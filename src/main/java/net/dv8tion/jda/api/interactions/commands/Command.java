@@ -17,30 +17,28 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
+import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
-import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -50,51 +48,10 @@ import java.util.stream.Collectors;
  * @see Guild#retrieveCommandById(String)
  * @see Guild#retrieveCommands()
  */
-public class Command implements ISnowflake
+public interface Command extends ISnowflake
 {
-    private static final EnumSet<OptionType> OPTIONS = EnumSet.complementOf(EnumSet.of(OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP));
-    private static final Predicate<DataObject> OPTION_TEST = it -> OPTIONS.contains(OptionType.fromKey(it.getInt("type")));
-    private static final Predicate<DataObject> SUBCOMMAND_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND;
-    private static final Predicate<DataObject> GROUP_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND_GROUP;
-
-    private final JDAImpl api;
-    private final Guild guild;
-    private final String name, description;
-    private final List<Option> options;
-    private final List<SubcommandGroup> groups;
-    private final List<Subcommand> subcommands;
-    private final long id, guildId, applicationId, version;
-    private final boolean defaultEnabled;
-
-    public Command(JDAImpl api, Guild guild, DataObject json)
-    {
-        this.api = api;
-        this.guild = guild;
-        this.name = json.getString("name");
-        this.description = json.getString("description");
-        this.id = json.getUnsignedLong("id");
-        this.defaultEnabled = json.getBoolean("default_permission");
-        this.guildId = guild != null ? guild.getIdLong() : 0L;
-        this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
-        this.options = parseOptions(json, OPTION_TEST, Option::new);
-        this.groups = parseOptions(json, GROUP_TEST, SubcommandGroup::new);
-        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
-        this.version = json.getUnsignedLong("version", id);
-    }
-
-    protected static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
-    {
-        return json.optArray("options").map(arr ->
-            arr.stream(DataArray::getObject)
-               .filter(test)
-               .map(transform)
-               .collect(Collectors.toList())
-        ).orElse(Collections.emptyList());
-    }
-
     /**
      * Delete this command.
-     * <br>If this is a global command it may take up to 1 hour to vanish from all clients.
      *
      * @throws IllegalStateException
      *         If this command is not owned by this bot
@@ -103,18 +60,7 @@ public class Command implements ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> delete()
-    {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
-            throw new IllegalStateException("Cannot delete a command from another bot!");
-        Route.CompiledRoute route;
-        String appId = getJDA().getSelfUser().getApplicationId();
-        if (guildId != 0L)
-            route = Route.Interactions.DELETE_GUILD_COMMAND.compile(appId, Long.toUnsignedString(guildId), getId());
-        else
-            route = Route.Interactions.DELETE_COMMAND.compile(appId, getId());
-        return new RestActionImpl<>(api, route);
-    }
+    RestAction<Void> delete();
 
     /**
      * Edit this command.
@@ -127,18 +73,13 @@ public class Command implements ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    public CommandEditAction editCommand()
-    {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
-            throw new IllegalStateException("Cannot edit a command from another bot!");
-        return guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
-    }
+    CommandEditAction editCommand();
 
     /**
-     * Retrieves the {@link CommandPrivilege CommandPrivileges} for this command.
-     * <br>This is a shortcut for {@link Guild#retrieveCommandPrivilegesById(String)}.
+     * Retrieves the {@link IntegrationPrivilege IntegrationPrivileges} for this command.
+     * <br>This is a shortcut for {@link Guild#retrieveIntegrationPrivilegesById(String)}.
      *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
@@ -149,86 +90,27 @@ public class Command implements ISnowflake
      * @throws IllegalArgumentException
      *         If the guild is null
      *
-     * @return {@link RestAction} - Type: {@link List} of {@link CommandPrivilege}
+     * @return {@link RestAction} - Type: {@link List} of {@link IntegrationPrivilege}
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        return guild.retrieveCommandPrivilegesById(id);
-    }
+    RestAction<List<IntegrationPrivilege>> retrievePrivileges(@Nonnull Guild guild);
 
     /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for this command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  guild
-     *         The target guild from which to update the privileges
-     * @param  privileges
-     *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     * @throws IllegalStateException
-     *         If this command is not owned by this bot
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
-     *         The updated list of privileges for this command.
-     */
-    @Nonnull
-    @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
-            throw new IllegalStateException("Cannot update privileges for a command from another bot!");
-        Checks.notNull(guild, "Guild");
-        return guild.updateCommandPrivilegesById(id, privileges);
-    }
-
-    /**
-     * Updates the list of {@link CommandPrivilege CommandPrivileges} for this command.
-     *
-     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  guild
-     *         The target guild from which to update the privileges
-     * @param  privileges
-     *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     * @throws IllegalStateException
-     *         If this command is not owned by this bot
-     *
-     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
-     *         The updated list of privileges for this command.
-     */
-    @Nonnull
-    @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges)
-    {
-        Checks.noneNull(privileges, "CommandPrivileges");
-        return updatePrivileges(guild, Arrays.asList(privileges));
-    }
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Command
+     * Returns the {@link JDA JDA} instance of this Command
      *
      * @return the corresponding JDA instance
      */
     @Nonnull
-    public JDA getJDA()
-    {
-        return api;
-    }
+    JDA getJDA();
+
+    /**
+     * The {@link Type} of command
+     *
+     * @return The command type
+     */
+    @Nonnull
+    Type getType();
 
     /**
      * The name of this command.
@@ -236,31 +118,31 @@ public class Command implements ISnowflake
      * @return The name
      */
     @Nonnull
-    public String getName()
-    {
-        return name;
-    }
+    String getName();
+
+    /**
+     * The localizations of this command's name for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+     */
+    @Nonnull
+    LocalizationMap getNameLocalizations();
 
     /**
      * The description of this command.
      *
-     * @return The description
+     * @return The description, empty for context menu commands
      */
     @Nonnull
-    public String getDescription()
-    {
-        return description;
-    }
+    String getDescription();
 
     /**
-     * Whether this command is enabled for everyone by default.
+     * The localizations of this command's description for {@link DiscordLocale various languages}.
      *
-     * @return True, if everyone can use this command by default.
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
      */
-    public boolean isDefaultEnabled()
-    {
-        return defaultEnabled;
-    }
+    @Nonnull
+    LocalizationMap getDescriptionLocalizations();
 
     /**
      * The {@link Option Options} of this command.
@@ -268,10 +150,7 @@ public class Command implements ISnowflake
      * @return Immutable list of command options
      */
     @Nonnull
-    public List<Option> getOptions()
-    {
-        return options;
-    }
+    List<Option> getOptions();
 
     /**
      * The {@link Subcommand Subcommands} of this command.
@@ -279,10 +158,7 @@ public class Command implements ISnowflake
      * @return Immutable list of subcommands
      */
     @Nonnull
-    public List<Subcommand> getSubcommands()
-    {
-        return subcommands;
-    }
+    List<Subcommand> getSubcommands();
 
     /**
      * The {@link SubcommandGroup SubcommandGroups} of this command.
@@ -290,20 +166,14 @@ public class Command implements ISnowflake
      * @return Immutable list of subcommand groups
      */
     @Nonnull
-    public List<SubcommandGroup> getSubcommandGroups()
-    {
-        return groups;
-    }
+    List<SubcommandGroup> getSubcommandGroups();
 
     /**
      * The id of the application this command belongs to.
      *
      * @return The application id
      */
-    public long getApplicationIdLong()
-    {
-        return applicationId;
-    }
+    long getApplicationIdLong();
 
     /**
      * The id of the application this command belongs to.
@@ -311,24 +181,21 @@ public class Command implements ISnowflake
      * @return The application id
      */
     @Nonnull
-    public String getApplicationId()
+    default String getApplicationId()
     {
-        return Long.toUnsignedString(applicationId);
+        return Long.toUnsignedString(getApplicationIdLong());
     }
 
     /**
      * The version of this command.
-     * <br>This changes when a command is updated through {@link net.dv8tion.jda.api.JDA#upsertCommand(CommandData) upsertCommand}, {@link net.dv8tion.jda.api.JDA#updateCommands() updateCommands}, or {@link net.dv8tion.jda.api.JDA#editCommandById(String) editCommandById}
+     * <br>This changes when a command is updated through {@link JDA#upsertCommand(CommandData) upsertCommand}, {@link JDA#updateCommands() updateCommands}, or {@link JDA#editCommandById(String) editCommandById}
      * <br>Useful for checking if command cache is outdated
      *
      * @return The version of the command as a snowflake id.
      *
      * @see #getTimeModified()
      */
-    public long getVersion()
-    {
-        return version;
-    }
+    long getVersion();
 
     /**
      * The time this command was updated last.
@@ -338,37 +205,73 @@ public class Command implements ISnowflake
      * @see #getVersion()
      */
     @Nonnull
-    public OffsetDateTime getTimeModified()
+    default OffsetDateTime getTimeModified()
     {
         return TimeUtil.getTimeCreated(getVersion());
     }
 
-    @Override
-    public long getIdLong()
-    {
-        return id;
-    }
+    /**
+     * The {@link DefaultMemberPermissions} of this command.
+     * <br>If this command has no default permission set, this returns {@link DefaultMemberPermissions#ENABLED}.
+     *
+     * @return The DefaultMemberPermissions of this command.
+     */
+    @Nonnull
+    DefaultMemberPermissions getDefaultPermissions();
 
-    @Override
-    public String toString()
-    {
-        return "C:" + getName() + "(" + getId() + ")";
-    }
+    /**
+     * Whether the command can only be used inside a guild.
+     * <br>Always true for guild commands.
+     *
+     * @return True, if this command is restricted to guilds.
+     */
+    boolean isGuildOnly();
 
-    @Override
-    public boolean equals(Object obj)
+    /**
+     * Possible command types
+     */
+    enum Type
     {
-        if (obj == this)
-            return true;
-        if (!(obj instanceof Command))
-            return false;
-        return id == ((Command) obj).id;
-    }
+        UNKNOWN(-1),
+        SLASH(1),
+        USER(2),
+        MESSAGE(3);
 
-    @Override
-    public int hashCode()
-    {
-        return Long.hashCode(id);
+        private final int id;
+
+        Type(int id)
+        {
+            this.id = id;
+        }
+
+        /**
+         * Resolves the provided command type id to the enum constant
+         *
+         * @param  id
+         *         The command type id
+         *
+         * @return The type or {@link #UNKNOWN}
+         */
+        @Nonnull
+        public static Type fromId(int id)
+        {
+            for (Type type : values())
+            {
+                if (type.id == id)
+                    return type;
+            }
+            return UNKNOWN;
+        }
+
+        /**
+         * The raw command type id used in the API
+         *
+         * @return The command type id
+         */
+        public int getId()
+        {
+            return id;
+        }
     }
 
     /**
@@ -377,24 +280,40 @@ public class Command implements ISnowflake
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Command.Choice...)
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Collection)
      */
-    public static class Choice
+    class Choice
     {
-        private final String name;
+        /**
+         * The maximum length the name of a choice can be.
+         */
+        public static final int MAX_NAME_LENGTH = 100;
+
+        /**
+         * The maximum length the {@link OptionType#STRING STRING} value of a choice can be.
+         */
+        public static final int MAX_STRING_VALUE_LENGTH = 100;
+
+        private String name;
+        private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
         private long intValue = 0;
         private double doubleValue = Double.NaN;
         private String stringValue = null;
+        private OptionType type;
 
         /**
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The integer value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
          */
         public Choice(@Nonnull String name, long value)
         {
-            this.name = name;
+            setName(name);
             setIntValue(value);
         }
 
@@ -402,13 +321,17 @@ public class Command implements ISnowflake
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The double value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
          */
         public Choice(@Nonnull String name, double value)
         {
-            this.name = name;
+            setName(name);
             setDoubleValue(value);
         }
 
@@ -416,13 +339,22 @@ public class Command implements ISnowflake
          * Create a Choice tuple
          *
          * @param name
-         *        The display name of this choice
+         *        The display name of this choice, must be less than 100 characters
          * @param value
          *        The string value you receive in a command option
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *                 as defined by {@link #MAX_NAME_LENGTH}</li>
+         *             <li>If the value is null or longer than {@value #MAX_STRING_VALUE_LENGTH} characters long,
+         *                 as defined by {@link #MAX_STRING_VALUE_LENGTH}</li>
+         *         </ul>
+         *
          */
         public Choice(@Nonnull String name, @Nonnull String value)
         {
-            this.name = name;
+            setName(name);
             setStringValue(value);
         }
 
@@ -453,6 +385,7 @@ public class Command implements ISnowflake
             {
                 setStringValue(json.getString("value"));
             }
+            setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
         }
 
         /**
@@ -465,6 +398,85 @@ public class Command implements ISnowflake
         public String getName()
         {
             return name;
+        }
+
+        /**
+         * Configure the choice name
+         *
+         * @param  name
+         *         The choice name, {@link #MAX_NAME_LENGTH 1-100 characters long}
+         *
+         * @throws IllegalArgumentException
+         *         If the name is null, empty, or not between 1-{@value #MAX_NAME_LENGTH} characters long,
+         *         as defined by {@link #MAX_NAME_LENGTH}
+         *
+         * @return The Choice instance, for chaining
+         */
+        public Choice setName(@Nonnull String name)
+        {
+            checkName(name);
+            this.name = name;
+            return this;
+        }
+
+        /**
+         * The localizations of this choice's name for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+         */
+        @Nonnull
+        public LocalizationMap getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
+        /**
+         * Sets the name localizations of this choice.
+         *
+         * @param  locale
+         *         The locale to associate the translated name with
+         *
+         * @param  name
+         *         The translated name to put
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the locale is null</li>
+         *             <li>If the name is null</li>
+         *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+         *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
+         *         </ul>
+         *
+         * @return This builder instance, for chaining
+         */
+        @Nonnull
+        public Choice setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
+        {
+            nameLocalizations.setTranslation(locale, name);
+            return this;
+        }
+
+        /**
+         * Sets the name localizations of this choice.
+         *
+         * @param  map
+         *         The map from which to transfer the translated names
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the map is null</li>
+         *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+         *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
+         *         </ul>
+         *
+         * @return This builder instance, for chaining
+         */
+        @Nonnull
+        public Choice setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+        {
+            //Checks are done in LocalizationMap
+            nameLocalizations.setTranslations(map);
+            return this;
         }
 
         /**
@@ -498,6 +510,17 @@ public class Command implements ISnowflake
             return stringValue;
         }
 
+        /**
+         * The {@link OptionType} this choice is for
+         *
+         * @return The option type of this choice
+         */
+        @Nonnull
+        public OptionType getType()
+        {
+            return type;
+        }
+
         @Override
         public int hashCode()
         {
@@ -524,6 +547,7 @@ public class Command implements ISnowflake
             this.doubleValue = value;
             this.intValue = value;
             this.stringValue = Long.toString(value);
+            this.type = OptionType.INTEGER;
         }
 
         private void setDoubleValue(double value)
@@ -531,35 +555,69 @@ public class Command implements ISnowflake
             this.doubleValue = value;
             this.intValue = (long) value;
             this.stringValue = Double.toString(value);
+            this.type = OptionType.NUMBER;
         }
 
         private void setStringValue(@Nonnull String value)
         {
+            Checks.notLonger(value, MAX_STRING_VALUE_LENGTH, "Choice string value");
             this.doubleValue = Double.NaN;
             this.intValue = 0;
             this.stringValue = value;
+            this.type = OptionType.STRING;
+        }
+
+        private void checkName(@Nonnull String name)
+        {
+            Checks.notEmpty(name, "Choice name");
+            Checks.notLonger(name, MAX_NAME_LENGTH, "Choice name");
+        }
+
+        @Nonnull
+        public DataObject toData(OptionType optionType)
+        {
+            final Object value;
+            if (optionType == OptionType.INTEGER)
+                value = getAsLong();
+            else if (optionType == OptionType.STRING)
+                value = getAsString();
+            else if (optionType == OptionType.NUMBER)
+                value = getAsDouble();
+            else
+                throw new IllegalArgumentException("Cannot transform choice into data for type " + optionType);
+
+            return DataObject.empty()
+                    .put("name", name)
+                    .put("value", value)
+                    .put("name_localizations", nameLocalizations);
         }
     }
 
     /**
      * An Option for a command.
      */
-    public static class Option
+    class Option
     {
         private final String name, description;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final int type;
-        private final boolean required;
+        private final boolean required, autoComplete;
         private final Set<ChannelType> channelTypes;
         private final List<Choice> choices;
         private Number minValue;
         private Number maxValue;
+        private Integer minLength, maxLength;
 
         public Option(@Nonnull DataObject json)
         {
             this.name = json.getString("name");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
+            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
+            this.autoComplete = json.getBoolean("autocomplete");
             this.channelTypes = Collections.unmodifiableSet(json.optArray("channel_types")
                     .map(it -> it.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toSet()))
                     .orElse(Collections.emptySet()));
@@ -570,6 +628,10 @@ public class Command implements ISnowflake
                 this.minValue = json.getDouble("min_value");
             if (!json.isNull("max_value"))
                 this.maxValue = json.getDouble("max_value");
+            if (!json.isNull("min_length"))
+                this.minLength = json.getInt("min_length");
+            if (!json.isNull("max_length"))
+                this.maxLength = json.getInt("max_length");
         }
 
         /**
@@ -584,6 +646,17 @@ public class Command implements ISnowflake
         }
 
         /**
+         * The localizations of this option's name for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+         */
+        @Nonnull
+        public LocalizationMap getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
+        /**
          * The description of this option, subcommand, or subcommand group.
          *
          * @return The description
@@ -592,6 +665,17 @@ public class Command implements ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        /**
+         * The localizations of this option's description for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+         */
+        @Nonnull
+        public LocalizationMap getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**
@@ -612,6 +696,16 @@ public class Command implements ISnowflake
         public boolean isRequired()
         {
             return required;
+        }
+
+        /**
+         * Whether this option supports auto-complete
+         *
+         * @return True if this option supports auto-complete
+         */
+        public boolean isAutoComplete()
+        {
+            return autoComplete;
         }
 
         /**
@@ -664,6 +758,32 @@ public class Command implements ISnowflake
         }
 
         /**
+         * The minimum length for strings which can be provided for this option.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#STRING STRING}.
+         *
+         * @return The minimum length for strings for this option or {@code null}
+         */
+        @Nullable
+        public Integer getMinLength()
+        {
+            return minLength;
+        }
+
+        /**
+         * The maximum length for strings which can be provided for this option.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#STRING STRING}.
+         *
+         * @return The maximum length for strings for this option or {@code null}
+         */
+        @Nullable
+        public Integer getMaxLength()
+        {
+            return maxLength;
+        }
+
+        /**
          * The predefined choices available for this option.
          * <br>If no choices are defined, this returns an empty list.
          *
@@ -678,7 +798,7 @@ public class Command implements ISnowflake
         @Override
         public int hashCode()
         {
-            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue);
+            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue, minLength, maxLength, required, autoComplete);
         }
 
         @Override
@@ -693,6 +813,10 @@ public class Command implements ISnowflake
                 && Objects.equals(other.channelTypes, channelTypes)
                 && Objects.equals(other.minValue, minValue)
                 && Objects.equals(other.maxValue, maxValue)
+                && Objects.equals(other.minLength, minLength)
+                && Objects.equals(other.maxLength, maxLength)
+                && other.required == required
+                && other.autoComplete == autoComplete
                 && other.type == type;
         }
 
@@ -706,16 +830,20 @@ public class Command implements ISnowflake
     /**
      * An Subcommand for a command.
      */
-    public static class Subcommand
+    class Subcommand
     {
         private final String name, description;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final List<Option> options;
 
         public Subcommand(DataObject json)
         {
             this.name = json.getString("name");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
-            this.options = parseOptions(json, OPTION_TEST, Option::new);
+            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
+            this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
         }
 
         /**
@@ -730,6 +858,17 @@ public class Command implements ISnowflake
         }
 
         /**
+         * The localizations of this subcommands's name for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+         */
+        @Nonnull
+        public LocalizationMap getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
+        /**
          * The description of this subcommand.
          *
          * @return The description
@@ -738,6 +877,17 @@ public class Command implements ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        /**
+         * The localizations of this subcommand's description for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+         */
+        @Nonnull
+        public LocalizationMap getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**
@@ -778,16 +928,20 @@ public class Command implements ISnowflake
     /**
      * An Subcommand Group for a command.
      */
-    public static class SubcommandGroup
+    class SubcommandGroup
     {
         private final String name, description;
+        private final LocalizationMap nameLocalizations;
+        private final LocalizationMap descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
         public SubcommandGroup(DataObject json)
         {
             this.name = json.getString("name");
+            this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
-            this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
+            this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
+            this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, Subcommand::new);
         }
 
         /**
@@ -802,6 +956,17 @@ public class Command implements ISnowflake
         }
 
         /**
+         * The localizations of this subcommand group's name for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+         */
+        @Nonnull
+        public LocalizationMap getNameLocalizations()
+        {
+            return nameLocalizations;
+        }
+
+        /**
          * The description of this subcommand group.
          *
          * @return The description
@@ -810,6 +975,17 @@ public class Command implements ISnowflake
         public String getDescription()
         {
             return description;
+        }
+
+        /**
+         * The localizations of this subcommand group's description for {@link DiscordLocale various languages}.
+         *
+         * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+         */
+        @Nonnull
+        public LocalizationMap getDescriptionLocalizations()
+        {
+            return descriptionLocalizations;
         }
 
         /**

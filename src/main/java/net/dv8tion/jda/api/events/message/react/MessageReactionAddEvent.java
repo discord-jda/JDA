@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to track when a user adds a reaction to a message
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>
@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
  */
 public class MessageReactionAddEvent extends GenericMessageReactionEvent
 {
-    public MessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user,
+    public MessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nullable User user,
                                    @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, user, member, reaction, userId);

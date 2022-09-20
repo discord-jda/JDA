@@ -16,15 +16,23 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EmoteImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
@@ -62,7 +70,6 @@ public class MessageReactionHandler extends SocketHandler
 
         final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
         String emojiName = emoji.getString("name", null);
-        final boolean emojiAnimated = emoji.getBoolean("animated");
 
         if (emojiId == null && emojiName == null)
         {
@@ -70,8 +77,8 @@ public class MessageReactionHandler extends SocketHandler
                 JDALogger.getLazyString(() -> add ? "add" : "remove"), content);
             return null;
         }
-
-        Guild guild = api.getGuildById(content.getUnsignedLong("guild_id", 0));
+        final long guildId = content.getUnsignedLong("guild_id", 0);
+        Guild guild = api.getGuildById(guildId);
         MemberImpl member = null;
         if (guild != null)
         {
@@ -105,8 +112,12 @@ public class MessageReactionHandler extends SocketHandler
         User user = api.getUserById(userId);
         if (user == null && member != null)
             user = member.getUser(); // this happens when we have guild subscriptions disabled
+
         if (user == null)
         {
+            // We expect there to be a user object already cached when we are in a guild and adding a new reaction as the user should be a member cached in the guild.
+            // The event in the context of a guild will also provide a member object, if the required intents are present.
+            // The only time we can receive a reaction add but not have the user cached would be if we receive the event in an uncached or partially built PrivateChannel.
             if (add && guild != null)
             {
                 api.getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
@@ -116,48 +127,49 @@ public class MessageReactionHandler extends SocketHandler
             }
         }
 
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = api.getTextChannelById(channelId);
-        if (channel == null)
-            channel = api.getNewsChannelById(channelId);
-        if (channel == null)
-            channel = api.getThreadChannelById(channelId);
-        if (channel == null)
-            channel = api.getPrivateChannelById(channelId);
+        MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
-            api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
-            return null;
-        }
-
-        MessageReaction.ReactionEmote rEmote;
-        if (emojiId != null)
-        {
-            Emote emote = api.getEmoteById(emojiId);
-            if (emote == null)
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
+            if (guild != null)
             {
-                if (emojiName != null)
+                GuildChannel actual = guild.getGuildChannelById(channelId);
+                if (actual != null)
                 {
-                    emote = new EmoteImpl(emojiId, api).setAnimated(emojiAnimated).setName(emojiName);
-                }
-                else
-                {
-                    WebSocketClient.LOG.debug("Received a reaction {} with a null name. json: {}",
-                        JDALogger.getLazyString(() -> add ? "add" : "remove"), content);
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION event for unexpected channel of type {}", actual.getType());
                     return null;
                 }
             }
-            rEmote = MessageReaction.ReactionEmote.fromCustom(emote);
+
+            if (guildId != 0)
+            {
+                api.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
+                return null;
+            }
+
+            //create a new private channel with minimal information for this event
+            channel = getJDA().getEntityBuilder().createPrivateChannel(
+                    DataObject.empty()
+                            .put("id", channelId)
+            );
         }
-        else
-        {
-            rEmote = MessageReaction.ReactionEmote.fromUnicode(emojiName, api);
-        }
-        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == api.getSelfUser().getIdLong(), -1);
+
+        // reaction remove has null name sometimes
+        EmojiUnion rEmoji = EntityBuilder.createEmoji(emoji);
+
+        MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, userId == api.getSelfUser().getIdLong(), -1);
 
         if (channel.getType() == ChannelType.PRIVATE)
+        {
             api.usedPrivateChannel(reaction.getChannel().getIdLong());
+            PrivateChannelImpl priv = (PrivateChannelImpl) channel;
+            //try to add the user here if we need to, as we have their ID
+            if (priv.getUser() == null && user != null)
+            {
+                priv.setUser(user);
+            }
+        }
 
         if (add)
         {

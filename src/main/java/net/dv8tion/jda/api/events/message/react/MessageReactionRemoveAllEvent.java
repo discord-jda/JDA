@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.events.message.react;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import javax.annotation.Nonnull;
@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect when the reactions of a message are removed by a moderator
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>

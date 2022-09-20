@@ -16,9 +16,10 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.Incubating;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -105,7 +106,7 @@ public interface Activity
      * @return Possibly-null {@link Emoji} used for custom status
      */
     @Nullable
-    Emoji getEmoji();
+    EmojiUnion getEmoji();
 
     /**
      * Creates a new Activity instance with the specified name.
@@ -162,7 +163,7 @@ public interface Activity
 
     /**
      * Creates a new Activity instance with the specified name.
-     * <br>This will display as {@code Listening name} in the official client
+     * <br>This will display as {@code Listening to name} in the official client
      *
      * @param  name
      *         The not-null name of the newly created game
@@ -531,145 +532,6 @@ public interface Activity
         public int hashCode()
         {
             return Objects.hash(start, end);
-        }
-    }
-
-    /**
-     * Emoji for a custom status.
-     * <br>This can be a unicode emoji or a custom emoji (Emote).
-     */
-    class Emoji implements ISnowflake, IMentionable
-    {
-        private final String name;
-        private final long id;
-        private final boolean animated;
-
-        public Emoji(String name, long id, boolean animated)
-        {
-            this.name = name;
-            this.id = id;
-            this.animated = animated;
-        }
-
-        public Emoji(String name)
-        {
-            this(name, 0, false);
-        }
-
-        /**
-         * The name of this emoji. This will be the unicode characters for a unicode emoji
-         * and the name of the custom emote otherwise.
-         *
-         * @return The emoji name
-         *
-         * @see    #getAsCodepoints()
-         */
-        @Nonnull
-        public String getName()
-        {
-            return name;
-        }
-
-        /**
-         * The codepoint notation ({@code "U+XXXX"}) for the unicode of this emoji.
-         * Not available for custom emotes.
-         *
-         * @throws IllegalStateException
-         *         If {@link #isEmoji()} is false
-         *
-         * @return The codepoint notation
-         *
-         * @see    #getName()
-         */
-        @Nonnull
-        public String getAsCodepoints()
-        {
-            if (!isEmoji())
-                throw new IllegalStateException("Cannot convert custom emote to codepoints");
-            return EncodingUtil.encodeCodepoints(name);
-        }
-
-        /**
-         * The id for this custom emoji.
-         *
-         * @throws IllegalStateException
-         *         If {@link #isEmote()} is false
-         *
-         * @return The emoji id
-         */
-        @Override
-        public long getIdLong()
-        {
-            if (!isEmote())
-                throw new IllegalStateException("Cannot get id for unicode emoji");
-            return id;
-        }
-
-        /**
-         * Whether this emoji is animated.
-         * This is always false for unicode emoji.
-         *
-         * @return True, if this emoji is animated
-         */
-        public boolean isAnimated()
-        {
-            return animated;
-        }
-
-        /**
-         * Whether this is a unicode emoji.
-         *
-         * @return True, if this is a unicode emoji
-         */
-        public boolean isEmoji()
-        {
-            return id == 0;
-        }
-
-        /**
-         * Whether this is a custom emoji (Emote)
-         *
-         * @return True, if this is a custom emoji
-         */
-        public boolean isEmote()
-        {
-            return id != 0;
-        }
-
-        @Nonnull
-        @Override
-        public String getAsMention()
-        {
-            if (isEmoji())
-                return name; // unicode name
-            // custom emoji format (for messages)
-            return String.format("<%s:%s:%s>", isAnimated() ? "a" : "", name, getId());
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return id == 0 ? name.hashCode() : Long.hashCode(id);
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (obj == this)
-                return true;
-            if (!(obj instanceof Emoji))
-                return false;
-            Emoji other = (Emoji) obj;
-            return id == 0 ? other.name.equals(this.name)
-                           : other.id == this.id;
-        }
-
-        @Override
-        public String toString()
-        {
-            if (isEmoji())
-                return "ActivityEmoji(" + getAsCodepoints() + ')';
-            return "ActivityEmoji(" + Long.toUnsignedString(id) + " / " + name + ')';
         }
     }
 }

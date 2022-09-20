@@ -26,10 +26,18 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.sticker.StickerPack;
+import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
+import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
@@ -42,6 +50,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -57,6 +66,8 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -80,7 +91,6 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
-import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -95,12 +105,12 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
     protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Category.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SnowflakeCacheViewImpl<>(StoreChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<ThreadChannel> threadChannelsCache = new SnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName);
+    protected final SnowflakeCacheViewImpl<ForumChannel> forumChannelsCache = new SnowflakeCacheViewImpl<>(ForumChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, Channel::getName);
     protected final LinkedList<Long> privateChannelLRU = new LinkedList<>();
 
@@ -168,6 +178,11 @@ public class JDAImpl implements JDA
         return sessionConfig.isRawEvents();
     }
 
+    public boolean isEventPassthrough()
+    {
+        return sessionConfig.isEventPassthrough();
+    }
+
     public boolean isRelativeRateLimit()
     {
         return sessionConfig.isRelativeRateLimit();
@@ -217,8 +232,7 @@ public class JDAImpl implements JDA
         try
         {
             return member.getUser().equals(getSelfUser()) // always cache self
-                    || chunkGuild(member.getGuild().getIdLong())  // always cache if chunking
-                    || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
+                || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
         }
         catch (Exception e)
         {
@@ -261,17 +275,17 @@ public class JDAImpl implements JDA
         }
     }
 
-    public int login() throws LoginException
+    public int login()
     {
         return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
     }
 
-    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
+    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding)
     {
         return login(null, shardInfo, compression, validateToken, intents, encoding);
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
+    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding)
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
@@ -282,7 +296,7 @@ public class JDAImpl implements JDA
         String token = authConfig.getToken();
         setStatus(Status.LOGGING_IN);
         if (token == null || token.isEmpty())
-            throw new LoginException("Provided token was null or empty!");
+            throw new InvalidTokenException("Provided token was null or empty!");
 
         Map<String, String> previousContext = null;
         ConcurrentMap<String, String> contextMap = metaConfig.getMdcContextMap();
@@ -318,7 +332,7 @@ public class JDAImpl implements JDA
 
     public String getGateway()
     {
-        return getSessionController().getGateway(this);
+        return getSessionController().getGateway();
     }
 
 
@@ -356,7 +370,7 @@ public class JDAImpl implements JDA
         }
     }
 
-    public void verifyToken() throws LoginException
+    public void verifyToken()
     {
         RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile())
         {
@@ -381,7 +395,7 @@ public class JDAImpl implements JDA
             return;
         }
         shutdownNow();
-        throw new LoginException("The provided token is invalid!");
+        throw new InvalidTokenException("The provided token is invalid!");
     }
 
     public AuthorizationConfig getAuthorizationConfig()
@@ -553,22 +567,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<User> retrieveUserById(@Nonnull String id)
+    public CacheRestAction<User> retrieveUserById(long id)
     {
-        return retrieveUserById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<User> retrieveUserById(long id, boolean update)
-    {
-        if (id == getSelfUser().getIdLong())
-            return new CompletedRestAction<>(this, getSelfUser());
-
-        AccountTypeException.check(getAccountType(), AccountType.BOT);
         return new DeferredRestAction<>(this, User.class,
-                () -> !update || isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null,
+                () -> isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null,
                 () -> {
+                    if (id == getSelfUser().getIdLong())
+                        return new CompletedRestAction<>(this, getSelfUser());
                     Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
                     return new RestActionImpl<>(this, route,
                             (response, request) -> getEntityBuilder().createUser(response.getObject()));
@@ -614,9 +619,47 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<Emote> getEmoteCache()
+    public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
-        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmojiCache));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<StickerUnion> retrieveSticker(@Nonnull StickerSnowflake sticker)
+    {
+        Checks.notNull(sticker, "Sticker");
+        Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(sticker.getId());
+        return new RestActionImpl<>(this, route,
+            (response, request) -> entityBuilder.createRichSticker(response.getObject())
+        );
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<StickerPack>> retrieveNitroStickerPacks()
+    {
+        Route.CompiledRoute route = Route.Stickers.LIST_PACKS.compile();
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            DataArray array = response.getObject().getArray("sticker_packs");
+            List<StickerPack> packs = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = null;
+                try
+                {
+                    object = array.getObject(i);
+                    StickerPack pack = entityBuilder.createStickerPack(object);
+                    packs.add(pack);
+                }
+                catch (ParsingException ex)
+                {
+                    EntityBuilder.LOG.error("Failed to parse sticker pack. JSON: {}", object);
+                }
+            }
+            return Collections.unmodifiableList(packs);
+        });
     }
 
     @Nonnull
@@ -624,13 +667,6 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
-    }
-
-    @Nonnull
-    @Override
-    public SnowflakeCacheView<StoreChannel> getStoreChannelCache()
-    {
-        return storeChannelCache;
     }
 
     @Nonnull
@@ -670,6 +706,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<ForumChannel> getForumChannelCache()
+    {
+        return forumChannelsCache;
+    }
+
+    @Nonnull
+    @Override
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return privateChannelCache;
@@ -692,7 +735,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<PrivateChannel> openPrivateChannelById(long userId)
+    public CacheRestAction<PrivateChannel> openPrivateChannelById(long userId)
     {
         if (selfUser != null && userId == selfUser.getIdLong())
             throw new UnsupportedOperationException("Cannot open private channel with yourself!");
@@ -780,7 +823,7 @@ public class JDAImpl implements JDA
         setStatus(Status.SHUTDOWN);
     }
 
-    public synchronized void shutdownRequester()
+    public void shutdownRequester()
     {
         // Stop all request processing
         requester.shutdown();
@@ -868,14 +911,17 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<List<Command>> retrieveCommands()
+    public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
-        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS.compile(getSelfUser().getApplicationId());
+        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS
+                .compile(getSelfUser().getApplicationId())
+                .withQueryParams("with_localizations", String.valueOf(withLocalizations));
+
         return new RestActionImpl<>(this, route,
             (response, request) ->
                 response.getArray()
                         .stream(DataArray::getObject)
-                        .map(json -> new Command(this, null, json))
+                        .map(json -> new CommandImpl(this, null, json))
                         .collect(Collectors.toList()));
     }
 
@@ -885,7 +931,7 @@ public class JDAImpl implements JDA
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
-        return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
+        return new RestActionImpl<>(this, route, (response, request) -> new CommandImpl(this, null, response.getObject()));
     }
 
     @Nonnull
@@ -893,7 +939,7 @@ public class JDAImpl implements JDA
     public CommandCreateAction upsertCommand(@Nonnull CommandData command)
     {
         Checks.notNull(command, "CommandData");
-        return new CommandCreateActionImpl(this, command);
+        return new CommandCreateActionImpl(this, (CommandDataImpl) command);
     }
 
     @Nonnull
@@ -1097,11 +1143,6 @@ public class JDAImpl implements JDA
         return categories;
     }
 
-    public SnowflakeCacheViewImpl<StoreChannel> getStoreChannelsView()
-    {
-        return storeChannelCache;
-    }
-
     public SnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
     {
         return textChannelCache;
@@ -1125,6 +1166,11 @@ public class JDAImpl implements JDA
     public SnowflakeCacheViewImpl<ThreadChannel> getThreadChannelsView()
     {
         return threadChannelsCache;
+    }
+
+    public SnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
+    {
+        return forumChannelsCache;
     }
 
     public SnowflakeCacheViewImpl<PrivateChannel> getPrivateChannelsView()

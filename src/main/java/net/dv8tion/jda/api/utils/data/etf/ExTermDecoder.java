@@ -41,7 +41,7 @@ public class ExTermDecoder
     /**
      * Unpacks the provided term into a java object.
      *
-     * <h2>The mapping is as follows:</h2>
+     * <p><b>The mapping is as follows:</b><br>
      * <ul>
      *     <li>{@code Small Int | Int -> Integer}</li>
      *     <li>{@code Small BigInt -> Long}</li>
@@ -71,7 +71,7 @@ public class ExTermDecoder
     /**
      * Unpacks the provided term into a java {@link Map}.
      *
-     * <h2>The mapping is as follows:</h2>
+     * <p><b>The mapping is as follows:</b><br>
      * <ul>
      *     <li>{@code Small Int | Int -> Integer}</li>
      *     <li>{@code Small BigInt -> Long}</li>
@@ -102,7 +102,7 @@ public class ExTermDecoder
     /**
      * Unpacks the provided term into a java {@link List}.
      *
-     * <h2>The mapping is as follows:</h2>
+     * <p><b>The mapping is as follows:</b><br>
      * <ul>
      *     <li>{@code Small Int | Int -> Integer}</li>
      *     <li>{@code Small BigInt -> Long}</li>
@@ -247,7 +247,7 @@ public class ExTermDecoder
         case "true": return true;
         case "false": return false;
         case "nil": return null;
-        default: return value;
+        default: return value.intern();
         }
     }
 

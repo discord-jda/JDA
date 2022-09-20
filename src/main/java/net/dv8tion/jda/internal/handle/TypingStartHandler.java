@@ -15,9 +15,9 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -54,15 +54,13 @@ public class TypingStartHandler extends SocketHandler
         final long channelId = content.getLong("channel_id");
 
         //TODO-v5-unified-channel-cache
-        MessageChannel channel = getJDA().getTextChannelsView().get(channelId);
+        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
+
+        //We don't have the channel cached yet. We chose not to cache this event
+        // because that happens very often and could easily fill up the EventCache if
+        // we, for some reason, never get the channel. Especially in an active channel.
         if (channel == null)
-            channel = getJDA().getNewsChannelView().get(channelId);
-        if (channel == null)
-            channel = getJDA().getPrivateChannelsView().get(channelId);
-        if (channel == null)
-            return null;    //We don't have the channel cached yet. We chose not to cache this event
-                            // because that happen very often and could easily fill up the EventCache if
-                            // we, for some reason, never get the channel. Especially in an active channel.
+            return null;
 
         final long userId = content.getLong("user_id");
         User user;

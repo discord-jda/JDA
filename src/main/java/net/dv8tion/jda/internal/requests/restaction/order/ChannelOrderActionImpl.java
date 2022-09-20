@@ -16,10 +16,16 @@
 
 package net.dv8tion.jda.internal.requests.restaction.order;
 
+import gnu.trove.map.TLongLongMap;
+import gnu.trove.map.hash.TLongLongHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -29,6 +35,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -38,6 +45,8 @@ public class ChannelOrderActionImpl
 {
     protected final Guild guild;
     protected final int bucket;
+    protected final TLongSet lockPermissions = new TLongHashSet();
+    protected final TLongLongMap parent = new TLongLongHashMap();
 
     /**
      * Creates a new ChannelOrderAction instance
@@ -102,6 +111,25 @@ public class ChannelOrderActionImpl
         return bucket;
     }
 
+    @Nonnull
+    @Override
+    public ChannelOrderAction setCategory(@Nullable Category category, boolean syncPermissions)
+    {
+        GuildChannel channel = getSelectedEntity();
+        if (!(channel instanceof ICategorizableChannel) && category != null)
+            throw new IllegalStateException("Cannot move channel of type " + channel.getType() + " to category!");
+        if (category != null)
+            Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild!");
+
+        long id = channel.getIdLong();
+        parent.put(id, category == null ? 0 : category.getIdLong());
+        if (syncPermissions)
+            lockPermissions.add(id);
+        else
+            lockPermissions.remove(id);
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -112,9 +140,16 @@ public class ChannelOrderActionImpl
         for (int i = 0; i < orderList.size(); i++)
         {
             GuildChannel chan = orderList.get(i);
-            array.add(DataObject.empty()
+            DataObject json = DataObject.empty()
                     .put("id", chan.getId())
-                    .put("position", i));
+                    .put("position", i);
+            if (parent.containsKey(chan.getIdLong()))
+            {
+                long parentId = parent.get(chan.getIdLong());
+                json.put("parent_id", parentId == 0 ? null : parentId);
+                json.put("lock_permissions", lockPermissions.contains(chan.getIdLong()));
+            }
+            array.add(json);
         }
 
         return getRequestBody(array);

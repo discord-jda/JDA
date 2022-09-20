@@ -16,322 +16,212 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
- * Builder for a Slash-Command.
+ * Builder for Application Commands.
+ * <br>Use the factory methods provided by {@link Commands} to create instances of this interface.
+ *
+ * @see Commands
  */
-public class CommandData extends BaseCommand<CommandData> implements SerializableData
+public interface CommandData extends SerializableData
 {
-    private boolean allowSubcommands = true;
-    private boolean allowGroups = true;
-    private boolean allowOption = true;
-    private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
-    private boolean allowRequired = true;
+    /**
+     * The maximum length the name of a command can be.
+     */
+    int MAX_NAME_LENGTH = 32;
 
     /**
-     * Create an command builder.
+     * The maximum length the description of a command can be.
+     */
+    int MAX_DESCRIPTION_LENGTH = 100;
+
+    /**
+     * Sets the {@link LocalizationFunction} for this command
+     * <br>This enables you to have the entirety of this command to be localized.
      *
-     * @param name
-     *        The command name, 1-32 lowercase alphanumeric characters
-     * @param description
-     *        The command description, 1-100 characters
+     * @param  localizationFunction
+     *         The localization function
      *
      * @throws IllegalArgumentException
-     *         If any of the following requirements are not met
-     *         <ul>
-     *             <li>The name must be lowercase alphanumeric (with dash), 1-32 characters long</li>
-     *             <li>The description must be 1-100 characters long</li>
-     *         </ul>
-     */
-    public CommandData(@Nonnull String name, @Nonnull String description)
-    {
-        super(name, description);
-    }
-
-    @Nonnull
-    @Override
-    public DataObject toData()
-    {
-        return super.toData().put("default_permission", defaultPermissions);
-    }
-
-    /**
-     * The {@link SubcommandData Subcommands} in this command.
+     *         If the localization function is null
      *
-     * @return Immutable list of {@link SubcommandData}
+     * @return The builder instance, for chaining
      */
     @Nonnull
-    public List<SubcommandData> getSubcommands()
-    {
-        return options.stream(DataArray::getObject)
-                .filter(obj ->
-                {
-                    OptionType type = OptionType.fromKey(obj.getInt("type"));
-                    return type == OptionType.SUB_COMMAND;
-                })
-                .map(SubcommandData::fromData)
-                .collect(Collectors.toList());
-    }
+    CommandData setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
 
     /**
-     * The {@link SubcommandGroupData Subcommand Groups} in this command.
+     * Configure the command name.
      *
-     * @return Immutable list of {@link SubcommandGroupData}
+     * @param  name
+     *         The name, 1-32 characters (lowercase and alphanumeric for {@link Command.Type#SLASH})
+     *
+     * @throws IllegalArgumentException
+     *         If the name is not between 1-32 characters long, or not lowercase and alphanumeric for slash commands
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
-    public List<SubcommandGroupData> getSubcommandGroups()
-    {
-        return options.stream(DataArray::getObject)
-                .filter(obj ->
-                {
-                    OptionType type = OptionType.fromKey(obj.getInt("type"));
-                    return type == OptionType.SUB_COMMAND_GROUP;
-                })
-                .map(SubcommandGroupData::fromData)
-                .collect(Collectors.toList());
-    }
+    CommandData setName(@Nonnull String name);
 
     /**
-     * Whether this command is available to everyone by default.
-     * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     * Sets a {@link DiscordLocale language-specific} localization of this command's name.
      *
-     * @param  enabled
-     *         True, if this command is enabled by default for everyone. (Default: true)
+     * @param  locale
+     *         The locale to associate the translated name with
      *
-     * @return The CommandData instance, for chaining
-     */
-    @Nonnull
-    public CommandData setDefaultEnabled(boolean enabled)
-    {
-        this.defaultPermissions = enabled;
-        return this;
-    }
-
-    /**
-     * Adds up to 25 options to this command.
-     *
-     * <p>Required options must be added before non-required options!
-     *
-     * @param  options
-     *          The {@link OptionData Options} to add
+     * @param  name
+     *         The translated name to put
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
-     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
-     *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
-     *             <li>If null is provided</li>
+     *             <li>If the locale is null</li>
+     *             <li>If the name is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
      *         </ul>
      *
-     * @return The CommandData instance, for chaining
+     * @return This builder instance, for chaining
      */
     @Nonnull
-    public CommandData addOptions(@Nonnull OptionData... options)
+    CommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
+
+    /**
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this command's name.
+     *
+     * @param  map
+     *         The map from which to transfer the translated names
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} that a user must have in a specific channel to be able to use this command.
+     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). Additionally, a command can be disabled for everyone but admins via {@link DefaultMemberPermissions#DISABLED}.
+     * <p>These configurations can be overwritten by moderators in each guild. See {@link Command#retrievePrivileges(net.dv8tion.jda.api.entities.Guild)} to get moderator defined overrides.
+     *
+     * @param  permission
+     *         {@link DefaultMemberPermissions} representing the default permissions of this command.
+     *
+     * @return The builder instance, for chaining
+     *
+     * @see DefaultMemberPermissions#ENABLED
+     * @see DefaultMemberPermissions#DISABLED
+     */
+    @Nonnull
+    CommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
+
+    /**
+     * Sets whether this command is only usable in a guild (Default: false).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  guildOnly
+     *         Whether to restrict this command to guilds
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setGuildOnly(boolean guildOnly);
+
+    /**
+     * The current command name
+     *
+     * @return The command name
+     */
+    @Nonnull
+    String getName();
+
+    /**
+     * The localizations of this command's name for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+     */
+    @Nonnull
+    LocalizationMap getNameLocalizations();
+
+    /**
+     * The {@link Command.Type}
+     *
+     * @return The {@link Command.Type}
+     */
+    @Nonnull
+    Command.Type getType();
+
+    /**
+     * Gets the {@link DefaultMemberPermissions} of this command.
+     * <br>If no permissions have been set, this returns {@link DefaultMemberPermissions#ENABLED}.
+     *
+     * @return DefaultMemberPermissions of this command.
+     *
+     * @see    DefaultMemberPermissions#ENABLED
+     * @see    DefaultMemberPermissions#DISABLED
+     */
+    @Nonnull
+    DefaultMemberPermissions getDefaultPermissions();
+
+    /**
+     * Whether the command can only be used inside a guild.
+     * <br>Always true for guild commands.
+     *
+     * @return True, if this command is restricted to guilds.
+     */
+    boolean isGuildOnly();
+
+    /**
+     * Converts the provided {@link Command} into a CommandData instance.
+     *
+     * @param  command
+     *         The command to convert
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the command has illegal configuration
+     *
+     * @return An instance of CommandData
+     *
+     * @see    SlashCommandData#fromCommand(Command)
+     */
+    @Nonnull
+    static CommandData fromCommand(@Nonnull Command command)
     {
-        Checks.noneNull(options, "Option");
-        Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
-        Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
-        allowSubcommands = allowGroups = false;
-        for (OptionData option : options)
+        Checks.notNull(command, "Command");
+        if (command.getType() != Command.Type.SLASH)
         {
-            Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand with addOptions(...). Use addSubcommands(...) instead!");
-            Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
-            Checks.check(allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
-            allowRequired = option.isRequired(); // prevent adding required options after non-required options
-            this.options.add(option);
+            final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
+            return data.setDefaultPermissions(command.getDefaultPermissions())
+                    .setGuildOnly(command.isGuildOnly())
+                    .setNameLocalizations(command.getNameLocalizations().toMap())
+                    .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
         }
-        return this;
-    }
 
-    /**
-     * Adds up to 25 options to this command.
-     *
-     * <p>Required options must be added before non-required options!
-     *
-     * @param  options
-     *         The {@link OptionData Options} to add
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
-     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
-     *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
-     *             <li>If null is provided</li>
-     *         </ul>
-     *
-     * @return The CommandData instance, for chaining
-     */
-    @Nonnull
-    public CommandData addOptions(@Nonnull Collection<? extends OptionData> options)
-    {
-        Checks.noneNull(options, "Option");
-        return addOptions(options.toArray(new OptionData[0]));
-    }
-
-    /**
-     * Adds an option to this command.
-     *
-     * <p>Required options must be added before non-required options!
-     *
-     * @param  type
-     *         The {@link OptionType}
-     * @param  name
-     *         The lowercase option name, 1-32 characters
-     * @param  description
-     *         The option description, 1-100 characters
-     * @param  required
-     *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
-     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
-     *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
-     *             <li>If null is provided</li>
-     *         </ul>
-     *
-     * @return The CommandData instance, for chaining
-     */
-    @Nonnull
-    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
-    {
-        return addOptions(new OptionData(type, name, description).setRequired(required));
-    }
-
-    /**
-     * Adds an option to this command.
-     * <br>The option is set to be non-required! You can use {@link #addOption(OptionType, String, String, boolean)} to add a required option instead.
-     *
-     * <p>Required options must be added before non-required options!
-     *
-     * @param  type
-     *         The {@link OptionType}
-     * @param  name
-     *         The lowercase option name, 1-32 characters
-     * @param  description
-     *         The option description, 1-100 characters
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
-     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
-     *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
-     *             <li>If null is provided</li>
-     *         </ul>
-     *
-     * @return The CommandData instance, for chaining
-     */
-    @Nonnull
-    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
-    {
-        return addOption(type, name, description, false);
-    }
-
-    /**
-     * Add up to 25 {@link SubcommandData Subcommands} to this command.
-     *
-     * @param  subcommands
-     *         The subcommands to add
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
-     *
-     * @return The CommandData instance, for chaining
-     */
-    @Nonnull
-    public CommandData addSubcommands(@Nonnull SubcommandData... subcommands)
-    {
-        Checks.noneNull(subcommands, "Subcommands");
-        if (!allowSubcommands)
-            throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-        allowOption = false;
-        Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands for a command!");
-        for (SubcommandData data : subcommands)
-            options.add(data);
-        return this;
-    }
-
-    /**
-     * Add up to 25 {@link SubcommandData Subcommands} to this command.
-     *
-     * @param  subcommands
-     *         The subcommands to add
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
-     *
-     * @return The CommandData instance, for chaining
-     */
-    @Nonnull
-    public CommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
-    {
-        Checks.noneNull(subcommands, "Subcommands");
-        return addSubcommands(subcommands.toArray(new SubcommandData[0]));
-    }
-
-    /**
-     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
-     *
-     * @param  groups
-     *         The subcommand groups to add
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommand groups are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
-     *
-     * @return The CommandData instance, for chaining
-     */
-    @Nonnull
-    public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
-    {
-        Checks.noneNull(groups, "SubcommandGroups");
-        if (!allowGroups)
-            throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-        allowOption = false;
-        Checks.check(groups.length + options.length() <= 25, "Cannot have more than 25 subcommand groups for a command!");
-        for (SubcommandGroupData data : groups)
-            options.add(data);
-        return this;
-    }
-
-    /**
-     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
-     *
-     * @param  groups
-     *         The subcommand groups to add
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommand groups are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
-     *
-     * @return The CommandData instance, for chaining
-     */
-    @Nonnull
-    public CommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
-    {
-        Checks.noneNull(groups, "SubcommandGroups");
-        return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
+        return SlashCommandData.fromCommand(command);
     }
 
     /**
      * Parses the provided serialization back into an CommandData instance.
-     * <br>This is the reverse function for {@link #toData()}.
+     * <br>This is the reverse function for {@link CommandData#toData()}.
      *
      * @param  object
      *         The serialized {@link DataObject} representing the command
@@ -342,74 +232,31 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *         If any of the values are failing the respective checks such as length
      *
      * @return The parsed CommandData instance, which can be further configured through setters
+     *
+     * @see    SlashCommandData#fromData(DataObject)
+     * @see    Commands#fromList(Collection)
      */
     @Nonnull
-    public static CommandData fromData(@Nonnull DataObject object)
+    static CommandData fromData(@Nonnull DataObject object)
     {
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
-        String description = object.getString("description");
-        DataArray options = object.optArray("options").orElseGet(DataArray::empty);
-        CommandData command = new CommandData(name, description);
-        options.stream(DataArray::getObject).forEach(opt ->
+        Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
+        if (commandType != Command.Type.SLASH)
         {
-            OptionType type = OptionType.fromKey(opt.getInt("type"));
-            switch (type)
+            CommandDataImpl data = new CommandDataImpl(commandType, name);
+            if (!object.isNull("default_member_permissions"))
             {
-            case SUB_COMMAND:
-                command.addSubcommands(SubcommandData.fromData(opt));
-                break;
-            case SUB_COMMAND_GROUP:
-                command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
-                break;
-            default:
-                command.addOptions(OptionData.fromData(opt));
+                long defaultPermissions = object.getLong("default_member_permissions");
+                data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
             }
-        });
-        return command;
-    }
 
-    /**
-     * Parses the provided serialization back into an CommandData instance.
-     * <br>This is the reverse function for {@link #toData()}.
-     *
-     * @param  array
-     *         Array of serialized {@link DataObject} representing the commands
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the serialized object is missing required fields
-     * @throws IllegalArgumentException
-     *         If any of the values are failing the respective checks such as length
-     *
-     * @return The parsed CommandData instances, which can be further configured through setters
-     */
-    @Nonnull
-    public static List<CommandData> fromList(@Nonnull DataArray array)
-    {
-        Checks.notNull(array, "DataArray");
-        return array.stream(DataArray::getObject)
-                .map(CommandData::fromData)
-                .collect(Collectors.toList());
-    }
+            data.setGuildOnly(!object.getBoolean("dm_permission", true));
+            data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+            data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
+            return data;
+        }
 
-    /**
-     * Parses the provided serialization back into an CommandData instance.
-     * <br>This is the reverse function for {@link #toData()}.
-     *
-     * @param  collection
-     *         Collection of serialized {@link DataObject} representing the commands
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the serialized object is missing required fields
-     * @throws IllegalArgumentException
-     *         If any of the values are failing the respective checks such as length
-     *
-     * @return The parsed CommandData instances, which can be further configured through setters
-     */
-    @Nonnull
-    public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection)
-    {
-        Checks.noneNull(collection, "CommandData");
-        return fromList(DataArray.fromCollection(collection));
+        return SlashCommandData.fromData(object);
     }
 }

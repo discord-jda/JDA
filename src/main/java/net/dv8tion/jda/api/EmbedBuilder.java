@@ -25,7 +25,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.time.*;
+import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class EmbedBuilder
 
     /**
      * Constructs a new EmbedBuilder instance, which can be used to create {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
-     * These can then be sent to a channel using {@link net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)}.
+     * These can then be sent to a channel using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)}.
      * <br>Every part of an embed can be removed or cleared by providing {@code null} to the setter method.
      */
     public EmbedBuilder() { }
@@ -72,7 +72,7 @@ public class EmbedBuilder
     {
         copyFrom(builder);
     }
-    
+
     /**
      * Creates an EmbedBuilder using fields in an existing embed.
      *
@@ -257,7 +257,7 @@ public class EmbedBuilder
     {
         return setTitle(title, null);
     }
-    
+
     /**
      * Sets the Title of the embed.
      * <br>You can provide {@code null} as url if no url should be used.
@@ -382,47 +382,10 @@ public class EmbedBuilder
     @Nonnull
     public EmbedBuilder setTimestamp(@Nullable TemporalAccessor temporal)
     {
-        if (temporal == null)
-        {
-            this.timestamp = null;
-        }
-        else if (temporal instanceof OffsetDateTime)
-        {
-            this.timestamp = (OffsetDateTime) temporal;
-        }
-        else
-        {
-            ZoneOffset offset;
-            try
-            {
-                offset = ZoneOffset.from(temporal);
-            }
-            catch (DateTimeException ignore)
-            {
-                offset = ZoneOffset.UTC;
-            }
-            try
-            {
-                LocalDateTime ldt = LocalDateTime.from(temporal);
-                this.timestamp = OffsetDateTime.of(ldt, offset);
-            }
-            catch (DateTimeException ignore)
-            {
-                try
-                {
-                    Instant instant = Instant.from(temporal);
-                    this.timestamp = OffsetDateTime.ofInstant(instant, offset);
-                }
-                catch (DateTimeException ex)
-                {
-                    throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
-                            temporal + " of type " + temporal.getClass().getName(), ex);
-                }
-            }
-        }
-        return this; 
+        this.timestamp = Helpers.toOffsetDateTime(temporal);
+        return this;
     }
-    
+
     /**
      * Sets the Color of the embed.
      *
@@ -461,7 +424,7 @@ public class EmbedBuilder
         this.color = color;
         return this;
     }
-    
+
     /**
      * Sets the Thumbnail of the embed.
      *
@@ -469,7 +432,7 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
@@ -479,7 +442,7 @@ public class EmbedBuilder
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setThumbnail("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
+     * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  url
@@ -516,7 +479,7 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
@@ -526,7 +489,7 @@ public class EmbedBuilder
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
+     * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  url
@@ -541,7 +504,7 @@ public class EmbedBuilder
      *
      * @return the builder after the image has been set
      *
-     * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, String, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)
+     * @see    net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)
      */
     @Nonnull
     public EmbedBuilder setImage(@Nullable String url)
@@ -557,7 +520,7 @@ public class EmbedBuilder
         }
         return this;
     }
-    
+
     /**
      * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
      * image beside it along with the author's name being made clickable by way of providing a url.
@@ -617,7 +580,7 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
@@ -627,7 +590,7 @@ public class EmbedBuilder
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setAuthor("Minn", null, "attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
+     * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  name
@@ -697,7 +660,7 @@ public class EmbedBuilder
      *
      * <p><b>Uploading images with Embeds</b>
      * <br>When uploading an <u>image</u>
-     * (using {@link net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)})
+     * (using {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendFiles(net.dv8tion.jda.api.utils.FileUpload...) MessageChannel.sendFiles(...)})
      * you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
      *
      * <p><u>Example</u>
@@ -707,7 +670,7 @@ public class EmbedBuilder
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setFooter("Cool footer!", "attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
+     * channel.sendFiles(FileUpload.fromData(file, "cat.png")).setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  text
@@ -747,7 +710,7 @@ public class EmbedBuilder
     /**
      * Copies the provided Field into a new Field for this builder.
      * <br>For additional documentation, see {@link #addField(String, String, boolean)}
-     * 
+     *
      * @param  field
      *         the field object to add
      *
@@ -758,7 +721,7 @@ public class EmbedBuilder
     {
         return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
-    
+
     /**
      * Adds a Field to the embed.
      *
@@ -777,7 +740,7 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If only {@code name} or {@code value} is set. Both must be set.</li>
+     *             <li>If {@code null} is provided</li>
      *             <li>If the character limit for {@code name}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#TITLE_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#TITLE_MAX_LENGTH},
      *             is exceeded.</li>
      *             <li>If the character limit for {@code value}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#VALUE_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#VALUE_MAX_LENGTH},
@@ -787,14 +750,14 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addField(@Nullable String name, @Nullable String value, boolean inline)
+    public EmbedBuilder addField(@Nonnull String name, @Nonnull String value, boolean inline)
     {
-        if (name == null && value == null)
-            return this;
+        Checks.notNull(name, "Name");
+        Checks.notNull(value, "Value");
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
-    
+
     /**
      * Adds a blank (empty) Field to the embed.
      *
@@ -827,7 +790,7 @@ public class EmbedBuilder
         this.fields.clear();
         return this;
     }
-    
+
     /**
      * <b>Modifiable</b> list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} Fields that the builder will
      * use for {@link #build()}.

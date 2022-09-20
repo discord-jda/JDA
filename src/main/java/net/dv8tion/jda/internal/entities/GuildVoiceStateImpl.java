@@ -18,7 +18,12 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -106,8 +111,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     private RestAction<Void> update(boolean suppress)
     {
-        if (requestToSpeak == 0L || !(connectedChannel instanceof StageChannel))
+        if (!(connectedChannel instanceof StageChannel) || suppress == isSuppressed())
             return new CompletedRestAction<>(api, null);
+
         Member selfMember = getGuild().getSelfMember();
         boolean isSelf = selfMember.equals(member);
         if (!isSelf && !selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
@@ -180,9 +186,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public AudioChannel getChannel()
+    public AudioChannelUnion getChannel()
     {
-        return connectedChannel;
+        return (AudioChannelUnion) connectedChannel;
     }
 
     @Nonnull

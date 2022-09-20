@@ -17,12 +17,17 @@
 package net.dv8tion.jda.internal.utils;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import okhttp3.*;
+import okhttp3.ConnectionPool;
+import okhttp3.Dispatcher;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
 import okio.Okio;
 import org.slf4j.Logger;
 
 import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
@@ -50,6 +55,36 @@ public class IOUtil
             closeable.close();
         }
         catch (IOException ignored) {}
+    }
+
+    public static String addQuery(String base, Object... params)
+    {
+        try
+        {
+            StringBuilder builder = new StringBuilder(base);
+            // Start a new query or append to existing one
+            if (new URI(base).getQuery() == null)
+                builder.append('?');
+            else
+                builder.append('&');
+
+            for (int i = 0; i < params.length; i += 2)
+            {
+                builder.append(params[i])
+                    .append('=')
+                    .append(URLEncoder.encode(params[i + 1].toString(), "UTF-8"))
+                    .append('&');
+            }
+
+            // Remove trailing &
+            builder.setLength(builder.length() - 1);
+
+            return builder.toString();
+        }
+        catch (URISyntaxException | UnsupportedEncodingException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public static String getHost(String uri)
@@ -178,7 +213,7 @@ public class IOUtil
      *
      * @return RequestBody capable of transmitting the provided InputStream of data
      */
-    public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
+    public static BufferedRequestBody createRequestBody(final MediaType contentType, final InputStream stream)
     {
         return new BufferedRequestBody(Okio.source(stream), contentType);
     }

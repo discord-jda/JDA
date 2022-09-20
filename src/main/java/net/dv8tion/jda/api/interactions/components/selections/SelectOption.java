@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
-import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -26,7 +28,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * One of the possible options provided in a {@link SelectionMenu}.
+ * One of the possible options provided in a {@link SelectMenu}.
  */
 public class SelectOption implements SerializableData
 {
@@ -48,7 +50,7 @@ public class SelectOption implements SerializableData
     private final String label, value;
     private final String description;
     private final boolean isDefault;
-    private final Emoji emoji;
+    private final EmojiUnion emoji;
 
     /**
      * Creates a new SelectOption instance
@@ -56,7 +58,7 @@ public class SelectOption implements SerializableData
      * @param  label
      *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
@@ -73,7 +75,7 @@ public class SelectOption implements SerializableData
      * @param  label
      *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      * @param  description
      *         The description explaining the meaning of this option in more detail, up to {@value #DESCRIPTION_MAX_LENGTH} characters, as defined by {@link #DESCRIPTION_MAX_LENGTH}
@@ -83,7 +85,7 @@ public class SelectOption implements SerializableData
      *         The {@link Emoji} shown next to this option, or null
      *
      * @throws IllegalArgumentException
-     *         If the an invalid null is provided, or any of the individual parameter requirements are violated.
+     *         If an unexpected null is provided, or any of the individual parameter requirements are violated.
      */
     protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable Emoji emoji)
     {
@@ -97,7 +99,7 @@ public class SelectOption implements SerializableData
         this.value = value;
         this.description = description;
         this.isDefault = isDefault;
-        this.emoji = emoji;
+        this.emoji = (EmojiUnion) emoji;
     }
 
     /**
@@ -107,11 +109,11 @@ public class SelectOption implements SerializableData
      * @param  label
      *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
-     *         If the null is provided, or any of the individual parameter requirements are violated.
+     *         If null is provided, or any of the individual parameter requirements are violated.
      *
      * @return The new select option instance
      */
@@ -144,7 +146,7 @@ public class SelectOption implements SerializableData
      * Returns a copy of this select option with the changed value.
      *
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
      *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
@@ -223,7 +225,7 @@ public class SelectOption implements SerializableData
     }
 
     /**
-     * The current option value which is used to identify the selected options in {@link SelectionMenuInteraction#getValues()}.
+     * The current option value which is used to identify the selected options in {@link SelectMenuInteraction#getValues()}.
      *
      * @return The option value
      */
@@ -255,12 +257,12 @@ public class SelectOption implements SerializableData
     }
 
     /**
-     * The emoji attached to this option which is shown next to the option in the selection menu
+     * The emoji attached to this option which is shown next to the option in the select menu
      *
      * @return The attached emoji
      */
     @Nullable
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return emoji;
     }
@@ -303,7 +305,7 @@ public class SelectOption implements SerializableData
             data.getString("value"),
             data.getString("description", null),
             data.getBoolean("default", false),
-            data.optObject("emoji").map(Emoji::fromData).orElse(null)
+            data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null)
         );
     }
 }

@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.internal.requests.restaction.order;
 
-import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -33,10 +33,10 @@ public class CategoryOrderActionImpl
     protected final Category category;
 
     /**
-     * Creates a new CategoryOrderAction for the specified {@link net.dv8tion.jda.api.entities.Category Category}
+     * Creates a new CategoryOrderAction for the specified {@link Category Category}
      *
      * @param  category
-     *         The target {@link net.dv8tion.jda.api.entities.Category Category}
+     *         The target {@link Category Category}
      *         which the new CategoryOrderAction will order channels from.
      * @param  bucket
      *         The sorting bucket

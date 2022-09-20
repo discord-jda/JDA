@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -48,17 +49,17 @@ import java.util.Collection;
 public interface RoleManager extends Manager<RoleManager>
 {
     /** Used to reset the name field */
-    long NAME        = 0x1;
+    long NAME        = 1;
     /** Used to reset the color field */
-    long COLOR       = 0x2;
+    long COLOR       = 1 << 1;
     /** Used to reset the permission field */
-    long PERMISSION  = 0x4;
+    long PERMISSION  = 1 << 2;
     /** Used to reset the hoisted field */
-    long HOIST       = 0x8;
+    long HOIST       = 1 << 3;
     /** Used to reset the mentionable field */
-    long MENTIONABLE = 0x10;
+    long MENTIONABLE = 1 << 4;
     /** Used to reset the icon field */
-    long ICON        = 0x20;
+    long ICON        = 1 << 5;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -303,6 +304,25 @@ public interface RoleManager extends Manager<RoleManager>
     @Nonnull
     @CheckReturnValue
     RoleManager setIcon(@Nullable String emoji);
+
+    /**
+     * Sets the Unicode Emoji of this {@link net.dv8tion.jda.api.entities.Role Role} instead of a custom image.
+     *
+     * @param  emoji
+     *         The new Unicode Emoji for this {@link net.dv8tion.jda.api.entities.Role Role}
+     *         or {@code null} to reset
+     *
+     * @return RoleManager for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.entities.emoji.Emoji#fromUnicode(String) Emoji.fromUnicode(String)
+     * @see    UnicodeEmoji
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RoleManager setIcon(@Nullable UnicodeEmoji emoji)
+    {
+        return setIcon(emoji == null ? null : emoji.getFormatted());
+    }
 
     /**
      * Adds the specified {@link net.dv8tion.jda.api.Permission Permissions} to the selected {@link net.dv8tion.jda.api.entities.Role Role}.

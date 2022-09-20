@@ -28,7 +28,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Specialized {@link RestAction} used to create a {@link StageInstance}
  *
- * @see net.dv8tion.jda.api.entities.StageChannel#createStageInstance(String)
+ * @see net.dv8tion.jda.api.entities.channel.concrete.StageChannel#createStageInstance(String)
  */
 public interface StageInstanceAction extends RestAction<StageInstance>
 {
@@ -68,11 +68,13 @@ public interface StageInstanceAction extends RestAction<StageInstance>
      *         The {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel}
      *
      * @throws IllegalArgumentException
-     *         If the provided level is null or {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN}
+     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN},
+     *         or {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#PUBLIC PUBLIC}.
      *
      * @return The StageInstanceAction for chaining
      */
     @Nonnull
     @CheckReturnValue
+    @SuppressWarnings("deprecation")
     StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level);
 }

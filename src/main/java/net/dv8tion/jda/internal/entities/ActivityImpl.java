@@ -17,6 +17,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.RichPresence;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,7 +29,7 @@ public class ActivityImpl implements Activity
     protected final String url;
     protected final ActivityType type;
     protected final Timestamps timestamps;
-    protected final Emoji emoji;
+    protected final EmojiUnion emoji;
 
     protected ActivityImpl(String name)
     {
@@ -45,7 +46,7 @@ public class ActivityImpl implements Activity
         this(name, url, type, null, null);
     }
 
-    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps, Emoji emoji)
+    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps, EmojiUnion emoji)
     {
         this.name = name;
         this.url = url;
@@ -94,7 +95,7 @@ public class ActivityImpl implements Activity
 
     @Nullable
     @Override
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return emoji;
     }

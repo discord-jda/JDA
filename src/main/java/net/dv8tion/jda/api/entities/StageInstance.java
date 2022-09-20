@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.managers.StageInstanceManager;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -42,9 +44,9 @@ public interface StageInstance extends ISnowflake
     Guild getGuild();
 
     /**
-     * The {@link StageChannel} for this stage instance
+     * The {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel} for this stage instance
      *
-     * @return The {@link StageChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.concrete.StageChannel}
      */
     @Nonnull
     StageChannel getChannel();
@@ -64,13 +66,6 @@ public interface StageInstance extends ISnowflake
      */
     @Nonnull
     PrivacyLevel getPrivacyLevel();
-
-    /**
-     * Whether this stage instance can be found in stage discovery.
-     *
-     * @return True if this is a public stage that can be found in stage discovery
-     */
-    boolean isDiscoverable();
 
     /**
      * All current speakers of this stage instance.
@@ -135,38 +130,6 @@ public interface StageInstance extends ISnowflake
     RestAction<Void> delete();
 
     /**
-     * Sends a {@link GuildVoiceState#getRequestToSpeakTimestamp() request-to-speak} indicator to the stage instance moderators.
-     * <p>If the self member has {@link Permission#VOICE_MUTE_OTHERS} this will immediately promote them to speaker.
-     *
-     * @throws IllegalStateException
-     *         If the self member is not currently connected to the channel of this stage instance
-     *
-     * @return {@link RestAction}
-     *
-     * @see    #cancelRequestToSpeak()
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> requestToSpeak();
-
-    /**
-     * Cancels the {@link #requestToSpeak() Request-to-Speak}.
-     * <br>This can also be used to move back to the audience if you are currently a speaker.
-     *
-     * <p>If there is no request to speak or the member is not currently connected to an active {@link StageInstance}, this does nothing.
-     *
-     * @throws IllegalStateException
-     *         If the self member is not currently connected to the channel of this stage instance
-     *
-     * @return {@link RestAction}
-     *
-     * @see    #requestToSpeak()
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> cancelRequestToSpeak();
-
-    /**
      * The {@link StageInstanceManager} used to update this stage instance.
      * <p>This can be used to update multiple fields such as topic and privacy level in one request
      *
@@ -190,7 +153,14 @@ public interface StageInstance extends ISnowflake
     {
         /** Placeholder for future privacy levels, indicates that this version of JDA does not support this privacy level yet */
         UNKNOWN(-1),
-        /** This stage instance can be accessed by lurkers, meaning users that are not active members of the guild */
+        /**
+         * This stage instance can be accessed by lurkers, meaning users that are not active members of the guild
+         *
+         * @deprecated Public stage instances are no longer supported by discord
+         */
+        @Deprecated
+        @ForRemoval
+        @DeprecatedSince("5.0.0")
         PUBLIC(1),
         /** This stage instance can only be accessed by guild members */
         GUILD_ONLY(2);

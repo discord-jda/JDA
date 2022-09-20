@@ -16,13 +16,21 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+
+import javax.annotation.Nullable;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.ToLongFunction;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * This class has major inspiration from <a href="https://commons.apache.org/proper/commons-lang/" target="_blank">Lang 3</a>
@@ -41,6 +49,15 @@ public final class Helpers
         return (Consumer<T>) EMPTY_CONSUMER;
     }
 
+    public static <T extends Channel> T safeChannelCast(Object instance, Class<T> toObjectClass)
+    {
+        if (toObjectClass.isInstance(instance))
+            return toObjectClass.cast(instance);
+
+        String cleanedClassName = instance.getClass().getSimpleName().replace("Impl", "");
+        throw new IllegalStateException(Helpers.format("Cannot convert channel of type %s to %s!", cleanedClassName, toObjectClass.getSimpleName()));
+    }
+
     public static OffsetDateTime toOffset(long instant)
     {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(instant), OFFSET);
@@ -50,6 +67,48 @@ public final class Helpers
     {
         TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(iso8601String);
         return Instant.from(joinedAt).toEpochMilli();
+    }
+
+    public static OffsetDateTime toOffsetDateTime(@Nullable TemporalAccessor temporal)
+    {
+        if (temporal == null)
+        {
+            return null;
+        }
+        else if (temporal instanceof OffsetDateTime)
+        {
+            return (OffsetDateTime) temporal;
+        }
+        else
+        {
+            ZoneOffset offset;
+            try
+            {
+                offset = ZoneOffset.from(temporal);
+            }
+            catch (DateTimeException ignore)
+            {
+                offset = ZoneOffset.UTC;
+            }
+            try
+            {
+                LocalDateTime ldt = LocalDateTime.from(temporal);
+                return OffsetDateTime.of(ldt, offset);
+            }
+            catch (DateTimeException ignore)
+            {
+                try
+                {
+                    Instant instant = Instant.from(temporal);
+                    return OffsetDateTime.ofInstant(instant, offset);
+                }
+                catch (DateTimeException ex)
+                {
+                    throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
+                            temporal + " of type " + temporal.getClass().getName(), ex);
+                }
+            }
+        }
     }
 
     // locale-safe String#format
@@ -149,9 +208,9 @@ public final class Helpers
         return true;
     }
 
-    public static int codePointLength(final String string)
+    public static int codePointLength(final CharSequence string)
     {
-        return string.codePointCount(0, string.length());
+        return (int) string.codePoints().count();
     }
 
     // ## CollectionUtils ##
@@ -184,6 +243,26 @@ public final class Helpers
         return col == null || col.isEmpty() ? EnumSet.noneOf(clazz) : EnumSet.copyOf(col);
     }
 
+    @SafeVarargs
+    public static <T> Set<T> setOf(T... elements)
+    {
+        Set<T> set = new HashSet<>(elements.length);
+        Collections.addAll(set, elements);
+        return set;
+    }
+
+    public static TLongObjectMap<DataObject> convertToMap(ToLongFunction<DataObject> getId, DataArray array)
+    {
+        TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
+        for (int i = 0; i < array.length(); i++)
+        {
+            DataObject obj = array.getObject(i);
+            long objId = getId.applyAsLong(obj);
+            map.put(objId, obj);
+        }
+        return map;
+    }
+
     // ## ExceptionUtils ##
 
     public static <T extends Throwable> T appendCause(T throwable, Throwable cause)
@@ -205,5 +284,10 @@ public final class Helpers
             cursor = cursor.getCause();
         }
         return false;
+    }
+
+    public static <T> Collector<T, ?, List<T>> toUnmodifiableList()
+    {
+        return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 }

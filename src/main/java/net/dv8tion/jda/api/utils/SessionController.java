@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  * <p>The {@link net.dv8tion.jda.api.utils.SessionControllerAdapter SessionControllerAdapter} provides
  * a default implementation that can be extended and overridden.
  *
- * <h2>States {@literal &} Behaviour</h2>
+ * <p><b>States {@literal &} Behaviour</b><br>
  * <b>Identify Ratelimit Handling</b>
  * <br>This will enable handling of (re-)connecting gateway sessions.
  *
@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
  * <br>This provider can be used to change the gateway retrieval (using cache, http, or static) and
  * allows to set a custom gateway endpoint. <b>Use carefully.</b>
  *
- * <h2>Examples</h2>
+ * <p><b>Examples</b><br>
  *
  * <b>Using {@link net.dv8tion.jda.api.JDABuilder JDABuilder}</b>
  * <br>
@@ -138,16 +138,17 @@ public interface SessionController
     void setGlobalRatelimit(long ratelimit);
 
     /**
-     * Called by a JDA session when a new gateway session starts (Connecting, Reconnecting).
-     * <br>Should provide the gateway endpoint (wss) to connect to.
+     * Discord's gateway URL, which is used to receive events.
      *
-     * @param  api
-     *         The current JDA instance (used for RestActions and ShardInfo)
+     * Called by JDA when starting a new gateway session (Connecting, Reconnecting).
      *
      * @return The gateway endpoint
      */
     @Nonnull
-    String getGateway(@Nonnull JDA api);
+    default String getGateway()
+    {
+        return "wss://gateway.discord.gg/";
+    }
 
     /**
      * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
@@ -159,7 +160,7 @@ public interface SessionController
      *
      * @return The ShardedGateway instance consisting of the gateway endpoint to connect to and the shardTotal
      *
-     * @see    #getGateway(net.dv8tion.jda.api.JDA)
+     * @see    #getGateway()
      */
     @Nonnull
     ShardedGateway getShardedGateway(@Nonnull JDA api);

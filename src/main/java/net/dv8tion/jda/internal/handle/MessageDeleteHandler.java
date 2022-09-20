@@ -15,12 +15,14 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageDeleteHandler extends SocketHandler
 {
@@ -33,48 +35,50 @@ public class MessageDeleteHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        Guild guild = null;
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
             if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
+
+            guild = getJDA().getGuildById(guildId);
+            if (guild == null)
+            {
+                getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Got message delete for a guild that is not yet cached. GuildId: {}", guildId);
+                return null;
+            }
         }
 
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
 
-        //TODO-v5-unified-channel-cache
-        MessageChannel channel = getJDA().getTextChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getNewsChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getThreadChannelById(channelId);
-        if (channel == null)
-            channel = getJDA().getPrivateChannelById(channelId);
+        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
+            if (guild != null)
+            {
+                GuildChannel actual = guild.getGuildChannelById(channelId);
+                if (actual != null)
+                {
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_DELETE for unexpected channel of type {}", actual.getType());
+                    return null;
+                }
+            }
+
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: {}", channelId);
             return null;
-        }
-
-        // Reset the latest message id as it was deleted.
-        if (channel.hasLatestMessage() & messageId == channel.getLatestMessageIdLong())
-        {
-            ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(0);
         }
 
         if (channel.getType().isThread())
         {
             ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
 
-            //If we have less than 50 messages then we can still accurately track how many messages are in the message count.
-            //Once we exceed 50 messages Discord caps this value, so we cannot confidently decrement it.
-            int messageCount = gThread.getMessageCount();
-            if (messageCount < 50 && messageCount > 0)
-            {
-                gThread.setMessageCount(messageCount - 1);
-            }
+            gThread.setMessageCount(Math.max(0, gThread.getMessageCount() - 1));
+            // Not decrementing totalMessageCount since that should include deleted as well
         }
 
         getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, messageId, channel));

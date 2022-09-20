@@ -17,9 +17,10 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -30,6 +31,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,28 +50,28 @@ public class ReactionPaginationActionImpl
     public ReactionPaginationActionImpl(MessageReaction reaction)
     {
         super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannel().getId(), reaction.getMessageId(), getCode(reaction)), 1, 100, 100);
+        super.order(PaginationOrder.FORWARD);
         this.reaction = reaction;
     }
 
     public ReactionPaginationActionImpl(Message message, String code)
     {
         super(message.getJDA(), Route.Messages.GET_REACTION_USERS.compile(message.getChannel().getId(), message.getId(), code), 1, 100, 100);
+        super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
     public ReactionPaginationActionImpl(MessageChannel channel, String messageId, String code)
     {
         super(channel.getJDA(), Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code), 1, 100, 100);
+        super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
     protected static String getCode(MessageReaction reaction)
     {
-        MessageReaction.ReactionEmote emote = reaction.getReactionEmote();
-
-        return emote.isEmote()
-            ? emote.getName() + ":" + emote.getId()
-            : EncodingUtil.encodeUTF8(emote.getName());
+        Emoji emoji = reaction.getEmoji();
+        return EncodingUtil.encodeUTF8(emoji.getAsReactionCode());
     }
 
     @Nonnull
@@ -81,23 +83,11 @@ public class ReactionPaginationActionImpl
         return reaction;
     }
 
+    @Nonnull
     @Override
-    protected Route.CompiledRoute finalizeRoute()
+    public EnumSet<PaginationOrder> getSupportedOrders()
     {
-        Route.CompiledRoute route = super.finalizeRoute();
-
-        String after = null;
-        String limit = String.valueOf(getLimit());
-        long last = this.lastKey;
-        if (last != 0)
-            after = Long.toUnsignedString(last);
-
-        route = route.withQueryParams("limit", limit);
-
-        if (after != null)
-            route = route.withQueryParams("after", after);
-
-        return route;
+        return EnumSet.of(PaginationOrder.FORWARD);
     }
 
     @Override

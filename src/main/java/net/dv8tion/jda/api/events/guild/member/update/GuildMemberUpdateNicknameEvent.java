@@ -25,11 +25,11 @@ import javax.annotation.Nullable;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} nickname.
  *
- * <p>Can be used to retrieve members who change their nickname, triggering guild, the old nick and the new nick.
+ * <p>Can be used to retrieve members who change their nickname, the triggering guild, the old nick and the new nick.
  *
  * <p>Identifier: {@code nick}
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and

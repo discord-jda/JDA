@@ -16,7 +16,12 @@
 package net.dv8tion.jda.api.events.user;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,7 +30,7 @@ import java.time.OffsetDateTime;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} started typing. (Similar to the typing indicator in the Discord client)
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_TYPING GUILD_MESSAGE_TYPING} intent to be enabled to fire
  * for guild channels, and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_TYPING DIRECT_MESSAGE_TYPING} to fire for private channels.
@@ -65,16 +70,16 @@ public class UserTypingEvent extends GenericUserEvent
      * @return The channel
      */
     @Nonnull
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     /**
      * Whether the user started typing in a channel of the specified type.
      *
      * @param  type
-     *         {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     *         {@link ChannelType ChannelType}
      *
      * @return True, if the user started typing in a channel of the specified type
      */
@@ -84,50 +89,14 @@ public class UserTypingEvent extends GenericUserEvent
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * The {@link ChannelType ChannelType}
      *
-     * @return The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * @return The {@link ChannelType ChannelType}
      */
     @Nonnull
     public ChannelType getType()
     {
         return channel.getType();
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} in which this users started typing,
-     * or {@code null} if this was not in a PrivateChannel.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     */
-    @Nullable
-    public PrivateChannel getPrivateChannel()
-    {
-        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} in which this users started typing,
-     * or {@code null} if this was not in a TextChannel.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     */
-    @Nullable
-    public TextChannel getTextChannel()
-    {
-        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
-    }
-
-    /**
-     * {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in which this users started typing,
-     * or {@code null} if this was not in a NewsChannel.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel}
-     */
-    @Nullable
-    public NewsChannel getNewsChannel()
-    {
-        return isFromType(ChannelType.NEWS) ? (NewsChannel) channel : null;
     }
 
     /**

@@ -1,10 +1,10 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.IThreadContainer;
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -13,42 +13,65 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<ThreadChannel, ThreadChannelPaginationAction> implements ThreadChannelPaginationAction
 {
     protected final IThreadContainer channel;
 
-    public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, IThreadContainer channel)
+    // Whether IDs or ISO8601 timestamps shall be provided for all pagination requests.
+    // Some thread pagination endpoints require this odd and singular behavior throughout the discord api.
+    protected final boolean useID;
+
+    public ThreadChannelPaginationActionImpl(JDA api, Route.CompiledRoute route, IThreadContainer channel, boolean useID)
     {
-        super(api, route, 1, 100, 100);
+        super(api, route, 2, 100, 100);
         this.channel = channel;
+        this.useID = useID;
     }
 
     @Nonnull
     @Override
-    public IThreadContainer getChannel()
+    public IThreadContainerUnion getChannel()
     {
-        return channel;
+        return (IThreadContainerUnion) channel;
     }
 
+    @Nonnull
     @Override
-    protected Route.CompiledRoute finalizeRoute()
+    public EnumSet<PaginationOrder> getSupportedOrders()
     {
-        Route.CompiledRoute route = super.finalizeRoute();
+        return EnumSet.of(PaginationOrder.BACKWARD);
+    }
 
-        final String limit = String.valueOf(this.limit.get());
-        final long last = this.lastKey;
+    //Thread pagination supplies ISO8601 timestamps for some cases, see constructor
+    @Nonnull
+    @Override
+    protected String getPaginationLastEvaluatedKey(long lastId, ThreadChannel last)
+    {
+        if (useID)
+            return Long.toUnsignedString(lastId);
 
-        route = route.withQueryParams("limit", limit);
+        if (order == PaginationOrder.FORWARD && lastId == 0)
+        {
+            // first second of 2015 aka discords epoch, hard coding something older makes no sense to me
+            return "2015-01-01T00:00:00.000";
+        }
 
-        if (last != 0)
-            route = route.withQueryParams("before", Long.toUnsignedString(last));
+        // this should be redundant, due to calling this with PaginationAction#getLast() as last param,
+        // but let's have this here.
+        if (last == null)
+            return OffsetDateTime.now(ZoneOffset.UTC).toString();
 
-        return route;
+        // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
+        return last.getTimeArchiveInfoLastModified().toString();
     }
 
     @Override
@@ -61,14 +84,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         List<ThreadChannel> list = new ArrayList<>(threads.length());
         EntityBuilder builder = api.getEntityBuilder();
 
-        TLongObjectMap<DataObject> selfThreadMemberMap = new TLongObjectHashMap<>();
-        for (int i = 0; i < selfThreadMembers.length(); i++)
-        {
-            DataObject selfThreadMember = selfThreadMembers.getObject(i);
-
-            //Store the thread member based on the "id" which is the _thread's_ id, not the member's id (which would be our id)
-            selfThreadMemberMap.put(selfThreadMember.getLong("id"), selfThreadMember);
-        }
+        TLongObjectMap<DataObject> selfThreadMemberMap = Helpers.convertToMap((o) -> o.getUnsignedLong("id"), selfThreadMembers);
 
         for (int i = 0; i < threads.length(); i++)
         {
@@ -84,13 +100,23 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
-                ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().getIdLong());
-                list.add(thread);
+                try
+                {
+                    ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().getIdLong());
+                    list.add(thread);
 
-                if (this.useCache)
-                    this.cached.add(thread);
-                this.last = thread;
-                this.lastKey = last.getIdLong();
+                    if (this.useCache)
+                        this.cached.add(thread);
+                    this.last = thread;
+                    this.lastKey = last.getIdLong();
+                }
+                catch (Exception e)
+                {
+                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage()))
+                        EntityBuilder.LOG.debug("Discarding thread without cached parent channel. JSON: {}", threadObj);
+                    else
+                        EntityBuilder.LOG.warn("Failed to create thread channel. JSON: {}", threadObj, e);
+                }
             }
             catch (ParsingException | NullPointerException e)
             {

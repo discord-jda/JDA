@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -37,9 +38,7 @@ import java.util.function.BooleanSupplier;
  * @since  3.0
  *
  * @see    net.dv8tion.jda.api.entities.PermissionOverride#getManager()
- * @see    IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
- * @see    IPermissionContainer#createPermissionOverride(IPermissionHolder)
- * @see    IPermissionContainer#putPermissionOverride(IPermissionHolder)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
  */
 public interface PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
@@ -131,7 +130,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @return long value of granted permissions
      */
-    long getAllow();
+    long getAllowed();
 
     /**
      * Set of {@link net.dv8tion.jda.api.Permission Permissions}
@@ -143,7 +142,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     default EnumSet<Permission> getAllowedPermissions()
     {
-        return Permission.getPermissions(getAllow());
+        return Permission.getPermissions(getAllowed());
     }
 
     /**
@@ -156,7 +155,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @return long value of denied permissions
      */
-    long getDeny();
+    long getDenied();
 
     /**
      * Set of {@link net.dv8tion.jda.api.Permission Permissions}
@@ -168,7 +167,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     default EnumSet<Permission> getDeniedPermissions()
     {
-        return Permission.getPermissions(getDeny());
+        return Permission.getPermissions(getDenied());
     }
 
     /**
@@ -240,12 +239,12 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *
-     * @see    #setAllow(java.util.Collection) setAllow(Collection)
-     * @see    #setAllow(net.dv8tion.jda.api.Permission...) setAllow(Permission...)
+     * @see    #setAllowed(java.util.Collection) setAllow(Collection)
+     * @see    #setAllowed(net.dv8tion.jda.api.Permission...) setAllow(Permission...)
      */
     @Nonnull
     @CheckReturnValue
-    PermissionOverrideAction setAllow(long allowBits);
+    PermissionOverrideAction setAllowed(long allowBits);
 
     /**
      * Sets the value of explicitly granted permissions
@@ -268,16 +267,16 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The current PermissionOverrideAction - for chaining convenience
      *
      * @see    java.util.EnumSet EnumSet
-     * @see    #setAllow(net.dv8tion.jda.api.Permission...) setAllow(Permission...)
+     * @see    #setAllowed(net.dv8tion.jda.api.Permission...) setAllow(Permission...)
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction setAllow(@Nullable Collection<Permission> permissions)
+    default PermissionOverrideAction setAllowed(@Nullable Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
-            return setAllow(0);
+            return setAllowed(0);
         Checks.noneNull(permissions, "Permissions");
-        return setAllow(Permission.getRaw(permissions));
+        return setAllowed(Permission.getRaw(permissions));
     }
 
     /**
@@ -300,12 +299,12 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction setAllow(@Nullable Permission... permissions)
+    default PermissionOverrideAction setAllowed(@Nullable Permission... permissions)
     {
         if (permissions == null || permissions.length == 0)
-            return setAllow(0);
+            return setAllowed(0);
         Checks.noneNull(permissions, "Permissions");
-        return setAllow(Permission.getRaw(permissions));
+        return setAllowed(Permission.getRaw(permissions));
     }
 
     /**
@@ -389,12 +388,12 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *
-     * @see    #setDeny(java.util.Collection) setDeny(Collection)
-     * @see    #setDeny(net.dv8tion.jda.api.Permission...) setDeny(Permission...)
+     * @see    #setDenied(java.util.Collection) setDeny(Collection)
+     * @see    #setDenied(net.dv8tion.jda.api.Permission...) setDeny(Permission...)
      */
     @Nonnull
     @CheckReturnValue
-    PermissionOverrideAction setDeny(long denyBits);
+    PermissionOverrideAction setDenied(long denyBits);
 
     /**
      * Sets the value of explicitly denied permissions
@@ -417,16 +416,16 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The current PermissionOverrideAction - for chaining convenience
      *
      * @see    java.util.EnumSet EnumSet
-     * @see    #setDeny(net.dv8tion.jda.api.Permission...) setDeny(Permission...)
+     * @see    #setDenied(net.dv8tion.jda.api.Permission...) setDeny(Permission...)
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction setDeny(@Nullable Collection<Permission> permissions)
+    default PermissionOverrideAction setDenied(@Nullable Collection<Permission> permissions)
     {
         if (permissions == null || permissions.isEmpty())
-            return setDeny(0);
+            return setDenied(0);
         Checks.noneNull(permissions, "Permissions");
-        return setDeny(Permission.getRaw(permissions));
+        return setDenied(Permission.getRaw(permissions));
     }
 
     /**
@@ -449,12 +448,12 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction setDeny(@Nullable Permission... permissions)
+    default PermissionOverrideAction setDenied(@Nullable Permission... permissions)
     {
         if (permissions == null || permissions.length == 0)
-            return setDeny(0);
+            return setDenied(0);
         Checks.noneNull(permissions, "Permissions");
-        return setDeny(Permission.getRaw(permissions));
+        return setDenied(Permission.getRaw(permissions));
     }
 
     /**
@@ -584,7 +583,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
 
 
     /**
-     * Combination of {@link #setAllow(long)} and {@link #setDeny(long)}
+     * Combination of {@link #setAllowed(long)} and {@link #setDenied(long)}
      * <br>First sets the allow bits and then the deny bits.
      *
      * @param  allowBits
@@ -609,7 +608,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     PermissionOverrideAction setPermissions(long allowBits, long denyBits);
 
     /**
-     * Combination of {@link #setAllow(java.util.Collection)} and {@link #setDeny(java.util.Collection)}
+     * Combination of {@link #setAllowed(java.util.Collection)} and {@link #setDenied(java.util.Collection)}
      * <br>First sets the granted permissions and then the denied permissions.
      * <br>If a passed collection is {@code null} it resets the represented value to {@code 0} - no permission specifics.
      *
@@ -637,6 +636,6 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction setPermissions(@Nullable Collection<Permission> grantPermissions, @Nullable Collection<Permission> denyPermissions)
     {
-        return setAllow(grantPermissions).setDeny(denyPermissions);
+        return setAllowed(grantPermissions).setDenied(denyPermissions);
     }
 }

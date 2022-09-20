@@ -15,3 +15,6 @@ contact_links:
   - name: Releases
     url: https://github.com/DV8FromTheWorld/JDA/releases
     about: You can find the latest releases here on GitHub and on Bintray.
+  - name: Questions
+    url: https://github.com/DV8FromTheWorld/JDA/discussions
+    about: You can ask questions about JDA and find useful information in our Discussions.

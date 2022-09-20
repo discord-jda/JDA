@@ -16,20 +16,23 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.*;
-import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
-import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
-import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
-import net.dv8tion.jda.api.events.application.GenericApplicationCommandEvent;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
+import net.dv8tion.jda.api.events.channel.forum.GenericForumTagEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateModeratedEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.GenericForumTagUpdateEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
-import net.dv8tion.jda.api.events.emote.EmoteAddedEvent;
-import net.dv8tion.jda.api.events.emote.EmoteRemovedEvent;
-import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
-import net.dv8tion.jda.api.events.emote.update.EmoteUpdateNameEvent;
-import net.dv8tion.jda.api.events.emote.update.EmoteUpdateRolesEvent;
-import net.dv8tion.jda.api.events.emote.update.GenericEmoteUpdateEvent;
+import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent;
+import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent;
+import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent;
+import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateNameEvent;
+import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateRolesEvent;
+import net.dv8tion.jda.api.events.emoji.update.GenericEmojiUpdateEvent;
 import net.dv8tion.jda.api.events.guild.*;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
@@ -43,7 +46,13 @@ import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
-import net.dv8tion.jda.api.events.interaction.*;
+import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.*;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
@@ -58,6 +67,10 @@ import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
 import net.dv8tion.jda.api.events.stage.update.GenericStageInstanceUpdateEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdatePrivacyLevelEvent;
 import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdateTopicEvent;
+import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent;
+import net.dv8tion.jda.api.events.sticker.GuildStickerAddedEvent;
+import net.dv8tion.jda.api.events.sticker.GuildStickerRemovedEvent;
+import net.dv8tion.jda.api.events.sticker.update.*;
 import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
 import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
 import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
@@ -84,7 +97,7 @@ import java.util.concurrent.ConcurrentMap;
  * An abstract implementation of {@link net.dv8tion.jda.api.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.api.events.Event Events}
  * for you. You should <b><u>override</u></b> the methods provided by this class for your event listener implementation.
  *
- * <h2>Example:</h2>
+ * <p><b>Example:</b><br>
  * <pre><code>
  * public class MyReadyListener extends ListenerAdapter
  * {
@@ -125,14 +138,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onException(@Nonnull ExceptionEvent event) {}
 
     //Interaction Events
-    public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
-    public void onButtonClick(@Nonnull ButtonClickEvent event) {}
-    public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
-
-    //Application Events
-    public void onApplicationCommandUpdate(@Nonnull ApplicationCommandUpdateEvent event) {}
-    public void onApplicationCommandDelete(@Nonnull ApplicationCommandDeleteEvent event) {}
-    public void onApplicationCommandCreate(@Nonnull ApplicationCommandCreateEvent event) {}
+    public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {}
+    public void onUserContextInteraction(@Nonnull UserContextInteractionEvent event) {}
+    public void onMessageContextInteraction(@Nonnull MessageContextInteractionEvent event) {}
+    public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {}
+    public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {}
+    public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {}
+    public void onModalInteraction(@Nonnull ModalInteractionEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -161,7 +173,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {}
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {}
     public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
-    public void onMessageReactionRemoveEmote(@Nonnull MessageReactionRemoveEmoteEvent event) {}
+    public void onMessageReactionRemoveEmoji(@Nonnull MessageReactionRemoveEmojiEvent event) {}
 
     //PermissionOverride Events
     public void onPermissionOverrideDelete(@Nonnull PermissionOverrideDeleteEvent event) {}
@@ -181,11 +193,15 @@ public abstract class ListenerAdapter implements EventListener
     //Channel Update Events
     public void onChannelUpdateBitrate(@Nonnull ChannelUpdateBitrateEvent event) {}
     public void onChannelUpdateName(@Nonnull ChannelUpdateNameEvent event) {}
+    public void onChannelUpdateFlags(@Nonnull ChannelUpdateFlagsEvent event) {}
     public void onChannelUpdateNSFW(@Nonnull ChannelUpdateNSFWEvent event) {}
     public void onChannelUpdateParent(@Nonnull ChannelUpdateParentEvent event) {}
     public void onChannelUpdatePosition(@Nonnull ChannelUpdatePositionEvent event) {}
     public void onChannelUpdateRegion(@Nonnull ChannelUpdateRegionEvent event) {}
     public void onChannelUpdateSlowmode(@Nonnull ChannelUpdateSlowmodeEvent event) {}
+    public void onChannelUpdateDefaultThreadSlowmode(@Nonnull ChannelUpdateDefaultThreadSlowmodeEvent event) {}
+    public void onChannelUpdateDefaultReaction(@Nonnull ChannelUpdateDefaultReactionEvent event) {}
+    public void onChannelUpdateDefaultSortOrder(@Nonnull ChannelUpdateDefaultSortOrderEvent event) {}
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
     public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}
@@ -194,6 +210,14 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateAutoArchiveDuration(@Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
     public void onChannelUpdateLocked(@Nonnull ChannelUpdateLockedEvent event) {}
     public void onChannelUpdateInvitable(@Nonnull ChannelUpdateInvitableEvent event) {}
+    public void onChannelUpdateAppliedTags(@Nonnull ChannelUpdateAppliedTagsEvent event) {}
+
+    //Forum Tag Events
+    public void onForumTagAdd(@Nonnull ForumTagAddEvent event) {}
+    public void onForumTagRemove(@Nonnull ForumTagRemoveEvent event) {}
+    public void onForumTagUpdateName(@Nonnull ForumTagUpdateNameEvent event) {}
+    public void onForumTagUpdateEmoji(@Nonnull ForumTagUpdateEmojiEvent event) {}
+    public void onForumTagUpdateModerated(@Nonnull ForumTagUpdateModeratedEvent event) {}
 
     //Thread Events
     public void onThreadRevealed(@Nonnull ThreadRevealedEvent event) {}
@@ -256,6 +280,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberUpdateAvatar(@Nonnull GuildMemberUpdateAvatarEvent event) {}
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
     public void onGuildMemberUpdatePending(@Nonnull GuildMemberUpdatePendingEvent event) {}
+    public void onGuildMemberUpdateTimeOut(@Nonnull GuildMemberUpdateTimeOutEvent event) {}
 
     //Guild Voice Events
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {}
@@ -283,22 +308,39 @@ public abstract class ListenerAdapter implements EventListener
     public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {}
     public void onRoleUpdatePosition(@Nonnull RoleUpdatePositionEvent event) {}
 
-    //Emote Events
-    public void onEmoteAdded(@Nonnull EmoteAddedEvent event) {}
-    public void onEmoteRemoved(@Nonnull EmoteRemovedEvent event) {}
+    //Emoji Events
+    public void onEmojiAdded(@Nonnull EmojiAddedEvent event) {}
+    public void onEmojiRemoved(@Nonnull EmojiRemovedEvent event) {}
 
-    //Emote Update Events
-    public void onEmoteUpdateName(@Nonnull EmoteUpdateNameEvent event) {}
-    public void onEmoteUpdateRoles(@Nonnull EmoteUpdateRolesEvent event) {}
+    //Emoji Update Events
+    public void onEmojiUpdateName(@Nonnull EmojiUpdateNameEvent event) {}
+    public void onEmojiUpdateRoles(@Nonnull EmojiUpdateRolesEvent event) {}
+
+    // Application command permission update events
+    public void onGenericPrivilegeUpdate(@Nonnull GenericPrivilegeUpdateEvent event) {}
+    public void onApplicationCommandUpdatePrivileges(@Nonnull ApplicationCommandUpdatePrivilegesEvent event) {}
+    public void onApplicationUpdatePrivileges(@Nonnull ApplicationUpdatePrivilegesEvent event) {}
+
+    //Sticker Events
+    public void onGuildStickerAdded(@Nonnull GuildStickerAddedEvent event) {}
+    public void onGuildStickerRemoved(@Nonnull GuildStickerRemovedEvent event) {}
+
+    //Sticker Update Events
+    public void onGuildStickerUpdateName(@Nonnull GuildStickerUpdateNameEvent event) {}
+    public void onGuildStickerUpdateTags(@Nonnull GuildStickerUpdateTagsEvent event) {}
+    public void onGuildStickerUpdateDescription(@Nonnull GuildStickerUpdateDescriptionEvent event) {}
+    public void onGuildStickerUpdateAvailable(@Nonnull GuildStickerUpdateAvailableEvent event) {}
 
     // Debug Events
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
     public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {}
-    public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
+    public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
+    public void onGenericCommandInteraction(@Nonnull GenericCommandInteractionEvent event) {}
+    public void onGenericContextInteraction(@Nonnull GenericContextInteractionEvent<?> event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
@@ -318,9 +360,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
     public void onGenericRole(@Nonnull GenericRoleEvent event) {}
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
-    public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
-    public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
+    public void onGenericEmoji(@Nonnull GenericEmojiEvent event) {}
+    public void onGenericEmojiUpdate(@Nonnull GenericEmojiUpdateEvent event) {}
+    public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
+    public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
+    public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
+    public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();

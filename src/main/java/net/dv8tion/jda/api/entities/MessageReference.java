@@ -17,13 +17,17 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,7 +57,7 @@ public class MessageReference
         if (guildId == 0L)
             this.channel = api.getPrivateChannelById(channelId);
         else
-            this.channel = (MessageChannel) api.getGuildChannelById(channelId);
+            this.channel = api.getChannelById(MessageChannel.class, channelId);
 
         this.guild = api.getGuildById(guildId); // is null if guildId = 0 anyway
 
@@ -69,11 +73,11 @@ public class MessageReference
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *         was revoked in the {@link TextChannel TextChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
-     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *         in the {@link TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The message has already been deleted.</li>
@@ -83,9 +87,10 @@ public class MessageReference
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
+     *         If this reference refers to a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT} (applicable if {@code getChannel().getType().isAudio()})</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
@@ -109,11 +114,11 @@ public class MessageReference
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *         was revoked in the {@link TextChannel TextChannel}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
-     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *         in the {@link TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The message has already been deleted.</li>
@@ -126,9 +131,10 @@ public class MessageReference
      *         Whether to update the already stored message
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
+     *         If this reference refers to a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VOICE_CONNECT Permission.VOICE_CONNECT} (applicable if {@code getChannel().getType().isAudio()})</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
@@ -154,7 +160,8 @@ public class MessageReference
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
         return new RestActionImpl<>(jda, route, (response, request) -> {
-            Message created = jda.getEntityBuilder().createMessage(response.getObject(), getChannel(), false);
+            // channel can be null for MessageReferences, but we've already checked for that above, so it is nonnull here
+            Message created = jda.getEntityBuilder().createMessageWithChannel(response.getObject(), channel, false);
             this.referencedMessage = created;
             return created;
         });
@@ -186,9 +193,9 @@ public class MessageReference
      * @see    #getChannelId()
      */
     @Nullable
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
 
@@ -282,16 +289,13 @@ public class MessageReference
 
     private void checkPermission(Permission permission)
     {
-        if (guild == null || !(channel instanceof IPermissionContainer)) return;
+        if (guild == null || !(channel instanceof GuildChannel)) return;
 
         Member selfMember = guild.getSelfMember();
+        GuildChannel guildChannel = (GuildChannel) channel;
 
-
-        IPermissionContainer permChannel = (IPermissionContainer) channel;
-
-        if (!selfMember.hasAccess(permChannel))
-            throw new MissingAccessException(permChannel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasPermission(permChannel, permission))
-            throw new InsufficientPermissionException(permChannel, permission);
+        Checks.checkAccess(selfMember, guildChannel);
+        if (!selfMember.hasPermission(guildChannel, permission))
+            throw new InsufficientPermissionException(guildChannel, permission);
     }
 }

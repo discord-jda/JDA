@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.utils.cache;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
@@ -45,11 +47,17 @@ public enum CacheFlag
      */
     VOICE_STATE(GatewayIntent.GUILD_VOICE_STATES),
     /**
-     * Enables cache for {@link Guild#getEmoteCache()}
+     * Enables cache for {@link Guild#getEmojiCache()}
      *
-     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent to be enabled.
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
      */
-    EMOTE(GatewayIntent.GUILD_EMOJIS),
+    EMOJI(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
+    /**
+     * Enables cache for {@link Guild#getStickerCache()}
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
+     */
+    STICKER(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
     /**
      * Enables cache for {@link Member#getOnlineStatus(net.dv8tion.jda.api.entities.ClientType) Member.getOnlineStatus(ClientType)}
      *
@@ -57,13 +65,17 @@ public enum CacheFlag
      */
     CLIENT_STATUS(GatewayIntent.GUILD_PRESENCES),
     /**
-     * Enables cache for {@link net.dv8tion.jda.api.entities.IPermissionContainer#getMemberPermissionOverrides()}
+     * Enables cache for {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getMemberPermissionOverrides()}
      */
     MEMBER_OVERRIDES,
     /**
      * Enables cache for {@link Role#getTags()}
      */
     ROLE_TAGS,
+    /**
+     * Enables cache for {@link ForumChannel#getAvailableTagCache()} and {@link ThreadChannel#getAppliedTags()}
+     */
+    FORUM_TAGS,
     /**
      * Enables cache for {@link Member#getOnlineStatus()}
      * <br>This is enabled implicitly by {@link #ACTIVITY} and {@link #CLIENT_STATUS}.

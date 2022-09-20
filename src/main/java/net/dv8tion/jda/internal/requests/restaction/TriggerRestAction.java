@@ -17,9 +17,9 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -101,19 +101,17 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
     public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
         if (isReady)
+        {
             super.queue(success, failure);
-        else onReady(() -> {
+            return;
+        }
+
+        Consumer<? super Throwable> onFailure = wrapContext(failure);
+        onReady(() -> {
             if (this.exception != null)
-            {
-                if (failure != null)
-                    failure.accept(this.exception);
-                else
-                    RestAction.getDefaultFailure().accept(this.exception);
-            }
+                onFailure.accept(exception);
             else
-            {
-                super.queue(success, failure);
-            }
+                super.queue(success, onFailure);
         });
     }
 
@@ -124,27 +122,37 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
         if (isReady)
             return super.submit(shouldQueue);
         CompletableFuture<T> future = new CompletableFuture<>();
+        Consumer<? super Throwable> onFailure = wrapContext(future::completeExceptionally);
 
         onReady(() -> {
             if (exception != null)
             {
-                future.completeExceptionally(exception);
+                onFailure.accept(exception);
                 return;
             }
 
             CompletableFuture<T> handle = super.submit(shouldQueue);
             handle.whenComplete((success, error) -> {
                 if (error != null)
-                    future.completeExceptionally(error);
+                    onFailure.accept(error);
                 else
                     future.complete(success);
             });
+
             // Handle cancel forwarding
             future.whenComplete((r, e) -> {
                 if (future.isCancelled())
-                  handle.cancel(false);
+                    handle.cancel(false);
             });
         });
         return future;
+    }
+
+    private Consumer<? super Throwable> wrapContext(Consumer<? super Throwable> failure)
+    {
+        failure = failure == null ? getDefaultFailure() : failure;
+        if (!isPassContext() || (failure instanceof ContextException.ContextConsumer))
+            return failure;
+        return ContextException.here(failure);
     }
 }

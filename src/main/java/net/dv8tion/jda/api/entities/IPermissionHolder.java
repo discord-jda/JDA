@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -173,7 +175,7 @@ public interface IPermissionHolder extends ISnowflake
     default boolean hasAccess(@Nonnull GuildChannel channel)
     {
         Checks.notNull(channel, "Channel");
-        return channel.getType() == ChannelType.VOICE || channel.getType() == ChannelType.STAGE
+        return channel.getType().isAudio()
                 ? hasPermission(channel, Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL)
                 : hasPermission(channel, Permission.VIEW_CHANNEL);
     }
@@ -188,7 +190,7 @@ public interface IPermissionHolder extends ISnowflake
      * @param  targetChannel
      *         The target channel to check
      * @param  syncSource
-     *         The sync source, for example the parent category (see {@link ICategorizableChannel#getParentCategory()})
+     *         The sync source, for example the parent category (see {@link net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel#getParentCategory()})
      *
      * @throws IllegalArgumentException
      *         If either of the channels is null or not from the same guild as this permission holder

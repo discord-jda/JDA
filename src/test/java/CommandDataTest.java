@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -22,6 +24,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +36,9 @@ public class CommandDataTest
     @Test
     public void testNormal()
     {
-        CommandData command = new CommandData("ban", "Ban a user from this server")
-                .setDefaultEnabled(false)
+        CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
+                .setGuildOnly(true)
+                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
                 .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                 .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
                 .addOption(OptionType.INTEGER, "days", "The duration of the ban", false); // test with explicit false
@@ -42,7 +46,8 @@ public class CommandDataTest
         DataObject data = command.toData();
         Assertions.assertEquals("ban", data.getString("name"));
         Assertions.assertEquals("Ban a user from this server", data.getString("description"));
-        Assertions.assertFalse(data.getBoolean("default_permission"));
+        Assertions.assertFalse(data.getBoolean("dm_permission"));
+        Assertions.assertEquals(Permission.BAN_MEMBERS.getRawValue(), data.getUnsignedLong("default_member_permissions"));
 
         DataArray options = data.getArray("options");
 
@@ -63,10 +68,23 @@ public class CommandDataTest
     }
 
     @Test
+    public void testDefaultMemberPermissions()
+    {
+        CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
+                .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
+        DataObject data = command.toData();
+
+        Assertions.assertEquals(0, data.getUnsignedLong("default_member_permissions"));
+
+        command.setDefaultPermissions(DefaultMemberPermissions.ENABLED);
+        data = command.toData();
+        Assertions.assertTrue(data.isNull("default_member_permissions"));
+    }
+
+    @Test
     public void testSubcommand()
     {
-        CommandData command = new CommandData("mod", "Moderation commands")
-                .setDefaultEnabled(true)
+        CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
                     .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                     .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
@@ -75,7 +93,6 @@ public class CommandDataTest
         DataObject data = command.toData();
         Assertions.assertEquals("mod", data.getString("name"));
         Assertions.assertEquals("Moderation commands", data.getString("description"));
-        Assertions.assertTrue(data.getBoolean("default_permission"));
 
         DataObject subdata = data.getArray("options").getObject(0);
         Assertions.assertEquals("ban", subdata.getString("name"));
@@ -102,7 +119,7 @@ public class CommandDataTest
     @Test
     public void testSubcommandGroup()
     {
-        CommandData command = new CommandData("mod", "Moderation commands")
+        CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
                 .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
                     .addSubcommands(new SubcommandData("add", "Ban a user from this server")
                         .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
@@ -112,7 +129,6 @@ public class CommandDataTest
         DataObject data = command.toData();
         Assertions.assertEquals("mod", data.getString("name"));
         Assertions.assertEquals("Moderation commands", data.getString("description"));
-        Assertions.assertTrue(data.getBoolean("default_permission"));
 
         DataObject group = data.getArray("options").getObject(0);
         Assertions.assertEquals("ban", group.getString("name"));
@@ -142,7 +158,7 @@ public class CommandDataTest
     @Test
     public void testRequiredThrows()
     {
-        CommandData command = new CommandData("ban", "Simple ban command");
+        CommandDataImpl command = new CommandDataImpl("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true));
@@ -155,9 +171,9 @@ public class CommandDataTest
     @Test
     public void testNameChecks()
     {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("valid_name", ""));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalid name", "Valid description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalidName", "Valid description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("valid_name", ""));
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalid name", "Valid description"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalidName", "Valid description"));

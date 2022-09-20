@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
  * The most efficient way to use a RestAction is by using the asynchronous {@link #queue()} operations.
  * <br>These allow users to provide success and failure callbacks which will be called at a convenient time.
  *
- * <h2>Planning Execution</h2>
+ * <p><b>Planning Execution</b><br>
  * To <u>schedule</u> a RestAction we provide both {@link #queue()} and {@link #complete()} versions that
  * will be executed by a {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService} after a
  * specified delay:
@@ -93,13 +93,13 @@ import java.util.stream.Collectors;
  * to provide a success and/or failure callback due to the returned {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
  * not being able to provide the response values of the {@link #queue()} callbacks.
  *
- * <h1>Using RestActions</h1>
+ * <p><b>Using RestActions</b><br>
  * The most common way to use a RestAction is not using the returned value.
  * <br>For instance sending messages usually means you will not require to view the message once
  * it was sent. Thus we can simply use the <b>asynchronous</b> {@link #queue()} operation which will
  * be executed on a rate limit worker thread in the background, without blocking your current thread:
  * <pre><code>
- *      {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *      {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} channel = event.getChannel();
  *     {@literal RestAction<Message>} action = channel.sendMessage("Hello World");
  *      action.{@link #queue() queue()}; // Execute the rest action asynchronously
  * </code></pre>
@@ -109,9 +109,9 @@ import java.util.stream.Collectors;
  * callback {@link java.util.function.Consumer Consumer} or the (not recommended) {@link #complete()} which will block
  * the current thread until the response has been processed and joins with the current thread.
  *
- * <h2>Example Queue: (recommended)</h2>
+ * <p><b>Example Queue: (recommended)</b><br>
  * <pre><code>
- *     {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} channel = event.getChannel();
  *     final long time = System.currentTimeMillis();
  *    {@literal RestAction<Message>} action = channel.sendMessage("Calculating Response Time...");
  *     {@link java.util.function.Consumer Consumer}{@literal <Message>} callback = (message) {@literal ->  {
@@ -123,9 +123,9 @@ import java.util.stream.Collectors;
  *     action.{@link #queue(Consumer) queue(callback)};
  * </code></pre>
  *
- * <h2>Example Complete:</h2>
+ * <p><b>Example Complete:</b><br>
  * <pre><code>
- *     {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} channel = event.getChannel();
  *     final long time = System.currentTimeMillis();
  *    {@literal RestAction<Message>} action = channel.sendMessage("Calculating Response Time...");
  *     Message message = action.{@link #complete() complete()};
@@ -133,9 +133,9 @@ import java.util.stream.Collectors;
  *     // End with {@link #queue() queue()} to not block the callback thread!
  * </code></pre>
  *
- * <h2>Example Planning:</h2>
+ * <p><b>Example Planning:</b><br>
  * <pre><code>
- *     {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} channel = event.getChannel();
  *    {@literal RestAction<Message>} action = channel.sendMessage("This message will destroy itself in 5 seconds!");
  *     action.queue((message) {@literal ->} message.delete().{@link #queueAfter(long, TimeUnit) queueAfter(5, TimeUnit.SECONDS)});
  * </code></pre>
@@ -452,7 +452,7 @@ public interface RestAction<T>
      * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
      * This is the same as {@code deadline(System.currentTimeMillis() + unit.toMillis(timeout))}.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * action.timeout(10, TimeUnit.SECONDS) // 10 seconds from now
      *       .queueAfter(20, SECONDS); // request will not be executed within deadline and timeout immediately after 20 seconds
@@ -485,7 +485,7 @@ public interface RestAction<T>
      * right before executing the request or within intervals in a worker thread. This only means the request will timeout
      * if the deadline has passed.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * action.deadline(System.currentTimeMillis() + 10000) // 10 seconds from now
      *       .queueAfter(20, SECONDS); // request will not be executed within deadline and timeout immediately after 20 seconds
@@ -515,7 +515,7 @@ public interface RestAction<T>
      *
      * <p><b>This method is asynchronous</b>
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public static void sendMessage(MessageChannel channel, String content)
      * {
@@ -529,8 +529,7 @@ public interface RestAction<T>
      * @throws java.util.concurrent.RejectedExecutionException
      *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      *
-     * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(java.lang.CharSequence) MessageChannel.sendMessage(CharSequence)
-     * @see net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction
+     * @see net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendMessage(java.lang.CharSequence) MessageChannel.sendMessage(CharSequence)
      * @see #queue(java.util.function.Consumer) queue(Consumer)
      * @see #queue(java.util.function.Consumer, java.util.function.Consumer) queue(Consumer, Consumer)
      */
@@ -547,7 +546,7 @@ public interface RestAction<T>
      *
      * <p><b>This method is asynchronous</b>
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public static void sendPrivateMessage(User user, String content)
      * {
@@ -578,7 +577,7 @@ public interface RestAction<T>
      *
      * <p><b>This method is asynchronous</b>
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public static void sendPrivateMessage(JDA jda, String userId, String content)
      * {
@@ -666,7 +665,7 @@ public interface RestAction<T>
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public static void sendPrivateMessage(JDA jda, String userId, String content)
      * {
@@ -739,7 +738,7 @@ public interface RestAction<T>
      * <p>This does not modify this instance but returns a new RestAction which will apply
      * the map function on successful execution.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<String> retrieveMemberNickname(Guild guild, String userId) {
      *     return guild.retrieveMemberById(userId)
@@ -766,12 +765,52 @@ public interface RestAction<T>
     }
 
     /**
+     * An intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction, which will consume
+     * the actions result using the given consumer on successful execution.
+     * The resulting action continues with the previous result.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * public RestAction<String> retrieveMemberNickname(Guild guild, String userId) {
+     *     return guild.retrieveMemberById(userId)
+     *                 .map(Member::getNickname)
+     *                 .onSuccess(System.out::println);
+     * }
+     * }</pre>
+     *
+     * Prefer using {@link #queue(Consumer)} instead, if continuation of the action
+     * chain is not desired.
+     *
+     * @param  consumer
+     *         The consuming function to apply to the action result, failures are propagated
+     *         into the resulting action
+     *
+     *
+     * @throws IllegalArgumentException
+     *         If the consumer is null
+     *
+     * @return RestAction that consumes the action result
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer)
+    {
+        Checks.notNull(consumer, "Consumer");
+        return map(result -> {
+            consumer.accept(result);
+            return result;
+        });
+    }
+
+    /**
      * Supply a fallback value when the RestAction fails for any reason.
      *
      * <p>This does not modify this instance but returns a new RestAction which will apply
      * the map function on failed execution.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<String> sendMessage(User user, String content) {
      *     return user.openPrivateChannel() // RestAction<PrivateChannel>
@@ -804,7 +843,7 @@ public interface RestAction<T>
      * <p>This does not modify this instance but returns a new RestAction which will apply
      * the map function on failed execution.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<String> sendMessage(User user, String content) {
      *     return user.openPrivateChannel() // RestAction<PrivateChannel>
@@ -843,7 +882,7 @@ public interface RestAction<T>
      * <p>This does not modify this instance but returns a new RestAction which will apply
      * the map function on failed execution.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<Message> sendMessage(User user, TextChannel context, String content) {
      *     return user.openPrivateChannel() // RestAction<PrivateChannel>
@@ -877,7 +916,7 @@ public interface RestAction<T>
      * <p>This does not modify this instance but returns a new RestAction which will apply
      * the map function on failed execution.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<Message> sendMessage(User user, TextChannel context, String content) {
      *     return user.openPrivateChannel() // RestAction<PrivateChannel>
@@ -919,7 +958,7 @@ public interface RestAction<T>
      * <br>The returned RestAction must not be null!
      * To terminate the execution chain on a specific condition you can use {@link #flatMap(Predicate, Function)}.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<Void> initializeGiveaway(Guild guild, String channelName) {
      *     return guild.createTextChannel(channelName)
@@ -954,7 +993,7 @@ public interface RestAction<T>
      * the map function on successful execution. This will compute the result of both RestActions.
      * <br>The provided RestAction must not be null!
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * private static final int MAX_COUNT = 1000;
      * public void updateCount(MessageChannel channel, String messageId, int count) {
@@ -1091,7 +1130,7 @@ public interface RestAction<T>
      *
      * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
      *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
@@ -1123,7 +1162,7 @@ public interface RestAction<T>
      *
      * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
      *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
@@ -1158,7 +1197,7 @@ public interface RestAction<T>
      *
      * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
      *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
@@ -1192,7 +1231,7 @@ public interface RestAction<T>
      *
      * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
      *     return channel.sendMessage("The following message will destroy itself in 1 minute!")

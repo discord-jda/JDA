@@ -19,7 +19,12 @@ package net.dv8tion.jda.internal.entities;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleIcon;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -28,7 +33,7 @@ import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -50,8 +55,6 @@ public class RoleImpl implements Role
     private final JDAImpl api;
     private Guild guild;
 
-    private RoleManager manager;
-
     private RoleTagsImpl tags;
     private String name;
     private boolean managed;
@@ -60,6 +63,7 @@ public class RoleImpl implements Role
     private long rawPermissions;
     private int color;
     private int rawPosition;
+    private int frozenPosition = Integer.MIN_VALUE; // this is used exclusively for delete events
     private RoleIcon icon;
 
     public RoleImpl(long id, Guild guild)
@@ -73,6 +77,8 @@ public class RoleImpl implements Role
     @Override
     public int getPosition()
     {
+        if (frozenPosition > Integer.MIN_VALUE)
+            return frozenPosition;
         Guild guild = getGuild();
         if (equals(guild.getPublicRole()))
             return -1;
@@ -289,16 +295,14 @@ public class RoleImpl implements Role
                     .setMentionable(mentionable)
                     .setName(name)
                     .setPermissions(rawPermissions)
-                    .setIcon(icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
+                    .setIcon(icon == null ? null : icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
     }
 
     @Nonnull
     @Override
     public RoleManager getManager()
     {
-        if (manager == null)
-            return manager = new RoleManagerImpl(this);
-        return manager;
+        return new RoleManagerImpl(this);
     }
 
     @Nonnull
@@ -456,6 +460,11 @@ public class RoleImpl implements Role
     {
         this.icon = icon;
         return this;
+    }
+
+    public void freezePosition()
+    {
+        this.frozenPosition = getPosition();
     }
 
     public static class RoleTagsImpl implements RoleTags

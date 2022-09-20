@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
@@ -77,10 +77,12 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
     {
         Checks.notNull(level, "PrivacyLevel");
         Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "The PrivacyLevel must not be UNKNOWN!");
+        Checks.check(level != StageInstance.PrivacyLevel.PUBLIC, "Cannot create PUBLIC stage instances anymore.");
         this.level = level;
         return this;
     }

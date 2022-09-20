@@ -18,6 +18,8 @@ package net.dv8tion.jda.api;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
@@ -39,7 +41,6 @@ import okhttp3.OkHttpClient;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -56,7 +57,6 @@ import java.util.stream.Collectors;
  */
 public class JDABuilder
 {
-    public static final int GUILD_SUBSCRIPTIONS = GatewayIntent.getRaw(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING);
     protected final List<Object> listeners = new LinkedList<>();
     protected final EnumSet<CacheFlag> automaticallyDisabled = EnumSet.noneOf(CacheFlag.class);
 
@@ -138,7 +138,7 @@ public class JDABuilder
      *
      * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
      * {@link #enableIntents(Collection)}.
-     * 
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -522,6 +522,26 @@ public class JDABuilder
     }
 
     /**
+     * Whether JDA should store the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} for every discord event, accessible through {@link net.dv8tion.jda.api.events.GenericEvent#getRawData() getRawData()}.
+     * <br>You can expect to receive the full gateway message payload, including sequence, event name and dispatch type of the events
+     * <br>You can read more about payloads <a href="https://discord.com/developers/docs/topics/gateway" target="_blank">here</a> and the different events <a href="https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events" target="_blank">here</a>.
+     * <br>Warning: be aware that enabling this could consume a lot of memory if your event objects have a long lifetime.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to every discord event.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    Event#getRawData()
+     */
+    @Nonnull
+    public JDABuilder setEventPassthrough(boolean enable)
+    {
+        return setFlag(ConfigFlag.EVENT_PASSTHROUGH, enable);
+    }
+
+    /**
      * Whether the rate-limit should be relative to the current time plus latency.
      * <br>By default we use the {@code X-RateLimit-Reset-After} header to determine when
      * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
@@ -558,7 +578,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    #enableCache(CacheFlag, CacheFlag...) 
+     * @see    #enableCache(CacheFlag, CacheFlag...)
      * @see    #disableCache(Collection)
      */
     @Nonnull
@@ -583,7 +603,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    #enableCache(Collection) 
+     * @see    #enableCache(Collection)
      * @see    #disableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
@@ -607,7 +627,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    #disableCache(CacheFlag, CacheFlag...) 
+     * @see    #disableCache(CacheFlag, CacheFlag...)
      * @see    #enableCache(Collection)
      */
     @Nonnull
@@ -633,7 +653,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    #disableCache(Collection) 
+     * @see    #disableCache(Collection)
      * @see    #enableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
@@ -653,7 +673,7 @@ public class JDABuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
-     * <h2>Example</h2>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public void configureCache(JDABuilder builder) {
      *     // Cache members who are in a voice channel
@@ -783,7 +803,7 @@ public class JDABuilder
      * Sets the token that will be used by the {@link net.dv8tion.jda.api.JDA} instance to log in when
      * {@link net.dv8tion.jda.api.JDABuilder#build() build()} is called.
      *
-     * <h2>For {@link net.dv8tion.jda.api.AccountType#BOT}</h2>
+     * <p><b>For {@link net.dv8tion.jda.api.AccountType#BOT}</b><br>
      * <ol>
      *     <li>Go to your <a href="https://discord.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
@@ -1411,7 +1431,7 @@ public class JDABuilder
     /**
      * The {@link ChunkingFilter} to filter which guilds should use member chunking.
      *
-     * <p>If a guild is configured for chunking the {@link #setMemberCachePolicy(MemberCachePolicy)} will be ignored.
+     * <p>Use {@link #setMemberCachePolicy(MemberCachePolicy)} to configure which members to keep in cache from chunking.
      *
      * @param  filter
      *         The filter to apply
@@ -1721,7 +1741,7 @@ public class JDABuilder
      * {@link net.dv8tion.jda.api.hooks.EventListener EventListener} to listen for the
      * {@link ReadyEvent ReadyEvent}.
      *
-     * @throws LoginException
+     * @throws InvalidTokenException
      *         If the provided token is invalid.
      * @throws IllegalArgumentException
      *         If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
@@ -1732,7 +1752,7 @@ public class JDABuilder
      * @see    net.dv8tion.jda.api.JDA#awaitReady()
      */
     @Nonnull
-    public JDA build() throws LoginException
+    public JDA build()
     {
         checkIntents();
         OkHttpClient httpClient = this.httpClient;

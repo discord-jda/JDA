@@ -16,10 +16,11 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
@@ -30,7 +31,6 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -46,7 +46,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, ChannelType type)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(channel.getId()));
+        super(channel.getJDA(), Route.Channels.CREATE_THREAD.compile(channel.getId()));
         this.guild = channel.getGuild();
         this.type = type;
         this.parentMessageId = null;
@@ -56,12 +56,19 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, String parentMessageId)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITH_MESSAGE.compile(channel.getId(), parentMessageId));
+        super(channel.getJDA(), Route.Channels.CREATE_THREAD_FROM_MESSAGE.compile(channel.getId(), parentMessageId));
         this.guild = channel.getGuild();
         this.type = channel.getType() == ChannelType.TEXT ? ChannelType.GUILD_PUBLIC_THREAD : ChannelType.GUILD_NEWS_THREAD;
         this.parentMessageId = parentMessageId;
 
         this.name = name;
+    }
+
+    @Nonnull
+    @Override
+    public ThreadChannelActionImpl reason(String reason)
+    {
+        return (ThreadChannelActionImpl) super.reason(reason);
     }
 
     @Nonnull
@@ -105,7 +112,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
     public ThreadChannelActionImpl setName(@Nonnull String name)
     {
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 100, "Name");
+        Checks.notLonger(name, Channel.MAX_NAME_LENGTH, "Name");
         this.name = name;
         return this;
     }
@@ -115,16 +122,6 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
     public ThreadChannelAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration)
     {
         Checks.notNull(autoArchiveDuration, "autoArchiveDuration");
-
-        Set<String> features = guild.getFeatures();
-        if (autoArchiveDuration == ThreadChannel.AutoArchiveDuration.TIME_3_DAYS && !features.contains("THREE_DAY_THREAD_ARCHIVE"))
-            throw new IllegalStateException("Cannot use TIME_3_DAYS archive duration because feature isn't supported on this Guild." +
-                    " Missing THREE_DAY_THREAD_ARCHIVE feature due to boost level being too low.");
-
-        if (autoArchiveDuration == ThreadChannel.AutoArchiveDuration.TIME_1_WEEK && !features.contains("SEVEN_DAY_THREAD_ARCHIVE"))
-            throw new IllegalStateException("Cannot use TIME_1_WEEK archive duration because feature isn't supported on this Guild." +
-                    " Missing SEVEN_DAY_THREAD_ARCHIVE feature due to boost level being too low.");
-
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
     }

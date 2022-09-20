@@ -17,10 +17,10 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -130,7 +130,7 @@ public interface GuildAction extends RestAction<Void>
 
     /**
      * Adds a {@link GuildChannel GuildChannel} to the resulting
-     * Guild. This cannot be of type {@link net.dv8tion.jda.api.entities.ChannelType#CATEGORY CATEGORY}!
+     * Guild. This cannot be of type {@link ChannelType#CATEGORY CATEGORY}!
      *
      * @param  channel
      *         The {@link ChannelData ChannelData}
@@ -195,17 +195,16 @@ public interface GuildAction extends RestAction<Void>
      * instance and adds it to this GuildAction.
      *
      * @param  type
-     *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} of the resulting GuildChannel
-     *         <br>This may be of type {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}!
+     *         The {@link ChannelType ChannelType} of the resulting GuildChannel
+     *         <br>This may be of type {@link ChannelType#TEXT TEXT} or {@link ChannelType#VOICE VOICE}!
      * @param  name
-     *         The name of the channel. This must be alphanumeric with underscores for type TEXT
+     *         The name of the channel.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If provided with an invalid ChannelType</li>
      *             <li>If the provided name is {@code null} or blank</li>
      *             <li>If the provided name is not between 2-100 characters long</li>
-     *             <li>If the type is TEXT and the provided name is not alphanumeric with underscores</li>
      *         </ul>
      *
      * @return The new ChannelData instance
@@ -507,17 +506,16 @@ public interface GuildAction extends RestAction<Void>
          * of a {@link net.dv8tion.jda.api.entities.Guild Guild}!
          *
          * @param  type
-         *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} of the resulting GuildChannel
-         *         <br>This may be of type {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT} or {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}!
+         *         The {@link ChannelType ChannelType} of the resulting GuildChannel
+         *         <br>This may be of type {@link ChannelType#TEXT TEXT} or {@link ChannelType#VOICE VOICE}!
          * @param  name
-         *         The name of the channel. This must be alphanumeric with underscores for type TEXT
+         *         The name of the channel.
          *
          * @throws java.lang.IllegalArgumentException
          *         <ul>
          *             <li>If provided with an invalid ChannelType</li>
          *             <li>If the provided name is {@code null} or blank</li>
          *             <li>If the provided name is not between 2-100 characters long</li>
-         *             <li>If the type is TEXT and the provided name is not alphanumeric with underscores</li>
          *         </ul>
          */
         public ChannelData(ChannelType type, String name)
@@ -527,8 +525,6 @@ public interface GuildAction extends RestAction<Void>
                 "Can only create channels of type TEXT, STAGE, or VOICE in GuildAction!");
             Checks.check(name.length() >= 2 && name.length() <= 100,
                 "Channel name has to be between 2-100 characters long!");
-            Checks.check(type == ChannelType.VOICE || type == ChannelType.STAGE || name.matches("[a-zA-Z0-9-_]+"),
-                "Channels of type TEXT must have a name in alphanumeric with underscores!");
 
             this.type = type;
             this.name = name;
@@ -536,7 +532,7 @@ public interface GuildAction extends RestAction<Void>
 
         /**
          * Sets the topic for this channel.
-         * <br>These are only relevant to channels of type {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}.
+         * <br>These are only relevant to channels of type {@link ChannelType#TEXT TEXT}.
          *
          * @param  topic
          *         The topic for the channel
@@ -557,7 +553,7 @@ public interface GuildAction extends RestAction<Void>
 
         /**
          * Sets the whether this channel should be marked NSFW.
-         * <br>These are only relevant to channels of type {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}.
+         * <br>These are only relevant to channels of type {@link ChannelType#TEXT TEXT}.
          *
          * @param  nsfw
          *         Whether this channel should be marked NSFW
@@ -573,7 +569,7 @@ public interface GuildAction extends RestAction<Void>
 
         /**
          * Sets the bitrate for this channel.
-         * <br>These are only relevant to channels of type {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}.
+         * <br>These are only relevant to channels of type {@link ChannelType#VOICE VOICE}.
          *
          * @param  bitrate
          *         The bitrate for the channel (8000-96000)
@@ -597,7 +593,7 @@ public interface GuildAction extends RestAction<Void>
 
         /**
          * Sets the userlimit for this channel.
-         * <br>These are only relevant to channels of type {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}.
+         * <br>These are only relevant to channels of type {@link ChannelType#VOICE VOICE}.
          *
          * @param  userlimit
          *         The userlimit for the channel (0-99)

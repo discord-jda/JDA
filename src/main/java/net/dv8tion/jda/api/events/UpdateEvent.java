@@ -44,7 +44,7 @@ public interface UpdateEvent<E, T> extends GenericEvent
     /**
      * The field name for the updated property
      *
-     * <h1>Example</h1>
+     * <p><b>Example</b><br>
      * <pre><code>
      * {@literal @Override}
      * public void onGenericRoleUpdate(GenericRoleUpdateEvent event)

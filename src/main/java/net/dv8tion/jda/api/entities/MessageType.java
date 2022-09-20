@@ -26,136 +26,144 @@ public enum MessageType
     /**
      * The normal text messages received when a user or bot sends a Message.
      */
-    DEFAULT(0, false),
+    DEFAULT(0, false, true),
 
     /**
      * Specialized messages used for Groups as a System-Message showing that a new User has been added to the Group.
      * Also used in message threads to indicate a member has joined that thread.
      */
-    RECIPIENT_ADD(1),
+    RECIPIENT_ADD(1, true, false),
 
     /**
      * Specialized messages used for Groups as a System-Message showing that a new User has been removed from the Group.
      * Also used in message threads to indicate a member has left that thread.
      */
-    RECIPIENT_REMOVE(2),
+    RECIPIENT_REMOVE(2, true, false),
 
     /**
      * Specialized message used for Groups as a System-Message showing that a Call was started.
      */
-    CALL(3),
+    CALL(3, true, false),
 
     /**
      * Specialized message used for Groups as a System-Message showing that the name of the Group was changed.
      * Also used in message threads to indicate the name of that thread has changed.
      */
-    CHANNEL_NAME_CHANGE(4),
+    CHANNEL_NAME_CHANGE(4, true, false),
 
     /**
      * Specialized message used for Groups as a System-Message showing that the icon of the Group was changed.
      */
-    CHANNEL_ICON_CHANGE(5),
+    CHANNEL_ICON_CHANGE(5, true, false),
 
     /**
      * Specialized message used in MessageChannels as a System-Message to announce new pins
      */
-    CHANNEL_PINNED_ADD(6),
+    CHANNEL_PINNED_ADD(6, true, true),
 
     /**
      * Specialized message used to welcome new members in a Guild
      */
-    GUILD_MEMBER_JOIN(7),
+    GUILD_MEMBER_JOIN(7, true, true),
 
     /**
      * Specialized message used to announce a new booster
      */
-    GUILD_MEMBER_BOOST(8),
+    GUILD_MEMBER_BOOST(8, true, true),
 
     /**
      * Specialized message used to announce the server has reached tier 1
      */
-    GUILD_BOOST_TIER_1(9),
+    GUILD_BOOST_TIER_1(9, true, true),
 
     /**
      * Specialized message used to announce the server has reached tier 2
      */
-    GUILD_BOOST_TIER_2(10),
+    GUILD_BOOST_TIER_2(10, true, true),
 
     /**
      * Specialized message used to announce the server has reached tier 3
      */
-    GUILD_BOOST_TIER_3(11),
+    GUILD_BOOST_TIER_3(11, true, true),
 
     /**
      * Specialized message used to announce when a crosspost webhook is added to a channel
      */
-    CHANNEL_FOLLOW_ADD(12),
+    CHANNEL_FOLLOW_ADD(12, true, true),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_DISQUALIFIED(14),
+    GUILD_DISCOVERY_DISQUALIFIED(14, true, false),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_REQUALIFIED(15),
+    GUILD_DISCOVERY_REQUALIFIED(15, true, false),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16),
+    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16, true, false),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17),
+    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17, true, false),
 
     /**
      * This is sent to a TextChannel when a message thread is created if the message from which the thread was started is "old".
      * The definition of "old" is loose, but is currently a very liberal definition.
      */
-    THREAD_CREATED(18),
+    THREAD_CREATED(18, true, true),
 
     /**
      * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
      */
-    INLINE_REPLY(19, false),
+    INLINE_REPLY(19, false, true),
 
     /**
      * This message was created by an interaction. Usually in combination with Slash Commands.
-     * <br>Most commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
      */
-    APPLICATION_COMMAND(20, false),
+    SLASH_COMMAND(20, false, true),
 
     /**
      * A new message sent as the first message in threads that are started from an existing message in the parent channel.
      * It only contains a message reference field that points to the message from which the thread was started.
      */
-    THREAD_STARTER_MESSAGE(21),
+    THREAD_STARTER_MESSAGE(21, false, false),
 
     /**
      * The "Invite your friends" messages that are sent to guild owners in new servers.
      */
-    GUILD_INVITE_REMINDER(22),
+    GUILD_INVITE_REMINDER(22, true, true),
+
+    /**
+     * This message was created by an interaction. Usually in combination with Context Menus.
+     */
+    CONTEXT_COMMAND(23, false, true),
+
+    /**
+     * This message was created by the automod system.
+     *
+     * Messages from this type usually come with custom embeds containing relevant information, the author is the user that triggered the filter.
+     */
+    AUTO_MODERATION_ACTION(24, true, true),
 
     /**
      * Unknown MessageType.
      */
-    UNKNOWN(-1);
+    UNKNOWN(-1, false, true);
 
     private final int id;
     private final boolean system;
+    private final boolean deletable;
 
-    MessageType(int id)
-    {
-        this(id, true); // true as default because the majority are system
-    }
-
-    MessageType(int id, boolean system)
+    MessageType(int id, boolean system, boolean deletable)
     {
         this.id = id;
         this.system = system;
+        this.deletable = deletable;
     }
 
     /**
@@ -170,7 +178,7 @@ public enum MessageType
 
     /**
      * Whether this message type is for system messages.
-     * <br>These are messages that are sent by discord and don't look like messages from users.
+     * <br>These are messages that are sent by Discord and don't look like messages from users.
      * Messages like this have some special restrictions.
      *
      * @return True, if this type is for a system message
@@ -178,6 +186,32 @@ public enum MessageType
     public boolean isSystem()
     {
         return system;
+    }
+
+    /**
+     * Whether messages of this type can be deleted.
+     * <br>These are messages which are required to stay such as thread starter messages.
+     *
+     * <p><b>Messages which cannot be deleted:</b><br>
+     * <ul>
+     *     <li>{@link #RECIPIENT_ADD}</li>
+     *     <li>{@link #RECIPIENT_REMOVE}</li>
+     *     <li>{@link #CALL}</li>
+     *     <li>{@link #CHANNEL_NAME_CHANGE}</li>
+     *     <li>{@link #CHANNEL_ICON_CHANGE}</li>
+     *     <li>{@link #GUILD_DISCOVERY_DISQUALIFIED}</li>
+     *     <li>{@link #GUILD_DISCOVERY_REQUALIFIED}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING}</li>
+     *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING}</li>
+     *     <li>{@link #THREAD_STARTER_MESSAGE}</li>
+     * </ul>
+     *
+     * @return True, if delete is supported
+     */
+    public boolean canDelete()
+    {
+        return deletable;
     }
 
     /**

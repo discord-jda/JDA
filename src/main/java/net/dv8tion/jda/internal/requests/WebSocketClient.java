@@ -22,9 +22,8 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.events.RawGatewayEvent;
 import net.dv8tion.jda.api.events.session.*;
@@ -93,6 +92,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile String sessionId = null;
     protected final Object readLock = new Object();
     protected Decompressor decompressor;
+    protected String resumeUrl = null;
 
     protected final ReentrantLock queueLock = new ReentrantLock();
     protected final ScheduledExecutorService executor;
@@ -348,39 +348,43 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = api.getGatewayUrl()
-                + "?encoding=" + encoding.name().toLowerCase()
-                + "&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
-        if (compression != Compression.NONE)
-        {
-            url += "&compress=" + compression.getKey();
-            switch (compression)
-            {
-                case ZLIB:
-                    if (decompressor == null || decompressor.getType() != Compression.ZLIB)
-                        decompressor = new ZlibDecompressor(api.getMaxBufferSize());
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown compression");
-            }
-        }
-
         try
         {
+            String gatewayUrl = resumeUrl != null ? resumeUrl : api.getGatewayUrl();
+            gatewayUrl = IOUtil.addQuery(gatewayUrl,
+                "encoding", encoding.name().toLowerCase(),
+                "v", JDAInfo.DISCORD_GATEWAY_VERSION
+            );
+            if (compression != Compression.NONE)
+            {
+                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compression.getKey());
+                switch (compression)
+                {
+                    case ZLIB:
+                        if (decompressor == null || decompressor.getType() != Compression.ZLIB)
+                            decompressor = new ZlibDecompressor(api.getMaxBufferSize());
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown compression");
+                }
+            }
+
             WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
-            IOUtil.setServerName(socketFactory, url);
+            IOUtil.setServerName(socketFactory, gatewayUrl);
             if (socketFactory.getSocketTimeout() > 0)
                 socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
             else
                 socketFactory.setSocketTimeout(10000);
-            socket = socketFactory.createSocket(url);
+
+            socket = socketFactory.createSocket(gatewayUrl);
             socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")
                   .addListener(this)
                   .connect();
         }
-        catch (IOException | WebSocketException e)
+        catch (IOException | WebSocketException | IllegalArgumentException e)
         {
+            resumeUrl = null;
             api.resetGatewayUrl();
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
@@ -698,18 +702,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
         DataObject connectionProperties = DataObject.empty()
-            .put("$os", System.getProperty("os.name"))
-            .put("$browser", "JDA")
-            .put("$device", "JDA")
-            .put("$referring_domain", "")
-            .put("$referrer", "");
+            .put("os", System.getProperty("os.name"))
+            .put("browser", "JDA")
+            .put("device", "JDA");
         DataObject payload = DataObject.empty()
             .put("presence", presenceObj.getFullPresence())
             .put("token", getToken())
             .put("properties", connectionProperties)
-            .put("v", JDAInfo.DISCORD_GATEWAY_VERSION)
-            .put("large_threshold", api.getLargeThreshold());
-        payload.put("intents", gatewayIntents);
+            .put("large_threshold", api.getLargeThreshold())
+            .put("intents", gatewayIntents);
 
         DataObject identify = DataObject.empty()
                 .put("op", WebSocketCode.IDENTIFY)
@@ -744,6 +745,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void invalidate()
     {
+        resumeUrl = null;
         sessionId = null;
         sentAuthInfo = false;
 
@@ -751,11 +753,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         api.getTextChannelsView().clear();
         api.getVoiceChannelsView().clear();
-        api.getStoreChannelsView().clear();
         api.getCategoriesView().clear();
+        api.getNewsChannelView().clear();
+        api.getPrivateChannelsView().clear();
+        api.getStageChannelView().clear();
+        api.getThreadChannelsView().clear();
+        api.getForumChannelsView().clear();
+
         api.getGuildsView().clear();
         api.getUsersView().clear();
-        api.getPrivateChannelsView().clear();
+
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
         chunkManager.clear();
@@ -930,6 +937,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     // otherwise the audio connection requests that are currently pending might be removed in the process
                     handlers.get("READY").handle(responseTotal, raw);
                     sessionId = content.getString("session_id");
+                    resumeUrl = content.getString("resume_gateway_url", null);
                     break;
                 case "RESUMED":
                     reconnectTimeoutS = 2;
@@ -1285,8 +1293,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         return false;
                     }
 
-                    IPermissionContainer permChannel = (IPermissionContainer) channel;
-                    if (!guild.getSelfMember().hasPermission(permChannel, Permission.VOICE_CONNECT))
+                    if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
                     {
                         if (listener != null)
                             listener.onStatusChange(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);
@@ -1322,53 +1329,52 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void setupHandlers()
     {
-        final SocketHandler.NOPHandler nopHandler =   new SocketHandler.NOPHandler(api);
-        handlers.put("APPLICATION_COMMAND_UPDATE",    new ApplicationCommandUpdateHandler(api));
-        handlers.put("APPLICATION_COMMAND_DELETE",    new ApplicationCommandDeleteHandler(api));
-        handlers.put("APPLICATION_COMMAND_CREATE",    new ApplicationCommandCreateHandler(api));
-        handlers.put("CHANNEL_CREATE",                new ChannelCreateHandler(api));
-        handlers.put("CHANNEL_DELETE",                new ChannelDeleteHandler(api));
-        handlers.put("CHANNEL_UPDATE",                new ChannelUpdateHandler(api));
-        handlers.put("GUILD_BAN_ADD",                 new GuildBanHandler(api, true));
-        handlers.put("GUILD_BAN_REMOVE",              new GuildBanHandler(api, false));
-        handlers.put("GUILD_CREATE",                  new GuildCreateHandler(api));
-        handlers.put("GUILD_DELETE",                  new GuildDeleteHandler(api));
-        handlers.put("GUILD_EMOJIS_UPDATE",           new GuildEmojisUpdateHandler(api));
-        handlers.put("GUILD_MEMBER_ADD",              new GuildMemberAddHandler(api));
-        handlers.put("GUILD_MEMBER_REMOVE",           new GuildMemberRemoveHandler(api));
-        handlers.put("GUILD_MEMBER_UPDATE",           new GuildMemberUpdateHandler(api));
-        handlers.put("GUILD_MEMBERS_CHUNK",           new GuildMembersChunkHandler(api));
-        handlers.put("GUILD_ROLE_CREATE",             new GuildRoleCreateHandler(api));
-        handlers.put("GUILD_ROLE_DELETE",             new GuildRoleDeleteHandler(api));
-        handlers.put("GUILD_ROLE_UPDATE",             new GuildRoleUpdateHandler(api));
-        handlers.put("GUILD_SYNC",                    new GuildSyncHandler(api));
-        handlers.put("GUILD_UPDATE",                  new GuildUpdateHandler(api));
-        handlers.put("INTERACTION_CREATE",            new InteractionCreateHandler(api));
-        handlers.put("INVITE_CREATE",                 new InviteCreateHandler(api));
-        handlers.put("INVITE_DELETE",                 new InviteDeleteHandler(api));
-        handlers.put("MESSAGE_CREATE",                new MessageCreateHandler(api));
-        handlers.put("MESSAGE_DELETE",                new MessageDeleteHandler(api));
-        handlers.put("MESSAGE_DELETE_BULK",           new MessageBulkDeleteHandler(api));
-        handlers.put("MESSAGE_REACTION_ADD",          new MessageReactionHandler(api, true));
-        handlers.put("MESSAGE_REACTION_REMOVE",       new MessageReactionHandler(api, false));
-        handlers.put("MESSAGE_REACTION_REMOVE_ALL",   new MessageReactionBulkRemoveHandler(api));
-        handlers.put("MESSAGE_REACTION_REMOVE_EMOJI", new MessageReactionClearEmoteHandler(api));
-        handlers.put("MESSAGE_UPDATE",                new MessageUpdateHandler(api));
-        handlers.put("READY",                         new ReadyHandler(api));
-        handlers.put("STAGE_INSTANCE_CREATE",         new StageInstanceCreateHandler(api));
-        handlers.put("STAGE_INSTANCE_DELETE",         new StageInstanceDeleteHandler(api));
-        handlers.put("STAGE_INSTANCE_UPDATE",         new StageInstanceUpdateHandler(api));
-        handlers.put("THREAD_CREATE",                 new ThreadCreateHandler(api));
-        handlers.put("THREAD_DELETE",                 new ThreadDeleteHandler(api));
-        handlers.put("THREAD_LIST_SYNC",              new ThreadListSyncHandler(api));
-        handlers.put("THREAD_MEMBERS_UPDATE",         new ThreadMembersUpdateHandler(api));
-        handlers.put("THREAD_MEMBER_UPDATE",          new ThreadMemberUpdateHandler(api));
-        handlers.put("THREAD_UPDATE",                 new ThreadUpdateHandler(api));
-        handlers.put("USER_UPDATE",                   new UserUpdateHandler(api));
-        handlers.put("VOICE_SERVER_UPDATE",           new VoiceServerUpdateHandler(api));
-        handlers.put("VOICE_STATE_UPDATE",            new VoiceStateUpdateHandler(api));
-        handlers.put("PRESENCE_UPDATE",               new PresenceUpdateHandler(api));
-        handlers.put("TYPING_START",                  new TypingStartHandler(api));
+        final SocketHandler.NOPHandler nopHandler =            new SocketHandler.NOPHandler(api);
+        handlers.put("APPLICATION_COMMAND_PERMISSIONS_UPDATE", new ApplicationCommandPermissionsUpdateHandler(api));
+        handlers.put("CHANNEL_CREATE",                         new ChannelCreateHandler(api));
+        handlers.put("CHANNEL_DELETE",                         new ChannelDeleteHandler(api));
+        handlers.put("CHANNEL_UPDATE",                         new ChannelUpdateHandler(api));
+        handlers.put("GUILD_BAN_ADD",                          new GuildBanHandler(api, true));
+        handlers.put("GUILD_BAN_REMOVE",                       new GuildBanHandler(api, false));
+        handlers.put("GUILD_CREATE",                           new GuildCreateHandler(api));
+        handlers.put("GUILD_DELETE",                           new GuildDeleteHandler(api));
+        handlers.put("GUILD_EMOJIS_UPDATE",                    new GuildEmojisUpdateHandler(api));
+        handlers.put("GUILD_MEMBER_ADD",                       new GuildMemberAddHandler(api));
+        handlers.put("GUILD_MEMBER_REMOVE",                    new GuildMemberRemoveHandler(api));
+        handlers.put("GUILD_MEMBER_UPDATE",                    new GuildMemberUpdateHandler(api));
+        handlers.put("GUILD_MEMBERS_CHUNK",                    new GuildMembersChunkHandler(api));
+        handlers.put("GUILD_ROLE_CREATE",                      new GuildRoleCreateHandler(api));
+        handlers.put("GUILD_ROLE_DELETE",                      new GuildRoleDeleteHandler(api));
+        handlers.put("GUILD_ROLE_UPDATE",                      new GuildRoleUpdateHandler(api));
+        handlers.put("GUILD_SYNC",                             new GuildSyncHandler(api));
+        handlers.put("GUILD_STICKERS_UPDATE",                  new GuildStickersUpdateHandler(api));
+        handlers.put("GUILD_UPDATE",                           new GuildUpdateHandler(api));
+        handlers.put("INTERACTION_CREATE",                     new InteractionCreateHandler(api));
+        handlers.put("INVITE_CREATE",                          new InviteCreateHandler(api));
+        handlers.put("INVITE_DELETE",                          new InviteDeleteHandler(api));
+        handlers.put("MESSAGE_CREATE",                         new MessageCreateHandler(api));
+        handlers.put("MESSAGE_DELETE",                         new MessageDeleteHandler(api));
+        handlers.put("MESSAGE_DELETE_BULK",                    new MessageBulkDeleteHandler(api));
+        handlers.put("MESSAGE_REACTION_ADD",                   new MessageReactionHandler(api, true));
+        handlers.put("MESSAGE_REACTION_REMOVE",                new MessageReactionHandler(api, false));
+        handlers.put("MESSAGE_REACTION_REMOVE_ALL",            new MessageReactionBulkRemoveHandler(api));
+        handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",          new MessageReactionClearEmojiHandler(api));
+        handlers.put("MESSAGE_UPDATE",                         new MessageUpdateHandler(api));
+        handlers.put("PRESENCE_UPDATE",                        new PresenceUpdateHandler(api));
+        handlers.put("READY",                                  new ReadyHandler(api));
+        handlers.put("STAGE_INSTANCE_CREATE",                  new StageInstanceCreateHandler(api));
+        handlers.put("STAGE_INSTANCE_DELETE",                  new StageInstanceDeleteHandler(api));
+        handlers.put("STAGE_INSTANCE_UPDATE",                  new StageInstanceUpdateHandler(api));
+        handlers.put("THREAD_CREATE",                          new ThreadCreateHandler(api));
+        handlers.put("THREAD_DELETE",                          new ThreadDeleteHandler(api));
+        handlers.put("THREAD_LIST_SYNC",                       new ThreadListSyncHandler(api));
+        handlers.put("THREAD_MEMBERS_UPDATE",                  new ThreadMembersUpdateHandler(api));
+        handlers.put("THREAD_MEMBER_UPDATE",                   new ThreadMemberUpdateHandler(api));
+        handlers.put("THREAD_UPDATE",                          new ThreadUpdateHandler(api));
+        handlers.put("TYPING_START",                           new TypingStartHandler(api));
+        handlers.put("USER_UPDATE",                            new UserUpdateHandler(api));
+        handlers.put("VOICE_SERVER_UPDATE",                    new VoiceServerUpdateHandler(api));
+        handlers.put("VOICE_STATE_UPDATE",                     new VoiceStateUpdateHandler(api));
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);

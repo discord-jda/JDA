@@ -21,10 +21,14 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -36,6 +40,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 public class MemberImpl implements Member
 {
@@ -47,7 +52,7 @@ public class MemberImpl implements Member
     private User user;
     private String nickname;
     private String avatarId;
-    private long joinDate, boostDate;
+    private long joinDate, boostDate, timeOutEnd;
     private boolean pending = false;
 
     public MemberImpl(GuildImpl guild, User user)
@@ -113,7 +118,20 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getTimeBoosted()
     {
-        return boostDate != 0 ? Helpers.toOffset(boostDate) : null;
+        return isBoosting() ? Helpers.toOffset(boostDate) : null;
+    }
+
+    @Override
+    public boolean isBoosting()
+    {
+        return boostDate != 0;
+    }
+
+    @Nullable
+    @Override
+    public OffsetDateTime getTimeOutEnd()
+    {
+        return timeOutEnd != 0 ? Helpers.toOffset(timeOutEnd) : null;
     }
 
     @Override
@@ -328,9 +346,9 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean canInteract(@Nonnull Emote emote)
+    public boolean canInteract(@Nonnull RichCustomEmoji emoji)
     {
-        return PermissionUtil.canInteract(this, emote);
+        return PermissionUtil.canInteract(this, emoji);
     }
 
     @Override
@@ -375,6 +393,12 @@ public class MemberImpl implements Member
         return this;
     }
 
+    public MemberImpl setTimeOutEnd(long time)
+    {
+        this.timeOutEnd = time;
+        return this;
+    }
+
     public MemberImpl setPending(boolean pending)
     {
         this.pending = pending;
@@ -389,6 +413,11 @@ public class MemberImpl implements Member
     public long getBoostDateRaw()
     {
         return boostDate;
+    }
+
+    public long getTimeOutEndRaw()
+    {
+        return timeOutEnd;
     }
 
     @Override
@@ -420,16 +449,16 @@ public class MemberImpl implements Member
     @Override
     public String getAsMention()
     {
-        return (nickname == null ? "<@" : "<@!") + user.getId() + '>';
+        return "<@" + user.getId() + '>';
     }
 
     @Nullable
     @Override
-    public TextChannel getDefaultChannel()
+    public DefaultGuildChannelUnion getDefaultChannel()
     {
-        return getGuild().getTextChannelsView().stream()
-                 .sorted(Comparator.reverseOrder())
-                 .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
-                 .findFirst().orElse(null);
+        return (DefaultGuildChannelUnion) Stream.concat(getGuild().getTextChannelCache().stream(), getGuild().getNewsChannelCache().stream())
+                .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
+                .min(Comparator.naturalOrder())
+                .orElse(null);
     }
 }

@@ -17,8 +17,9 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
+import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.sticker.GenericGuildStickerEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
@@ -49,7 +51,7 @@ import java.util.EnumSet;
  * <ol>
  *     <li><b>GUILD_MEMBERS</b> - This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks). This is required to cache all members of a guild (including chunking)</li>
  *     <li><b>GUILD_BANS</b> - This will only track guild bans and unbans</li>
- *     <li><b>GUILD_EMOJIS</b> - This will only track guild emote create/modify/delete. Most bots don't need this since they just use the emote id anyway.</li>
+ *     <li><b>GUILD_EMOJIS</b> - This will only track custom emoji create/modify/delete. Most bots don't need this since they just use the emoji id anyway.</li>
  *     <li><b>GUILD_WEBHOOKS</b> - This will only track guild webhook create/update/delete. Most bots don't need this since related events don't contain any useful information about webhook changes.</li>
  *     <li><b>GUILD_INVITES</b> - This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
  *     <li><b>GUILD_VOICE_STATES</b> - Required to properly get information of members in voice channels and cache them. <u>You cannot connect to a voice channel without this intent</u>.</li>
@@ -62,7 +64,7 @@ import java.util.EnumSet;
  *     <li><b>DIRECT_MESSAGE_TYPING</b> - This is used to track when a user starts typing in private channels (DMs). Almost no bot will have a use for this.</li>
  * </ol>
  *
- * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use if (and its related events).
+ * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use it (and its related events).
  * To get whitelisted you either need to contact discord support (for bots in more than 100 guilds)
  * or enable it in the developer dashboard of your application.
  *
@@ -89,9 +91,9 @@ public enum GatewayIntent
      */
     GUILD_BANS(2),
     /**
-     * Emote add/update/delete events.
+     * Custom emoji and sticker add/update/delete events.
      */
-    GUILD_EMOJIS(3),
+    GUILD_EMOJIS_AND_STICKERS(3),
 //    /**
 //     * Integration events. (unused)
 //     */
@@ -139,6 +141,23 @@ public enum GatewayIntent
      * Typing events in private channels.
      */
     DIRECT_MESSAGE_TYPING(14),
+    /**
+     * <b>PRIVILEGED INTENT</b> Access to message content.
+     *
+     * <p>This specifically affects messages received through the message history of a channel, or through {@link GenericMessageEvent Message Events}.
+     * The content restriction does not apply if the message <b>mentions the bot directly</b> (using @username), sent by the bot itself,
+     * or if the message is a direct message from a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel}.
+     * Affected are all user-generated content fields of a message, such as:
+     * <ul>
+     *     <li>{@link Message#getContentRaw()}, {@link Message#getContentDisplay()}, {@link Message#getContentStripped()}</li>
+     *     <li>{@link Message#getEmbeds()}</li>
+     *     <li>{@link Message#getAttachments()}</li>
+     *     <li>{@link Message#getActionRows()}, {@link Message#getButtons()}</li>
+     * </ul>
+     *
+     * @see <a href="https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ" target="_blank">Message Content Privileged Intent FAQ</a>
+     */
+    MESSAGE_CONTENT(15),
     ;
 
     /**
@@ -156,6 +175,7 @@ public enum GatewayIntent
      * <ul>
      *     <li>GUILD_MEMBERS (because its privileged)</li>
      *     <li>GUILD_PRESENCES (because its privileged)</li>
+     *     <li>MESSAGE_CONTENT (because its privileged)</li>
      *     <li>GUILD_WEBHOOKS because its not useful for most bots</li>
      *     <li>GUILD_MESSAGE_TYPING because its not useful for most bots</li>
      *     <li>DIRECT_MESSAGE_TYPING because its not useful for most bots</li>
@@ -166,7 +186,7 @@ public enum GatewayIntent
      * You can further configure intents by using {@link net.dv8tion.jda.api.JDABuilder#enableIntents(GatewayIntent, GatewayIntent...) enableIntents(intents)}
      * and {@link net.dv8tion.jda.api.JDABuilder#disableIntents(GatewayIntent, GatewayIntent...) disableIntents(intents)}.
      */
-    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, GUILD_WEBHOOKS, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
+    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, MESSAGE_CONTENT, GUILD_WEBHOOKS, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
 
     private final int rawValue;
     private final int offset;
@@ -253,7 +273,7 @@ public enum GatewayIntent
     public static int getRaw(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... set)
     {
         Checks.notNull(intent, "Intent");
-        Checks.notNull(set,    "Intent");
+        Checks.notNull(set, "Intent");
         return getRaw(EnumSet.of(intent, set));
     }
 
@@ -351,8 +371,8 @@ public enum GatewayIntent
 
             else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_BANS);
-            else if (GenericEmoteEvent.class.isAssignableFrom(event))
-                intents.add(GUILD_EMOJIS);
+            else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_EMOJIS_AND_STICKERS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_INVITES);
             else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))

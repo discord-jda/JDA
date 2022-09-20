@@ -17,21 +17,25 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
+import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class InteractionImpl implements Interaction
 {
-    protected final InteractionHookImpl hook;
     protected final long id;
     protected final int type;
     protected final String token;
@@ -39,7 +43,12 @@ public class InteractionImpl implements Interaction
     protected final Member member;
     protected final User user;
     protected final Channel channel;
+    protected final DiscordLocale userLocale;
     protected final JDAImpl api;
+
+    //This is used to give a proper error when an interaction is ack'd twice
+    // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
+    private boolean isAck;
 
     public InteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -48,7 +57,7 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
-        this.hook = new InteractionHookImpl(this, jda);
+        this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
         if (guild != null)
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
@@ -70,21 +79,34 @@ public class InteractionImpl implements Interaction
                 );
             }
             this.channel = channel;
-            user = channel.getUser();
+
+            User user = channel.getUser();
+            if (user == null)
+            {
+                user = jda.getEntityBuilder().createUser(data.getObject("user"));
+                ((PrivateChannelImpl) channel).setUser(user);
+                ((UserImpl) user).setPrivateChannel(channel);
+            }
+            this.user = user;
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel)
+    // Used to allow interaction hook to send messages after acknowledgements
+    // This is implemented only in DeferrableInteractionImpl where a hook is present!
+    public synchronized void releaseHook(boolean success) {}
+
+    // Ensures that one cannot acknowledge an interaction twice
+    public synchronized boolean ack()
     {
-        this.id = id;
-        this.type = type;
-        this.token = token;
-        this.guild = guild;
-        this.member = member;
-        this.user = user;
-        this.channel = channel;
-        this.api = (JDAImpl) user.getJDA();
-        this.hook = new InteractionHookImpl(this, api);
+        boolean wasAck = isAck;
+        this.isAck = true;
+        return wasAck;
+    }
+
+    @Override
+    public synchronized boolean isAcknowledged()
+    {
+        return isAck;
     }
 
     @Override
@@ -121,10 +143,9 @@ public class InteractionImpl implements Interaction
     }
 
     @Nonnull
-    @Override
-    public InteractionHook getHook()
+    public DiscordLocale getUserLocale()
     {
-        return hook;
+        return userLocale;
     }
 
     @Nonnull
@@ -139,19 +160,6 @@ public class InteractionImpl implements Interaction
     public Member getMember()
     {
         return member;
-    }
-
-    @Override
-    public boolean isAcknowledged()
-    {
-        return hook.isAck();
-    }
-
-    @Nonnull
-    @Override
-    public ReplyActionImpl deferReply()
-    {
-        return new ReplyActionImpl(this.hook);
     }
 
     @Nonnull
