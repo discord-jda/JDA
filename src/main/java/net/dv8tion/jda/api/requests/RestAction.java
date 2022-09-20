@@ -765,6 +765,46 @@ public interface RestAction<T>
     }
 
     /**
+     * An intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction, which will consume
+     * the actions result using the given consumer on successful execution.
+     * The resulting action continues with the previous result.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * public RestAction<String> retrieveMemberNickname(Guild guild, String userId) {
+     *     return guild.retrieveMemberById(userId)
+     *                 .map(Member::getNickname)
+     *                 .onSuccess(System.out::println);
+     * }
+     * }</pre>
+     *
+     * Prefer using {@link #queue(Consumer)} instead, if continuation of the action
+     * chain is not desired.
+     *
+     * @param  consumer
+     *         The consuming function to apply to the action result, failures are propagated
+     *         into the resulting action
+     *
+     *
+     * @throws IllegalArgumentException
+     *         If the consumer is null
+     *
+     * @return RestAction that consumes the action result
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer)
+    {
+        Checks.notNull(consumer, "Consumer");
+        return map(result -> {
+            consumer.accept(result);
+            return result;
+        });
+    }
+
+    /**
      * Supply a fallback value when the RestAction fails for any reason.
      *
      * <p>This does not modify this instance but returns a new RestAction which will apply
