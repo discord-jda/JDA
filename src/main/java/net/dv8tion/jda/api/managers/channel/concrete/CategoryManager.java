@@ -20,6 +20,14 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManager;
 
+/**
+ * Manager providing methods to modify a {@link Category}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("Cool People Only").queue();
+ * }</pre>
+ */
 public interface CategoryManager extends
         IPermissionContainerManager<Category, CategoryManager>,
         IPositionableChannelManager<Category, CategoryManager>

@@ -20,7 +20,16 @@ import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 
-//TODO-v5: Docs
+/**
+ * Manager providing methods to modify a {@link StageChannel}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("School Presentations")
+ *        .setBitrate(96000)
+ *        .queue();
+ * }</pre>
+ */
 public interface StageChannelManager extends
         AudioChannelManager<StageChannel, StageChannelManager>,
         StandardGuildChannelManager<StageChannel, StageChannelManager>

@@ -21,19 +21,26 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.IPermissionHolder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
@@ -46,15 +53,27 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
 {
+    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM,
+                                                                              ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
+    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
+
     protected T channel;
 
+    protected final EnumSet<ChannelFlag> flags;
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration;
+    protected List<BaseForumTag> availableTags;
+    protected List<String> appliedTags;
+    protected Emoji defaultReactionEmoji;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -73,18 +92,12 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected final TLongObjectHashMap<PermOverrideData> overridesAdd;
     protected final TLongSet overridesRem;
 
-    /**
-     * Creates a new ChannelManager instance
-     *
-     * @param channel
-     *        {@link GuildChannel GuildChannel} that should be modified
-     *        <br>Either {@link VoiceChannel Voice}- or {@link TextChannel TextChannel}
-     */
     public ChannelManagerImpl(T channel)
     {
         super(channel.getJDA(), Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         this.channel = channel;
         this.type = channel.getType();
+        this.flags = channel.getFlags();
 
         if (isPermissionChecksEnabled())
             checkPermissions();
@@ -118,6 +131,12 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             this.topic = null;
         if ((fields & REGION) == REGION)
             this.region = null;
+        if ((fields & AVAILABLE_TAGS) == AVAILABLE_TAGS)
+            this.availableTags = null;
+        if ((fields & APPLIED_TAGS) == APPLIED_TAGS)
+            this.appliedTags = null;
+        if ((fields & DEFAULT_REACTION) == DEFAULT_REACTION)
+            this.defaultReactionEmoji = null;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -126,6 +145,23 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
                 this.overridesAdd.clear();
             });
         }
+
+        if ((fields & PINNED) == PINNED)
+        {
+            if (channel.getFlags().contains(ChannelFlag.PINNED))
+                this.flags.add(ChannelFlag.PINNED);
+            else
+                this.flags.remove(ChannelFlag.PINNED);
+        }
+
+        if ((fields & REQUIRE_TAG) == REQUIRE_TAG)
+        {
+            if (channel.getFlags().contains(ChannelFlag.REQUIRE_TAG))
+                this.flags.add(ChannelFlag.REQUIRE_TAG);
+            else
+                this.flags.remove(ChannelFlag.REQUIRE_TAG);
+        }
+
         return (M) this;
     }
 
@@ -149,6 +185,11 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         this.parent = null;
         this.topic = null;
         this.region = null;
+        this.availableTags = null;
+        this.appliedTags = null;
+        this.defaultReactionEmoji = null;
+        this.flags.clear();
+        this.flags.addAll(channel.getFlags());
         withLock(lock, (lock) ->
         {
             this.overridesRem.clear();
@@ -188,9 +229,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     public M putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny)
     {
         if (!(channel instanceof IPermissionContainer))
-        {
             throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
-        }
 
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
@@ -341,7 +380,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 100, "Name");
+        Checks.notLonger(name, Channel.MAX_NAME_LENGTH, "Name");
         this.name = name;
         set |= NAME;
         return (M) this;
@@ -413,10 +452,14 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setTopic(String topic)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
-            throw new IllegalStateException("Can only set topic on text and news channels");
+        Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "topic");
         if (topic != null)
-            Checks.notLonger(topic, 1024, "Topic");
+        {
+            if (type == ChannelType.FORUM)
+                Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
+            else
+                Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
+        }
         this.topic = topic;
         set |= TOPIC;
         return (M) this;
@@ -426,8 +469,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setNSFW(boolean nsfw)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
-            throw new IllegalStateException("Can only set nsfw on text and news channels");
+        Checks.checkSupportedChannelTypes(NSFW_SUPPORTED, type, "NSFW (age-restriction)");
         this.nsfw = nsfw;
         set |= NSFW;
         return (M) this;
@@ -437,9 +479,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setSlowmode(int slowmode)
     {
-        if (type != ChannelType.TEXT && !type.isThread())
-            throw new IllegalStateException("Can only set slowmode on text channels and threads");
-        Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
+        Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "slowmode");
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;
         return (M) this;
@@ -533,10 +574,66 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setPinned(boolean pinned)
+    {
+        if (pinned)
+            flags.add(ChannelFlag.PINNED);
+        else
+            flags.remove(ChannelFlag.PINNED);
+        set |= PINNED;
+        return (M) this;
+    }
+
+    public M setTagRequired(boolean requireTag)
+    {
+        if (requireTag)
+            flags.add(ChannelFlag.REQUIRE_TAG);
+        else
+            flags.remove(ChannelFlag.REQUIRE_TAG);
+        set |= REQUIRE_TAG;
+        return (M) this;
+    }
+
+    public M setAvailableTags(List<? extends BaseForumTag> tags)
+    {
+        if (type != ChannelType.FORUM)
+            throw new IllegalStateException("Can only set available tags on forum channels.");
+        Checks.noneNull(tags, "Available Tags");
+        this.availableTags = new ArrayList<>(tags);
+        set |= AVAILABLE_TAGS;
+        return (M) this;
+    }
+
+    public M setAppliedTags(Collection<? extends ForumTagSnowflake> tags)
+    {
+        if (type != ChannelType.GUILD_PUBLIC_THREAD)
+            throw new IllegalStateException("Can only set applied tags on forum post thread channels.");
+        Checks.noneNull(tags, "Applied Tags");
+        Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Cannot apply more than %d tags to a post thread!", ForumChannel.MAX_POST_TAGS);
+        ThreadChannel thread = (ThreadChannel) getChannel();
+        IThreadContainerUnion parentChannel = thread.getParentChannel();
+        if (!(parentChannel instanceof ForumChannel))
+            throw new IllegalStateException("Cannot apply tags to threads outside of forum channels.");
+        if (tags.isEmpty() && parentChannel.asForumChannel().isTagRequired())
+            throw new IllegalArgumentException("Cannot remove all tags from a forum post which requires at least one tag! See ForumChannel#isRequireTag()");
+        this.appliedTags = tags.stream().map(ISnowflake::getId).collect(Collectors.toList());
+        set |= APPLIED_TAGS;
+        return (M) this;
+    }
+
+    public M setDefaultReaction(Emoji emoji)
+    {
+        if (type != ChannelType.FORUM)
+            throw new IllegalStateException("Can only set default reaction on forum channels.");
+        this.defaultReactionEmoji = emoji;
+        set |= DEFAULT_REACTION;
+        return (M) this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject frame = DataObject.empty().put("name", getChannel().getName());
+        DataObject frame = DataObject.empty();
         if (shouldUpdate(NAME))
             frame.put("name", name);
         if (shouldUpdate(TYPE))
@@ -565,6 +662,21 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("locked", locked);
         if (shouldUpdate(INVITEABLE))
             frame.put("invitable", invitable);
+        if (shouldUpdate(AVAILABLE_TAGS))
+            frame.put("available_tags", DataArray.fromCollection(availableTags));
+        if (shouldUpdate(APPLIED_TAGS))
+            frame.put("applied_tags", DataArray.fromCollection(appliedTags));
+        if (shouldUpdate(PINNED | REQUIRE_TAG))
+            frame.put("flags", ChannelFlag.getRaw(flags));
+        if (shouldUpdate(DEFAULT_REACTION))
+        {
+            if (defaultReactionEmoji instanceof CustomEmoji)
+                frame.put("default_reaction_emoji", DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
+            else if (defaultReactionEmoji instanceof UnicodeEmoji)
+                frame.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
+            else
+                frame.put("default_reaction_emoji", null);
+        }
 
         withLock(lock, (lock) ->
         {

@@ -100,13 +100,23 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
-                ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().getIdLong());
-                list.add(thread);
+                try
+                {
+                    ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().getIdLong());
+                    list.add(thread);
 
-                if (this.useCache)
-                    this.cached.add(thread);
-                this.last = thread;
-                this.lastKey = last.getIdLong();
+                    if (this.useCache)
+                        this.cached.add(thread);
+                    this.last = thread;
+                    this.lastKey = last.getIdLong();
+                }
+                catch (Exception e)
+                {
+                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage()))
+                        EntityBuilder.LOG.debug("Discarding thread without cached parent channel. JSON: {}", threadObj);
+                    else
+                        EntityBuilder.LOG.warn("Failed to create thread channel. JSON: {}", threadObj, e);
+                }
             }
             catch (ParsingException | NullPointerException e)
             {

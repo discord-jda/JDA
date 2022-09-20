@@ -120,6 +120,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
+                break;
             }
 
             case CATEGORY:
@@ -136,6 +137,22 @@ public class ChannelDeleteHandler extends SocketHandler
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         category));
+                break;
+            }
+            case FORUM:
+            {
+                ForumChannel channel = getJDA().getForumChannelsView().remove(channelId);
+                if (channel == null || guild == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a forum channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getForumChannelsView().remove(channel.getIdLong());
+                getJDA().handleEvent(
+                    new ChannelDeleteEvent(
+                        getJDA(), responseNumber,
+                        channel));
                 break;
             }
             case PRIVATE:

@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -44,27 +45,8 @@ import javax.annotation.Nonnull;
  * @see   JDA#getTextChannelsByName(String, boolean)
  * @see   JDA#getTextChannelById(long)
  */
-public interface TextChannel extends StandardGuildMessageChannel
+public interface TextChannel extends StandardGuildMessageChannel, ISlowmodeChannel
 {
-    /**
-     * The maximum duration of slowmode in seconds
-     */
-    int MAX_SLOWMODE = 21600;
-
-    /**
-     * The slowmode set for this TextChannel.
-     * <br>If slowmode is set this returns an {@code int} between 1 and {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
-     * <br>If not set this returns {@code 0}.
-     *
-     * <p>Note bots are unaffected by this.
-     * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
-     * grants immunity to slowmode.
-     *
-     * @return The slowmode for this TextChannel, between 1 and {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
-     */
-    int getSlowmode();
-
     @Nonnull
     @Override
     ChannelAction<TextChannel> createCopy(@Nonnull Guild guild);

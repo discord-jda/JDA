@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.utils.cache;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
@@ -70,6 +72,10 @@ public enum CacheFlag
      * Enables cache for {@link Role#getTags()}
      */
     ROLE_TAGS,
+    /**
+     * Enables cache for {@link ForumChannel#getAvailableTagCache()} and {@link ThreadChannel#getAppliedTags()}
+     */
+    FORUM_TAGS,
     /**
      * Enables cache for {@link Member#getOnlineStatus()}
      * <br>This is enabled implicitly by {@link #ACTIVITY} and {@link #CLIENT_STATUS}.

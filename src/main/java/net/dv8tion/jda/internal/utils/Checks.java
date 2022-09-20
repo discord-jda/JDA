@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.utils;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
@@ -285,5 +286,13 @@ public class Checks
         if (channel instanceof AudioChannel && !perms.contains(Permission.VOICE_CONNECT))
             throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
         throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+    }
+
+    // Type checks
+
+    public static void checkSupportedChannelTypes(EnumSet<ChannelType> supported, ChannelType type, String what)
+    {
+        Checks.check(supported.contains(type), "Can only configure %s for channels of types %s", what,
+                     JDALogger.getLazyString(() -> supported.stream().map(ChannelType::name).collect(Collectors.joining(", "))));
     }
 }

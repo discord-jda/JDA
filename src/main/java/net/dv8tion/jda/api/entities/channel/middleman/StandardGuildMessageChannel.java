@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -44,6 +45,12 @@ import javax.annotation.Nullable;
  */
 public interface StandardGuildMessageChannel extends StandardGuildChannel, GuildMessageChannel, IThreadContainer, IWebhookContainer, IAgeRestrictedChannel
 {
+    /**
+     * The maximum length a channel topic can be ({@value #MAX_TOPIC_LENGTH})
+     * <br>Forum channels have a higher limit, defined by {@link ForumChannel#MAX_FORUM_TOPIC_LENGTH}
+     */
+    int MAX_TOPIC_LENGTH = 1024;
+
     @Nonnull
     @Override
     StandardGuildMessageChannelManager<?, ?> getManager();
