@@ -330,7 +330,7 @@ public interface Mentions
      * An immutable list of all mentioned {@link SlashCommandReference slash commands}.
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
      *
-     * <p>Be aware these mentions could be not mentioning an actual command
+     * <p>Be aware these mentions could be mentioning a non-existent command
      *
      * @return Immutable list of mentioned slash commands, or an empty list
      */
