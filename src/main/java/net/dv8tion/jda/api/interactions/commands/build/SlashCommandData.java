@@ -67,10 +67,10 @@ public interface SlashCommandData extends CommandData
      * Configure the description
      *
      * @param  description
-     *         The description, 1-100 characters
+     *         The description, 1-{@value #MAX_DESCRIPTION_LENGTH} characters
      *
      * @throws IllegalArgumentException
-     *         If the name is null or not between 1-100 characters
+     *         If the name is null or not between 1-{@value #MAX_DESCRIPTION_LENGTH} characters
      *
      * @return The builder, for chaining
      */
@@ -135,8 +135,6 @@ public interface SlashCommandData extends CommandData
 
     /**
      * The {@link SubcommandData Subcommands} in this command.
-     * <br>These subcommand instances are <b>reconstructed</b>,
-     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandData}
      */
@@ -145,8 +143,6 @@ public interface SlashCommandData extends CommandData
 
     /**
      * The {@link SubcommandGroupData Subcommand Groups} in this command.
-     * <br>These subcommand group instances are <b>reconstructed</b>,
-     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandGroupData}
      */
@@ -155,8 +151,6 @@ public interface SlashCommandData extends CommandData
 
     /**
      * The options for this command.
-     * <br>These option instances are <b>reconstructed</b>,
-     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link OptionData}
      */
@@ -164,7 +158,7 @@ public interface SlashCommandData extends CommandData
     List<OptionData> getOptions();
 
     /**
-     * Adds up to 25 options to this command.
+     * Adds up to {@value CommandData#MAX_OPTIONS} options to this command.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -176,7 +170,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -187,7 +181,7 @@ public interface SlashCommandData extends CommandData
     SlashCommandData addOptions(@Nonnull OptionData... options);
 
     /**
-     * Adds up to 25 options to this command.
+     * Adds up to {@value CommandData#MAX_OPTIONS} options to this command.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -199,7 +193,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -221,9 +215,9 @@ public interface SlashCommandData extends CommandData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      * @param  autoComplete
@@ -237,7 +231,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If the provided option type does not support auto-complete</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -260,9 +254,9 @@ public interface SlashCommandData extends CommandData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      *
@@ -272,7 +266,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -294,9 +288,9 @@ public interface SlashCommandData extends CommandData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -304,7 +298,7 @@ public interface SlashCommandData extends CommandData
      *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -318,13 +312,13 @@ public interface SlashCommandData extends CommandData
     }
 
     /**
-     * Add up to 25 {@link SubcommandData Subcommands} to this command.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandData Subcommands} to this command.
      *
      * @param  subcommands
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommands, or duplicate subcommand names are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
      * @return The builder instance, for chaining
@@ -333,13 +327,13 @@ public interface SlashCommandData extends CommandData
     SlashCommandData addSubcommands(@Nonnull SubcommandData... subcommands);
 
     /**
-     * Add up to 25 {@link SubcommandData Subcommands} to this command.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandData Subcommands} to this command.
      *
      * @param  subcommands
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommands, or duplicate subcommand names are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
      * @return The builder instance, for chaining
@@ -352,13 +346,13 @@ public interface SlashCommandData extends CommandData
     }
 
     /**
-     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandGroupData Subcommand-Groups} to this command.
      *
      * @param  groups
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommand groups, or duplicate group names are provided.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommand groups, or duplicate group names are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
      * @return The builder instance, for chaining
@@ -367,13 +361,13 @@ public interface SlashCommandData extends CommandData
     SlashCommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
 
     /**
-     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandGroupData Subcommand-Groups} to this command.
      *
      * @param  groups
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommand groups, or duplicate group names are provided.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommand groups, or duplicate group names are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
      *
      * @return The builder instance, for chaining

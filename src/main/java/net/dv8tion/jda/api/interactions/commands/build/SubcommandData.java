@@ -25,14 +25,10 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -40,7 +36,7 @@ import java.util.stream.Stream;
  */
 public class SubcommandData implements SerializableData
 {
-    protected final DataArray options = DataArray.empty();
+    protected final List<OptionData> options = new ArrayList<>(CommandData.MAX_OPTIONS);
     protected String name, description;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
     private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
@@ -219,7 +215,7 @@ public class SubcommandData implements SerializableData
     }
 
     /**
-     * Adds up to 25 options to this subcommand.
+     * Adds up to {@value CommandData#MAX_OPTIONS} options to this subcommand.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -229,7 +225,7 @@ public class SubcommandData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -240,7 +236,7 @@ public class SubcommandData implements SerializableData
     public SubcommandData addOptions(@Nonnull OptionData... options)
     {
         Checks.noneNull(options, "Option");
-        Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a subcommand!");
+        Checks.check(options.length + this.options.size() <= CommandData.MAX_OPTIONS, "Cannot have more than %d options for a subcommand!", CommandData.MAX_OPTIONS);
         boolean allowRequired = this.allowRequired;
         for (OptionData option : options)
         {
@@ -255,14 +251,13 @@ public class SubcommandData implements SerializableData
             (count, value) -> new Object[]{ value, count });
 
         this.allowRequired = allowRequired;
-        for (OptionData option : options)
-            this.options.add(option);
+        this.options.addAll(Arrays.asList(options));
 
         return this;
     }
 
     /**
-     * Adds up to 25 options to this subcommand.
+     * Adds up to {@value CommandData#MAX_OPTIONS} options to this subcommand.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -272,7 +267,7 @@ public class SubcommandData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -294,9 +289,9 @@ public class SubcommandData implements SerializableData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      * @param  autoComplete
@@ -307,7 +302,7 @@ public class SubcommandData implements SerializableData
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If the provided option type does not support auto-complete</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -330,16 +325,16 @@ public class SubcommandData implements SerializableData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -361,14 +356,14 @@ public class SubcommandData implements SerializableData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -389,10 +384,7 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public List<OptionData> getOptions()
     {
-        return options.stream(DataArray::getObject)
-                .map(OptionData::fromData)
-                .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
-                .collect(Helpers.toUnmodifiableList());
+        return Collections.unmodifiableList(options);
     }
 
     /**
@@ -449,7 +441,7 @@ public class SubcommandData implements SerializableData
                 .put("name_localizations", nameLocalizations)
                 .put("description", description)
                 .put("description_localizations", descriptionLocalizations)
-                .put("options", options);
+                .put("options", DataArray.fromCollection(options));
     }
 
     /**

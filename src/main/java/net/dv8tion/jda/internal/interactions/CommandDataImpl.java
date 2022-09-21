@@ -20,27 +20,24 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.command.localization.LocalizationMapper;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class CommandDataImpl implements SlashCommandData
 {
-    protected final DataArray options = DataArray.empty();
+    protected final List<SerializableData> options = new ArrayList<>(MAX_OPTIONS);
+
     protected String name, description = "";
     private LocalizationMapper localizationMapper;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
@@ -97,6 +94,8 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public DataObject toData()
     {
+        DataArray options = DataArray.fromCollection(this.options);
+
         if (localizationMapper != null) localizationMapper.localizeCommand(this, options);
 
         DataObject json = DataObject.empty()
@@ -107,11 +106,13 @@ public class CommandDataImpl implements SlashCommandData
                 .put("default_member_permissions", defaultMemberPermissions == DefaultMemberPermissions.ENABLED
                         ? null
                         : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()))
-                .put("name_localizations", nameLocalizations)
-                .put("options", options);
+                .put("name_localizations", nameLocalizations);
+
         if (type == Command.Type.SLASH)
+        {
             json.put("description", description)
                 .put("description_localizations", descriptionLocalizations);
+        }
         return json;
     }
 
@@ -137,15 +138,21 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
+    public List<OptionData> getOptions()
+    {
+        return options.stream()
+                .filter(OptionData.class::isInstance)
+                .map(OptionData.class::cast)
+                .collect(Helpers.toUnmodifiableList());
+    }
+
+    @Nonnull
+    @Override
     public List<SubcommandData> getSubcommands()
     {
-        return options.stream(DataArray::getObject)
-                .filter(obj ->
-                {
-                    OptionType type = OptionType.fromKey(obj.getInt("type"));
-                    return type == OptionType.SUB_COMMAND;
-                })
-                .map(SubcommandData::fromData)
+        return options.stream()
+                .filter(SubcommandData.class::isInstance)
+                .map(SubcommandData.class::cast)
                 .collect(Helpers.toUnmodifiableList());
     }
 
@@ -153,13 +160,9 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public List<SubcommandGroupData> getSubcommandGroups()
     {
-        return options.stream(DataArray::getObject)
-                .filter(obj ->
-                {
-                    OptionType type = OptionType.fromKey(obj.getInt("type"));
-                    return type == OptionType.SUB_COMMAND_GROUP;
-                })
-                .map(SubcommandGroupData::fromData)
+        return options.stream()
+                .filter(SubcommandGroupData.class::isInstance)
+                .map(SubcommandGroupData.class::cast)
                 .collect(Helpers.toUnmodifiableList());
     }
 
@@ -188,7 +191,7 @@ public class CommandDataImpl implements SlashCommandData
         if (options.length == 0)
             return this;
         checkType(Command.Type.SLASH, "add options");
-        Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
+        Checks.check(options.length + this.options.size() <= CommandData.MAX_OPTIONS, "Cannot have more than %d options for a command!", CommandData.MAX_OPTIONS);
         Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
         boolean allowRequired = this.allowRequired;
         for (OptionData option : options)
@@ -207,8 +210,7 @@ public class CommandDataImpl implements SlashCommandData
 
         allowSubcommands = allowGroups = false;
         this.allowRequired = allowRequired;
-        for (OptionData option : options)
-            this.options.add(option);
+        Collections.addAll(this.options, options);
         return this;
     }
 
@@ -222,7 +224,7 @@ public class CommandDataImpl implements SlashCommandData
         checkType(Command.Type.SLASH, "add subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-        Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands for a command!");
+        Checks.check(subcommands.length + this.options.size() <= CommandData.MAX_OPTIONS, "Cannot have more than %d subcommands for a command!", CommandData.MAX_OPTIONS);
         Checks.checkUnique(
             Stream.concat(getSubcommands().stream(), Arrays.stream(subcommands)).map(SubcommandData::getName),
             "Cannot have multiple subcommands with the same name. Name: \"%s\" appeared %d times!",
@@ -230,8 +232,7 @@ public class CommandDataImpl implements SlashCommandData
         );
 
         allowOption = false;
-        for (SubcommandData data : subcommands)
-            options.add(data);
+        Collections.addAll(this.options, subcommands);
         return this;
     }
 
@@ -245,7 +246,7 @@ public class CommandDataImpl implements SlashCommandData
         checkType(Command.Type.SLASH, "add subcommand groups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-        Checks.check(groups.length + options.length() <= 25, "Cannot have more than 25 subcommand groups for a command!");
+        Checks.check(groups.length + this.options.size() <= CommandData.MAX_OPTIONS, "Cannot have more than %d subcommand groups for a command!", CommandData.MAX_OPTIONS);
         Checks.checkUnique(
             Stream.concat(getSubcommandGroups().stream(), Arrays.stream(groups)).map(SubcommandGroupData::getName),
             "Cannot have multiple subcommand groups with the same name. Name: \"%s\" appeared %d times!",
@@ -253,8 +254,7 @@ public class CommandDataImpl implements SlashCommandData
         );
 
         allowOption = false;
-        for (SubcommandGroupData data : groups)
-            options.add(data);
+        Collections.addAll(this.options, groups);
         return this;
     }
 
@@ -345,15 +345,5 @@ public class CommandDataImpl implements SlashCommandData
     public LocalizationMap getDescriptionLocalizations()
     {
         return descriptionLocalizations;
-    }
-
-    @Nonnull
-    @Override
-    public List<OptionData> getOptions()
-    {
-        return options.stream(DataArray::getObject)
-                .map(OptionData::fromData)
-                .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
-                .collect(Helpers.toUnmodifiableList());
     }
 }
