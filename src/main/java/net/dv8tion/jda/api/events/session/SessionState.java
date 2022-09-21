@@ -47,7 +47,7 @@ public enum SessionState
     /**
      * The session has resumed successfully after disconnecting.
      *
-     * @see SessionResumedEvent
+     * @see SessionResumeEvent
      */
     RESUMED,
 

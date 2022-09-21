@@ -213,7 +213,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         else
         {
             JDAImpl.LOG.debug("Successfully resumed Session!");
-            api.handleEvent(new SessionResumedEvent(api));
+            api.handleEvent(new SessionResumeEvent(api));
         }
         api.setStatus(JDA.Status.CONNECTED);
     }

@@ -129,7 +129,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onReady(@Nonnull ReadyEvent event) {}
     public void onSessionInvalidate(@Nonnull SessionInvalidateEvent event) {}
     public void onSessionDisconnect(@Nonnull SessionDisconnectEvent event) {}
-    public void onSessionResumed(@Nonnull SessionResumedEvent event) {}
+    public void onSessionResume(@Nonnull SessionResumeEvent event) {}
     public void onSessionRecreate(@Nonnull SessionRecreateEvent event) {}
     public void onShutdown(@Nonnull ShutdownEvent event) {}
 

@@ -25,9 +25,9 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect the continuation of event flow stopped by the {@link SessionDisconnectEvent}.
  */
-public class SessionResumedEvent extends GenericSessionEvent
+public class SessionResumeEvent extends GenericSessionEvent
 {
-    public SessionResumedEvent(@Nonnull JDA api)
+    public SessionResumeEvent(@Nonnull JDA api)
     {
         super(api, SessionState.RESUMED);
     }
