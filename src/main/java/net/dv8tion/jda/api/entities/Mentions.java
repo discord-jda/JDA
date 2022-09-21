@@ -341,7 +341,7 @@ public interface Mentions
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned {@link SlashCommandReference slash commands}.
      * <br>This can be used to retrieve the amount of times a slash commands was mentioned.
      *
-     * <p>Be aware these mentions could be not mentioning an actual command
+     * <p>Be aware these mentions could be mentioning a non-existent command
      *
      * <p><b>Example</b><br>
      * <pre>{@code
