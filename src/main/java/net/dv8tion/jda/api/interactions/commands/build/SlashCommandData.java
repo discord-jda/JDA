@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
@@ -132,6 +133,111 @@ public interface SlashCommandData extends CommandData
      */
     @Nonnull
     LocalizationMap getDescriptionLocalizations();
+
+    /**
+     * Removes all options that evaluate to {@code true} under the provided {@code condition}.
+     * <br>This will not affect options within subcommands.
+     * Use {@link SubcommandData#removeOptions(Predicate)} instead.
+     *
+     * <p><b>Example: Remove all options</b>
+     * <pre>{@code
+     * command.removeOptions(option -> true);
+     * }</pre>
+     * <p><b>Example: Remove all options that are required</b>
+     * <pre>{@code
+     * command.removeOptions(option -> option.isRequired());
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any options were removed
+     */
+    boolean removeOptions(@Nonnull Predicate<? super OptionData> condition);
+
+    /**
+     * Removes options by the provided name.
+     * <br>This will not affect options within subcommands.
+     * Use {@link SubcommandData#removeOptionByName(String)} instead.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> option name
+     *
+     * @return True, if any options were removed
+     */
+    default boolean removeOptionByName(@Nonnull String name)
+    {
+        return removeOptions(option -> option.getName().equals(name));
+    }
+
+    /**
+     * Removes all subcommands that evaluate to {@code true} under the provided {@code condition}.
+     * <br>This will not apply to subcommands within subcommand groups.
+     * Use {@link SubcommandGroupData#removeSubcommand(Predicate)} instead.
+     *
+     * <p><b>Example: Remove all subcommands</b>
+     * <pre>{@code
+     * command.removeSubcommands(subcommand -> true);
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any subcommands were removed
+     */
+    boolean removeSubcommands(@Nonnull Predicate<? super SubcommandData> condition);
+
+    /**
+     * Removes subcommands by the provided name.
+     * <br>This will not apply to subcommands within subcommand groups.
+     * Use {@link SubcommandGroupData#removeSubcommandByName(String)} instead.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> subcommand name
+     *
+     * @return True, if any subcommands were removed
+     */
+    default boolean removeSubcommandByName(@Nonnull String name)
+    {
+        return removeSubcommands(subcommand -> subcommand.getName().equals(name));
+    }
+
+    /**
+     * Removes all subcommand groups that evaluate to {@code true} under the provided {@code condition}.
+     *
+     * <p><b>Example: Remove all subcommand groups</b>
+     * <pre>{@code
+     * command.removeSubcommandGroups(group -> true);
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any subcommand groups were removed
+     */
+    boolean removeSubcommandGroups(@Nonnull Predicate<? super SubcommandGroupData> condition);
+
+    /**
+     * Removes subcommand groups by the provided name.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> subcommand group name
+     *
+     * @return True, if any subcommand groups were removed
+     */
+    default boolean removeSubcommandGroupByName(@Nonnull String name)
+    {
+        return removeSubcommandGroups(group -> group.getName().equals(name));
+    }
 
     /**
      * The {@link SubcommandData Subcommands} in this command.

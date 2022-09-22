@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -261,6 +262,41 @@ public class SubcommandGroupData implements SerializableData
     public LocalizationMap getDescriptionLocalizations()
     {
         return descriptionLocalizations;
+    }
+
+    /**
+     * Removes all subcommands that evaluate to {@code true} under the provided {@code condition}.
+     *
+     * <p><b>Example: Remove all subcommands</b>
+     * <pre>{@code
+     * command.removeSubcommands(subcommand -> true);
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any subcommands were removed
+     */
+    public boolean removeSubcommand(@Nonnull Predicate<? super SubcommandData> condition)
+    {
+        Checks.notNull(condition, "Condition");
+        return subcommands.removeIf(condition);
+    }
+
+    /**
+     * Removes subcommands by the provided name.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> subcommand name
+     *
+     * @return True, if any subcommands were removed
+     */
+    public boolean removeSubcommandByName(@Nonnull String name)
+    {
+        return removeSubcommand(subcommand -> subcommand.getName().equals(name));
     }
 
     /**

@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class CommandDataImpl implements SlashCommandData
@@ -44,7 +45,6 @@ public class CommandDataImpl implements SlashCommandData
     private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
 
     private boolean allowSubcommands = true;
-    private boolean allowGroups = true;
     private boolean allowOption = true;
     private boolean allowRequired = true;
     private boolean guildOnly = false;
@@ -208,7 +208,7 @@ public class CommandDataImpl implements SlashCommandData
             (count, value) -> new Object[]{ value, count }
         );
 
-        allowSubcommands = allowGroups = false;
+        allowSubcommands = false;
         this.allowRequired = allowRequired;
         Collections.addAll(this.options, options);
         return this;
@@ -244,7 +244,7 @@ public class CommandDataImpl implements SlashCommandData
         if (groups.length == 0)
             return this;
         checkType(Command.Type.SLASH, "add subcommand groups");
-        if (!allowGroups)
+        if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
         Checks.check(groups.length + this.options.size() <= CommandData.MAX_OPTIONS, "Cannot have more than %d subcommand groups for a command!", CommandData.MAX_OPTIONS);
         Checks.checkUnique(
@@ -345,5 +345,50 @@ public class CommandDataImpl implements SlashCommandData
     public LocalizationMap getDescriptionLocalizations()
     {
         return descriptionLocalizations;
+    }
+
+    @Override
+    public boolean removeOptions(@Nonnull Predicate<? super OptionData> condition)
+    {
+        Checks.notNull(condition, "Condition");
+        boolean modified = options.removeIf((o) -> o instanceof OptionData && condition.test((OptionData) o));
+        if (modified)
+            updateAllowedOptions();
+        return modified;
+    }
+
+    @Override
+    public boolean removeSubcommands(@Nonnull Predicate<? super SubcommandData> condition)
+    {
+        Checks.notNull(condition, "Condition");
+        boolean modified = options.removeIf((o) -> o instanceof SubcommandData && condition.test((SubcommandData) o));
+        if (modified)
+            updateAllowedOptions();
+        return modified;
+    }
+
+    @Override
+    public boolean removeSubcommandGroups(@Nonnull Predicate<? super SubcommandGroupData> condition)
+    {
+        Checks.notNull(condition, "Condition");
+        boolean modified = options.removeIf((o) -> o instanceof SubcommandGroupData && condition.test((SubcommandGroupData) o));
+        if (modified)
+            updateAllowedOptions();
+        return modified;
+    }
+
+    // Update allowed conditions after removing options
+    private void updateAllowedOptions()
+    {
+        if (options.isEmpty())
+        {
+            allowRequired = allowOption = allowSubcommands = true;
+            return;
+        }
+
+        SerializableData last = options.get(options.size() - 1);
+        allowOption = last instanceof OptionData;
+        allowRequired = allowOption && ((OptionData) last).isRequired();
+        allowSubcommands = !allowOption;
     }
 }

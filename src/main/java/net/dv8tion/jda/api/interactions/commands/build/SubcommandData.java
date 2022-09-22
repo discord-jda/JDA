@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -212,6 +213,45 @@ public class SubcommandData implements SerializableData
         //Checks are done in LocalizationMap
         descriptionLocalizations.setTranslations(map);
         return this;
+    }
+
+    /**
+     * Removes all options that evaluate to {@code true} under the provided {@code condition}.
+     *
+     * <p><b>Example: Remove all options</b>
+     * <pre>{@code
+     * command.removeOptions(option -> true);
+     * }</pre>
+     * <p><b>Example: Remove all options that are required</b>
+     * <pre>{@code
+     * command.removeOptions(option -> option.isRequired());
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any options were removed
+     */
+    public boolean removeOptions(@Nonnull Predicate<? super OptionData> condition)
+    {
+        Checks.notNull(condition, "Condition");
+        return options.removeIf(condition);
+    }
+
+    /**
+     * Removes options by the provided name.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> option name
+     *
+     * @return True, if any options were removed
+     */
+    public boolean removeOptionByName(@Nonnull String name)
+    {
+        return removeOptions(option -> option.getName().equals(name));
     }
 
     /**
