@@ -97,8 +97,8 @@ dependencies {
     /* ABI dependencies */
 
     //Code safety
-    api("com.google.code.findbugs:jsr305:3.0.2")
-    api("org.jetbrains:annotations:23.0.0")
+    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    compileOnly("org.jetbrains:annotations:23.0.0")
 
     //Logger
     api("org.slf4j:slf4j-api:1.7.36")
@@ -130,6 +130,7 @@ dependencies {
     configurations["examplesImplementation"].withDependencies {
         addAll(configurations["api"].allDependencies)
         addAll(configurations["implementation"].allDependencies)
+        addAll(configurations["compileOnly"].allDependencies)
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
