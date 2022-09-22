@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.guild.voice;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,16 +51,16 @@ public class GenericGuildVoiceUpdateEvent extends GenericGuildVoiceEvent impleme
 
     @Nullable
     @Override
-    public AudioChannel getChannelLeft()
+    public AudioChannelUnion getChannelLeft()
     {
-        return left;
+        return (AudioChannelUnion) left;
     }
 
     @Nullable
     @Override
-    public AudioChannel getChannelJoined()
+    public AudioChannelUnion getChannelJoined()
     {
-        return joined;
+        return (AudioChannelUnion) joined;
     }
 
     @Nonnull

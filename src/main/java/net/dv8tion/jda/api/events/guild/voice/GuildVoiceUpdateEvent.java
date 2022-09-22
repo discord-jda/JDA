@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.guild.voice;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.UpdateEvent;
 
 import javax.annotation.Nonnull;
@@ -68,18 +69,18 @@ public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, AudioChannel>
     Guild getGuild();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel} that the {@link net.dv8tion.jda.api.entities.Member Member} is moved from
+     * The {@link AudioChannelUnion} that the {@link Member} is moved from
      *
-     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel}
+     * @return The {@link AudioChannelUnion}, or {@code null} if the member was not connected to a channel before
      */
     @Nullable
-    AudioChannel getChannelLeft();
+    AudioChannelUnion getChannelLeft();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel} that was joined
+     * The {@link AudioChannelUnion} that was joined
      *
-     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel}
+     * @return The {@link AudioChannelUnion}, or {@code null} if the member has disconnected
      */
     @Nullable
-    AudioChannel getChannelJoined();
+    AudioChannelUnion getChannelJoined();
 }

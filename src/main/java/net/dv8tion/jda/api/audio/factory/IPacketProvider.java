@@ -49,7 +49,7 @@ public interface IPacketProvider
     /**
      * Provides the current channel that this connection is transmitting to.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannel} that this connection is sending to.
+     * @return The {@link AudioChannel} that this connection is sending to.
      */
     @Nonnull
     AudioChannel getConnectedChannel();

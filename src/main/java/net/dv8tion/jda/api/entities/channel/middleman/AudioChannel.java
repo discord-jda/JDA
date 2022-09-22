@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.entities.channel.middleman;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
@@ -28,25 +28,25 @@ import javax.annotation.Nullable;
 
 /**
  * Represents a Guild Channel that is capable of handling audio.
- * <br>This is a {@link GuildChannel GuildChannel} that contains additional methods present for audio channels
+ * <br>This is a {@link StandardGuildChannel} that contains additional methods present for audio channels
  *
  * @see VoiceChannel
  * @see StageChannel
  *
- * @see   Guild#getVoiceChannelCache()
- * @see   Guild#getVoiceChannels()
- * @see   Guild#getVoiceChannelsByName(String, boolean)
- * @see   Guild#getVoiceChannelById(long)
+ * @see Guild#getVoiceChannelCache()
+ * @see Guild#getVoiceChannels()
+ * @see Guild#getVoiceChannelsByName(String, boolean)
+ * @see Guild#getVoiceChannelById(long)
  *
- * @see   Guild#getStageChannelCache()
- * @see   Guild#getStageChannels()
- * @see   Guild#getStageChannelsByName(String, boolean)
- * @see   Guild#getStageChannelById(long)
+ * @see Guild#getStageChannelCache()
+ * @see Guild#getStageChannels()
+ * @see Guild#getStageChannelsByName(String, boolean)
+ * @see Guild#getStageChannelById(long)
  *
- * @see net.dv8tion.jda.api.JDA#getVoiceChannelById(long)
- * @see net.dv8tion.jda.api.JDA#getStageChannelById(long)
+ * @see JDA#getVoiceChannelById(long)
+ * @see JDA#getStageChannelById(long)
  */
-public interface AudioChannel extends GuildChannel, IMemberContainer
+public interface AudioChannel extends StandardGuildChannel
 {
     //TODO-v5: Docs
     @Override
@@ -63,10 +63,10 @@ public interface AudioChannel extends GuildChannel, IMemberContainer
     int getBitrate();
 
     /**
-     * The {@link net.dv8tion.jda.api.Region Region} of this {@link AudioChannel AudioChannel}.
+     * The {@link Region} of this channel.
      * <br>This will return {@link Region#AUTOMATIC} if the region of this channel is set to Automatic.
      *
-     * @return the {@link net.dv8tion.jda.api.Region Region} of this channel.
+     * @return the {@link Region} of this channel.
      */
     @Nonnull
     default Region getRegion()
@@ -75,10 +75,10 @@ public interface AudioChannel extends GuildChannel, IMemberContainer
     }
 
     /**
-     * The raw region name for this {@link AudioChannel AudioChannel}.
-     * This will return null if the region is set to Automatic.
+     * The raw region name for this channel.
+     * <br>This will return null if the region is set to Automatic.
      *
-     * @return Raw region name
+     * @return Raw region name, or {@code null} if the region is set to automatic.
      */
     @Nullable
     String getRegionRaw();

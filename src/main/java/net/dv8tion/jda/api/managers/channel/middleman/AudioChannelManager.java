@@ -21,13 +21,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
-import net.dv8tion.jda.api.managers.channel.ChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 //todo-v5: Docs
-public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends ChannelManager<T, M>
+public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends StandardGuildChannelManager<T, M>
 {
     /**
      * Sets the <b><u>bitrate</u></b> of the selected {@link VoiceChannel VoiceChannel}.

@@ -16,14 +16,20 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import gnu.trove.set.TLongSet;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.channel.update.*;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.LongStream;
 
 public class ThreadUpdateHandler extends SocketHandler
 {
@@ -62,6 +68,7 @@ public class ThreadUpdateHandler extends SocketHandler
 
         final DataObject threadMetadata = content.getObject("thread_metadata");
         final String name = content.getString("name");
+        final int flags = content.getInt("flags", 0);
         final ThreadChannel.AutoArchiveDuration autoArchiveDuration = ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration"));
         final boolean locked = threadMetadata.getBoolean("locked");
         final boolean archived = threadMetadata.getBoolean("archived");
@@ -76,6 +83,8 @@ public class ThreadUpdateHandler extends SocketHandler
         final boolean oldInvitable = !thread.isPublic() && thread.isInvitable();
         final long oldArchiveTimestamp = thread.getArchiveTimestamp();
         final int oldSlowmode = thread.getSlowmode();
+        final int oldFlags = thread.getRawFlags();
+
 
         //TODO should these be Thread specific events?
         if (!Objects.equals(oldName, name))
@@ -85,6 +94,14 @@ public class ThreadUpdateHandler extends SocketHandler
                 new ChannelUpdateNameEvent(
                     getJDA(), responseNumber,
                     thread, oldName, name));
+        }
+        if (oldFlags != flags)
+        {
+            thread.setFlags(flags);
+            api.handleEvent(
+                new ChannelUpdateFlagsEvent(
+                    getJDA(), responseNumber,
+                    thread, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
         }
         if (oldSlowmode != slowmode)
         {
@@ -133,6 +150,25 @@ public class ThreadUpdateHandler extends SocketHandler
                 new ChannelUpdateInvitableEvent(
                     api, responseNumber,
                     thread, oldInvitable, invitable));
+        }
+
+        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS) && !content.isNull("applied_tags"))
+        {
+            final TLongSet oldTags = thread.getAppliedTagsSet();
+            thread.setAppliedTags(content.getArray("applied_tags")
+                    .stream(DataArray::getUnsignedLong)
+                    .mapToLong(Long::longValue));
+            final TLongSet tags = thread.getAppliedTagsSet();
+
+            if (!oldTags.equals(tags))
+            {
+                List<Long> oldTagList = LongStream.of(oldTags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
+                List<Long> newTagList = LongStream.of(tags.toArray()).boxed().collect(Helpers.toUnmodifiableList());
+                api.handleEvent(
+                    new ChannelUpdateAppliedTagsEvent(
+                        api, responseNumber,
+                        thread, oldTagList, newTagList));
+            }
         }
 
         return null;

@@ -108,6 +108,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ForumChannel> forumChannelCache = new SortedSnowflakeCacheViewImpl<>(ForumChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<RichCustomEmoji> emojicache = new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
@@ -160,6 +161,7 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
         SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
+        SnowflakeCacheViewImpl<ForumChannel> forumView = getJDA().getForumChannelsView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
         SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
 
@@ -184,6 +186,11 @@ public class GuildImpl implements Guild
         {
             getNewsChannelCache()
                 .forEachUnordered(chan -> newsView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = forumView.writeLock())
+        {
+            getForumChannelCache()
+                .forEachUnordered(chan -> forumView.getMap().remove(chan.getIdLong()));
         }
         try (UnlockHook hook = voiceView.writeLock())
         {
@@ -694,6 +701,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SortedSnowflakeCacheView<ForumChannel> getForumChannelCache()
+    {
+        return forumChannelCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<StageChannel> getStageChannelCache()
     {
         return stageChannelCache;
@@ -740,16 +754,19 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getNewsChannelView();
+        SnowflakeCacheViewImpl<ForumChannel> forumView = getForumChannelsView();
         List<TextChannel> textChannels;
         List<NewsChannel> newsChannels;
         List<VoiceChannel> voiceChannels;
         List<StageChannel> stageChannels;
+        List<ForumChannel> forumChannels;
         List<Category> categories;
         try (UnlockHook categoryHook = categoryView.readLock();
              UnlockHook voiceHook = voiceView.readLock();
              UnlockHook textHook = textView.readLock();
              UnlockHook newsHook = newsView.readLock();
-             UnlockHook stageHook = stageView.readLock())
+             UnlockHook stageHook = stageView.readLock();
+             UnlockHook forumHook = forumView.readLock())
         {
             if (includeHidden)
             {
@@ -757,6 +774,7 @@ public class GuildImpl implements Guild
                 newsChannels = newsView.asList();
                 voiceChannels = voiceView.asList();
                 stageChannels = stageView.asList();
+                forumChannels = forumView.asList();
             }
             else
             {
@@ -764,6 +782,7 @@ public class GuildImpl implements Guild
                 newsChannels = newsView.stream().filter(filterHidden).collect(Collectors.toList());
                 voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
                 stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
+                forumChannels = forumView.stream().filter(filterHidden).collect(Collectors.toList());
             }
             categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
             channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + stageChannels.size());
@@ -773,6 +792,7 @@ public class GuildImpl implements Guild
         newsChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         stageChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        forumChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         Collections.sort(channels);
 
         for (Category category : categories)
@@ -1251,8 +1271,18 @@ public class GuildImpl implements Guild
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
-                ThreadChannel thread = builder.createThreadChannel(threadObj, this.getIdLong());
-                list.add(thread);
+                try
+                {
+                    ThreadChannel thread = builder.createThreadChannel(threadObj, this.getIdLong());
+                    list.add(thread);
+                }
+                catch (Exception e)
+                {
+                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage()))
+                        EntityBuilder.LOG.debug("Discarding thread without cached parent channel. JSON: {}", threadObj);
+                    else
+                        EntityBuilder.LOG.warn("Failed to create thread channel. JSON: {}", threadObj, e);
+                }
             }
 
             return Collections.unmodifiableList(list);
@@ -1680,60 +1710,52 @@ public class GuildImpl implements Guild
     @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
+        return createChannel(ChannelType.TEXT, TextChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(NewsChannel.class, name, this, ChannelType.NEWS).setParent(parent);
+        return createChannel(ChannelType.NEWS, NewsChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
+        return createChannel(ChannelType.VOICE, VoiceChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<StageChannel> createStageChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
+        return createChannel(ChannelType.STAGE, StageChannel.class, name, parent);
+    }
 
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(StageChannel.class, name, this, ChannelType.STAGE).setParent(parent);
+    @Nonnull
+    @Override
+    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, Category parent)
+    {
+        return createChannel(ChannelType.FORUM, ForumChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<Category> createCategory(@Nonnull String name)
     {
-        checkPermission(Permission.MANAGE_CHANNEL);
+        return createChannel(ChannelType.CATEGORY, Category.class, name, null);
+    }
+
+    private <T extends GuildChannel> ChannelAction<T> createChannel(ChannelType type, Class<T> clazz, String name, Category parent)
+    {
+        checkCanCreateChannel(parent);
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(Category.class, name, this, ChannelType.CATEGORY);
+        return new ChannelActionImpl<>(clazz, name, this, type).setParent(parent);
     }
 
     @Nonnull
@@ -2153,6 +2175,11 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<ThreadChannel> getThreadChannelsView()
     {
         return threadChannelCache;
+    }
+
+    public SortedSnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
+    {
+        return forumChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()

@@ -19,6 +19,13 @@ import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
+import net.dv8tion.jda.api.events.channel.forum.GenericForumTagEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateModeratedEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.GenericForumTagUpdateEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent;
 import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent;
@@ -187,11 +194,15 @@ public abstract class ListenerAdapter implements EventListener
     //Channel Update Events
     public void onChannelUpdateBitrate(@Nonnull ChannelUpdateBitrateEvent event) {}
     public void onChannelUpdateName(@Nonnull ChannelUpdateNameEvent event) {}
+    public void onChannelUpdateFlags(@Nonnull ChannelUpdateFlagsEvent event) {}
     public void onChannelUpdateNSFW(@Nonnull ChannelUpdateNSFWEvent event) {}
     public void onChannelUpdateParent(@Nonnull ChannelUpdateParentEvent event) {}
     public void onChannelUpdatePosition(@Nonnull ChannelUpdatePositionEvent event) {}
     public void onChannelUpdateRegion(@Nonnull ChannelUpdateRegionEvent event) {}
     public void onChannelUpdateSlowmode(@Nonnull ChannelUpdateSlowmodeEvent event) {}
+    public void onChannelUpdateDefaultThreadSlowmode(@Nonnull ChannelUpdateDefaultThreadSlowmodeEvent event) {}
+    public void onChannelUpdateDefaultReaction(@Nonnull ChannelUpdateDefaultReactionEvent event) {}
+//    public void onChannelUpdateDefaultSortOrder(@Nonnull ChannelUpdateDefaultSortOrderEvent event) {}
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
     public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}
@@ -200,6 +211,14 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateAutoArchiveDuration(@Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
     public void onChannelUpdateLocked(@Nonnull ChannelUpdateLockedEvent event) {}
     public void onChannelUpdateInvitable(@Nonnull ChannelUpdateInvitableEvent event) {}
+    public void onChannelUpdateAppliedTags(@Nonnull ChannelUpdateAppliedTagsEvent event) {}
+
+    //Forum Tag Events
+    public void onForumTagAdd(@Nonnull ForumTagAddEvent event) {}
+    public void onForumTagRemove(@Nonnull ForumTagRemoveEvent event) {}
+    public void onForumTagUpdateName(@Nonnull ForumTagUpdateNameEvent event) {}
+    public void onForumTagUpdateEmoji(@Nonnull ForumTagUpdateEmojiEvent event) {}
+    public void onForumTagUpdateModerated(@Nonnull ForumTagUpdateModeratedEvent event) {}
 
     //Thread Events
     public void onThreadRevealed(@Nonnull ThreadRevealedEvent event) {}
@@ -363,7 +382,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
     public void onGenericGuildScheduledEventUpdate(@Nonnull GenericGuildScheduledEventUpdateEvent event) {}
-
+    public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
+    public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent event) {}
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
     private static final Set<Class<?>> unresolved;

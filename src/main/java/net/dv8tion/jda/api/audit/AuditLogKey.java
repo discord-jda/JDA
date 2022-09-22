@@ -16,9 +16,16 @@
 
 package net.dv8tion.jda.api.audit;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -208,6 +215,13 @@ public enum AuditLogKey
     CHANNEL_NAME("name"),
 
     /**
+     * Change of the {@link Channel#getFlags() flags} value.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    CHANNEL_FLAGS("flags"),
+
+    /**
      * Change of the {@link ICategorizableChannel#getParentCategory()} ICategorizable.getParentCategory()} value.
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getCategoryById(String) Guild.getCategoryById(String)}
      *
@@ -224,12 +238,25 @@ public enum AuditLogKey
     CHANNEL_TOPIC("topic"),
 
     /**
-     * Change of the {@link TextChannel#getSlowmode() TextChannel.getSlowmode()} value.
-     * <br>Only for {@link ChannelType#TEXT ChannelType.TEXT}
+     * Change of the {@link ISlowmodeChannel#getSlowmode()} value.
      *
      * <p>Expected type: <b>Integer</b>
      */
     CHANNEL_SLOWMODE("rate_limit_per_user"),
+
+    /**
+     * Change of the {@link IThreadContainer#getDefaultThreadSlowmode()} value.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    CHANNEL_DEFAULT_THREAD_SLOWMODE("default_thread_rate_limit_per_user"),
+
+    /**
+     * Change of the {@link ForumChannel#getDefaultReaction()} value.
+     *
+     * <p>Expected type: <b>Map</b> containing {@code emoji_id} and {@code emoji_name}
+     */
+    CHANNEL_DEFAULT_REACTION_EMOJI("default_reaction_emoji"),
 
     /**
      * Change of the {@link VoiceChannel#getBitrate() VoiceChannel.getBitrate()} value.
@@ -277,6 +304,21 @@ public enum AuditLogKey
      */
     CHANNEL_OVERRIDES("permission_overwrites"),
 
+    /**
+     * The available tags of this {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannel}.
+     *
+     * <p>Expected type: <b>List{@literal <Map<String, Object>>}</b>
+     */
+    CHANNEL_AVAILABLE_TAGS("available_tags"),
+
+//    /**
+//     * The {@link ForumChannel#getDefaultSortOrder()} value.
+//     * <br>Only for {@link ChannelType#FORUM}.
+//     *
+//     * <p>Expected type: <b>Integer</b>
+//     */
+//    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
+
     // THREADS
 
     /**
@@ -287,10 +329,16 @@ public enum AuditLogKey
     THREAD_NAME("name"),
 
     /**
-     * Change of the {@link ThreadChannel#getSlowmode() ThreadChannel.getSlowmode()} value.
+     * Change of the {@link ISlowmodeChannel#getSlowmode()} value.
      *
      * <p>Expected type: <b>Integer</b>
+     *
+     * @deprecated Use {@link #CHANNEL_SLOWMODE} instead
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("5.0.0")
+    @ReplaceWith("CHANNEL_SLOWMODE")
     THREAD_SLOWMODE("rate_limit_per_user"),
 
     /**
@@ -321,6 +369,13 @@ public enum AuditLogKey
      * <p>Expected type: <b>Boolean</b>
      */
     THREAD_INVITABLE("invitable"),
+
+    /**
+     * The applied tags of this {@link ThreadChannel}, given that it is a forum post.
+     *
+     * <p>Expected type: <b>List{@literal <String>}</b>
+     */
+    THREAD_APPLIED_TAGS("applied_tags"),
 
     // STAGE_INSTANCE
 

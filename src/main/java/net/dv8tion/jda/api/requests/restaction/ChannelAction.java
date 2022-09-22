@@ -22,10 +22,16 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -33,8 +39,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
+import java.util.List;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
@@ -55,20 +60,8 @@ import java.util.function.BooleanSupplier;
  * @param <T>
  *        The type of channel to create
  */
-public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T>
+public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRestAction<T, ChannelAction<T>>
 {
-    @Nonnull
-    @Override
-    ChannelAction<T> setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    ChannelAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    ChannelAction<T> deadline(long timestamp);
-
     /**
      * The guild to create this {@link GuildChannel} in
      *
@@ -89,10 +82,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Sets the name for the new GuildChannel
      *
      * @param  name
-     *         The not-null name for the new GuildChannel (1-100 chars long)
+     *         The not-null name for the new GuildChannel (1-{@value Channel#MAX_NAME_LENGTH} characters long)
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the provided name is null or not between 1-100 chars long
+     *         If the provided name is null or not between 1-{@value Channel#MAX_NAME_LENGTH} characters long
      *
      * @return The current ChannelAction, for chaining convenience
      */
@@ -149,12 +142,14 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Sets the topic for the new TextChannel
      *
      * @param  topic
-     *         The topic for the new GuildChannel (max 1024 chars)
+     *         The topic for the new GuildChannel
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a TextChannel
      * @throws IllegalArgumentException
-     *         If the provided topic is longer than 1024 chars
+     *         If the provided topic is greater than {@value StandardGuildMessageChannel#MAX_TOPIC_LENGTH} in length.
+     *         For {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels},
+     *         this limit is {@value net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#MAX_FORUM_TOPIC_LENGTH} instead.
      *
      * @return The current ChannelAction, for chaining convenience
      */
@@ -179,7 +174,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
 
     /**
      * Sets the slowmode value, which limits the amount of time that individual users must wait
-     * between sending messages in the new TextChannel. This is measured in seconds.
+     * between sending messages in the new channel. This is measured in seconds.
      *
      * <p>Note: Bots are unaffected by this.
      * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
@@ -190,15 +185,50 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         The number of seconds required to wait between sending messages in the channel.
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is not for a TextChannel
+     *         If this ChannelAction is not for a {@link ISlowmodeChannel}
      * @throws IllegalArgumentException
-     *         If the {@code slowmode} is greater than {@link TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or less than 0
+     *         If the {@code slowmode} is greater than {@link ISlowmodeChannel#MAX_SLOWMODE ISlowmodeChannel.MAX_SLOWMODE}, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setSlowmode(int slowmode);
+
+    /**
+     * Sets the <b><u>default reaction emoji</u></b> of the new {@link ForumChannel}.
+     * <br>This does not support custom emoji from other guilds.
+     *
+     * @param  emoji
+     *         The new default reaction emoji, or null to unset.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    ForumChannel#getDefaultReaction()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji);
+
+    /**
+     * Sets the <b><u>available tags</u></b> of the new {@link ForumChannel}.
+     * <br>Tags will be ordered based on the provided list order.
+     *
+     * <p>You can use {@link ForumTagData} to create new tags.
+     *
+     * @param  tags
+     *         The new available tags in the desired order.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided list is null or contains null elements
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    ForumChannel#getAvailableTags()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setAvailableTags(@Nonnull List<? extends BaseForumTag> tags);
 
     /**
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}

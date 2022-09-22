@@ -18,18 +18,28 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateModeratedEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
@@ -39,14 +49,13 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
+import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.entities.channel.concrete.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,8 +87,10 @@ public class ChannelUpdateHandler extends SocketHandler
         final long channelId = content.getLong("id");
         final long parentId = content.isNull("parent_id") ? 0 : content.getLong("parent_id");
         final int position = content.getInt("position");
+        final int flags = content.getInt("flags", 0);
         final String name = content.getString("name");
         final boolean nsfw = content.getBoolean("nsfw");
+        final int defaultThreadSlowmode = content.getInt("default_thread_rate_limit_per_user", 0);
         final int slowmode = content.getInt("rate_limit_per_user", 0);
         final DataArray permOverwrites = content.getArray("permission_overwrites");
 
@@ -110,6 +121,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldPosition = textChannel.getPositionRaw();
                 final boolean oldNsfw = textChannel.isNSFW();
                 final int oldSlowmode = textChannel.getSlowmode();
+                final int oldDefaultThreadSlowmode = textChannel.getDefaultThreadSlowmode();
                 if (!Objects.equals(oldName, name))
                 {
                     textChannel.setName(name);
@@ -143,7 +155,6 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     textChannel, oldPosition, position));
                 }
-
                 if (oldNsfw != nsfw)
                 {
                     textChannel.setNSFW(nsfw);
@@ -152,7 +163,6 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     textChannel, oldNsfw, nsfw));
                 }
-
                 if (oldSlowmode != slowmode)
                 {
                     textChannel.setSlowmode(slowmode);
@@ -161,6 +171,124 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     textChannel, oldSlowmode, slowmode));
                 }
+                if (oldDefaultThreadSlowmode != defaultThreadSlowmode)
+                {
+                    textChannel.setDefaultThreadSlowmode(defaultThreadSlowmode);
+                    getJDA().handleEvent(
+                            new ChannelUpdateDefaultThreadSlowmodeEvent(
+                                    getJDA(), responseNumber,
+                                    textChannel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
+                }
+                break;
+            }
+            case FORUM:
+            {
+                final String topic = content.getString("topic", null);
+                final EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
+                        .map(json -> {
+                            json.opt("emoji_id").ifPresent(id -> json.put("id", id));
+                            json.opt("emoji_name").ifPresent(n -> json.put("name", n));
+                            return EntityBuilder.createEmoji(json);
+                        })
+                        .orElse(null);
+
+                ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
+                content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(forumChannel, array));
+//                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
+
+                //If any properties changed, update the values and fire the proper events.
+                final long oldParentId = forumChannel.getParentCategoryIdLong();
+                final String oldName = forumChannel.getName();
+                final String oldTopic = forumChannel.getTopic();
+                final int oldPosition = forumChannel.getPositionRaw();
+                final boolean oldNsfw = forumChannel.isNSFW();
+                final int oldSlowmode = forumChannel.getSlowmode();
+                final int oldDefaultThreadSlowmode = forumChannel.getDefaultThreadSlowmode();
+                final int oldFlags = forumChannel.getRawFlags();
+//                final int oldSortOrder = forumChannel.getRawSortOrder();
+                final EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
+
+                if (!Objects.equals(oldName, name))
+                {
+                    forumChannel.setName(name);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNameEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldName, name));
+                }
+                if (oldParentId != parentId)
+                {
+                    final Category oldParent = forumChannel.getParentCategory();
+                    forumChannel.setParentCategory(parentId);
+                    getJDA().handleEvent(
+                            new ChannelUpdateParentEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldParent, forumChannel.getParentCategory()));
+                }
+                if (!Objects.equals(oldTopic, topic))
+                {
+                    forumChannel.setTopic(topic);
+                    getJDA().handleEvent(
+                            new ChannelUpdateTopicEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldTopic, topic));
+                }
+                if (oldPosition != position)
+                {
+                    forumChannel.setPosition(position);
+                    getJDA().handleEvent(
+                            new ChannelUpdatePositionEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldPosition, position));
+                }
+                if (oldNsfw != nsfw)
+                {
+                    forumChannel.setNSFW(nsfw);
+                    getJDA().handleEvent(
+                            new ChannelUpdateNSFWEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldNsfw, nsfw));
+                }
+                if (oldSlowmode != slowmode)
+                {
+                    forumChannel.setSlowmode(slowmode);
+                    getJDA().handleEvent(
+                            new ChannelUpdateSlowmodeEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldSlowmode, slowmode));
+                }
+                if (oldDefaultThreadSlowmode != defaultThreadSlowmode)
+                {
+                    forumChannel.setDefaultThreadSlowmode(defaultThreadSlowmode);
+                    getJDA().handleEvent(
+                            new ChannelUpdateDefaultThreadSlowmodeEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldDefaultThreadSlowmode, defaultThreadSlowmode));
+                }
+                if (oldFlags != flags)
+                {
+                    forumChannel.setFlags(flags);
+                    getJDA().handleEvent(
+                            new ChannelUpdateFlagsEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
+                }
+                if (!Objects.equals(oldDefaultReaction, defaultReaction))
+                {
+                    forumChannel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
+                    getJDA().handleEvent(
+                            new ChannelUpdateDefaultReactionEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, oldDefaultReaction, defaultReaction));
+                }
+//                if (oldSortOrder != sortOrder)
+//                {
+//                    forumChannel.setDefaultSortOrder(sortOrder);
+//                    getJDA().handleEvent(
+//                            new ChannelUpdateDefaultSortOrderEvent(
+//                                    getJDA(), responseNumber,
+//                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
+//                }
                 break;
             }
             case NEWS:
@@ -571,6 +699,70 @@ public class ChannelUpdateHandler extends SocketHandler
         for (ThreadChannel thread : threads)
         {
             api.handleEvent(new ThreadHiddenEvent(api, responseNumber, thread));
+        }
+    }
+
+    private void handleTagsUpdate(ForumChannelImpl channel, DataArray tags)
+    {
+        if (!api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
+            return;
+        EntityBuilder builder = api.getEntityBuilder();
+
+        SortedSnowflakeCacheViewImpl<ForumTag> view = channel.getAvailableTagCache();
+
+        try (UnlockHook hook = view.writeLock())
+        {
+            TLongObjectMap<ForumTag> cache = view.getMap();
+            TLongSet removedTags = new TLongHashSet(cache.keySet());
+
+            for (int i = 0; i < tags.length(); i++)
+            {
+                DataObject tagJson = tags.getObject(i);
+                long id = tagJson.getUnsignedLong("id");
+                if (removedTags.remove(id))
+                {
+                    ForumTagImpl impl = (ForumTagImpl) cache.get(id);
+                    if (impl == null)
+                        continue;
+
+                    String name = tagJson.getString("name");
+                    boolean moderated = tagJson.getBoolean("moderated");
+
+                    String oldName = impl.getName();
+                    EmojiUnion oldEmoji = impl.getEmoji();
+
+                    impl.setEmoji(tagJson);
+
+                    impl.setPosition(i);
+                    if (!Objects.equals(oldEmoji, impl.getEmoji()))
+                    {
+                        api.handleEvent(new ForumTagUpdateEmojiEvent(api, responseNumber, channel, impl, oldEmoji));
+                    }
+                    if (!name.equals(oldName))
+                    {
+                        impl.setName(name);
+                        api.handleEvent(new ForumTagUpdateNameEvent(api, responseNumber, channel, impl, oldName));
+                    }
+                    if (moderated != impl.isModerated())
+                    {
+                        impl.setModerated(moderated);
+                        api.handleEvent(new ForumTagUpdateModeratedEvent(api, responseNumber, channel, impl, moderated));
+                    }
+                }
+                else
+                {
+                    ForumTag tag = builder.createForumTag(channel, tagJson, i);
+                    cache.put(id, tag);
+                    api.handleEvent(new ForumTagAddEvent(api, responseNumber, channel, tag));
+                }
+            }
+
+            removedTags.forEach(id -> {
+                ForumTag tag = cache.remove(id);
+                if (tag != null)
+                    api.handleEvent(new ForumTagRemoveEvent(api, responseNumber, channel, tag));
+                return true;
+            });
         }
     }
 }

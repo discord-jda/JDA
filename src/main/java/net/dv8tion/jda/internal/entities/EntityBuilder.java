@@ -30,8 +30,10 @@ import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -71,6 +73,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
@@ -85,6 +88,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
 public class EntityBuilder
@@ -356,7 +360,17 @@ public class EntityBuilder
         for (int i = 0; i < threadArray.length(); i++)
         {
             DataObject threadJson = threadArray.getObject(i);
-            createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
+            try
+            {
+                createThreadChannel(guildObj, threadJson, guildObj.getIdLong());
+            }
+            catch (Exception ex)
+            {
+                if (MISSING_CHANNEL.equals(ex.getMessage()))
+                    LOG.debug("Discarding thread without cached parent channel. JSON: {}", threadJson);
+                else
+                    LOG.warn("Failed to create thread channel for guild with id {}.\nJSON: {}", guildId, threadJson, ex);
+            }
         }
 
         createGuildScheduledEventPass(guildObj, scheduledEventsArray);
@@ -393,6 +407,9 @@ public class EntityBuilder
             break;
         case CATEGORY:
             createCategory(guildObj, channelData, guildObj.getIdLong());
+            break;
+        case FORUM:
+            createForumChannel(guildObj, channelData, guildObj.getIdLong());
             break;
         default:
             LOG.debug("Cannot create channel for type " + channelData.getInt("type"));
@@ -1078,6 +1095,7 @@ public class EntityBuilder
             .setTopic(json.getString("topic", null))
             .setPosition(json.getInt("position"))
             .setNSFW(json.getBoolean("nsfw"))
+            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
             .setSlowmode(json.getInt("rate_limit_per_user", 0));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
@@ -1219,11 +1237,16 @@ public class EntityBuilder
     public ThreadChannel createThreadChannel(GuildImpl guild, DataObject json, long guildId)
     {
         boolean playbackCache = false;
-        final long id = json.getLong("id");
+        final long id = json.getUnsignedLong("id");
+        final long parentId = json.getUnsignedLong("parent_id");
         final ChannelType type = ChannelType.fromId(json.getInt("type"));
 
         if (guild == null)
             guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+
+        IThreadContainer parent = guild.getChannelById(IThreadContainer.class, parentId);
+        if (parent == null)
+            throw new IllegalArgumentException(MISSING_CHANNEL);
 
         ThreadChannelImpl channel = ((ThreadChannelImpl) getJDA().getThreadChannelsView().get(id));
         if (channel == null)
@@ -1243,12 +1266,20 @@ public class EntityBuilder
 
         DataObject threadMetadata = json.getObject("thread_metadata");
 
+        if (!json.isNull("applied_tags") && api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
+        {
+            DataArray array = json.getArray("applied_tags");
+            channel.setAppliedTags(IntStream.range(0, array.length()).mapToLong(array::getUnsignedLong));
+        }
+
         channel
                 .setName(json.getString("name"))
-                .setParentChannelId(json.getLong("parent_id"))
+                .setFlags(json.getInt("flags", 0))
+                .setParentChannel(parent)
                 .setOwnerId(json.getLong("owner_id"))
                 .setMemberCount(json.getInt("member_count"))
                 .setMessageCount(json.getInt("message_count"))
+                .setTotalMessageCount(json.getInt("total_message_count", 0))
                 .setLatestMessageIdLong(json.getLong("last_message_id", 0))
                 .setSlowmode(json.getInt("rate_limit_per_user", 0))
                 .setLocked(threadMetadata.getBoolean("locked"))
@@ -1291,6 +1322,80 @@ public class EntityBuilder
             .setFlags(json.getInt("flags"));
 
         return threadMember;
+    }
+
+    public ForumChannel createForumChannel(DataObject json, long guildId)
+    {
+        return createForumChannel(null, json, guildId);
+    }
+
+    public ForumChannel createForumChannel(GuildImpl guild, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        ForumChannelImpl channel = (ForumChannelImpl) getJDA().getForumChannelsView().get(id);
+        if (channel == null)
+        {
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<ForumChannel>
+                    guildView = guild.getForumChannelsView(),
+                    globalView = getJDA().getForumChannelsView();
+            try (
+                    UnlockHook vlock = guildView.writeLock();
+                    UnlockHook jlock = globalView.writeLock())
+            {
+                channel = new ForumChannelImpl(id, guild);
+                guildView.getMap().put(id, channel);
+                playbackCache = globalView.getMap().put(id, channel) == null;
+            }
+        }
+
+        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
+        {
+            DataArray tags = json.getArray("available_tags");
+            for (int i = 0; i < tags.length(); i++)
+                createForumTag(channel, tags.getObject(i), i);
+        }
+
+        channel
+                .setParentCategory(json.getLong("parent_id", 0))
+                .setFlags(json.getInt("flags", 0))
+                .setDefaultReaction(json.optObject("default_reaction_emoji").orElse(null))
+//                .setDefaultSortOrder(json.getInt("default_sort_order", -1))
+                .setName(json.getString("name"))
+                .setTopic(json.getString("topic", null))
+                .setPosition(json.getInt("position"))
+                .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
+                .setSlowmode(json.getInt("rate_limit_per_user", 0))
+                .setNSFW(json.getBoolean("nsfw"));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
+    }
+
+    public ForumTagImpl createForumTag(ForumChannelImpl channel, DataObject json, int index)
+    {
+        final long id = json.getUnsignedLong("id");
+        SortedSnowflakeCacheViewImpl<ForumTag> cache = channel.getAvailableTagCache();
+        ForumTagImpl tag = (ForumTagImpl) cache.get(id);
+
+        if (tag == null)
+        {
+            try (UnlockHook lock = cache.writeLock())
+            {
+                tag = new ForumTagImpl(id);
+                cache.getMap().put(id, tag);
+            }
+        }
+
+        tag.setName(json.getString("name"))
+           .setModerated(json.getBoolean("moderated"))
+           .setEmoji(json)
+           .setPosition(index);
+        return tag;
     }
 
     public PrivateChannel createPrivateChannel(DataObject json)

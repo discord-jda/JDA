@@ -756,6 +756,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getPrivateChannelsView().clear();
         api.getStageChannelView().clear();
         api.getThreadChannelsView().clear();
+        api.getForumChannelsView().clear();
 
         api.getGuildsView().clear();
         api.getUsersView().clear();
