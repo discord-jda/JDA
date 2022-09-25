@@ -28,79 +28,81 @@ import javax.annotation.Nonnull;
 public enum OptionType
 {
     /** Placeholder for future option types */
-    UNKNOWN(-1),
+    UNKNOWN(-1, false),
     /**
      * Option which is serialized as subcommand, this is only used for internals and should be ignored by users.
      * @see SlashCommandData#addSubcommands(SubcommandData...)
      */
-    SUB_COMMAND(1),
+    SUB_COMMAND(1, false),
     /**
      * Option which is serialized as subcommand groups, this is only used for internals and should be ignored by users.
      * @see SlashCommandData#addSubcommandGroups(SubcommandGroupData...)
      */
-    SUB_COMMAND_GROUP(2),
+    SUB_COMMAND_GROUP(2, false),
     /**
      * Options which accept text inputs. This also supports role/channel/user mentions.
      * @see OptionMapping#getAsString()
      * @see OptionMapping#getMentions()
      */
-    STRING(3, true),
+    STRING(3, true, true),
     /**
      * Options which accept {@link Long} integer inputs
      * @see OptionMapping#getAsLong()
      */
-    INTEGER(4, true),
+    INTEGER(4, true, true),
     /**
      * Options which accept boolean true or false inputs
      * @see OptionMapping#getAsBoolean()
      */
-    BOOLEAN(5),
+    BOOLEAN(5, true),
     /**
      * Options which accept a single {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.User User}
      * @see OptionMapping#getAsUser()
      * @see OptionMapping#getAsMember()
      */
-    USER(6),
+    USER(6, true),
     /**
      * Options which accept a single {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}
      * @see OptionMapping#getAsChannel()
      */
-    CHANNEL(7),
+    CHANNEL(7, true),
     /**
      * Options which accept a single {@link net.dv8tion.jda.api.entities.Role Role}
      * @see OptionMapping#getAsRole()
      */
-    ROLE(8),
+    ROLE(8, true),
     /**
      * Options which accept a single {@link net.dv8tion.jda.api.entities.Role Role}, {@link net.dv8tion.jda.api.entities.User User}, or {@link net.dv8tion.jda.api.entities.Member Member}.
      * @see OptionMapping#getAsMentionable()
      */
-    MENTIONABLE(9),
+    MENTIONABLE(9, true),
     /**
      * Options which accept a {@link Double} value (also includes {@link Long})
      * @see OptionMapping#getAsDouble()
      * @see OptionMapping#getAsLong()
      */
-    NUMBER(10, true),
+    NUMBER(10, true, true),
     /**
      * Options which accept a file attachment
      * @see OptionMapping#getAsAttachment()
      */
-    ATTACHMENT(11),
+    ATTACHMENT(11, true),
     ;
 
     private final int raw;
     private final boolean supportsChoices;
+    private final boolean isOption;
 
-    OptionType(int raw)
+    OptionType(int raw, boolean isOption)
     {
-        this(raw, false);
+        this(raw, false, isOption);
     }
 
-    OptionType(int raw, boolean supportsChoices)
+    OptionType(int raw, boolean supportsChoices, boolean isOption)
     {
         this.raw = raw;
         this.supportsChoices = supportsChoices;
+        this.isOption = isOption;
     }
 
     /**
@@ -111,6 +113,16 @@ public enum OptionType
     public int getKey()
     {
         return raw;
+    }
+
+    /**
+     * Whether this option type is an input option.
+     *
+     * @return True, if this is an input option.
+     */
+    public boolean isOption()
+    {
+        return isOption;
     }
 
     /**
