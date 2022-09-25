@@ -1417,7 +1417,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot kick the owner of a guild!");
+        checkOwner(user.getIdLong(), "kick");
         Member member = resolveMember(user);
         if (member != null) // If user is in guild. Check if we are able to ban.
             checkPosition(member);
@@ -1435,7 +1435,7 @@ public class GuildImpl implements Guild
         Checks.notNegative(duration, "Deletion Timeframe");
         Checks.check(unit.toDays(duration) <= 7, "Deletion timeframe must not be larger than 7 days");
         checkPermission(Permission.BAN_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot ban the owner of a guild!");
+        checkOwner(user.getIdLong(), "ban");
 
         Member member = resolveMember(user);
         if (member != null) // If user is in guild. Check if we are able to ban.
@@ -1471,7 +1471,7 @@ public class GuildImpl implements Guild
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot put the owner of a guild in time out!");
+        checkOwner(user.getIdLong(), "time out");
 
         return timeoutUntilById0(user.getId(), date);
     }
@@ -1852,6 +1852,8 @@ public class GuildImpl implements Guild
         return new RoleOrderActionImpl(this, useAscendingOrder);
     }
 
+    // ---- Checks ----
+
     protected void checkGuild(Guild providedGuild, String comment)
     {
         if (!equals(providedGuild))
@@ -1885,6 +1887,26 @@ public class GuildImpl implements Guild
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
+    }
+
+    private void checkCanCreateChannel(Category parent)
+    {
+        if (parent != null)
+        {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+        }
+        else
+        {
+            checkPermission(Permission.MANAGE_CHANNEL);
+        }
+    }
+
+    private void checkOwner(long userId, String what)
+    {
+        if (userId == ownerId)
+            throw new HierarchyException("Cannot " + what + " the owner of a guild.");
     }
 
     private Member resolveMember(UserSnowflake user)
@@ -2199,19 +2221,5 @@ public class GuildImpl implements Guild
     public String toString()
     {
         return "G:" + getName() + '(' + id + ')';
-    }
-
-    private void checkCanCreateChannel(Category parent)
-    {
-        if (parent != null)
-        {
-            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
-            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
-        }
-        else
-        {
-            checkPermission(Permission.MANAGE_CHANNEL);
-        }
     }
 }
