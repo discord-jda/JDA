@@ -675,7 +675,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntil(@Nullable TemporalAccessor temporal)
+    default AuditableRestAction<Void> timeoutUntil(@Nonnull TemporalAccessor temporal)
     {
         return getGuild().timeoutUntil(this, temporal);
     }
