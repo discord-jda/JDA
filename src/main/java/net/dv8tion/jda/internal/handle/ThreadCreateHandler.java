@@ -39,6 +39,8 @@ public class ThreadCreateHandler extends SocketHandler
 
         try
         {
+            //Prevent possible duplicate events or unexpected situations of threads being revealed
+            // after already being known due to permissions
             if (api.getThreadChannelById(content.getUnsignedLong("id")) != null)
                 return null;
             ThreadChannel thread = api.getEntityBuilder().createThreadChannel(content, guildId);
