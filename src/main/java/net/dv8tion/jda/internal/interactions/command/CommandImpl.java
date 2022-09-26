@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
@@ -35,7 +35,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -87,10 +89,10 @@ public class CommandImpl implements Command
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
     {
         return json.optArray("options").map(arr ->
-                arr.stream(DataArray::getObject)
-                        .filter(test)
-                        .map(transform)
-                        .collect(Collectors.toList())
+            arr.stream(DataArray::getObject)
+               .filter(test)
+               .map(transform)
+               .collect(Collectors.toList())
         ).orElse(Collections.emptyList());
     }
 

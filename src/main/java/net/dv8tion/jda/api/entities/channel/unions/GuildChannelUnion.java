@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.api.entities.channel.unions;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.*;
 
 import javax.annotation.Nonnull;
 
@@ -32,6 +35,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link ThreadChannel}</li>
  *     <li>{@link VoiceChannel}</li>
  *     <li>{@link StageChannel}</li>
+ *     <li>{@link ForumChannel}</li>
  *     <li>{@link Category}</li>
  * </ul>
  */
@@ -170,6 +174,28 @@ public interface GuildChannelUnion extends GuildChannel
     Category asCategory();
 
     /**
+     * Casts this union to a {@link ForumChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * ForumChannel channel = union.asForumChannel();
+     * ForumChannel channel2 = (ForumChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#FORUM} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof ForumChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link ForumChannel}.
+     *
+     * @return The channel as a {@link ForumChannel}
+     */
+    @Nonnull
+    ForumChannel asForumChannel();
+
+    /**
      * Casts this union to a {@link GuildMessageChannel}.
      * This method exists for developer discoverability.
      *
@@ -215,7 +241,7 @@ public interface GuildChannelUnion extends GuildChannel
     AudioChannel asAudioChannel();
 
     /**
-     * Casts this union to a {@link IThreadContainer}.
+     * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
      * Note: This is effectively equivalent to using the cast operator:
@@ -228,9 +254,9 @@ public interface GuildChannelUnion extends GuildChannel
      * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
      *
      * @throws IllegalStateException
-     *         If the channel represented by this union is not actually a {@link IThreadContainer}.
+     *         If the channel represented by this union is not actually a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      *
-     * @return The channel as a {@link IThreadContainer}
+     * @return The channel as a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}
      */
     IThreadContainer asThreadContainer();
 

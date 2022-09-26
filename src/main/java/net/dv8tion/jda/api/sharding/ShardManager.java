@@ -19,8 +19,14 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -36,7 +42,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -229,7 +234,7 @@ public interface ShardManager extends IGuildChannelContainer
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.Category Categories} visible to this ShardManager instance.
+     * all cached {@link net.dv8tion.jda.api.entities.channel.concrete.Category Categories} visible to this ShardManager instance.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -294,7 +299,7 @@ public interface ShardManager extends IGuildChannelContainer
      *
      * <p><b>Hint</b>: To check whether you can use a {@link RichCustomEmoji} in a specific
      * context you can use {@link RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.Member)} or {@link
-     * RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.User, net.dv8tion.jda.api.entities.MessageChannel)}
+     * RichCustomEmoji#canInteract(net.dv8tion.jda.api.entities.User, MessageChannel)}
      *
      * <p><b>Unicode emojis are not included as {@link RichCustomEmoji}!</b>
      *
@@ -583,14 +588,14 @@ public interface ShardManager extends IGuildChannelContainer
     }
 
     /**
-     * An unmodifiable list of all known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels}.
+     * An unmodifiable list of all known {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannels}.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
      * a local variable or use {@link #getPrivateChannelCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels}.
+     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannels}.
      */
     @Nonnull
     default List<PrivateChannel> getPrivateChannels()
@@ -693,14 +698,14 @@ public interface ShardManager extends IGuildChannelContainer
     }
 
     /**
-     * This returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with an id that matches the provided
+     * This returns the {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} with an id that matches the provided
      * one, then this will return {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
+     *         The id of the {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with matching id.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} with matching id.
      */
     @Nullable
     default PrivateChannel getPrivateChannelById(final long id)
@@ -709,17 +714,17 @@ public interface ShardManager extends IGuildChannelContainer
     }
 
     /**
-     * This returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
-     * <br>If there is no known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with an id that matches the provided
+     * This returns the {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} with an id that matches the provided
      * one, this will return {@code null}.
      *
      * @param  id
-     *         The id of the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
+     *         The id of the {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel}.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with matching id.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} with matching id.
      */
     @Nullable
     default PrivateChannel getPrivateChannelById(@Nonnull final String id)
@@ -729,7 +734,7 @@ public interface ShardManager extends IGuildChannelContainer
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels} visible to this ShardManager instance.
+     * all cached {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannels} visible to this ShardManager instance.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -799,6 +804,13 @@ public interface ShardManager extends IGuildChannelContainer
     default SnowflakeCacheView<NewsChannel> getNewsChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getNewsChannelCache));
+    }
+
+    @Nonnull
+    @Override
+    default SnowflakeCacheView<ForumChannel> getForumChannelCache()
+    {
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getForumChannelCache));
     }
 
     /**
@@ -1155,9 +1167,9 @@ public interface ShardManager extends IGuildChannelContainer
     /**
      * Initializes and starts all shards. This should only be called once.
      *
-     * @throws LoginException
+     * @throws InvalidTokenException
      *         If the provided token is invalid.
      */
-    void login() throws LoginException;
+    void login();
 
 }

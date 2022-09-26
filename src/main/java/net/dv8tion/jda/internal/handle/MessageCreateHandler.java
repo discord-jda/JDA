@@ -15,13 +15,18 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageCreateHandler extends SocketHandler
@@ -119,10 +124,8 @@ public class MessageCreateHandler extends SocketHandler
             {
                 ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
 
-                //Discord will only ever allow this property to show up to 50,
-                // so we don't want to update it to be over 50 because we don't want users to use it incorrectly.
-                int newMessageCount = Math.min(gThread.getMessageCount() + 1, 50);
-                gThread.setMessageCount(newMessageCount);
+                gThread.setMessageCount(gThread.getMessageCount() + 1);
+                gThread.setTotalMessageCount(gThread.getTotalMessageCount() + 1);
             }
         }
         else

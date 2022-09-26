@@ -16,14 +16,21 @@
 
 package net.dv8tion.jda.api.entities.channel.unions;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * A union representing all channel types that implement {@link IPermissionContainer}.
- * <br>This class extends {@link IPermissionContainer} and primarily acts as a discovery tool for
- * developers to discover some common interfaces that a {@link IPermissionContainer} could be cast to.
+ * A union representing all channel types that implement {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer}.
+ * <br>This class extends {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer} and primarily acts as a discovery tool for
+ * developers to discover some common interfaces that a {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer} could be cast to.
  *
  * <br>This interface represents the follow concrete channel types:
  * <ul>
@@ -31,6 +38,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link NewsChannel}</li>
  *     <li>{@link VoiceChannel}</li>
  *     <li>{@link StageChannel}</li>
+ *     <li>{@link ForumChannel}</li>
  *     <li>{@link Category}</li>
  * </ul>
  */
@@ -147,6 +155,28 @@ public interface IPermissionContainerUnion extends IPermissionContainer
     Category asCategory();
 
     /**
+     * Casts this union to a {@link ForumChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * ForumChannel channel = union.asForumChannel();
+     * ForumChannel channel2 = (ForumChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#FORUM} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof ForumChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link ForumChannel}.
+     *
+     * @return The channel as a {@link ForumChannel}
+     */
+    @Nonnull
+    ForumChannel asForumChannel();
+
+    /**
      * Casts this union to a {@link GuildMessageChannel}.
      * This method exists for developer discoverability.
      *
@@ -192,7 +222,7 @@ public interface IPermissionContainerUnion extends IPermissionContainer
     AudioChannel asAudioChannel();
 
     /**
-     * Casts this union to a {@link IThreadContainer}.
+     * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
      * Note: This is effectively equivalent to using the cast operator:
@@ -205,9 +235,9 @@ public interface IPermissionContainerUnion extends IPermissionContainer
      * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
      *
      * @throws IllegalStateException
-     *         If the channel represented by this union is not actually a {@link IThreadContainer}.
+     *         If the channel represented by this union is not actually a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      *
-     * @return The channel as a {@link IThreadContainer}
+     * @return The channel as a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}
      */
     IThreadContainer asThreadContainer();
 

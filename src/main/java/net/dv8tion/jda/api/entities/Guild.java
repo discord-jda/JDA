@@ -15,10 +15,20 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.channel.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -822,35 +832,35 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<MetaData> retrieveMetaData();
 
     /**
-     * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
+     * Provides the {@link VoiceChannel VoiceChannel} that has been set as the channel
      * which {@link net.dv8tion.jda.api.entities.Member Members} will be moved to after they have been inactive in a
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.
+     * {@link VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.
      * <br>If no channel has been set as the AFK channel, this returns {@code null}.
      * <p>
      * This value can be modified using {@link GuildManager#setAfkChannel(VoiceChannel)}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that is the AFK Channel.
+     * @return Possibly-null {@link VoiceChannel VoiceChannel} that is the AFK Channel.
      */
     @Nullable
     VoiceChannel getAfkChannel();
 
     /**
-     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that has been set as the channel
+     * Provides the {@link TextChannel TextChannel} that has been set as the channel
      * which newly joined {@link net.dv8tion.jda.api.entities.Member Members} will be announced in.
      * <br>If no channel has been set as the system channel, this returns {@code null}.
      * <p>
      * This value can be modified using {@link GuildManager#setSystemChannel(TextChannel)}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the system Channel.
+     * @return Possibly-null {@link TextChannel TextChannel} that is the system Channel.
      */
     @Nullable
     TextChannel getSystemChannel();
 
     /**
-     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that lists the rules of the guild.
+     * Provides the {@link TextChannel TextChannel} that lists the rules of the guild.
      * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the rules channel
+     * @return Possibly-null {@link TextChannel TextChannel} that is the rules channel
      *
      * @see    #getFeatures()
      */
@@ -858,10 +868,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     TextChannel getRulesChannel();
 
     /**
-     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that receives community updates.
+     * Provides the {@link TextChannel TextChannel} that receives community updates.
      * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the community updates channel
+     * @return Possibly-null {@link TextChannel TextChannel} that is the community updates channel
      *
      * @see    #getFeatures()
      */
@@ -914,7 +924,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild.Timeout Timeout} set for this Guild representing the amount of time
-     * that must pass for a Member to have had no activity in a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * that must pass for a Member to have had no activity in a {@link VoiceChannel VoiceChannel}
      * to be considered AFK. If {@link #getAfkChannel()} is not {@code null} (thus an AFK channel has been set) then Member
      * will be automatically moved to the AFK channel after they have been inactive for longer than the returned Timeout.
      * <br>Default is {@link Timeout#SECONDS_300 300 seconds (5 minutes)}.
@@ -1275,21 +1285,24 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Override
     SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
+    @Nonnull
+    @Override
+    SortedSnowflakeCacheView<ForumChannel> getForumChannelCache();
+
     /**
      * Populated list of {@link GuildChannel channels} for this guild.
-     * This includes all types of channels, such as category/voice/text.
-     * <br>This includes hidden channels by default.
+     * <br>This includes all types of channels, except for threads.
+     * <br>This includes hidden channels by default,
+     * you can use {@link #getChannels(boolean) getChannels(false)} to exclude hidden channels.
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and NewsChannel without parent</li>
-     *     <li>VoiceChannel without parent</li>
-     *     <li>StageChannel without parent</li>
+     *     <li>TextChannel, ForumChannel, and NewsChannel without parent</li>
+     *     <li>VoiceChannel and StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and NewsChannel with category as parent</li>
-     *             <li>VoiceChannel with category as parent</li>
-     *             <li>StageChannel with category as parent</li>
+     *             <li>TextChannel, ForumChannel, and NewsChannel with category as parent</li>
+     *             <li>VoiceChannel and StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
@@ -1306,22 +1319,19 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Populated list of {@link GuildChannel channels} for this guild.
-     * This includes all types of channels, such as category/voice/text.
+     * <br>This includes all types of channels, except for threads.
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel and NewsChannel without parent</li>
-     *     <li>VoiceChannel without parent</li>
-     *     <li>StageChannel without parent</li>
+     *     <li>TextChannel, ForumChannel, and NewsChannel without parent</li>
+     *     <li>VoiceChannel and StageChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel and NewsChannel with category as parent</li>
-     *             <li>VoiceChannel with category as parent</li>
-     *             <li>StageChannel with category as parent</li>
+     *             <li>TextChannel, ForumChannel, and NewsChannel with category as parent</li>
+     *             <li>VoiceChannel and StageChannel with category as parent</li>
      *         </ol>
      *     </li>
      * </ol>
-     *
      *
      * @param  includeHidden
      *         Whether to include channels with denied {@link Permission#VIEW_CHANNEL View Channel Permission}
@@ -1895,7 +1905,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or
      * {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -1917,7 +1927,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link UserSnowflake}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int)} or {@link #unban(UserSnowflake)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(UserSnowflake, int, TimeUnit)} or {@link #unban(UserSnowflake)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -1984,14 +1994,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Role getPublicRole();
 
     /**
-     * The default {@link net.dv8tion.jda.api.entities.StandardGuildChannel} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * The default {@link StandardGuildChannel} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time when accepting an invite
      * that is not directed at a specific {@link IInviteContainer channel}.
      *
      * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
      * has the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in.
      *
-     * @return The {@link net.dv8tion.jda.api.entities.StandardGuildChannel channel} representing the default channel for this guild
+     * @return The {@link StandardGuildChannel channel} representing the default channel for this guild
      */
     @Nullable
     DefaultGuildChannelUnion getDefaultChannel();
@@ -2236,7 +2246,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Retrieves all {@link net.dv8tion.jda.api.entities.Webhook Webhooks} for this Guild.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
      *
-     * <p>To get all webhooks for a specific {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}, use
+     * <p>To get all webhooks for a specific {@link TextChannel TextChannel}, use
      * {@link TextChannel#retrieveWebhooks()}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -2933,8 +2943,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /* From GuildController */
 
     /**
-     * Used to move a {@link net.dv8tion.jda.api.entities.Member Member} from one {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}
-     * to another {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
+     * Used to move a {@link net.dv8tion.jda.api.entities.Member Member} from one {@link AudioChannel AudioChannel}
+     * to another {@link AudioChannel AudioChannel}.
      * <br>As a note, you cannot move a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild as the one that you are moving them to.
      *
@@ -2957,7 +2967,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  member
      *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
      * @param  audioChannel
-     *         The destination {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel} to which the member is being
+     *         The destination {@link AudioChannel AudioChannel} to which the member is being
      *         moved to. Or null to perform a voice kick.
      *
      * @throws IllegalStateException
@@ -2983,7 +2993,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel);
 
     /**
-     * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannel}.
+     * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link AudioChannel AudioChannel}.
      * <br>As a note, you cannot kick a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild.
      *
@@ -3182,10 +3192,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @deprecated
+     *         Use {@link #kick(UserSnowflake)} and {@link AuditableRestAction#reason(String)} instead.
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, @Nullable String reason);
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("kick(user).reason(reason)")
+    @DeprecatedSince("5.0.0")
+    default AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, @Nullable String reason)
+    {
+        return kick(user).reason(reason);
+    }
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -3219,20 +3239,32 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull UserSnowflake user)
-    {
-        return kick(user, null);
-    }
+    AuditableRestAction<Void> kick(@Nonnull UserSnowflake user);
 
     /**
-     * Bans the user specified by the provided {@link UserSnowflake} and deletes messages sent by the user based on the amount of delDays.
-     * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
+     * Bans the user specified by the provided {@link UserSnowflake} and deletes messages sent by the user based on the {@code deletionTimeframe}.
+     * <br>If you wish to ban a user without deleting any messages, provide {@code deletionTimeframe} with a value of 0.
+     * To set a ban reason, use {@link AuditableRestAction#reason(String)}.
      *
      * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserReference)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
+     *
+     * <p><b>Examples</b><br>
+     * Banning a user without deleting any messages:
+     * <pre>{@code
+     * guild.ban(user, 0, TimeUnit.SECONDS)
+     *      .reason("Banned for rude behavior")
+     *      .queue();
+     * }</pre>
+     * Banning a user and deleting messages from the past hour:
+     * <pre>{@code
+     * guild.ban(user, 1, TimeUnit.HOURS)
+     *      .reason("Banned for spamming")
+     *      .queue();
+     * }</pre>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -3247,10 +3279,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  user
      *         The {@link UserSnowflake} for the user to ban.
      *         This can be a member or user instance or {@link User#fromId(long)}.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
+     * @param  deletionTimeframe
+     *         The timeframe for the history of messages that will be deleted. (seconds precision)
+     * @param  unit
+     *         Timeframe unit as a {@link TimeUnit} (for example {@code ban(user, 7, TimeUnit.DAYS)}).
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
@@ -3259,64 +3291,18 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided reason is longer than 512 characters.</li>
-     *             <li>If the provided user is {@code null}</li>
+     *             <li>If the provided deletionTimeframe is negative.</li>
+     *             <li>If the provided deletionTimeframe is longer than 7 days.</li>
+     *             <li>If the provided user or time unit is {@code null}</li>
      *         </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     * @return {@link AuditableRestAction}
+     *
+     * @see    AuditableRestAction#reason(String)
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays, @Nullable String reason);
-
-    /**
-     * Bans the {@link UserSnowflake} and deletes messages sent by the user based on the amount of delDays.
-     * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     *
-     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserReference)}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
-     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User does not exit</li>
-     * </ul>
-     *
-     * @param  user
-     *         The {@link UserSnowflake} for the user to ban.
-     *         This can be a member or user instance or {@link User#fromId(long)}.
-     * @param  delDays
-     *         The history of messages, in days, that will be deleted.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided amount of days (delDays) is less than 0.</li>
-     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided user is {@code null}</li>
-     *         </ul>
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int delDays)
-    {
-        return ban(user, delDays, null);
-    }
+    AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int deletionTimeframe, @Nonnull TimeUnit unit);
 
     /**
      * Unbans the specified {@link UserSnowflake} from this Guild.
@@ -3328,7 +3314,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>The specified User is invalid</li>
+     *     <br>The specified User does not exist</li>
      * </ul>
      *
      * @param  user
@@ -3455,7 +3441,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         The {@link UserSnowflake} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  temporal
-     *         The time the specified Member will be released from time out or null to remove the time out
+     *         The time the specified Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -3465,6 +3451,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If any of the following are true
      *         <ul>
      *             <li>The provided {@code user} is null</li>
+     *             <li>The provided {@code temporal} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
@@ -3892,7 +3879,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> transferOwnership(@Nonnull Member newOwner);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} in this Guild.
+     * Creates a new {@link TextChannel TextChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -3906,12 +3893,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the TextChannel to create
+     *         The name of the TextChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -3924,7 +3911,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} in this Guild.
+     * Creates a new {@link TextChannel TextChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -3938,14 +3925,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the TextChannel to create
+     *         The name of the TextChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
@@ -3956,7 +3943,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     ChannelAction<TextChannel> createTextChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in this Guild.
+     * Creates a new {@link NewsChannel NewsChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -3970,12 +3957,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the NewsChannel to create
+     *         The name of the NewsChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new NewsChannel before creating it
@@ -3988,7 +3975,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} in this Guild.
+     * Creates a new {@link NewsChannel NewsChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4002,14 +3989,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the NewsChannel to create
+     *         The name of the NewsChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
@@ -4020,7 +4007,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} in this Guild.
+     * Creates a new {@link VoiceChannel VoiceChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4034,12 +4021,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the VoiceChannel to create
+     *         The name of the VoiceChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
@@ -4052,7 +4039,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} in this Guild.
+     * Creates a new {@link VoiceChannel VoiceChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4066,14 +4053,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the VoiceChannel to create
+     *         The name of the VoiceChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link ChannelAction ChannelAction}
@@ -4084,7 +4071,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild.
+     * Creates a new {@link StageChannel StageChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4098,12 +4085,12 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the StageChannel to create
+     *         The name of the StageChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new StageChannel before creating it
@@ -4116,7 +4103,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild.
+     * Creates a new {@link StageChannel StageChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4130,14 +4117,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the StageChannel to create
+     *         The name of the StageChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link ChannelAction ChannelAction}
@@ -4148,7 +4135,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     ChannelAction<StageChannel> createStageChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.Category Category} in this Guild.
+     * Creates a new {@link ForumChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4162,12 +4149,76 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the Category to create
+     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new ForumChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<ForumChannel> createForumChannel(@Nonnull String name)
+    {
+        return createForumChannel(name, null);
+    }
+
+    /**
+     * Creates a new {@link ForumChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     * @param  parent
+     *         The optional parent category for this channel, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
+     *         or the provided parent is not in the same guild.
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new ForumChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, @Nullable Category parent);
+
+    /**
+     * Creates a new {@link Category Category} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the Category to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Category before creating it
@@ -4443,7 +4494,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.Category Category}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link Category Category}
      */
     @Nonnull
     @CheckReturnValue
@@ -4465,7 +4516,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link TextChannel TextChannel}
      */
     @Nonnull
     @CheckReturnValue
@@ -4487,17 +4538,17 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link VoiceChannel VoiceChannel}
      */
     @Nonnull
     @CheckReturnValue
     ChannelOrderAction modifyVoiceChannelPositions();
 
     /**
-     * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Category#getTextChannels() Category#getTextChannels()}
+     * Modifies the positional order of {@link Category#getTextChannels() Category#getTextChannels()}
      * using an extension of {@link ChannelOrderAction ChannelOrderAction}
-     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this
-     * {@link net.dv8tion.jda.api.entities.Category Category}.
+     * specialized for ordering the nested {@link TextChannel TextChannels} of this
+     * {@link Category Category}.
      * <br>Like {@code ChannelOrderAction}, the returned {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction}
      * can be used to move TextChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
@@ -4514,20 +4565,20 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  category
-     *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
-     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} from.
+     *         The {@link Category Category} to order
+     *         {@link TextChannel TextChannels} from.
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link TextChannel TextChannel}
      */
     @Nonnull
     @CheckReturnValue
     CategoryOrderAction modifyTextChannelPositions(@Nonnull Category category);
 
     /**
-     * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Category#getVoiceChannels() Category#getVoiceChannels()}
+     * Modifies the positional order of {@link Category#getVoiceChannels() Category#getVoiceChannels()}
      * using an extension of {@link ChannelOrderAction ChannelOrderAction}
-     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this
-     * {@link net.dv8tion.jda.api.entities.Category Category}.
+     * specialized for ordering the nested {@link VoiceChannel VoiceChannels} of this
+     * {@link Category Category}.
      * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
      * can be used to move VoiceChannels {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up},
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}, or
@@ -4544,10 +4595,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  category
-     *         The {@link net.dv8tion.jda.api.entities.Category Category} to order
-     *         {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} from.
+     *         The {@link Category Category} to order
+     *         {@link VoiceChannel VoiceChannels} from.
      *
-     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link VoiceChannel VoiceChannels}
      */
     @Nonnull
     @CheckReturnValue
@@ -4559,12 +4610,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
      * or {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveTo(int) to} a specific position.
      *
-     * <p>This uses <b>ascending</b> ordering which means the lowest role is first!
-     * <br>This means the highest role appears at index {@code n - 1} and the lower role at index {@code 0}.
+     * <p>You can also move roles to a position relative to another role, by using {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveBelow(Object) moveBelow(...)}
+     * and {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveAbove(Object) moveAbove(...)}.
+     *
+     * <p>This uses <b>descending</b> ordering which means the highest role is first!
+     * <br>This means the lowest role appears at index {@code n - 1} and the highest role at index {@code 0}.
      * <br>Providing {@code true} to {@link #modifyRolePositions(boolean)} will result in the ordering being
-     * in ascending order, with the lower role at index {@code n - 1} and the highest at index {@code 0}.
+     * in ascending order, with the highest role at index {@code n - 1} and the lowest at index {@code 0}.
+     *
      * <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
-     * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
+     * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order, just like this method.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -4575,13 +4630,13 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     <br>The currently logged in account was removed from the Guild</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction RoleOrderAction}
+     * @return {@link RoleOrderAction}
      */
     @Nonnull
     @CheckReturnValue
     default RoleOrderAction modifyRolePositions()
     {
-        return modifyRolePositions(true);
+        return modifyRolePositions(false);
     }
 
     /**
@@ -4607,7 +4662,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
      *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
-     * @return {@link RoleOrderAction RoleOrderAction}
+     * @return {@link RoleOrderAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -4617,7 +4672,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Represents the idle time allowed until a user is moved to the
-     * AFK {@link net.dv8tion.jda.api.entities.VoiceChannel} if one is set
+     * AFK {@link VoiceChannel} if one is set
      * ({@link net.dv8tion.jda.api.entities.Guild#getAfkChannel() Guild.getAfkChannel()}).
      */
     enum Timeout

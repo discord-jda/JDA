@@ -16,13 +16,11 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
@@ -30,61 +28,13 @@ import java.util.function.BooleanSupplier;
  * This extension allows setting properties before executing the action.
  *
  * @see    Message#createThreadChannel(String)
- * @see    IThreadContainer#createThreadChannel(String)
- * @see    IThreadContainer#createThreadChannel(String, boolean)
- * @see    IThreadContainer#createThreadChannel(String, long)
- * @see    IThreadContainer#createThreadChannel(String, String)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, boolean)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, long)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer#createThreadChannel(String, String)
  */
-public interface ThreadChannelAction extends AuditableRestAction<ThreadChannel>
+public interface ThreadChannelAction extends AbstractThreadCreateAction<ThreadChannel, ThreadChannelAction>, FluentAuditableRestAction<ThreadChannel, ThreadChannelAction>
 {
-    @Nonnull
-    @Override
-    ThreadChannelAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    ThreadChannelAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    ThreadChannelAction deadline(long timestamp);
-
-    /**
-     * The guild to create this {@link GuildChannel} in
-     *
-     * @return The guild
-     */
-    @Nonnull
-    Guild getGuild();
-
-    /**
-     * The {@link ChannelType} for the resulting channel
-     *
-     * @return The channel type
-     */
-    @Nonnull
-    ChannelType getType();
-
-    /**
-     * Sets the name for the new GuildChannel
-     *
-     * @param  name
-     *         The not-null name for the new GuildChannel (1-100 chars long)
-     *
-     * @throws IllegalArgumentException
-     *         If the provided name is null or not between 1-100 chars long
-     *
-     * @return The current ChannelAction, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    ThreadChannelAction setName(@Nonnull String name);
-
-    //TODO-v5: Docs
-    @Nonnull
-    @CheckReturnValue
-    ThreadChannelAction setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
-
     //TODO-v5: Docs
     @Nonnull
     @CheckReturnValue

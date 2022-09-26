@@ -18,8 +18,13 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;

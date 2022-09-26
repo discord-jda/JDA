@@ -16,10 +16,10 @@
 
 /**
  * Events that are fired for {@link net.dv8tion.jda.api.entities.Message Messages} in
- * a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+ * a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
  * Such as {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent receiving}.
  *
- * <p>These events combine all {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+ * <p>These events combine all {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
  * messages but specifications can be found in subpackages.
  *
  * <p><b>Requirements</b><br>

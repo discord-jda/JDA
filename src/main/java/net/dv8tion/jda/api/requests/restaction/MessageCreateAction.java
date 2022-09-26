@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -33,9 +34,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Specialized {@link net.dv8tion.jda.api.requests.RestAction RestAction} used for sending messages to {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannels}.
+ * Specialized {@link net.dv8tion.jda.api.requests.RestAction RestAction} used for sending messages to {@link MessageChannel MessageChannels}.
  *
- * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(...)
+ * @see MessageChannel#sendMessage(MessageCreateData) MessageChannel.sendMessage(...)
  */
 public interface MessageCreateAction extends MessageCreateRequest<MessageCreateAction>, FluentRestAction<Message, MessageCreateAction>
 {

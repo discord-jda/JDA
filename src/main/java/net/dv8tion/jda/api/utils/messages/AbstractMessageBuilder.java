@@ -201,7 +201,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     /**
      * Whether this builder is considered empty, this checks for all <em>required</em> fields of the request type.
-     * <br>On a create request, this checks for {@link #setContent(String) content}, {@link #setEmbeds(Collection) embeds}, and {@link #setFiles(Collection) files}.
+     * <br>On a create request, this checks for {@link #setContent(String) content}, {@link #setEmbeds(Collection) embeds}, {@link #setComponents(Collection) components}, and {@link #setFiles(Collection) files}.
      * <br>An edit request is only considered empty if no setters were called. And never empty, if the builder is a {@link MessageEditRequest#setReplace(boolean) replace request}.
      *
      * @return True, if the builder state is empty

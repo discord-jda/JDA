@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.attribute;
 
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 /**
  * Channels which can be set to age-restricted.

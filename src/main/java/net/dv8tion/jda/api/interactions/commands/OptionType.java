@@ -62,7 +62,7 @@ public enum OptionType
      */
     USER(6),
     /**
-     * Options which accept a single {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * Options which accept a single {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}
      * @see OptionMapping#getAsChannel()
      */
     CHANNEL(7),

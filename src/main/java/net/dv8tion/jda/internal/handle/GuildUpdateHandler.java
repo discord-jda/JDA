@@ -17,8 +17,8 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 public class GuildUpdateHandler extends SocketHandler
 {
@@ -94,7 +93,7 @@ public class GuildUpdateHandler extends SocketHandler
         if (!content.isNull("features"))
         {
             DataArray featureArr = content.getArray("features");
-            features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
+            features = featureArr.stream(DataArray::getString).map(String::intern).collect(Collectors.toSet());
         }
         else
         {

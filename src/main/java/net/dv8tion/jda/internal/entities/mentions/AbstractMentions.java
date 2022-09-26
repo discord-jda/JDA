@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.utils.MiscUtil;

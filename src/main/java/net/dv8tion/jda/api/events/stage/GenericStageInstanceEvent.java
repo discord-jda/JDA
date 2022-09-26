@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.events.stage;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 
 import javax.annotation.Nonnull;

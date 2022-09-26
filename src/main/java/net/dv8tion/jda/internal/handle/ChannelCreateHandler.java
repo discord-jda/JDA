@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Channel;
-import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -46,7 +46,8 @@ public class ChannelCreateHandler extends SocketHandler
         }
 
         Channel channel = buildChannel(type, content, guildId);
-        if (channel == null) {
+        if (channel == null)
+        {
             WebSocketClient.LOG.debug("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: {}", content);
             return null;
         }
@@ -66,6 +67,7 @@ public class ChannelCreateHandler extends SocketHandler
             case VOICE: return builder.createVoiceChannel(content, guildId);
             case STAGE: return builder.createStageChannel(content, guildId);
             case CATEGORY: return builder.createCategory(content, guildId);
+            case FORUM: return builder.createForumChannel(content, guildId);
 
             default:
                 return null;

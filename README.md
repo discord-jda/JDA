@@ -144,7 +144,7 @@ configure it on the `JDABuilder` with `setEventManager(...)`.
 public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
-            throws LoginException, InterruptedException
+            throws InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = JDABuilder.createDefault("token")
@@ -170,7 +170,6 @@ public class ReadyListener implements EventListener
 public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
-            throws LoginException
     {
         JDA jda = JDABuilder.createDefault("token")
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
@@ -204,7 +203,7 @@ public class MessageListener extends ListenerAdapter
 ```java
 public class Bot extends ListenerAdapter
 {
-    public static void main(String[] args) throws LoginException
+    public static void main(String[] args)
     {
         if (args.length < 1) {
             System.out.println("You have to provide a token as first argument!");
@@ -241,7 +240,7 @@ public class Bot extends ListenerAdapter
 ```java
 public class Bot extends ListenerAdapter
 {
-    public static void main(String[] args) throws LoginException
+    public static void main(String[] args)
     {
         if (args.length < 1) {
             System.out.println("You have to provide a token as first argument!");

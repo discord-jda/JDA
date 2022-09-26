@@ -17,9 +17,8 @@
 package net.dv8tion.jda.api.events.guild.override;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 
 import javax.annotation.Nonnull;
 

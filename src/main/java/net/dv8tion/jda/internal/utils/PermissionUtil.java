@@ -17,6 +17,11 @@ package net.dv8tion.jda.internal.utils;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import org.apache.commons.collections4.CollectionUtils;
@@ -145,7 +150,7 @@ public class PermissionUtil
 
     /**
      * Checks whether the specified {@link RichCustomEmoji Emoji} can be used by the provided
-     * {@link net.dv8tion.jda.api.entities.User User} in the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+     * {@link net.dv8tion.jda.api.entities.User User} in the {@link MessageChannel MessageChannel}.
      *
      * @param  issuer
      *         The user that tries to interact with the emoji
@@ -190,7 +195,7 @@ public class PermissionUtil
 
     /**
      * Checks whether the specified {@link RichCustomEmoji} can be used by the provided
-     * {@link net.dv8tion.jda.api.entities.User User} in the {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+     * {@link net.dv8tion.jda.api.entities.User User} in the {@link MessageChannel MessageChannel}.
      *
      * @param  issuer
      *         The user that tries to interact with the emoji

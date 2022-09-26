@@ -15,16 +15,20 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.*;
-import net.dv8tion.jda.internal.entities.mixin.channel.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.MemberPresenceImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.VoiceChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 

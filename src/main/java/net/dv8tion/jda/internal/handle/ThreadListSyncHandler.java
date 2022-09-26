@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -42,9 +42,17 @@ public class ThreadListSyncHandler extends SocketHandler
         for (int i = 0; i < threadsArrayJson.length(); i++)
         {
             DataObject threadJson = threadsArrayJson.getObject(i);
-            ThreadChannel thread = entityBuilder.createThreadChannel(threadJson, guildId);
-
-            api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
+            try
+            {
+                ThreadChannel thread = entityBuilder.createThreadChannel(threadJson, guildId);
+                api.handleEvent(new ThreadRevealedEvent(api, responseNumber, thread));
+            }
+            catch (IllegalArgumentException ex)
+            {
+                if (!EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage()))
+                    throw ex;
+                EntityBuilder.LOG.debug("Discarding thread on sync because of missing parent channel cache. JSON: {}", threadJson);
+            }
         }
 
         return null;
