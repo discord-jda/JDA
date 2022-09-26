@@ -555,6 +555,17 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Set<String> getFeatures();
 
     /**
+     * Whether the invites for this guild are paused/disabled.
+     * <br>This is equivalent to {@code getFeatures().contains("INVITES_DISABLED")}.
+     *
+     * @return True, if invites are paused/disabled
+     */
+    default boolean isInvitesDisabled()
+    {
+        return getFeatures().contains("INVITES_DISABLED");
+    }
+
+    /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.
      * If no splash has been set, this returns {@code null}.
