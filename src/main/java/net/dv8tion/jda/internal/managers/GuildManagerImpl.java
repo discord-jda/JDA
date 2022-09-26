@@ -32,7 +32,9 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class GuildManagerImpl extends ManagerBase<GuildManager> implements GuildManager
@@ -49,7 +51,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected int explicitContentLevel;
     protected int verificationLevel;
     protected boolean boostProgressBarEnabled;
-    protected List<String> features;
+    protected Set<String> features;
 
     public GuildManagerImpl(Guild guild)
     {
@@ -296,7 +298,33 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         Checks.noneNull(features, "Features");
         this.features = features.stream()
                 .map(String::toUpperCase)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
+        set |= FEATURES;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager addFeatures(@Nonnull Collection<String> features)
+    {
+        return updateFeatures(features, this.features::add);
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager removeFeatures(@Nonnull Collection<String> features)
+    {
+        return updateFeatures(features, this.features::remove);
+    }
+
+    private GuildManager updateFeatures(Collection<String> changed, Consumer<String> op)
+    {
+        Checks.noneNull(changed, "Features");
+        if (this.features == null)
+            this.features = new HashSet<>(getGuild().getFeatures());
+        changed.stream()
+               .map(String::toUpperCase)
+               .forEach(op);
         set |= FEATURES;
         return this;
     }
