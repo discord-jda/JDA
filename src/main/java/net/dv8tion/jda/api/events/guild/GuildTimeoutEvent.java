@@ -18,13 +18,13 @@ package net.dv8tion.jda.api.events.guild;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 
 import javax.annotation.Nonnull;
 
 /**
  * Indicates that a guild failed to ready up and timed out.
- * <br>Usually this event will be fired right before a {@link net.dv8tion.jda.api.events.ReadyEvent ReadyEvent}.
+ * <br>Usually this event will be fired right before a {@link ReadyEvent ReadyEvent}.
  *
  * <p>This will mark the guild as <b>unavailable</b> and it will not be usable when JDA becomes ready.
  * You can check all unavailable guilds with {@link ReadyEvent#getGuildUnavailableCount()} and {@link JDA#getUnavailableGuilds()}.

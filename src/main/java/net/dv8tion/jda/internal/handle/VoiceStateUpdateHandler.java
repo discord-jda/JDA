@@ -178,11 +178,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
             {
                 ((AudioChannelMixin<?>) channel).getConnectedMembersMap().put(userId, member);
                 getJDA().getEntityBuilder().updateMemberCache(member);
-
-                getJDA().handleEvent(
-                    new GuildVoiceJoinEvent(
-                        getJDA(), responseNumber,
-                        member));
             }
             else if (channel == null)
             {
@@ -190,11 +185,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
-
-                getJDA().handleEvent(
-                    new GuildVoiceLeaveEvent(
-                        getJDA(), responseNumber,
-                        member, oldChannel));
             }
             else
             {
@@ -220,11 +210,12 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 ((AudioChannelMixin<?>) oldChannel).getConnectedMembersMap().remove(userId);
                 getJDA().getEntityBuilder().updateMemberCache(member);
 
-                getJDA().handleEvent(
-                    new GuildVoiceMoveEvent(
-                        getJDA(), responseNumber,
-                        member, oldChannel));
             }
+
+            getJDA().handleEvent(
+                new GuildVoiceUpdateEvent(
+                    getJDA(), responseNumber,
+                    member, oldChannel));
         }
 
         if (isSelf && voiceInterceptor != null)

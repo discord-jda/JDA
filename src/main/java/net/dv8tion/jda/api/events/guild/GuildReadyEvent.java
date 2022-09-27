@@ -18,16 +18,17 @@ package net.dv8tion.jda.api.events.guild;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.events.session.SessionRecreateEvent;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} finished setting up
+ * Indicates that a {@link Guild} finished setting up
  * <br>This event is fired if a guild finished setting up during login phase.
  * After this event is fired, JDA will start dispatching events related to this guild.
  * This indicates a guild was created and added to the cache. It will be fired for both the initial
- * setup and full reconnects (indicated by {@link net.dv8tion.jda.api.events.ReconnectedEvent ReconnectedEvent}).
+ * setup and full reconnects (indicated by {@link SessionRecreateEvent}).
  *
  * <p>Can be used to initialize any services that depend on this guild.
  *
@@ -35,7 +36,8 @@ import javax.annotation.Nonnull;
  * Guilds that fail to ready up will either timeout or get marked as unavailable.
  * <br>You can use {@link ReadyEvent#getGuildUnavailableCount()} and {@link JDA#getUnavailableGuilds()} to check for unavailable guilds.
  * {@link GuildTimeoutEvent} will be fired for guilds that don't ready up and also don't get marked as unavailable by Discord.
- * Guilds that timeout will be marked as unavailable by the timeout event, they will <b>not</b> fire a {@link GuildUnavailableEvent} as that event is only indicating that a guild becomes unavailable <b>after</b> ready happened.
+ * Guilds that timeout will be marked as unavailable by the timeout event,
+ * they will <b>not</b> fire a {@link GuildUnavailableEvent} as that event is only indicating that a guild becomes unavailable <b>after</b> ready happened.
  */
 public class GuildReadyEvent extends GenericGuildEvent
 {
