@@ -2086,7 +2086,7 @@ public class EntityBuilder
             else
                 guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
 
-            final GuildWelcomeScreen welcomeScreen = guildObject.isNull("welcome_screen") ? null : createWelcomeScreen(guildObject.getObject("welcome_screen"));
+            final GuildWelcomeScreen welcomeScreen = guildObject.isNull("welcome_screen") ? null : createWelcomeScreen(null, guildObject.getObject("welcome_screen"));
 
             guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
@@ -2159,21 +2159,22 @@ public class EntityBuilder
                               uses, channel, guild, group, target, type);
     }
 
-    public GuildWelcomeScreen createWelcomeScreen(DataObject object)
+    public GuildWelcomeScreen createWelcomeScreen(Guild guild, DataObject object)
     {
         final DataArray welcomeChannelsArray = object.getArray("welcome_channels");
         final List<GuildWelcomeScreen.Channel> welcomeChannels = new ArrayList<>(welcomeChannelsArray.length());
         for (int i = 0; i < welcomeChannelsArray.length(); i++)
         {
             final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
-            welcomeChannels.add(new GuildWelcomeScreen.Channel(api,
+            welcomeChannels.add(new GuildWelcomeScreen.Channel(
+                    guild,
                     welcomeChannelObj.getLong("channel_id"),
                     welcomeChannelObj.getString("description"),
                     welcomeChannelObj.getString("emoji_id", null),
                     welcomeChannelObj.getString("emoji_name", null))
             );
         }
-        return new GuildWelcomeScreen(object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
+        return new GuildWelcomeScreen(guild, object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
     }
 
     public Template createTemplate(DataObject object)

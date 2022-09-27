@@ -1329,7 +1329,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
             EntityBuilder entityBuilder = api.getEntityBuilder();
-            return entityBuilder.createWelcomeScreen(response.getObject());
+            return entityBuilder.createWelcomeScreen(this, response.getObject());
         });
     }
 

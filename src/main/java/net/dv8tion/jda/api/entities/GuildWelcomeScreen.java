@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,13 +35,22 @@ import java.util.List;
  */
 public class GuildWelcomeScreen
 {
+    private final Guild guild;
     private final String description;
     private final List<GuildWelcomeScreen.Channel> channels;
 
-    public GuildWelcomeScreen(String description, List<GuildWelcomeScreen.Channel> channels)
+    public GuildWelcomeScreen(Guild guild, String description, List<GuildWelcomeScreen.Channel> channels)
     {
+        this.guild = guild;
         this.description = description;
         this.channels = channels;
+    }
+
+    //TODO docs
+    @Nullable
+    public Guild getGuild()
+    {
+        return guild;
     }
 
     /**
@@ -72,19 +84,26 @@ public class GuildWelcomeScreen
      */
     public static class Channel implements ISnowflake
     {
-        private final JDA api;
+        private final Guild guild;
         private final long id;
         private final String description;
         private final String emoteId;
         private final String emojiName;
 
-        public Channel(JDA api, long id, String description, String emoteId, String emojiName)
+        public Channel(Guild guild, long id, String description, String emoteId, String emojiName)
         {
-            this.api = api;
+            this.guild = guild;
             this.id = id;
             this.description = description;
             this.emoteId = emoteId;
             this.emojiName = emojiName;
+        }
+
+        //TODO docs
+        @Nullable
+        public Guild getGuild()
+        {
+            return guild;
         }
 
         /**
@@ -102,12 +121,17 @@ public class GuildWelcomeScreen
          * Returns the {@link GuildChannel} that is linked to this recommended channel.
          * <br>This will be {@code null} if the linked channel was deleted.
          *
+         * TODO add throw
+         *
          * @return The {@link GuildChannel} that is linked to this recommended channel or {@code null}
          */
         @Nullable
         public GuildChannel getChannel()
         {
-            return api.getGuildChannelById(id);
+            if (guild == null)
+                throw new IllegalStateException("Cannot retrieve channel from invites");
+
+            return guild.getGuildChannelById(id);
         }
 
         /**
@@ -144,6 +168,19 @@ public class GuildWelcomeScreen
         public String getEmojiName()
         {
             return emojiName;
+        }
+
+        //TODO docs
+        @SuppressWarnings("unchecked")
+        @Nonnull
+        public RestAction<? extends EmojiUnion> retrieveEmoji()
+        {
+            if (guild == null)
+                throw new IllegalStateException("Cannot retrieve channel from invites");
+
+            if (emoteId == null)
+                return (RestAction<? extends EmojiUnion>) new CompletedRestAction<>(guild.getJDA(), Emoji.fromUnicode(emojiName));
+            return (RestAction<? extends EmojiUnion>) guild.retrieveEmojiById(emoteId);
         }
     }
 }
