@@ -114,9 +114,7 @@ public class GuildWelcomeScreen
 
         /**
          * Returns the {@link GuildChannel} that is linked to this recommended channel.
-         * <br>This will be {@code null} if the linked channel was deleted.
-         *
-         * TODO add throw
+         * <br>This will be {@code null} if the linked channel was deleted, or if the welcome screen comes from an {@link Invite.Guild invite guild}.
          *
          * @return The {@link GuildChannel} that is linked to this recommended channel or {@code null}
          */
@@ -124,7 +122,7 @@ public class GuildWelcomeScreen
         public GuildChannel getChannel()
         {
             if (guild == null)
-                throw new IllegalStateException("Cannot retrieve channel from invites");
+                return null;
 
             return guild.getGuildChannelById(id);
         }
