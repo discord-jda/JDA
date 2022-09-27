@@ -17,10 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -87,16 +84,14 @@ public class GuildWelcomeScreen
         private final Guild guild;
         private final long id;
         private final String description;
-        private final String emoteId;
-        private final String emojiName;
+        private final EmojiUnion emoji;
 
-        public Channel(Guild guild, long id, String description, String emoteId, String emojiName)
+        public Channel(Guild guild, long id, String description, EmojiUnion emoji)
         {
             this.guild = guild;
             this.id = id;
             this.description = description;
-            this.emoteId = emoteId;
-            this.emojiName = emojiName;
+            this.emoji = emoji;
         }
 
         //TODO docs
@@ -146,41 +141,16 @@ public class GuildWelcomeScreen
         }
 
         /**
+         * TODO update docs, "animated" is always false
          * The id of the emote that is used for this recommended channel.
          * <br><b>This will return {@code null} if the emoji is a unicode emoji.</b>
          *
          * @return The id of the emote that is used for this recommended channel or {@code null}
          */
         @Nullable
-        public String getEmoteId()
+        public EmojiUnion getEmoji()
         {
-            return emoteId;
-        }
-
-        /**
-         * The name of the emoji that is used for this recommended channel.
-         * <br>This will return the emote name if {@link #getEmoteId()} is not null, otherwise the unicode emoji or {@code null}
-         * is returned if no emoji was set.
-         *
-         * @return The name of the emoji that is used for this recommended channel or {@code null}
-         */
-        @Nullable
-        public String getEmojiName()
-        {
-            return emojiName;
-        }
-
-        //TODO docs
-        @SuppressWarnings("unchecked")
-        @Nonnull
-        public RestAction<? extends EmojiUnion> retrieveEmoji()
-        {
-            if (guild == null)
-                throw new IllegalStateException("Cannot retrieve channel from invites");
-
-            if (emoteId == null)
-                return (RestAction<? extends EmojiUnion>) new CompletedRestAction<>(guild.getJDA(), Emoji.fromUnicode(emojiName));
-            return (RestAction<? extends EmojiUnion>) guild.retrieveEmojiById(emoteId);
+            return emoji;
         }
     }
 }

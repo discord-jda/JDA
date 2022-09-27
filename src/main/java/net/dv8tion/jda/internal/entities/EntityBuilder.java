@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
@@ -2086,7 +2087,9 @@ public class EntityBuilder
             else
                 guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
 
-            final GuildWelcomeScreen welcomeScreen = guildObject.isNull("welcome_screen") ? null : createWelcomeScreen(null, guildObject.getObject("welcome_screen"));
+            final GuildWelcomeScreen welcomeScreen = guildObject.isNull("welcome_screen")
+                    ? null
+                    : createWelcomeScreen(null, guildObject.getObject("welcome_screen"));
 
             guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
@@ -2166,12 +2169,22 @@ public class EntityBuilder
         for (int i = 0; i < welcomeChannelsArray.length(); i++)
         {
             final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
+            final String emojiId = welcomeChannelObj.getString("emoji_id", null);
+            final String emojiName = welcomeChannelObj.getString("emoji_name", null);
+            final EmojiUnion emoji;
+            if (emojiName != null && emojiId != null) {
+                emoji = (EmojiUnion) Emoji.fromCustom(emojiName, Long.parseUnsignedLong(emojiId), false);
+            } else if (emojiName != null) {
+                emoji = (EmojiUnion) Emoji.fromUnicode(emojiName);
+            } else {
+                emoji = null;
+            }
+
             welcomeChannels.add(new GuildWelcomeScreen.Channel(
                     guild,
                     welcomeChannelObj.getLong("channel_id"),
                     welcomeChannelObj.getString("description"),
-                    welcomeChannelObj.getString("emoji_id", null),
-                    welcomeChannelObj.getString("emoji_name", null))
+                    emoji)
             );
         }
         return new GuildWelcomeScreen(guild, object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
