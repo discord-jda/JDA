@@ -2086,7 +2086,9 @@ public class EntityBuilder
             else
                 guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
 
-            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
+            final GuildWelcomeScreen welcomeScreen = guildObject.isNull("welcome_screen") ? null : createWelcomeScreen(guildObject.getObject("welcome_screen"));
+
+            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
             final String channelName = channelObject.getString("name");
             final long channelId = channelObject.getLong("id");
@@ -2155,6 +2157,23 @@ public class EntityBuilder
         return new InviteImpl(getJDA(), code, expanded, inviter,
                               maxAge, maxUses, temporary, timeCreated,
                               uses, channel, guild, group, target, type);
+    }
+
+    public GuildWelcomeScreen createWelcomeScreen(DataObject object)
+    {
+        final DataArray welcomeChannelsArray = object.getArray("welcome_channels");
+        final List<GuildWelcomeScreen.Channel> welcomeChannels = new ArrayList<>(welcomeChannelsArray.length());
+        for (int i = 0; i < welcomeChannelsArray.length(); i++)
+        {
+            final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
+            welcomeChannels.add(new GuildWelcomeScreen.Channel(api,
+                    welcomeChannelObj.getLong("channel_id"),
+                    welcomeChannelObj.getString("description"),
+                    welcomeChannelObj.getString("emoji_id", null),
+                    welcomeChannelObj.getString("emoji_name", null))
+            );
+        }
+        return new GuildWelcomeScreen(object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
     }
 
     public Template createTemplate(DataObject object)

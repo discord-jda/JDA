@@ -2260,6 +2260,26 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<List<Webhook>> retrieveWebhooks();
 
     /**
+     * Retrieves the {@link GuildWelcomeScreen Welcome screen} for this Guild.
+     * <br>The welcome screen is shown to all members after joining the Guild.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_WELCOME_SCREEN Unknown Guild Welcome Screen}
+     *     <br>The guild has no welcome screen</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS Missing Permissions}
+     *     <br>The guild's welcome screen is disabled
+     *     and the currently logged in account doesn't have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission</li>
+     * </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildWelcomeScreen GuildWelcomeScreen}
+     *         <br>The welcome screen for this Guild.
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<GuildWelcomeScreen> retrieveWelcomeScreen();
+
+    /**
      * A list containing the {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState} of every {@link net.dv8tion.jda.api.entities.Member Member}
      * in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>This will never return an empty list because if it were empty, that would imply that there are no

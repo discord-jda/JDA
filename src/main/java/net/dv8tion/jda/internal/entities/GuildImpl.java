@@ -1323,6 +1323,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public RestAction<GuildWelcomeScreen> retrieveWelcomeScreen()
+    {
+        final Route.CompiledRoute route = Route.Guilds.GET_WELCOME_SCREEN.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            return entityBuilder.createWelcomeScreen(response.getObject());
+        });
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel)
     {
         Checks.notNull(member, "Member");
