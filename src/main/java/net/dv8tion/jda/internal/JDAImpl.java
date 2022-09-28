@@ -96,6 +96,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -133,7 +136,6 @@ public class JDAImpl implements JDA
     protected WebSocketClient client;
     protected Requester requester;
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
-    protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected long responseTotal;
@@ -144,6 +146,10 @@ public class JDAImpl implements JDA
     protected String clientId = null,  requiredScopes = "bot";
     protected ShardManager shardManager = null;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
+
+    protected final AtomicReference<Status> status = new AtomicReference<>(Status.INITIALIZING);
+    protected final ReentrantLock statusLock = new ReentrantLock();
+    protected final Condition statusCondition = statusLock.newCondition();
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
@@ -360,14 +366,14 @@ public class JDAImpl implements JDA
 
     public void setStatus(Status status)
     {
-        //noinspection SynchronizeOnNonFinalField
-        synchronized (this.status)
-        {
-            Status oldStatus = this.status;
-            this.status = status;
+        StatusChangeEvent event = MiscUtil.locked(statusLock, () -> {
+            Status oldStatus = this.status.getAndSet(status);
+            this.statusCondition.signalAll();
 
-            handleEvent(new StatusChangeEvent(this, status, oldStatus));
-        }
+            return new StatusChangeEvent(this, status, oldStatus);
+        });
+
+        handleEvent(event);
     }
 
     public void verifyToken()
@@ -442,7 +448,7 @@ public class JDAImpl implements JDA
     @Override
     public Status getStatus()
     {
-        return status;
+        return status.get();
     }
 
     @Nonnull
@@ -485,19 +491,28 @@ public class JDAImpl implements JDA
     public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn) throws InterruptedException
     {
         Checks.notNull(status, "Status");
-        Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
         if (getStatus() == Status.CONNECTED)
             return this;
-        List<Status> failStatus = Arrays.asList(failOn);
-        while (!getStatus().isInit()                         // JDA might disconnect while starting
-                || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
+
+        MiscUtil.tryLock(statusLock);
+        try
         {
-            if (getStatus() == Status.SHUTDOWN)
-                throw new IllegalStateException("Was shutdown trying to await status");
-            else if (failStatus.contains(getStatus()))
-                return this;
-            Thread.sleep(50);
+            List<Status> failStatus = Arrays.asList(failOn);
+            while (getStatus() != status)
+            {
+                if (getStatus() == Status.SHUTDOWN)
+                    throw new IllegalStateException("Was shutdown trying to await status");
+                else if (failStatus.contains(getStatus()))
+                    return this;
+
+                statusCondition.await();
+            }
         }
+        finally
+        {
+            statusLock.unlock();
+        }
+
         return this;
     }
 
@@ -784,6 +799,7 @@ public class JDAImpl implements JDA
     @Override
     public synchronized void shutdown()
     {
+        Status status = getStatus();
         if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN)
             return;
 
@@ -800,7 +816,7 @@ public class JDAImpl implements JDA
 
     public synchronized void shutdownInternals()
     {
-        if (status == Status.SHUTDOWN)
+        if (getStatus() == Status.SHUTDOWN)
             return;
         //so we can shutdown from WebSocketClient properly
         closeAudioConnections();

@@ -455,6 +455,7 @@ class AudioWebSocket extends WebSocketAdapter
                 LOG.debug("Successfully resumed session!");
                 changeStatus(ConnectionStatus.CONNECTED);
                 ready = true;
+                MiscUtil.locked(audioConnection.readyLock, audioConnection.readyCondvar::signalAll);
                 break;
             }
             case VoiceCode.SESSION_DESCRIPTION:
@@ -474,6 +475,7 @@ class AudioWebSocket extends WebSocketAdapter
 
                 LOG.debug("Audio connection has finished connecting!");
                 ready = true;
+                MiscUtil.locked(audioConnection.readyLock, audioConnection.readyCondvar::signalAll);
                 changeStatus(ConnectionStatus.CONNECTED);
                 break;
             }
