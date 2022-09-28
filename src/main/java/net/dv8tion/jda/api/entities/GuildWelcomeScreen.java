@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 
 import javax.annotation.Nonnull;
@@ -24,7 +25,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * The welcome screen of a {@link net.dv8tion.jda.api.entities.Guild}.
+ * The welcome screen of a {@link Guild}.
  * This welcome screen will be shown to all members after joining the Guild.
  *
  * @see Guild#retrieveWelcomeScreen()
@@ -43,7 +44,11 @@ public class GuildWelcomeScreen
         this.channels = channels;
     }
 
-    //TODO docs
+    /**
+     * The {@link Guild Guild}
+     *
+     * @return The Guild
+     */
     @Nullable
     public Guild getGuild()
     {
@@ -94,7 +99,11 @@ public class GuildWelcomeScreen
             this.emoji = emoji;
         }
 
-        //TODO docs
+        /**
+         * The {@link Guild Guild}, or {@code null} if this welcome screen came from an {@link net.dv8tion.jda.api.entities.Invite}
+         *
+         * @return The Guild
+         */
         @Nullable
         public Guild getGuild()
         {
@@ -139,11 +148,17 @@ public class GuildWelcomeScreen
         }
 
         /**
-         * TODO update docs, "animated" is always false
-         * The id of the emote that is used for this recommended channel.
-         * <br><b>This will return {@code null} if the emoji is a unicode emoji.</b>
+         * The emoji that is used for this recommended channel.
+         * <br><b>This will return {@code null} if no emoji was set</b>
          *
-         * @return The id of the emote that is used for this recommended channel or {@code null}
+         * <p>The emoji will always be from this guild, if not a unicode emoji
+         * <br><b>{@link CustomEmoji#isAnimated()} will always return {@code false} if:</b>
+         * <ul>
+         *     <li>This welcome screen came from an {@link net.dv8tion.jda.api.entities.Invite.Guild invite's guild}</li>
+         *     <li>{@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI CacheFlag.EMOJI} is disabled</li>
+         * </ul>
+         *
+         * @return The emoji that is used for this recommended channel or {@code null}
          */
         @Nullable
         public EmojiUnion getEmoji()
