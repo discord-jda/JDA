@@ -340,12 +340,15 @@ public interface JDA extends IGuildChannelContainer
      * </ol>
      *
      * @param  status
-     *         The status to wait for, once JDA has reached the provided status, this method returns successfully
+     *         The init status to wait for, once JDA has reached the specified
+     *         stage of the startup cycle this method will return.
      * @param  failOn
      *         Optional failure states that will force a premature return
      *
      * @throws InterruptedException
      *         If this thread is interrupted while waiting
+     * @throws IllegalArgumentException
+     *         If the provided status is null or not an init status ({@link Status#isInit()})
      * @throws IllegalStateException
      *         If JDA is shutdown during this wait period
      *

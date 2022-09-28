@@ -497,15 +497,18 @@ public class JDAImpl implements JDA
         MiscUtil.tryLock(statusLock);
         try
         {
-            List<Status> failStatus = Arrays.asList(failOn);
-            while (getStatus() != status)
+            EnumSet<Status> endCondition = EnumSet.of(status, failOn);
+            Status current = getStatus();
+            while (!current.isInit()                      // In case of disconnects during startup
+                 || current.ordinal() < status.ordinal()) // If we missed the status (e.g. LOGGING_IN -> CONNECTED happened while waiting for lock)
             {
-                if (getStatus() == Status.SHUTDOWN)
+                if (current == Status.SHUTDOWN)
                     throw new IllegalStateException("Was shutdown trying to await status");
-                else if (failStatus.contains(getStatus()))
+                if (endCondition.contains(current))
                     return this;
 
                 statusCondition.await();
+                current = getStatus();
             }
         }
         finally
