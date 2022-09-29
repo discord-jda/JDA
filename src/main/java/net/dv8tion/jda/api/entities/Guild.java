@@ -44,6 +44,7 @@ import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
+import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -4685,6 +4686,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     RoleOrderAction modifyRolePositions(boolean useAscendingOrder);
+
+    //TODO docs
+    @Nonnull
+    @CheckReturnValue
+    GuildWelcomeScreenManager modifyWelcomeScreen();
 
     //////////////////////////
 

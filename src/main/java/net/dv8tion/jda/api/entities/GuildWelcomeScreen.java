@@ -17,8 +17,13 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -84,7 +89,7 @@ public class GuildWelcomeScreen
      *
      * @see GuildWelcomeScreen#getChannels()
      */
-    public static class Channel implements ISnowflake
+    public static class Channel implements ISnowflake, SerializableData
     {
         private final Guild guild;
         private final long id;
@@ -97,6 +102,24 @@ public class GuildWelcomeScreen
             this.id = id;
             this.description = description;
             this.emoji = emoji;
+        }
+
+        //TODO docs
+        @Nonnull
+        public static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description)
+        {
+            return of(channel, description, null);
+        }
+
+        //TODO docs
+        @Nonnull
+        public static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description, @Nullable Emoji emoji)
+        {
+            Checks.notBlank(description, "Description");
+            Checks.notLonger(description, 42, "Description"); //TODO const
+
+            //TODO checks
+            return new Channel(channel.getGuild(), channel.getIdLong(), description, (EmojiUnion) emoji);
         }
 
         /**
@@ -164,6 +187,23 @@ public class GuildWelcomeScreen
         public EmojiUnion getEmoji()
         {
             return emoji;
+        }
+
+        @Nonnull
+        @Override
+        public DataObject toData()
+        {
+            final DataObject data = DataObject.empty();
+            data.put("channel_id", id);
+            data.put("description", description);
+            if (emoji != null)
+            {
+                if (emoji.getType() == Emoji.Type.CUSTOM)
+                    data.put("emoji_id", ((CustomEmoji) emoji).getId());
+                data.put("emoji_name", emoji.getName());
+            }
+
+            return data;
         }
     }
 }
