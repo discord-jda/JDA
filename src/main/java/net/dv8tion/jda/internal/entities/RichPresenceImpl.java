@@ -144,7 +144,7 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     @Override
     public String toString()
     {
-        return "RichPresence[" + name + "](" + applicationId + ')';
+        return "RichPresence[" + name + "](" + applicationId + ")";
     }
 
     @Override

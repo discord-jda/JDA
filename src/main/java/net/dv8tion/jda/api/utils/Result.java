@@ -295,6 +295,6 @@ public class Result<T>
     @Override
     public String toString()
     {
-        return isSuccess() ? "Result(success=" + value + ')' : "Result(error=" + error + ')';
+        return isSuccess() ? "Result(success=" + value + ")" : "Result(error=" + error + ")";
     }
 }

@@ -503,7 +503,7 @@ public class Route
         @Override
         public String toString()
         {
-            return "CompiledRoute[" + method + "](" + compiledRoute + ')';
+            return "CompiledRoute[" + method + "](" + compiledRoute + ")";
         }
     }
 }

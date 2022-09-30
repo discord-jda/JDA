@@ -75,6 +75,6 @@ public class TeamMemberImpl implements TeamMember
     @Override
     public String toString()
     {
-        return "TeamMember:" + getTeamId() + '(' + user + ')';
+        return "TeamMember:" + getTeamId() + "(" + user + ")";
     }
 }

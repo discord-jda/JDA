@@ -84,6 +84,6 @@ public class ConnectionRequest
     @Override
     public String toString()
     {
-        return "ConnectionRequest[" + stage + "](" + Long.toUnsignedString(guildId) + '#' + Long.toUnsignedString(channelId) + ')';
+        return "ConnectionRequest[" + stage + "](" + Long.toUnsignedString(guildId) + "#" + Long.toUnsignedString(channelId) + ")";
     }
 }

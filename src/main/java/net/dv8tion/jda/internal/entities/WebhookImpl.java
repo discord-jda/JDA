@@ -244,7 +244,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     @Override
     public String toString()
     {
-        return "Webhook:" + getName() + '(' + id + ')';
+        return "Webhook:" + getName() + "(" + id + ")";
     }
 
     // TODO: Implement WebhookMessage

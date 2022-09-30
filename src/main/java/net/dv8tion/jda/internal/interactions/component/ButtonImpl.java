@@ -151,6 +151,6 @@ public class ButtonImpl implements Button
     @Override
     public String toString()
     {
-        return "Button:" + label + '(' + id + ')';
+        return "Button:" + label + "(" + id + ")";
     }
 }

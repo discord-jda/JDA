@@ -1054,7 +1054,7 @@ public class WidgetUtil
             
             @Override
             public String toString() {
-                return "Widget.VoiceState:" + widget.getName() + '(' + member.getEffectiveName() + ')';
+                return "Widget.VoiceState:" + widget.getName() + "(" + member.getEffectiveName() + ")";
             }
         }
     }
