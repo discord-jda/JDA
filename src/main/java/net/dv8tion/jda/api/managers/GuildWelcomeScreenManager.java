@@ -23,6 +23,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -45,7 +46,6 @@ import java.util.List;
  *
  * @see Guild#modifyWelcomeScreen()
  */
-//TODO docs
 public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenManager>
 {
     /** Used to reset the description field */
@@ -104,14 +104,40 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
     @Override
     GuildWelcomeScreenManager reset(long... fields);
 
+    /**
+     * Sets the enabled state of the welcome screen.
+     *
+     * @param  enabled
+     *         {@code True} if the welcome screen should be enabled
+     *
+     * @return GuildWelcomeScreenManager for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     GuildWelcomeScreenManager setEnabled(boolean enabled);
 
-    @Nonnull //Can be blank
+    /**
+     * Sets the description of the welcome screen.
+     *
+     * <p>The description must not be longer than {@value GuildWelcomeScreen#MAX_DESCRIPTION_LENGTH}
+     *
+     * @param  description
+     *         The new description of the welcome screen, or {@code null} to remove the description
+     *
+     * @throws IllegalArgumentException
+     *         If the description longer than {@value GuildWelcomeScreen#MAX_DESCRIPTION_LENGTH}
+     *
+     * @return GuildWelcomeScreenManager for chaining convenience
+     */
+    @Nonnull
     @CheckReturnValue
     GuildWelcomeScreenManager setDescription(@Nullable String description);
 
+    /**
+     * Removes the description of the welcome screen.
+     *
+     * @return GuildWelcomeScreenManager for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     default GuildWelcomeScreenManager clearDescription()
@@ -119,19 +145,58 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
         return setDescription(null);
     }
 
-    //unmodifiable
+    /**
+     * Returns an immutable list of the welcome channels
+     * <br>These channels are those which are <b>being modified</b>, not the ones currently shown on Discord
+     *
+     * @return An immutable list of the welcome channels to be set by the manager
+     */
     @Nonnull
     List<GuildWelcomeScreen.Channel> getWelcomeChannels();
 
+    /**
+     * Removes all welcome channels.
+     *
+     * @return GuildWelcomeScreenManager for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     GuildWelcomeScreenManager clearWelcomeChannels();
 
-    //Used to set channels AND order
+    /**
+     * Sets the welcome channels of the welcome screen.
+     *
+     * <p>The order of the {@link Collection} defines in what order the channels appear on Discord.
+     *
+     * @param  channels
+     *         The new welcome channels to use, can be an empty list to remove all welcome channels.
+     *
+     * @throws IllegalArgumentException
+     *         If {@code channels} is {@code null}
+     *
+     * @return GuildWelcomeScreenManager for chaining convenience
+     *
+     * @see #setWelcomeChannels(GuildWelcomeScreen.Channel...)
+     */
     @Nonnull
     @CheckReturnValue
-    GuildWelcomeScreenManager setWelcomeChannels(@Nonnull List<GuildWelcomeScreen.Channel> channels);
+    GuildWelcomeScreenManager setWelcomeChannels(@Nonnull Collection<GuildWelcomeScreen.Channel> channels);
 
+    /**
+     * Sets the welcome channels of the welcome screen.
+     *
+     * <p>The order of the parameters defines in what order the channels appear on Discord.
+     *
+     * @param  channels
+     *         The new welcome channels to use, you can provide nothing in order to remove all welcome channels.
+     *
+     * @throws IllegalArgumentException
+     *         If {@code channels} is {@code null}
+     *
+     * @return GuildWelcomeScreenManager for chaining convenience
+     *
+     * @see #setWelcomeChannels(Collection)
+     */
     @Nonnull
     @CheckReturnValue
     default GuildWelcomeScreenManager setWelcomeChannels(@Nonnull GuildWelcomeScreen.Channel... channels)

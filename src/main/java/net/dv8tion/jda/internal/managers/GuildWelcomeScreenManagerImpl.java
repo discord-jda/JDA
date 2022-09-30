@@ -31,6 +31,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,7 +129,7 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
 
     @Nonnull
     @Override
-    public GuildWelcomeScreenManager setWelcomeChannels(@Nonnull List<GuildWelcomeScreen.Channel> channels)
+    public GuildWelcomeScreenManager setWelcomeChannels(@Nonnull Collection<GuildWelcomeScreen.Channel> channels)
     {
         Checks.notNull(channels, "Welcome channels");
         withLock(this.channels, c ->

@@ -38,6 +38,8 @@ import java.util.List;
  */
 public class GuildWelcomeScreen
 {
+    public static final int MAX_DESCRIPTION_LENGTH = 140;
+
     private final Guild guild;
     private final String description;
     private final List<GuildWelcomeScreen.Channel> channels;
