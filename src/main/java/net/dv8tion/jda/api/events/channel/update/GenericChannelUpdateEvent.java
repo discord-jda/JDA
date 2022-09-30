@@ -68,4 +68,10 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
     {
         return newValue;
     }
+
+    @Override
+    public String toString()
+    {
+        return "ChannelUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ')';
+    }
 }
