@@ -108,21 +108,52 @@ public class GuildWelcomeScreen
             this.emoji = emoji;
         }
 
-        //TODO docs
+        /**
+         * Constructs a new welcome channel.
+         *
+         * @param  channel
+         *         The Discord channel to be presented the user
+         * @param  description
+         *         The description of the channel, must not be longer than {@value MAX_DESCRIPTION_LENGTH}
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the channel is null</li>
+         *             <li>If the description is null, blank, or longer than {@value MAX_DESCRIPTION_LENGTH}</li>
+         *         </ul>
+         *
+         * @return The new welcome channel
+         */
         @Nonnull
         public static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description)
         {
             return of(channel, description, null);
         }
 
-        //TODO docs
+        /**
+         * Constructs a new welcome channel.
+         *
+         * @param  channel
+         *         The Discord channel to be presented the user
+         * @param  description
+         *         The description of the channel, must not be longer than {@value MAX_DESCRIPTION_LENGTH}
+         * @param  emoji
+         *         The emoji to show beside the channel
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If the channel is null</li>
+         *             <li>If the description is null, blank, or longer than {@value MAX_DESCRIPTION_LENGTH}</li>
+         *         </ul>
+         *
+         * @return The new welcome channel
+         */
         @Nonnull
         public static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description, @Nullable Emoji emoji)
         {
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
 
-            //TODO checks
             return new Channel(channel.getGuild(), channel.getIdLong(), description, (EmojiUnion) emoji);
         }
 
