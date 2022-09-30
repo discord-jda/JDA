@@ -224,7 +224,7 @@ public class CommandImpl implements Command
     @Override
     public String toString()
     {
-        return "Command[" + getType() + "](" + getId() + ":" + getName() + ")";
+        return String.format("Command[%s]:%s(%s)", getType(), getName(), getId());
     }
 
     @Override
