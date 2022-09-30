@@ -177,12 +177,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         return impl.id == this.id;
     }
 
-    @Override
-    public String toString() //TODO change
-    {
-        return "PC:" + getName() + '(' + getId() + ')';
-    }
-
     private void updateUser()
     {
         //if the user is null then we don't even know their ID, and so we have to check that first

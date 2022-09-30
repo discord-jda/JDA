@@ -272,13 +272,6 @@ public interface Command extends ISnowflake
         {
             return id;
         }
-        return id;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Command:" + getName() + '(' + getId() + ')';
     }
 
     /**

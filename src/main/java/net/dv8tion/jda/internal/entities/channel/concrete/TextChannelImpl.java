@@ -111,6 +111,8 @@ public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<Tex
         getGuild().getTextChannelsView().clearCachedLists();
     }
 
+    // -- Object overrides --
+
     @Override
     public String toString()
     {

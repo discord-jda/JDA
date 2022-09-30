@@ -449,19 +449,13 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return flags;
     }
 
-    // -- Object overrides --
-
-    @Override
-    public String toString()
-    {
-        return "ThC:" + getName() + '(' + getId() + ')';
-    }
-
     private void checkUnarchived()
     {
         if (archived)
             throw new IllegalStateException("Cannot modify a ThreadChannel while it is archived!");
     }
+
+    // -- Object overrides --
 
     @Override
     public String toString()
