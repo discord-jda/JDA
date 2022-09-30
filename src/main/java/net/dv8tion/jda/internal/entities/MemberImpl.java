@@ -442,7 +442,7 @@ public class MemberImpl implements Member
     @Override
     public String toString()
     {
-        return "Member:" + getEffectiveName() + '[' + getUser() + "](" + getGuild() + ')';
+        return "Member:" + getEffectiveName() + "(" + getUser() + ", " + getGuild() + ")";
     }
 
     @Nonnull

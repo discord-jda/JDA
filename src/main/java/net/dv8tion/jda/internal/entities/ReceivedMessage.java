@@ -703,9 +703,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String toString()
     {
-        return author != null
-            ? String.format("Message:%s:%#s(%.20s)", getId(), author, this)
-            : String.format("Message(%.20s)", this); // this message was made using MessageBuilder
+        return String.format("Message(%s, %#s \"%.20s ...\")", getId(), author, this);
     }
 
     @Override

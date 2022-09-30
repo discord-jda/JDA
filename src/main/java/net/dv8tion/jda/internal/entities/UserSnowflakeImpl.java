@@ -61,6 +61,6 @@ public class UserSnowflakeImpl implements UserSnowflake
     @Override
     public String toString()
     {
-        return "U:(" + getId() + ')';
+        return "User(" + getId() + ')';
     }
 }

@@ -104,6 +104,6 @@ public class SystemMessage extends ReceivedMessage
     @Override
     public String toString()
     {
-        return "SystemMessage[" + type + ']' + author + '(' + id + ')';
+        return "SystemMessage[" + type + "](" + id + ", " + author + ")";
     }
 }
