@@ -60,7 +60,6 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 {
     private final List<FileUpload> files = new ArrayList<>(10);
     private boolean tts;
-    private int flags = 0;
 
     public MessageCreateBuilder() {}
 
@@ -245,7 +244,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
         if (components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
-        return new MessageCreateData(content, embeds, files, components, mentions, tts, flags);
+        return new MessageCreateData(content, embeds, files, components, mentions, tts, messageFlags);
     }
 
     @Nonnull
