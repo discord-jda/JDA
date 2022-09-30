@@ -66,7 +66,7 @@ public interface TemplateManager extends Manager<TemplateManager>
     TemplateManager reset(long fields);
 
     /**
-     * Resets the specified fields.
+     * Resets the fields specified by the provided bit-flag patterns.
      * <br>Example: {@code manager.reset(TemplateManager.NAME, TemplateManager.DESCRIPTION);}
      *
      * <p><b>Flag Constants:</b>

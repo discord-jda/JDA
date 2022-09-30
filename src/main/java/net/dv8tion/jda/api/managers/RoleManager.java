@@ -86,7 +86,7 @@ public interface RoleManager extends Manager<RoleManager>
     RoleManager reset(long fields);
 
     /**
-     * Resets the specified fields.
+     * Resets the fields specified by the provided bit-flag patterns.
      * <br>Example: {@code manager.reset(RoleManager.COLOR, RoleManager.NAME);}
      *
      * <p><b>Flag Constants:</b>

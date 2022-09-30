@@ -106,7 +106,7 @@ public interface GuildManager extends Manager<GuildManager>
     GuildManager reset(long fields);
 
     /**
-     * Resets the specified fields.
+     * Resets the fields specified by the provided bit-flag patterns.
      * <br>Example: {@code manager.reset(GuildManager.NAME, GuildManager.ICON);}
      *
      * <p><b>Flag Constants:</b>

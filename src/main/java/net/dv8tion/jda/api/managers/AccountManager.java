@@ -79,7 +79,7 @@ public interface AccountManager extends Manager<AccountManager>
     AccountManager reset(long fields);
 
     /**
-     * Resets the specified fields.
+     * Resets the fields specified by the provided bit-flag patterns.
      * <br>Example: {@code manager.reset(AccountManager.NAME, AccountManager.AVATAR);}
      *
      * <p><b>Flag Constants:</b>

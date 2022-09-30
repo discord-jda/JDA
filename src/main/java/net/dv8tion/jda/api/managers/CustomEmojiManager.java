@@ -69,7 +69,7 @@ public interface CustomEmojiManager extends Manager<CustomEmojiManager>
     CustomEmojiManager reset(long fields);
 
     /**
-     * Resets the specified fields.
+     * Resets the fields specified by the provided bit-flag patterns.
      * <br>Example: {@code manager.reset(CustomEmojiManager.NAME, CustomEmojiManager.ROLES);}
      *
      * <p><b>Flag Constants:</b>

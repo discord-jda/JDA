@@ -75,7 +75,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
     PermOverrideManager reset(long fields);
 
     /**
-     * Resets the specified fields.
+     * Resets the fields specified by the provided bit-flag patterns.
      * <br>Example: {@code manager.reset(PermOverrideManager.ALLOWED, PermOverrideManager.DENIED);}
      *
      * <p><b>Flag Constants:</b>

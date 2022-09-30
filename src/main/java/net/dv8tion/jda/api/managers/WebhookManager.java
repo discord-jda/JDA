@@ -73,7 +73,7 @@ public interface WebhookManager extends Manager<WebhookManager>
     WebhookManager reset(long fields);
 
     /**
-     * Resets the specified fields.
+     * Resets the fields specified by the provided bit-flag patterns.
      * <br>Example: {@code manager.reset(WebhookManager.CHANNEL, WebhookManager.NAME);}
      *
      * <p><b>Flag Constants:</b>
