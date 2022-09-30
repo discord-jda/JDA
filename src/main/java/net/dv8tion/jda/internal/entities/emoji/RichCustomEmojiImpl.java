@@ -253,7 +253,7 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion
     @Override
     public String toString()
     {
-        return "Emote:" + getName() + '(' + getIdLong() + ')';
+        return "RichCustomEmoji:" + name + '(' + id + ')';
     }
 
     public RichCustomEmojiImpl copy()
