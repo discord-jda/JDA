@@ -25,6 +25,26 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Manager providing functionality to update one or more fields for a {@link GuildWelcomeScreen}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setEnabled(false)
+ *        .clearDescription()
+ *        .setWelcomeChannels()
+ *        .queue();
+ * manager.setEnabled(true)
+ *        .setDescription("Bot desc")
+ *        .setWelcomeChannels(Arrays.asList(
+ *                GuildWelcomeScreen.Channel.of(rulesChannel, "Read the rules first"),
+ *                GuildWelcomeScreen.Channel.of(generalChannel, "Go have a chat", Emoji.fromUnicode("U+1F4AC"))
+ *        ))
+ *        .queue();
+ * }</pre>
+ *
+ * @see Guild#modifyWelcomeScreen()
+ */
 //TODO docs
 public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenManager>
 {
@@ -35,13 +55,51 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
     /** Used to reset the channels field */
     long CHANNELS    = 1 << 2;
 
+    /**
+     * The {@link Guild} this Manager's {@link GuildWelcomeScreen} is in.
+     *
+     * @return The parent {@link Guild}
+     */
     @Nonnull
     Guild getGuild();
 
+    /**
+     * Resets the fields specified by the provided bit-flag pattern.
+     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * <br>Example: {@code manager.reset(GuildWelcomeScreenManager.DESCRIPTION | GuildWelcomeScreenManager.CHANNELS);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #ENABLED}</li>
+     *     <li>{@link #DESCRIPTION}</li>
+     *     <li>{@link #CHANNELS}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return GuildWelcomeScreenManager for chaining convenience
+     */
     @Nonnull
     @Override
     GuildWelcomeScreenManager reset(long fields);
 
+    /**
+     * Resets the specified fields.
+     * <br>Example: {@code manager.reset(GuildWelcomeScreenManager.DESCRIPTION, GuildWelcomeScreenManager.CHANNELS);}
+     *
+     * <p><b>Flag Constants:</b>
+     * <ul>
+     *     <li>{@link #ENABLED}</li>
+     *     <li>{@link #DESCRIPTION}</li>
+     *     <li>{@link #CHANNELS}</li>
+     * </ul>
+     *
+     * @param  fields
+     *         Integer value containing the flags to reset.
+     *
+     * @return GuildWelcomeScreenManager for chaining convenience
+     */
     @Nonnull
     @Override
     GuildWelcomeScreenManager reset(long... fields);

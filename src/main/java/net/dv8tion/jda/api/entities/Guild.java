@@ -4687,7 +4687,16 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     RoleOrderAction modifyRolePositions(boolean useAscendingOrder);
 
-    //TODO docs
+    /**
+     * The {@link GuildWelcomeScreenManager Manager} for this guild's welcome screen, used to modify
+     * properties of the welcome screen like if the welcome screen is enabled, description and welcome channels.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
+     *
+     * @return The GuildWelcomeScreenManager for this guild's welcome screen
+     */
     @Nonnull
     @CheckReturnValue
     GuildWelcomeScreenManager modifyWelcomeScreen();
