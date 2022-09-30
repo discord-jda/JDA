@@ -105,7 +105,7 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     public GuildWelcomeScreenManager setDescription(@Nullable String description)
     {
         if (description != null)
-            Checks.notLonger(description, 140, "Description"); //TODO const
+            Checks.notLonger(description, GuildWelcomeScreen.MAX_DESCRIPTION_LENGTH, "Description"); //TODO const
         this.description = description;
         set |= DESCRIPTION;
         return this;

@@ -93,6 +93,8 @@ public class GuildWelcomeScreen
      */
     public static class Channel implements ISnowflake, SerializableData
     {
+        public static final int MAX_DESCRIPTION_LENGTH = 42;
+
         private final Guild guild;
         private final long id;
         private final String description;
@@ -118,7 +120,7 @@ public class GuildWelcomeScreen
         public static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description, @Nullable Emoji emoji)
         {
             Checks.notBlank(description, "Description");
-            Checks.notLonger(description, 42, "Description"); //TODO const
+            Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
 
             //TODO checks
             return new Channel(channel.getGuild(), channel.getIdLong(), description, (EmojiUnion) emoji);
