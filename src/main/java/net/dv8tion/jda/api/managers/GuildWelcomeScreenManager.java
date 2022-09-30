@@ -203,14 +203,4 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
     {
         return setWelcomeChannels(Arrays.asList(channels));
     }
-
-    //Add to last
-    @Nonnull
-    @CheckReturnValue
-    GuildWelcomeScreenManager addWelcomeChannel(@Nonnull GuildWelcomeScreen.Channel channel);
-
-    //Remove ig
-    @Nonnull
-    @CheckReturnValue
-    GuildWelcomeScreenManager removeWelcomeChannel(@Nonnull GuildWelcomeScreen.Channel channel);
 }

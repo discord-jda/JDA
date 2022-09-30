@@ -141,26 +141,6 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
         return this;
     }
 
-    @Nonnull
-    @Override
-    public GuildWelcomeScreenManager addWelcomeChannel(@Nonnull GuildWelcomeScreen.Channel channel)
-    {
-        Checks.notNull(channel, "Welcome channel");
-        withLock(channels, c -> c.add(channel));
-        set |= CHANNELS;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public GuildWelcomeScreenManager removeWelcomeChannel(@Nonnull GuildWelcomeScreen.Channel channel)
-    {
-        Checks.notNull(channel, "Welcome channel");
-        withLock(channels, c -> c.remove(channel));
-        set |= CHANNELS;
-        return this;
-    }
-
     @Override
     protected RequestBody finalizeData()
     {
