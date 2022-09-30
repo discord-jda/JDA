@@ -66,7 +66,7 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
     StageInstanceManager reset(long fields);
 
     /**
-     * Resets the fields specified by the provided bit-flag patterns.
+     * Resets the specified fields.
      * <br>Example: {@code manager.reset(ChannelManager.TOPIC, ChannelManager.PRIVACY_LEVEL);}
      *
      * <p><b>Flag Constants:</b>
