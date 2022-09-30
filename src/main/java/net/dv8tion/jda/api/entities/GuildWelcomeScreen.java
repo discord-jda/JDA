@@ -52,9 +52,9 @@ public class GuildWelcomeScreen
     }
 
     /**
-     * The {@link Guild Guild}
+     * The {@link Guild Guild}, or {@code null} if this welcome screen came from an {@link Invite}
      *
-     * @return The Guild
+     * @return The Guild, or {@code null}
      */
     @Nullable
     public Guild getGuild()
@@ -63,10 +63,10 @@ public class GuildWelcomeScreen
     }
 
     /**
-     * The server description that is shown in the Welcome screen.
+     * The server description shown in the Welcome screen.
      * <br>This will be {@code null} if the welcome screen has no description.
      *
-     * @return The server description that is shown in the Welcome screen or {@code null}
+     * @return The server description shown in the Welcome screen or {@code null}
      */
     @Nullable
     public String getDescription()
@@ -75,9 +75,9 @@ public class GuildWelcomeScreen
     }
 
     /**
-     * The channels that are shown in the Welcome screen.
+     * The channels shown in the Welcome screen.
      *
-     * @return Possibly-empty, unmodifiable list of the channels that are shown in the Welcome screen
+     * @return Possibly-empty, unmodifiable list of the channels shown in the Welcome screen
      */
     @Nonnull
     public List<GuildWelcomeScreen.Channel> getChannels()
@@ -112,7 +112,7 @@ public class GuildWelcomeScreen
          * Constructs a new welcome channel.
          *
          * @param  channel
-         *         The Discord channel to be presented the user
+         *         The Discord channel to be presented to the user
          * @param  description
          *         The description of the channel, must not be longer than {@value MAX_DESCRIPTION_LENGTH}
          *
@@ -158,9 +158,9 @@ public class GuildWelcomeScreen
         }
 
         /**
-         * The {@link Guild Guild}, or {@code null} if this welcome screen came from an {@link net.dv8tion.jda.api.entities.Invite}
+         * The {@link Guild Guild}, or {@code null} if this welcome channel came from an {@link Invite}
          *
-         * @return The Guild
+         * @return The Guild, or {@code null}
          */
         @Nullable
         public Guild getGuild()
@@ -195,7 +195,7 @@ public class GuildWelcomeScreen
         }
 
         /**
-         * The description of this recommended channel that is shown in the Welcome screen.
+         * The description of this recommended channel shown in the Welcome screen.
          *
          * @return The description of this recommended channel
          */
@@ -207,12 +207,12 @@ public class GuildWelcomeScreen
 
         /**
          * The emoji that is used for this recommended channel.
-         * <br><b>This will return {@code null} if no emoji was set</b>
+         * <br>This will return {@code null} if no emoji was set
          *
          * <p>The emoji will always be from this guild, if not a unicode emoji
          * <br><b>{@link CustomEmoji#isAnimated()} will always return {@code false} if:</b>
          * <ul>
-         *     <li>This welcome screen came from an {@link net.dv8tion.jda.api.entities.Invite.Guild invite's guild}</li>
+         *     <li>This welcome screen came from an {@link Invite.Guild invite's guild}</li>
          *     <li>{@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI CacheFlag.EMOJI} is disabled</li>
          * </ul>
          *

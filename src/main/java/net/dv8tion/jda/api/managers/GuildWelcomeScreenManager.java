@@ -176,7 +176,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      *
      * @return GuildWelcomeScreenManager for chaining convenience
      *
-     * @see #setWelcomeChannels(GuildWelcomeScreen.Channel...)
+     * @see    #setWelcomeChannels(GuildWelcomeScreen.Channel...)
      */
     @Nonnull
     @CheckReturnValue
@@ -195,7 +195,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      *
      * @return GuildWelcomeScreenManager for chaining convenience
      *
-     * @see #setWelcomeChannels(Collection)
+     * @see    #setWelcomeChannels(Collection)
      */
     @Nonnull
     @CheckReturnValue

@@ -2261,7 +2261,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<List<Webhook>> retrieveWebhooks();
 
     /**
-     * Retrieves the {@link GuildWelcomeScreen Welcome screen} for this Guild.
+     * Retrieves the {@link GuildWelcomeScreen welcome screen} for this Guild.
      * <br>The welcome screen is shown to all members after joining the Guild.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -2273,7 +2273,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *     and the currently logged in account doesn't have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission</li>
      * </ul>
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.GuildWelcomeScreen GuildWelcomeScreen}
+     * @return {@link RestAction} - Type: {@link GuildWelcomeScreen}
      *         <br>The welcome screen for this Guild.
      */
     @Nonnull
@@ -4689,7 +4689,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * The {@link GuildWelcomeScreenManager Manager} for this guild's welcome screen, used to modify
-     * properties of the welcome screen like if the welcome screen is enabled, description and welcome channels.
+     * properties of the welcome screen like if the welcome screen is enabled, the description and welcome channels.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
