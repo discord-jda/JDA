@@ -399,6 +399,6 @@ public class MessageReaction
     @Override
     public String toString()
     {
-        return "MessageReaction:" + messageId + '(' + emoji + ')';
+        return "MessageReaction:" + messageId + "(" + emoji + ")";
     }
 }

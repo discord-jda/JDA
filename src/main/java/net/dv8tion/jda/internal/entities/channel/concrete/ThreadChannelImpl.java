@@ -460,6 +460,6 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public String toString()
     {
-        return "ThreadChannel:" + getName() + '(' + getId() + ')';
+        return "ThreadChannel:" + getName() + "(" + getId() + ")";
     }
 }

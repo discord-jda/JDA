@@ -202,6 +202,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     @Override
     public String toString()
     {
-        return "PrivateChannel:" + getName() + '(' + getId() + ')';
+        return "PrivateChannel:" + getName() + "(" + getId() + ")";
     }
 }

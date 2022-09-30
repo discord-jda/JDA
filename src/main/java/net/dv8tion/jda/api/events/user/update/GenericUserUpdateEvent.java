@@ -89,6 +89,6 @@ public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent impleme
     @Override
     public String toString()
     {
-        return "UserUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ')';
+        return "UserUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ")";
     }
 }

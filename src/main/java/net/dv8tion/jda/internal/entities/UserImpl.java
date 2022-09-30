@@ -185,7 +185,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
     @Override
     public String toString()
     {
-        return "User:" + getName() + '(' + getId() + ')';
+        return "User:" + getName() + "(" + getId() + ")";
     }
 
     // -- Setters --

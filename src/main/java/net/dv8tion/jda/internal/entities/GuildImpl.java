@@ -2220,6 +2220,6 @@ public class GuildImpl implements Guild
     @Override
     public String toString()
     {
-        return "Guild:" + getName() + '(' + id + ')';
+        return "Guild:" + getName() + "(" + id + ")";
     }
 }

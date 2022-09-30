@@ -75,6 +75,6 @@ public abstract class GenericStageInstanceUpdateEvent<T> extends GenericStageIns
     @Override
     public String toString()
     {
-        return "StageInstanceUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ')';
+        return "StageInstanceUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ")";
     }
 }

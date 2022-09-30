@@ -539,7 +539,7 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Choice:" + name + '(' + stringValue + ')';
+            return "Choice:" + name + "(" + stringValue + ")";
         }
 
         private void setIntValue(long value)
@@ -823,7 +823,7 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Option[" + getType() + "](" + name + ')';
+            return "Option[" + getType() + "](" + name + ")";
         }
     }
 
@@ -921,7 +921,7 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Subcommand(" + name + ')';
+            return "Subcommand(" + name + ")";
         }
     }
 
@@ -1019,7 +1019,7 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "SubcommandGroup(" + name + ')';
+            return "SubcommandGroup(" + name + ")";
         }
     }
 }

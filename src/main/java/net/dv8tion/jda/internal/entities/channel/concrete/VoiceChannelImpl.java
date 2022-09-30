@@ -203,6 +203,6 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     @Override
     public String toString()
     {
-        return "VoiceChannel:" + getName() + '(' + getId() + ')';
+        return "VoiceChannel:" + getName() + "(" + getId() + ")";
     }
 }

@@ -116,6 +116,6 @@ public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<Tex
     @Override
     public String toString()
     {
-        return "TextChannel:" + getName() + '(' + getId() + ')';
+        return "TextChannel:" + getName() + "(" + getId() + ")";
     }
 }

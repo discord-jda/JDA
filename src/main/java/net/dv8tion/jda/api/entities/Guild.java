@@ -5155,7 +5155,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         @Override
         public String toString()
         {
-            return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
+            return "GuildBan:" + user + (reason == null ? "" : "(" + reason + ")");
         }
     }
 

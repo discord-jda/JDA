@@ -77,6 +77,6 @@ public abstract class GenericRoleUpdateEvent<T> extends GenericRoleEvent impleme
     @Override
     public String toString()
     {
-        return "RoleUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ')';
+        return "RoleUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ")";
     }
 }
