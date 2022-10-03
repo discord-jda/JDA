@@ -545,7 +545,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
-     * <p>Features can be udpated using {@link GuildManager#setFeatures(Collection)}.
+     * <p>Features can be updated using {@link GuildManager#setFeatures(Collection)}.
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
      *
