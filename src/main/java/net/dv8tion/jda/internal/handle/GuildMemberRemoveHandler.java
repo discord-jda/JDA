@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -81,7 +81,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 if (connected != null) // user left channel!
                 {
                     getJDA().handleEvent(
-                        new GuildVoiceLeaveEvent(
+                        new GuildVoiceUpdateEvent(
                             getJDA(), responseNumber,
                             connected, channel));
                 }
@@ -96,14 +96,14 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
-        if (voiceState != null && voiceState.inAudioChannel())//If this user was in an AudioChannel, fire VoiceLeaveEvent.
+        if (voiceState != null && voiceState.inAudioChannel()) //If this user was in an AudioChannel, fire VoiceLeaveEvent.
         {
             AudioChannel channel = voiceState.getChannel();
             voiceState.setConnectedChannel(null);
             ((AudioChannelMixin<?>) channel).getConnectedMembersMap().remove(userId);
 
             getJDA().handleEvent(
-                new GuildVoiceLeaveEvent(
+                new GuildVoiceUpdateEvent(
                     getJDA(), responseNumber,
                     member, channel));
         }

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -1738,7 +1739,7 @@ public class JDABuilder
      * <p>If you wish to be sure that the {@link net.dv8tion.jda.api.JDA} information is correct, please use
      * {@link net.dv8tion.jda.api.JDA#awaitReady() JDA.awaitReady()} or register an
      * {@link net.dv8tion.jda.api.hooks.EventListener EventListener} to listen for the
-     * {@link net.dv8tion.jda.api.events.ReadyEvent ReadyEvent}.
+     * {@link ReadyEvent ReadyEvent}.
      *
      * @throws InvalidTokenException
      *         If the provided token is invalid.

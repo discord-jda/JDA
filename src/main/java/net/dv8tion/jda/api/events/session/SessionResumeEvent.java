@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.events;
+package net.dv8tion.jda.api.events.session;
 
 import net.dv8tion.jda.api.JDA;
 
@@ -23,12 +23,12 @@ import javax.annotation.Nonnull;
  * Indicates that JDA successfully resumed its connection to the gateway.
  * <br>All Objects are still in place and events are replayed.
  *
- * <p>Can be used to marks the continuation of event flow stopped by the {@link net.dv8tion.jda.api.events.DisconnectEvent DisconnectEvent}.
+ * <p>Can be used to detect the continuation of event flow stopped by the {@link SessionDisconnectEvent}.
  */
-public class ResumedEvent extends Event
+public class SessionResumeEvent extends GenericSessionEvent
 {
-    public ResumedEvent(@Nonnull JDA api, long responseNumber)
+    public SessionResumeEvent(@Nonnull JDA api)
     {
-        super(api, responseNumber);
+        super(api, SessionState.RESUMED);
     }
 }

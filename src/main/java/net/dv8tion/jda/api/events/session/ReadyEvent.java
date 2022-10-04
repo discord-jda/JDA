@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.events;
+package net.dv8tion.jda.api.events.session;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -28,14 +28,14 @@ import javax.annotation.Nonnull;
  * <p>Can be used to indicate when JDA finished populating internal objects and is ready to be used.
  * When this is fired all <b>available</b> entities are cached and accessible.
  */
-public class ReadyEvent extends Event
+public class ReadyEvent extends GenericSessionEvent
 {
     private final int availableGuilds;
     private final int unavailableGuilds;
 
-    public ReadyEvent(@Nonnull JDA api, long responseNumber)
+    public ReadyEvent(@Nonnull JDA api)
     {
-        super(api, responseNumber);
+        super(api, SessionState.READY);
         this.availableGuilds = (int) getJDA().getGuildCache().size();
         GuildSetupController setupController = ((JDAImpl) getJDA()).getGuildSetupController();
         this.unavailableGuilds = setupController.getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size() + setupController.getUnavailableGuilds().size();
