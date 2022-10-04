@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -68,9 +69,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @CheckReturnValue
     public GuildScheduledEventManagerImpl setName(@Nonnull String name)
     {
-        Checks.notNull(name, "Name");
         Checks.notBlank(name, "Name");
-        Checks.notEmpty(name, "Name");
         Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
         this.name = name;
         set |= NAME;
@@ -128,9 +127,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     @Override
     public GuildScheduledEventManager setLocation(@Nonnull String location)
     {
-        Checks.notNull(location, "Location");
         Checks.notBlank(location, "Location");
-        Checks.notEmpty(location, "Location");
         Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
         this.location = location;
         this.entityType = GuildScheduledEvent.Type.EXTERNAL;

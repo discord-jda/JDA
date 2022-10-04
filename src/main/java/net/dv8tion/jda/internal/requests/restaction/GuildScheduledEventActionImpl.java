@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -110,6 +112,13 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
     @Nonnull
     @Override
+    public GuildScheduledEventActionImpl reason(@Nullable String reason)
+    {
+        return (GuildScheduledEventActionImpl) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     public Guild getGuild()
     {
         return guild;
@@ -119,9 +128,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Override
     public GuildScheduledEventActionImpl setName(@Nullable String name)
     {
-        Checks.notNull(name, "Name");
         Checks.notBlank(name, "Name");
-        Checks.notEmpty(name, "Name");
         Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
         this.name = name;
         return this;
