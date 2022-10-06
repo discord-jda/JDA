@@ -119,4 +119,10 @@ public class ThreadMemberImpl implements ThreadMember
         this.flags = flags;
         return this;
     }
+
+    @Override
+    public String toString()
+    {
+        return "ThreadMember:" + getId() + "(" + getMember() + ")";
+    }
 }
