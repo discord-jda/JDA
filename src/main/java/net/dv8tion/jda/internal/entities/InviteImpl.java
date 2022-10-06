@@ -322,6 +322,12 @@ public class InviteImpl implements Invite
         {
             return this.type;
         }
+
+        @Override
+        public String toString()
+        {
+            return "Invite.Channel[" + getType() + "]:" + getName() + "(" + getId() + ")";
+        }
     }
 
     public static class GuildImpl implements Guild
@@ -415,6 +421,12 @@ public class InviteImpl implements Invite
         {
             return features;
         }
+
+        @Override
+        public String toString()
+        {
+            return "Invite.Guild:" + getName() + "(" + getId() + ")";
+        }
     }
 
     public static class GroupImpl implements Group
@@ -460,6 +472,12 @@ public class InviteImpl implements Invite
         public List<String> getUsers()
         {
             return users;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Invite.Group:" + getName() + "(" + getId() + ")";
         }
     }
 
@@ -508,6 +526,12 @@ public class InviteImpl implements Invite
         public EmbeddedApplication getApplication()
         {
             return targetApplication;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Invite.InviteTarget[" + getType() + "](" + getTargetEntity() + ")";
         }
 
         @Nonnull
@@ -582,6 +606,12 @@ public class InviteImpl implements Invite
         public int getMaxParticipants()
         {
             return maxParticipants;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Invite.EmbeddedApplication:" + getName() + "(" + getId() + ")";
         }
     }
 }
