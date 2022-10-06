@@ -110,6 +110,12 @@ public class StageInstanceImpl implements StageInstance
         return this;
     }
 
+    @Override
+    public String toString()
+    {
+        return "StageInstance:" + getId() + "(" + getChannel() + ")";
+    }
+
     private void checkPermissions()
     {
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(getChannel());
