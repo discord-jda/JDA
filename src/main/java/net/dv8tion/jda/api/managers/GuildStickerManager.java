@@ -75,8 +75,7 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
     GuildStickerManager reset(long fields);
 
     /**
-     * Resets the fields specified by the provided bit-flag pattern.
-     * You can specify a combination by using a bitwise OR concat of the flag constants.
+     * Resets the fields specified by the provided bit-flag patterns.
      * <br>Example: {@code manager.reset(GuildStickerManager.NAME, GuildStickerManager.TAGS);}
      *
      * <p><b>Flag Constants:</b>

@@ -76,7 +76,6 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
 
     /**
      * Resets the fields specified by the provided bit-flag patterns.
-     * You can specify a combination by using a bitwise OR concat of the flag constants.
      * <br>Example: {@code manager.reset(PermOverrideManager.ALLOWED, PermOverrideManager.DENIED);}
      *
      * <p><b>Flag Constants:</b>
