@@ -827,7 +827,10 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Option[" + getType() + "](" + name + ")";
+            return new EntityString(this)
+                    .setType(getType())
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
@@ -925,7 +928,9 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Subcommand(" + name + ")";
+            return new EntityString(this)
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
@@ -1023,7 +1028,9 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "SubcommandGroup(" + name + ")";
+            return new EntityString(this)
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 }

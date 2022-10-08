@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities.sticker;
 
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -63,7 +64,9 @@ public class StickerItemImpl implements StickerItem
     @Override
     public String toString()
     {
-        return "StickerItem:" + name + '(' + getId() + ')';
+        return new EntityString(this)
+                .setName(name)
+                .toString();
     }
 
     @Override
