@@ -36,6 +36,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -282,7 +283,9 @@ public class InviteImpl implements Invite
     @Override
     public String toString()
     {
-        return "Invite(" + this.code + ")";
+        return new EntityString(this)
+                .addMetadata("code", code)
+                .toString();
     }
 
     public static class ChannelImpl implements Channel

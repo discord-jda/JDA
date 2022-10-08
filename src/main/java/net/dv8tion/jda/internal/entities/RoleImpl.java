@@ -38,6 +38,7 @@ import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
@@ -375,7 +376,9 @@ public class RoleImpl implements Role
     @Override
     public String toString()
     {
-        return "Role:" + getName() + '(' + id + ')';
+        return new EntityString(this)
+                .setName(getName())
+                .toString();
     }
 
     @Override

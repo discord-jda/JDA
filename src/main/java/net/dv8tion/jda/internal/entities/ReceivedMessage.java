@@ -52,6 +52,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -703,7 +704,10 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String toString()
     {
-        return String.format("Message(%s, %#s \"%.20s ...\")", getId(), author, this);
+        return new EntityString(this)
+                .addMetadata("author", author.getAsTag())
+                .addMetadata("content", String.format("%.20s ...", this))
+                .toString();
     }
 
     @Override

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.*;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.ChannelMixin;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -158,5 +159,13 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     public StandardGuildMessageChannel asStandardGuildMessageChannel()
     {
         return Helpers.safeChannelCast(this, StandardGuildMessageChannel.class);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .setName(name)
+                .toString();
     }
 }

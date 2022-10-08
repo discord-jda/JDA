@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -123,6 +124,8 @@ public class ThreadMemberImpl implements ThreadMember
     @Override
     public String toString()
     {
-        return "ThreadMember:" + getId() + "(" + getMember() + ")";
+        return new EntityString(this)
+                .addMetadata("member", getMember())
+                .toString();
     }
 }

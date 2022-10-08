@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.managers.StageInstanceManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -113,7 +114,9 @@ public class StageInstanceImpl implements StageInstance
     @Override
     public String toString()
     {
-        return "StageInstance:" + getId() + "(" + getChannel() + ")";
+        return new EntityString(this)
+                .addMetadata("channel", getChannel())
+                .toString();
     }
 
     private void checkPermissions()
