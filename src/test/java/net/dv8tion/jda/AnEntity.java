@@ -1,6 +1,6 @@
 package net.dv8tion.jda;
 
-class AnEntity
+public class AnEntity
 {
 
 }
