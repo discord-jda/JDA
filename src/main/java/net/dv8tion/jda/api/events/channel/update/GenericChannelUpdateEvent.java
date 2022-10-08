@@ -72,6 +72,6 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
     @Override
     public String toString()
     {
-        return "ChannelUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ")";
+        return toEntityString();
     }
 }

@@ -82,6 +82,6 @@ public abstract class GenericGuildStickerUpdateEvent<T> extends GenericGuildStic
     @Override
     public String toString()
     {
-        return "GuildStickerUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ")";
+        return toEntityString();
     }
 }

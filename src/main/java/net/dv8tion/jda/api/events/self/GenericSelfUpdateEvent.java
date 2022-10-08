@@ -88,6 +88,6 @@ public abstract class GenericSelfUpdateEvent<T> extends Event implements UpdateE
     @Override
     public String toString()
     {
-        return "SelfUserUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ")";
+        return toEntityString();
     }
 }

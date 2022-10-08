@@ -79,6 +79,6 @@ public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent
     @Override
     public String toString()
     {
-        return "ForumTagUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ")";
+        return toEntityString();
     }
 }

@@ -91,6 +91,6 @@ public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
     @Override
     public String toString()
     {
-        return "GatewayUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + " -> " + getNewValue() + ')';
+        return toEntityString();
     }
 }
