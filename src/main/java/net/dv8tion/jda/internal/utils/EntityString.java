@@ -50,10 +50,10 @@ public class EntityString
         return this;
     }
 
-    public EntityString addMetadata(@Nullable String key, @Nonnull Object value) {
+    public EntityString addMetadata(@Nullable String key, @Nullable Object value) {
         if (this.metadata == null) this.metadata = new ArrayList<>();
 
-        this.metadata.add(key == null ? value.toString() : key + "=" + value);
+        this.metadata.add(key == null ? String.valueOf(value) : key + "=" + value);
 
         return this;
     }

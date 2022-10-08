@@ -543,7 +543,11 @@ public class RoleImpl implements Role
         @Override
         public String toString()
         {
-            return "RoleTags(bot=" + getBotId() + ", integration=" + getIntegrationId() + ", boost=" + isBoost() + ")";
+            return new EntityString(this)
+                    .addMetadata("bot", getBotId())
+                    .addMetadata("integration", getIntegrationId())
+                    .addMetadata("isBoost", isBoost())
+                    .toString();
         }
     }
 }

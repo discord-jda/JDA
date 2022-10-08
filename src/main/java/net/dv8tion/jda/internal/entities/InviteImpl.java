@@ -329,7 +329,10 @@ public class InviteImpl implements Invite
         @Override
         public String toString()
         {
-            return "Invite.Channel[" + getType() + "]:" + getName() + "(" + getId() + ")";
+            return new EntityString(this)
+                    .setType(getType())
+                    .setName(name)
+                    .toString();
         }
     }
 
@@ -428,7 +431,9 @@ public class InviteImpl implements Invite
         @Override
         public String toString()
         {
-            return "Invite.Guild:" + getName() + "(" + getId() + ")";
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
         }
     }
 
@@ -480,7 +485,9 @@ public class InviteImpl implements Invite
         @Override
         public String toString()
         {
-            return "Invite.Group:" + getName() + "(" + getId() + ")";
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
         }
     }
 
@@ -534,7 +541,10 @@ public class InviteImpl implements Invite
         @Override
         public String toString()
         {
-            return "Invite.InviteTarget[" + getType() + "](" + getTargetEntity() + ")";
+            return new EntityString(this)
+                    .setType(getType())
+                    .addMetadata("target", getTargetEntity())
+                    .toString();
         }
 
         @Nonnull
@@ -614,7 +624,9 @@ public class InviteImpl implements Invite
         @Override
         public String toString()
         {
-            return "Invite.EmbeddedApplication:" + getName() + "(" + getId() + ")";
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
         }
     }
 }
