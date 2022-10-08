@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -152,8 +151,6 @@ public class ButtonImpl implements Button
     @Override
     public String toString()
     {
-        return new EntityString(this)
-                .setName(getLabel())
-                .toString();
+        return "Button:" + label + "(" + id + ")";
     }
 }
