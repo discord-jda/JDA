@@ -61,8 +61,11 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
         {
             try
             {
-                DataObject userObject = array.getObject(i).getObject("user");
-                DataObject memberObject = array.getObject(i).getObject("member");
+                DataObject object = array.getObject(i);
+                if (object.isNull("member"))
+                    continue;
+                DataObject userObject = object.getObject("user");
+                DataObject memberObject = object.getObject("member");
                 Member member = builder.createMember((GuildImpl) guild, memberObject.put("user", userObject));
                 members.add(member);
             }

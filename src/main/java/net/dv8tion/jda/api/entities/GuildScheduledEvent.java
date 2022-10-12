@@ -16,11 +16,11 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
@@ -227,27 +227,6 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     AuditableRestAction<Void> delete();
 
     /**
-     * A {@link PaginationAction} implementation
-     * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.entities.User Users} interested in this Event.
-     *
-     * <br>This iterates in ascending order by user id.
-     *
-     * <p>Possible ErrorResponses include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT UNKNOWN_GUILD_SCHEDULED_EVENT}
-     *     <br>If the the event was already deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>If we were removed from the Guild or can't view the events channel (Location)</li>
-     * </ul>
-     *
-     * @return {@link GuildScheduledEventUsersPaginationAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    GuildScheduledEventUsersPaginationAction retrieveInterestedUsers();
-
-    /**
      * A {@link PaginationAction PaginationAction} implementation
      * that allows to {@link Iterable iterate} over all {@link net.dv8tion.jda.api.entities.Member Members} interested in this Event.
      *
@@ -262,7 +241,7 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *     <br>If we were removed from the Guild or can't view the events channel (Location)</li>
      * </ul>
      *
-     * @return {@link GuildScheduledEventUsersPaginationAction GuildScheduledEventUsersPaginationAction}
+     * @return {@link GuildScheduledEventMembersPaginationAction}
      */
     @Nonnull
     @CheckReturnValue
@@ -426,6 +405,16 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
         public int getKey()
         {
             return key;
+        }
+
+        /**
+         * Whether the event is scheduled to be held in a {@link GuildChannel}.
+         *
+         * @return True, if the event is scheduled to be held in a {@link GuildChannel}
+         */
+        public boolean isChannel()
+        {
+            return this == STAGE_INSTANCE || this == VOICE;
         }
 
         /**

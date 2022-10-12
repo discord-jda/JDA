@@ -68,20 +68,8 @@ import java.util.function.BooleanSupplier;
  * @see    Guild#createScheduledEvent(String, String, OffsetDateTime, OffsetDateTime) 
  * @see    Guild#createScheduledEvent(String, net.dv8tion.jda.api.entities.channel.middleman.GuildChannel, OffsetDateTime)
  */
-public interface GuildScheduledEventAction extends AuditableRestAction<GuildScheduledEvent>
+public interface GuildScheduledEventAction extends FluentAuditableRestAction<GuildScheduledEvent, GuildScheduledEventAction>
 {
-    @Nonnull
-    @Override
-    GuildScheduledEventAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    GuildScheduledEventAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    GuildScheduledEventAction deadline(long timestamp);
-
     /**
      * The guild to create the {@link GuildScheduledEvent} in
      *

@@ -22,15 +22,12 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventUsersPaginationAction;
 import net.dv8tion.jda.internal.managers.GuildScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.GuildScheduledEventMembersPaginationActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.pagination.GuildScheduledEventUsersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -122,11 +119,12 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public GuildChannelUnion getChannel()
     {
-        if (type == Type.STAGE_INSTANCE || type == Type.VOICE)
+        if (type.isChannel())
             return (GuildChannelUnion) guild.getGuildChannelById(location);
         return null;
     }
 
+    @Nonnull
     @Override
     public String getLocation()
     {
@@ -172,15 +170,6 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     }
 
     @Nonnull
-    @CheckReturnValue
-    @Override
-    public GuildScheduledEventUsersPaginationAction retrieveInterestedUsers()
-    {
-        return new GuildScheduledEventUsersPaginationActionImpl(this);
-    }
-
-    @Nonnull
-    @CheckReturnValue
     @Override
     public GuildScheduledEventMembersPaginationAction retrieveInterestedMembers()
     {
