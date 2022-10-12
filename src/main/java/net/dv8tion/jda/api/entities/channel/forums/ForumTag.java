@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  * Represents a Discord Forum Tag.
  * <br>These tags can be applied to forum posts to help categorize them.
  */
-public interface ForumTag extends ISnowflake, Comparable<ForumTag>, BaseForumTag
+public interface ForumTag extends ForumTagSnowflake, Comparable<ForumTag>, BaseForumTag
 {
     /**
      * The maximum length of a forum tag name ({@value #MAX_NAME_LENGTH})

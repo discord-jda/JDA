@@ -291,9 +291,6 @@ public interface Webhook extends ISnowflake
      * The {@link WebhookManager WebhookManager} for this Webhook.
      * <br>You can modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
-     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
-     * This getter is not thread-safe and would require guards by the user.
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS}
      *

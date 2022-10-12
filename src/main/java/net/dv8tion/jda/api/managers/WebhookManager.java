@@ -74,7 +74,6 @@ public interface WebhookManager extends Manager<WebhookManager>
 
     /**
      * Resets the fields specified by the provided bit-flag patterns.
-     * You can specify a combination by using a bitwise OR concat of the flag constants.
      * <br>Example: {@code manager.reset(WebhookManager.CHANNEL, WebhookManager.NAME);}
      *
      * <p><b>Flag Constants:</b>
