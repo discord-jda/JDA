@@ -24,10 +24,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.RoleSelectMenuInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.UserSelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.*;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Component;
@@ -40,6 +37,7 @@ import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionIm
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.ButtonInteractionImpl;
+import net.dv8tion.jda.internal.interactions.component.select.ChannelSelectMenuInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.select.RoleSelectMenuInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.select.SelectMenuInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.select.UserSelectMenuInteractionImpl;
@@ -151,6 +149,11 @@ public class InteractionCreateHandler extends SocketHandler
             api.handleEvent(
                     new UserSelectMenuInteractionEvent(api, responseNumber,
                             new UserSelectMenuInteractionImpl(api, content)));
+            break;
+        case CHANNEL_SELECT_MENU:
+            api.handleEvent(
+                    new ChannelSelectMenuInteractionEvent(api, responseNumber,
+                            new ChannelSelectMenuInteractionImpl(api, content)));
             break;
         }
     }
