@@ -128,7 +128,8 @@ public class ActivityImpl implements Activity
         final EntityString entityString = new EntityString(this)
                 .setType(type)
                 .setName(name);
-        if (url != null) entityString.addMetadata("url", url);
+        if (url != null) 
+            entityString.addMetadata("url", url);
 
         return entityString.toString();
     }
