@@ -99,7 +99,7 @@ public class ChannelSelectMenuImpl implements ChannelSelectMenu
     public DataObject toData()
     {
         DataObject data = DataObject.empty();
-        data.put("type", 3);
+        data.put("type", 8);
         data.put("custom_id", id);
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
