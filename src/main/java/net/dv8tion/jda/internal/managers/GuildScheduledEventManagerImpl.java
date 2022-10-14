@@ -140,6 +140,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     public GuildScheduledEventManager setStartTime(@Nonnull TemporalAccessor startTime)
     {
         Checks.notNull(startTime, "Start Time");
+        Checks.check(Helpers.toOffsetDateTime(startTime).isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
         this.startTime = Helpers.toOffsetDateTime(startTime);
         set |= START_TIME;
         return this;
@@ -150,6 +151,7 @@ public class GuildScheduledEventManagerImpl extends ManagerBase<GuildScheduledEv
     public GuildScheduledEventManager setEndTime(@Nonnull TemporalAccessor endTime)
     {
         Checks.notNull(endTime, "End Time");
+        Checks.check(Helpers.toOffsetDateTime(endTime).isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
         this.endTime = Helpers.toOffsetDateTime(endTime);
         set |= END_TIME;
         return this;

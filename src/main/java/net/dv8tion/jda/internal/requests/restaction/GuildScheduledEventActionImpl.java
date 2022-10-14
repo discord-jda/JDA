@@ -151,6 +151,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     {
         Checks.notNull(startTime, "Start Time");
         Checks.check(Helpers.toOffsetDateTime(startTime).isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
+        Checks.check(Helpers.toOffsetDateTime(startTime).isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
         this.startTime = Helpers.toOffsetDateTime(startTime);
         return this;
     }
@@ -161,6 +162,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     {
         Checks.notNull(endTime, "End Time");
         Checks.check(Helpers.toOffsetDateTime(endTime).isAfter(startTime), "Cannot schedule event to end before its starting!");
+        Checks.check(Helpers.toOffsetDateTime(endTime).isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
         this.endTime = Helpers.toOffsetDateTime(endTime);
         return this;
     }
