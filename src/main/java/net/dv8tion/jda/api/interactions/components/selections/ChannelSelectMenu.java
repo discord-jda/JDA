@@ -19,14 +19,11 @@ package net.dv8tion.jda.api.interactions.components.selections;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.select.ChannelSelectMenuImpl;
-import net.dv8tion.jda.internal.interactions.component.select.SelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Represents a channel select menu in a message.

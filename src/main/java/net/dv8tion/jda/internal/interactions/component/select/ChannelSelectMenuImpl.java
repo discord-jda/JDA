@@ -17,16 +17,10 @@
 package net.dv8tion.jda.internal.interactions.component.select;
 
 import net.dv8tion.jda.api.interactions.components.selections.ChannelSelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 public class ChannelSelectMenuImpl implements ChannelSelectMenu

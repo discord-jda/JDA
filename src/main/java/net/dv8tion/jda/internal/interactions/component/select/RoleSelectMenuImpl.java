@@ -16,9 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.component.select;
 
-import net.dv8tion.jda.api.interactions.components.selections.ChannelSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.RoleSelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
