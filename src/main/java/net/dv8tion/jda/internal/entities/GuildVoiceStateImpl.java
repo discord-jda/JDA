@@ -245,7 +245,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public String toString()
     {
         return new EntityString(this)
-                .setName(getGuild().getName())
+                .addMetadata("member", getMember()) //Guild metadata is included in Member metadata
                 .toString();
     }
 
