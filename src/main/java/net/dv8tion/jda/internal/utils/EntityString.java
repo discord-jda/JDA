@@ -31,26 +31,31 @@ public class EntityString
     private String name;
     private List<String> metadata;
 
-    public EntityString(Object entity) {
+    public EntityString(Object entity)
+    {
         this.entity = entity;
     }
 
-    public EntityString setType(@Nonnull Enum<?> type) {
+    public EntityString setType(@Nonnull Enum<?> type)
+    {
         this.type = type.name();
         return this;
     }
 
-    public EntityString setType(@Nonnull Object type) {
+    public EntityString setType(@Nonnull Object type)
+    {
         this.type = type;
         return this;
     }
 
-    public EntityString setName(@Nonnull String name) {
+    public EntityString setName(@Nonnull String name)
+    {
         this.name = name;
         return this;
     }
 
-    public EntityString addMetadata(@Nullable String key, @Nullable Object value) {
+    public EntityString addMetadata(@Nullable String key, @Nullable Object value)
+    {
         if (this.metadata == null) this.metadata = new ArrayList<>();
 
         this.metadata.add(key == null ? String.valueOf(value) : key + "=" + value);
@@ -60,7 +65,8 @@ public class EntityString
 
     @Nonnull
     @Override
-    public String toString() {
+    public String toString()
+    {
         final String entityName;
         if (this.entity instanceof String)
             entityName = (String) this.entity;
@@ -70,15 +76,14 @@ public class EntityString
             entityName = getCleanedClassName(this.entity.getClass());
 
         final StringBuilder sb = new StringBuilder(entityName);
-        if (this.type != null) {
+        if (this.type != null)
             sb.append('[').append(this.type).append(']');
-        }
-        if (this.name != null) {
+        if (this.name != null)
             sb.append(':').append(this.name);
-        }
 
         final boolean isSnowflake = entity instanceof ISnowflake;
-        if (isSnowflake || this.metadata != null) {
+        if (isSnowflake || this.metadata != null)
+        {
             final StringJoiner metadataJoiner = new StringJoiner(", ", "(", ")");
             if (isSnowflake) metadataJoiner.add("id=" + ((ISnowflake) entity).getId());
             if (this.metadata != null)
@@ -92,7 +97,8 @@ public class EntityString
     }
 
     @Nonnull
-    private static String getCleanedClassName(@Nonnull Class<?> clazz) {
+    private static String getCleanedClassName(@Nonnull Class<?> clazz)
+    {
         String packageName = clazz.getPackage().getName();
         String fullName = clazz.getName();
         String simpleName = fullName.substring(packageName.length() + 1);
