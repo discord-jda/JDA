@@ -534,7 +534,7 @@ public class WidgetUtil
         @Override
         public String toString()
         {
-            final EntityString entityString = new EntityString(this);
+            final EntityString entityString = new EntityString("Widget");
             if (isAvailable()) entityString.setName(getName());
             return entityString.toString();
         }
@@ -815,7 +815,7 @@ public class WidgetUtil
             @Override
             public String toString()
             {
-                return new EntityString(this)
+                return new EntityString("Widget.Member")
                         .setName(getName())
                         .toString();
             }
@@ -908,7 +908,7 @@ public class WidgetUtil
             @Override
             public String toString()
             {
-                return new EntityString(this)
+                return new EntityString("Widget.VoiceChannel")
                         .setName(getName())
                         .toString();
             }
@@ -1061,7 +1061,7 @@ public class WidgetUtil
             
             @Override
             public String toString() {
-                return new EntityString(this)
+                return new EntityString("Widget.VoiceState")
                         .setName(widget.getName())
                         .addMetadata("memberName", member.getEffectiveName())
                         .toString();
