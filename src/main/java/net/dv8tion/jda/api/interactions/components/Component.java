@@ -74,12 +74,20 @@ public interface Component extends SerializableData
         ACTION_ROW(1, 0, true, true),
         /** A button */
         BUTTON(2, 5, true, false),
-        /** A select menu */
+        /** Select Menus */
         SELECT_MENU(3, 1, true, false),
+
+        USER_SELECT_MENU(5, 1, true, false),
+
+        ROLE_SELECT_MENU(6, 1, true, false),
+
+        MENTIONABLE_SELECT_MENU(7, 1, true, false),
+
+        CHANNEL_SELECT_MENU(8, 1, true, false),
+
         /** A text input field */
         TEXT_INPUT(4, 1, false, true)
         ;
-
         private final int key;
         private final int maxPerRow;
         private final boolean messageCompatible;

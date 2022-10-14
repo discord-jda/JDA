@@ -38,7 +38,7 @@ import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionIm
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.ButtonInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.SelectMenuInteractionImpl;
+import net.dv8tion.jda.internal.interactions.component.select.SelectMenuInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class InteractionCreateHandler extends SocketHandler
