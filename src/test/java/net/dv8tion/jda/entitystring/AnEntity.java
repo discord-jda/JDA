@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda;
+package net.dv8tion.jda.entitystring;
 
 public class AnEntity
 {
