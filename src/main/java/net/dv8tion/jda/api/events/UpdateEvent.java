@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.events;
 
-import net.dv8tion.jda.internal.utils.EntityString;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -93,13 +91,4 @@ public interface UpdateEvent<E, T> extends GenericEvent
      */
     @Nullable
     T getNewValue();
-
-    @Nonnull
-    default String toEntityString()
-    {
-        return new EntityString(this)
-                .setType(getPropertyIdentifier())
-                .addMetadata(null, getOldValue() + " -> " + getNewValue())
-                .toString();
-    }
 }

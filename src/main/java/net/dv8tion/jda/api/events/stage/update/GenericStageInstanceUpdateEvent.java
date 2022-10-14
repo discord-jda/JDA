@@ -71,10 +71,4 @@ public abstract class GenericStageInstanceUpdateEvent<T> extends GenericStageIns
     {
         return next;
     }
-
-    @Override
-    public String toString()
-    {
-        return toEntityString();
-    }
 }
