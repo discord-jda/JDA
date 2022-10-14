@@ -16,10 +16,13 @@
 
 package net.dv8tion.jda.internal.interactions.component.select;
 
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.selections.ChannelSelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.ChannelSelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.RoleSelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.RoleSelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.UserSelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.UserSelectMenuInteraction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -30,30 +33,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChannelSelectMenuInteractionImpl extends ComponentInteractionImpl implements ChannelSelectMenuInteraction
+public class UserSelectMenuInteractionImpl extends ComponentInteractionImpl implements UserSelectMenuInteraction
 {
-    private final List<GuildChannel> values;
-    private final ChannelSelectMenu menu;
+    private final List<User> values;
+    private final UserSelectMenu menu;
 
-    public ChannelSelectMenuInteractionImpl(JDAImpl jda, DataObject data)
+    public UserSelectMenuInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
 
-        List<GuildChannel> channels = new ArrayList<>();
+        List<User> users = new ArrayList<>();
 
         data.getObject("data").getArray("values")
                 .stream(DataArray::getObject)
-                .forEach((object) -> channels.add(jda.getChannelById(GuildChannel.class, object.getLong("id"))));
+                .forEach((object) -> users.add(jda.getUserById(object.getLong("id"))));
 
-        values = Collections.unmodifiableList(channels);
+        values = Collections.unmodifiableList(users);
 
         if (message != null)
         {
             menu = message.getActionRows()
                     .stream()
                     .flatMap(row -> row.getComponents().stream())
-                    .filter(ChannelSelectMenu.class::isInstance)
-                    .map(ChannelSelectMenu.class::cast)
+                    .filter(UserSelectMenu.class::isInstance)
+                    .map(UserSelectMenu.class::cast)
                     .filter(c -> customId.equals(c.getId()))
                     .findFirst()
                     .orElse(null);
@@ -66,7 +69,7 @@ public class ChannelSelectMenuInteractionImpl extends ComponentInteractionImpl i
 
     @Nonnull
     @Override
-    public ChannelSelectMenu getComponent()
+    public UserSelectMenu getComponent()
     {
         return menu;
     }
@@ -75,12 +78,12 @@ public class ChannelSelectMenuInteractionImpl extends ComponentInteractionImpl i
     @Override
     public Component.Type getComponentType()
     {
-        return Component.Type.CHANNEL_SELECT_MENU;
+        return Component.Type.USER_SELECT_MENU;
     }
 
     @Nonnull
     @Override
-    public List<GuildChannel> getValues()
+    public List<User> getValues()
     {
         return values;
     }

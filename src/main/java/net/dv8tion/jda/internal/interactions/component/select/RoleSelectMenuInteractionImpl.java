@@ -16,10 +16,13 @@
 
 package net.dv8tion.jda.internal.interactions.component.select;
 
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.selections.ChannelSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.ChannelSelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.RoleSelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.RoleSelectMenuInteraction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -30,30 +33,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ChannelSelectMenuInteractionImpl extends ComponentInteractionImpl implements ChannelSelectMenuInteraction
+public class RoleSelectMenuInteractionImpl extends ComponentInteractionImpl implements RoleSelectMenuInteraction
 {
-    private final List<GuildChannel> values;
-    private final ChannelSelectMenu menu;
+    private final List<Role> values;
+    private final RoleSelectMenu menu;
 
-    public ChannelSelectMenuInteractionImpl(JDAImpl jda, DataObject data)
+    public RoleSelectMenuInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
 
-        List<GuildChannel> channels = new ArrayList<>();
+        List<Role> roles = new ArrayList<>();
 
         data.getObject("data").getArray("values")
                 .stream(DataArray::getObject)
-                .forEach((object) -> channels.add(jda.getChannelById(GuildChannel.class, object.getLong("id"))));
+                .forEach((object) -> roles.add(jda.getRoleById(object.getLong("id"))));
 
-        values = Collections.unmodifiableList(channels);
+        values = Collections.unmodifiableList(roles);
 
         if (message != null)
         {
             menu = message.getActionRows()
                     .stream()
                     .flatMap(row -> row.getComponents().stream())
-                    .filter(ChannelSelectMenu.class::isInstance)
-                    .map(ChannelSelectMenu.class::cast)
+                    .filter(RoleSelectMenu.class::isInstance)
+                    .map(RoleSelectMenu.class::cast)
                     .filter(c -> customId.equals(c.getId()))
                     .findFirst()
                     .orElse(null);
@@ -66,7 +69,7 @@ public class ChannelSelectMenuInteractionImpl extends ComponentInteractionImpl i
 
     @Nonnull
     @Override
-    public ChannelSelectMenu getComponent()
+    public RoleSelectMenu getComponent()
     {
         return menu;
     }
@@ -75,12 +78,12 @@ public class ChannelSelectMenuInteractionImpl extends ComponentInteractionImpl i
     @Override
     public Component.Type getComponentType()
     {
-        return Component.Type.CHANNEL_SELECT_MENU;
+        return Component.Type.ROLE_SELECT_MENU;
     }
 
     @Nonnull
     @Override
-    public List<GuildChannel> getValues()
+    public List<Role> getValues()
     {
         return values;
     }
