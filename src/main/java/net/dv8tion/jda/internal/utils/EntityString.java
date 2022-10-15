@@ -85,10 +85,13 @@ public class EntityString
         if (isSnowflake || this.metadata != null)
         {
             final StringJoiner metadataJoiner = new StringJoiner(", ", "(", ")");
-            if (isSnowflake) metadataJoiner.add("id=" + ((ISnowflake) entity).getId());
+            if (isSnowflake)
+                metadataJoiner.add("id=" + ((ISnowflake) entity).getId());
             if (this.metadata != null)
+            {
                 for (Object metadataItem : this.metadata)
                     metadataJoiner.add(metadataItem.toString());
+            }
 
             sb.append(metadataJoiner);
         }
