@@ -426,7 +426,10 @@ public class Route
     @Override
     public String toString()
     {
-        return method + "/" + route;
+        return new EntityString(this)
+                .setType(method)
+                .addMetadata("route", route)
+                .toString();
     }
 
     public class CompiledRoute

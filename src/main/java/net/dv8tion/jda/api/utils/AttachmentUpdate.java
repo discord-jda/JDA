@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import okhttp3.MultipartBody;
 
 import javax.annotation.Nonnull;
@@ -128,6 +129,9 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
     @Override
     public String toString()
     {
-        return "AttachedFile[Attachment]" + (name == null ? "" : ":" + name) + '(' + id + ')';
+        final EntityString entityString = new EntityString("AttachedFile").setType("Attachment");
+        if (name != null)
+            entityString.setName(name);
+        return entityString.toString();
     }
 }
