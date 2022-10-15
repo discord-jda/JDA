@@ -535,7 +535,8 @@ public class WidgetUtil
         public String toString()
         {
             final EntityString entityString = new EntityString("Widget");
-            if (isAvailable()) entityString.setName(getName());
+            if (isAvailable())
+                entityString.setName(getName());
             return entityString.toString();
         }
 
