@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.internal.utils.EntityString;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -95,7 +97,11 @@ public enum CloseCode
     @Override
     public String toString()
     {
-        return "CloseCode(" + code + " / " + meaning + ")";
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("code", code)
+                .addMetadata("meaning", meaning)
+                .toString();
     }
 
     /**
