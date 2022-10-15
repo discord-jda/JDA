@@ -38,6 +38,14 @@ public class EntityStringTest
 
     @Test
     @Order(2)
+    public void testClassNameAsString()
+    {
+        assertEquals("NotAnEntity", new EntityString("NotAnEntity").toString());
+        assertEquals("NotAnEntity:AName", new EntityString("NotAnEntity").setName("AName").toString());
+    }
+
+    @Test
+    @Order(3)
     public void testType()
     {
         assertEquals("AnEntity[AType]", new EntityString(new AnEntity()).setType("AType").toString());
@@ -46,7 +54,7 @@ public class EntityStringTest
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void testMetadata()
     {
         assertEquals("AnEntity(Metadata1)", new EntityString(new AnEntity()).addMetadata(null, "Metadata1").toString());
@@ -59,7 +67,7 @@ public class EntityStringTest
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void testAll()
     {
         assertEquals("AnEntity:AName(Metadata1)", new EntityString(new AnEntity())
@@ -104,7 +112,7 @@ public class EntityStringTest
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testSimpleSnowflake()
     {
         assertEquals("ASnowflake(id=42)", new EntityString(new ASnowflake()).toString());
@@ -112,7 +120,7 @@ public class EntityStringTest
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void testTypeSnowflake()
     {
         assertEquals("ASnowflake[AType](id=42)", new EntityString(new ASnowflake()).setType("AType").toString());
@@ -121,7 +129,7 @@ public class EntityStringTest
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void testMetadataSnowflake()
     {
         assertEquals("ASnowflake(id=42, Metadata1)", new EntityString(new ASnowflake()).addMetadata(null, "Metadata1").toString());
@@ -134,7 +142,7 @@ public class EntityStringTest
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     public void testAllSnowflake()
     {
         assertEquals("ASnowflake:AName(id=42, Metadata1)", new EntityString(new ASnowflake())
