@@ -197,8 +197,8 @@ public interface EntitySelectMenu extends ActionComponent
      * Represents an EntitySelectMenu type
      */
     enum SelectType {
-        ROLE(5),
-        USER(6),
+        ROLE(6),
+        USER(5),
         CHANNEL(8),
         ;
 
