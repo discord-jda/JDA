@@ -49,19 +49,18 @@ public class EntitySelectMenuInteractionImpl extends ComponentInteractionImpl im
         values = Collections.unmodifiableList(data.getObject("data").getArray("values")
                 .stream(DataArray::getString)
                 .map(id -> {
-                    if (type == Component.Type.ROLE_SELECT_MENU)
-                        return getGuild().getRoleById(id);
-                    else if (type == Component.Type.CHANNEL_SELECT_MENU)
-                        return getGuild().getGuildChannelById(id);
-                    else if (type == Component.Type.USER_SELECT_MENU)
-                        return getGuild().getMemberById(id).getUser();
-                    else if (type == Component.Type.MENTIONABLE_SELECT_MENU)
-                    {
-                        if (jda.getUserById(id) != null)
-                            return getGuild().getMemberById(id).getUser();
-                        else
-                            return getGuild().getRoleById(id);
-                    }
+                    if (jda.getUserById(id) != null)
+                        return jda.getUserById(id);
+
+                    if (jda.getGuildChannelById(id) != null)
+                        return jda.getGuildChannelById(id);
+
+                    if (jda.getRoleById(id) != null)
+                        return jda.getRoleById(id);
+
+                    if (jda.getUserById(id) != null)
+                        return jda.getUserById(id);
+
                     return null;
                 })
                 .collect(Collectors.toList()));
