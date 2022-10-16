@@ -111,10 +111,6 @@ public class SlashCommandReference implements ICommandReference
     @Override
     public int hashCode()
     {
-        int result = Long.hashCode(id);
-        result = 31 * result + name.hashCode();
-        result = 31 * result + (subcommand != null ? subcommand.hashCode() : 0);
-        result = 31 * result + (subcommandGroup != null ? subcommandGroup.hashCode() : 0);
-        return result;
+        return Objects.hash(id, name, subcommand, subcommandGroup);
     }
 }
