@@ -221,9 +221,10 @@ public interface EntitySelectMenu extends ActionComponent
         private int minValues = 1, maxValues = 1;
         private boolean disabled = false;
 
-        protected Builder(@Nonnull String customId, EnumSet<SelectType> types)
+        protected Builder(@Nonnull String customId, @Nonnull EnumSet<SelectType> types)
         {
             setId(customId);
+            setType(types);
         }
 
         /**
