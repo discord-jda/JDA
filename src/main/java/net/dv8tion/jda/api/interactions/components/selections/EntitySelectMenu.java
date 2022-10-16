@@ -264,11 +264,9 @@ public interface EntitySelectMenu extends ActionComponent
             Checks.notEmpty(type, "Select Type");
             boolean isSupportedCombination = true;
 
-            // Check to make sure that if the size is over 1, that the only combination can be ROLE, USER, CHANNEL
-            if (type.size() > 1)
-                isSupportedCombination = type.contains(SelectType.ROLE) && type.contains(SelectType.CHANNEL);
-            else
-                isSupportedCombination = false;
+            // Check to make sure that if the size is over 1, that the only combination can be ROLE, USER
+            if (type.size() == 2)
+                isSupportedCombination = type.contains(SelectType.ROLE) && type.contains(SelectType.USER);
 
             Checks.check(isSupportedCombination, "That select menu combination is not supported!");
 
@@ -283,7 +281,7 @@ public interface EntitySelectMenu extends ActionComponent
             if (!getType().contains(SelectType.CHANNEL))
                 throw new IllegalArgumentException("Cannot set channel filters on a select menu that does not contain the CHANNEL type!");
 
-            Checks.check(getType().size() == 1 && !getType().contains(SelectType.CHANNEL), "Cannot set channel filters on a select menu that does not contain the CHANNEL type!");
+            Checks.check(!getType().contains(SelectType.CHANNEL), "Cannot set channel filters on a select menu that does not contain the CHANNEL type!");
             this.channelFilters = channelFilters;
             return this;
         }
@@ -466,7 +464,7 @@ public interface EntitySelectMenu extends ActionComponent
 
             if (type.size() == 1)
                 typeCode = type.iterator().next().getKey();
-            else if (type.size() == 3 && type.contains(SelectType.ROLE) && type.contains(SelectType.CHANNEL))
+            else if (type.size() == 3 && type.contains(SelectType.ROLE) && type.contains(SelectType.USER))
                 typeCode = 7;
             else
                 throw new IllegalArgumentException("Invalid select menu type combination!");
