@@ -46,11 +46,30 @@ public class EntitySelectMenuInteractionImpl extends ComponentInteractionImpl im
         super(jda, data);
         type = Component.Type.fromKey(data.getInt("type"));
 
+        values = Collections.unmodifiableList(data.getObject("data").getArray("values")
+                .stream(DataArray::getString)
+                .map(id -> {
+                    if (type == Component.Type.ROLE_SELECT_MENU)
+                        return jda.getRoleById(id);
+                    else if (type == Component.Type.CHANNEL_SELECT_MENU)
+                        return jda.getGuildChannelById(id);
+                    else if (type == Component.Type.USER_SELECT_MENU)
+                        return jda.getUserById(id);
+                    else if (type == Component.Type.MENTIONABLE_SELECT_MENU)
+                    {
+                        if (jda.getUserById(id) != null)
+                            return jda.getUserById(id);
+                        else
+                            return jda.getRoleById(id);
+                    }
+                })
+                .collect(Collectors.toList()));
+
         List<IMentionable> mentionables = new ArrayList<>();
         for (DataObject obj : data.getObject("data").getArray("values").stream(DataArray::getObject).collect(Collectors.toList()))
         {
             if (type == Component.Type.ROLE_SELECT_MENU)
-                mentionables.add(jda.getRoleById(obj.getString("id")));
+                mentionables.add(jda.getRoleById(ob);
             else if (type == Component.Type.CHANNEL_SELECT_MENU)
                 mentionables.add(jda.getGuildChannelById(obj.getString("id")));
             else if (type == Component.Type.USER_SELECT_MENU)
