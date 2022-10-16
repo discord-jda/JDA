@@ -278,10 +278,7 @@ public interface EntitySelectMenu extends ActionComponent
         public Builder setChannelFilters(@Nonnull EnumSet<ChannelType> channelFilters)
         {
             Checks.notEmpty(channelFilters, "Channel Filters");
-            if (!getType().contains(SelectType.CHANNEL))
-                throw new IllegalArgumentException("Cannot set channel filters on a select menu that does not contain the CHANNEL type!");
-
-            Checks.check(!getType().contains(SelectType.CHANNEL), "Cannot set channel filters on a select menu that does not contain the CHANNEL type!");
+            Checks.check(getType().contains(SelectType.CHANNEL), "Cannot set channel filters on a select menu that does not contain the CHANNEL type!");
             this.channelFilters = channelFilters;
             return this;
         }
