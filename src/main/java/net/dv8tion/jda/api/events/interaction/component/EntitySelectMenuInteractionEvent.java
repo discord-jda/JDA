@@ -69,17 +69,17 @@ public class EntitySelectMenuInteractionEvent extends GenericComponentInteractio
     }
 
     @Nonnull
-    public List<IMentionable> getSelectedEntities()
+    public List<IMentionable> getSelectedEntities(JDA jda)
     {
         // turn list of ids into list of mentionables
         return menuInteraction.getValues().stream()
             .map(id -> {
-                if (getJDA().getUserById(id) != null)
-                    return getJDA().getUserById(id);
-                else if (getJDA().getRoleById(id) != null)
-                    return getJDA().getRoleById(id);
-                else if (getJDA().getGuildChannelById(id) != null)
-                    return getJDA().getGuildChannelById(id);
+                if (jda.getUserById(id) != null)
+                    return jda.getUserById(id);
+                else if (jda.getRoleById(id) != null)
+                    return jda.getRoleById(id);
+                else if (jda.getGuildChannelById(id) != null)
+                    return jda.getGuildChannelById(id);
                 else
                     return null;
             })
