@@ -50,17 +50,17 @@ public class EntitySelectMenuInteractionImpl extends ComponentInteractionImpl im
                 .stream(DataArray::getString)
                 .map(id -> {
                     if (type == Component.Type.ROLE_SELECT_MENU)
-                        return jda.getRoleById(id);
+                        return getGuild().getRoleById(id);
                     else if (type == Component.Type.CHANNEL_SELECT_MENU)
-                        return jda.getGuildChannelById(id);
+                        return getGuild().getGuildChannelById(id);
                     else if (type == Component.Type.USER_SELECT_MENU)
-                        return jda.getUserById(id);
+                        return getGuild().getMemberById(id).getUser();
                     else if (type == Component.Type.MENTIONABLE_SELECT_MENU)
                     {
                         if (jda.getUserById(id) != null)
-                            return jda.getUserById(id);
+                            return getGuild().getMemberById(id).getUser();
                         else
-                            return jda.getRoleById(id);
+                            return getGuild().getRoleById(id);
                     }
                     return null;
                 })
