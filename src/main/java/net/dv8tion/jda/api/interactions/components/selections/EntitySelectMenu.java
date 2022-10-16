@@ -17,19 +17,16 @@
 package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.select.EntitySelectMenuImpl;
-import net.dv8tion.jda.internal.interactions.component.select.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.EnumSet;
 
 /**
  * Represents a select menu in a message.

@@ -20,9 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenuInteraction;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenuInteraction;
-import net.dv8tion.jda.internal.entities.UserImpl;
 
 import javax.annotation.Nonnull;
 import java.util.List;

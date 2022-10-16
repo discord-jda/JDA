@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
-import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -30,7 +29,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Component Interaction for a {@link EntitySelectMenu}.
