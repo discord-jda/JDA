@@ -281,13 +281,8 @@ public abstract class AbstractMentions implements Mentions
                     return true;
                 break;
             case SLASH_COMMAND:
-                if (mentionable instanceof ICommandReference)
-                {
-                    final ICommandReference reference = (ICommandReference) mentionable;
-                    for (SlashCommandReference r : getSlashCommands())
-                        if (r.getCommandPath().equals(reference.getCommandPath()) && r.getIdLong() == reference.getIdLong())
-                            return true;
-                }
+                if (isSlashCommandMentioned(mentionable))
+                    return true;
                 break;
 //           default: continue;
             }
@@ -350,6 +345,18 @@ public abstract class AbstractMentions implements Mentions
         else if (guild != null && mentionable instanceof User)
             member = guild.getMember((User) mentionable);
         return member != null && CollectionUtils.containsAny(getRoles(), member.getRoles());
+    }
+
+    protected boolean isSlashCommandMentioned(IMentionable mentionable)
+    {
+        if (mentionable instanceof ICommandReference)
+        {
+            final ICommandReference reference = (ICommandReference) mentionable;
+            for (SlashCommandReference r : getSlashCommands())
+                if (r.getCommandPath().equals(reference.getCommandPath()) && r.getIdLong() == reference.getIdLong())
+                    return true;
+        }
+        return false;
     }
 
     protected boolean isMass(String s)
