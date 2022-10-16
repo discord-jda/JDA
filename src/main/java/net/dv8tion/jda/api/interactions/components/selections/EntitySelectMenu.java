@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
@@ -78,6 +79,13 @@ public interface EntitySelectMenu extends ActionComponent
      */
     @Nullable
     String getPlaceholder();
+
+    /**
+     * The channel filters controlling what channels are shown.
+     *
+     * @return the channel filters
+     */
+    EnumSet<ChannelType> getChannelTypes();
 
     /**
      * The minimum amount of values a user has to select.
@@ -209,6 +217,7 @@ public interface EntitySelectMenu extends ActionComponent
         private String customId;
         private String placeholder;
         private EnumSet<SelectType> type;
+        private EnumSet<ChannelType> channelFilters;
         private int minValues = 1, maxValues = 1;
         private boolean disabled = false;
 
@@ -263,6 +272,18 @@ public interface EntitySelectMenu extends ActionComponent
             Checks.check(isSupportedCombination, "That select menu combination is not supported!");
 
             this.type = type;
+            return this;
+        }
+
+        @Nonnull
+        public Builder setChannelFilters(@Nonnull EnumSet<ChannelType> channelFilters)
+        {
+            Checks.notEmpty(channelFilters, "Channel Filters");
+            if (!getType().contains(SelectType.CHANNEL))
+                throw new IllegalArgumentException("Cannot set channel filters on a select menu that does not contain the CHANNEL type!");
+
+            Checks.check(getType().size() == 1 && !getType().contains(SelectType.CHANNEL), "Cannot set channel filters on a select menu that does not contain the CHANNEL type!");
+            this.channelFilters = channelFilters;
             return this;
         }
 
@@ -374,6 +395,22 @@ public interface EntitySelectMenu extends ActionComponent
         }
 
         /**
+         * The type(s) used in the select menu.
+         *
+         * @return The type(s)
+         */
+        @Nonnull
+        public EnumSet<SelectType> getType() { return type; }
+
+        /**
+         * The allowed channels used in the select menu.
+         *
+         * @return The allowed channels
+         */
+        @Nonnull
+        public EnumSet<ChannelType> getChannelFilters() { return channelFilters; }
+
+        /**
          * Placeholder which is displayed when no selections have been made yet.
          *
          * @return The placeholder or null
@@ -433,7 +470,7 @@ public interface EntitySelectMenu extends ActionComponent
             else
                 throw new IllegalArgumentException("Invalid select menu type combination!");
 
-            return new EntitySelectMenuImpl(customId, placeholder, minValues, maxValues, disabled, Component.Type.fromKey(typeCode));
+            return new EntitySelectMenuImpl(customId, placeholder, minValues, maxValues, disabled, Component.Type.fromKey(typeCode), channelFilters);
         }
     }
 }

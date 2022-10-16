@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.component.select;
 
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.internal.entities.channel.concrete.TextChannelImpl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EntitySelectMenuImpl implements EntitySelectMenu
 {
@@ -34,19 +36,25 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
     private final int minValues, maxValues;
     private final boolean disabled;
     private final Component.Type type;
+    private final EnumSet<ChannelType> channelTypes;
 
     public EntitySelectMenuImpl(DataObject data)
     {
-        this(
-                data.getString("custom_id"),
-                data.getString("placeholder", null),
-                data.getInt("min_values", 1),
-                data.getInt("max_values", 1),
-                data.getBoolean("disabled"),
-                Component.Type.fromKey(data.getInt("type")));
+        EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
+        for (String type : data.getArray("channel_types").stream(DataArray::getString).toArray(String[]::new))
+            channelTypes.add(ChannelType.fromId(Integer.parseInt(type)));
+
+
+        this.id = data.getString("custom_id");
+        this.placeholder = data.getString("placeholder", null);
+        this.minValues = data.getInt("min_values", 1);
+        this.maxValues = data.getInt("max_values", 1);
+        this.disabled = data.getBoolean("disabled");
+        this.type = Component.Type.fromKey(data.getInt("type"));
+        this.channelTypes = channelTypes;
     }
 
-    public EntitySelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, Component.Type type)
+    public EntitySelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, Component.Type type, EnumSet<ChannelType> channelFilters)
     {
         this.id = id;
         this.placeholder = placeholder;
@@ -54,6 +62,7 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
         this.maxValues = maxValues;
         this.disabled = disabled;
         this.type = type;
+        this.channelTypes = channelFilters;
     }
 
     @Nonnull
@@ -65,10 +74,7 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
 
     @Nullable
     @Override
-    public String getId()
-    {
-        return id;
-    }
+    public String getId() { return id; }
 
     @Nullable
     @Override
@@ -76,6 +82,9 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
     {
         return placeholder;
     }
+
+    @Override
+    public EnumSet<ChannelType> getChannelTypes() { return channelTypes;}
 
     @Override
     public int getMinValues()
@@ -105,6 +114,7 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
         data.put("disabled", disabled);
+        data.put("channel_types", DataArray.fromCollection(this.channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
         if (placeholder != null)
             data.put("placeholder", placeholder);
         return data;
