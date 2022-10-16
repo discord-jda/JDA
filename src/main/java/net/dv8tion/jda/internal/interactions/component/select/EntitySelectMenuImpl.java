@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.interactions.component.select;
 
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
@@ -40,8 +41,20 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
 
     public EntitySelectMenuImpl(DataObject data)
     {
+        this.type = Component.Type.fromKey(data.getInt("type"));
+
         EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
-        if (!data.getArray("channel_types").isEmpty())
+
+        DataArray array;
+        try
+        {
+            array = data.getArray("channel_types");
+        } catch (ParsingException e)
+        {
+            array = null;
+        }
+
+        if (array != null && !data.getArray("channel_types").isEmpty())
         {
             for (String type : data.getArray("channel_types").stream(DataArray::getString).toArray(String[]::new))
                 channelTypes.add(ChannelType.fromId(Integer.parseInt(type)));
@@ -53,7 +66,6 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
         this.minValues = data.getInt("min_values", 1);
         this.maxValues = data.getInt("max_values", 1);
         this.disabled = data.getBoolean("disabled");
-        this.type = Component.Type.fromKey(data.getInt("type"));
         this.channelTypes = channelTypes;
     }
 
