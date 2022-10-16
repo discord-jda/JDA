@@ -80,7 +80,7 @@ public interface EntitySelectMenuInteraction extends ComponentInteraction
      * @return {@link List} of the selected values
      */
     @Nonnull
-    List<IMentionable> getValues();
+    List<String> getValues();
 
     /**
      * Update the select menu with a new select menu instance.

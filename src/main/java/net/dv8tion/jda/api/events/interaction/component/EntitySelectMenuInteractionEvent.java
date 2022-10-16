@@ -22,9 +22,11 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenuInteraction;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenuInteraction;
+import net.dv8tion.jda.internal.entities.UserImpl;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Indicates that a custom {@link EntitySelectMenu} on one of the bots messages was used by a user.
@@ -61,8 +63,26 @@ public class EntitySelectMenuInteractionEvent extends GenericComponentInteractio
 
     @Nonnull
     @Override
-    public List<IMentionable> getValues()
+    public List<String> getValues()
     {
         return menuInteraction.getValues();
+    }
+
+    @Nonnull
+    public List<IMentionable> getSelectedEntities()
+    {
+        // turn list of ids into list of mentionables
+        return menuInteraction.getValues().stream()
+            .map(id -> {
+                if (getJDA().getUserById(id) != null)
+                    return getJDA().getUserById(id);
+                else if (getJDA().getRoleById(id) != null)
+                    return getJDA().getRoleById(id);
+                else if (getJDA().getGuildChannelById(id) != null)
+                    return getJDA().getGuildChannelById(id);
+                else
+                    return null;
+            })
+            .collect(Collectors.toList());
     }
 }

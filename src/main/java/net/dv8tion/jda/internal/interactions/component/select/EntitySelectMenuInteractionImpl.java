@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 
 public class EntitySelectMenuInteractionImpl extends ComponentInteractionImpl implements EntitySelectMenuInteraction
 {
-    private final List<IMentionable> values;
+    private final List<String> values;
     private final EntitySelectMenu menu;
     private final Component.Type type;
 
@@ -48,21 +48,6 @@ public class EntitySelectMenuInteractionImpl extends ComponentInteractionImpl im
 
         values = Collections.unmodifiableList(data.getObject("data").getArray("values")
                 .stream(DataArray::getString)
-                .map(id -> {
-                    if (jda.getUserById(id) != null)
-                        return jda.getUserById(id);
-
-                    if (jda.getGuildChannelById(id) != null)
-                        return jda.getGuildChannelById(id);
-
-                    if (jda.getRoleById(id) != null)
-                        return jda.getRoleById(id);
-
-                    if (jda.getUserById(id) != null)
-                        return jda.getUserById(id);
-
-                    return null;
-                })
                 .collect(Collectors.toList()));
 
         if (message != null)
@@ -98,7 +83,7 @@ public class EntitySelectMenuInteractionImpl extends ComponentInteractionImpl im
 
     @Nonnull
     @Override
-    public List<IMentionable> getValues()
+    public List<String> getValues()
     {
         return values;
     }
