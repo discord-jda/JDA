@@ -56,15 +56,6 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
         this.type = type;
     }
 
-    private static List<SelectOption> parseOptions(DataArray array)
-    {
-        List<SelectOption> options = new ArrayList<>(array.length());
-        array.stream(DataArray::getObject)
-            .map(SelectOption::fromData)
-            .forEach(options::add);
-        return options;
-    }
-
     @Nonnull
     @Override
     public Type getType()
