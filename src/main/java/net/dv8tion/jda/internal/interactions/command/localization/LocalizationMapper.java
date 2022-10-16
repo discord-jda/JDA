@@ -119,7 +119,9 @@ public class LocalizationMapper
                 };
 
                 //We need to differentiate subcommands/groups from options before inserting the "options" separator
-                if (OptionType.fromKey(item.getInt("type", -1)).isOption()) { //-1 when the object isn't an option
+                final OptionType type = OptionType.fromKey(item.getInt("type", -1)); //-1 when the object isn't an option
+                final boolean isOption = type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP;
+                if (isOption) {
                     //At this point the key should look like "path.to.command",
                     // we can insert "options", and the keyExtractor would give option names
 
