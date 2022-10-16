@@ -77,9 +77,9 @@ public interface Component extends SerializableData
         /** Select Menus */
         SELECT_MENU(3, 1, true, false),
 
-        USER_SELECT_MENU(6, 1, true, false),
+        USER_SELECT_MENU(5, 1, true, false),
 
-        ROLE_SELECT_MENU(56, 1, true, false),
+        ROLE_SELECT_MENU(6, 1, true, false),
 
         MENTIONABLE_SELECT_MENU(7, 1, true, false),
 
