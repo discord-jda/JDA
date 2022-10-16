@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.interactions.component.select;
 
 import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.Mentions;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenuInteraction;
@@ -29,6 +30,7 @@ import net.dv8tion.jda.internal.entities.RoleImpl;
 import net.dv8tion.jda.internal.interactions.component.ComponentInteractionImpl;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,29 +46,24 @@ public class EntitySelectMenuInteractionImpl extends ComponentInteractionImpl im
         super(jda, data);
         type = Component.Type.fromKey(data.getInt("type"));
 
-        values = Collections.unmodifiableList(data.getObject("data").getArray("values")
-                .stream(DataArray::getObject)
-                .map(obj -> {
-                    if (type == Component.Type.ROLE_SELECT_MENU)
-                        return jda.getRoleById(obj.getString("id"));
-
-                    if (type == Component.Type.CHANNEL_SELECT_MENU)
-                        return jda.getGuildChannelById(obj.getString("id"));
-
-                    if (type == Component.Type.USER_SELECT_MENU)
-                        return jda.getUserById(obj.getString("id"));
-
-                    if (type == Component.Type.MENTIONABLE_SELECT_MENU) {
-                        if (jda.getUserById(obj.getString("id")) != null)
-                            return jda.getUserById(obj.getString("id"));
-                            // Mentionable isn't a user, return a role.
-                        else
-                            return jda.getRoleById(obj.getString("id"));
-                    }
-
-                    return null;
-                })
-                .collect(Collectors.toList()));
+        List<IMentionable> mentionables = new ArrayList<>();
+        for (DataObject obj : data.getObject("data").getArray("values").stream(DataArray::getObject).collect(Collectors.toList()))
+        {
+            if (type == Component.Type.ROLE_SELECT_MENU)
+                mentionables.add(jda.getRoleById(obj.getString("id")));
+            else if (type == Component.Type.CHANNEL_SELECT_MENU)
+                mentionables.add(jda.getGuildChannelById(obj.getString("id")));
+            else if (type == Component.Type.USER_SELECT_MENU)
+                mentionables.add(jda.getUserById(obj.getString("id")));
+            else if (type == Component.Type.MENTIONABLE_SELECT_MENU)
+            {
+                if (jda.getUserById(obj.getString("id")) != null)
+                    mentionables.add(jda.getUserById(obj.getString("id")));
+                else
+                    mentionables.add(jda.getRoleById(obj.getString("id")));
+            }
+        }
+        values = Collections.unmodifiableList(mentionables);
 
         if (message != null)
         {
