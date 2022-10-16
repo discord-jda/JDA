@@ -140,7 +140,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserContextInteraction(@Nonnull UserContextInteractionEvent event) {}
     public void onMessageContextInteraction(@Nonnull MessageContextInteractionEvent event) {}
     public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {}
-    public void onSelectMenuInteraction(@Nonnull StringSelectMenuInteractionEvent event) {}
+    public void onStringSelectMenuInteraction(@Nonnull StringSelectMenuInteractionEvent event) {}
+    public void onEntitySelectMenuInteraction(@Nonnull EntitySelectMenuInteractionEvent event) {}
     public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {}
     public void onModalInteraction(@Nonnull ModalInteractionEvent event) {}
 
