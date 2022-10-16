@@ -16,40 +16,50 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.component.select.ChannelSelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.select.EntitySelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.select.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * Represents a channel select menu in a message.
+ * Represents a select menu in a message.
  * <br>This is an interactive component and usually located within an {@link net.dv8tion.jda.api.interactions.components.ActionRow ActionRow}.
  * One select menu fills up an entire action row by itself. You cannot have an action row with other components if a select menu is present in the same row.
  *
  * <p>The selections a user makes are only visible within their current client session.
  * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
  *
+ * <p>There are two types of select menus within JDA. Entity select menus, which are used for channels, users and roles, and string select menus which are used for custom options.
+ *
  * <p><b>Examples</b><br>
  * <pre>{@code
  * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
- *   if (!event.getName().equals("class")) return;
+ *   if (!event.getName().equals("friend")) return;
  *
- *   TO BE ADDED
+ *   SelectMenu menu = SelectMenu.create("menu:friend")
+ *     .setPlaceholder("Select a friend") // shows the placeholder indicating what this menu is for
+ *     .setRequireRange(1, 1) // only one can be selected
+ *     .build();
  *
- *   event.reply("Please pick your class below")
+ *   event.reply("Please select a friend below")
  *     .setEphemeral(true)
  *     .addActionRow(menu)
  *     .queue();
  * }
  * }</pre>
  *
- * @see SelectMenuInteraction
+ * @see StringSelectMenuInteraction
  */
-public interface ChannelSelectMenu extends ActionComponent
+public interface EntitySelectMenu extends ActionComponent
 {
     /**
      * The maximum length a select menu id can have
@@ -86,7 +96,7 @@ public interface ChannelSelectMenu extends ActionComponent
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelSelectMenu asDisabled()
+    default EntitySelectMenu asDisabled()
     {
         return withDisabled(true);
     }
@@ -94,7 +104,7 @@ public interface ChannelSelectMenu extends ActionComponent
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelSelectMenu asEnabled()
+    default EntitySelectMenu asEnabled()
     {
         return withDisabled(false);
     }
@@ -102,7 +112,7 @@ public interface ChannelSelectMenu extends ActionComponent
     @Nonnull
     @Override
     @CheckReturnValue
-    default ChannelSelectMenu withDisabled(boolean disabled)
+    default EntitySelectMenu withDisabled(boolean disabled)
     {
         return createCopy().setDisabled(disabled).build();
     }
@@ -117,8 +127,16 @@ public interface ChannelSelectMenu extends ActionComponent
     @CheckReturnValue
     default Builder createCopy()
     {
-        //noinspection ConstantConditions
-        Builder builder = create(getId());
+        EnumSet<SelectType> selectTypes;
+
+        Type componentType = getType();
+        if (componentType == Type.MENTIONABLE_SELECT_MENU) selectTypes = EnumSet.of(SelectType.ROLE, SelectType.USER);
+        else if (componentType == Type.CHANNEL_SELECT_MENU) selectTypes = EnumSet.of(SelectType.CHANNEL);
+        else if (componentType == Type.ROLE_SELECT_MENU) selectTypes = EnumSet.of(SelectType.ROLE);
+        else if (componentType == Type.USER_SELECT_MENU) selectTypes = EnumSet.of(SelectType.USER);
+        else throw new IllegalStateException("Unknown component type: " + componentType);
+
+        Builder builder = create(getId(), selectTypes);
         builder.setRequiredRange(getMinValues(), getMaxValues());
         builder.setPlaceholder(getPlaceholder());
         builder.setDisabled(isDisabled());
@@ -131,6 +149,9 @@ public interface ChannelSelectMenu extends ActionComponent
      * @param  customId
      *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
      *
+     * @param  type
+     *         The type combination of select menu to create
+     *
      * @throws IllegalArgumentException
      *         If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters
      *
@@ -138,9 +159,9 @@ public interface ChannelSelectMenu extends ActionComponent
      */
     @Nonnull
     @CheckReturnValue
-    static Builder create(@Nonnull String customId)
+    static Builder create(@Nonnull String customId, @Nonnull EnumSet<SelectType> type)
     {
-        return new Builder(customId);
+        return new Builder(customId, type);
     }
 
     /**
@@ -161,7 +182,23 @@ public interface ChannelSelectMenu extends ActionComponent
     @CheckReturnValue
     static Builder fromData(@Nonnull DataObject data)
     {
-        return new ChannelSelectMenuImpl(data).createCopy();
+        return new EntitySelectMenuImpl(data).createCopy();
+    }
+
+    /**
+     * Represents an EntitySelectMenu type
+     */
+    enum SelectType {
+        ROLE(5),
+        USER(6),
+        CHANNEL(8),
+        ;
+
+        private final int key;
+
+        SelectType(int key) { this.key = key; }
+
+        public int getKey() { return key; }
     }
 
     /**
@@ -171,10 +208,11 @@ public interface ChannelSelectMenu extends ActionComponent
     {
         private String customId;
         private String placeholder;
+        private EnumSet<SelectType> type;
         private int minValues = 1, maxValues = 1;
         private boolean disabled = false;
 
-        protected Builder(@Nonnull String customId)
+        protected Builder(@Nonnull String customId, EnumSet<SelectType> types)
         {
             setId(customId);
         }
@@ -196,6 +234,35 @@ public interface ChannelSelectMenu extends ActionComponent
             Checks.notEmpty(customId, "Component ID");
             Checks.notLonger(customId, ID_MAX_LENGTH, "Component ID");
             this.customId = customId;
+            return this;
+        }
+
+        /**
+         * Changes the type(s) used in the select menu.
+         *
+         * @param  type
+         *         The new type(s) to use
+         *
+         * @throws IllegalArgumentException
+         *         If the provided type(s) is empty, or if the combination provided is invalid.
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder setType(@Nonnull EnumSet<SelectType> type)
+        {
+            Checks.notEmpty(type, "Select Type");
+            boolean isSupportedCombination = true;
+
+            // Check to make sure that if the size is over 1, that the only combination can be ROLE, USER, CHANNEL
+            if (type.size() > 1)
+                isSupportedCombination = type.contains(SelectType.ROLE) && type.contains(SelectType.CHANNEL);
+            else
+                isSupportedCombination = false;
+
+            Checks.check(isSupportedCombination, "That select menu combination is not supported!");
+
+            this.type = type;
             return this;
         }
 
@@ -229,6 +296,7 @@ public interface ChannelSelectMenu extends ActionComponent
          * @param  minValues
          *         The min values
          *
+         *
          * @return The same builder instance for chaining
          */
         @Nonnull
@@ -243,9 +311,9 @@ public interface ChannelSelectMenu extends ActionComponent
          * The maximum amount of values a user can select.
          * <br>Default: {@code 1}
          *
-         *
          * @param  maxValues
          *         The max values
+         *
          *
          * @return The same builder instance for chaining
          */
@@ -347,18 +415,25 @@ public interface ChannelSelectMenu extends ActionComponent
         }
 
         /**
-         * Creates a new {@link ChannelSelectMenu} instance if all requirements are satisfied.
+         * Creates a new {@link EntitySelectMenu} instance if all requirements are satisfied.
          *
-         * @throws IllegalArgumentException
-         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()}
-         *
-         * @return The new {@link ChannelSelectMenu} instance
+         * @return The new {@link EntitySelectMenu} instance
          */
         @Nonnull
-        public ChannelSelectMenu build()
+        public EntitySelectMenu build()
         {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
-            return new ChannelSelectMenuImpl(customId, placeholder, minValues, maxValues, disabled);
+
+            int typeCode;
+
+            if (type.size() == 1)
+                typeCode = type.iterator().next().getKey();
+            else if (type.size() == 3 && type.contains(SelectType.ROLE) && type.contains(SelectType.CHANNEL))
+                typeCode = 7;
+            else
+                throw new IllegalArgumentException("Invalid select menu type combination!");
+
+            return new EntitySelectMenuImpl(customId, placeholder, minValues, maxValues, disabled, Component.Type.fromKey(typeCode));
         }
     }
 }

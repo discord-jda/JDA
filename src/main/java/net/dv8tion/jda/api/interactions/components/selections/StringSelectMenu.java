@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.interactions.components.selections;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.component.select.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.select.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -29,12 +29,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Represents a select menu in a message.
+ * Represents a string select menu in a message.
  * <br>This is an interactive component and usually located within an {@link net.dv8tion.jda.api.interactions.components.ActionRow ActionRow}.
  * One select menu fills up an entire action row by itself. You cannot have an action row with other components if a select menu is present in the same row.
  *
  * <p>The selections a user makes are only visible within their current client session.
  * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
+ *
+ * <p>There are two types of select menus within JDA. Entity select menus, which are used for channels, users and roles, and string select menus which are used for custom options.
  *
  * <p><b>Examples</b><br>
  * <pre>{@code
@@ -56,9 +58,9 @@ import java.util.stream.Collectors;
  * }
  * }</pre>
  *
- * @see SelectMenuInteraction
+ * @see StringSelectMenuInteraction
  */
-public interface SelectMenu extends ActionComponent
+public interface StringSelectMenu extends ActionComponent
 {
     /**
      * The maximum length a select menu id can have
@@ -110,7 +112,7 @@ public interface SelectMenu extends ActionComponent
     @Nonnull
     @Override
     @CheckReturnValue
-    default SelectMenu asDisabled()
+    default StringSelectMenu asDisabled()
     {
         return withDisabled(true);
     }
@@ -118,7 +120,7 @@ public interface SelectMenu extends ActionComponent
     @Nonnull
     @Override
     @CheckReturnValue
-    default SelectMenu asEnabled()
+    default StringSelectMenu asEnabled()
     {
         return withDisabled(false);
     }
@@ -126,7 +128,7 @@ public interface SelectMenu extends ActionComponent
     @Nonnull
     @Override
     @CheckReturnValue
-    default SelectMenu withDisabled(boolean disabled)
+    default StringSelectMenu withDisabled(boolean disabled)
     {
         return createCopy().setDisabled(disabled).build();
     }
@@ -186,7 +188,7 @@ public interface SelectMenu extends ActionComponent
     @CheckReturnValue
     static Builder fromData(@Nonnull DataObject data)
     {
-        return new SelectMenuImpl(data).createCopy();
+        return new StringSelectMenuImpl(data).createCopy();
     }
 
     /**
@@ -383,7 +385,7 @@ public interface SelectMenu extends ActionComponent
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
+         *         The value for the option used to indicate which option was selected with {@link StringSelectMenuInteraction#getValues()},
          *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          *
          * @throws IllegalArgumentException
@@ -404,7 +406,7 @@ public interface SelectMenu extends ActionComponent
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
+         *         The value for the option used to indicate which option was selected with {@link StringSelectMenuInteraction#getValues()},
          *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          * @param  emoji
          *         The {@link Emoji} shown next to this option, or null
@@ -426,7 +428,7 @@ public interface SelectMenu extends ActionComponent
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
+         *         The value for the option used to indicate which option was selected with {@link StringSelectMenuInteraction#getValues()},
          *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          * @param  description
          *         The description explaining the meaning of this option in more detail, up to 50 characters
@@ -449,7 +451,7 @@ public interface SelectMenu extends ActionComponent
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
+         *         The value for the option used to indicate which option was selected with {@link StringSelectMenuInteraction#getValues()},
          *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          * @param  description
          *         The description explaining the meaning of this option in more detail, up to 50 characters
@@ -575,7 +577,7 @@ public interface SelectMenu extends ActionComponent
         }
 
         /**
-         * Creates a new {@link SelectMenu} instance if all requirements are satisfied.
+         * Creates a new {@link StringSelectMenu} instance if all requirements are satisfied.
          * <br>A select menu may not have more than {@value OPTIONS_MAX_AMOUNT} options at once.
          *
          * <p>The values for {@link #setMinValues(int)} and {@link #setMaxValues(int)} are bounded by the length of {@link #getOptions()}.
@@ -584,16 +586,16 @@ public interface SelectMenu extends ActionComponent
          * @throws IllegalArgumentException
          *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()} or more than {@value OPTIONS_MAX_AMOUNT} options are provided
          *
-         * @return The new {@link SelectMenu} instance
+         * @return The new {@link StringSelectMenu} instance
          */
         @Nonnull
-        public SelectMenu build()
+        public StringSelectMenu build()
         {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
             Checks.check(options.size() <= OPTIONS_MAX_AMOUNT, "Cannot build a select menu with more than %d options.", OPTIONS_MAX_AMOUNT);
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
-            return new SelectMenuImpl(customId, placeholder, min, max, disabled, options);
+            return new StringSelectMenuImpl(customId, placeholder, min, max, disabled, options);
         }
     }
 }

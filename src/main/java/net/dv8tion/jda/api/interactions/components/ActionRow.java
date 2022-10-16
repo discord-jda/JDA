@@ -19,7 +19,8 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
-import net.dv8tion.jda.internal.interactions.component.select.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.select.EntitySelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.select.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -69,7 +70,11 @@ public class ActionRow implements LayoutComponent
                 case BUTTON:
                     return new ButtonImpl(obj);
                 case SELECT_MENU:
-                    return new SelectMenuImpl(obj);
+                    return new StringSelectMenuImpl(obj);
+                case ROLE_SELECT_MENU:
+                case CHANNEL_SELECT_MENU:
+                case USER_SELECT_MENU:
+                    return new EntitySelectMenuImpl(obj);
                 case TEXT_INPUT:
                     return new TextInputImpl(obj);
                 default:

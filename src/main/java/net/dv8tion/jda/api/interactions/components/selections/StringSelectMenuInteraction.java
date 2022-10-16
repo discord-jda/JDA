@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -32,25 +32,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Component Interaction for a {@link SelectMenu}.
+ * Component Interaction for a {@link StringSelectMenu}.
  *
- * @see SelectMenuInteractionEvent
+ * @see StringSelectMenuInteractionEvent
  */
-public interface SelectMenuInteraction extends ComponentInteraction
+public interface StringSelectMenuInteraction extends ComponentInteraction
 {
     @Nonnull
     @Override
-    SelectMenu getComponent();
+    StringSelectMenu getComponent();
 
     /**
-     * The {@link SelectMenu} this interaction belongs to.
+     * The {@link StringSelectMenu} this interaction belongs to.
      *
-     * @return The {@link SelectMenu}
+     * @return The {@link StringSelectMenu}
      *
      * @see    #getComponentId()
      */
     @Nonnull
-    default SelectMenu getSelectMenu()
+    default StringSelectMenu getSelectMenu()
     {
         return getComponent();
     }
@@ -64,7 +64,7 @@ public interface SelectMenuInteraction extends ComponentInteraction
     @Nonnull
     default List<SelectOption> getSelectedOptions()
     {
-        SelectMenu menu = getComponent();
+        StringSelectMenu menu = getComponent();
         List<String> values = getValues();
         return menu.getOptions()
                 .stream()
@@ -91,12 +91,12 @@ public interface SelectMenuInteraction extends ComponentInteraction
      *
      * @return {@link RestAction}
      *
-     * @see    SelectMenu#createCopy()
-     * @see    SelectMenu#create(String)
+     * @see    StringSelectMenu#createCopy()
+     * @see    StringSelectMenu#create(String)
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> editSelectMenu(@Nullable SelectMenu newMenu)
+    default RestAction<Void> editSelectMenu(@Nullable StringSelectMenu newMenu)
     {
         Message message = getMessage();
         List<ActionRow> components = new ArrayList<>(message.getActionRows());

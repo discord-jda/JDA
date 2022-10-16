@@ -37,10 +37,8 @@ import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionIm
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.ButtonInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.select.ChannelSelectMenuInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.select.RoleSelectMenuInteractionImpl;
+import net.dv8tion.jda.internal.interactions.component.select.EntitySelectMenuInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.select.SelectMenuInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.select.UserSelectMenuInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class InteractionCreateHandler extends SocketHandler
@@ -79,26 +77,26 @@ public class InteractionCreateHandler extends SocketHandler
 
         switch (InteractionType.fromKey(type))
         {
-            case COMMAND: // slash commands
-                handleCommand(content);
-                break;
-            case COMPONENT: // buttons/components
-                handleAction(content);
-                break;
-            case COMMAND_AUTOCOMPLETE:
-                api.handleEvent(
+        case COMMAND: // slash commands
+            handleCommand(content);
+            break;
+        case COMPONENT: // buttons/components
+            handleAction(content);
+            break;
+        case COMMAND_AUTOCOMPLETE:
+            api.handleEvent(
                     new CommandAutoCompleteInteractionEvent(api, responseNumber,
-                        new CommandAutoCompleteInteractionImpl(api, content)));
-                break;
-            case MODAL_SUBMIT:
-                api.handleEvent(
+                            new CommandAutoCompleteInteractionImpl(api, content)));
+            break;
+        case MODAL_SUBMIT:
+            api.handleEvent(
                     new ModalInteractionEvent(api, responseNumber,
-                        new ModalInteractionImpl(api, content)));
-                break;
-            default:
-                api.handleEvent(
+                            new ModalInteractionImpl(api, content)));
+            break;
+        default:
+            api.handleEvent(
                     new GenericInteractionCreateEvent(api, responseNumber,
-                        new InteractionImpl(api, content)));
+                            new InteractionImpl(api, content)));
         }
 
         return null;
@@ -110,18 +108,18 @@ public class InteractionCreateHandler extends SocketHandler
         {
         case SLASH:
             api.handleEvent(
-                new SlashCommandInteractionEvent(api, responseNumber,
-                    new SlashCommandInteractionImpl(api, content)));
+                    new SlashCommandInteractionEvent(api, responseNumber,
+                            new SlashCommandInteractionImpl(api, content)));
             break;
         case MESSAGE:
             api.handleEvent(
-                new MessageContextInteractionEvent(api, responseNumber,
-                    new MessageContextInteractionImpl(api, content)));
+                    new MessageContextInteractionEvent(api, responseNumber,
+                            new MessageContextInteractionImpl(api, content)));
             break;
         case USER:
             api.handleEvent(
-                new UserContextInteractionEvent(api, responseNumber,
-                    new UserContextInteractionImpl(api, content)));
+                    new UserContextInteractionEvent(api, responseNumber,
+                            new UserContextInteractionImpl(api, content)));
             break;
         }
     }
@@ -132,28 +130,21 @@ public class InteractionCreateHandler extends SocketHandler
         {
         case BUTTON:
             api.handleEvent(
-                new ButtonInteractionEvent(api, responseNumber,
-                    new ButtonInteractionImpl(api, content)));
+                    new ButtonInteractionEvent(api, responseNumber,
+                            new ButtonInteractionImpl(api, content)));
             break;
         case SELECT_MENU:
             api.handleEvent(
-                new SelectMenuInteractionEvent(api, responseNumber,
-                    new SelectMenuInteractionImpl(api, content)));
-            break;
-        case ROLE_SELECT_MENU:
-            api.handleEvent(
-                    new RoleSelectMenuInteractionEvent(api, responseNumber,
-                            new RoleSelectMenuInteractionImpl(api, content)));
+                    new StringSelectMenuInteractionEvent(api, responseNumber,
+                            new SelectMenuInteractionImpl(api, content)));
             break;
         case USER_SELECT_MENU:
-            api.handleEvent(
-                    new UserSelectMenuInteractionEvent(api, responseNumber,
-                            new UserSelectMenuInteractionImpl(api, content)));
-            break;
+        case ROLE_SELECT_MENU:
         case CHANNEL_SELECT_MENU:
+        case MENTIONABLE_SELECT_MENU:
             api.handleEvent(
-                    new ChannelSelectMenuInteractionEvent(api, responseNumber,
-                            new ChannelSelectMenuInteractionImpl(api, content)));
+                    new EntitySelectMenuInteractionEvent(api, responseNumber,
+                            new EntitySelectMenuInteractionImpl(api, content)));
             break;
         }
     }

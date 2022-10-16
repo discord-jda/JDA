@@ -16,44 +16,60 @@
 
 package net.dv8tion.jda.internal.interactions.component.select;
 
-import net.dv8tion.jda.api.interactions.components.selections.RoleSelectMenu;
+import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.channel.concrete.TextChannelImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Objects;
+import java.util.*;
 
-public class RoleSelectMenuImpl implements RoleSelectMenu
+public class EntitySelectMenuImpl implements EntitySelectMenu
 {
     private final String id, placeholder;
     private final int minValues, maxValues;
     private final boolean disabled;
+    private final Component.Type type;
 
-    public RoleSelectMenuImpl(DataObject data)
+    public EntitySelectMenuImpl(DataObject data)
     {
         this(
                 data.getString("custom_id"),
                 data.getString("placeholder", null),
                 data.getInt("min_values", 1),
                 data.getInt("max_values", 1),
-                data.getBoolean("disabled")
-        );
+                data.getBoolean("disabled"),
+                Component.Type.fromKey(data.getInt("type")));
     }
 
-    public RoleSelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled)
+    public EntitySelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, Component.Type type)
     {
         this.id = id;
         this.placeholder = placeholder;
         this.minValues = minValues;
         this.maxValues = maxValues;
         this.disabled = disabled;
+        this.type = type;
+    }
+
+    private static List<SelectOption> parseOptions(DataArray array)
+    {
+        List<SelectOption> options = new ArrayList<>(array.length());
+        array.stream(DataArray::getObject)
+            .map(SelectOption::fromData)
+            .forEach(options::add);
+        return options;
     }
 
     @Nonnull
     @Override
     public Type getType()
     {
-    return Type.ROLE_SELECT_MENU;
+        return type;
     }
 
     @Nullable
@@ -93,7 +109,7 @@ public class RoleSelectMenuImpl implements RoleSelectMenu
     public DataObject toData()
     {
         DataObject data = DataObject.empty();
-        data.put("type", 6);
+        data.put("type", 3);
         data.put("custom_id", id);
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
@@ -106,13 +122,13 @@ public class RoleSelectMenuImpl implements RoleSelectMenu
     @Override
     public String toString()
     {
-        return "RoleSelectMenu:" + id + "(" + placeholder + ")";
+        return "SelectMenu:" + id + "(" + placeholder + ")";
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, placeholder, minValues, maxValues, disabled);
+        return Objects.hash(id, placeholder, minValues, maxValues, disabled, getType());
     }
 
     @Override
@@ -120,13 +136,14 @@ public class RoleSelectMenuImpl implements RoleSelectMenu
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof RoleSelectMenu))
+        if (!(obj instanceof StringSelectMenu))
             return false;
-        RoleSelectMenu other = (RoleSelectMenu) obj;
+        StringSelectMenu other = (StringSelectMenu) obj;
         return Objects.equals(id, other.getId())
                 && Objects.equals(placeholder, other.getPlaceholder())
                 && minValues == other.getMinValues()
                 && maxValues == other.getMaxValues()
-                && disabled == other.isDisabled();
+                && disabled == other.isDisabled()
+                && getType() == other.getType();
     }
 }

@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
@@ -2655,7 +2655,7 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * such as {@link Button Buttons} or {@link StringSelectMenu SelectMenus} on this message.
      * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -2720,7 +2720,7 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * such as {@link Button Buttons} or {@link StringSelectMenu SelectMenus} on this message.
      * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -2777,7 +2777,7 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * such as {@link Button Buttons} or {@link StringSelectMenu SelectMenus} on this message.
      * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -2837,7 +2837,7 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * such as {@link Button Buttons} or {@link StringSelectMenu SelectMenus} on this message.
      * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:

@@ -17,14 +17,17 @@
 package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenuInteraction;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Indicates that a custom {@link SelectMenu} on one of the bots messages was used by a user.
+ * Indicates that a custom {@link EntitySelectMenu} on one of the bots messages was used by a user.
  *
  * <p>This fires when a user selects the options on one of the custom select menus attached to a bot or webhook message.
  *
@@ -32,11 +35,11 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SelectMenuInteractionEvent extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction
+public class EntitySelectMenuInteractionEvent extends GenericComponentInteractionCreateEvent implements EntitySelectMenuInteraction
 {
-    private final SelectMenuInteraction menuInteraction;
+    private final EntitySelectMenuInteraction menuInteraction;
 
-    public SelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction interaction)
+    public EntitySelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull EntitySelectMenuInteraction interaction)
     {
         super(api, responseNumber, interaction);
         this.menuInteraction = interaction;
@@ -44,21 +47,21 @@ public class SelectMenuInteractionEvent extends GenericComponentInteractionCreat
 
     @Nonnull
     @Override
-    public SelectMenuInteraction getInteraction()
+    public EntitySelectMenuInteraction getInteraction()
     {
         return menuInteraction;
     }
 
     @Nonnull
     @Override
-    public SelectMenu getComponent()
+    public EntitySelectMenu getComponent()
     {
         return menuInteraction.getComponent();
     }
 
     @Nonnull
     @Override
-    public List<String> getValues()
+    public List<IMentionable> getValues()
     {
         return menuInteraction.getValues();
     }

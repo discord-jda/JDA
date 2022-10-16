@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -33,52 +33,54 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Component Interaction for a {@link ChannelSelectMenu}.
+ * Component Interaction for a {@link EntitySelectMenu}.
  *
- * @see SelectMenuInteractionEvent
+ * @see StringSelectMenuInteractionEvent
  */
-public interface ChannelSelectMenuInteraction extends ComponentInteraction
+public interface EntitySelectMenuInteraction extends ComponentInteraction
 {
     @Nonnull
     @Override
-    ChannelSelectMenu getComponent();
+    EntitySelectMenu getComponent();
 
     /**
-     * The {@link ChannelSelectMenu} this interaction belongs to.
+     * The {@link EntitySelectMenu} this interaction belongs to.
      *
-     * @return The {@link ChannelSelectMenu}
+     * @return The {@link EntitySelectMenu}
      *
      * @see    #getComponentId()
      */
     @Nonnull
-    default ChannelSelectMenu getSelectMenu()
+    default EntitySelectMenu getSelectMenu()
     {
         return getComponent();
     }
 
     /**
-     * If available, this will resolve the selected {@link #getValues() values} to the representative {@link SelectOption SelectOption} instances.
+     * If available, this will resolve the selected {@link #getValues() values}
      * <br>This is null if the message is ephemeral.
      *
      * @return {@link List} of the selected options or null if this message is ephemeral
-     */
+
     @Nonnull
-    default List<GuildChannel> getSelectedOptions()
+    default List<IMentionable> getSelectedOptions()
     {
-        List<GuildChannel> values = getValues();
-        return getGuild().getChannels()
+        StringSelectMenu menu = getComponent();
+        List<String> values = getValues();
+        return menu.getOptions()
                 .stream()
-                .filter(values::contains)
+                .filter(it -> values.contains(it.getValue()))
                 .collect(Collectors.toList());
     }
+    */
 
     /**
-     * The selected values. These are defined in the individual {@link SelectOption SelectOptions}.
+     * The selected values.
      *
-     * @return {@link List} of {@link SelectOption#getValue()}
+     * @return {@link List} of the selected values
      */
     @Nonnull
-    List<GuildChannel> getValues();
+    List<IMentionable> getValues();
 
     /**
      * Update the select menu with a new select menu instance.
@@ -91,12 +93,12 @@ public interface ChannelSelectMenuInteraction extends ComponentInteraction
      *
      * @return {@link RestAction}
      *
-     * @see    SelectMenu#createCopy()
-     * @see    SelectMenu#create(String)
+     * @see    EntitySelectMenu#createCopy()
+     * @see    EntitySelectMenu#create(String, java.util.EnumSet)
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> editSelectMenu(@Nullable ChannelSelectMenu newMenu)
+    default RestAction<Void> editSelectMenu(@Nullable EntitySelectMenu newMenu)
     {
         Message message = getMessage();
         List<ActionRow> components = new ArrayList<>(message.getActionRows());

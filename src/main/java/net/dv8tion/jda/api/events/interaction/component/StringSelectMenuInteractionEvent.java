@@ -17,17 +17,14 @@
 package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.interactions.components.selections.RoleSelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.RoleSelectMenuInteraction;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenuInteraction;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Indicates that a custom {@link RoleSelectMenu} on one of the bots messages was used by a user.
+ * Indicates that a custom {@link StringSelectMenu} on one of the bots messages was used by a user.
  *
  * <p>This fires when a user selects the options on one of the custom select menus attached to a bot or webhook message.
  *
@@ -35,11 +32,11 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class RoleSelectMenuInteractionEvent extends GenericComponentInteractionCreateEvent implements RoleSelectMenuInteraction
+public class StringSelectMenuInteractionEvent extends GenericComponentInteractionCreateEvent implements StringSelectMenuInteraction
 {
-    private final RoleSelectMenuInteraction menuInteraction;
+    private final StringSelectMenuInteraction menuInteraction;
 
-    public RoleSelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull RoleSelectMenuInteraction interaction)
+    public StringSelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull StringSelectMenuInteraction interaction)
     {
         super(api, responseNumber, interaction);
         this.menuInteraction = interaction;
@@ -47,21 +44,21 @@ public class RoleSelectMenuInteractionEvent extends GenericComponentInteractionC
 
     @Nonnull
     @Override
-    public RoleSelectMenuInteraction getInteraction()
+    public StringSelectMenuInteraction getInteraction()
     {
         return menuInteraction;
     }
 
     @Nonnull
     @Override
-    public RoleSelectMenu getComponent()
+    public StringSelectMenu getComponent()
     {
         return menuInteraction.getComponent();
     }
 
     @Nonnull
     @Override
-    public List<Role> getValues()
+    public List<String> getValues()
     {
         return menuInteraction.getValues();
     }

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.component.select;
 
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -28,14 +28,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class SelectMenuImpl implements SelectMenu
+public class StringSelectMenuImpl implements StringSelectMenu
 {
     private final String id, placeholder;
     private final int minValues, maxValues;
     private final boolean disabled;
     private final List<SelectOption> options;
 
-    public SelectMenuImpl(DataObject data)
+    public StringSelectMenuImpl(DataObject data)
     {
         this(
             data.getString("custom_id"),
@@ -47,7 +47,7 @@ public class SelectMenuImpl implements SelectMenu
         );
     }
 
-    public SelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
+    public StringSelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
     {
         this.id = id;
         this.placeholder = placeholder;
@@ -145,9 +145,9 @@ public class SelectMenuImpl implements SelectMenu
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof SelectMenu))
+        if (!(obj instanceof StringSelectMenu))
             return false;
-        SelectMenu other = (SelectMenu) obj;
+        StringSelectMenu other = (StringSelectMenu) obj;
         return Objects.equals(id, other.getId())
                 && Objects.equals(placeholder, other.getPlaceholder())
                 && minValues == other.getMinValues()
