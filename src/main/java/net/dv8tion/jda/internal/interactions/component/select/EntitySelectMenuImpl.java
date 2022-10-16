@@ -41,8 +41,11 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
     public EntitySelectMenuImpl(DataObject data)
     {
         EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
-        for (String type : data.getArray("channel_types").stream(DataArray::getString).toArray(String[]::new))
-            channelTypes.add(ChannelType.fromId(Integer.parseInt(type)));
+        if (!data.getArray("channel_types").isEmpty())
+        {
+            for (String type : data.getArray("channel_types").stream(DataArray::getString).toArray(String[]::new))
+                channelTypes.add(ChannelType.fromId(Integer.parseInt(type)));
+        }
 
 
         this.id = data.getString("custom_id");
