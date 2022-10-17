@@ -43,7 +43,7 @@ import java.util.EnumSet;
  * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
  *   if (!event.getName().equals("friend")) return;
  *
- *   SelectMenu menu = SelectMenu.create("menu:friend")
+ *   EntitySelectMenu menu = EntitySelectMenu.create("menu:friend", EnumSet.of(SelectType.USER))
  *     .setPlaceholder("Select a friend") // shows the placeholder indicating what this menu is for
  *     .setRequireRange(1, 1) // only one can be selected
  *     .build();
