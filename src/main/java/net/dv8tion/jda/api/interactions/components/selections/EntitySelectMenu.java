@@ -458,7 +458,7 @@ public interface EntitySelectMenu extends ActionComponent
 
             if (type.size() == 1)
                 typeCode = type.iterator().next().getKey();
-            else if (type.size() == 3 && type.contains(SelectType.ROLE) && type.contains(SelectType.USER))
+            else if (type.size() == 2 && type.contains(SelectType.ROLE) && type.contains(SelectType.USER))
                 typeCode = 7;
             else
                 throw new IllegalArgumentException("Invalid select menu type combination!");
