@@ -66,6 +66,7 @@ public interface EntitySelectMenu extends SelectMenu
     /**
      * The allowed {@link ChannelType ChannelTypes} for this menu.
      * <br>This is only relevant if the {@link SelectTarget SelectTargets} include {@link SelectTarget#CHANNEL}.
+     * The returned set is empty if all types are supported, or {@link #getEntityTypes()} does not include {@link SelectTarget#CHANNEL}.
      *
      * <p>Modifying the returned {@link EnumSet} will not affect this menu.
      *
@@ -132,7 +133,7 @@ public interface EntitySelectMenu extends SelectMenu
     class Builder extends SelectMenu.Builder<EntitySelectMenu, Builder>
     {
         protected Component.Type componentType;
-        protected EnumSet<ChannelType> channelTypes = null;
+        protected EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
 
         protected Builder(@Nonnull String customId)
         {
@@ -171,6 +172,14 @@ public interface EntitySelectMenu extends SelectMenu
         }
 
         @Nonnull
+        public Builder setEntityTypes(@Nonnull SelectTarget type, @Nonnull SelectTarget... types)
+        {
+            Checks.notNull(type, "Type");
+            Checks.noneNull(types, "Types");
+            return setEntityTypes(EnumSet.of(type, types));
+        }
+
+        @Nonnull
         public Builder setChannelTypes(@Nonnull Collection<ChannelType> types)
         {
             Checks.noneNull(types, "Types");
@@ -191,6 +200,7 @@ public interface EntitySelectMenu extends SelectMenu
         public EntitySelectMenu build()
         {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
+            EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
             return new EntitySelectMenuImpl(customId, placeholder, minValues, maxValues, disabled, componentType, channelTypes);
         }
     }
