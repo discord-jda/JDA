@@ -382,7 +382,7 @@ public interface GuildManager extends Manager<GuildManager>
 
     /**
      * Configures the new {@link Guild#getFeatures() features} of the {@link Guild}.
-     * <br>The list of available features, including which ones can be configured is available in the
+     * <br>The list of available features, including which ones can be configured, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
      *
      * <p><b>Example</b>
@@ -406,7 +406,7 @@ public interface GuildManager extends Manager<GuildManager>
 
     /**
      * Adds a {@link Guild#getFeatures() Guild Feature} to the list of features.
-     * <br>The list of available features, including which ones can be configured is available in the
+     * <br>The list of available features, including which ones can be configured, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  features
@@ -423,7 +423,7 @@ public interface GuildManager extends Manager<GuildManager>
 
     /**
      * Adds a {@link Guild#getFeatures() Guild Feature} to the list of features.
-     * <br>The list of available features, including which ones can be configured is available in the
+     * <br>The list of available features, including which ones can be configured, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  features
@@ -444,7 +444,7 @@ public interface GuildManager extends Manager<GuildManager>
 
     /**
      * Removes a {@link Guild#getFeatures() Guild Feature} from the list of features.
-     * <br>The list of available features, including which ones can be configured is available in the
+     * <br>The list of available features, including which ones can be configured, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  features
@@ -461,7 +461,7 @@ public interface GuildManager extends Manager<GuildManager>
 
     /**
      * Removes a {@link Guild#getFeatures() Guild Feature} from the list of features.
-     * <br>The list of available features, including which ones can be configured is available in the
+     * <br>The list of available features, including which ones can be configured, is available in the
      * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
      *
      * @param  features
