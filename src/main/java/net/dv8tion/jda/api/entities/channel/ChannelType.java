@@ -172,6 +172,17 @@ public enum ChannelType
     }
 
     /**
+     * All the channel types for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @return {@link EnumSet} of {@link ChannelType}
+     */
+    @Nonnull
+    public static EnumSet<ChannelType> guildTypes()
+    {
+        return EnumSet.complementOf(EnumSet.of(PRIVATE, GROUP, UNKNOWN));
+    }
+
+    /**
      * Static accessor for retrieving a channel type based on its Discord id key.
      *
      * @param  id

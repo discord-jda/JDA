@@ -32,11 +32,11 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SelectMenuInteractionEvent extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction
+public class GenericSelectMenuInteractionEvent<T, S extends SelectMenu> extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction<T, S>
 {
-    private final SelectMenuInteraction menuInteraction;
+    private final SelectMenuInteraction<T, S> menuInteraction;
 
-    public SelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction interaction)
+    public GenericSelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction<T, S> interaction)
     {
         super(api, responseNumber, interaction);
         this.menuInteraction = interaction;
@@ -44,21 +44,21 @@ public class SelectMenuInteractionEvent extends GenericComponentInteractionCreat
 
     @Nonnull
     @Override
-    public SelectMenuInteraction getInteraction()
+    public SelectMenuInteraction<T, S> getInteraction()
     {
         return menuInteraction;
     }
 
     @Nonnull
     @Override
-    public SelectMenu getComponent()
+    public S getComponent()
     {
         return menuInteraction.getComponent();
     }
 
     @Nonnull
     @Override
-    public List<String> getValues()
+    public List<T> getValues()
     {
         return menuInteraction.getValues();
     }
