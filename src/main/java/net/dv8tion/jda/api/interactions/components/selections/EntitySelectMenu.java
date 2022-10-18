@@ -132,7 +132,7 @@ public interface EntitySelectMenu extends SelectMenu
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters.</li>
-     *             <li>If the provided types are null, empty, or invalid.</li>
+     *             <li>If the provided types are null or invalid.</li>
      *         </ul>
      *
      * @return The {@link Builder} used to create the select menu
@@ -141,6 +141,8 @@ public interface EntitySelectMenu extends SelectMenu
     @CheckReturnValue
     static Builder create(@Nonnull String customId, @Nonnull SelectTarget type, @Nonnull SelectTarget... types)
     {
+        Checks.notNull(type, "Type");
+        Checks.noneNull(types, "Types");
         return create(customId, EnumSet.of(type, types));
     }
 
