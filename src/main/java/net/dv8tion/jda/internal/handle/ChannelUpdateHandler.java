@@ -139,6 +139,9 @@ public class ChannelUpdateHandler extends SocketHandler
         {
             case FORUM:
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
+
+                int flags = content.getInt("flags", 0);
+                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
                 EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
                         .map(json -> {
                             json.opt("emoji_id").ifPresent(id -> json.put("id", id));
@@ -147,13 +150,13 @@ public class ChannelUpdateHandler extends SocketHandler
                         })
                         .orElse(null);
 
-                content.optArray("available_tags").ifPresent(array -> handleTagsUpdate(forumChannel, array));
-                int flags = content.getInt("flags", 0);
-                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
-
                 int oldFlags = forumChannel.getRawFlags();
                 int oldSortOrder = forumChannel.getRawSortOrder();
                 EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
+
+                content.optArray("available_tags").ifPresent(
+                    array -> handleTagsUpdate(forumChannel, array)
+                );
 
                 if (oldFlags != flags)
                 {
