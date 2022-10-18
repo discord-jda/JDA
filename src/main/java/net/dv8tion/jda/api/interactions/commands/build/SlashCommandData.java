@@ -273,7 +273,7 @@ public interface SlashCommandData extends CommandData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
@@ -296,7 +296,7 @@ public interface SlashCommandData extends CommandData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
@@ -332,7 +332,7 @@ public interface SlashCommandData extends CommandData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If the provided option type does not support auto-complete</li>
@@ -368,7 +368,7 @@ public interface SlashCommandData extends CommandData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -400,7 +400,7 @@ public interface SlashCommandData extends CommandData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -419,13 +419,34 @@ public interface SlashCommandData extends CommandData
 
     /**
      * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandData Subcommands} to this command.
+     * <br>When a subcommand or subcommand group is added, the base command itself cannot be used.
+     * Thus using {@link #addOptions(OptionData...)} and {@link #addSubcommands(SubcommandData...)} / {@link #addSubcommandGroups(SubcommandGroupData...)}
+     * for the same command, is not supported.
+     *
+     * <p>Valid command layouts are as follows:
+     * <pre>{@code
+     * command
+     * |-- subcommand
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |-- option
+     * |__ option
+     * }</pre>
+     *
+     * Having an option and subcommand simultaneously is not allowed.
      *
      * @param  subcommands
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
      *         If null, more than {@value CommandData#MAX_OPTIONS} subcommands, or duplicate subcommand names are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         Also throws if you try adding subcommands when options are already present.
      *
      * @return The builder instance, for chaining
      */
@@ -434,13 +455,34 @@ public interface SlashCommandData extends CommandData
 
     /**
      * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandData Subcommands} to this command.
+     * <br>When a subcommand or subcommand group is added, the base command itself cannot be used.
+     * Thus using {@link #addOptions(OptionData...)} and {@link #addSubcommands(SubcommandData...)} / {@link #addSubcommandGroups(SubcommandGroupData...)}
+     * for the same command, is not supported.
+     *
+     * <p>Valid command layouts are as follows:
+     * <pre>{@code
+     * command
+     * |-- subcommand
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |-- option
+     * |__ option
+     * }</pre>
+     *
+     * Having an option and subcommand simultaneously is not allowed.
      *
      * @param  subcommands
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
      *         If null, more than {@value CommandData#MAX_OPTIONS} subcommands, or duplicate subcommand names are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         Also throws if you try adding subcommands when options are already present.
      *
      * @return The builder instance, for chaining
      */
@@ -453,13 +495,34 @@ public interface SlashCommandData extends CommandData
 
     /**
      * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandGroupData Subcommand-Groups} to this command.
+     * <br>When a subcommand or subcommand group is added, the base command itself cannot be used.
+     * Thus using {@link #addOptions(OptionData...)} and {@link #addSubcommands(SubcommandData...)} / {@link #addSubcommandGroups(SubcommandGroupData...)}
+     * for the same command, is not supported.
+     *
+     * <p>Valid command layouts are as follows:
+     * <pre>{@code
+     * command
+     * |-- subcommand
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |-- option
+     * |__ option
+     * }</pre>
+     *
+     * Having an option and subcommand simultaneously is not allowed.
      *
      * @param  groups
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
      *         If null, more than {@value CommandData#MAX_OPTIONS} subcommand groups, or duplicate group names are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         Also throws if you try adding subcommand groups when options are already present.
      *
      * @return The builder instance, for chaining
      */
@@ -468,13 +531,34 @@ public interface SlashCommandData extends CommandData
 
     /**
      * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandGroupData Subcommand-Groups} to this command.
+     * <br>When a subcommand or subcommand group is added, the base command itself cannot be used.
+     * Thus using {@link #addOptions(OptionData...)} and {@link #addSubcommands(SubcommandData...)} / {@link #addSubcommandGroups(SubcommandGroupData...)}
+     * for the same command, is not supported.
+     *
+     * <p>Valid command layouts are as follows:
+     * <pre>{@code
+     * command
+     * |-- subcommand
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |-- option
+     * |__ option
+     * }</pre>
+     *
+     * Having an option and subcommand simultaneously is not allowed.
      *
      * @param  groups
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
      *         If null, more than {@value CommandData#MAX_OPTIONS} subcommand groups, or duplicate group names are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         Also throws if you try adding subcommand groups when options are already present.
      *
      * @return The builder instance, for chaining
      */
