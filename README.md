@@ -29,13 +29,13 @@
 
 # JDA (Java Discord API)
 
-JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
-This library is a helpful tool that provides the functionality to create a discord bot in java.
+JDA strives to provide a clean and full wrapping of the Discord REST API and its WebSocket Events for Java.
+This library is a helpful tool that provides the functionality to create a Discord bot in Java.
 
 ## Summary
 
-Due to official statements made by the Discord developers we will no longer support unofficial features. These features
-are undocumented API endpoints or protocols that are not available to bot-accounts.
+Due to official statements made by the Discord developers, we will no longer support unofficial features. These features
+are undocumented API endpoints or protocols that are not available to bot accounts.
 
 _Please see the [Discord docs](https://discord.com/developers/docs/reference) for more information about bot accounts._
 
@@ -54,7 +54,7 @@ _Please see the [Discord docs](https://discord.com/developers/docs/reference) fo
 
 Discord is currently prohibiting creation and usage of automated client accounts (AccountType.CLIENT).
 We have officially dropped support for client login as of version **4.2.0**!
-Note that JDA is not a good tool to build a custom discord client as it loads all servers/guilds on startup unlike
+Note that JDA is not a good tool to build a custom Discord client. This is because JDA loads all servers/guilds on startup, unlike
 a client which does this via lazy loading instead.
 If you need a bot, use a bot account from the [Application Dashboard](https://discord.com/developers/applications).
 
@@ -101,7 +101,7 @@ public static void main(String[] args) {
   and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
 You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
-Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter`, disabling **intents**, or changing the **member cache policy**.
+Additionally, you can change the handling of the member/user cache by setting either a `ChunkingFilter`, disabling **intents**, or changing the **member cache policy**.
 
 ```java
 public void configureMemoryUsage(JDABuilder builder) {
@@ -131,7 +131,7 @@ We offer two implementations for the `IEventManager`:
 - **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
 - **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation that can be applied to methods
 
-By default the **InterfacedEventManager** is used.
+By default, the **InterfacedEventManager** is used.
 Since you can create your own implementation of `IEventManager` this is a very versatile and configurable system.
 If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
 configure it on the `JDABuilder` with `setEventManager(...)`.
@@ -243,10 +243,10 @@ public class Bot extends ListenerAdapter
     public static void main(String[] args)
     {
         if (args.length < 1) {
-            System.out.println("You have to provide a token as first argument!");
+            System.out.println("You have to provide a token as the first argument!");
             System.exit(1);
         }
-        // args[0] should be the token
+        // args[0] should be the bot token
         // We don't need any intents for this bot. Slash commands work without any intents!
         JDA jda = JDABuilder.createLight(args[0], Collections.emptyList())
             .addEventListeners(new Bot())
@@ -314,13 +314,13 @@ TODO: Find good examples
 
 ## Sharding a Bot
 
-Discord allows Bot-accounts to share load across sessions by limiting them to a fraction of the total connected Guilds/Servers of the bot.
-<br>This can be done using **sharding** which will limit JDA to only a certain amount of Guilds/Servers including events and entities.
-Sharding will limit the amount of Guilds/Channels/Users visible to the JDA session so it is recommended to have some kind of elevated management to
+Discord allows bot accounts to share load across sessions by limiting them to a fraction of the total connected Guilds/Servers of the bot.
+<br>This can be done using **sharding**, which will limit JDA to only a certain amount of Guilds/Servers including events and entities.
+Sharding will limit the amount of Guilds/Channels/Users visible to the JDA session, so it is recommended to have some kind of elevated management to
 access information of other shards.
 
-To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based which means the first shard
-has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
+To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based, which means the first shard
+has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array. The last shard has the ID of
 `shardTotal - 1`.
 
 The [`SessionController`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
@@ -578,8 +578,8 @@ as it is easier.
 Created and maintained by [sedmelluq](https://github.com/sedmelluq)
 <br>Provides a native implementation for the JDA Audio Send-System to avoid GC pauses.
 
-Note that this send system creates an extra UDP-Client which causes audio receive to no longer function properly
-since discord identifies the sending UDP-Client as the receiver.
+Note that this send system creates an extra UDP-Client, which causes audio receive to no longer function properly
+since Discord identifies the sending UDP-Client as the receiver.
 
 ```java
 JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN)
@@ -626,7 +626,7 @@ When a feature is introduced to replace or enhance existing functionality we mig
 A deprecated method/class usually has a replacement mentioned in its documentation which should be switched to. Deprecated
 functionality might or might not exist in the next minor release. (Hint: The minor version is the `MM` of `XX.MM.RR` in our version format)
 
-It is possible that some features are deprecated without replacement, in this case the functionality is no longer supported by either the JDA structure
+It is possible that some features are deprecated without replacement. In this case, the functionality is no longer supported by either the JDA structure
 due to fundamental changes (for example automation of a feature) or due to Discord API changes that cause it to be removed.
 
 We highly recommend discontinuing usage of deprecated functionality and update by going through each minor release instead of jumping.
@@ -642,7 +642,7 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 
 This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
- * NV Websocket Client
+ * NV WebSocket Client
    * Version: **2.14**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
  * OkHttp
