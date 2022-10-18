@@ -120,6 +120,31 @@ public interface EntitySelectMenu extends SelectMenu
     }
 
     /**
+     * Creates a new {@link StringSelectMenu.Builder} for a select menu with the provided custom id.
+     *
+     * @param  customId
+     *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
+     * @param  type
+     *         The first supported {@link SelectTarget}
+     * @param  types
+     *         Other supported {@link SelectTarget SelectTargets}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters.</li>
+     *             <li>If the provided types are null, empty, or invalid.</li>
+     *         </ul>
+     *
+     * @return The {@link Builder} used to create the select menu
+     */
+    @Nonnull
+    @CheckReturnValue
+    static Builder create(@Nonnull String customId, @Nonnull SelectTarget type, @Nonnull SelectTarget... types)
+    {
+        return create(customId, EnumSet.of(type, types));
+    }
+
+    /**
      * Supported entity types for a EntitySelectMenu.
      * <br>Note that some combinations are unsupported by Discord, due to the restrictive API design.
      */
@@ -130,6 +155,9 @@ public interface EntitySelectMenu extends SelectMenu
         CHANNEL
     }
 
+    /**
+     * A preconfigured builder for the creation of entity select menus.
+     */
     class Builder extends SelectMenu.Builder<EntitySelectMenu, Builder>
     {
         protected Component.Type componentType;
@@ -147,7 +175,7 @@ public interface EntitySelectMenu extends SelectMenu
             Checks.noneNull(types, "Types");
 
             EnumSet<SelectTarget> set = Helpers.copyEnumSet(SelectTarget.class, types);
-            if (types.size() == 1)
+            if (set.size() == 1)
             {
                 if (set.contains(SelectTarget.CHANNEL))
                     this.componentType = Component.Type.CHANNEL_SELECT;
@@ -156,7 +184,7 @@ public interface EntitySelectMenu extends SelectMenu
                 else if (set.contains(SelectTarget.USER))
                     this.componentType = Component.Type.USER_SELECT;
             }
-            else if (types.size() == 2)
+            else if (set.size() == 2)
             {
                 if (set.contains(SelectTarget.USER) && set.contains(SelectTarget.ROLE))
                     this.componentType = Type.MENTIONABLE_SELECT;
