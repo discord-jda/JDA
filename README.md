@@ -489,7 +489,7 @@ If you do not need any opus de-/encoding done by JDA (voice receive/send with PC
 This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
 
 If you want to use a custom opus library you can provide the absolute path to `OpusLibrary.loadFrom(String)` before using
-the audio api of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
+the audio API of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
 <br>_For this setup you should only exclude `opus-java-natives` as `opus-java-api` is a requirement for en-/decoding._
 
 See [opus-java](https://github.com/discord-java/opus-java)
