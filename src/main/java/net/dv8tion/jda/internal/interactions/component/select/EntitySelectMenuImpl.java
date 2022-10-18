@@ -130,11 +130,9 @@ public class EntitySelectMenuImpl implements EntitySelectMenu
         data.put("disabled", disabled);
         if (placeholder != null)
             data.put("placeholder", placeholder);
+        if (channelTypes != null)
+            data.put("channel_types", DataArray.fromCollection(this.channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
 
-        if (channelTypes == null)
-            return data;
-
-        data.put("channel_types", DataArray.fromCollection(this.channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
         return data;
     }
 
