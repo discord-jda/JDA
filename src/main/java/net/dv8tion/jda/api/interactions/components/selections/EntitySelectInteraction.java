@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import javax.annotation.Nonnull;
 
 /**
- * Component Interaction for a {@link StringSelectMenu}.
+ * Component Interaction for a {@link EntitySelectMenu}.
  *
  * @see EntitySelectInteractionEvent
  */

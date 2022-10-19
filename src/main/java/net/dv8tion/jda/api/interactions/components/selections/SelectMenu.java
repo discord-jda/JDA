@@ -30,26 +30,8 @@ import javax.annotation.Nullable;
  * <p>The selections a user makes are only visible within their current client session.
  * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
  *
- * <p><b>Examples</b><br>
- * <pre>{@code
- * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
- *   if (!event.getName().equals("class")) return;
- *
- *   SelectMenu menu = SelectMenu.create("menu:class")
- *     .setPlaceholder("Choose your class") // shows the placeholder indicating what this menu is for
- *     .setRequireRange(1, 1) // only one can be selected
- *     .addOption("Arcane Mage", "mage-arcane")
- *     .addOption("Fire Mage", "mage-fire")
- *     .addOption("Frost Mage", "mage-frost")
- *     .build();
- *
- *   event.reply("Please pick your class below")
- *     .setEphemeral(true)
- *     .addActionRow(menu)
- *     .queue();
- * }
- * }</pre>
- *
+ * @see StringSelectMenu
+ * @see EntitySelectMenu
  * @see SelectMenuInteraction
  */
 public interface SelectMenu extends ActionComponent
@@ -93,6 +75,11 @@ public interface SelectMenu extends ActionComponent
 
     /**
      * A preconfigured builder for the creation of select menus.
+     *
+     * @param <T>
+     *        The output type
+     * @param <B>
+     *        The builder type (used for fluent interface)
      */
     @SuppressWarnings("unchecked")
     abstract class Builder<T extends SelectMenu, B extends Builder<T, B>>
@@ -287,6 +274,14 @@ public interface SelectMenu extends ActionComponent
             return disabled;
         }
 
+        /**
+         * Creates a new {@link SelectMenu} instance if all requirements are satisfied.
+         *
+         * @throws IllegalArgumentException
+         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()}
+         *
+         * @return The new {@link SelectMenu} instance
+         */
         @Nonnull
         public abstract T build();
     }

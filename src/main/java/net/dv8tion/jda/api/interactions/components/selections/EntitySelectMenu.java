@@ -29,6 +29,39 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 
+/**
+ * Specialized {@link SelectMenu} for selecting Discord entities.
+ *
+ * <p>Unlike {@link StringSelectMenu}, these entity select menus do not support custom choices.
+ * A user will get suggested inputs based on what they write into the select menu.
+ *
+ * <p>This is an interactive component and usually located within an {@link net.dv8tion.jda.api.interactions.components.ActionRow ActionRow}.
+ * One select menu fills up an entire action row by itself. You cannot have an action row with other components if a select menu is present in the same row.
+ *
+ * <p>The selections a user makes are only visible within their current client session.
+ * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
+ *
+ * <p><b>Examples</b><br>
+ * <pre>{@code
+ * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+ *   if (!event.getName().equals("class")) return;
+ *
+ *   EntitySelectMenu menu = EntitySelectMenu.create("menu:class", SelectTarget.ROLE)
+ *     .setPlaceholder("Choose your class") // shows the placeholder indicating what this menu is for
+ *     .setRequireRange(1, 1) // only one can be selected
+ *     .build();
+ *
+ *   event.reply("Please pick your class below")
+ *     .setEphemeral(true)
+ *     .addActionRow(menu)
+ *     .queue();
+ * }
+ * }</pre>
+ *
+ * @see SelectTarget
+ * @see EntitySelectInteraction
+ * @see StringSelectMenu
+ */
 public interface EntitySelectMenu extends SelectMenu
 {
     @Nonnull
@@ -97,7 +130,7 @@ public interface EntitySelectMenu extends SelectMenu
     }
 
     /**
-     * Creates a new {@link StringSelectMenu.Builder} for a select menu with the provided custom id.
+     * Creates a new {@link Builder} for a select menu with the provided custom id.
      *
      * @param  customId
      *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
@@ -120,7 +153,7 @@ public interface EntitySelectMenu extends SelectMenu
     }
 
     /**
-     * Creates a new {@link StringSelectMenu.Builder} for a select menu with the provided custom id.
+     * Creates a new {@link Builder} for a select menu with the provided custom id.
      *
      * @param  customId
      *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
@@ -149,6 +182,9 @@ public interface EntitySelectMenu extends SelectMenu
     /**
      * Supported entity types for a EntitySelectMenu.
      * <br>Note that some combinations are unsupported by Discord, due to the restrictive API design.
+     *
+     * <p>The only combination that is currently supported is {@link #USER} + {@link #ROLE} (often referred to as "mentionables").
+     * Combinations such as {@link #ROLE} + {@link #CHANNEL} are currently not supported.
      */
     enum SelectTarget
     {
@@ -170,6 +206,17 @@ public interface EntitySelectMenu extends SelectMenu
             super(customId);
         }
 
+        /**
+         * The {@link SelectTarget SelectTargets} that should be supported by this menu.
+         *
+         * @param  types
+         *         The supported {@link SelectTarget SelectTargets} (1-2)
+         *
+         * @throws IllegalArgumentException
+         *         If the provided targets are null, empty, or invalid.
+         *
+         * @return The current Builder instance
+         */
         @Nonnull
         public Builder setEntityTypes(@Nonnull Collection<SelectTarget> types)
         {
@@ -201,6 +248,19 @@ public interface EntitySelectMenu extends SelectMenu
             return this;
         }
 
+        /**
+         * The {@link SelectTarget SelectTargets} that should be supported by this menu.
+         *
+         * @param  type
+         *         The first supported {@link SelectTarget}
+         * @param  types
+         *         Additional supported {@link SelectTarget SelectTargets}
+         *
+         * @throws IllegalArgumentException
+         *         If the provided targets are null or invalid.
+         *
+         * @return The current Builder instance
+         */
         @Nonnull
         public Builder setEntityTypes(@Nonnull SelectTarget type, @Nonnull SelectTarget... types)
         {
@@ -209,6 +269,18 @@ public interface EntitySelectMenu extends SelectMenu
             return setEntityTypes(EnumSet.of(type, types));
         }
 
+        /**
+         * The {@link ChannelType ChannelTypes} that should be supported by this menu.
+         * <br>This is only relevant for menus that allow {@link SelectTarget#CHANNEL CHANNEL} targets.
+         *
+         * @param  types
+         *         The supported {@link ChannelType ChannelTypes} (empty to allow all types)
+         *
+         * @throws IllegalArgumentException
+         *         If the provided types are null or not guild types
+         *
+         * @return The current Builder instance
+         */
         @Nonnull
         public Builder setChannelTypes(@Nonnull Collection<ChannelType> types)
         {
@@ -219,12 +291,32 @@ public interface EntitySelectMenu extends SelectMenu
             return this;
         }
 
+        /**
+         * The {@link ChannelType ChannelTypes} that should be supported by this menu.
+         * <br>This is only relevant for menus that allow {@link SelectTarget#CHANNEL CHANNEL} targets.
+         *
+         * @param  types
+         *         The supported {@link ChannelType ChannelTypes} (empty to allow all types)
+         *
+         * @throws IllegalArgumentException
+         *         If the provided types are null or not guild types
+         *
+         * @return The current Builder instance
+         */
         @Nonnull
         public Builder setChannelTypes(@Nonnull ChannelType... types)
         {
             return setChannelTypes(Arrays.asList(types));
         }
 
+        /**
+         * Creates a new {@link EntitySelectMenu} instance if all requirements are satisfied.
+         *
+         * @throws IllegalArgumentException
+         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()}
+         *
+         * @return The new {@link EntitySelectMenu} instance
+         */
         @Nonnull
         @Override
         public EntitySelectMenu build()

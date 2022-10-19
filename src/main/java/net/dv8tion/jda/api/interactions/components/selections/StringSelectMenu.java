@@ -27,6 +27,37 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a select menu in a message.
+ * <br>This is an interactive component and usually located within an {@link net.dv8tion.jda.api.interactions.components.ActionRow ActionRow}.
+ * One select menu fills up an entire action row by itself. You cannot have an action row with other components if a select menu is present in the same row.
+ *
+ * <p>The selections a user makes are only visible within their current client session.
+ * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
+ *
+ * <p><b>Examples</b><br>
+ * <pre>{@code
+ * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+ *   if (!event.getName().equals("class")) return;
+ *
+ *   StringSelectMenu menu = StringSelectMenu.create("menu:class")
+ *     .setPlaceholder("Choose your class") // shows the placeholder indicating what this menu is for
+ *     .setRequireRange(1, 1) // only one can be selected
+ *     .addOption("Arcane Mage", "mage-arcane")
+ *     .addOption("Fire Mage", "mage-fire")
+ *     .addOption("Frost Mage", "mage-frost")
+ *     .build();
+ *
+ *   event.reply("Please pick your class below")
+ *     .setEphemeral(true)
+ *     .addActionRow(menu)
+ *     .queue();
+ * }
+ * }</pre>
+ *
+ * @see StringSelectInteraction
+ * @see EntitySelectMenu
+ */
 public interface StringSelectMenu extends SelectMenu
 {
     @Nonnull
