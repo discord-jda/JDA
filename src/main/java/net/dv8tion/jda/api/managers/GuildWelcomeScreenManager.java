@@ -135,18 +135,6 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
     GuildWelcomeScreenManager setDescription(@Nullable String description);
 
     /**
-     * Removes the description of the welcome screen.
-     *
-     * @return GuildWelcomeScreenManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    default GuildWelcomeScreenManager clearDescription()
-    {
-        return setDescription(null);
-    }
-
-    /**
      * Returns an immutable list of the welcome channels
      * <br>These channels are those which are <b>being modified</b>, not the ones currently shown on Discord
      *
