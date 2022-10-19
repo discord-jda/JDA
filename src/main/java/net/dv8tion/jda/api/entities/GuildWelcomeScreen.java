@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.entities.GuildWelcomeScreenImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -75,23 +75,10 @@ public interface GuildWelcomeScreen
      *
      * @see GuildWelcomeScreen#getChannels()
      */
-    class Channel implements ISnowflake, SerializableData
+    interface Channel extends ISnowflake, SerializableData
     {
         /** Maximum length of a channel description ({@value}) */
-        public static final int MAX_DESCRIPTION_LENGTH = 42;
-
-        private final Guild guild;
-        private final long id;
-        private final String description;
-        private final EmojiUnion emoji;
-
-        public Channel(@Nullable Guild guild, long id, @Nonnull String description, @Nullable EmojiUnion emoji)
-        {
-            this.guild = guild;
-            this.id = id;
-            this.description = description;
-            this.emoji = emoji;
-        }
+        int MAX_DESCRIPTION_LENGTH = 42;
 
         /**
          * Constructs a new welcome channel.
@@ -110,7 +97,7 @@ public interface GuildWelcomeScreen
          * @return The new welcome channel
          */
         @Nonnull
-        public static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description)
+        static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description)
         {
             return of(channel, description, null);
         }
@@ -134,13 +121,13 @@ public interface GuildWelcomeScreen
          * @return The new welcome channel
          */
         @Nonnull
-        public static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description, @Nullable Emoji emoji)
+        static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description, @Nullable Emoji emoji)
         {
             Checks.notNull(channel, "Channel");
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
 
-            return new Channel(channel.getGuild(), channel.getIdLong(), description, (EmojiUnion) emoji);
+            return new GuildWelcomeScreenImpl.ChannelImpl(channel.getGuild(), channel.getIdLong(), description, (EmojiUnion) emoji);
         }
 
         /**
@@ -149,10 +136,7 @@ public interface GuildWelcomeScreen
          * @return The Guild, or {@code null}
          */
         @Nullable
-        public Guild getGuild()
-        {
-            return guild;
-        }
+        Guild getGuild();
 
         /**
          * The id of this recommended channel.
@@ -160,10 +144,7 @@ public interface GuildWelcomeScreen
          * @return The id of this recommended channel
          */
         @Override
-        public long getIdLong()
-        {
-            return id;
-        }
+        long getIdLong();
 
         /**
          * Returns the {@link GuildChannel} that is linked to this recommended channel.
@@ -172,13 +153,7 @@ public interface GuildWelcomeScreen
          * @return The {@link GuildChannel} that is linked to this recommended channel or {@code null}
          */
         @Nullable
-        public GuildChannel getChannel()
-        {
-            if (guild == null)
-                return null;
-
-            return guild.getGuildChannelById(id);
-        }
+        GuildChannel getChannel();
 
         /**
          * The description of this recommended channel shown in the welcome screen.
@@ -186,10 +161,7 @@ public interface GuildWelcomeScreen
          * @return The description of this recommended channel
          */
         @Nonnull
-        public String getDescription()
-        {
-            return description;
-        }
+        String getDescription();
 
         /**
          * The emoji that is used for this recommended channel.
@@ -205,26 +177,6 @@ public interface GuildWelcomeScreen
          * @return The emoji that is used for this recommended channel or {@code null}
          */
         @Nullable
-        public EmojiUnion getEmoji()
-        {
-            return emoji;
-        }
-
-        @Nonnull
-        @Override
-        public DataObject toData()
-        {
-            final DataObject data = DataObject.empty();
-            data.put("channel_id", id);
-            data.put("description", description);
-            if (emoji != null)
-            {
-                if (emoji.getType() == Emoji.Type.CUSTOM)
-                    data.put("emoji_id", ((CustomEmoji) emoji).getId());
-                data.put("emoji_name", emoji.getName());
-            }
-
-            return data;
-        }
+        EmojiUnion getEmoji();
     }
 }

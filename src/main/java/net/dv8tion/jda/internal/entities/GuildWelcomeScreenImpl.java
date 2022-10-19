@@ -18,6 +18,11 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildWelcomeScreen;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,5 +60,81 @@ public class GuildWelcomeScreenImpl implements GuildWelcomeScreen
     public List<Channel> getChannels()
     {
         return channels;
+    }
+
+    /**
+     * POJO for the recommended channels information provided by a welcome screen.
+     * <br>Recommended channels are shown in the welcome screen after joining a server.
+     *
+     * @see GuildWelcomeScreen#getChannels()
+     */
+    public static class ChannelImpl implements GuildWelcomeScreen.Channel
+    {
+        private final Guild guild;
+        private final long id;
+        private final String description;
+        private final EmojiUnion emoji;
+
+        public ChannelImpl(@Nullable Guild guild, long id, @Nonnull String description, @Nullable EmojiUnion emoji)
+        {
+            this.guild = guild;
+            this.id = id;
+            this.description = description;
+            this.emoji = emoji;
+        }
+
+        @Nullable
+        @Override
+        public Guild getGuild()
+        {
+            return guild;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        @Nullable
+        @Override
+        public GuildChannel getChannel()
+        {
+            if (guild == null)
+                return null;
+
+            return guild.getGuildChannelById(id);
+        }
+
+        @Nonnull
+        @Override
+        public String getDescription()
+        {
+            return description;
+        }
+
+        @Nullable
+        @Override
+        public EmojiUnion getEmoji()
+        {
+            return emoji;
+        }
+
+        @Nonnull
+        @Override
+        public DataObject toData()
+        {
+            final DataObject data = DataObject.empty();
+            data.put("channel_id", id);
+            data.put("description", description);
+            if (emoji != null)
+            {
+                if (emoji.getType() == Emoji.Type.CUSTOM)
+                    data.put("emoji_id", ((CustomEmoji) emoji).getId());
+                data.put("emoji_name", emoji.getName());
+            }
+
+            return data;
+        }
     }
 }
