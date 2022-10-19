@@ -44,7 +44,7 @@ public class GuildWelcomeScreen
     private final String description;
     private final List<GuildWelcomeScreen.Channel> channels;
 
-    public GuildWelcomeScreen(Guild guild, String description, List<GuildWelcomeScreen.Channel> channels)
+    public GuildWelcomeScreen(@Nullable Guild guild, @Nullable String description, @Nonnull List<GuildWelcomeScreen.Channel> channels)
     {
         this.guild = guild;
         this.description = description;
@@ -93,6 +93,7 @@ public class GuildWelcomeScreen
      */
     public static class Channel implements ISnowflake, SerializableData
     {
+        /** Maximum length of a channel description ({@value}) */
         public static final int MAX_DESCRIPTION_LENGTH = 42;
 
         private final Guild guild;
@@ -114,12 +115,12 @@ public class GuildWelcomeScreen
          * @param  channel
          *         The Discord channel to be presented to the user
          * @param  description
-         *         The description of the channel, must not be longer than {@value MAX_DESCRIPTION_LENGTH}
+         *         The description of the channel, must not be longer than {@value #MAX_DESCRIPTION_LENGTH}
          *
          * @throws IllegalArgumentException
          *         <ul>
          *             <li>If the channel is null</li>
-         *             <li>If the description is null, blank, or longer than {@value MAX_DESCRIPTION_LENGTH}</li>
+         *             <li>If the description is null, blank, or longer than {@value #MAX_DESCRIPTION_LENGTH}</li>
          *         </ul>
          *
          * @return The new welcome channel
@@ -136,14 +137,14 @@ public class GuildWelcomeScreen
          * @param  channel
          *         The Discord channel to be presented the user
          * @param  description
-         *         The description of the channel, must not be longer than {@value MAX_DESCRIPTION_LENGTH}
+         *         The description of the channel, must not be longer than {@value #MAX_DESCRIPTION_LENGTH}
          * @param  emoji
          *         The emoji to show beside the channel
          *
          * @throws IllegalArgumentException
          *         <ul>
          *             <li>If the channel is null</li>
-         *             <li>If the description is null, blank, or longer than {@value MAX_DESCRIPTION_LENGTH}</li>
+         *             <li>If the description is null, blank, or longer than {@value #MAX_DESCRIPTION_LENGTH}</li>
          *         </ul>
          *
          * @return The new welcome channel
