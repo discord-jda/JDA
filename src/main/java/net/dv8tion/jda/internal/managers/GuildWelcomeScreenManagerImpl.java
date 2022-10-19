@@ -39,7 +39,7 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
 {
     private final Guild guild;
 
-    protected Boolean enabled;
+    protected boolean enabled;
     protected String description;
     protected final List<GuildWelcomeScreen.Channel> channels = new ArrayList<>();
 
@@ -65,7 +65,7 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     {
         super.reset(fields);
         if ((fields & ENABLED) == ENABLED)
-            this.enabled = null;
+            this.enabled = false; //Most important is the flag being removed anyway
         if ((fields & DESCRIPTION) == DESCRIPTION)
             this.description = null;
         if ((fields & CHANNELS) == CHANNELS)
