@@ -67,10 +67,10 @@ public class GuildWelcomeScreen
     }
 
     /**
-     * The server description shown in the Welcome screen.
+     * The server description shown in the welcome screen.
      * <br>This will be {@code null} if the welcome screen has no description.
      *
-     * @return The server description shown in the Welcome screen or {@code null}
+     * @return The server description shown in the welcome screen or {@code null}
      */
     @Nullable
     public String getDescription()
@@ -79,9 +79,9 @@ public class GuildWelcomeScreen
     }
 
     /**
-     * The channels shown in the Welcome screen.
+     * The channels shown in the welcome screen.
      *
-     * @return Possibly-empty, unmodifiable list of the channels shown in the Welcome screen
+     * @return Possibly-empty, unmodifiable list of the channels shown in the welcome screen
      */
     @Nonnull
     public List<GuildWelcomeScreen.Channel> getChannels()
@@ -90,8 +90,8 @@ public class GuildWelcomeScreen
     }
 
     /**
-     * POJO for the recommended channels information provided by a Welcome screen.
-     * <br>Recommended channels are shown in the Welcome screen after joining a server.
+     * POJO for the recommended channels information provided by a welcome screen.
+     * <br>Recommended channels are shown in the welcome screen after joining a server.
      *
      * @see GuildWelcomeScreen#getChannels()
      */
@@ -201,7 +201,7 @@ public class GuildWelcomeScreen
         }
 
         /**
-         * The description of this recommended channel shown in the Welcome screen.
+         * The description of this recommended channel shown in the welcome screen.
          *
          * @return The description of this recommended channel
          */
