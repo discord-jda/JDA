@@ -39,6 +39,8 @@ import java.util.List;
  *        The type of select menu
  *
  * @see GenericSelectMenuInteractionEvent
+ * @see EntitySelectInteraction
+ * @see StringSelectInteraction
  */
 public interface SelectMenuInteraction<T, S extends SelectMenu> extends ComponentInteraction
 {

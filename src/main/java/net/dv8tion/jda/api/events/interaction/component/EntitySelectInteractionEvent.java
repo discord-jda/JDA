@@ -24,6 +24,18 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a custom {@link EntitySelectMenu} on one of the bots messages was used by a user.
+ *
+ * <p>This fires when a user selects the options on one of the custom select menus attached to a bot or webhook message.
+ * Use {@link #getMentions()} or {@link #getValues()} to handle the selected entities.
+ *
+ * <p><b>Requirements</b><br>
+ * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
+ * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
+ *
+ * @see StringSelectInteractionEvent
+ */
 public class EntitySelectInteractionEvent extends GenericSelectMenuInteractionEvent<IMentionable, EntitySelectMenu> implements EntitySelectInteraction
 {
     private final EntitySelectInteraction interaction;
