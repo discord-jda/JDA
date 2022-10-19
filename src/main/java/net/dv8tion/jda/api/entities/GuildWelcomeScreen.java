@@ -41,6 +41,9 @@ public class GuildWelcomeScreen
     /** The maximum length of a welcome screen description ({@value}) */
     public static final int MAX_DESCRIPTION_LENGTH = 140;
 
+    /** The maximum amount of welcome channel a welcome screen can show ({@value}) */
+    public static final int MAX_WELCOME_CHANNELS = 5;
+
     private final Guild guild;
     private final String description;
     private final List<GuildWelcomeScreen.Channel> channels;

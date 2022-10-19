@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildWelcomeScreen;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -172,7 +173,10 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      *         The new welcome channels to use, can be an empty list to remove all welcome channels.
      *
      * @throws IllegalArgumentException
-     *         If {@code channels} is {@code null}
+     *         <ul>
+     *             <li>If {@code channels} is {@code null}</li>
+     *             <li>If more than {@value GuildWelcomeScreen#MAX_WELCOME_CHANNELS} welcome channels are set</li>
+     *         </ul>
      *
      * @return GuildWelcomeScreenManager for chaining convenience
      *
@@ -191,7 +195,10 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      *         The new welcome channels to use, you can provide nothing in order to remove all welcome channels.
      *
      * @throws IllegalArgumentException
-     *         If {@code channels} is {@code null}
+     *         <ul>
+     *             <li>If {@code channels} is {@code null}</li>
+     *             <li>If more than {@value GuildWelcomeScreen#MAX_WELCOME_CHANNELS} welcome channels are set</li>
+     *         </ul>
      *
      * @return GuildWelcomeScreenManager for chaining convenience
      *
@@ -201,6 +208,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
     @CheckReturnValue
     default GuildWelcomeScreenManager setWelcomeChannels(@Nonnull GuildWelcomeScreen.Channel... channels)
     {
+        Checks.notNull(channels, "Welcome channels");
         return setWelcomeChannels(Arrays.asList(channels));
     }
 }
