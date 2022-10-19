@@ -2184,7 +2184,7 @@ public class EntityBuilder
                     emoji)
             );
         }
-        return new GuildWelcomeScreen(guild, object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
+        return new GuildWelcomeScreenImpl(guild, object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
     }
 
     public Template createTemplate(DataObject object)

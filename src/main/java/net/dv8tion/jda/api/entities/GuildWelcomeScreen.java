@@ -36,24 +36,13 @@ import java.util.List;
  * @see Guild#retrieveWelcomeScreen()
  * @see Invite.Guild#getWelcomeScreen()
  */
-public class GuildWelcomeScreen
+public interface GuildWelcomeScreen
 {
     /** The maximum length of a welcome screen description ({@value}) */
-    public static final int MAX_DESCRIPTION_LENGTH = 140;
+    int MAX_DESCRIPTION_LENGTH = 140;
 
     /** The maximum amount of welcome channel a welcome screen can show ({@value}) */
-    public static final int MAX_WELCOME_CHANNELS = 5;
-
-    private final Guild guild;
-    private final String description;
-    private final List<GuildWelcomeScreen.Channel> channels;
-
-    public GuildWelcomeScreen(@Nullable Guild guild, @Nullable String description, @Nonnull List<GuildWelcomeScreen.Channel> channels)
-    {
-        this.guild = guild;
-        this.description = description;
-        this.channels = channels;
-    }
+    int MAX_WELCOME_CHANNELS = 5;
 
     /**
      * The {@link Guild Guild}, or {@code null} if this welcome screen came from an {@link Invite}
@@ -61,10 +50,7 @@ public class GuildWelcomeScreen
      * @return The Guild, or {@code null}
      */
     @Nullable
-    public Guild getGuild()
-    {
-        return guild;
-    }
+    Guild getGuild();
 
     /**
      * The server description shown in the welcome screen.
@@ -73,10 +59,7 @@ public class GuildWelcomeScreen
      * @return The server description shown in the welcome screen or {@code null}
      */
     @Nullable
-    public String getDescription()
-    {
-        return description;
-    }
+    String getDescription();
 
     /**
      * The channels shown in the welcome screen.
@@ -84,10 +67,7 @@ public class GuildWelcomeScreen
      * @return Possibly-empty, unmodifiable list of the channels shown in the welcome screen
      */
     @Nonnull
-    public List<GuildWelcomeScreen.Channel> getChannels()
-    {
-        return channels;
-    }
+    List<Channel> getChannels();
 
     /**
      * POJO for the recommended channels information provided by a welcome screen.
@@ -95,7 +75,7 @@ public class GuildWelcomeScreen
      *
      * @see GuildWelcomeScreen#getChannels()
      */
-    public static class Channel implements ISnowflake, SerializableData
+    class Channel implements ISnowflake, SerializableData
     {
         /** Maximum length of a channel description ({@value}) */
         public static final int MAX_DESCRIPTION_LENGTH = 42;
@@ -105,7 +85,7 @@ public class GuildWelcomeScreen
         private final String description;
         private final EmojiUnion emoji;
 
-        public Channel(@Nonnull Guild guild, long id, @Nonnull String description, @Nullable EmojiUnion emoji)
+        public Channel(@Nullable Guild guild, long id, @Nonnull String description, @Nullable EmojiUnion emoji)
         {
             this.guild = guild;
             this.id = id;
