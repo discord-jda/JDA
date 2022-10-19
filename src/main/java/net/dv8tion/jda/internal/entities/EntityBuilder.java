@@ -38,7 +38,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
@@ -2176,9 +2175,7 @@ public class EntityBuilder
         for (int i = 0; i < welcomeChannelsArray.length(); i++)
         {
             final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
-            final String emojiId = welcomeChannelObj.getString("emoji_id", null);
-            final String emojiName = welcomeChannelObj.getString("emoji_name", null);
-            final EmojiUnion emoji = resolveEmoji(guild, emojiName, emojiId);
+            final EmojiUnion emoji = createEmoji(welcomeChannelObj, "emoji_name", "emoji_id");
 
             welcomeChannels.add(new GuildWelcomeScreen.Channel(
                     guild,
@@ -2363,21 +2360,6 @@ public class EntityBuilder
         Object oldValue = change.isNull("old_value") ? null : change.get("old_value");
         Object newValue = change.isNull("new_value") ? null : change.get("new_value");
         return new AuditLogChange(oldValue, newValue, key);
-    }
-
-    private EmojiUnion resolveEmoji(Guild guild, String emojiName, String emojiId)
-    {
-        if (emojiName != null && emojiId != null) {
-            if (guild != null) {
-                final RichCustomEmoji customEmoji = guild.getEmojiById(emojiId);
-                if (customEmoji != null) return (EmojiUnion) customEmoji;
-            }
-            return (EmojiUnion) Emoji.fromCustom(emojiName, Long.parseUnsignedLong(emojiId), false);
-        } else if (emojiName != null) {
-            return (EmojiUnion) Emoji.fromUnicode(emojiName);
-        } else {
-            return null;
-        }
     }
 
     private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
