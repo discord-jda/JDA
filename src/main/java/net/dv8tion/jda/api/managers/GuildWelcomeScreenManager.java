@@ -49,7 +49,7 @@ import java.util.List;
  */
 public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenManager>
 {
-    /** Used to reset the description field */
+    /** Used to reset the enabled field */
     long ENABLED     = 1;
     /** Used to reset the description field */
     long DESCRIPTION = 1 << 1;
