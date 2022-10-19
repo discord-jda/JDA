@@ -38,6 +38,7 @@ import java.util.List;
  */
 public class GuildWelcomeScreen
 {
+    /** The maximum length of a welcome screen description ({@value}) */
     public static final int MAX_DESCRIPTION_LENGTH = 140;
 
     private final Guild guild;
