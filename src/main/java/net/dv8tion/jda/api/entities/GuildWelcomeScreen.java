@@ -102,7 +102,7 @@ public class GuildWelcomeScreen
         private final String description;
         private final EmojiUnion emoji;
 
-        public Channel(Guild guild, long id, String description, EmojiUnion emoji)
+        public Channel(@Nonnull Guild guild, long id, @Nonnull String description, @Nullable EmojiUnion emoji)
         {
             this.guild = guild;
             this.id = id;
@@ -153,6 +153,7 @@ public class GuildWelcomeScreen
         @Nonnull
         public static Channel of(@Nonnull StandardGuildChannel channel, @Nonnull String description, @Nullable Emoji emoji)
         {
+            Checks.notNull(channel, "Channel");
             Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
 
