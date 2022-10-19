@@ -41,7 +41,7 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
 
     protected boolean enabled;
     protected String description;
-    protected final List<GuildWelcomeScreen.Channel> channels = new ArrayList<>();
+    protected final List<GuildWelcomeScreen.Channel> channels = new ArrayList<>(GuildWelcomeScreen.MAX_WELCOME_CHANNELS);
 
     public GuildWelcomeScreenManagerImpl(Guild guild)
     {
