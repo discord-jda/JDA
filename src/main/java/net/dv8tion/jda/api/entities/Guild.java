@@ -545,13 +545,26 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <p>
-     * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
+     *
+     * <p>Features can be updated using {@link GuildManager#setFeatures(Collection)}.
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
+     *
+     * @see <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features">List of Features</a>
      */
     @Nonnull
     Set<String> getFeatures();
+
+    /**
+     * Whether the invites for this guild are paused/disabled.
+     * <br>This is equivalent to {@code getFeatures().contains("INVITES_DISABLED")}.
+     *
+     * @return True, if invites are paused/disabled
+     */
+    default boolean isInvitesDisabled()
+    {
+        return getFeatures().contains("INVITES_DISABLED");
+    }
 
     /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a

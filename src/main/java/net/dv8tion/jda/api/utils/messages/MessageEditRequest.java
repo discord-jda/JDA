@@ -207,6 +207,10 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
     {
         return setReplace(true)
                 .setContent(data.getContent())
+                .setAllowedMentions(data.getAllowedMentions())
+                .mentionUsers(data.getMentionedUsers())
+                .mentionRoles(data.getMentionedRoles())
+                .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setComponents(data.getComponents())
                 .setFiles(data.getFiles());

@@ -20,10 +20,13 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -73,6 +76,8 @@ public interface GuildManager extends Manager<GuildManager>
     long COMMUNITY_UPDATES_CHANNEL  = 1 << 13;
     /** Used to reset the premium progress bar enabled field */
     long BOOST_PROGRESS_BAR_ENABLED = 1 << 14;
+    /** Used to add or remove modifiable features (such as {@code "INVITES_DISABLED"}) */
+    long FEATURES = 1 << 15;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -94,6 +99,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
      *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
+     *     <li>{@link #FEATURES}</li>
      * </ul>
      *
      * @param  fields
@@ -124,6 +130,7 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
      *     <li>{@link #BOOST_PROGRESS_BAR_ENABLED}</li>
+     *     <li>{@link #FEATURES}</li>
      * </ul>
      *
      * @param  fields
@@ -371,4 +378,122 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setBoostProgressBarEnabled(boolean boostProgressBarEnabled);
+
+    /**
+     * Configures the new {@link Guild#getFeatures() features} of the {@link Guild}.
+     * <br>The list of available features, including which ones can be configured, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * List<String> features = new ArrayList<>(guild.getFeatures());
+     * features.add("INVITES_DISABLED");
+     * guild.getManager().setFeatures(features).queue();
+     * }</pre>
+     *
+     * @param  features
+     *         The new features to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided list is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setFeatures(@Nonnull Collection<String> features);
+
+    /**
+     * Adds a {@link Guild#getFeatures() Guild Feature} to the list of features.
+     * <br>The list of available features, including which ones can be configured, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  features
+     *         The features to add
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided features is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager addFeatures(@Nonnull Collection<String> features);
+
+    /**
+     * Adds a {@link Guild#getFeatures() Guild Feature} to the list of features.
+     * <br>The list of available features, including which ones can be configured, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  features
+     *         The features to add
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided features is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default GuildManager addFeatures(@Nonnull String... features)
+    {
+        Checks.noneNull(features, "Features");
+        return addFeatures(Arrays.asList(features));
+    }
+
+    /**
+     * Removes a {@link Guild#getFeatures() Guild Feature} from the list of features.
+     * <br>The list of available features, including which ones can be configured, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  features
+     *         The features to remove
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided features is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager removeFeatures(@Nonnull Collection<String> features);
+
+    /**
+     * Removes a {@link Guild#getFeatures() Guild Feature} from the list of features.
+     * <br>The list of available features, including which ones can be configured, is available in the
+     * <a href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features" target="_blank">Official Discord API Documentation</a>.
+     *
+     * @param  features
+     *         The features to remove
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided features is null
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default GuildManager removeFeatures(@Nonnull String... features)
+    {
+        Checks.noneNull(features, "Features");
+        return removeFeatures(Arrays.asList(features));
+    }
+
+    /**
+     * Configures the {@code INVITES_DISABLED} feature flag of this guild.
+     * <br>This is equivalent to adding or removing the feature {@code INVITES_DISABLED} via {@link #setFeatures(Collection)}.
+     *
+     * @param  disabled
+     *         True, to pause/disable all invites to the guild
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default GuildManager setInvitesDisabled(boolean disabled)
+    {
+        if (disabled)
+            return addFeatures("INVITES_DISABLED");
+        return removeFeatures("INVITES_DISABLED");
+    }
 }
