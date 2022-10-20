@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.GuildWelcomeScreenImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -51,6 +52,21 @@ public interface GuildWelcomeScreen
      */
     @Nullable
     Guild getGuild();
+
+    /**
+     * Returns the {@link GuildWelcomeScreenManager Manager} for this guild's welcome screen.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
+     * @throws IllegalStateException
+     *         If welcome screen came from an {@link Invite}
+     *
+     * @return The GuildWelcomeScreenManager for this guild's welcome screen
+     *
+     * @see Guild#modifyWelcomeScreen()
+     */
+    @Nonnull
+    GuildWelcomeScreenManager getManager();
 
     /**
      * The server description shown in the welcome screen.

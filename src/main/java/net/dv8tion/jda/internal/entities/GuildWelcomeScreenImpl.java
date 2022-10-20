@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
@@ -46,6 +47,15 @@ public class GuildWelcomeScreenImpl implements GuildWelcomeScreen
     public Guild getGuild()
     {
         return guild;
+    }
+
+    @Nonnull
+    @Override
+    public GuildWelcomeScreenManager getManager()
+    {
+        if (guild == null)
+            throw new IllegalStateException("Cannot modify a guild welcome screen from an Invite");
+        return guild.modifyWelcomeScreen();
     }
 
     @Nullable
