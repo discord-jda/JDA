@@ -172,7 +172,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      */
     @Nonnull
     @CheckReturnValue
-    GuildWelcomeScreenManager setWelcomeChannels(@Nonnull Collection<GuildWelcomeScreen.Channel> channels);
+    GuildWelcomeScreenManager setWelcomeChannels(@Nonnull Collection<? extends GuildWelcomeScreen.Channel> channels);
 
     /**
      * Sets the welcome channels of the welcome screen.
