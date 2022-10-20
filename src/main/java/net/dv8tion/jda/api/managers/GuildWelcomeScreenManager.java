@@ -33,7 +33,7 @@ import java.util.List;
  * <p><b>Example</b>
  * <pre>{@code
  * manager.setEnabled(false)
- *        .clearDescription()
+ *        .setDescription(null)
  *        .setWelcomeChannels()
  *        .queue();
  * manager.setEnabled(true)
