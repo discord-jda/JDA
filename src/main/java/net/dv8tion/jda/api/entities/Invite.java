@@ -479,7 +479,8 @@ public interface Invite
 
         /**
          * The welcome screen of the {@link Invite.Guild Guild}.
-         * <br>This will be {@code null} if the Guild has no welcome screen.
+         * <br>This will be {@code null} if the Guild has no welcome screen,
+         * or if the invite came from a {@link net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent GuildInviteCreateEvent}.
          *
          * @return The welcome screen of this Guild or {@code null}
          */
