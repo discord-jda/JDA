@@ -129,7 +129,7 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
 
     @Nonnull
     @Override
-    public GuildWelcomeScreenManager setWelcomeChannels(@Nonnull Collection<GuildWelcomeScreen.Channel> channels)
+    public GuildWelcomeScreenManager setWelcomeChannels(@Nonnull Collection<? extends GuildWelcomeScreen.Channel> channels)
     {
         Checks.noneNull(channels, "Welcome channels");
         Checks.check(channels.size() <= GuildWelcomeScreen.MAX_WELCOME_CHANNELS, "Cannot have more than %d welcome channels", GuildWelcomeScreen.MAX_WELCOME_CHANNELS);
