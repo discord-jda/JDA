@@ -1390,7 +1390,6 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *              <li>If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
      *              {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}.</li>
-     *              <li>If this Message is ephemeral</li>
      *              <li>If this message type cannot be deleted. (See {@link MessageType#canDelete()})</li>
      *         </ul>
      *
