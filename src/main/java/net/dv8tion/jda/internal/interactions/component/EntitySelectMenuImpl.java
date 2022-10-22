@@ -94,13 +94,6 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
     }
 
     @Override
-    public String toString()
-    {
-        // TODO-toString: Update this to use the new string builder
-        return "SelectMenu" + getEntityTypes() + ":" + id + "(" + placeholder + ")";
-    }
-
-    @Override
     public int hashCode()
     {
         return Objects.hash(id, placeholder, minValues, maxValues, disabled, type, channelTypes);

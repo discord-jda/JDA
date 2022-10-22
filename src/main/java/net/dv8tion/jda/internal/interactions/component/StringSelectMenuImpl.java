@@ -75,13 +75,6 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
     }
 
     @Override
-    public String toString()
-    {
-        // TODO-toString: Update this to use the new string builder
-        return "SelectMenu[String]:" + id + "(" + placeholder + ")";
-    }
-
-    @Override
     public int hashCode()
     {
         return Objects.hash(id, placeholder, minValues, maxValues, disabled, options);

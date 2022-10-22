@@ -94,4 +94,14 @@ public abstract class SelectMenuImpl implements SelectMenu
             data.put("placeholder", placeholder);
         return data;
     }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(SelectMenu.class)
+                .setType(getType())
+                .addMetadata("id", id)
+                .addMetadata("placeholder", placeholder)
+                .toString();
+    }
 }
