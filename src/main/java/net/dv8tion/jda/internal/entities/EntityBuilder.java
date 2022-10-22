@@ -162,10 +162,17 @@ public class EntityBuilder
     // Unlike Emoji.fromData this does not check for null or empty
     public static EmojiUnion createEmoji(DataObject emoji)
     {
-        if (emoji.isNull("id"))
-            return new UnicodeEmojiImpl(emoji.getString("name"));
+        return createEmoji(emoji, "name", "id");
+    }
+
+    // Unlike Emoji.fromData this does not check for null or empty
+    public static EmojiUnion createEmoji(DataObject emoji, String nameKey, String idKey)
+    {
+        long id = emoji.getUnsignedLong(idKey, 0L);
+        if (id == 0L)
+            return new UnicodeEmojiImpl(emoji.getString(nameKey));
         else // name can be empty in some cases where discord fails to properly load the emoji
-            return new CustomEmojiImpl(emoji.getString("name", ""), emoji.getUnsignedLong("id"), emoji.getBoolean("animated"));
+            return new CustomEmojiImpl(emoji.getString(nameKey, ""), id, emoji.getBoolean("animated"));
     }
 
     private void createGuildEmojiPass(GuildImpl guildObj, DataArray array)

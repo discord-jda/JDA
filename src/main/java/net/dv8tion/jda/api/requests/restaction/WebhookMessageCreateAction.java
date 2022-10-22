@@ -75,7 +75,6 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
      * <p>Ephemeral messages have some limitations and will be removed once the user restarts their client.
      * <br>Limitations:
      * <ul>
-     *     <li>Cannot be deleted by the bot</li>
      *     <li>Cannot be reacted to</li>
      *     <li>Cannot be retrieved</li>
      * </ul>
