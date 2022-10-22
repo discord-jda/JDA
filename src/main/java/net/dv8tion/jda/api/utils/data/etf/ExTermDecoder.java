@@ -247,7 +247,7 @@ public class ExTermDecoder
         case "true": return true;
         case "false": return false;
         case "nil": return null;
-        default: return value;
+        default: return value.intern();
         }
     }
 

@@ -16,15 +16,25 @@
 
 package net.dv8tion.jda.api.managers.channel.concrete;
 
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.NewsChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildMessageChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+/**
+ * Manager providing methods to modify a {@link NewsChannel}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("no-more-news")
+ *        .setType(ChannelType.TEXT) // Changes channel type to TextChannel
+ *        .queue();
+ * }</pre>
+ */
 public interface NewsChannelManager extends StandardGuildMessageChannelManager<NewsChannel, NewsChannelManager>
 {
     /**

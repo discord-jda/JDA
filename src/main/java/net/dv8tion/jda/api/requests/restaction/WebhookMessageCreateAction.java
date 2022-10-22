@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 
@@ -30,8 +32,6 @@ import javax.annotation.Nonnull;
  *
  * <p><u>When this RestAction has been executed all provided files will be closed.</u>
  * <br>Note that the garbage collector also frees opened file streams when it finalizes the stream object.
- *
- * @since  4.3.0
  *
  * @see    net.dv8tion.jda.api.entities.WebhookClient#sendMessage(String)
  */
@@ -75,13 +75,14 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
      * <p>Ephemeral messages have some limitations and will be removed once the user restarts their client.
      * <br>Limitations:
      * <ul>
-     *     <li>Cannot be deleted by the bot</li>
-     *     <li>Cannot contain any files/attachments</li>
      *     <li>Cannot be reacted to</li>
      *     <li>Cannot be retrieved</li>
      * </ul>
      *
-     * <p>This only works on {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
+     * <p>This only works on {@link InteractionHook InteractionHooks}!
+     * For a {@link IReplyCallback#deferReply() deferred reply}, this is not supported. When a reply is deferred,
+     * the very first message sent through the {@link InteractionHook}, inherits the ephemeral state of the initial reply.
+     * To send an ephemeral deferred reply, you must use {@link IReplyCallback#deferReply(boolean) deferReply(true)} instead.
      *
      * @param  ephemeral
      *         True, if this message should be invisible for other users

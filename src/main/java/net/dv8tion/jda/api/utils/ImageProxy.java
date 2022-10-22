@@ -21,6 +21,8 @@ import net.dv8tion.jda.internal.utils.FutureUtil;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
@@ -122,6 +124,8 @@ public class ImageProxy extends FileProxy
      *         <ul>
      *             <li>The target file is null</li>
      *             <li>The parent folder of the target file does not exist</li>
+     *             <li>The target file exists and is not a {@link Files#isRegularFile(Path, LinkOption...) regular file}</li>
+     *             <li>The target file exists and is not {@link Files#isWritable(Path) writable}</li>
      *             <li>The requested size is negative or 0</li>
      *         </ul>
      *
@@ -154,6 +158,8 @@ public class ImageProxy extends FileProxy
      *         <ul>
      *             <li>The target path is null</li>
      *             <li>The parent folder of the target path does not exist</li>
+     *             <li>The target path exists and is not a {@link Files#isRegularFile(Path, LinkOption...) regular file}</li>
+     *             <li>The target path exists and is not {@link Files#isWritable(Path) writable}</li>
      *             <li>The requested size is negative or 0</li>
      *         </ul>
      *

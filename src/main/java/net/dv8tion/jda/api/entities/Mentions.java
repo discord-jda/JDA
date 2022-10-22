@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import org.apache.commons.collections4.Bag;
 
@@ -90,7 +92,7 @@ public interface Mentions
     Bag<User> getUsersBag();
 
     /**
-     * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannels}.
+     * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannels}.
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
      *
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
@@ -132,7 +134,7 @@ public interface Mentions
     Bag<GuildChannel> getChannelsBag();
 
     /**
-     * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannels} of type {@code clazz}.
+     * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannels} of type {@code clazz}.
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
      *
      * <p><b>This may include GuildChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>

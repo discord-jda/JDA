@@ -19,6 +19,13 @@ import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
+import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
+import net.dv8tion.jda.api.events.channel.forum.GenericForumTagEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateModeratedEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.ForumTagUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.forum.update.GenericForumTagUpdateEvent;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent;
 import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent;
@@ -53,6 +60,7 @@ import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.events.self.*;
+import net.dv8tion.jda.api.events.session.*;
 import net.dv8tion.jda.api.events.stage.GenericStageInstanceEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceCreateEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
@@ -117,12 +125,15 @@ public abstract class ListenerAdapter implements EventListener
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
     public void onGatewayPing(@Nonnull GatewayPingEvent event) {}
 
-    //JDA Events
+    //Session Events
     public void onReady(@Nonnull ReadyEvent event) {}
-    public void onResumed(@Nonnull ResumedEvent event) {}
-    public void onReconnected(@Nonnull ReconnectedEvent event) {}
-    public void onDisconnect(@Nonnull DisconnectEvent event) {}
+    public void onSessionInvalidate(@Nonnull SessionInvalidateEvent event) {}
+    public void onSessionDisconnect(@Nonnull SessionDisconnectEvent event) {}
+    public void onSessionResume(@Nonnull SessionResumeEvent event) {}
+    public void onSessionRecreate(@Nonnull SessionRecreateEvent event) {}
     public void onShutdown(@Nonnull ShutdownEvent event) {}
+
+    //Status Events
     public void onStatusChange(@Nonnull StatusChangeEvent event) {}
     public void onException(@Nonnull ExceptionEvent event) {}
 
@@ -182,11 +193,15 @@ public abstract class ListenerAdapter implements EventListener
     //Channel Update Events
     public void onChannelUpdateBitrate(@Nonnull ChannelUpdateBitrateEvent event) {}
     public void onChannelUpdateName(@Nonnull ChannelUpdateNameEvent event) {}
+    public void onChannelUpdateFlags(@Nonnull ChannelUpdateFlagsEvent event) {}
     public void onChannelUpdateNSFW(@Nonnull ChannelUpdateNSFWEvent event) {}
     public void onChannelUpdateParent(@Nonnull ChannelUpdateParentEvent event) {}
     public void onChannelUpdatePosition(@Nonnull ChannelUpdatePositionEvent event) {}
     public void onChannelUpdateRegion(@Nonnull ChannelUpdateRegionEvent event) {}
     public void onChannelUpdateSlowmode(@Nonnull ChannelUpdateSlowmodeEvent event) {}
+    public void onChannelUpdateDefaultThreadSlowmode(@Nonnull ChannelUpdateDefaultThreadSlowmodeEvent event) {}
+    public void onChannelUpdateDefaultReaction(@Nonnull ChannelUpdateDefaultReactionEvent event) {}
+//    public void onChannelUpdateDefaultSortOrder(@Nonnull ChannelUpdateDefaultSortOrderEvent event) {}
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
     public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}
@@ -195,6 +210,14 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateAutoArchiveDuration(@Nonnull ChannelUpdateAutoArchiveDurationEvent event) {}
     public void onChannelUpdateLocked(@Nonnull ChannelUpdateLockedEvent event) {}
     public void onChannelUpdateInvitable(@Nonnull ChannelUpdateInvitableEvent event) {}
+    public void onChannelUpdateAppliedTags(@Nonnull ChannelUpdateAppliedTagsEvent event) {}
+
+    //Forum Tag Events
+    public void onForumTagAdd(@Nonnull ForumTagAddEvent event) {}
+    public void onForumTagRemove(@Nonnull ForumTagRemoveEvent event) {}
+    public void onForumTagUpdateName(@Nonnull ForumTagUpdateNameEvent event) {}
+    public void onForumTagUpdateEmoji(@Nonnull ForumTagUpdateEmojiEvent event) {}
+    public void onForumTagUpdateModerated(@Nonnull ForumTagUpdateModeratedEvent event) {}
 
     //Thread Events
     public void onThreadRevealed(@Nonnull ThreadRevealedEvent event) {}
@@ -261,9 +284,6 @@ public abstract class ListenerAdapter implements EventListener
 
     //Guild Voice Events
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {}
-    public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {}
-    public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
-    public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {}
     public void onGuildVoiceMute(@Nonnull GuildVoiceMuteEvent event) {}
     public void onGuildVoiceDeafen(@Nonnull GuildVoiceDeafenEvent event) {}
     public void onGuildVoiceGuildMute(@Nonnull GuildVoiceGuildMuteEvent event) {}
@@ -300,7 +320,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericPrivilegeUpdate(@Nonnull GenericPrivilegeUpdateEvent event) {}
     public void onApplicationCommandUpdatePrivileges(@Nonnull ApplicationCommandUpdatePrivilegesEvent event) {}
     public void onApplicationUpdatePrivileges(@Nonnull ApplicationUpdatePrivilegesEvent event) {}
-    
+
     //Sticker Events
     public void onGuildStickerAdded(@Nonnull GuildStickerAddedEvent event) {}
     public void onGuildStickerRemoved(@Nonnull GuildStickerRemovedEvent event) {}
@@ -315,6 +335,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
+    public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
@@ -344,6 +365,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
+    public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
+    public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();

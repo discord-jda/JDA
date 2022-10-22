@@ -16,7 +16,14 @@
 
 package net.dv8tion.jda.api.entities.channel.unions;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 
 import javax.annotation.Nonnull;
 
@@ -24,7 +31,7 @@ import javax.annotation.Nonnull;
  * A specialized union representing all channel types that can be used for the "default" channel for
  * {@link Guild#getDefaultChannel()} or {@link Member#getDefaultChannel()}.
  * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
- * when accepting an invite that is not directed at a specific {@link IInviteContainer channel}.
+ * when accepting an invite that is not directed at a specific {@link net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer channel}.
  *
  * <br>This class extends {@link StandardGuildChannel} and primarily acts as a discovery tool for
  * developers to understand which channels might be returned as default channels.
@@ -86,7 +93,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
     //TODO: add asForumChannel() (I think ForumChannels can be the default?)
 
     /**
-     * Casts this union to a {@link IThreadContainer}.
+     * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
      * Note: This is effectively equivalent to using the cast operator:
@@ -99,9 +106,9 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * You can use <code>channel instanceof IThreadContainer</code> to validate whether you can call this method.
      *
      * @throws IllegalStateException
-     *         If the channel represented by this union is not actually a {@link IThreadContainer}.
+     *         If the channel represented by this union is not actually a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      *
-     * @return The channel as a {@link IThreadContainer}
+     * @return The channel as a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}
      */
     IThreadContainer asThreadContainer();
 

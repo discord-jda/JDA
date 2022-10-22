@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -32,7 +32,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import net.dv8tion.jda.internal.interactions.ModalInteractionImpl;
+import net.dv8tion.jda.internal.interactions.modal.ModalInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandAutoCompleteInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
@@ -52,9 +52,10 @@ public class InteractionCreateHandler extends SocketHandler
     protected Long handleInternally(DataObject content)
     {
         int type = content.getInt("type");
-        if (content.getInt("version", 1) != 1)
+        int version = content.getInt("version", 1);
+        if (version != 1)
         {
-            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", content.getInt("version", 1));
+            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", version);
             return null;
         }
 

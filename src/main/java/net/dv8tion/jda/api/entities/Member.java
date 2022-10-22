@@ -660,13 +660,14 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * </ul>
      *
      * @param  temporal
-     *         The time this Member will be released from time out, or null to remove the time out
+     *         The time this Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
+     *             <li>The provided {@code temporal} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
@@ -675,7 +676,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> timeoutUntil(@Nullable TemporalAccessor temporal)
+    default AuditableRestAction<Void> timeoutUntil(@Nonnull TemporalAccessor temporal)
     {
         return getGuild().timeoutUntil(this, temporal);
     }

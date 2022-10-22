@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -289,7 +290,7 @@ public interface User extends UserSnowflake
 
     /**
      * Whether or not the currently logged in user and this user have a currently open
-     * {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} or not.
+     * {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} or not.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -299,7 +300,7 @@ public interface User extends UserSnowflake
     boolean hasPrivateChannel();
 
     /**
-     * Opens a {@link PrivateChannel} with this User.
+     * Opens a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel} with this User.
      * <br>If a channel has already been opened with this user, it is immediately returned in the RestAction's
      * success consumer without contacting the Discord API.
      * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new channel object,
@@ -327,7 +328,7 @@ public interface User extends UserSnowflake
      *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser})
      *         or if the user was created with {@link #fromId(long)}
      *
-     * @return {@link CacheRestAction} - Type: {@link PrivateChannel}
+     * @return {@link CacheRestAction} - Type: {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel}
      *         <br>Retrieves the PrivateChannel to use to directly message this User.
      *
      * @see    JDA#openPrivateChannelById(long)

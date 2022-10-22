@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
  * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
- * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} to compile a valid
+ * <p><b>Must provide not-null {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} to compile a valid
  * pagination route.</b>
  *
  * <p><b>Limits:</b><br>
@@ -62,10 +62,10 @@ import javax.annotation.Nonnull;
 public interface MessagePaginationAction extends PaginationAction<Message, MessagePaginationAction>
 {
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} of
-     * the targeted {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+     * The {@link ChannelType ChannelType} of
+     * the targeted {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
      *
-     * @return {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * @return {@link ChannelType ChannelType}
      */
     @Nonnull
     default ChannelType getType()
@@ -74,7 +74,7 @@ public interface MessagePaginationAction extends PaginationAction<Message, Messa
     }
 
     /**
-     * The targeted {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
+     * The targeted {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}
      *
      * @return The MessageChannel instance
      */

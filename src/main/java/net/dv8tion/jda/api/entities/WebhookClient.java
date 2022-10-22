@@ -218,6 +218,62 @@ public interface WebhookClient<T>
      *
      * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     * </ul>
+     *
+     * @param  components
+     *         {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         If any of the components are null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
+
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     * </ul>
+     *
+     * @param  component
+     *         {@link LayoutComponent} to use
+     * @param  other
+     *         Additional {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT} in total)
+     *
+     * @throws IllegalArgumentException
+     *         If any of the components are null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    {
+        Checks.notNull(component, "LayoutComponents");
+        Checks.noneNull(other, "LayoutComponents");
+        List<LayoutComponent> embedList = new ArrayList<>();
+        embedList.add(component);
+        Collections.addAll(embedList, other);
+        return sendMessageComponents(embedList);
+    }
+
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
      * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.

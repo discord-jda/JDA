@@ -43,7 +43,7 @@ public enum AuditLogOption
 
     /**
      * Possible message id for actions of type {@link ActionType#MESSAGE_PIN} and {@link ActionType#MESSAGE_UNPIN}.
-     * <br>Use with {@link net.dv8tion.jda.api.entities.MessageChannel#retrieveMessageById(String)}.
+     * <br>Use with {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(String)}.
      *
      * <p>Expected type: <b>String</b>
      */

@@ -26,29 +26,25 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 
 public class UserContextInteractionImpl extends ContextInteractionImpl<User> implements UserContextInteraction
 {
-    private final MemberImpl member;
+    private MemberImpl member;
 
     public UserContextInteractionImpl(JDAImpl jda, DataObject data)
     {
-        super(jda, data, (resolved) -> parse(jda, resolved));
-        DataObject resolved = data.getObject("data").getObject("resolved");
-        if (!resolved.isNull("members"))
-        {
-            DataObject members = resolved.getObject("members");
-            DataObject member = members.getObject(members.keys().iterator().next());
-            this.member = jda.getEntityBuilder().createMember((GuildImpl) guild, member);
-            jda.getEntityBuilder().updateMemberCache(this.member);
-        }
-        else
-        {
-            this.member = null;
-        }
+        super(jda, data);
     }
 
-    private static User parse(JDAImpl api, DataObject resolved)
+    @Override
+    protected User parse(DataObject interaction, DataObject resolved)
     {
         DataObject users = resolved.getObject("users");
         DataObject user = users.getObject(users.keys().iterator().next());
+
+        resolved.optObject("members").filter(m -> !m.keys().isEmpty()).ifPresent(members -> {
+            DataObject member = members.getObject(members.keys().iterator().next());
+            this.member = api.getEntityBuilder().createMember((GuildImpl) guild, member);
+            api.getEntityBuilder().updateMemberCache(this.member);
+        });
+
         return api.getEntityBuilder().createUser(user);
     }
 

@@ -31,10 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -187,7 +184,7 @@ public class FileProxy
     protected CompletableFuture<Path> downloadToPath(String url)
     {
         final HttpUrl parsedUrl = HttpUrl.parse(url);
-        Checks.check(parsedUrl != null, "URL '" + url + "' is not valid");
+        Checks.check(parsedUrl != null, "URL '%s' is invalid", url);
 
         final List<String> segments = parsedUrl.pathSegments();
         final String fileName = segments.get(segments.size() - 1);
@@ -198,8 +195,16 @@ public class FileProxy
 
     protected CompletableFuture<Path> downloadToPath(String url, Path path)
     {
+        //Turn this into an absolute path so we can check the parent folder
+        final Path absolute = path.toAbsolutePath();
         //Check if the parent path, the folder, exists
-        Checks.check(Files.exists(path.getParent()), "Parent folder of the file '" + path.toAbsolutePath() + "' does not exist.");
+        final Path parent = absolute.getParent();
+        Checks.check(parent != null && Files.exists(parent), "Parent folder of the file '%s' does not exist.", absolute);
+        if (Files.exists(absolute))
+        {
+            Checks.check(Files.isRegularFile(absolute), "Path '%s' is not a regular file.", absolute);
+            Checks.check(Files.isWritable(absolute), "File at '%s' is not writable.", absolute);
+        }
 
         final DownloadTask downloadTask = downloadInternal(url);
 
@@ -208,14 +213,14 @@ public class FileProxy
             {
                 //Temporary file follows this pattern: filename + random_number + ".part"
                 // The random number is generated until a filename becomes valid, until no file with the same name exists in the tmp directory
-                final Path tmpPath = Files.createTempFile(path.getFileName().toString(), ".part");
+                final Path tmpPath = Files.createTempFile(absolute.getFileName().toString(), ".part");
                 //A user might use a file's presence as an indicator of something being successfully downloaded,
                 //This might prevent a file from being partial, say, if the user shuts down its bot while it's downloading something
                 //Meanwhile, the time window to "corrupt" a file is very small when moving it
                 //This is why we copy the file into a temporary file and then move it.
                 Files.copy(stream, tmpPath, StandardCopyOption.REPLACE_EXISTING);
-                Files.move(tmpPath, path, StandardCopyOption.REPLACE_EXISTING);
-                return path;
+                Files.move(tmpPath, absolute, StandardCopyOption.REPLACE_EXISTING);
+                return absolute;
             }
             catch (IOException e)
             {
@@ -270,6 +275,8 @@ public class FileProxy
      *         <ul>
      *             <li>The target file is null</li>
      *             <li>The parent folder of the target file does not exist</li>
+     *             <li>The target file exists and is not a {@link Files#isRegularFile(Path, LinkOption...) regular file}</li>
+     *             <li>The target file exists and is not {@link Files#isWritable(Path) writable}</li>
      *         </ul>
      *
      * @return {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
@@ -298,6 +305,8 @@ public class FileProxy
      *         <ul>
      *             <li>The target path is null</li>
      *             <li>The parent folder of the target path does not exist</li>
+     *             <li>The target path exists and is not a {@link Files#isRegularFile(Path, LinkOption...) regular file}</li>
+     *             <li>The target path exists and is not {@link Files#isWritable(Path) writable}</li>
      *         </ul>
      *
      * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.

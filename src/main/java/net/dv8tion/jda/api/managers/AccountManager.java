@@ -80,7 +80,6 @@ public interface AccountManager extends Manager<AccountManager>
 
     /**
      * Resets the fields specified by the provided bit-flag patterns.
-     * You can specify a combination by using a bitwise OR concat of the flag constants.
      * <br>Example: {@code manager.reset(AccountManager.NAME, AccountManager.AVATAR);}
      *
      * <p><b>Flag Constants:</b>
