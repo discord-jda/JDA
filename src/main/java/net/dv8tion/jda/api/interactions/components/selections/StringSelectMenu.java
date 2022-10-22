@@ -334,9 +334,14 @@ public interface StringSelectMenu extends SelectMenu
          *
          * <p>The values for {@link #setMinValues(int)} and {@link #setMaxValues(int)} are bounded by the length of {@link #getOptions()}.
          * This means they will automatically be adjusted to not be greater than {@code getOptions().size()}.
+         * You can use this to your advantage to easily make a select menu with unlimited options by setting it to {@link #OPTIONS_MAX_AMOUNT}.
          *
          * @throws IllegalArgumentException
-         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()} or more than {@value #OPTIONS_MAX_AMOUNT} options are provided
+         *         <ul>
+         *             <li>If {@link #getMinValues()} is greater than {@link #getMaxValues()}</li>
+         *             <li>If no options are provided</li>
+         *             <li>If more than {@value #OPTIONS_MAX_AMOUNT} options are provided</li>
+         *         </ul>
          *
          * @return The new {@link StringSelectMenu} instance
          */
@@ -344,6 +349,7 @@ public interface StringSelectMenu extends SelectMenu
         public StringSelectMenu build()
         {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
+            Checks.check(!options.isEmpty(), "Cannot build a select menu without options. Add at least one option!");
             Checks.check(options.size() <= OPTIONS_MAX_AMOUNT, "Cannot build a select menu with more than %d options.", OPTIONS_MAX_AMOUNT);
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
