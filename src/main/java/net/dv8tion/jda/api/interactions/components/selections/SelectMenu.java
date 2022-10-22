@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 /**
  * Represents a select menu in a message.
@@ -29,6 +30,10 @@ import javax.annotation.Nullable;
  *
  * <p>The selections a user makes are only visible within their current client session.
  * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
+ *
+ * <p>This is a generic interface for all types of select menus.
+ * <br>You can use {@link EntitySelectMenu#create(String, Collection)} to create a select menu of Discord entities such as {@link net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget#USER users}.
+ * <br>Alternatively, you can use {@link StringSelectMenu#create(String)} to create a select menu of up to {@value #OPTIONS_MAX_AMOUNT} pre-defined strings to pick from.
  *
  * @see StringSelectMenu
  * @see EntitySelectMenu

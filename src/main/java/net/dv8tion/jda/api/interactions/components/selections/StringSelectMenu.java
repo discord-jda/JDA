@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
  *     .addOption("Arcane Mage", "mage-arcane")
  *     .addOption("Fire Mage", "mage-fire")
  *     .addOption("Frost Mage", "mage-frost")
+ *     .setDefaultValues("mage-fire") // default to fire mage
  *     .build();
  *
  *   event.reply("Please pick your class below")
@@ -314,6 +315,24 @@ public interface StringSelectMenu extends SelectMenu
          * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
          *
          * @param  values
+         *         The {@link SelectOption#getValue() option values}
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder setDefaultValues(@Nonnull String... values)
+        {
+            Checks.noneNull(values, "Values");
+            return setDefaultValues(Arrays.asList(values));
+        }
+
+        /**
+         * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
+         *
+         * @param  values
          *         The {@link SelectOption SelectOptions}
          *
          * @throws IllegalArgumentException
@@ -326,6 +345,24 @@ public interface StringSelectMenu extends SelectMenu
         {
             Checks.noneNull(values, "Values");
             return setDefaultValues(values.stream().map(SelectOption::getValue).collect(Collectors.toSet()));
+        }
+
+        /**
+         * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
+         *
+         * @param  values
+         *         The {@link SelectOption SelectOptions}
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder setDefaultOptions(@Nonnull SelectOption... values)
+        {
+            Checks.noneNull(values, "Values");
+            return setDefaultOptions(Arrays.asList(values));
         }
 
         /**

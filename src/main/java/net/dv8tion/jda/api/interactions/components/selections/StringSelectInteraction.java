@@ -40,9 +40,8 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
 
     /**
      * If available, this will resolve the selected {@link #getValues() values} to the representative {@link SelectOption SelectOption} instances.
-     * <br>This is null if the message is ephemeral.
      *
-     * @return {@link List} of the selected options or null if this message is ephemeral
+     * @return {@link List} of the selected options
      */
     @Nonnull
     default List<SelectOption> getSelectedOptions()
