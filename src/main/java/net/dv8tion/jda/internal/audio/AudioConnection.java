@@ -67,7 +67,6 @@ public class AudioConnection
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
     private final JDAImpl api;
-    private final AtomicInteger silenceCounter = new AtomicInteger(0);
 
     private AudioChannel channel;
     private PointerByReference opusEncoder;
@@ -644,28 +643,19 @@ public class AudioConnection
         }
 
         @Override
-        public DatagramPacket getNextPacket(boolean ignored)
+        public DatagramPacket getNextPacket(boolean unused)
         {
-            ByteBuffer buffer = getNextPacketRaw(ignored);
+            ByteBuffer buffer = getNextPacketRaw(unused);
             return buffer == null ? null : getDatagramPacket(buffer);
         }
 
         @Override
-        public ByteBuffer getNextPacketRaw(boolean ignored)
+        public ByteBuffer getNextPacketRaw(boolean unused)
         {
             ByteBuffer nextPacket = null;
             try
             {
-                // We send 10 silent packets on initial connect
-                if (silenceCounter.incrementAndGet() < 10)
-                {
-                    nextPacket = getPacketData(silenceBytes);
-                    if (seq + 1 > Character.MAX_VALUE)
-                        seq = 0;
-                    else
-                        seq++;
-                }
-                else if (sendHandler != null && sendHandler.canProvide())
+                if (sendHandler != null && sendHandler.canProvide())
                 {
                     ByteBuffer rawAudio = sendHandler.provide20MsAudio();
                     if (rawAudio != null && !rawAudio.hasArray())
