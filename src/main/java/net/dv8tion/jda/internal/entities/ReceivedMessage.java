@@ -48,6 +48,7 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -579,6 +580,10 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public AuditableRestAction<Void> delete()
     {
+        if (isEphemeral())
+        {
+            throw new IllegalStateException("Cannot delete ephemeral messages.");
+        }
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
             if (isFromType(ChannelType.PRIVATE))
