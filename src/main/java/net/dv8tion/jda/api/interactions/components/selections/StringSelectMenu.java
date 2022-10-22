@@ -82,7 +82,7 @@ public interface StringSelectMenu extends SelectMenu
     }
 
     /**
-     * An <b>unmodifiable</b> list of up to {@value OPTIONS_MAX_AMOUNT} available options to choose from.
+     * An <b>unmodifiable</b> list of up to {@value #OPTIONS_MAX_AMOUNT} available options to choose from.
      *
      * @return The {@link SelectOption SelectOptions} this menu provides
      *
@@ -117,7 +117,7 @@ public interface StringSelectMenu extends SelectMenu
      *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
      *
      * @throws IllegalArgumentException
-     *         If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters
+     *         If the provided id is null, empty, or longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The {@link Builder} used to create the select menu
      */
@@ -141,13 +141,13 @@ public interface StringSelectMenu extends SelectMenu
         }
 
         /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
+         * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
          *
          * @param  options
          *         The {@link SelectOption SelectOptions} to add
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT} or null is provided
+         *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT} or null is provided
          *
          * @return The same builder instance for chaining
          *
@@ -163,13 +163,13 @@ public interface StringSelectMenu extends SelectMenu
         }
 
         /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
+         * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
          *
          * @param  options
          *         The {@link SelectOption SelectOptions} to add
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT} or null is provided
+         *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT} or null is provided
          *
          * @return The same builder instance for chaining
          *
@@ -185,7 +185,7 @@ public interface StringSelectMenu extends SelectMenu
         }
 
         /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
+         * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
          *
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
@@ -194,7 +194,7 @@ public interface StringSelectMenu extends SelectMenu
          *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
+         *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT}, invalid null is provided,
          *         or any of the individual parameter requirements are violated.
          *
          * @return The same builder instance for chaining
@@ -206,7 +206,7 @@ public interface StringSelectMenu extends SelectMenu
         }
 
         /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
+         * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
          *
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
@@ -217,7 +217,7 @@ public interface StringSelectMenu extends SelectMenu
          *         The {@link Emoji} shown next to this option, or null
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided, or any of the individual parameter requirements are violated.
+         *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT}, invalid null is provided, or any of the individual parameter requirements are violated.
          *
          * @return The same builder instance for chaining
          */
@@ -228,7 +228,7 @@ public interface StringSelectMenu extends SelectMenu
         }
 
         /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
+         * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
          *
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
@@ -239,7 +239,7 @@ public interface StringSelectMenu extends SelectMenu
          *         The description explaining the meaning of this option in more detail, up to 50 characters
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
+         *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT}, invalid null is provided,
          *         or any of the individual parameter requirements are violated.
          *
          * @return The same builder instance for chaining
@@ -251,7 +251,7 @@ public interface StringSelectMenu extends SelectMenu
         }
 
         /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
+         * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
          *
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
@@ -264,7 +264,7 @@ public interface StringSelectMenu extends SelectMenu
          *         The {@link Emoji} shown next to this option, or null
          *
          * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
+         *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT}, invalid null is provided,
          *         or any of the individual parameter requirements are violated.
          *
          * @return The same builder instance for chaining

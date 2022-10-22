@@ -101,7 +101,7 @@ public interface SelectMenu extends ActionComponent
          *         The new custom id to use
          *
          * @throws IllegalArgumentException
-         *         If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters
+         *         If the provided id is null, empty, or longer than {@value #ID_MAX_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
@@ -121,7 +121,7 @@ public interface SelectMenu extends ActionComponent
          *         The placeholder or null
          *
          * @throws IllegalArgumentException
-         *         If the provided placeholder is empty or longer than {@value PLACEHOLDER_MAX_LENGTH} characters
+         *         If the provided placeholder is empty or longer than {@value #PLACEHOLDER_MAX_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
@@ -147,7 +147,7 @@ public interface SelectMenu extends ActionComponent
          *         The min values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is negative or greater than {@value OPTIONS_MAX_AMOUNT}
+         *         If the provided amount is negative or greater than {@value #OPTIONS_MAX_AMOUNT}
          *
          * @return The same builder instance for chaining
          */
@@ -170,7 +170,7 @@ public interface SelectMenu extends ActionComponent
          *         The max values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is less than 1 or greater than {@value OPTIONS_MAX_AMOUNT}
+         *         If the provided amount is less than 1 or greater than {@value #OPTIONS_MAX_AMOUNT}
          *
          * @return The same builder instance for chaining
          */

@@ -185,11 +185,7 @@ public class ChannelUpdateHandler extends SocketHandler
             {
                 final String topic = content.getString("topic", null);
                 final EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
-                        .map(json -> {
-                            json.opt("emoji_id").ifPresent(id -> json.put("id", id));
-                            json.opt("emoji_name").ifPresent(n -> json.put("name", n));
-                            return EntityBuilder.createEmoji(json);
-                        })
+                        .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
                         .orElse(null);
 
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;

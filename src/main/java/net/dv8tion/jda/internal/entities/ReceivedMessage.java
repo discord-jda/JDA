@@ -580,8 +580,9 @@ public class ReceivedMessage extends AbstractMessage
     public AuditableRestAction<Void> delete()
     {
         if (isEphemeral())
+        {
             throw new IllegalStateException("Cannot delete ephemeral messages.");
-        
+        }
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
             if (isFromType(ChannelType.PRIVATE))

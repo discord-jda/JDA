@@ -104,7 +104,6 @@ public interface InteractionHook extends WebhookClient<Message>
      * <p>Ephemeral messages have some limitations and will be removed once the user restarts their client.
      * <br>Limitations:
      * <ul>
-     *     <li>Cannot be deleted by the bot</li>
      *     <li>Cannot contain any files/attachments</li>
      *     <li>Cannot be reacted to</li>
      *     <li>Cannot be retrieved</li>
@@ -368,7 +367,6 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Delete the original reply.
-     * <br>This doesn't work for ephemeral messages.
      *
      * @return {@link RestAction}
      */
