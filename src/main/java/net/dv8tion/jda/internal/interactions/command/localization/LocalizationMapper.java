@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.interactions.command.localization;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
@@ -94,7 +95,9 @@ public class LocalizationMapper
             if (obj.hasKey("options"))
                 localizeOptionArray(obj.getArray("options"), ctx);
             if (obj.hasKey("choices"))
-                localizeOptionArray(obj.getArray("choices"), ctx);
+                //Puts "choices" between the option name and the choice name
+                // This makes it more distinguishable in tree structures
+                ctx.withKey("choices", () -> localizeOptionArray(obj.getArray("choices"), ctx));
         });
     }
 
@@ -107,10 +110,27 @@ public class LocalizationMapper
             for (int i = 0; i < source.length(); i++)
             {
                 final DataObject item = source.getObject(i);
-                final String key = keyExtractor.apply(item);
-                keyComponents.push(key);
-                consumer.accept(item);
-                keyComponents.pop();
+                final Runnable runnable = () ->
+                {
+                    final String key = keyExtractor.apply(item);
+                    keyComponents.push(key);
+                    consumer.accept(item);
+                    keyComponents.pop();
+                };
+
+                //We need to differentiate subcommands/groups from options before inserting the "options" separator
+                final OptionType type = OptionType.fromKey(item.getInt("type", -1)); //-1 when the object isn't an option
+                final boolean isOption = type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP;
+                if (isOption) {
+                    //At this point the key should look like "path.to.command",
+                    // we can insert "options", and the keyExtractor would give option names
+
+                    //Put "options" between the command name and the option name
+                    // This makes it more distinguishable in tree structures
+                    withKey("options", runnable);
+                } else {
+                    runnable.run();
+                }
             }
         }
 

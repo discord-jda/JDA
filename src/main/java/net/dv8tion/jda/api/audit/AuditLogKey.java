@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -666,6 +667,9 @@ public enum AuditLogKey
     @Override
     public String toString()
     {
-        return name() + '(' + key + ')';
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("key", key)
+                .toString();
     }
 }

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 
@@ -94,6 +95,8 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag
     @Override
     public String toString()
     {
-        return "ForumTag:" + name + "(" + id + ')';
+        return new EntityString(this)
+                .setName(name)
+                .toString();
     }
 }

@@ -164,12 +164,6 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> impleme
         return this;
     }
 
-    @Override
-    public String toString()
-    {
-        return "GC:" + getName() + '(' + id + ')';
-    }
-
     private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
     {
         Member selfMember = getGuild().getSelfMember();

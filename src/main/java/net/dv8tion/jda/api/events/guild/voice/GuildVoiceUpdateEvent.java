@@ -106,10 +106,4 @@ public class GuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements Upd
     {
         return next;
     }
-
-    @Override
-    public String toString()
-    {
-        return "MemberVoiceUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
-    }
 }

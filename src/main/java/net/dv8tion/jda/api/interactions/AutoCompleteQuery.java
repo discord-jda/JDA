@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -98,6 +99,10 @@ public class AutoCompleteQuery
     @Override
     public String toString()
     {
-        return "AutoCompleteQuery[" + type + "](" + name + "=" + value + ")";
+        return new EntityString(this)
+                .setType(getType())
+                .addMetadata("name", getName())
+                .addMetadata("value", getValue())
+                .toString();
     }
 }

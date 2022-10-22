@@ -67,7 +67,7 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     {
         return ChannelType.VOICE;
     }
-    
+
     @Override
     public int getBitrate()
     {

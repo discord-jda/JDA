@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.TeamMember;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -75,6 +76,9 @@ public class TeamMemberImpl implements TeamMember
     @Override
     public String toString()
     {
-        return "TeamMember(" + getTeamId() + ", " + user + ")";
+        return new EntityString(this)
+                .addMetadata("teamId", getTeamId())
+                .addMetadata("user", user)
+                .toString();
     }
 }

@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.interactions.component.EntitySelectMenuImpl;
 import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -294,7 +295,9 @@ public class ActionRow implements LayoutComponent
     @Override
     public String toString()
     {
-        return "ActionRow(" + components + ")";
+        return new EntityString(this)
+                .addMetadata("components", components)
+                .toString();
     }
 
     @Override
