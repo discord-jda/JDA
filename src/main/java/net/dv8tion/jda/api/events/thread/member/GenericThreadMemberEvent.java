@@ -25,7 +25,10 @@ import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Member GuildMember} interacted with a {@link ThreadChannel} as a {@link ThreadMember}
+ * Current possible interactions are {@link ThreadMemberJoinEvent} and {@link ThreadMemberLeaveEvent} event.
+ */
 public class GenericThreadMemberEvent extends GenericThreadEvent
 {
     protected final long threadMemberId;
@@ -39,22 +42,40 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
         this.threadMember = threadMember;
     }
 
+    /**
+     * The Snowflake id of the interacting {@link ThreadMember}. This is unique to every entity and will never change.
+     *
+     * @return Never-null String containing the Id.
+     */
     public String getThreadMemberId()
     {
         return Long.toUnsignedString(getThreadMemberIdLong());
     }
 
+    /**
+     * The Snowflake id of the interacting {@link ThreadMember}. This is unique to every entity and will never change.
+     *
+     * @return Long containing the Id.
+     */
     public long getThreadMemberIdLong()
     {
         return threadMemberId;
     }
 
+    /**
+     *
+     * @return The interacting {@link ThreadMember}
+     */
     @Nullable
     public ThreadMember getThreadMember()
     {
         return threadMember;
     }
 
+    /**
+     * The interacting {@link ThreadMember} as a {@link Member GuildMember}
+     * @return The interacting {@link ThreadMember} as a {@link Member GuildMember}
+     */
     @Nullable
     public Member getMember()
     {
