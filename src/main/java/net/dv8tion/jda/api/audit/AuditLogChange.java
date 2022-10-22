@@ -113,7 +113,7 @@ public class AuditLogChange
     {
         return new EntityString(this)
                 .setName(key)
-                .addMetadata(null, oldValue + " ->" + newValue)
+                .addMetadata(null, oldValue + " -> " + newValue)
                 .toString();
     }
 }
