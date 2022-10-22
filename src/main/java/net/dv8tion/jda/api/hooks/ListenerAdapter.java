@@ -43,10 +43,10 @@ import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventCreateEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventDeleteEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserAddEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventUserRemoveEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventDeleteEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventUserAddEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventUserRemoveEvent;
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.*;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
@@ -270,18 +270,18 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
     public void onGuildUpdateNSFWLevel(@Nonnull GuildUpdateNSFWLevelEvent event) {}
 
-    //Guild Scheduled Event Events
-    public void onGuildScheduledEventUpdateDescription(@Nonnull GuildScheduledEventUpdateDescriptionEvent event) {}
-    public void onGuildScheduledEventUpdateEndTime(@Nonnull GuildScheduledEventUpdateEndTimeEvent event) {}
-    public void onGuildScheduledEventUpdateLocation(@Nonnull GuildScheduledEventUpdateLocationEvent event) {}
-    public void onGuildScheduledEventUpdateName(@Nonnull GuildScheduledEventUpdateNameEvent event) {}
-    public void onGuildScheduledEventUpdateStartTime(@Nonnull GuildScheduledEventUpdateStartTimeEvent event) {}
-    public void onGuildScheduledEventUpdateStatus(@Nonnull GuildScheduledEventUpdateStatusEvent event) {}
+    //Scheduled Event Events
+    public void onScheduledEventUpdateDescription(@Nonnull ScheduledEventUpdateDescriptionEvent event) {}
+    public void onScheduledEventUpdateEndTime(@Nonnull ScheduledEventUpdateEndTimeEvent event) {}
+    public void onScheduledEventUpdateLocation(@Nonnull ScheduledEventUpdateLocationEvent event) {}
+    public void onScheduledEventUpdateName(@Nonnull ScheduledEventUpdateNameEvent event) {}
+    public void onScheduledEventUpdateStartTime(@Nonnull ScheduledEventUpdateStartTimeEvent event) {}
+    public void onScheduledEventUpdateStatus(@Nonnull ScheduledEventUpdateStatusEvent event) {}
 
-    public void onGuildScheduledEventCreate(@Nonnull GuildScheduledEventCreateEvent event) {}
-    public void onGuildScheduledEventDelete(@Nonnull GuildScheduledEventDeleteEvent event) {}
-    public void onGuildScheduledEventUserAdd(@Nonnull GuildScheduledEventUserAddEvent event) {}
-    public void onGuildScheduledEventUserRemove(@Nonnull GuildScheduledEventUserRemoveEvent event) {}
+    public void onScheduledEventCreate(@Nonnull ScheduledEventCreateEvent event) {}
+    public void onScheduledEventDelete(@Nonnull ScheduledEventDeleteEvent event) {}
+    public void onScheduledEventUserAdd(@Nonnull ScheduledEventUserAddEvent event) {}
+    public void onScheduledEventUserRemove(@Nonnull ScheduledEventUserRemoveEvent event) {}
 
     //Guild Invite Events
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
@@ -383,9 +383,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
-    public void onGenericGuildScheduledEventUpdate(@Nonnull GenericGuildScheduledEventUpdateEvent event) {}
+    public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent event) {}
     public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
     public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent event) {}
+
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
     private static final Set<Class<?>> unresolved;

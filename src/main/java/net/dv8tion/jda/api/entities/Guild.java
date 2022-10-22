@@ -1275,78 +1275,78 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * Sorted {@link SnowflakeCacheView} of
-     * all cached {@link GuildScheduledEvent GuildScheduledEvents} of this Guild.
+     * all cached {@link ScheduledEvent ScheduledEvents} of this Guild.
      * <br>Scheduled events are sorted by their start time, and events that start at the same time
      * are sorted by their snowflake ID.
      *
      * @return {@link SortedSnowflakeCacheView}
      */
     @Nonnull
-    SortedSnowflakeCacheView<GuildScheduledEvent> getScheduledEventCache();
+    SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache();
     
     /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} in this Guild that have the same
+     * Gets a list of all {@link ScheduledEvent ScheduledEvents} in this Guild that have the same
      * name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvents} with the provided name,
+     * <br>If there are no {@link ScheduledEvent ScheduledEvents} with the provided name,
      * then this returns an empty list.
      *
      * @param  name
-     *         The name used to filter the returned {@link GuildScheduledEvent} objects.
+     *         The name used to filter the returned {@link ScheduledEvent} objects.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws java.lang.IllegalArgumentException
      *         If the name is blank, empty or {@code null}
      *
-     * @return Possibly-empty immutable list of all GuildScheduledEvent names that match the provided name.
+     * @return Possibly-empty immutable list of all ScheduledEvent names that match the provided name.
      */
     @Nonnull
-    default List<GuildScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
+    default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
     }
     
     /**
-     * Gets a {@link GuildScheduledEvent} from this guild that has the same id as the
-     * one provided. This method is similar to {@link JDA#getGuildScheduledEventById(String)}, but it only
+     * Gets a {@link ScheduledEvent} from this guild that has the same id as the
+     * one provided. This method is similar to {@link JDA#getScheduledEventById(String)}, but it only
      * checks this specific Guild for a scheduled event.
-     * <br>If there is no {@link GuildScheduledEvent} with an id that matches the provided
+     * <br>If there is no {@link ScheduledEvent} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link GuildScheduledEvent}.
+     *         The id of the {@link ScheduledEvent}.
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return Possibly-null {@link GuildScheduledEvent} with matching id.
+     * @return Possibly-null {@link ScheduledEvent} with matching id.
      */
     @Nullable
-    default GuildScheduledEvent getScheduledEventById(@Nonnull String id)
+    default ScheduledEvent getScheduledEventById(@Nonnull String id)
     {
         return getScheduledEventCache().getElementById(id);
     }
     
     /**
-     * Gets a {@link GuildScheduledEvent} from this guild that has the same id as the
-     * one provided. This method is similar to {@link JDA#getGuildScheduledEventById(long)}, but it only
+     * Gets a {@link ScheduledEvent} from this guild that has the same id as the
+     * one provided. This method is similar to {@link JDA#getScheduledEventById(long)}, but it only
      * checks this specific Guild for a scheduled event.
-     * <br>If there is no {@link GuildScheduledEvent} with an id that matches the provided
+     * <br>If there is no {@link ScheduledEvent} with an id that matches the provided
      * one, then this returns {@code null}.
      *
      * @param  id
-     *         The id of the {@link GuildScheduledEvent}.
+     *         The id of the {@link ScheduledEvent}.
      *
-     * @return Possibly-null {@link GuildScheduledEvent} with matching id.
+     * @return Possibly-null {@link ScheduledEvent} with matching id.
      */
     @Nullable
-    default GuildScheduledEvent getScheduledEventById(long id)
+    default ScheduledEvent getScheduledEventById(long id)
     {
         return getScheduledEventCache().getElementById(id);
     }
     
     /**
-     * Gets all {@link GuildScheduledEvent GuildScheduledEvents} in this guild.
+     * Gets all {@link ScheduledEvent ScheduledEvents} in this guild.
      * <br>Scheduled events are sorted by their start time, and events that start at the same time
      * are sorted by their snowflake ID.
      *
@@ -1355,10 +1355,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * a local variable or use {@link #getScheduledEventCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Possibly-empty immutable List of {@link GuildScheduledEvent GuildScheduledEvents}.
+     * @return Possibly-empty immutable List of {@link ScheduledEvent ScheduledEvents}.
      */
     @Nonnull
-    default List<GuildScheduledEvent> getScheduledEvents()
+    default List<ScheduledEvent> getScheduledEvents()
     {
         return getScheduledEventCache().asList();
     }
@@ -3040,52 +3040,52 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     RestAction<List<ThreadChannel>> retrieveActiveThreads();
 
     /**
-     * Retrieves a {@link GuildScheduledEvent} by its ID.
+     * Retrieves a {@link ScheduledEvent} by its ID.
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT ErrorResponse.UNKNOWN_SCHEDULED_EVENT}
      *     <br>A scheduled event with the specified ID does not exist in the guild, or the currently logged in user does not
      *     have access to it.</li>
      * </ul>
      *
      * @param  id
-     *         The ID of the {@link GuildScheduledEvent}
+     *         The ID of the {@link ScheduledEvent}
      *
-     * @return {@link RestAction} - Type: {@link GuildScheduledEvent}
+     * @return {@link RestAction} - Type: {@link ScheduledEvent}
      *
      * @see    #getScheduledEventById(long)
      */
     @Nonnull
     @CheckReturnValue
-    default CacheRestAction<GuildScheduledEvent> retrieveScheduledEventById(long id)
+    default CacheRestAction<ScheduledEvent> retrieveScheduledEventById(long id)
     {
         return retrieveScheduledEventById(Long.toUnsignedString(id));
     }
 
     /**
-     * Retrieves a {@link GuildScheduledEvent} by its ID.
+     * Retrieves a {@link ScheduledEvent} by its ID.
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT ErrorResponse.UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT ErrorResponse.UNKNOWN_SCHEDULED_EVENT}
      *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
      *     have access to it.</li>
      * </ul>
      *
      * @param  id
-     *         The ID of the {@link GuildScheduledEvent}
+     *         The ID of the {@link ScheduledEvent}
      *
      * @throws IllegalArgumentException
      *         If the specified ID is {@code null} or empty
      * @throws NumberFormatException
      *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
      *
-     * @return {@link RestAction} - Type: {@link GuildScheduledEvent}
+     * @return {@link RestAction} - Type: {@link ScheduledEvent}
      *
      * @see    #getScheduledEventById(long)
      */
     @Nonnull
     @CheckReturnValue
-    CacheRestAction<GuildScheduledEvent> retrieveScheduledEventById(@Nonnull String id);
+    CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id);
 
     /* From GuildController */
 
@@ -4626,14 +4626,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id);
 
     /**
-     * Creates a new {@link GuildScheduledEvent}.
-     * Events created with this method will be of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
+     * Creates a new {@link ScheduledEvent}.
+     * Events created with this method will be of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
      * These events are set to take place at an external location.
      *
      * <p><b>Requirements</b><br>
      *
      * Events are required to have a name, location and start time.
-     * Additionally, an end time <em>must</em> also be specified for events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
+     * Additionally, an end time <em>must</em> also be specified for events of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
      * {@link Permission#MANAGE_EVENTS} is required on the guild level in order to create this type of event.
      *
      * <p><b>Example</b><br>
@@ -4662,22 +4662,22 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *             <li>If the location is longer than 100 characters</li>
      *         </ul>
      *
-     * @return {@link GuildScheduledEventAction}
+     * @return {@link ScheduledEventAction}
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime);
+    ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime);
 
     /**
-     * Creates a new {@link GuildScheduledEvent}.
+     * Creates a new {@link ScheduledEvent}.
      *
      * <p><b>Requirements</b><br>
      *
      * Events are required to have a name, channel and start time. Depending on the
-     * type of channel provided, an event will be of one of two different {@link GuildScheduledEvent.Type Types}:
+     * type of channel provided, an event will be of one of two different {@link ScheduledEvent.Type Types}:
      * <ol>
      *     <li>
-     *         {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     *         {@link ScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
      *         <br>These events are set to take place inside of a {@link StageChannel}. The
      *         following permissions are required in the specified stage channel in order to create an event there:
      *          <ul>
@@ -4688,7 +4688,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         </ul>
      *     </li>
      *     <li>
-     *         {@link GuildScheduledEvent.Type#VOICE Type.VOICE}
+     *         {@link ScheduledEvent.Type#VOICE Type.VOICE}
      *         <br>These events are set to take place inside of a {@link VoiceChannel}. The
      *         following permissions are required in the specified voice channel in order to create an event there:
      *         <ul>
@@ -4723,11 +4723,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *             <li>If the channel is not from the same guild as the scheduled event</li>
      *         </ul>
      *
-     * @return {@link GuildScheduledEventAction}
+     * @return {@link ScheduledEventAction}
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime);
+    ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime);
 
     /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}

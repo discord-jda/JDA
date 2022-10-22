@@ -16,25 +16,26 @@
 package net.dv8tion.jda.api.events.guild.scheduledevent;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link GuildScheduledEvent} object has been deleted.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has subscribed to a {@link ScheduledEvent ScheduledEvent}.
  *
  * <p><b>Requirements</b><br>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
- * Can be used to detect when a {@link GuildScheduledEvent} was deleted and retrieve the deleted scheduled event.
+ * Can be used to detect when someone has subscribed to an event and also retrieve their
+ * {@link net.dv8tion.jda.api.entities.User User} object as well as the {@link ScheduledEvent}.
  */
-public class GuildScheduledEventDeleteEvent extends GenericGuildScheduledEventGatewayEvent
+public class ScheduledEventUserAddEvent extends GenericScheduledEventUserEvent
 {
-    public GuildScheduledEventDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent)
+    public ScheduledEventUserAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, long userId)
     {
-        super(api, responseNumber, guildScheduledEvent);
+        super(api, responseNumber, scheduledEvent, userId);
     }
 }

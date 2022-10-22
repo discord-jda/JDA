@@ -16,40 +16,40 @@
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
- * Indicates the {@link GuildScheduledEvent#getEndTime() end time} of a {@link GuildScheduledEvent} has changed.
+ * Indicates the {@link ScheduledEvent#getEndTime() end time} of a {@link ScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} end time has changed.
+ * <p>Can be used to detect when the {@link ScheduledEvent} end time has changed.
  *
  * <p>Identifier: {@code end_time}
  *
  * <p><b>Requirements</b><br>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
  * Discord does not specifically tell us about the updates, but merely tells us the
- * {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} was updated and gives us the updated {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} object.
- * In order to fire a specific event like this we need to have the old {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} cached to compare against.
+ * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
+ * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class GuildScheduledEventUpdateEndTimeEvent extends GenericGuildScheduledEventUpdateEvent<OffsetDateTime>
+public class ScheduledEventUpdateEndTimeEvent extends GenericScheduledEventUpdateEvent<OffsetDateTime>
 {
     public static final String IDENTIFIER = "end_time";
 
-    public GuildScheduledEventUpdateEndTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nullable OffsetDateTime previous)
+    public ScheduledEventUpdateEndTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nullable OffsetDateTime previous)
     {
-        super(api, responseNumber, guildScheduledEvent, previous, guildScheduledEvent.getEndTime(), IDENTIFIER);
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getEndTime(), IDENTIFIER);
     }
 
     /**
-     * The old {@link GuildScheduledEvent#getEndTime() end time}.
+     * The old {@link ScheduledEvent#getEndTime() end time}.
      *
      * @return The old end time, or {@code null} if no end time was previously set.
      */
@@ -60,7 +60,7 @@ public class GuildScheduledEventUpdateEndTimeEvent extends GenericGuildScheduled
     }
 
     /**
-     * The new {@link GuildScheduledEvent#getEndTime() end time}.
+     * The new {@link ScheduledEvent#getEndTime() end time}.
      *
      * @return The new start time, or {@code null} if the end time has been removed.
      */

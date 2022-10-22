@@ -17,12 +17,12 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -34,11 +34,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GuildScheduledEventMembersPaginationActionImpl extends PaginationActionImpl<Member, GuildScheduledEventMembersPaginationAction> implements GuildScheduledEventMembersPaginationAction
+public class ScheduledEventMembersPaginationActionImpl extends PaginationActionImpl<Member, ScheduledEventMembersPaginationAction> implements ScheduledEventMembersPaginationAction
 {
     protected final Guild guild;
 
-    public GuildScheduledEventMembersPaginationActionImpl(GuildScheduledEvent event)
+    public ScheduledEventMembersPaginationActionImpl(ScheduledEvent event)
     {
         super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getGuild().getId(), event.getId()).withQueryParams("with_member", "true"), 1, 100, 100);
         this.guild = event.getGuild();
@@ -71,7 +71,7 @@ public class GuildScheduledEventMembersPaginationActionImpl extends PaginationAc
             }
             catch (ParsingException | NullPointerException e)
             {
-                LOG.warn("Encountered an exception in GuildScheduledEventPagination", e);
+                LOG.warn("Encountered an exception in ScheduledEventPagination", e);
             }
         }
 

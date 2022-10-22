@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import javax.annotation.Nonnull;
 
 /**
- * {@link PaginationAction PaginationAction} that paginates the guild scheduled event users endpoint.
+ * {@link PaginationAction PaginationAction} that paginates the scheduled event users endpoint.
  * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
  * with a lock. Calling methods on this class from multiple threads is not recommended.
  *
@@ -33,20 +33,20 @@ import javax.annotation.Nonnull;
  * <p><b>Example</b><br>
  * <pre>{@code
  * // Get every member interested in this event and add the members names to a list
- * public static void getInterestedMembers(GuildScheduledEvent event) {
+ * public static void getInterestedMembers(ScheduledEvent event) {
  *      // get paginator
- *      GuildScheduledEventMembersPaginationAction members = event.retrieveInterestedMembers();
+ *      ScheduledEventMembersPaginationAction members = event.retrieveInterestedMembers();
  *      // add the name of every interested member to a list
  *      ArrayList<String> memberNames = new ArrayList();
  *      members.forEachAsync(member -> memberNames.add(member.getEffectiveName()));
  * }
  * }</pre>
  */
-public interface GuildScheduledEventMembersPaginationAction extends PaginationAction<Member, GuildScheduledEventMembersPaginationAction>
+public interface ScheduledEventMembersPaginationAction extends PaginationAction<Member, ScheduledEventMembersPaginationAction>
 {
     /**
      * The current target {@link Guild Guild} for
-     * this GuildScheduledEventMembersPaginationAction.
+     * this ScheduledEventMembersPaginationAction.
      *
      * @return The never-null target Guild
      */

@@ -17,14 +17,14 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.GuildScheduledEventAction;
+import net.dv8tion.jda.api.requests.restaction.ScheduledEventAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -41,7 +41,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<GuildScheduledEvent> implements GuildScheduledEventAction
+public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledEvent> implements ScheduledEventAction
 {
     protected final Guild guild;
     protected String name, description;
@@ -49,9 +49,9 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     protected long channelId;
     protected String location;
     protected OffsetDateTime startTime, endTime;
-    protected final GuildScheduledEvent.Type entityType;
+    protected final ScheduledEvent.Type entityType;
 
-    public GuildScheduledEventActionImpl(String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild)
+    public ScheduledEventActionImpl(String name, String location, TemporalAccessor startTime, TemporalAccessor endTime, Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
@@ -61,12 +61,12 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         Checks.notNull(location, "Location");
         Checks.notBlank(location, "Location");
         Checks.notEmpty(location, "Location");
-        Checks.notLonger(location, GuildScheduledEvent.MAX_LOCATION_LENGTH, "Location");
+        Checks.notLonger(location, ScheduledEvent.MAX_LOCATION_LENGTH, "Location");
         this.location = location;
-        this.entityType = GuildScheduledEvent.Type.EXTERNAL;
+        this.entityType = ScheduledEvent.Type.EXTERNAL;
     }
 
-    public GuildScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild)
+    public ScheduledEventActionImpl(String name, GuildChannel channel, TemporalAccessor startTime, Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.CREATE_SCHEDULED_EVENT.compile(guild.getId()));
         this.guild = guild;
@@ -80,41 +80,45 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
         else if (channel instanceof StageChannel)
         {
             this.channelId = channel.getIdLong();
-            this.entityType = GuildScheduledEvent.Type.STAGE_INSTANCE;
-        } else if (channel instanceof VoiceChannel) {
+            this.entityType = ScheduledEvent.Type.STAGE_INSTANCE;
+        }
+        else if (channel instanceof VoiceChannel)
+        {
             this.channelId = channel.getIdLong();
-            this.entityType = GuildScheduledEvent.Type.VOICE;
-        } else {
+            this.entityType = ScheduledEvent.Type.VOICE;
+        }
+        else
+        {
             throw new IllegalArgumentException("Invalid parameter: Can only set location to Voice and Stage Channels!");
         }
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventActionImpl setCheck(BooleanSupplier checks)
+    public ScheduledEventActionImpl setCheck(BooleanSupplier checks)
     {
-        return (GuildScheduledEventActionImpl) super.setCheck(checks);
+        return (ScheduledEventActionImpl) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    public ScheduledEventActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
     {
-        return (GuildScheduledEventActionImpl) super.timeout(timeout, unit);
+        return (ScheduledEventActionImpl) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventActionImpl deadline(long timestamp)
+    public ScheduledEventActionImpl deadline(long timestamp)
     {
-        return (GuildScheduledEventActionImpl) super.deadline(timestamp);
+        return (ScheduledEventActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventActionImpl reason(@Nullable String reason)
+    public ScheduledEventActionImpl reason(@Nullable String reason)
     {
-        return (GuildScheduledEventActionImpl) super.reason(reason);
+        return (ScheduledEventActionImpl) super.reason(reason);
     }
 
     @Nonnull
@@ -126,10 +130,10 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
 
     @Nonnull
     @Override
-    public GuildScheduledEventActionImpl setName(@Nullable String name)
+    public ScheduledEventActionImpl setName(@Nullable String name)
     {
         Checks.notBlank(name, "Name");
-        Checks.notLonger(name, GuildScheduledEvent.MAX_NAME_LENGTH, "Name");
+        Checks.notLonger(name, ScheduledEvent.MAX_NAME_LENGTH, "Name");
         this.name = name;
         return this;
     }
@@ -137,39 +141,41 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildScheduledEventActionImpl setDescription(@Nullable String description)
+    public ScheduledEventActionImpl setDescription(@Nullable String description)
     {
         if (description != null)
-            Checks.notLonger(description, GuildScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
+            Checks.notLonger(description, ScheduledEvent.MAX_DESCRIPTION_LENGTH, "Description");
         this.description = description;
         return this;
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime)
+    public ScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime)
     {
         Checks.notNull(startTime, "Start Time");
-        Checks.check(Helpers.toOffsetDateTime(startTime).isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
-        Checks.check(Helpers.toOffsetDateTime(startTime).isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
-        this.startTime = Helpers.toOffsetDateTime(startTime);
+        OffsetDateTime offsetStartTime = Helpers.toOffsetDateTime(startTime);
+        Checks.check(offsetStartTime.isAfter(OffsetDateTime.now()), "Cannot schedule event in the past!");
+        Checks.check(offsetStartTime.isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
+        this.startTime = offsetStartTime;
         return this;
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime)
+    public ScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime)
     {
         Checks.notNull(endTime, "End Time");
-        Checks.check(Helpers.toOffsetDateTime(endTime).isAfter(startTime), "Cannot schedule event to end before its starting!");
-        Checks.check(Helpers.toOffsetDateTime(endTime).isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
-        this.endTime = Helpers.toOffsetDateTime(endTime);
+        OffsetDateTime offsetEndTime = Helpers.toOffsetDateTime(endTime);
+        Checks.check(offsetEndTime.isAfter(startTime), "Cannot schedule event to end before its starting!");
+        Checks.check(offsetEndTime.isBefore(OffsetDateTime.now().plusYears(5)), "Scheduled start and end times must be within five years.");
+        this.endTime = offsetEndTime;
         return this;
     }
 
     @Nonnull
     @Override
-    public GuildScheduledEventAction setImage(@Nullable Icon icon)
+    public ScheduledEventAction setImage(@Nullable Icon icon)
     {
         this.image = icon;
         return this;
@@ -194,7 +200,7 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
             object.put("entity_metadata", DataObject.empty().put("location", location));
             break;
         default:
-            throw new IllegalStateException("GuildScheduledEventType " + entityType + " is not supported!");
+            throw new IllegalStateException("ScheduledEventType " + entityType + " is not supported!");
         }
 
         if (description != null)
@@ -208,8 +214,8 @@ public class GuildScheduledEventActionImpl extends AuditableRestActionImpl<Guild
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<GuildScheduledEvent> request)
+    protected void handleSuccess(Response response, Request<ScheduledEvent> request)
     {
-        request.onSuccess(api.getEntityBuilder().createGuildScheduledEvent((GuildImpl) guild, response.getObject()));
+        request.onSuccess(api.getEntityBuilder().createScheduledEvent((GuildImpl) guild, response.getObject()));
     }
 }

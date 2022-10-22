@@ -16,39 +16,39 @@
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates the {@link GuildScheduledEvent#getDescription() description} of a {@link GuildScheduledEvent} has changed.
+ * Indicates the {@link ScheduledEvent#getDescription() description} of a {@link ScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} description has changed.
+ * <p>Can be used to detect when the {@link ScheduledEvent} description has changed.
  *
  * <p>Identifier: {@code description}
  *
  * <p><b>Requirements</b><br>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
  * Discord does not specifically tell us about the updates, but merely tells us the
- * {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} was updated and gives us the updated {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} object.
- * In order to fire a specific event like this we need to have the old {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} cached to compare against.
+ * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
+ * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class GuildScheduledEventUpdateDescriptionEvent extends GenericGuildScheduledEventUpdateEvent<String>
+public class ScheduledEventUpdateDescriptionEvent extends GenericScheduledEventUpdateEvent<String>
 {
     public static final String IDENTIFIER = "description";
 
-    public GuildScheduledEventUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nullable String previous)
+    public ScheduledEventUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nullable String previous)
     {
-        super(api, responseNumber, guildScheduledEvent, previous, guildScheduledEvent.getDescription(), IDENTIFIER);
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getDescription(), IDENTIFIER);
     }
 
     /**
-     * The old {@link GuildScheduledEvent#getDescription() description}.
+     * The old {@link ScheduledEvent#getDescription() description}.
      *
      * @return The old description, or {@code null} if no description was previously set.
      */
@@ -59,7 +59,7 @@ public class GuildScheduledEventUpdateDescriptionEvent extends GenericGuildSched
     }
 
     /**
-     * The new {@link GuildScheduledEvent#getDescription() description}.
+     * The new {@link ScheduledEvent#getDescription() description}.
      *
      * @return The new description, or {@code null} if the description was removed.
      */

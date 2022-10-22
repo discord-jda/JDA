@@ -19,20 +19,20 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
+import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
-import net.dv8tion.jda.internal.managers.GuildScheduledEventManagerImpl;
+import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.internal.managers.ScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.pagination.GuildScheduledEventMembersPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ScheduledEventMembersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
-public class GuildScheduledEventImpl implements GuildScheduledEvent
+public class ScheduledEventImpl implements ScheduledEvent
 {
     private final long id;
     private final Guild guild;
@@ -47,7 +47,7 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     private int interestedUserCount;
     private String location;
 
-    public GuildScheduledEventImpl(long id, Guild guild)
+    public ScheduledEventImpl(long id, Guild guild)
     {
         this.id = id;
         this.guild = guild;
@@ -152,9 +152,9 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     @Nonnull
     @Override
-    public GuildScheduledEventManager getManager()
+    public ScheduledEventManager getManager()
     {
-        return new GuildScheduledEventManagerImpl(this);
+        return new ScheduledEventManagerImpl(this);
     }
 
     @Nonnull
@@ -171,86 +171,86 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
 
     @Nonnull
     @Override
-    public GuildScheduledEventMembersPaginationAction retrieveInterestedMembers()
+    public ScheduledEventMembersPaginationAction retrieveInterestedMembers()
     {
-        return new GuildScheduledEventMembersPaginationActionImpl(this);
+        return new ScheduledEventMembersPaginationActionImpl(this);
     }
 
-    public GuildScheduledEventImpl setName(String name)
+    public ScheduledEventImpl setName(String name)
     {
         this.name = name;
         return this;
     }
 
-    public GuildScheduledEventImpl setType(Type type)
+    public ScheduledEventImpl setType(Type type)
     {
         this.type = type;
         return this;
     }
 
-    public GuildScheduledEventImpl setLocation(String location)
+    public ScheduledEventImpl setLocation(String location)
     {
         this.location = location;
         return this;
     }
 
-    public GuildScheduledEventImpl setDescription(String description)
+    public ScheduledEventImpl setDescription(String description)
     {
         this.description = description;
         return this;
     }
 
-    public GuildScheduledEventImpl setImage(String image)
+    public ScheduledEventImpl setImage(String image)
     {
         this.image = image;
         return this;
     }
 
-    public GuildScheduledEventImpl setCreatorId(long creatorId)
+    public ScheduledEventImpl setCreatorId(long creatorId)
     {
         this.creatorId = creatorId;
         return this;
     }
 
-    public GuildScheduledEventImpl setCreator(User creator)
+    public ScheduledEventImpl setCreator(User creator)
     {
         this.creator = creator;
         return this;
     }
 
-    public GuildScheduledEventImpl setStatus(Status status)
+    public ScheduledEventImpl setStatus(Status status)
     {
         this.status = status;
         return this;
     }
 
-    public GuildScheduledEventImpl setStartTime(OffsetDateTime startTime)
+    public ScheduledEventImpl setStartTime(OffsetDateTime startTime)
     {
         this.startTime = startTime;
         return this;
     }
 
-    public GuildScheduledEventImpl setEndTime(OffsetDateTime endTime)
+    public ScheduledEventImpl setEndTime(OffsetDateTime endTime)
     {
         this.endTime = endTime;
         return this;
     }
 
-    public GuildScheduledEventImpl setInterestedUserCount(int interestedUserCount)
+    public ScheduledEventImpl setInterestedUserCount(int interestedUserCount)
     {
         this.interestedUserCount = interestedUserCount;
         return this;
     }
 
     @Override
-    public int compareTo(@Nonnull GuildScheduledEvent guildScheduledEvent)
+    public int compareTo(@Nonnull ScheduledEvent scheduledEvent)
     {
-        Checks.notNull(guildScheduledEvent, "Guild Scheduled Event");
-        Checks.check(this.getGuild().equals(guildScheduledEvent.getGuild()), "Cannot compare two Guild Scheduled Events belonging to seperate guilds!");
+        Checks.notNull(scheduledEvent, "Scheduled Event");
+        Checks.check(this.getGuild().equals(scheduledEvent.getGuild()), "Cannot compare two Scheduled Events belonging to seperate guilds!");
 
-        int startTimeComparison = OffsetDateTime.timeLineOrder().compare(this.getStartTime(), guildScheduledEvent.getStartTime());
+        int startTimeComparison = OffsetDateTime.timeLineOrder().compare(this.getStartTime(), scheduledEvent.getStartTime());
         if (startTimeComparison == 0)
-            return Long.compare(this.getIdLong(), guildScheduledEvent.getIdLong());
+            return Long.compare(this.getIdLong(), scheduledEvent.getIdLong());
         else
             return startTimeComparison;
     }
@@ -260,9 +260,9 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     {
         if (o == this)
             return true;
-        if (!(o instanceof GuildScheduledEventImpl))
+        if (!(o instanceof ScheduledEventImpl))
             return false;
-        return this.id == ((GuildScheduledEventImpl) o).id;
+        return this.id == ((ScheduledEventImpl) o).id;
     }
 
     @Override
@@ -274,6 +274,6 @@ public class GuildScheduledEventImpl implements GuildScheduledEvent
     @Override
     public String toString()
     {
-        return "GuildScheduledEvent:" + getName() + '(' + id + ')';
+        return "ScheduledEvent:" + getName() + '(' + id + ')';
     }
 }

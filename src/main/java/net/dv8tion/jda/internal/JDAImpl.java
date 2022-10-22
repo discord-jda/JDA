@@ -664,7 +664,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public SnowflakeCacheView<GuildScheduledEvent> getGuildScheduledEventCache()
+    public SnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getScheduledEventCache));
     }

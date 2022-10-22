@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.GuildScheduledEventCreateEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventDeleteEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 
-public class GuildScheduledEventCreateHandler extends SocketHandler
+public class ScheduledEventDeleteHandler extends SocketHandler
 {
-    public GuildScheduledEventCreateHandler(JDAImpl api)
+    public ScheduledEventDeleteHandler(JDAImpl api)
     {
         super(api);
     }
@@ -33,22 +32,28 @@ public class GuildScheduledEventCreateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        if (!getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
             return null;
-        long guildId = content.getUnsignedLong("guild_id");
+        final long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null)
         {
-            EventCache.LOG.debug("Caching GUILD_SCHEDULED_EVENT_CREATE for uncached guild with id {}", guildId);
-            getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("SCHEDULED_EVENT_DELETE was received for a Guild that is not yet cached: {}", content);
             return null;
         }
 
-        GuildScheduledEvent event = getJDA().getEntityBuilder().createGuildScheduledEvent(guild, content);
-        getJDA().handleEvent(new GuildScheduledEventCreateEvent(getJDA(), responseNumber, event));
+        final long eventId = content.getLong("id");
+        ScheduledEvent removedEvent = guild.getScheduledEventsView().remove(eventId);
+        if (removedEvent != null)
+        {
+            getJDA().handleEvent(
+                    new ScheduledEventDeleteEvent(
+                            getJDA(), responseNumber,
+                            removedEvent));
+        }
         return null;
     }
 }

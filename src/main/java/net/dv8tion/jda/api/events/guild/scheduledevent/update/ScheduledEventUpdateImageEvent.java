@@ -16,38 +16,38 @@
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates the {@link GuildScheduledEvent#getImageUrl() image} of a {@link GuildScheduledEvent} has changed.
+ * Indicates the {@link ScheduledEvent#getImageUrl() image} of a {@link ScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} image had changed.
+ * <p>Can be used to detect when the {@link ScheduledEvent} image had changed.
  *
  * <p>Identifier: {@code image}
  *
  * <p><b>Requirements</b><br>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
  * Discord does not specifically tell us about the updates, but merely tells us the
- * {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} was updated and gives us the updated {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} object.
- * In order to fire a specific event like this we need to have the old {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} cached to compare against.
+ * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
+ * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class GuildScheduledEventUpdateImageEvent extends GenericGuildScheduledEventUpdateEvent<String>
+public class ScheduledEventUpdateImageEvent extends GenericScheduledEventUpdateEvent<String>
 {
     public static final String IDENTIFIER = "image";
 
-    public GuildScheduledEventUpdateImageEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull String previous)
+    public ScheduledEventUpdateImageEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous)
     {
-        super(api, responseNumber, guildScheduledEvent, previous, guildScheduledEvent.getImageUrl(), IDENTIFIER);
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getImageUrl(), IDENTIFIER);
     }
 
     /**
-     * The old {@link GuildScheduledEvent#getImageUrl() image}.
+     * The old {@link ScheduledEvent#getImageUrl() image}.
      *
      * @return The old image
      */
@@ -58,7 +58,7 @@ public class GuildScheduledEventUpdateImageEvent extends GenericGuildScheduledEv
     }
 
     /**
-     * The new {@link GuildScheduledEvent#getImageUrl() image}.
+     * The new {@link ScheduledEvent#getImageUrl() image}.
      *
      * @return The new image
      */

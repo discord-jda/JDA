@@ -25,7 +25,7 @@ import java.time.temporal.TemporalAccessor;
 
 
 /**
- * The Manager is providing functionality to update one or more fields of a {@link GuildScheduledEvent}.
+ * The Manager is providing functionality to update one or more fields of a {@link ScheduledEvent}.
  * <br>The manager may also be used to start, cancel or end events.
  *
  * <p><b>Example</b>
@@ -37,9 +37,9 @@ import java.time.temporal.TemporalAccessor;
  *     .queue();
  * }</pre>
  *
- * @see    GuildScheduledEvent#getManager()
+ * @see    ScheduledEvent#getManager()
  */
-public interface GuildScheduledEventManager extends Manager<GuildScheduledEventManager>
+public interface ScheduledEventManager extends Manager<ScheduledEventManager>
 {
     /** Used to reset the name field */
     long NAME         = 1;
@@ -59,7 +59,7 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
     /**
      * Resets the fields specified by the provided bit-flag pattern.
      * You can specify a combination by using a bitwise OR concat of the flag constants.
-     * <br>Example: {@code manager.reset(GuildScheduledEventManager.DESCRIPTION | GuildScheduledEventManager.END_TIME);}
+     * <br>Example: {@code manager.reset(ScheduledEventManager.DESCRIPTION | ScheduledEventManager.END_TIME);}
      *
      * <p><b>Flag Constants:</b>
      * <ul>
@@ -75,16 +75,16 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @param  fields
      *         Integer value containing the flags to reset.
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      */
     @Nonnull
     @Override
-    GuildScheduledEventManager reset(long fields);
+    ScheduledEventManager reset(long fields);
 
     /**
      * Resets the fields specified by the provided bit-flag patterns.
      * You can specify a combination by using a bitwise OR concat of the flag constants.
-     * <br>Example: {@code manager.reset(GuildScheduledEventManager.DESCRIPTION, GuildScheduledEventManager.END_TIME);}
+     * <br>Example: {@code manager.reset(ScheduledEventManager.DESCRIPTION, ScheduledEventManager.END_TIME);}
      *
      * <p><b>Flag Constants:</b>
      * <ul>
@@ -100,84 +100,84 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @param  fields
      *         Integer values containing the flags to reset.
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      */
     @Nonnull
     @Override
-    GuildScheduledEventManager reset(long... fields);
+    ScheduledEventManager reset(long... fields);
 
     /**
-     * The target {@link GuildScheduledEvent} for this manager
+     * The target {@link ScheduledEvent} for this manager
      */
     @Nonnull
-    GuildScheduledEvent getGuildScheduledEvent();
+    ScheduledEvent getScheduledEvent();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this
-     * {@link GuildScheduledEvent GuildScheduledEvent} is in.
-     * <br>This is logically the same as calling {@code getGuildScheduledEvent().getGuild()}
+     * {@link ScheduledEvent ScheduledEvent} is in.
+     * <br>This is logically the same as calling {@code getScheduledEvent().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
     default Guild getGuild()
     {
-        return getGuildScheduledEvent().getGuild();
+        return getScheduledEvent().getGuild();
     }
 
     /**
-     * Sets the name of the selected {@link GuildScheduledEvent GuildScheduledEvent}
+     * Sets the name of the selected {@link ScheduledEvent ScheduledEvent}
      *
      * @param  name
-     *         The new name for the selected {@link GuildScheduledEvent GuildScheduledEvent}
+     *         The new name for the selected {@link ScheduledEvent ScheduledEvent}
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the new name is blank, empty, {@code null}, or longer than {@value GuildScheduledEvent#MAX_NAME_LENGTH}
+     *         If the new name is blank, empty, {@code null}, or longer than {@value ScheduledEvent#MAX_NAME_LENGTH}
      *         characters
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setName(@Nonnull String name);
+    ScheduledEventManager setName(@Nonnull String name);
 
     /**
-     * Sets the description of the selected {@link GuildScheduledEvent GuildScheduledEvent}.
+     * Sets the description of the selected {@link ScheduledEvent ScheduledEvent}.
      * This field may include markdown.
      *
      * @param  description
-     *         The new description for the selected {@link GuildScheduledEvent GuildScheduledEvent},
+     *         The new description for the selected {@link ScheduledEvent ScheduledEvent},
      *         or {@code null} to reset the description
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the new description is longer than {@value GuildScheduledEvent#MAX_DESCRIPTION_LENGTH} characters
+     *         If the new description is longer than {@value ScheduledEvent#MAX_DESCRIPTION_LENGTH} characters
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setDescription(@Nullable String description);
+    ScheduledEventManager setDescription(@Nullable String description);
 
     /**
-     * Sets the cover image for the new {@link GuildScheduledEvent GuildScheduledEvent}.
+     * Sets the cover image for the new {@link ScheduledEvent ScheduledEvent}.
      *
      * @param  icon
-     *         The cover image for the new {@link GuildScheduledEvent GuildScheduledEvent},
+     *         The cover image for the new {@link ScheduledEvent ScheduledEvent},
      *         or {@code null} for no cover image.
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setImage(@Nullable Icon icon);
+    ScheduledEventManager setImage(@Nullable Icon icon);
 
     /**
-     * Sets the location of the selected {@link GuildScheduledEvent} to take place in the specified {@link GuildChannel}.
-     * <p>This will change the event's type to {@link GuildScheduledEvent.Type#STAGE_INSTANCE} or {@link GuildScheduledEvent.Type#VOICE},
+     * Sets the location of the selected {@link ScheduledEvent} to take place in the specified {@link GuildChannel}.
+     * <p>This will change the event's type to {@link ScheduledEvent.Type#STAGE_INSTANCE} or {@link ScheduledEvent.Type#VOICE},
      * which are the only supported channel types for the location of scheduled events currently.
      *
      * @param  channel
-     *         The {@link GuildChannel} that the selected {@link GuildScheduledEvent} is set to take place in.
+     *         The {@link GuildChannel} that the selected {@link ScheduledEvent} is set to take place in.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -193,48 +193,48 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *         or {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS Permission.VOICE_MOVE_OTHERS}, in the provided
      *         channel.
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setLocation(@Nonnull GuildChannel channel);
+    ScheduledEventManager setLocation(@Nonnull GuildChannel channel);
 
     /**
-     * Sets the location of the selected {@link GuildScheduledEvent} to take place externally,
+     * Sets the location of the selected {@link ScheduledEvent} to take place externally,
      * or not in a specific {@link GuildChannel}. <u>Please note that an event is required to have an end time set if
      * the location is external.</u>
-     * <p>This will change the event's type to {@link GuildScheduledEvent.Type#EXTERNAL}
+     * <p>This will change the event's type to {@link ScheduledEvent.Type#EXTERNAL}
      *
      * @param  location
-     *         The location that the selected {@link GuildScheduledEvent} is set to take place at.
+     *         The location that the selected {@link ScheduledEvent} is set to take place at.
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided location is blank, empty, {@code null}, or longer than
-     *         {@value GuildScheduledEvent#MAX_LOCATION_LENGTH}
+     *         {@value ScheduledEvent#MAX_LOCATION_LENGTH}
      * @throws java.lang.IllegalStateException
-     *         If the selected {@link GuildScheduledEvent} does not have an end time
+     *         If the selected {@link ScheduledEvent} does not have an end time
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      *
      * @see    #setEndTime(TemporalAccessor)
      * @see    #setLocation(GuildChannel)
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setLocation(@Nonnull String location);
+    ScheduledEventManager setLocation(@Nonnull String location);
 
     /**
-     * Sets the time that the selected {@link GuildScheduledEvent} should start at.
-     * Events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL} will automatically
-     * start at this time. Events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
-     * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} need to be manually started.
-     * If the {@link GuildScheduledEvent} has not begun after its scheduled start time, it will be automatically cancelled after a few hours.
+     * Sets the time that the selected {@link ScheduledEvent} should start at.
+     * Events of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL} will automatically
+     * start at this time. Events of {@link ScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     * and {@link ScheduledEvent.Type#VOICE Type.VOICE} need to be manually started.
+     * If the {@link ScheduledEvent} has not begun after its scheduled start time, it will be automatically cancelled after a few hours.
      *
      * @param  startTime
-     *         The time that the selected {@link GuildScheduledEvent} is set to start at.
+     *         The time that the selected {@link ScheduledEvent} is set to start at.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -242,23 +242,23 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *             <li>If the provided start time is before the end time</li>
      *             <li>If the provided start time is before the current time</li>
      *         </ul>
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      *
      * @see    #setEndTime(TemporalAccessor)
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setStartTime(@Nonnull TemporalAccessor startTime);
+    ScheduledEventManager setStartTime(@Nonnull TemporalAccessor startTime);
 
     /**
-     * Sets the time that the selected {@link GuildScheduledEvent} should end at.
-     * Events of {@link GuildScheduledEvent.Type#EXTERNAL Type.EXTERNAL} will automatically
-     * end at this time, and events of {@link GuildScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
-     * and {@link GuildScheduledEvent.Type#VOICE Type.VOICE} will end a few minutes after the last
+     * Sets the time that the selected {@link ScheduledEvent} should end at.
+     * Events of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL} will automatically
+     * end at this time, and events of {@link ScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     * and {@link ScheduledEvent.Type#VOICE Type.VOICE} will end a few minutes after the last
      * person has left the channel.
      *
      * @param  endTime
-     *         The time that the selected {@link GuildScheduledEvent} is set to end at.
+     *         The time that the selected {@link ScheduledEvent} is set to end at.
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
@@ -266,21 +266,21 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      *             <li>If the provided end time is {@code null}</li>
      *         </ul>
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      *
      * @see    #setStartTime(TemporalAccessor)
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setEndTime(@Nonnull TemporalAccessor endTime);
+    ScheduledEventManager setEndTime(@Nonnull TemporalAccessor endTime);
 
     /**
      * Sets the status of the event. This method may be used to start, end or cancel an event but can only be used to
      * complete one of the following transitions:
      * <ol>
-     *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link GuildScheduledEvent.Status#ACTIVE Status.ACTIVE}</li>
-     *     <li>{@link GuildScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link GuildScheduledEvent.Status#CANCELED Status.CANCELED}</li>
-     *     <li>{@link GuildScheduledEvent.Status#ACTIVE Status.ACTIVE} to {@link GuildScheduledEvent.Status#COMPLETED Status.COMPLETED}</li>
+     *     <li>{@link ScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link ScheduledEvent.Status#ACTIVE Status.ACTIVE}</li>
+     *     <li>{@link ScheduledEvent.Status#SCHEDULED Status.SCHEDULED} to {@link ScheduledEvent.Status#CANCELED Status.CANCELED}</li>
+     *     <li>{@link ScheduledEvent.Status#ACTIVE Status.ACTIVE} to {@link ScheduledEvent.Status#COMPLETED Status.COMPLETED}</li>
      * </ol>
      *
      * @param  status
@@ -291,12 +291,12 @@ public interface GuildScheduledEventManager extends Manager<GuildScheduledEventM
      * @throws IllegalArgumentException
      *         If the provided status is {@code null}
      *
-     * @return GuildScheduledEventManager for chaining convenience
+     * @return ScheduledEventManager for chaining convenience
      *
-     * @see    #getGuildScheduledEvent()
-     * @see    GuildScheduledEvent#getStatus()
+     * @see    #getScheduledEvent()
+     * @see    ScheduledEvent#getStatus()
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventManager setStatus(@Nonnull GuildScheduledEvent.Status status);
+    ScheduledEventManager setStatus(@Nonnull ScheduledEvent.Status status);
 }

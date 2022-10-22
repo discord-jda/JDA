@@ -25,14 +25,14 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.GuildScheduledEventImpl;
+import net.dv8tion.jda.internal.entities.ScheduledEventImpl;
 
 import java.time.OffsetDateTime;
 import java.util.*;
 
-public class GuildScheduledEventUpdateHandler extends SocketHandler
+public class ScheduledEventUpdateHandler extends SocketHandler
 {
-    public GuildScheduledEventUpdateHandler(JDAImpl api)
+    public ScheduledEventUpdateHandler(JDAImpl api)
     {
         super(api);
     }
@@ -40,7 +40,7 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        if (!getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
             return null;
         long guildId = content.getUnsignedLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
@@ -54,10 +54,10 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
             return null;
         }
 
-        GuildScheduledEventImpl event = (GuildScheduledEventImpl) guild.getScheduledEventById(content.getUnsignedLong("id"));
+        ScheduledEventImpl event = (ScheduledEventImpl) guild.getScheduledEventById(content.getUnsignedLong("id"));
         if (event == null)
         {
-            api.getEntityBuilder().createGuildScheduledEvent(guild, content);
+            api.getEntityBuilder().createScheduledEvent(guild, content);
             return null;
         }
 
@@ -65,13 +65,13 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
         final String description = content.getString("description", null);
         final OffsetDateTime startTime = content.getOffsetDateTime("scheduled_start_time");
         final OffsetDateTime endTime = content.getOffsetDateTime("scheduled_end_time", null);
-        final GuildScheduledEvent.Status status = GuildScheduledEvent.Status.fromKey(content.getInt("status", -1));
+        final ScheduledEvent.Status status = ScheduledEvent.Status.fromKey(content.getInt("status", -1));
         final String imageUrl = content.getString("image", null);
         String location = content.getString("channel_id", null);
         GuildChannel channel = null;
         String oldLocation = event.getLocation();
         if (location == null)
-            location = content.getObject("entity_metadata").getString("location");
+            location = content.getObject("entity_metadata").getString("location", null);
         else
             channel = guild.getGuildChannelById(location);
 
@@ -80,56 +80,56 @@ public class GuildScheduledEventUpdateHandler extends SocketHandler
             String oldName = event.getName();
             event.setName(name);
             getJDA().handleEvent(
-                new GuildScheduledEventUpdateNameEvent(getJDA(), responseNumber,
+                new ScheduledEventUpdateNameEvent(getJDA(), responseNumber,
                     event, oldName));
         }
         if (!Objects.equals(description, event.getDescription()))
         {
             String oldDescription = event.getDescription();
             event.setDescription(description);
-            getJDA().handleEvent(new GuildScheduledEventUpdateDescriptionEvent(getJDA(), responseNumber, event, oldDescription));
+            getJDA().handleEvent(new ScheduledEventUpdateDescriptionEvent(getJDA(), responseNumber, event, oldDescription));
         }
         if (!Objects.equals(startTime, event.getStartTime()))
         {
             OffsetDateTime oldStartTime = event.getStartTime();
             event.setStartTime(startTime);
-            getJDA().handleEvent(new GuildScheduledEventUpdateStartTimeEvent(getJDA(), responseNumber, event, oldStartTime));
+            getJDA().handleEvent(new ScheduledEventUpdateStartTimeEvent(getJDA(), responseNumber, event, oldStartTime));
         }
         if (!Objects.equals(endTime, event.getEndTime()))
         {
             OffsetDateTime oldEndTime = event.getEndTime();
             event.setEndTime(endTime);
-            getJDA().handleEvent(new GuildScheduledEventUpdateEndTimeEvent(getJDA(), responseNumber, event, oldEndTime));
+            getJDA().handleEvent(new ScheduledEventUpdateEndTimeEvent(getJDA(), responseNumber, event, oldEndTime));
         }
         if (!Objects.equals(status, event.getStatus()))
         {
-            GuildScheduledEvent.Status oldStatus = event.getStatus();
+            ScheduledEvent.Status oldStatus = event.getStatus();
             event.setStatus(status);
-            getJDA().handleEvent(new GuildScheduledEventUpdateStatusEvent(getJDA(), responseNumber, event, oldStatus));
+            getJDA().handleEvent(new ScheduledEventUpdateStatusEvent(getJDA(), responseNumber, event, oldStatus));
         }
-        if (channel == null && !location.equals(event.getLocation()))
+        if (channel == null && location != null && !location.equals(event.getLocation()))
         {
             event.setLocation(location);
-            event.setType(GuildScheduledEvent.Type.EXTERNAL);
-            getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
+            event.setType(ScheduledEvent.Type.EXTERNAL);
+            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (channel instanceof StageChannel && !location.equals(event.getLocation()))
         {
             event.setLocation(channel.getId());
-            event.setType(GuildScheduledEvent.Type.STAGE_INSTANCE);
-            getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
+            event.setType(ScheduledEvent.Type.STAGE_INSTANCE);
+            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (channel instanceof VoiceChannel && !location.equals(event.getLocation()))
         {
             event.setLocation(channel.getId());
-            event.setType(GuildScheduledEvent.Type.VOICE);
-            getJDA().handleEvent(new GuildScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
+            event.setType(ScheduledEvent.Type.VOICE);
+            getJDA().handleEvent(new ScheduledEventUpdateLocationEvent(getJDA(), responseNumber, event, oldLocation));
         }
         if (!Objects.equals(imageUrl, event.getImageUrl()))
         {
             String oldImageUrl = event.getImageUrl();
             event.setImage(imageUrl);
-            getJDA().handleEvent(new GuildScheduledEventUpdateImageEvent(getJDA(), responseNumber, event, oldImageUrl));
+            getJDA().handleEvent(new ScheduledEventUpdateImageEvent(getJDA(), responseNumber, event, oldImageUrl));
         }
         return null;
     }

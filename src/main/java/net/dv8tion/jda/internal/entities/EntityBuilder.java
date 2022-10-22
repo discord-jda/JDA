@@ -197,11 +197,11 @@ public class EntityBuilder
         }
     }
 
-    private void createGuildScheduledEventPass(GuildImpl guildObj, DataArray array)
+    private void createScheduledEventPass(GuildImpl guildObj, DataArray array)
     {
-        if (!getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
             return;
-        SnowflakeCacheViewImpl<GuildScheduledEvent> eventView = guildObj.getScheduledEventsView();
+        SnowflakeCacheViewImpl<ScheduledEvent> eventView = guildObj.getScheduledEventsView();
         for (int i = 0; i < array.length(); i++)
         {
             DataObject object = array.getObject(i);
@@ -210,7 +210,7 @@ public class EntityBuilder
                 LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
                 continue;
             }
-            createGuildScheduledEvent(guildObj, object);
+            createScheduledEvent(guildObj, object);
         }
     }
 
@@ -380,7 +380,7 @@ public class EntityBuilder
             }
         }
 
-        createGuildScheduledEventPass(guildObj, scheduledEventsArray);
+        createScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmojiPass(guildObj, emojisArray);
         createGuildStickerPass(guildObj, stickersArray);
         guildJson.optArray("stage_instances")
@@ -980,53 +980,53 @@ public class EntityBuilder
                 .setAvailable(json.getBoolean("available", true));
     }
 
-    public GuildScheduledEvent createGuildScheduledEvent(GuildImpl guild, DataObject json)
+    public ScheduledEvent createScheduledEvent(GuildImpl guild, DataObject json)
     {
         final long id = json.getLong("id");
-        GuildScheduledEventImpl guildScheduledEvent = (GuildScheduledEventImpl) guild.getScheduledEventsView().get(id);
-        if (guildScheduledEvent == null)
+        ScheduledEventImpl scheduledEvent = (ScheduledEventImpl) guild.getScheduledEventsView().get(id);
+        if (scheduledEvent == null)
         {
-            SnowflakeCacheViewImpl<GuildScheduledEvent> guildScheduledEventView = guild.getScheduledEventsView();
-            try (UnlockHook hook = guildScheduledEventView.writeLock())
+            SnowflakeCacheViewImpl<ScheduledEvent> scheduledEventView = guild.getScheduledEventsView();
+            try (UnlockHook hook = scheduledEventView.writeLock())
             {
-                guildScheduledEvent = new GuildScheduledEventImpl(id, guild);
-                if (getJDA().isCacheFlagSet(CacheFlag.GUILD_SCHEDULED_EVENTS))
+                scheduledEvent = new ScheduledEventImpl(id, guild);
+                if (getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
                 {
-                    guildScheduledEventView.getMap().put(id, guildScheduledEvent);
+                    scheduledEventView.getMap().put(id, scheduledEvent);
                 }
             }
         }
 
-        guildScheduledEvent.setName(json.getString("name"))
+        scheduledEvent.setName(json.getString("name"))
                 .setDescription(json.getString("description", null))
-                .setStatus(GuildScheduledEvent.Status.fromKey(json.getInt("status", -1)))
+                .setStatus(ScheduledEvent.Status.fromKey(json.getInt("status", -1)))
                 .setInterestedUserCount(json.getInt("user_count", -1))
                 .setStartTime(json.getOffsetDateTime("scheduled_start_time"))
                 .setEndTime(json.getOffsetDateTime("scheduled_end_time", null))
                 .setImage(json.getString("image", null));
 
         final long creatorId = json.getLong("creator_id", 0);
-        guildScheduledEvent.setCreatorId(creatorId);
+        scheduledEvent.setCreatorId(creatorId);
         if (creatorId != 0)
         {
             if (json.hasKey("creator"))
-                guildScheduledEvent.setCreator(createUser(json.getObject("creator")));
+                scheduledEvent.setCreator(createUser(json.getObject("creator")));
             else
-                guildScheduledEvent.setCreator(getJDA().getUserById(creatorId));
+                scheduledEvent.setCreator(getJDA().getUserById(creatorId));
         }
-        final GuildScheduledEvent.Type type = GuildScheduledEvent.Type.fromKey(json.getInt("entity_type"));
-        guildScheduledEvent.setType(type);
+        final ScheduledEvent.Type type = ScheduledEvent.Type.fromKey(json.getInt("entity_type"));
+        scheduledEvent.setType(type);
         switch (type)
         {
         case STAGE_INSTANCE:
         case VOICE:
-            guildScheduledEvent.setLocation(json.getString("channel_id"));
+            scheduledEvent.setLocation(json.getString("channel_id"));
             break;
         case EXTERNAL:
             String externalLocation = json.getObject("entity_metadata").getString("location");
-            guildScheduledEvent.setLocation(externalLocation);
+            scheduledEvent.setLocation(externalLocation);
         }
-        return guildScheduledEvent;
+        return scheduledEvent;
     }
 
 

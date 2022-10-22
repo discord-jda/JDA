@@ -16,43 +16,39 @@
 package net.dv8tion.jda.api.events.guild.scheduledevent;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
-import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.User User} is no longer interested or has unsubscribed from a {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+ * Indicates that a {@link User User} has subscribed or unsubscribed to a {@link ScheduledEvent ScheduledEvent}.
  *
  * <p><b>Requirements</b><br>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
- * Can be used to detect when someone has indicated that they are no longer interested in an event and also retrieve their
- * {@link net.dv8tion.jda.api.entities.User User} object as well as the {@link GuildScheduledEvent}.
+ * Can be used to detect when someone has indicated that they have subscribed or unsubscribed to an event and also retrieve their
+ * {@link User User} object as well as the {@link ScheduledEvent}.
  */
-public class GuildScheduledEventUserRemoveEvent extends GenericGuildScheduledEventGatewayEvent
+public abstract class GenericScheduledEventUserEvent extends GenericScheduledEventGatewayEvent
 {
     private final long userId;
 
-    public GuildScheduledEventUserRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, long userId)
+    public GenericScheduledEventUserEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, long userId)
     {
-        super(api, responseNumber, guildScheduledEvent);
+        super(api, responseNumber, scheduledEvent);
         this.userId = userId;
     }
-
     /**
-     * The id of the user that indicated that they are no longer interested in the event.
+     * The id of the user that subscribed or unsubscribed to the {@link ScheduledEvent ScheduledEvent}.
      *
      * @return The long user id
      */
@@ -62,7 +58,7 @@ public class GuildScheduledEventUserRemoveEvent extends GenericGuildScheduledEve
     }
 
     /**
-     * The id of the user that indicated that they are no longer interested in the event.
+     * The id of the user that subscribed or unsubscribed to the {@link ScheduledEvent ScheduledEvent}.
      *
      * @return The string user id
      */
@@ -73,11 +69,11 @@ public class GuildScheduledEventUserRemoveEvent extends GenericGuildScheduledEve
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.User User} who was removed from the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     * The {@link User User} who subscribed or unsubscribed to the {@link ScheduledEvent ScheduledEvent}.
      * <br>This might be missing if the user was not cached.
      * Use {@link #retrieveUser()} to load the user.
      *
-     * @return The removed user or null if this information is missing
+     * @return The added user or null if this information is missing
      */
     @Nullable
     public User getUser()
@@ -86,12 +82,12 @@ public class GuildScheduledEventUserRemoveEvent extends GenericGuildScheduledEve
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the removed user
+     * The {@link Member Member} instance for the user
      * or {@code null} if the user is not in this guild.
      * <br>This will also be {@code null} if the member is not available in the cache.
      * Use {@link #retrieveMember()} to load the member.
      *
-     * @return Member of the removed user or null if they are no longer member of this guild
+     * @return Member of the added user or null if they are no longer member of this guild
      */
     @Nullable
     public Member getMember()
@@ -100,7 +96,7 @@ public class GuildScheduledEventUserRemoveEvent extends GenericGuildScheduledEve
     }
 
     /**
-     * Retrieves the {@link User} who was removed from the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     * Retrieves the {@link User} that subscribed or unsubscribed to the {@link ScheduledEvent ScheduledEvent}.
      * <br>If a user is known, this will return {@link #getUser()}.
      *
      * @return {@link RestAction} - Type: {@link User}
@@ -113,7 +109,7 @@ public class GuildScheduledEventUserRemoveEvent extends GenericGuildScheduledEve
     }
 
     /**
-     * Retrieves the {@link Member} who was removed from the {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent}.
+     * Retrieves the {@link Member} that subscribed or unsubscribed to the {@link ScheduledEvent ScheduledEvent}.
      * <br>If a member is known, this will return {@link #getMember()}.
      *
      * @return {@link RestAction} - Type: {@link Member}

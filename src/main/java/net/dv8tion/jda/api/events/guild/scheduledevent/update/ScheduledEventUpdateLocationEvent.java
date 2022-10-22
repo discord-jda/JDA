@@ -16,54 +16,54 @@
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.GuildScheduledEvent;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that the {@link GuildScheduledEvent#getName() name} of a {@link GuildScheduledEvent} has changed.
+ * Indicates that the location of a {@link ScheduledEvent} has changed.
  *
- * <p>Can be used to detect when the {@link GuildScheduledEvent} name has changed.
+ * <p>Can be used to detect when the {@link ScheduledEvent} location has changed.
  *
- * <p>Identifier: {@code name}
+ * <p>Identifier: {@code location}
  *
  * <p><b>Requirements</b><br>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_SCHEDULED_EVENTS GUILD_SCHEDULED_EVENTS} intent to be enabled.
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
  * Discord does not specifically tell us about the updates, but merely tells us the
- * {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} was updated and gives us the updated {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} object.
- * In order to fire a specific event like this we need to have the old {@link net.dv8tion.jda.api.entities.GuildScheduledEvent GuildScheduledEvent} cached to compare against.
+ * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
+ * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */
-public class GuildScheduledEventUpdateNameEvent extends GenericGuildScheduledEventUpdateEvent<String>
+public class ScheduledEventUpdateLocationEvent extends GenericScheduledEventUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "name";
+    public static final String IDENTIFIER = "location";
 
-    public GuildScheduledEventUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildScheduledEvent guildScheduledEvent, @Nonnull String previous)
+    public ScheduledEventUpdateLocationEvent(@Nonnull JDA api, long responseNumber, @Nonnull ScheduledEvent scheduledEvent, @Nonnull String previous)
     {
-        super(api, responseNumber, guildScheduledEvent, previous, guildScheduledEvent.getName(), IDENTIFIER);
+        super(api, responseNumber, scheduledEvent, previous, scheduledEvent.getLocation(), IDENTIFIER);
     }
 
     /**
-     * The old {@link GuildScheduledEvent#getName() name}.
+     * The old {@link ScheduledEvent#getLocation() location}.
      *
-     * @return The old name
+     * @return The old location
      */
     @Nonnull
-    public String getOldName()
+    public String getOldLocation()
     {
         return getOldValue();
     }
 
     /**
-     * The new {@link GuildScheduledEvent#getName() name}.
+     * The new {@link ScheduledEvent#getLocation() location}.
      *
-     * @return The new name
+     * @return The new location
      */
     @Nonnull
-    public String getNewName()
+    public String getNewLocation()
     {
         return getNewValue();
     }

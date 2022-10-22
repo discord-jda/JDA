@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
-import net.dv8tion.jda.api.managers.GuildScheduledEventManager;
+import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.GuildScheduledEventMembersPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
@@ -30,12 +30,12 @@ import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
- * A class representing a {@link GuildScheduledEvent} (The events that show up under the events tab in the Official Discord Client).
+ * A class representing a {@link ScheduledEvent} (The events that show up under the events tab in the Official Discord Client).
  * These events should not be confused with {@link net.dv8tion.jda.api.events Gateway Events},
  * which are fired by Discord whenever something interesting happens
  * (ie., a {@link net.dv8tion.jda.api.events.message.MessageDeleteEvent MessageDeleteEvent} gets fired whenever a message gets deleted).
  */
-public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildScheduledEvent>
+public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent>
 {
     /**
      * The maximum allowed length for an event's name.
@@ -202,11 +202,11 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     String getLocation();
 
     /**
-     * Deletes this Guild Scheduled Event.
+     * Deletes this Scheduled Event.
      *
      * <p>Possible ErrorResponses include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT UNKNOWN_SCHEDULED_EVENT}
      *     <br>If the the event was already deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
@@ -234,23 +234,23 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      *
      * <p>Possible ErrorResponses include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT}
      *     <br>If the the event was already deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>If we were removed from the Guild or can't view the events channel (Location)</li>
      * </ul>
      *
-     * @return {@link GuildScheduledEventMembersPaginationAction}
+     * @return {@link ScheduledEventMembersPaginationAction}
      */
     @Nonnull
     @CheckReturnValue
-    GuildScheduledEventMembersPaginationAction retrieveInterestedMembers();
+    ScheduledEventMembersPaginationAction retrieveInterestedMembers();
 
     /**
      * The amount of users who are interested in attending the event.
      * <p>This method only returns the cached count, and may not be consistent with the live count. Discord may additionally not
-     * provide an interested user count for some {@link GuildScheduledEvent} objects returned from the Guild's or JDA's
+     * provide an interested user count for some {@link ScheduledEvent} objects returned from the Guild's or JDA's
      * cache, and this method may return -1 as a result. However, event's retrieved using {@link Guild#retrieveScheduledEventById(long)}
      * will always contain an interested user count.
      *
@@ -281,30 +281,30 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
     }
 
     /**
-     * The {@link GuildScheduledEventManager} for this event.
-     * <br>In the GuildScheduledEventManager, you can modify all values and also start, end, or cancel events.
+     * The {@link ScheduledEventManager} for this event.
+     * <br>In the ScheduledEventManager, you can modify all values and also start, end, or cancel events.
      * <br>You can modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EVENTS Permission.MANAGE_EVENTS}
      *
-     * @return The GuildScheduledEventManager of this event
+     * @return The ScheduledEventManager of this event
      */
     @Nonnull
-    GuildScheduledEventManager getManager();
+    ScheduledEventManager getManager();
 
     /**
-     * Compares two {@link GuildScheduledEvent} objects based on their scheduled start times.
+     * Compares two {@link ScheduledEvent} objects based on their scheduled start times.
      * <br>If two events are set to start at the same time, the comparison will be made based on their snowflake ID.
      *
-     * @param  guildScheduledEvent
+     * @param  scheduledEvent
      *         The provided scheduled event
      *
      * @throws IllegalArgumentException
      *         If the provided scheduled event is {@code null}, from a different {@link Guild}, or is not a valid
      *         scheduled event provided by JDA.
      *
-     * @return A negative number if the original event (which is the event that the {@link #compareTo(GuildScheduledEvent) compareTo}
+     * @return A negative number if the original event (which is the event that the {@link #compareTo(ScheduledEvent) compareTo}
      *         method is called upon) starts sooner than the provided event, or positive if it will start later than
      *         the provided event. If both events are set to start at the same time, then the result will be negative if the original
      *         event's snowflake ID is less than the provided event's ID, positive if it is greater than, or 0 if they
@@ -315,12 +315,12 @@ public interface GuildScheduledEvent extends ISnowflake, Comparable<GuildSchedul
      * @see    #getIdLong()
      */
     @Override
-    int compareTo(@Nonnull GuildScheduledEvent guildScheduledEvent);
+    int compareTo(@Nonnull ScheduledEvent scheduledEvent);
 
     /**
      * Represents the status of a scheduled event.
      *
-     * @see    GuildScheduledEvent#getStatus
+     * @see    ScheduledEvent#getStatus
      */
     enum Status
     {
