@@ -39,7 +39,8 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
     List<String> getValues();
 
     /**
-     * If available, this will resolve the selected {@link #getValues() values} to the representative {@link SelectOption SelectOption} instances.
+     * This resolves the selected {@link #getValues() values} to the representative {@link SelectOption SelectOption} instances.
+     * <br>It is recommended to check {@link #getValues()} directly instead of using the options.
      *
      * @return {@link List} of the selected options
      */
