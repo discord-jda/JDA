@@ -31,6 +31,11 @@ import java.util.List;
  * <p><b>Requirements</b><br>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
+ *
+ * @param <T>
+ *        The select menu value type
+ * @param <S>
+ *        The type of select menu
  */
 public class GenericSelectMenuInteractionEvent<T, S extends SelectMenu> extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction<T, S>
 {

@@ -34,7 +34,7 @@ import java.util.List;
  * Component Interaction for a {@link SelectMenu}.
  *
  * @param <T>
- *        The select menu type value
+ *        The select menu value type
  * @param <S>
  *        The type of select menu
  *
