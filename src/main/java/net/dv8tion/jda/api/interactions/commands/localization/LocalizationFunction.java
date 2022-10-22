@@ -28,6 +28,7 @@ import java.util.Map;
  * <p>
  * <b>Implementation note:</b>
  * The localization key is composed of the command/option/choice tree being walked, where each command/option/choice's name is separated by a dot
+ * <br>Additionally, there is an "options" key between the command path and the name of the option, as well as a "choices" key between the options and the choices
  * <br>Note: the final key is lowercase and spaces replaced by underscores
  * <br>
  * <br>A few examples of localization keys:
@@ -36,8 +37,8 @@ import java.util.Map;
  *    <li>The name of a message context named "Get content raw": {@code get_content_raw.name}</li>
  *    <li>The description of a command named "ban": {@code ban.description}</li>
  *    <li>The name of a subcommand "perm" in a command named "ban": {@code ban.perm.name}</li>
- *    <li>The description of an option "duration" in a subcommand "perm" in a command named "ban": {@code ban.perm.duration.description}</li>
- *    <li>The name of a choice in an option "duration" in a subcommand "perm" in a command named "ban": {@code ban.perm.duration.choice.name}</li>
+ *    <li>The description of an option "duration" in a subcommand "perm" in a command named "ban": {@code ban.perm.options.duration.description}</li>
+ *    <li>The name of a choice (here, "1 day") in an option "duration" in a subcommand "perm" in a command named "ban": {@code ban.perm.options.duration.choices.1_day.name}</li>
  * </ul>
  *
  * <br>Extremely naive implementation of LocalizationFunction
