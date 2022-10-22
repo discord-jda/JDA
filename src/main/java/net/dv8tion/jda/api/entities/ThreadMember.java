@@ -45,6 +45,7 @@ public interface ThreadMember extends IMentionable
     OffsetDateTime getTimeJoined();
 
     //TODO | Set<ThreadMemberFlags> getFlags();
+    // seems to be undocumented
 
     long getFlagsRaw();
 
