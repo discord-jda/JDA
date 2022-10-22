@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.text;
 
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -26,7 +27,7 @@ import javax.annotation.Nullable;
 /**
  * Represents a Discord Text input component
  *
- * Must be used in {@link net.dv8tion.jda.api.interactions.components.Modal Modals}!
+ * Must be used in {@link Modal Modals}!
  */
 public interface TextInput extends ActionComponent
 {
