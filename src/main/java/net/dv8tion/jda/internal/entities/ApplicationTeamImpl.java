@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.TeamMember;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -82,6 +83,6 @@ public class ApplicationTeamImpl implements ApplicationTeam
     @Override
     public String toString()
     {
-        return "ApplicationTeam(" + getId() + ')';
+        return new EntityString(this).toString();
     }
 }

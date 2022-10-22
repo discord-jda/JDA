@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
@@ -425,7 +426,10 @@ public class Route
     @Override
     public String toString()
     {
-        return method + "/" + route;
+        return new EntityString(this)
+                .setType(method)
+                .addMetadata("route", route)
+                .toString();
     }
 
     public class CompiledRoute
@@ -503,7 +507,10 @@ public class Route
         @Override
         public String toString()
         {
-            return "CompiledRoute(" + method + ": " + compiledRoute + ")";
+            return new EntityString(this)
+                    .setType(method)
+                    .addMetadata("compiledRoute", compiledRoute)
+                    .toString();
         }
     }
 }

@@ -449,14 +449,6 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return flags;
     }
 
-    // -- Object overrides --
-
-    @Override
-    public String toString()
-    {
-        return "ThC:" + getName() + '(' + id + ')';
-    }
-
     private void checkUnarchived()
     {
         if (archived)

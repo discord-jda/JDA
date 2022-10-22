@@ -44,6 +44,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
 
@@ -190,7 +191,10 @@ public interface JDA extends IGuildChannelContainer
         @Override
         public String toString()
         {
-            return "Shard " + getShardString();
+            return new EntityString(this)
+                    .addMetadata("currentShard", getShardString())
+                    .addMetadata("totalShards", getShardTotal())
+                    .toString();
         }
 
         @Override

@@ -73,6 +73,7 @@ import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -2220,6 +2221,8 @@ public class GuildImpl implements Guild
     @Override
     public String toString()
     {
-        return "G:" + getName() + '(' + id + ')';
+        return new EntityString(this)
+                .setName(getName())
+                .toString();
     }
 }

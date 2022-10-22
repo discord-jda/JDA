@@ -64,6 +64,7 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
@@ -5165,7 +5166,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         @Override
         public String toString()
         {
-            return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
+            return new EntityString(this)
+                    .addMetadata("user", user)
+                    .addMetadata("reason", reason)
+                    .toString();
         }
     }
 

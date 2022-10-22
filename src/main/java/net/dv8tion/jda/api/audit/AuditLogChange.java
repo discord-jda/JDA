@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.audit;
 
+import net.dv8tion.jda.internal.utils.EntityString;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -109,6 +111,9 @@ public class AuditLogChange
     @Override
     public String toString()
     {
-        return String.format("ALC:%s(%s -> %s)", key, oldValue, newValue);
+        return new EntityString(this)
+                .setName(key)
+                .addMetadata(null, oldValue + " -> " + newValue)
+                .toString();
     }
 }

@@ -115,11 +115,4 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
     {
         getGuild().getNewsChannelView().clearCachedLists();
     }
-
-    // -- Object Overrides --
-    @Override
-    public String toString()
-    {
-        return "NC:" + getName() + '(' + id + ')';
-    }
 }

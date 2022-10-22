@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -139,7 +140,10 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     @Override
     public String toString()
     {
-        return "GuildSticker:" + name + '(' + getId() + ", guild=" + getGuildId() + ')';
+        return new EntityString(this)
+                .setName(name)
+                .addMetadata("guild", getGuildId())
+                .toString();
     }
 
     @Override

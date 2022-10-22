@@ -37,6 +37,7 @@ import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -253,7 +254,9 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion
     @Override
     public String toString()
     {
-        return "E:" + getName() + '(' + getIdLong() + ')';
+        return new EntityString(this)
+                .setName(name)
+                .toString();
     }
 
     public RichCustomEmojiImpl copy()
