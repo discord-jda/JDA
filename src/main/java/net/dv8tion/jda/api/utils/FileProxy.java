@@ -200,7 +200,8 @@ public class FileProxy
         //Check if the parent path, the folder, exists
         final Path parent = absolute.getParent();
         Checks.check(parent != null && Files.exists(parent), "Parent folder of the file '%s' does not exist.", absolute);
-        if (Files.exists(absolute)) {
+        if (Files.exists(absolute))
+        {
             Checks.check(Files.isRegularFile(absolute), "Path '%s' is not a regular file.", absolute);
             Checks.check(Files.isWritable(absolute), "File at '%s' is not writable.", absolute);
         }
