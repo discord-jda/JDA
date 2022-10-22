@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.callbacks;
 
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 
 import javax.annotation.CheckReturnValue;
@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
 public interface IModalCallback extends Interaction
 {
     /**
-     * Acknowledgement of this interaction with a {@link net.dv8tion.jda.api.interactions.components.Modal Modal}.
+     * Acknowledgement of this interaction with a {@link Modal Modal}.
      *
      * <p>This will open a popup on the target user's Discord client.
      *
