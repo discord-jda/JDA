@@ -161,7 +161,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
             return Collections.emptyList();
         return parent.asForumChannel()
                 .getAvailableTagCache()
-                .streamUnordered()
+                .stream()
                 .filter(tag -> this.appliedTags.contains(tag.getIdLong()))
                 .collect(Helpers.toUnmodifiableList());
     }

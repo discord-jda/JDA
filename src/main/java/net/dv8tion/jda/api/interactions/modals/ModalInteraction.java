@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions;
+package net.dv8tion.jda.api.interactions.modals;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.components.Modal;
-import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;

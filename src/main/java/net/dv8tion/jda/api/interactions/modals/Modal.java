@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.components;
+package net.dv8tion.jda.api.interactions.modals;
 
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.ModalInteraction;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.interactions.component.ModalImpl;
+import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;

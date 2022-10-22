@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.thread;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.Nonnull;
@@ -24,7 +25,8 @@ import javax.annotation.Nonnull;
 /**
  * This event is dispatched when a {@link ThreadChannel} that JDA didn't previously have access to (due to permissions) is now visible.
  *
- * For example, if the bot is given the {@link net.dv8tion.jda.api.Permission#ADMINISTRATOR} permission, any thread channels that the bot could not previously see would be "revealed".
+ * <p>For example, if the bot is given the {@link Permission#ADMINISTRATOR} permission, any thread channels that the bot could not previously see would be "revealed".
+ * This event is also used when the bot is added to a {@link ThreadChannel#isPublic() private} thread channel, revealing it through membership.
  *
  * @see ThreadHiddenEvent
  */
