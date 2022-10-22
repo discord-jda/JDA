@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelectMenu
@@ -90,5 +91,35 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         if (type == Type.CHANNEL_SELECT && !channelTypes.isEmpty())
             json.put("channel_types", DataArray.fromCollection(channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
         return json;
+    }
+
+    @Override
+    public String toString()
+    {
+        // TODO-toString: Update this to use the new string builder
+        return "SelectMenu" + getEntityTypes() + ":" + id + "(" + placeholder + ")";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, placeholder, minValues, maxValues, disabled, type, channelTypes);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof EntitySelectMenu))
+            return false;
+        EntitySelectMenu other = (EntitySelectMenu) obj;
+        return Objects.equals(id, other.getId())
+                && Objects.equals(placeholder, other.getPlaceholder())
+                && minValues == other.getMinValues()
+                && maxValues == other.getMaxValues()
+                && disabled == other.isDisabled()
+                && type == other.getType()
+                && channelTypes.equals(other.getChannelTypes());
     }
 }
