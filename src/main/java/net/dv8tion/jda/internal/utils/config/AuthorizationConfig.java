@@ -27,7 +27,8 @@ public final class AuthorizationConfig
 
     public AuthorizationConfig(@Nonnull String token)
     {
-        Checks.notNull(token, "Token");
+        Checks.notEmpty(token, "Token");
+        Checks.noWhitespace(token, "Token");
         setToken(token);
     }
 
