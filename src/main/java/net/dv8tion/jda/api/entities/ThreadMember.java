@@ -44,11 +44,6 @@ public interface ThreadMember extends IMentionable
     @Nonnull
     OffsetDateTime getTimeJoined();
 
-    //TODO | Set<ThreadMemberFlags> getFlags();
-    // seems to be undocumented
-
-    long getFlagsRaw();
-
     default boolean isThreadOwner()
     {
         return getThread().getOwnerIdLong() == getIdLong();
