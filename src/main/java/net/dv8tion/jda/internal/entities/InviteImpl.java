@@ -33,6 +33,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -279,7 +280,9 @@ public class InviteImpl implements Invite
     @Override
     public String toString()
     {
-        return "Invite(" + this.code + ")";
+        return new EntityString(this)
+                .addMetadata("code", code)
+                .toString();
     }
 
     public static class ChannelImpl implements Channel
@@ -318,6 +321,15 @@ public class InviteImpl implements Invite
         public ChannelType getType()
         {
             return this.type;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setType(getType())
+                    .setName(name)
+                    .toString();
         }
     }
 
@@ -422,6 +434,14 @@ public class InviteImpl implements Invite
         {
             return welcomeScreen;
         }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
+        }
     }
 
     public static class GroupImpl implements Group
@@ -467,6 +487,14 @@ public class InviteImpl implements Invite
         public List<String> getUsers()
         {
             return users;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
         }
     }
 
@@ -515,6 +543,15 @@ public class InviteImpl implements Invite
         public EmbeddedApplication getApplication()
         {
             return targetApplication;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setType(getType())
+                    .addMetadata("target", getTargetEntity())
+                    .toString();
         }
 
         @Nonnull
@@ -589,6 +626,14 @@ public class InviteImpl implements Invite
         public int getMaxParticipants()
         {
             return maxParticipants;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
         }
     }
 }

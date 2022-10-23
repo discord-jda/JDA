@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -184,7 +184,10 @@ public interface RichPresence extends Activity
         @Override
         public String toString()
         {
-            return String.format("RichPresenceImage(%s | %s)", key, text);
+            return new EntityString(this)
+                    .addMetadata("key", getKey())
+                    .addMetadata("text", getText())
+                    .toString();
         }
 
         @Override
@@ -253,7 +256,11 @@ public interface RichPresence extends Activity
         @Override
         public String toString()
         {
-            return Helpers.format("RichPresenceParty(%s | [%d, %d])", id, size, max);
+            return new EntityString(this)
+                    .addMetadata("id", getId())
+                    .addMetadata("size", getSize())
+                    .addMetadata("max", getMax())
+                    .toString();
         }
 
         @Override

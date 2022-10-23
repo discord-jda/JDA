@@ -293,10 +293,7 @@ public class JDAImpl implements JDA
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
-        String token = authConfig.getToken();
         setStatus(Status.LOGGING_IN);
-        if (token == null || token.isEmpty())
-            throw new InvalidTokenException("Provided token was null or empty!");
 
         Map<String, String> previousContext = null;
         ConcurrentMap<String, String> contextMap = metaConfig.getMdcContextMap();
@@ -660,6 +657,13 @@ public class JDAImpl implements JDA
             }
             return Collections.unmodifiableList(packs);
         });
+    }
+
+    @Nonnull
+    @Override
+    public SnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
+    {
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getScheduledEventCache));
     }
 
     @Nonnull

@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.interactions.commands.privileges;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -135,7 +135,10 @@ public class IntegrationPrivilege implements ISnowflake
     @Override
     public String toString()
     {
-        return Helpers.format("IntegrationPrivilege[%s](%s, enabled=%s)", type, id, enabled);
+        return new EntityString(this)
+                .setType(getType())
+                .addMetadata("enabled", enabled)
+                .toString();
     }
 
     /**

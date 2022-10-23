@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -131,7 +132,10 @@ public class SelectMenuImpl implements SelectMenu
     @Override
     public String toString()
     {
-        return "SelectMenu:" + id + "(" + placeholder + ")";
+        return new EntityString(this)
+                .addMetadata("id", id)
+                .addMetadata("placeholder", placeholder)
+                .toString();
     }
 
     @Override

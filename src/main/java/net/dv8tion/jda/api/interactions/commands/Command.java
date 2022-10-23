@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.CheckReturnValue;
@@ -539,7 +540,10 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Choice(" + name + "," + stringValue + ")";
+            return new EntityString(this)
+                    .setName(name)
+                    .addMetadata("value", stringValue)
+                    .toString();
         }
 
         private void setIntValue(long value)
@@ -823,7 +827,10 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Option[" + getType() + "](" + name + ")";
+            return new EntityString(this)
+                    .setType(getType())
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
@@ -921,7 +928,9 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Subcommand(" + name + ")";
+            return new EntityString(this)
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
@@ -1019,7 +1028,9 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "SubcommandGroup(" + name + ")";
+            return new EntityString(this)
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 }

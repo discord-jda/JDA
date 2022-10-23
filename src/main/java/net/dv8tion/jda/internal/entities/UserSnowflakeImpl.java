@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 
@@ -61,6 +62,6 @@ public class UserSnowflakeImpl implements UserSnowflake
     @Override
     public String toString()
     {
-        return "U:(" + getId() + ')';
+        return new EntityString(this).toString();
     }
 }

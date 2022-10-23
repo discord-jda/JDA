@@ -83,10 +83,4 @@ public abstract class GenericGuildMemberUpdateEvent<T> extends GenericGuildMembe
     {
         return next;
     }
-
-    @Override
-    public String toString()
-    {
-        return "GenericGuildMemberUpdateEvent[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ")";
-    }
 }

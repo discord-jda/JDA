@@ -43,6 +43,11 @@ import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventDeleteEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventUserAddEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventUserRemoveEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.update.*;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
@@ -265,6 +270,19 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
     public void onGuildUpdateNSFWLevel(@Nonnull GuildUpdateNSFWLevelEvent event) {}
 
+    //Scheduled Event Events
+    public void onScheduledEventUpdateDescription(@Nonnull ScheduledEventUpdateDescriptionEvent event) {}
+    public void onScheduledEventUpdateEndTime(@Nonnull ScheduledEventUpdateEndTimeEvent event) {}
+    public void onScheduledEventUpdateLocation(@Nonnull ScheduledEventUpdateLocationEvent event) {}
+    public void onScheduledEventUpdateName(@Nonnull ScheduledEventUpdateNameEvent event) {}
+    public void onScheduledEventUpdateStartTime(@Nonnull ScheduledEventUpdateStartTimeEvent event) {}
+    public void onScheduledEventUpdateStatus(@Nonnull ScheduledEventUpdateStatusEvent event) {}
+
+    public void onScheduledEventCreate(@Nonnull ScheduledEventCreateEvent event) {}
+    public void onScheduledEventDelete(@Nonnull ScheduledEventDeleteEvent event) {}
+    public void onScheduledEventUserAdd(@Nonnull ScheduledEventUserAddEvent event) {}
+    public void onScheduledEventUserRemove(@Nonnull ScheduledEventUserRemoveEvent event) {}
+
     //Guild Invite Events
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
     public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {}
@@ -365,6 +383,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
+    public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent event) {}
     public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
     public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent event) {}
 

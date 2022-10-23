@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.BufferedRequestBody;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -376,6 +377,9 @@ public class FileUpload implements Closeable, AttachedFile
     @Override
     public String toString()
     {
-        return "AttachedFile[Data]:" + name;
+        return new EntityString("AttachedFile")
+                .setType("Data")
+                .setName(name)
+                .toString();
     }
 }

@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.internal.utils.EntityString;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -144,6 +146,8 @@ public enum Region
     @Override
     public String toString()
     {
-        return getName();
+        return new EntityString(this)
+                .setType(this)
+                .toString();
     }
 }
