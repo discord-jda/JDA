@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Widget;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.WidgetImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -219,7 +220,7 @@ public class WidgetUtil
                 {
                     try (InputStream stream = data)
                     {
-                        return new Widget(DataObject.fromJson(stream));
+                        return new WidgetImpl(DataObject.fromJson(stream));
                     }
                     catch (IOException e)
                     {
@@ -230,7 +231,7 @@ public class WidgetUtil
                 case 404: // guild not found
                     return null;
                 case 403: // widget disabled
-                    return new Widget(guildId);
+                    return new WidgetImpl(guildId);
                 case 429: // ratelimited
                 {
                     long retryAfter;

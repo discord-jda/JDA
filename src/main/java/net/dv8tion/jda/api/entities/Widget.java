@@ -1,124 +1,23 @@
-/*
- * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package net.dv8tion.jda.api.entities;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.utils.ImageProxy;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.utils.EntityString;
 
-public class Widget implements ISnowflake
-{
-    private final boolean isAvailable;
-    private final long id;
-    private final String name;
-    private final String invite;
-    private final TLongObjectMap<VoiceChannel> channels;
-    private final TLongObjectMap<Member> members;
-    
-    /**
-     * Constructs an unavailable Widget
-     */
-    public Widget(long guildId)
-    {
-        isAvailable = false;
-        id = guildId;
-        name = null;
-        invite = null;
-        channels = new TLongObjectHashMap<>();
-        members = new TLongObjectHashMap<>();
-    }
-    
-    /**
-     * Constructs an available Widget
-     *
-     * @param json
-     *        The {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to construct the Widget from
-     */
-    public Widget(@Nonnull DataObject json)
-    {
-        String inviteCode = json.getString("instant_invite", null);
-        if (inviteCode != null)
-            inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
-        
-        isAvailable = true;
-        id = json.getLong("id");
-        name = json.getString("name");
-        invite = inviteCode;
-        channels = MiscUtil.newLongMap();
-        members = MiscUtil.newLongMap();
-        
-        DataArray channelsJson = json.getArray("channels");
-        for (int i = 0; i < channelsJson.length(); i++)
-        {
-            DataObject channel = channelsJson.getObject(i);
-            channels.put(channel.getLong("id"), new VoiceChannel(channel, this));
-        }
-        
-        DataArray membersJson = json.getArray("members");
-        for (int i = 0; i<membersJson.length(); i++)
-        {
-            DataObject memberJson = membersJson.getObject(i);
-            Member member = new Member(memberJson, this);
-            if (!memberJson.isNull("channel_id")) // voice state
-            {
-                VoiceChannel channel = channels.get(memberJson.getLong("channel_id"));
-                member.setVoiceState(new VoiceState(channel, 
-                        memberJson.getBoolean("mute"), 
-                        memberJson.getBoolean("deaf"), 
-                        memberJson.getBoolean("suppress"), 
-                        memberJson.getBoolean("self_mute"), 
-                        memberJson.getBoolean("self_deaf"),
-                        member,
-                        this));
-                channel.addMember(member);
-            }
-            members.put(member.getIdLong(), member);
-        }
-    }
-    
+public interface Widget extends ISnowflake {
+
     /**
      * Shows whether or not the widget for a guild is available. If this
      * method returns false, all other values will be null
      * 
      * @return True, if the widget is available, false otherwise
      */
-    public boolean isAvailable()
-    {
-        return isAvailable;
-    }
+    boolean isAvailable();
 
-    @Override
-    public long getIdLong()
-    {
-        return id;
-    }
-    
     /**
      * Gets the name of the guild
      *
@@ -127,14 +26,10 @@ public class Widget implements ISnowflake
      *
      * @return the name of the guild
      */
-    @Nonnull
-    public String getName()
-    {
-        checkAvailable();
 
-        return name;
-    }
-    
+    @Nonnull
+    String getName();
+
     /**
      * Gets an invite code for the guild, or null if no invite channel is
      * enabled in the widget
@@ -145,13 +40,8 @@ public class Widget implements ISnowflake
      * @return an invite code for the guild, if widget invites are enabled
      */
     @Nullable
-    public String getInviteCode()
-    {
-        checkAvailable();
+    String getInviteCode();
 
-        return invite;
-    }
-    
     /**
      * Gets the list of voice channels in the guild
      *
@@ -161,13 +51,8 @@ public class Widget implements ISnowflake
      * @return the list of voice channels in the guild
      */
     @Nonnull
-    public List<VoiceChannel> getVoiceChannels()
-    {
-        checkAvailable();
+    List<VoiceChannel> getVoiceChannels();
 
-        return Collections.unmodifiableList(new ArrayList<>(channels.valueCollection()));
-    }
-    
     /**
      * Gets a voice channel with the given ID, or null if the voice channel is not found
      * 
@@ -182,12 +67,7 @@ public class Widget implements ISnowflake
      * @return possibly-null VoiceChannel with the given ID. 
      */
     @Nullable
-    public VoiceChannel getVoiceChannelById(String id)
-    {
-        checkAvailable();
-
-        return channels.get(MiscUtil.parseSnowflake(id));
-    }
+    VoiceChannel getVoiceChannelById(String id);
 
     /**
      * Gets a voice channel with the given ID, or {@code null} if the voice channel is not found
@@ -201,13 +81,8 @@ public class Widget implements ISnowflake
      * @return possibly-null VoiceChannel with the given ID.
      */
     @Nullable
-    public VoiceChannel getVoiceChannelById(long id)
-    {
-        checkAvailable();
+    VoiceChannel getVoiceChannelById(long id);
 
-        return channels.get(id);
-    }
-    
     /**
      * Gets a list of online members in the guild
      *
@@ -217,13 +92,8 @@ public class Widget implements ISnowflake
      * @return the list of members
      */
     @Nonnull
-    public List<Member> getMembers()
-    {
-        checkAvailable();
+    List<Member> getMembers();
 
-        return Collections.unmodifiableList(new ArrayList<>(members.valueCollection()));
-    }
-    
     /**
      * Gets a member with the given ID, or null if the member is not found
      * 
@@ -238,12 +108,7 @@ public class Widget implements ISnowflake
      * @return possibly-null Member with the given ID. 
      */
     @Nullable
-    public Member getMemberById(String id)
-    {
-        checkAvailable();
-
-        return members.get(MiscUtil.parseSnowflake(id));
-    }
+    Member getMemberById(String id);
 
     /**
      * Gets a member with the given ID, or {@code null} if the member is not found
@@ -257,117 +122,33 @@ public class Widget implements ISnowflake
      * @return possibly-null Member with the given ID.
      */
     @Nullable
-    public Member getMemberById(long id)
-    {
-        checkAvailable();
+    Member getMemberById(long id);
 
-        return members.get(id);
-    }
+    public static interface Member extends IMentionable {
 
-    @Override
-    public int hashCode() {
-        return Long.hashCode(id);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Widget))
-            return false;
-        Widget oWidget = (Widget) obj;
-        return this == oWidget || this.id == oWidget.getIdLong();
-    }
-    
-    @Override
-    public String toString()
-    {
-        final EntityString entityString = new EntityString("Widget");
-        if (isAvailable())
-            entityString.setName(getName());
-        return entityString.toString();
-    }
-
-    private void checkAvailable()
-    {
-        if (!isAvailable)
-            throw new IllegalStateException("The widget for this Guild is unavailable!");
-    }
-
-    public static class Member implements IMentionable
-    {
-        private final boolean bot;
-        private final long id;
-        private final String username;
-        private final String discriminator;
-        private final String avatar;
-        private final String nickname;
-        private final OnlineStatus status;
-        private final Activity game;
-        private final Widget widget;
-        private VoiceState state;
-        
-        private Member(@Nonnull DataObject json, @Nonnull Widget widget)
-        {
-            this.widget = widget;
-            this.bot = json.getBoolean("bot");
-            this.id = json.getLong("id");
-            this.username = json.getString("username");
-            this.discriminator = json.getString("discriminator");
-            this.avatar = json.getString("avatar", null);
-            this.nickname = json.getString("nick", null);
-            this.status = OnlineStatus.fromKey(json.getString("status"));
-            this.game = json.isNull("game") ? null : EntityBuilder.createActivity(json.getObject("game"));
-        }
-        
-        private void setVoiceState(VoiceState voiceState)
-        {
-            state = voiceState;
-        }
-        
         /**
          * Returns whether or not the given member is a bot account
          * 
          * @return true if the member is a bot, false otherwise
          */
-        public boolean isBot()
-        {
-            return bot;
-        }
-        
+        boolean isBot();
+
         /**
          * Returns the username of the member
          * 
          * @return the username of the member
          */
         @Nonnull
-        public String getName()
-        {
-            return username;
-        }
+        String getName();
 
-        @Override
-        public long getIdLong()
-        {
-            return id;
-        }
-
-        @Nonnull
-        @Override
-        public String getAsMention()
-        {
-            return "<@" + getId() + ">";
-        }
-        
         /**
          * Gets the discriminator of the member
          * 
          * @return the never-null discriminator of the member
          */
         @Nonnull
-        public String getDiscriminator()
-        {
-            return discriminator;
-        }
-        
+        String getDiscriminator();
+
         /**
          * Gets the avatar hash of the member, or null if they do not have
          * an avatar set.
@@ -376,11 +157,8 @@ public class Widget implements ISnowflake
          *         member
          */
         @Nullable
-        public String getAvatarId()
-        {
-            return avatar;
-        }
-        
+        String getAvatarId();
+
         /**
          * Gets the avatar url of the member, or null if they do not have
          * an avatar set.
@@ -389,11 +167,7 @@ public class Widget implements ISnowflake
          *         member
          */
         @Nullable
-        public String getAvatarUrl()
-        {
-            String avatarId = getAvatarId();
-            return avatarId == null ? null : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
-        }
+        String getAvatarUrl();
 
         /**
          * Returns an {@link ImageProxy} for this user's avatar image.
@@ -403,11 +177,7 @@ public class Widget implements ISnowflake
          * @see    #getAvatarUrl()
          */
         @Nullable
-        public ImageProxy getAvatar()
-        {
-            final String avatarUrl = getAvatarUrl();
-            return avatarUrl == null ? null : new ImageProxy(avatarUrl);
-        }
+        ImageProxy getAvatar();
 
         /**
          * Gets the asset id of the member's default avatar
@@ -416,10 +186,7 @@ public class Widget implements ISnowflake
          *         default avatar
          */
         @Nonnull
-        public String getDefaultAvatarId()
-        {
-            return String.valueOf(Integer.parseInt(getDiscriminator()) % 5);
-        }
+        String getDefaultAvatarId();
 
         /**
          * Gets the url of the member's default avatar
@@ -428,10 +195,7 @@ public class Widget implements ISnowflake
          *         default avatar
          */
         @Nonnull
-        public String getDefaultAvatarUrl()
-        {
-            return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
-        }
+        String getDefaultAvatarUrl();
 
         /**
          * Returns an {@link ImageProxy} for this user's default avatar image.
@@ -441,24 +205,17 @@ public class Widget implements ISnowflake
          * @see    #getDefaultAvatarUrl()
          */
         @Nonnull
-        public ImageProxy getDefaultAvatar()
-        {
-            return new ImageProxy(getDefaultAvatarUrl());
-        }
+        ImageProxy getDefaultAvatar();
 
         /**
-        * The URL for the user's avatar image
-        * <br>If they do not have an avatar set, this will return the URL of their
-        * default avatar
-        * 
-        * @return Never-null String containing the member's effective avatar url.
-        */
+         * The URL for the user's avatar image
+         * <br>If they do not have an avatar set, this will return the URL of their
+         * default avatar
+         * 
+         * @return Never-null String containing the member's effective avatar url.
+         */
         @Nonnull
-        public String getEffectiveAvatarUrl()
-        {
-            String avatarUrl = getAvatarUrl();
-            return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
-        }
+        String getEffectiveAvatarUrl();
 
         /**
          * Returns an {@link ImageProxy} for this user's effective avatar image.
@@ -468,11 +225,8 @@ public class Widget implements ISnowflake
          * @see    #getEffectiveAvatarUrl()
          */
         @Nonnull
-        public ImageProxy getEffectiveAvatar()
-        {
-            return new ImageProxy(getEffectiveAvatarUrl());
-        }
-        
+        ImageProxy getEffectiveAvatar();
+
         /**
          * Gets the nickname of the member. If they do not have a nickname on
          * the guild, this will return null;
@@ -480,11 +234,8 @@ public class Widget implements ISnowflake
          * @return possibly-null String containing the nickname of the member
          */
         @Nullable
-        public String getNickname()
-        {
-            return nickname;
-        }
-        
+        String getNickname();
+
         /**
          * Gets the visible name of the member. If they have a nickname set,
          * this will be their nickname. Otherwise, it will be their username.
@@ -492,11 +243,8 @@ public class Widget implements ISnowflake
          * @return never-null String containing the member's effective (visible) name
          */
         @Nonnull
-        public String getEffectiveName()
-        {
-            return nickname == null ? username : nickname;
-        }
-        
+        String getEffectiveName();
+
         /**
          * Gets the online status of the member. The widget does not show
          * offline members, so this status should never be offline
@@ -504,25 +252,19 @@ public class Widget implements ISnowflake
          * @return the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the member
          */
         @Nonnull
-        public OnlineStatus getOnlineStatus()
-        {
-            return status;
-        }
-        
+        OnlineStatus getOnlineStatus();
+
         /**
-        * The game that the member is currently playing.
-        * <br>This game cannot be a stream.
-        * If the user is not currently playing a game, this will return null.
-        *
-        * @return Possibly-null {@link net.dv8tion.jda.api.entities.Activity Activity} containing the game
-        *         that the member is currently playing.
-        */
+         * The game that the member is currently playing.
+         * <br>This game cannot be a stream.
+         * If the user is not currently playing a game, this will return null.
+         *
+         * @return Possibly-null {@link net.dv8tion.jda.api.entities.Activity Activity} containing the game
+         *         that the member is currently playing.
+         */
         @Nullable
-        public Activity getActivity()
-        {
-            return game;
-        }
-        
+        Activity getActivity();
+
         /**
          * The current voice state of the member.
          * <br>If the user is not in voice, this will return a VoiceState with a null channel.
@@ -530,10 +272,7 @@ public class Widget implements ISnowflake
          * @return never-null VoiceState of the member
          */
         @Nonnull
-        public VoiceState getVoiceState()
-        {
-            return state == null ? new VoiceState(this, widget) : state;
-        }
+        VoiceState getVoiceState();
 
         /**
          * Gets the widget that to which this member belongs
@@ -541,92 +280,33 @@ public class Widget implements ISnowflake
          * @return the Widget that holds this member
          */
         @Nonnull
-        public Widget getWidget()
-        {
-            return widget;
-        }
+        Widget getWidget();
 
-        @Override
-        public int hashCode() {
-            return (widget.getId() + ' ' + id).hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof Member))
-                return false;
-            Member oMember = (Member) obj;
-            return this == oMember || (this.id == oMember.getIdLong() && this.widget.getIdLong() == oMember.getWidget().getIdLong());
-        }
-        
-        @Override
-        public String toString()
-        {
-            return new EntityString("Widget.Member")
-                    .setName(getName())
-                    .toString();
-        }
     }
 
-    public static class VoiceChannel implements ISnowflake
-    {
-        private final int position;
-        private final long id;
-        private final String name;
-        private final List<Member> members;
-        private final Widget widget;
-        
-        private VoiceChannel(@Nonnull DataObject json, @Nonnull Widget widget)
-        {
-            this.widget = widget;
-            this.position = json.getInt("position");
-            this.id = json.getLong("id");
-            this.name = json.getString("name");
-            this.members = new ArrayList<>();
-        }
-        
-        private void addMember(@Nonnull Member member)
-        {
-            members.add(member);
-        }
-        
+    public static interface VoiceChannel extends ISnowflake {
+
         /**
          * Gets the integer position of the channel
          * 
          * @return integer position of the channel
          */
-        public int getPosition()
-        {
-            return position;
-        }
+        int getPosition();
 
-        @Override
-        public long getIdLong()
-        {
-            return id;
-        }
-        
         /**
-         * Gets the name of the channel
-         * 
+         * Gets the name of the channel	 * 
          * @return name of the channel
          */
         @Nonnull
-        public String getName()
-        {
-            return name;
-        }
-        
+        String getName();
+
         /**
          * Gets a list of all members in the channel
          * 
          * @return never-null, possibly-empty list of members in the channel
          */
         @Nonnull
-        public List<Member> getMembers()
-        {
-            return members;
-        }
+        List<Member> getMembers();
 
         /**
          * Gets the Widget to which this voice channel belongs
@@ -634,184 +314,80 @@ public class Widget implements ISnowflake
          * @return the Widget object that holds this voice channel
          */
         @Nonnull
-        public Widget getWidget()
-        {
-            return widget;
-        }
-
-        @Override
-        public int hashCode() {
-            return Long.hashCode(id);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof VoiceChannel))
-                return false;
-            VoiceChannel oVChannel = (VoiceChannel) obj;
-            return this == oVChannel || this.id == oVChannel.getIdLong();
-        }
-        
-        @Override
-        public String toString()
-        {
-            return new EntityString("Widget.VoiceChannel")
-                    .setName(getName())
-                    .toString();
-        }
+        Widget getWidget();
     }
-    
-    public static class VoiceState
-    {
-        private final VoiceChannel channel;
-        private final boolean muted;
-        private final boolean deafened;
-        private final boolean suppress;
-        private final boolean selfMute;
-        private final boolean selfDeaf;
-        private final Member member;
-        private final Widget widget;
-        
-        private VoiceState(@Nonnull Member member, @Nonnull Widget widget)
-        {
-            this(null, false, false, false, false, false, member, widget);
-        }
-        
-        private VoiceState(@Nullable VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, @Nonnull Member member, @Nonnull Widget widget)
-        {
-            this.channel = channel;
-            this.muted = muted;
-            this.deafened = deafened;
-            this.suppress = suppress;
-            this.selfMute = selfMute;
-            this.selfDeaf = selfDeaf;
-            this.member = member;
-            this.widget = widget;
-        }
-        
+
+    public static interface VoiceState {
+
         /**
          * Gets the channel the member is in
          * 
          * @return never-null VoiceChannel
          */
         @Nullable
-        public VoiceChannel getChannel()
-        {
-            return channel;
-        }
-        
+        VoiceChannel getChannel();
+
         /**
          * Used to determine if the member is currently in a voice channel.
          * <br>If this is false, getChannel() will return null
          * 
          * @return True, if the member is in a voice channel
          */
-        public boolean inVoiceChannel()
-        {
-            return channel != null;
-        }
-        
+        boolean inVoiceChannel();
+
         /**
          * Whether the member is muted by an admin
          * 
          * @return True, if the member is muted
          */
-        public boolean isGuildMuted()
-        {
-            return muted;
-        }
-        
+        boolean isGuildMuted();
+
         /**
          * Whether the member is deafened by an admin
          * 
          * @return True, if the member is deafened
          */
-        public boolean isGuildDeafened()
-        {
-            return deafened;
-        }
-        
+        boolean isGuildDeafened();
+
         /**
          * Whether the member is suppressed
          * 
          * @return True, if the member is suppressed
          */
-        public boolean isSuppressed()
-        {
-            return suppress;
-        }
-        
+        boolean isSuppressed();
+
         /**
          * Whether the member is self-muted
          * 
          * @return True, if the member is self-muted
          */
-        public boolean isSelfMuted()
-        {
-            return selfMute;
-        }
-        
+        boolean isSelfMuted();
+
         /**
          * Whether the member is self-deafened
          * 
          * @return True, if the member is self-deafened
          */
-        public boolean isSelfDeafened()
-        {
-            return selfDeaf;
-        }
-        
+        boolean isSelfDeafened();
+
         /**
          * Whether the member is muted, either by an admin or self-muted
          * 
          * @return True, if the member is self-muted or guild-muted
          */
-        public boolean isMuted()
-        {
-            return selfMute || muted;
-        }
-        
+        boolean isMuted();
+
         /**
          * Whether the member is deafened, either by an admin or self-deafened
          * 
          * @return True, if the member is self-deafened or guild-deafened
          */
-        public boolean isDeafened()
-        {
-            return selfDeaf || deafened;
-        }
+        boolean isDeafened();
 
         @Nonnull
-        public Member getMember()
-        {
-            return member;
-        }
+        Member getMember();
 
         @Nonnull
-        public Widget getWidget()
-        {
-            return widget;
-        }
-
-        @Override
-        public int hashCode() {
-            return member.hashCode();
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof VoiceState))
-                return false;
-            VoiceState oState = (VoiceState) obj;
-            return this == oState || (this.member.equals(oState.getMember()) && this.widget.equals(oState.getWidget()));
-        }
-        
-        @Override
-        public String toString() {
-            return new EntityString("Widget.VoiceState")
-                    .setName(widget.getName())
-                    .addMetadata("memberName", member.getEffectiveName())
-                    .toString();
-        }
+        Widget getWidget();
     }
 }
