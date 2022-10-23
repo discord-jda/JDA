@@ -19,7 +19,9 @@ package net.dv8tion.jda.internal.entities.channel.mixin.middleman;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IAgeRestrictedChannelMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IThreadContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ITopicChannelMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContainerMixin;
 
 import javax.annotation.Nonnull;
@@ -29,7 +31,9 @@ public interface StandardGuildMessageChannelMixin<T extends StandardGuildMessage
         StandardGuildChannelMixin<T>,
         GuildMessageChannelMixin<T>,
         IThreadContainerMixin<T>,
-        IWebhookContainerMixin<T>
+        IAgeRestrictedChannelMixin<T>,
+        IWebhookContainerMixin<T>,
+        ITopicChannelMixin<T>
 {
     // ---- Default implementations of interface ----
     @Override
@@ -40,9 +44,4 @@ public interface StandardGuildMessageChannelMixin<T extends StandardGuildMessage
 
         return member.hasPermission(this, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);
     }
-
-    // ---- State Accessors ----
-    T setTopic(String topic);
-
-    T setNSFW(boolean nsfw);
 }
