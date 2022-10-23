@@ -158,7 +158,7 @@ public class CommandImpl implements Command
 
     @Nonnull
     @Override
-    public String getCommandPath()
+    public String getFullCommandName()
     {
         return name;
     }

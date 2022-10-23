@@ -890,9 +890,9 @@ public interface Command extends ISnowflake, ICommandReference
 
         @Nonnull
         @Override
-        public String getCommandPath()
+        public String getFullCommandName()
         {
-            return parentCommand.getCommandPath() + " " + getName();
+            return parentCommand.getFullCommandName() + " " + getName();
         }
 
         /**
@@ -1010,9 +1010,9 @@ public interface Command extends ISnowflake, ICommandReference
 
         @Nonnull
         @Override
-        public String getCommandPath()
+        public String getFullCommandName()
         {
-            return parentCommand.getCommandPath() + " " + getName();
+            return parentCommand.getFullCommandName() + " " + getName();
         }
 
         /**

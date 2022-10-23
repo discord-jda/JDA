@@ -39,7 +39,7 @@ public interface ICommandReference extends IMentionable
      * @return the entire path (separated with spaces) of this command
      */
     @Nonnull
-    String getCommandPath();
+    String getFullCommandName();
 
     /**
      * {@inheritDoc}
@@ -53,6 +53,6 @@ public interface ICommandReference extends IMentionable
     @Override
     default String getAsMention()
     {
-        return "</" + getCommandPath() + ":" + getIdLong() + ">";
+        return "</" + getFullCommandName() + ":" + getIdLong() + ">";
     }
 }

@@ -353,7 +353,7 @@ public abstract class AbstractMentions implements Mentions
         {
             final ICommandReference reference = (ICommandReference) mentionable;
             for (SlashCommandReference r : getSlashCommands())
-                if (r.getCommandPath().equals(reference.getCommandPath()) && r.getIdLong() == reference.getIdLong())
+                if (r.getFullCommandName().equals(reference.getFullCommandName()) && r.getIdLong() == reference.getIdLong())
                     return true;
         }
         return false;

@@ -78,7 +78,7 @@ public class SlashCommandReference implements ICommandReference
 
     @Nonnull
     @Override
-    public String getCommandPath()
+    public String getFullCommandName()
     {
         final StringJoiner joiner = new StringJoiner(" ");
         joiner.add(name);
@@ -94,7 +94,7 @@ public class SlashCommandReference implements ICommandReference
     public String toString()
     {
         return new EntityString(this)
-                .setName(getCommandPath())
+                .setName(getFullCommandName())
                 .toString();
     }
 
