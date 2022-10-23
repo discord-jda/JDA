@@ -183,7 +183,7 @@ public class ChannelDeleteHandler extends SocketHandler
             // There is no delete event for the deletion of scheduled events in this case, so we do this to keep the cache in sync.
             String channelId1 = Long.toUnsignedString(channelId);
             guild.getScheduledEventsView().stream()
-                    .filter(scheduledEvent -> scheduledEvent.getType().isChannel() && scheduledEvent.getLocation().equals(String.valueOf(channelId1)))
+                    .filter(scheduledEvent -> scheduledEvent.getType().isChannel() && scheduledEvent.getLocation().equals(channelId1))
                     .forEach(scheduledEvent -> guild.getScheduledEventsView().remove(scheduledEvent.getIdLong()));
         }
 
