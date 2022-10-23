@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.events;
-
-import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
 
 /**
- * Indicates that JDA successfully resumed its connection to the gateway.
- * <br>All Objects are still in place and events are replayed.
- *
- * <p>Can be used to marks the continuation of event flow stopped by the {@link net.dv8tion.jda.api.events.DisconnectEvent DisconnectEvent}.
+ * Gateway events for {@link net.dv8tion.jda.api.entities.ScheduledEvent ScheduledEvents}.
+ * <p> It should be noted that {@link net.dv8tion.jda.api.entities.ScheduledEvent ScheduledEvents} are not
+ * actual gateway events found in the {@link net.dv8tion.jda.api.events} package, but are rather entities similar to
+ * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannel} objects
+ * representing a <a href="https://support.discord.com/hc/en-us/articles/4409494125719-Scheduled-Events">scheduled event</a>.
  */
-public class ResumedEvent extends Event
-{
-    public ResumedEvent(@Nonnull JDA api, long responseNumber)
-    {
-        super(api, responseNumber);
-    }
-}
+package net.dv8tion.jda.api.events.guild.scheduledevent;

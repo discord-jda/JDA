@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -488,11 +489,11 @@ public interface User extends UserSnowflake
         @Override
         public String toString()
         {
-            return "UserProfile(" +
-                    "userId=" + userId +
-                    ", bannerId='" + bannerId + "'" +
-                    ", accentColor=" + accentColor +
-                    ')';
+            return new EntityString(this)
+                    .addMetadata("userId", userId)
+                    .addMetadata("bannerId", bannerId)
+                    .addMetadata("accentColor", accentColor)
+                    .toString();
         }
     }
 

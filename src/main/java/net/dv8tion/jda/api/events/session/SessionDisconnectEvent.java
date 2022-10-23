@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.events;
+package net.dv8tion.jda.api.events.session;
 
 import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.api.JDA;
@@ -29,22 +29,21 @@ import java.time.OffsetDateTime;
  * unless {@link net.dv8tion.jda.api.JDABuilder#setAutoReconnect(boolean) JDABuilder.setAutoReconnect(Boolean)}
  * has been provided {@code false} or the disconnect was too fatal in which case a {@link ShutdownEvent} is fired.
  *
- * <p>When reconnecting was successful either a {@link net.dv8tion.jda.api.events.ReconnectedEvent ReconnectEvent}
- * <b>or</b> {@link net.dv8tion.jda.api.events.ResumedEvent ResumedEvent} is fired.
+ * <p>When reconnecting was successful either a {@link SessionRecreateEvent} <b>or</b> {@link SessionResumeEvent} is fired.
  */
-public class DisconnectEvent extends Event
+public class SessionDisconnectEvent extends GenericSessionEvent
 {
     protected final WebSocketFrame serverCloseFrame;
     protected final WebSocketFrame clientCloseFrame;
     protected final boolean closedByServer;
     protected final OffsetDateTime disconnectTime;
 
-    public DisconnectEvent(
+    public SessionDisconnectEvent(
         @Nonnull JDA api,
         @Nullable WebSocketFrame serverCloseFrame, @Nullable WebSocketFrame clientCloseFrame,
         boolean closedByServer, @Nonnull OffsetDateTime disconnectTime)
     {
-        super(api);
+        super(api, SessionState.DISCONNECTED);
         this.serverCloseFrame = serverCloseFrame;
         this.clientCloseFrame = clientCloseFrame;
         this.closedByServer = closedByServer;

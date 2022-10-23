@@ -156,9 +156,12 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setParent(Category category)
     {
-        Checks.check(category == null || category.getGuild().equals(guild), "Category is not from same guild!");
-        if (type == ChannelType.CATEGORY)
-            throw new UnsupportedOperationException("Cannot set a parent Category on a Category");
+        if (category != null)
+        {
+            Checks.check(category.getGuild().equals(guild), "Category is not from same guild!");
+            if (type == ChannelType.CATEGORY)
+                throw new UnsupportedOperationException("Cannot set a parent Category on a Category");
+        }
 
         this.parent = category;
         return this;

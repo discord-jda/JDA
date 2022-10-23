@@ -42,5 +42,6 @@ public enum TargetType
     STAGE_INSTANCE,
     STICKER,
     THREAD,
+	SCHEDULED_EVENT,
     UNKNOWN
 }

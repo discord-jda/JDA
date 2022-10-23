@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.audit;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
@@ -493,6 +494,21 @@ public enum ActionType
      * </ul>
      */
     STAGE_INSTANCE_DELETE(85, TargetType.STAGE_INSTANCE),
+
+    /**
+     * A user created a {@link ScheduledEvent ScheduledEvent}
+     */
+    SCHEDULED_EVENT_CREATE(100, TargetType.SCHEDULED_EVENT),
+
+    /**
+     * A user updated a {@link ScheduledEvent ScheduledEvent}
+     */
+    SCHEDULED_EVENT_UPDATE(101, TargetType.SCHEDULED_EVENT),
+
+    /**
+     * A user deleted/cancelled a {@link ScheduledEvent ScheduledEvent}
+     */
+    SCHEDULED_EVENT_DELETE(102, TargetType.SCHEDULED_EVENT),
 
     /**
      * An Administrator created a {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildSticker}.

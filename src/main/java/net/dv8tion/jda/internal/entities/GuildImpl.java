@@ -73,6 +73,7 @@ import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -102,6 +103,7 @@ public class GuildImpl implements Guild
     private final JDAImpl api;
 
     private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ScheduledEvent> scheduledEventCache = new SortedSnowflakeCacheViewImpl<>(ScheduledEvent.class, ScheduledEvent::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
@@ -539,6 +541,44 @@ public class GuildImpl implements Guild
         return rulesChannel;
     }
 
+    @Nonnull
+    @Override
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new DeferredRestAction<>(getJDA(), ScheduledEvent.class,
+                () -> getScheduledEventById(id),
+                () ->
+                {
+                    Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id);
+                    return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createScheduledEvent(this, response.getObject()));
+                });
+    }
+
+    @Nonnull
+    @Override
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        return retrieveScheduledEventById(Long.toUnsignedString(id));
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime)
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new ScheduledEventActionImpl(name, location, startTime, endTime, this);
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime)
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new ScheduledEventActionImpl(name, channel, startTime, this);
+    }
+
+
     @Override
     public TextChannel getCommunityUpdatesChannel()
     {
@@ -623,6 +663,13 @@ public class GuildImpl implements Guild
     public MemberCacheView getMemberCache()
     {
         return memberCache;
+    }
+
+    @Nonnull
+    @Override
+    public SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
+    {
+        return scheduledEventCache;
     }
 
     @Nonnull
@@ -1417,7 +1464,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot kick the owner of a guild!");
+        checkOwner(user.getIdLong(), "kick");
         Member member = resolveMember(user);
         if (member != null) // If user is in guild. Check if we are able to ban.
             checkPosition(member);
@@ -1435,7 +1482,7 @@ public class GuildImpl implements Guild
         Checks.notNegative(duration, "Deletion Timeframe");
         Checks.check(unit.toDays(duration) <= 7, "Deletion timeframe must not be larger than 7 days");
         checkPermission(Permission.BAN_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot ban the owner of a guild!");
+        checkOwner(user.getIdLong(), "ban");
 
         Member member = resolveMember(user);
         if (member != null) // If user is in guild. Check if we are able to ban.
@@ -1471,7 +1518,7 @@ public class GuildImpl implements Guild
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot put the owner of a guild in time out!");
+        checkOwner(user.getIdLong(), "time out");
 
         return timeoutUntilById0(user.getId(), date);
     }
@@ -1852,6 +1899,8 @@ public class GuildImpl implements Guild
         return new RoleOrderActionImpl(this, useAscendingOrder);
     }
 
+    // ---- Checks ----
+
     protected void checkGuild(Guild providedGuild, String comment)
     {
         if (!equals(providedGuild))
@@ -1885,6 +1934,26 @@ public class GuildImpl implements Guild
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
+    }
+
+    private void checkCanCreateChannel(Category parent)
+    {
+        if (parent != null)
+        {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+        }
+        else
+        {
+            checkPermission(Permission.MANAGE_CHANNEL);
+        }
+    }
+
+    private void checkOwner(long userId, String what)
+    {
+        if (userId == ownerId)
+            throw new HierarchyException("Cannot " + what + " the owner of a guild.");
     }
 
     private Member resolveMember(UserSnowflake user)
@@ -2096,6 +2165,11 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
+    public SortedSnowflakeCacheViewImpl<ScheduledEvent> getScheduledEventsView()
+    {
+        return scheduledEventCache;
+    }
+
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categoryCache;
@@ -2198,20 +2272,8 @@ public class GuildImpl implements Guild
     @Override
     public String toString()
     {
-        return "G:" + getName() + '(' + id + ')';
-    }
-
-    private void checkCanCreateChannel(Category parent)
-    {
-        if (parent != null)
-        {
-            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
-            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
-        }
-        else
-        {
-            checkPermission(Permission.MANAGE_CHANNEL);
-        }
+        return new EntityString(this)
+                .setName(getName())
+                .toString();
     }
 }

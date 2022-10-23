@@ -64,6 +64,7 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
@@ -71,6 +72,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -544,13 +546,26 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <p>
-     * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
+     *
+     * <p>Features can be updated using {@link GuildManager#setFeatures(Collection)}.
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
+     *
+     * @see <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features">List of Features</a>
      */
     @Nonnull
     Set<String> getFeatures();
+
+    /**
+     * Whether the invites for this guild are paused/disabled.
+     * <br>This is equivalent to {@code getFeatures().contains("INVITES_DISABLED")}.
+     *
+     * @return True, if invites are paused/disabled
+     */
+    default boolean isInvitesDisabled()
+    {
+        return getFeatures().contains("INVITES_DISABLED");
+    }
 
     /**
      * The Discord hash-id of the splash image for this Guild. A Splash image is an image displayed when viewing a
@@ -1258,6 +1273,96 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      */
     @Nonnull
     MemberCacheView getMemberCache();
+
+    /**
+     * Sorted {@link SnowflakeCacheView} of
+     * all cached {@link ScheduledEvent ScheduledEvents} of this Guild.
+     * <br>Scheduled events are sorted by their start time, and events that start at the same time
+     * are sorted by their snowflake ID.
+     *
+     * @return {@link SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache();
+    
+    /**
+     * Gets a list of all {@link ScheduledEvent ScheduledEvents} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link ScheduledEvent ScheduledEvents} with the provided name,
+     * then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link ScheduledEvent} objects.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the name is blank, empty or {@code null}
+     *
+     * @return Possibly-empty immutable list of all ScheduledEvent names that match the provided name.
+     */
+    @Nonnull
+    default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getScheduledEventCache().getElementsByName(name, ignoreCase);
+    }
+    
+    /**
+     * Gets a {@link ScheduledEvent} from this guild that has the same id as the
+     * one provided. This method is similar to {@link JDA#getScheduledEventById(String)}, but it only
+     * checks this specific Guild for a scheduled event.
+     * <br>If there is no {@link ScheduledEvent} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link ScheduledEvent}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link ScheduledEvent} with matching id.
+     */
+    @Nullable
+    default ScheduledEvent getScheduledEventById(@Nonnull String id)
+    {
+        return getScheduledEventCache().getElementById(id);
+    }
+    
+    /**
+     * Gets a {@link ScheduledEvent} from this guild that has the same id as the
+     * one provided. This method is similar to {@link JDA#getScheduledEventById(long)}, but it only
+     * checks this specific Guild for a scheduled event.
+     * <br>If there is no {@link ScheduledEvent} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link ScheduledEvent}.
+     *
+     * @return Possibly-null {@link ScheduledEvent} with matching id.
+     */
+    @Nullable
+    default ScheduledEvent getScheduledEventById(long id)
+    {
+        return getScheduledEventCache().getElementById(id);
+    }
+    
+    /**
+     * Gets all {@link ScheduledEvent ScheduledEvents} in this guild.
+     * <br>Scheduled events are sorted by their start time, and events that start at the same time
+     * are sorted by their snowflake ID.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getScheduledEventCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return Possibly-empty immutable List of {@link ScheduledEvent ScheduledEvents}.
+     */
+    @Nonnull
+    default List<ScheduledEvent> getScheduledEvents()
+    {
+        return getScheduledEventCache().asList();
+    }
 
     @Nonnull
     @Override
@@ -2008,9 +2113,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Returns the {@link GuildManager GuildManager} for this Guild, used to modify
      * all properties and settings of the Guild.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link RestAction#queue() RestAction.queue()}.
-     *
-     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
-     * This getter is not thread-safe and would require guards by the user.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
@@ -2938,6 +3040,54 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     RestAction<List<ThreadChannel>> retrieveActiveThreads();
 
+    /**
+     * Retrieves a {@link ScheduledEvent} by its ID.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT ErrorResponse.UNKNOWN_SCHEDULED_EVENT}
+     *     <br>A scheduled event with the specified ID does not exist in the guild, or the currently logged in user does not
+     *     have access to it.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the {@link ScheduledEvent}
+     *
+     * @return {@link RestAction} - Type: {@link ScheduledEvent}
+     *
+     * @see    #getScheduledEventById(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CacheRestAction<ScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        return retrieveScheduledEventById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Retrieves a {@link ScheduledEvent} by its ID.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT ErrorResponse.UNKNOWN_SCHEDULED_EVENT}
+     *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
+     *     have access to it.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the {@link ScheduledEvent}
+     *
+     * @throws IllegalArgumentException
+     *         If the specified ID is {@code null} or empty
+     * @throws NumberFormatException
+     *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return {@link RestAction} - Type: {@link ScheduledEvent}
+     *
+     * @see    #getScheduledEventById(long)
+     */
+    @Nonnull
+    @CheckReturnValue
+    CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id);
+
     /* From GuildController */
 
     /**
@@ -3439,7 +3589,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         The {@link UserSnowflake} to timeout.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  temporal
-     *         The time the specified Member will be released from time out or null to remove the time out
+     *         The time the specified Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
@@ -3449,6 +3599,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If any of the following are true
      *         <ul>
      *             <li>The provided {@code user} is null</li>
+     *             <li>The provided {@code temporal} is null</li>
      *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
@@ -4476,6 +4627,110 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id);
 
     /**
+     * Creates a new {@link ScheduledEvent}.
+     * Events created with this method will be of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
+     * These events are set to take place at an external location.
+     *
+     * <p><b>Requirements</b><br>
+     *
+     * Events are required to have a name, location and start time.
+     * Additionally, an end time <em>must</em> also be specified for events of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.
+     * {@link Permission#MANAGE_EVENTS} is required on the guild level in order to create this type of event.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * guild.createScheduledEvent("Cactus Beauty Contest", "Mike's Backyard", OffsetDateTime.now().plusHours(1), OffsetDateTime.now().plusHours(3))
+     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+     *     .queue();
+     * }</pre>
+     *
+     * @param  name
+     *         the name for this scheduled event, 1-100 characters
+     * @param  location
+     *         the external location for this scheduled event, 1-100 characters
+     * @param  startTime
+     *         the start time for this scheduled event, can't be in the past or after the end time
+     * @param  endTime
+     *         the end time for this scheduled event, has to be later than the start time
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If a required parameter is {@code null} or empty</li>
+     *             <li>If the start time is in the past</li>
+     *             <li>If the end time is before the start time</li>
+     *             <li>If the name is longer than 100 characters</li>
+     *             <li>If the description is longer than 1000 characters</li>
+     *             <li>If the location is longer than 100 characters</li>
+     *         </ul>
+     *
+     * @return {@link ScheduledEventAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime);
+
+    /**
+     * Creates a new {@link ScheduledEvent}.
+     *
+     * <p><b>Requirements</b><br>
+     *
+     * Events are required to have a name, channel and start time. Depending on the
+     * type of channel provided, an event will be of one of two different {@link ScheduledEvent.Type Types}:
+     * <ol>
+     *     <li>
+     *         {@link ScheduledEvent.Type#STAGE_INSTANCE Type.STAGE_INSTANCE}
+     *         <br>These events are set to take place inside of a {@link StageChannel}. The
+     *         following permissions are required in the specified stage channel in order to create an event there:
+     *          <ul>
+     *              <li>{@link Permission#MANAGE_EVENTS}</li>
+     *              <li>{@link Permission#MANAGE_CHANNEL}</li>
+     *              <li>{@link Permission#VOICE_MUTE_OTHERS}</li>
+     *              <li>{@link Permission#VOICE_MOVE_OTHERS}}</li>
+     *         </ul>
+     *     </li>
+     *     <li>
+     *         {@link ScheduledEvent.Type#VOICE Type.VOICE}
+     *         <br>These events are set to take place inside of a {@link VoiceChannel}. The
+     *         following permissions are required in the specified voice channel in order to create an event there:
+     *         <ul>
+     *             <li>{@link Permission#MANAGE_EVENTS}</li>
+     *             <li>{@link Permission#VIEW_CHANNEL}</li>
+     *             <li>{@link Permission#VOICE_CONNECT}</li>
+     *         </ul>
+     *     </li>
+     * </ol>
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * guild.createScheduledEvent("Cactus Beauty Contest", guild.getGuildChannelById(channelId), OffsetDateTime.now().plusHours(1))
+     *     .setDescription("Come and have your cacti judged! _Must be spikey to enter_")
+     *     .queue();
+     * }</pre>
+     *
+     * @param  name
+     *         the name for this scheduled event, 1-100 characters
+     * @param  channel
+     *         the voice or stage channel where this scheduled event will take place
+     * @param  startTime
+     *         the start time for this scheduled event, can't be in the past
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If a required parameter is {@code null} or empty</li>
+     *             <li>If the start time is in the past</li>
+     *             <li>If the name is longer than 100 characters</li>
+     *             <li>If the description is longer than 1000 characters</li>
+     *             <li>If the channel is not a Stage or Voice channel</li>
+     *             <li>If the channel is not from the same guild as the scheduled event</li>
+     *         </ul>
+     *
+     * @return {@link ScheduledEventAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime);
+
+    /**
      * Modifies the positional order of {@link net.dv8tion.jda.api.entities.Guild#getCategories() Guild.getCategories()}
      * using a specific {@link RestAction RestAction} extension to allow moving Channels
      * {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveUp(int) up}/{@link net.dv8tion.jda.api.requests.restaction.order.OrderAction#moveDown(int) down}
@@ -5154,7 +5409,10 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         @Override
         public String toString()
         {
-            return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
+            return new EntityString(this)
+                    .addMetadata("user", user)
+                    .addMetadata("reason", reason)
+                    .toString();
         }
     }
 

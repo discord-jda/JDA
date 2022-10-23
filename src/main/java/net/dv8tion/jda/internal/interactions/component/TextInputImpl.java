@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.interactions.component;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -134,5 +135,15 @@ public class TextInputImpl implements TextInput
         if (placeholder != null)
             obj.put("placeholder", placeholder);
         return obj;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .setType(style)
+                .addMetadata("id", id)
+                .addMetadata("value", value)
+                .toString();
     }
 }

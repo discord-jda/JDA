@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.events;
+package net.dv8tion.jda.api.events.session;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.CloseCode;
@@ -26,14 +26,14 @@ import java.time.OffsetDateTime;
  * Indicates that JDA has fully disconnected from Discord and will not attempt to reconnect again.
  * <br>At this stage all internal cache is invalid!
  */
-public class ShutdownEvent extends Event
+public class ShutdownEvent extends GenericSessionEvent
 {
     protected final OffsetDateTime shutdownTime;
     protected final int code;
 
     public ShutdownEvent(@Nonnull JDA api, @Nonnull OffsetDateTime shutdownTime, int code)
     {
-        super(api);
+        super(api, SessionState.SHUTDOWN);
         this.shutdownTime = shutdownTime;
         this.code = code;
     }

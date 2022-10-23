@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions.component;
+package net.dv8tion.jda.internal.interactions.modal;
 
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -82,5 +83,14 @@ public class ModalImpl implements Modal
                 .map(ActionRow::toData)
                 .collect(Collectors.toList())));
         return object;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .addMetadata("id", id)
+                .addMetadata("title", title)
+                .toString();
     }
 }

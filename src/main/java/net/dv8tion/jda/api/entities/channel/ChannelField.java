@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -245,14 +246,15 @@ public enum ChannelField
      */
     APPLIED_TAGS("applied_tags", AuditLogKey.THREAD_APPLIED_TAGS),
 
-    /**
-     * The default sort order of a forum channel.
-     *
-     * <p>Limited to {@link ForumChannel Forum Channels}.
-     *
-     * @see ForumChannel#getDefaultSortOrder()
-     */
-    DEFAULT_SORT_ORDER("default_sort_order", AuditLogKey.CHANNEL_DEFAULT_SORT_ORDER);
+//    /**
+//     * The default sort order of a forum channel.
+//     *
+//     * <p>Limited to {@link ForumChannel Forum Channels}.
+//     *
+//     * @see ForumChannel#getDefaultSortOrder()
+//     */
+//    DEFAULT_SORT_ORDER("default_sort_order", AuditLogKey.CHANNEL_DEFAULT_SORT_ORDER)
+    ;
 
     private final String fieldName;
     private final AuditLogKey auditLogKey;
@@ -279,6 +281,9 @@ public enum ChannelField
     @Override
     public String toString()
     {
-        return "ChannelField." + name() + '(' + fieldName + ')';
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("fieldName", fieldName)
+                .toString();
     }
 }

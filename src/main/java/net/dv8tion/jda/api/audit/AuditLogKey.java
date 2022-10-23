@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -311,13 +312,13 @@ public enum AuditLogKey
      */
     CHANNEL_AVAILABLE_TAGS("available_tags"),
 
-    /**
-     * The {@link ForumChannel#getDefaultSortOrder()} value.
-     * <br>Only for {@link ChannelType#FORUM}.
-     *
-     * <p>Expected type: <b>Integer</b>
-     */
-    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
+//    /**
+//     * The {@link ForumChannel#getDefaultSortOrder()} value.
+//     * <br>Only for {@link ChannelType#FORUM}.
+//     *
+//     * <p>Expected type: <b>Integer</b>
+//     */
+//    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
 
     // THREADS
 
@@ -666,6 +667,9 @@ public enum AuditLogKey
     @Override
     public String toString()
     {
-        return name() + '(' + key + ')';
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("key", key)
+                .toString();
     }
 }

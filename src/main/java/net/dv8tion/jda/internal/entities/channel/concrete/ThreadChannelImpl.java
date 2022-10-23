@@ -163,7 +163,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
             return Collections.emptyList();
         return parent.asForumChannel()
                 .getAvailableTagCache()
-                .streamUnordered()
+                .stream()
                 .filter(tag -> this.appliedTags.contains(tag.getIdLong()))
                 .collect(Helpers.toUnmodifiableList());
     }
@@ -449,14 +449,6 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public int getRawFlags()
     {
         return flags;
-    }
-
-    // -- Object overrides --
-
-    @Override
-    public String toString()
-    {
-        return "ThC:" + getName() + '(' + id + ')';
     }
 
     private void checkUnarchived()

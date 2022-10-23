@@ -81,9 +81,6 @@ public interface SelfUser extends User
      * <br>This can be used to atomically set account fields (like avatar/username)
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
-     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
-     * This getter is not thread-safe and would require guards by the user.
-     *
      * @return An AccountManager instance for the current account
      */
     @Nonnull

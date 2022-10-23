@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
@@ -533,7 +534,10 @@ public class WidgetUtil
         @Override
         public String toString()
         {
-            return "W:" + (isAvailable() ? getName() : "") + '(' + id + ')';
+            final EntityString entityString = new EntityString("Widget");
+            if (isAvailable())
+                entityString.setName(getName());
+            return entityString.toString();
         }
 
         private void checkAvailable()
@@ -812,7 +816,9 @@ public class WidgetUtil
             @Override
             public String toString()
             {
-                return "W.M:" + getName() + '(' + id + ')';
+                return new EntityString("Widget.Member")
+                        .setName(getName())
+                        .toString();
             }
         }
 
@@ -903,7 +909,9 @@ public class WidgetUtil
             @Override
             public String toString()
             {
-                return "W.VC:" + getName() + '(' + id + ')';
+                return new EntityString("Widget.VoiceChannel")
+                        .setName(getName())
+                        .toString();
             }
         }
         
@@ -1054,7 +1062,10 @@ public class WidgetUtil
             
             @Override
             public String toString() {
-                return "VS:" + widget.getName() + ':' + member.getEffectiveName();
+                return new EntityString("Widget.VoiceState")
+                        .setName(widget.getName())
+                        .addMetadata("memberName", member.getEffectiveName())
+                        .toString();
             }
         }
     }

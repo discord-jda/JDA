@@ -28,7 +28,10 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
@@ -141,7 +144,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
 
                 int flags = content.getInt("flags", 0);
-                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
+//                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
                 EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
                         .map(json -> {
                             json.opt("emoji_id").ifPresent(id -> json.put("id", id));
@@ -151,7 +154,7 @@ public class ChannelUpdateHandler extends SocketHandler
                         .orElse(null);
 
                 int oldFlags = forumChannel.getRawFlags();
-                int oldSortOrder = forumChannel.getRawSortOrder();
+//                int oldSortOrder = forumChannel.getRawSortOrder();
                 EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
 
                 content.optArray("available_tags").ifPresent(
@@ -166,14 +169,14 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     forumChannel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
                 }
-                if (oldSortOrder != sortOrder)
-                {
-                    forumChannel.setDefaultSortOrder(sortOrder);
-                    getJDA().handleEvent(
-                            new ChannelUpdateDefaultSortOrderEvent(
-                                    getJDA(), responseNumber,
-                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
-                }
+//                if (oldSortOrder != sortOrder)
+//                {
+//                    forumChannel.setDefaultSortOrder(sortOrder);
+//                    getJDA().handleEvent(
+//                            new ChannelUpdateDefaultSortOrderEvent(
+//                                    getJDA(), responseNumber,
+//                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
+//                }
                 if (!Objects.equals(oldDefaultReaction, defaultReaction))
                 {
                     forumChannel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));

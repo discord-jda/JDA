@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 
@@ -129,13 +130,14 @@ public class GuildSetupNode
     @Override
     public String toString()
     {
-        return "GuildSetupNode[" + id + "|" + status + ']' +
-            '{' +
-                "expectedMemberCount=" + expectedMemberCount + ", " +
-                "requestedChunk="      + requestedChunk + ", " +
-                "type="                + type + ", " +
-                "markedUnavailable="   + markedUnavailable +
-            '}';
+        return new EntityString(this)
+                .setType(type)
+                .addMetadata("id", id)
+                .addMetadata("status", status)
+                .addMetadata("expectedMemberCount", expectedMemberCount)
+                .addMetadata("requestedChunk", requestedChunk)
+                .addMetadata("markedUnavailable", markedUnavailable)
+                .toString();
     }
 
     @Override
