@@ -102,10 +102,10 @@ public class SlashCommandReference implements ICommandReference
 
         SlashCommandReference that = (SlashCommandReference) o;
 
-        if (id != that.id) return false;
-        if (!name.equals(that.name)) return false;
-        if (!Objects.equals(subcommand, that.subcommand)) return false;
-        return Objects.equals(subcommandGroup, that.subcommandGroup);
+        return id == that.id
+            && name.equals(that.name)
+            && Objects.equals(subcommand, that.subcommand)
+            && Objects.equals(subcommandGroup, that.subcommandGroup);
     }
 
     @Override
