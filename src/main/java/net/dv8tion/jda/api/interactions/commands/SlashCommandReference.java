@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.internal.utils.EntityString;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -91,7 +93,9 @@ public class SlashCommandReference implements ICommandReference
     @Override
     public String toString()
     {
-        return "SlashCommandReference: " + getCommandPath() + " (" + getId() + ")";
+        return new EntityString(this)
+                .setName(getCommandPath())
+                .toString();
     }
 
     @Override
