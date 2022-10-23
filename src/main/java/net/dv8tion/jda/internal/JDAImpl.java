@@ -110,6 +110,7 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<ThreadChannel> threadChannelsCache = new SnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName);
+    protected final SnowflakeCacheViewImpl<ForumChannel> forumChannelsCache = new SnowflakeCacheViewImpl<>(ForumChannel.class, Channel::getName);
     protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, Channel::getName);
     protected final LinkedList<Long> privateChannelLRU = new LinkedList<>();
 
@@ -292,10 +293,7 @@ public class JDAImpl implements JDA
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
-        String token = authConfig.getToken();
         setStatus(Status.LOGGING_IN);
-        if (token == null || token.isEmpty())
-            throw new InvalidTokenException("Provided token was null or empty!");
 
         Map<String, String> previousContext = null;
         ConcurrentMap<String, String> contextMap = metaConfig.getMdcContextMap();
@@ -663,6 +661,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
+    {
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getScheduledEventCache));
+    }
+
+    @Nonnull
+    @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return categories;
@@ -701,6 +706,13 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<ThreadChannel> getThreadChannelCache()
     {
         return threadChannelsCache;
+    }
+
+    @Nonnull
+    @Override
+    public SnowflakeCacheView<ForumChannel> getForumChannelCache()
+    {
+        return forumChannelsCache;
     }
 
     @Nonnull
@@ -1158,6 +1170,11 @@ public class JDAImpl implements JDA
     public SnowflakeCacheViewImpl<ThreadChannel> getThreadChannelsView()
     {
         return threadChannelsCache;
+    }
+
+    public SnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
+    {
+        return forumChannelsCache;
     }
 
     public SnowflakeCacheViewImpl<PrivateChannel> getPrivateChannelsView()

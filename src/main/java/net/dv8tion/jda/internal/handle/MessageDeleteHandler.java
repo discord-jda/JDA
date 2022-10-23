@@ -77,13 +77,8 @@ public class MessageDeleteHandler extends SocketHandler
         {
             ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
 
-            //If we have less than 50 messages then we can still accurately track how many messages are in the message count.
-            //Once we exceed 50 messages Discord caps this value, so we cannot confidently decrement it.
-            int messageCount = gThread.getMessageCount();
-            if (messageCount < 50 && messageCount > 0)
-            {
-                gThread.setMessageCount(messageCount - 1);
-            }
+            gThread.setMessageCount(Math.max(0, gThread.getMessageCount() - 1));
+            // Not decrementing totalMessageCount since that should include deleted as well
         }
 
         getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, messageId, channel));

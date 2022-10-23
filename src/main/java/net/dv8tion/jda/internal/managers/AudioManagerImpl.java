@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -74,8 +75,6 @@ public class AudioManagerImpl implements AudioManager
     {
         Checks.notNull(channel, "Provided AudioChannel");
 
-//        if (!AUDIO_SUPPORTED)
-//            throw new UnsupportedOperationException("Sorry! Audio is disabled due to an internal JDA error! Contact Dev!");
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("The provided AudioChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a AudioChannel from the proper Guild");
@@ -179,9 +178,9 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public AudioChannel getConnectedChannel()
+    public AudioChannelUnion getConnectedChannel()
     {
-        return audioConnection == null ? null : audioConnection.getChannel();
+        return audioConnection == null ? null : (AudioChannelUnion) audioConnection.getChannel();
     }
 
     @Override

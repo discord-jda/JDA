@@ -18,9 +18,10 @@ package net.dv8tion.jda.internal.entities.channel.mixin.middleman;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 
-public interface AudioChannelMixin<T extends AudioChannelMixin<T>> extends AudioChannel, GuildChannelMixin<T>
+public interface AudioChannelMixin<T extends AudioChannelMixin<T>>
+        extends AudioChannelUnion, StandardGuildChannelMixin<T>
 {
     // ---- State Accessors ----
     TLongObjectMap<Member> getConnectedMembersMap();

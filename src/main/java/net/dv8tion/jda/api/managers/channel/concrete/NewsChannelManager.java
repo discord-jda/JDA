@@ -25,6 +25,16 @@ import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildMessageChanne
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+/**
+ * Manager providing methods to modify a {@link NewsChannel}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("no-more-news")
+ *        .setType(ChannelType.TEXT) // Changes channel type to TextChannel
+ *        .queue();
+ * }</pre>
+ */
 public interface NewsChannelManager extends StandardGuildMessageChannelManager<NewsChannel, NewsChannelManager>
 {
     /**

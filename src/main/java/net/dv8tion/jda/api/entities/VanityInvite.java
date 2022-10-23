@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.internal.utils.EntityString;
+
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
@@ -88,6 +90,8 @@ public class VanityInvite
     @Override
     public String toString()
     {
-        return "VanityInvite(" + code + ")";
+        return new EntityString(this)
+                .addMetadata("code", code)
+                .toString();
     }
 }

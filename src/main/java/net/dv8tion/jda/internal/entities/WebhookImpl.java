@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 
@@ -244,7 +245,9 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     @Override
     public String toString()
     {
-        return "WH:" + getName() + "(" + id + ")";
+        return new EntityString(this)
+                .setName(getName())
+                .toString();
     }
 
     // TODO: Implement WebhookMessage

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.text;
 
-import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 
 import javax.annotation.Nonnull;
 

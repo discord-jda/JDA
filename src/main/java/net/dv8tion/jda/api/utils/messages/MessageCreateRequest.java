@@ -326,6 +326,10 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     {
         Checks.notNull(data, "MessageCreateData");
         return setContent(data.getContent())
+                .setAllowedMentions(data.getAllowedMentions())
+                .mentionUsers(data.getMentionedUsers())
+                .mentionRoles(data.getMentionedRoles())
+                .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
                 .setComponents(data.getComponents())

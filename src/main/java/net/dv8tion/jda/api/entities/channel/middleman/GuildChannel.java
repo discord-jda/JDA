@@ -55,9 +55,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
-     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
-     * This getter is not thread-safe and would require guards by the user.
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
      *
@@ -67,7 +64,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     ChannelManager<?, ?> getManager();
 
     /**
-     * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.
      * Deletes this GuildChannel.
      *
      * <p>Possible ErrorResponses include:
@@ -95,6 +91,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     AuditableRestAction<Void> delete();
 
     //TODO-v5: Docs
+    @Nonnull
     IPermissionContainer getPermissionContainer();
 
     /**

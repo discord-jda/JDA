@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.RichSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerUnion;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -82,6 +83,9 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
     @Override
     public String toString()
     {
-        return "RichSticker[" + getType() + "]:" + name + '(' + getId() + ')';
+        return new EntityString(this)
+                .setType(getType())
+                .setName(name)
+                .toString();
     }
 }

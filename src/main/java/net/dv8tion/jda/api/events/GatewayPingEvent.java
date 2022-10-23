@@ -87,10 +87,4 @@ public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
     {
         return next;
     }
-
-    @Override
-    public String toString()
-    {
-        return "GatewayUpdate[ping](" + getOldValue() + "->" + getNewValue() + ')';
-    }
 }

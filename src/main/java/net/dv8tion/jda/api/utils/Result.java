@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -295,6 +296,12 @@ public class Result<T>
     @Override
     public String toString()
     {
-        return isSuccess() ? "Result(success=" + value + ")" : "Result(error=" + error + ")";
+        final EntityString entityString = new EntityString(this);
+        if (isSuccess())
+            entityString.addMetadata("success", value);
+        else
+            entityString.addMetadata("error", error);
+
+        return entityString.toString();
     }
 }

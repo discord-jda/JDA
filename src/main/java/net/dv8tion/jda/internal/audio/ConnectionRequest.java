@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.audio;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 public class ConnectionRequest
 {
@@ -84,6 +85,10 @@ public class ConnectionRequest
     @Override
     public String toString()
     {
-        return stage + "(" + Long.toUnsignedString(guildId) + "#" + Long.toUnsignedString(channelId) + ")";
+        return new EntityString(this)
+                .setType(stage)
+                .addMetadata("guildId", Long.toUnsignedString(guildId))
+                .addMetadata("channelId", Long.toUnsignedString(channelId))
+                .toString();
     }
 }

@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
@@ -240,7 +241,10 @@ public class CommandImpl implements Command
     @Override
     public String toString()
     {
-        return "Command[" + getType() + "](" + getId() + ":" + getName() + ")";
+        return new EntityString(this)
+                .setType(getType())
+                .setName(getName())
+                .toString();
     }
 
     @Override

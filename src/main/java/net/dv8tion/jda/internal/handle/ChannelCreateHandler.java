@@ -46,7 +46,8 @@ public class ChannelCreateHandler extends SocketHandler
         }
 
         Channel channel = buildChannel(type, content, guildId);
-        if (channel == null) {
+        if (channel == null)
+        {
             WebSocketClient.LOG.debug("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: {}", content);
             return null;
         }
@@ -66,6 +67,7 @@ public class ChannelCreateHandler extends SocketHandler
             case VOICE: return builder.createVoiceChannel(content, guildId);
             case STAGE: return builder.createStageChannel(content, guildId);
             case CATEGORY: return builder.createCategory(content, guildId);
+            case FORUM: return builder.createForumChannel(content, guildId);
 
             default:
                 return null;

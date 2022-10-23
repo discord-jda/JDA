@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -45,7 +46,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, ChannelType type)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITHOUT_MESSAGE.compile(channel.getId()));
+        super(channel.getJDA(), Route.Channels.CREATE_THREAD.compile(channel.getId()));
         this.guild = channel.getGuild();
         this.type = type;
         this.parentMessageId = null;
@@ -55,12 +56,19 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, String parentMessageId)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD_WITH_MESSAGE.compile(channel.getId(), parentMessageId));
+        super(channel.getJDA(), Route.Channels.CREATE_THREAD_FROM_MESSAGE.compile(channel.getId(), parentMessageId));
         this.guild = channel.getGuild();
         this.type = channel.getType() == ChannelType.TEXT ? ChannelType.GUILD_PUBLIC_THREAD : ChannelType.GUILD_NEWS_THREAD;
         this.parentMessageId = parentMessageId;
 
         this.name = name;
+    }
+
+    @Nonnull
+    @Override
+    public ThreadChannelActionImpl reason(String reason)
+    {
+        return (ThreadChannelActionImpl) super.reason(reason);
     }
 
     @Nonnull
@@ -104,7 +112,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
     public ThreadChannelActionImpl setName(@Nonnull String name)
     {
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 100, "Name");
+        Checks.notLonger(name, Channel.MAX_NAME_LENGTH, "Name");
         this.name = name;
         return this;
     }
