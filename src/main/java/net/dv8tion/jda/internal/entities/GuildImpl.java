@@ -103,6 +103,7 @@ public class GuildImpl implements Guild
     private final JDAImpl api;
 
     private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ScheduledEvent> scheduledEventCache = new SortedSnowflakeCacheViewImpl<>(ScheduledEvent.class, ScheduledEvent::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
@@ -540,6 +541,44 @@ public class GuildImpl implements Guild
         return rulesChannel;
     }
 
+    @Nonnull
+    @Override
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new DeferredRestAction<>(getJDA(), ScheduledEvent.class,
+                () -> getScheduledEventById(id),
+                () ->
+                {
+                    Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id);
+                    return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createScheduledEvent(this, response.getObject()));
+                });
+    }
+
+    @Nonnull
+    @Override
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        return retrieveScheduledEventById(Long.toUnsignedString(id));
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime)
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new ScheduledEventActionImpl(name, location, startTime, endTime, this);
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime)
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new ScheduledEventActionImpl(name, channel, startTime, this);
+    }
+
+
     @Override
     public TextChannel getCommunityUpdatesChannel()
     {
@@ -624,6 +663,13 @@ public class GuildImpl implements Guild
     public MemberCacheView getMemberCache()
     {
         return memberCache;
+    }
+
+    @Nonnull
+    @Override
+    public SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
+    {
+        return scheduledEventCache;
     }
 
     @Nonnull
@@ -2118,6 +2164,11 @@ public class GuildImpl implements Guild
     }
 
     // -- Map getters --
+
+    public SortedSnowflakeCacheViewImpl<ScheduledEvent> getScheduledEventsView()
+    {
+        return scheduledEventCache;
+    }
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
     {
