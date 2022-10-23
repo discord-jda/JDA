@@ -145,12 +145,8 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 int flags = content.getInt("flags", 0);
 //                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
-                EmojiUnion defaultReaction = content.optObject("default_reaction_emoji")
-                        .map(json -> {
-                            json.opt("emoji_id").ifPresent(id -> json.put("id", id));
-                            json.opt("emoji_name").ifPresent(n -> json.put("name", n));
-                            return EntityBuilder.createEmoji(json);
-                        })
+                EmojiUnion defaultReaction =  content.optObject("default_reaction_emoji")
+                        .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
                         .orElse(null);
 
                 int oldFlags = forumChannel.getRawFlags();
