@@ -79,6 +79,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -2508,13 +2509,17 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
         for (Role role : roles)
             Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
 
-        if (isLoaded() || roles.isEmpty() || roles.contains(getPublicRole())) // Member#getRoles never contains the public role
+        if (isLoaded())
         {
             CompletableFuture<List<Member>> future = CompletableFuture.completedFuture(getMembersWithRoles(roles));
             return new GatewayTask<>(future, () -> {});
         }
 
-        return findMembers(member -> member.getRoles().containsAll(roles));
+        List<Role> rolesWithoutPublicRole = roles.stream().filter(role -> !role.isPublicRole()).collect(Collectors.toList());
+        if (rolesWithoutPublicRole.isEmpty())
+            return loadMembers();
+
+        return findMembers(member -> member.getRoles().containsAll(rolesWithoutPublicRole));
     }
 
     /**
