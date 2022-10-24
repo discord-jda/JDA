@@ -1234,7 +1234,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     default List<Member> getMembersWithRoles(@Nonnull Role... roles)
     {
-        return getMemberCache().getElementsWithRoles(roles);
+        return getMembersWithRoles(Arrays.asList(roles));
     }
 
     /**
@@ -1258,6 +1258,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles)
     {
+        for (Role role : roles)
+            Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
         return getMemberCache().getElementsWithRoles(roles);
     }
 
