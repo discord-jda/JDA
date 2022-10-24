@@ -204,7 +204,7 @@ public class WidgetImpl implements Widget
     @Override
     public String toString()
     {
-        final EntityString entityString = new EntityString("Widget");
+        final EntityString entityString = new EntityString(this);
         if (isAvailable())
             entityString.setName(getName());
         return entityString.toString();
@@ -397,7 +397,7 @@ public class WidgetImpl implements Widget
         @Override
         public String toString()
         {
-            return new EntityString("Widget.Member")
+            return new EntityString(this)
                     .setName(getName())
                     .toString();
         }
@@ -474,7 +474,7 @@ public class WidgetImpl implements Widget
         @Override
         public String toString()
         {
-            return new EntityString("Widget.VoiceChannel")
+            return new EntityString(this)
                     .setName(getName())
                     .toString();
         }
@@ -592,7 +592,7 @@ public class WidgetImpl implements Widget
 
         @Override
         public String toString() {
-            return new EntityString("Widget.VoiceState")
+            return new EntityString(this)
                     .setName(widget.getName())
                     .addMetadata("memberName", member.getEffectiveName())
                     .toString();
