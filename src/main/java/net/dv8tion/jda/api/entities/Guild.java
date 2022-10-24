@@ -1258,6 +1258,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles)
     {
+        Checks.noneNull(roles, "Roles");
         for (Role role : roles)
             Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
         return getMemberCache().getElementsWithRoles(roles);
