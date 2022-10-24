@@ -1234,7 +1234,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     default List<Member> getMembersWithRoles(@Nonnull Role... roles)
     {
-        Checks.noneNull(roles, "Roles");
+        Checks.notNull(roles, "Roles");
         return getMembersWithRoles(Arrays.asList(roles));
     }
 
