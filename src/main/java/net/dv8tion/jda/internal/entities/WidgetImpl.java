@@ -216,7 +216,7 @@ public class WidgetImpl implements Widget
             throw new IllegalStateException("The widget for this Guild is unavailable!");
     }
 
-    public static class MemberImpl implements Member
+    public class MemberImpl implements Member
     {
         private final boolean bot;
         private final long id;
@@ -403,7 +403,7 @@ public class WidgetImpl implements Widget
         }
     }
 
-    public static class VoiceChannelImpl implements VoiceChannel
+    public class VoiceChannelImpl implements VoiceChannel
     {
         private final int position;
         private final long id;
@@ -480,7 +480,7 @@ public class WidgetImpl implements Widget
         }
     }
 
-    public static class VoiceStateImpl implements VoiceState
+    public class VoiceStateImpl implements VoiceState
     {
         private final VoiceChannel channel;
         private final boolean muted;

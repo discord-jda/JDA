@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.dv8tion.jda.api.entities;
 
 import java.util.List;
@@ -7,8 +22,16 @@ import javax.annotation.Nullable;
 
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.api.utils.WidgetUtil;
 
-public interface Widget extends ISnowflake {
+/**
+ * Represents a guild's widget
+ * 
+ * @see WidgetUtil#getWidget(long)
+ * @see WidgetUtil#getWidget(String)
+ */
+public interface Widget extends ISnowflake
+{
 
     /**
      * Shows whether or not the widget for a guild is available. If this
@@ -26,7 +49,6 @@ public interface Widget extends ISnowflake {
      *
      * @return the name of the guild
      */
-
     @Nonnull
     String getName();
 
@@ -124,7 +146,16 @@ public interface Widget extends ISnowflake {
     @Nullable
     Member getMemberById(long id);
 
-    public static interface Member extends IMentionable {
+    /**
+     * Represents a member of a guild
+     * 
+     * @see     Widget#getMembers()
+     * @see     Widget#getMemberById(long)
+     * @see     Widget#getMemberById(String)
+     * @see     VoiceChannel#getMembers()
+     */
+    public interface Member extends IMentionable
+    {
 
         /**
          * Returns whether or not the given member is a bot account
@@ -284,7 +315,15 @@ public interface Widget extends ISnowflake {
 
     }
 
-    public static interface VoiceChannel extends ISnowflake {
+    /**
+     * Represents a voice channel
+     * 
+     * @see     Widget#getVoiceChannels()
+     * @see     Widget#getVoiceChannelById(long)
+     * @see     Widget#getVoiceChannelById(String)
+     */
+    public interface VoiceChannel extends ISnowflake
+    {
 
         /**
          * Gets the integer position of the channel
@@ -317,7 +356,13 @@ public interface Widget extends ISnowflake {
         Widget getWidget();
     }
 
-    public static interface VoiceState {
+    /**
+     * Represents a {@link net.dv8tion.jda.api.entities.Widget.Member Member's} voice state
+     * 
+     * @see     Member#getVoiceState()
+     */
+    public interface VoiceState
+    {
 
         /**
          * Gets the channel the member is in
@@ -384,9 +429,21 @@ public interface Widget extends ISnowflake {
          */
         boolean isDeafened();
 
+        /**
+         * Gets the {@link net.dv8tion.jda.api.entities.Widget.Member Member} to which this
+         * VoiceState belongs
+         * 
+         * @return the member
+         */
         @Nonnull
         Member getMember();
 
+        /**
+         * Gets the {@link net.dv8tion.jda.api.entities.Widget Widget} to which the
+         * {@link net.dv8tion.jda.api.entities.Widget.Member Member} of this VoiceState belongs
+         * 
+         * @return the widget
+         */
         @Nonnull
         Widget getWidget();
     }
