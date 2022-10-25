@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -144,18 +143,14 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     {
         return MiscUtil.locked(bucketLock, () -> {
             // Empty buckets will be removed by the cleanup worker, which also checks for rate limit parameters
-            AtomicInteger count = new AtomicInteger(0);
-            buckets.values()
+            int cancelled = (int) buckets.values()
                     .stream()
                     .map(Bucket::getRequests)
                     .flatMap(Collection::stream)
                     .filter(request -> !request.isPriority() && !request.isCancelled())
-                    .forEach(request -> {
-                        request.cancel();
-                        count.incrementAndGet();
-                    });
+                    .peek(Work::cancel)
+                    .count();
 
-            int cancelled = count.get();
             if (cancelled == 1)
                 log.warn("Cancelled 1 request!");
             else if (cancelled > 1)
@@ -182,7 +177,6 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             while (entries.hasNext())
             {
                 Map.Entry<String, Bucket> entry = entries.next();
-                String key = entry.getKey();
                 Bucket bucket = entry.getValue();
                 // Remove cancelled requests
                 bucket.requests.removeIf(Work::isSkipped);
@@ -190,10 +184,10 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 // Check if the bucket is empty
                 if (bucket.isUnlimited() && bucket.requests.isEmpty())
                     entries.remove(); // remove unlimited if requests are empty
-                    // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
+                // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
                 else if (bucket.requests.isEmpty() && bucket.reset <= getNow())
                     entries.remove();
-                    // Remove empty buckets when the rate limiter is stopped
+                // Remove empty buckets when the rate limiter is stopped
                 else if (bucket.requests.isEmpty() && isStopped)
                     entries.remove();
             }
