@@ -1280,6 +1280,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>Scheduled events are sorted by their start time, and events that start at the same time
      * are sorted by their snowflake ID.
      *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
      * @return {@link SortedSnowflakeCacheView}
      */
     @Nonnull
@@ -1290,6 +1292,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * name as the one provided.
      * <br>If there are no {@link ScheduledEvent ScheduledEvents} with the provided name,
      * then this returns an empty list.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
      *
      * @param  name
      *         The name used to filter the returned {@link ScheduledEvent} objects.
@@ -1314,6 +1318,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>If there is no {@link ScheduledEvent} with an id that matches the provided
      * one, then this returns {@code null}.
      *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
      * @param  id
      *         The id of the {@link ScheduledEvent}.
      *
@@ -1335,6 +1341,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br>If there is no {@link ScheduledEvent} with an id that matches the provided
      * one, then this returns {@code null}.
      *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
      * @param  id
      *         The id of the {@link ScheduledEvent}.
      *
@@ -1355,6 +1363,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * creates a new list with O(n) complexity. It is recommended to store this into
      * a local variable or use {@link #getScheduledEventCache()} and use its more efficient
      * versions of handling these values.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
      *
      * @return Possibly-empty immutable List of {@link ScheduledEvent ScheduledEvents}.
      */
