@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import okhttp3.Headers;
 import okhttp3.Response;

@@ -17,10 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.RestConfig;
-import net.dv8tion.jda.api.requests.RestRateLimiter;
+import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;

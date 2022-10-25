@@ -17,10 +17,10 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.Procedure;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;

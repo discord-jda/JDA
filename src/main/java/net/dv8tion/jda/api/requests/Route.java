@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests;
+package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
-import static net.dv8tion.jda.internal.requests.Method.*;
+import static net.dv8tion.jda.api.requests.Method.*;
 
 @SuppressWarnings("unused")
 public class Route

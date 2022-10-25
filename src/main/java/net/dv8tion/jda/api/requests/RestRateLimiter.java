@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.Response;
 
 import javax.annotation.Nonnull;
