@@ -268,6 +268,8 @@ public class Request<T>
 
     public void cancel()
     {
+        if (!this.isCancelled)
+            onCancelled();
         this.isCancelled = true;
     }
 
