@@ -443,7 +443,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 try
                 {
                     Response response = request.execute();
-                    updateBucket(request.getRoute(), response);
+                    if (response != null)
+                        updateBucket(request.getRoute(), response);
                     if (!request.isDone())
                         retry(request);
                 }

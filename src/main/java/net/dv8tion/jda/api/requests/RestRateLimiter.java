@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
 import okhttp3.Response;
+import org.jetbrains.annotations.Blocking;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,25 +34,85 @@ public interface RestRateLimiter
     String HASH_HEADER = "X-RateLimit-Bucket";
     String RETRY_AFTER_HEADER = "Retry-After";
 
+    /**
+     * Initialize your rate limiter with the provided configuration.
+     *
+     * @param config
+     *        The {@link RestConfig} to use
+     */
     void init(@Nonnull RateLimitConfig config);
 
+    /**
+     * Enqueue a new request.
+     *
+     * <p>Use {@link Work#getRoute()} to determine the correct bucket.
+     *
+     * @param task
+     *        The {@link Work} to enqueue
+     */
     void enqueue(@Nonnull Work task);
 
+    /**
+     * Indication to stop accepting new requests.
+     *
+     * @param shutdown
+     *        Whether to also cancel previously queued request
+     * @param callback
+     *        Function to call once all requests are completed, used for final cleanup
+     */
     void stop(boolean shutdown, @Nonnull Runnable callback);
 
+    /**
+     * Whether the queue has stopped accepting new requests.
+     *
+     * @return True, if the queue is stopped
+     */
     boolean isStopped();
 
+    /**
+     * Cancel all currently queued requests, which are not marked as {@link Work#isPriority() priority}.
+     *
+     * @return The number of cancelled requests
+     */
     int cancelRequests();
 
+    /**
+     * Type representing a pending request.
+     *
+     * <p>Use {@link #execute()} to run the request (on the calling thread) and {@link #isDone()} to discard it once completed.
+     */
     interface Work
     {
+        /**
+         * The {@link Route.CompiledRoute compiled route} of the request.
+         * <br>This is primarily used to handle rate-limit buckets.
+         *
+         * <p>To correctly handle rate-limits, it is recommended to use the {@link #HASH_HEADER bucket hash} header from the response.
+         *
+         * @return The {@link Route.CompiledRoute compiled route}
+         */
         @Nonnull
         Route.CompiledRoute getRoute();
 
+        /**
+         * The JDA instance which started the request.
+         *
+         * @return The JDA instance
+         */
         @Nonnull
         JDA getJDA();
 
+        /**
+         * Executes the request on the calling thread (blocking).
+         * <br>This might return null when the request has been skipped while executing.
+         * Retries for certain response codes are already handled by this method.
+         *
+         * <p>After completion, it is advised to use {@link #isDone()} to check whether the request should be retried.
+         *
+         * @return {@link Response} instance, used to update the rate-limit data
+         */
         @Nullable
+        @Blocking
         Response execute();
 
         /**
@@ -64,12 +125,33 @@ public interface RestRateLimiter
          */
         boolean isSkipped();
 
+        /**
+         * Whether the request is completed.
+         * <br>This means you should not try using {@link #execute()} again.
+         *
+         * @return True, if the request has completed.
+         */
         boolean isDone();
 
+        /**
+         * Requests marked as priority should not be cancelled.
+         *
+         * @return True, if this request is marked as priority
+         */
         boolean isPriority();
 
+        /**
+         * Whether this request was cancelled.
+         * <br>Similar to {@link #isSkipped()}, but only checks cancellation.
+         *
+         * @return True, if this request was cancelled
+         */
         boolean isCancelled();
 
+        /**
+         * Cancel the request.
+         * <br>Primarily used for {@link JDA#cancelRequests()}.
+         */
         void cancel();
     }
 
