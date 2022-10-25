@@ -46,10 +46,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
@@ -289,7 +286,11 @@ public class JDAImpl implements JDA
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
-        requester.getRateLimiter().init();
+        requester.getRateLimiter().init(new RestRateLimiter.RateLimitConfig(
+                threadConfig.getRateLimitPool(),
+                getSessionController().getGlobalRateLimitHandler(),
+                sessionConfig.isRelativeRateLimit())
+        );
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
@@ -501,7 +502,8 @@ public class JDAImpl implements JDA
     @Override
     public int cancelRequests()
     {
-        return requester.getRateLimiter().cancelRequests();
+// TODO        return requester.getRateLimiter().cancelRequests();
+        return 0;
     }
 
     @Nonnull
@@ -780,7 +782,7 @@ public class JDAImpl implements JDA
     @Override
     public synchronized void shutdownNow()
     {
-        requester.shutdown(); // stop all requests
+        requester.stop(true, this::shutdownRequester); // stop all requests
         shutdown();
         threadConfig.shutdownNow();
     }
@@ -811,8 +813,7 @@ public class JDAImpl implements JDA
         guildSetupController.close();
 
         // stop accepting new requests
-        if (requester.stop()) // returns true if no more requests will be executed
-            shutdownRequester(); // in that case shutdown entirely
+        requester.stop(false, this::shutdownRequester);
         threadConfig.shutdown();
 
         if (shutdownHook != null)
@@ -830,7 +831,6 @@ public class JDAImpl implements JDA
     public void shutdownRequester()
     {
         // Stop all request processing
-        requester.shutdown();
         threadConfig.shutdownRequester();
     }
 

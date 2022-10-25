@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.RestRateLimiter;
 
 import javax.annotation.Nonnull;
 
@@ -136,6 +137,12 @@ public interface SessionController
      *        The new global ratelimit
      */
     void setGlobalRatelimit(long ratelimit);
+
+    @Nonnull
+    default RestRateLimiter.GlobalRateLimit getGlobalRateLimitHandler()
+    {
+        return new GlobalRateLimiter(this);
+    }
 
     /**
      * Discord's gateway URL, which is used to receive events.
@@ -273,5 +280,27 @@ public interface SessionController
          *         If the calling thread is interrupted
          */
         void run(boolean isLast) throws InterruptedException;
+    }
+
+    class GlobalRateLimiter implements RestRateLimiter.GlobalRateLimit
+    {
+        private final SessionController controller;
+
+        public GlobalRateLimiter(SessionController controller)
+        {
+            this.controller = controller;
+        }
+
+        @Override
+        public long get()
+        {
+            return controller.getGlobalRatelimit();
+        }
+
+        @Override
+        public void set(long rateLimit)
+        {
+            controller.setGlobalRatelimit(rateLimit);
+        }
     }
 }
