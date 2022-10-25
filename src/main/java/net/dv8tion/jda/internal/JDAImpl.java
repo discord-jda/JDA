@@ -126,6 +126,7 @@ public class JDAImpl implements JDA
     protected final ThreadingConfig threadConfig;
     protected final SessionConfig sessionConfig;
     protected final MetaConfig metaConfig;
+    protected final RestConfig restConfig;
 
     protected WebSocketClient client;
     protected Requester requester;
@@ -144,20 +145,21 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
-        this(authConfig, null, null, null);
+        this(authConfig, null, null, null, null);
     }
 
     public JDAImpl(
             AuthorizationConfig authConfig, SessionConfig sessionConfig,
-            ThreadingConfig threadConfig, MetaConfig metaConfig)
+            ThreadingConfig threadConfig, MetaConfig metaConfig, RestConfig restConfig)
     {
         this.authConfig = authConfig;
         this.threadConfig = threadConfig == null ? ThreadingConfig.getDefault() : threadConfig;
         this.sessionConfig = sessionConfig == null ? SessionConfig.getDefault() : sessionConfig;
         this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
+        this.restConfig = restConfig == null ? new RestConfig() : restConfig;
         this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
+        this.requester = new Requester(this, this.authConfig, this.restConfig);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
@@ -182,7 +184,7 @@ public class JDAImpl implements JDA
 
     public boolean isRelativeRateLimit()
     {
-        return sessionConfig.isRelativeRateLimit();
+        return restConfig.isRelativeRateLimit();
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)

@@ -17,13 +17,11 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.requests.RestRateLimiter;
-import net.dv8tion.jda.api.requests.SequentialRestRateLimiter;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import okhttp3.Call;
@@ -46,12 +44,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.function.Consumer;
 
 public class Requester
 {
     public static final Logger LOG = JDALogger.getLog(Requester.class);
-    public static final String DISCORD_API_PREFIX = Helpers.format("https://discord.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
-    public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     @SuppressWarnings("deprecation")
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[0]);
     public static final MediaType MEDIA_TYPE_JSON  = MediaType.parse("application/json; charset=utf-8");
@@ -61,6 +58,9 @@ public class Requester
     protected final JDAImpl api;
     protected final AuthorizationConfig authConfig;
     private final RestRateLimiter rateLimiter;
+    private final String baseUrl;
+    private final String userAgent;
+    private final Consumer<? super okhttp3.Request.Builder> customBuilder;
 
     private final OkHttpClient httpClient;
 
@@ -70,19 +70,17 @@ public class Requester
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api)
-    {
-        this(api, ((JDAImpl) api).getAuthorizationConfig(), new SequentialRestRateLimiter());
-    }
-
-    public Requester(JDA api, AuthorizationConfig authConfig, RestRateLimiter rateLimiter)
+    public Requester(JDA api, AuthorizationConfig authConfig, RestConfig restConfig)
     {
         if (authConfig == null)
             throw new NullPointerException("Provided config was null!");
 
         this.authConfig = authConfig;
         this.api = (JDAImpl) api;
-        this.rateLimiter = rateLimiter;
+        this.rateLimiter = restConfig.getRateLimiter();
+        this.baseUrl = restConfig.getBaseUrl();
+        this.userAgent = restConfig.getUserAgent();
+        this.customBuilder = restConfig.getCustomBuilder();
         this.httpClient = this.api.getHttpClient();
     }
 
@@ -151,13 +149,24 @@ public class Requester
 
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
 
-        String url = DISCORD_API_PREFIX + route.getCompiledRoute();
+        String url = baseUrl + route.getCompiledRoute();
         builder.url(url);
 
         Request<?> apiRequest = task.request;
 
         applyBody(apiRequest, builder);
-        applyHeaders(apiRequest, builder, url.startsWith(DISCORD_API_PREFIX));
+        applyHeaders(apiRequest, builder);
+        if (customBuilder != null)
+        {
+            try
+            {
+                customBuilder.accept(builder);
+            }
+            catch (Exception e)
+            {
+                LOG.error("Custom request builder caused exception", e);
+            }
+        }
 
         okhttp3.Request request = builder.build();
 
@@ -269,16 +278,11 @@ public class Requester
         builder.method(method, body);
     }
 
-    private void applyHeaders(Request<?> apiRequest, okhttp3.Request.Builder builder, boolean authorized)
+    private void applyHeaders(Request<?> apiRequest, okhttp3.Request.Builder builder)
     {
-        builder.header("user-agent", USER_AGENT)
+        builder.header("user-agent", userAgent)
                .header("accept-encoding", "gzip")
                .header("x-ratelimit-precision", "millisecond"); // still sending this in case of regressions
-
-        //adding token to all requests to the discord api or cdn pages
-        //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
-        if (authorized)
-            builder.header("authorization", authConfig.getToken());
 
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing
