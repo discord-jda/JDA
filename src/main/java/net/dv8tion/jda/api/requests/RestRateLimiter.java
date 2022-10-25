@@ -24,15 +24,29 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ScheduledExecutorService;
 
+/**
+ * Interface used to handle requests to the Discord API.
+ * <p>Requests are handed to the rate-limiter via {@link #enqueue(Work)} and executed using {@link Work#execute()}.
+ * The rate-limiter is responsible to ensure that requests do not exceed the rate-limit set by Discord.
+ */
 public interface RestRateLimiter
 {
+    /** Total time (in seconds) of when the current rate limit bucket will reset. Can have decimals to match previous millisecond ratelimit precision */
     String RESET_AFTER_HEADER = "X-RateLimit-Reset-After";
+    /** Epoch time (seconds since 00:00:00 UTC on January 1, 1970) at which the rate limit resets */
     String RESET_HEADER = "X-RateLimit-Reset";
+    /** The number of requests that can be made */
     String LIMIT_HEADER = "X-RateLimit-Limit";
+    /** The number of remaining requests that can be made */
     String REMAINING_HEADER = "X-RateLimit-Remaining";
+    /** Returned only on HTTP 429 responses if the rate limit encountered is the global rate limit (not per-route) */
     String GLOBAL_HEADER = "X-RateLimit-Global";
+    /** A unique string denoting the rate limit being encountered (non-inclusive of top-level resources in the path) */
     String HASH_HEADER = "X-RateLimit-Bucket";
+    /** The number of seconds to wait before submitting another request */
     String RETRY_AFTER_HEADER = "Retry-After";
+    /** Returned only on HTTP 429 responses. Value can be user (per bot or user limit), global (per bot or user global limit), or shared (per resource limit) */
+    String SCOPE_HEADER = "X-RateLimit-Scope";
 
     /**
      * Initialize your rate limiter with the provided configuration.
@@ -155,12 +169,31 @@ public interface RestRateLimiter
         void cancel();
     }
 
+    /**
+     * Global rate-limit store.
+     * <br>This can be used to share the global rate-limit information between multiple instances.
+     */
     interface GlobalRateLimit
     {
+        /**
+         * The current global rate-limit reset time.
+         *
+         * @return The timestamp when the global rate-limit expires (unix timestamp in milliseconds)
+         */
         long get();
-        void set(long rateLimit);
+
+        /**
+         * Set the current global rate-limit reset time.
+         *
+         * @param timestamp
+         *        The timestamp when the global rate-limit expires (unix timestamp in milliseconds)
+         */
+        void set(long timestamp);
     }
 
+    /**
+     * Configuration for the rate-limiter.
+     */
     class RateLimitConfig
     {
         private final ScheduledExecutorService pool;
@@ -174,18 +207,34 @@ public interface RestRateLimiter
             this.isRelative = isRelative;
         }
 
+        /**
+         * The {@link ScheduledExecutorService} used to schedule rate-limit tasks.
+         *
+         * @return The {@link ScheduledExecutorService}
+         */
         @Nonnull
         public ScheduledExecutorService getPool()
         {
             return pool;
         }
 
+        /**
+         * The global rate-limit store.
+         *
+         * @return The global rate-limit store
+         */
         @Nonnull
         public GlobalRateLimit getGlobalRateLimit()
         {
             return globalRateLimit;
         }
 
+        /**
+         * Whether to use {@link #RESET_AFTER_HEADER}.
+         * <br>This is primarily to avoid NTP sync issues.
+         *
+         * @return True, if {@link #RESET_AFTER_HEADER} should be used instead of {@link #RESET_HEADER}
+         */
         public boolean isRelative()
         {
             return isRelative;

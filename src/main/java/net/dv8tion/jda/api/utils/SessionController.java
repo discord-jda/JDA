@@ -298,9 +298,9 @@ public interface SessionController
         }
 
         @Override
-        public void set(long rateLimit)
+        public void set(long timestamp)
         {
-            controller.setGlobalRatelimit(rateLimit);
+            controller.setGlobalRatelimit(timestamp);
         }
     }
 }

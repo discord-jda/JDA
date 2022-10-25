@@ -317,7 +317,7 @@ public class Requester
 
     private long parseRetry(okhttp3.Response response)
     {
-        String retryAfter = response.header("retry-after", "0");
+        String retryAfter = response.header(RestRateLimiter.RETRY_AFTER_HEADER, "0");
         return (long) (Double.parseDouble(retryAfter) * 1000);
     }
 
@@ -382,11 +382,10 @@ public class Requester
             request.cancel();
         }
 
-        private boolean handleResponse(okhttp3.Response response, Set<String> rays)
+        private void handleResponse(okhttp3.Response response, Set<String> rays)
         {
             done = true;
             request.handleResponse(new Response(response, -1, rays));
-            return true;
         }
     }
 }

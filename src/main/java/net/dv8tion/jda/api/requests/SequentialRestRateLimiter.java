@@ -244,6 +244,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 boolean global = headers.get(GLOBAL_HEADER) != null;
                 boolean cloudflare = headers.get("via") == null;
                 String hash = headers.get(HASH_HEADER);
+                String scope = headers.get(SCOPE_HEADER);
                 long now = getNow();
 
                 // Create a new bucket for the hash if needed
@@ -267,7 +268,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                     if (global)
                     {
                         config.getGlobalRateLimit().set(now + retryAfter);
-                        log.error("Encountered global rate limit! Retry-After: {} ms", retryAfter);
+                        log.error("Encountered global rate limit! Retry-After: {} ms Scope: {}", retryAfter, scope);
                     }
                     // Handle cloudflare rate limits, this applies to all routes and uses seconds for retry-after
                     else if (cloudflare)
@@ -285,9 +286,9 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                         // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
                         // unless its a long retry-after delay (more than a minute)
                         if (firstHit)
-                            log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                            log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms Scope: {}", baseRoute, bucket.bucketId, retryAfter, scope);
                         else
-                            log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                            log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms Scope: {}", baseRoute, bucket.bucketId, retryAfter, scope);
                     }
                     return bucket;
                 }
