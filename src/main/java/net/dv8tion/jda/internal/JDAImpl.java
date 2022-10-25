@@ -504,8 +504,7 @@ public class JDAImpl implements JDA
     @Override
     public int cancelRequests()
     {
-// TODO        return requester.getRateLimiter().cancelRequests();
-        return 0;
+        return restConfig.getRateLimiter().cancelRequests();
     }
 
     @Nonnull
