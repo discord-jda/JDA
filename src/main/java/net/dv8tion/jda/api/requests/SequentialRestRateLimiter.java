@@ -96,21 +96,41 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     @Override
     public void enqueue(@NotNull RestRateLimiter.Work task)
     {
-        Bucket bucket = getBucket(task.getRoute(), true);
-        bucket.enqueue(task);
-        runBucket(bucket);
+        MiscUtil.locked(bucketLock, () -> {
+            Bucket bucket = getBucket(task.getRoute(), true);
+            bucket.enqueue(task);
+            runBucket(bucket);
+        });
     }
 
     @Override
     public void stop(boolean shutdown, @Nonnull Runnable callback)
     {
-        if (!isStopped)
-        {
-            isStopped = true;
-            shutdownHandle.thenRun(callback);
-        }
-        if (shutdown && !isShutdown)
-            shutdown();
+        MiscUtil.locked(bucketLock, () -> {
+            boolean doShutdown = shutdown;
+            if (!isStopped)
+            {
+                isStopped = true;
+                shutdownHandle.thenRun(callback);
+                if (!doShutdown)
+                {
+                    int size = buckets.size();
+                    int average = (int) Math.ceil(
+                            buckets.values().stream()
+                                    .map(Bucket::getRequests)
+                                    .mapToInt(Collection::size)
+                                    .average().orElse(0)
+                    );
+
+                    if (size > 0 && average > 0)
+                        log.info("Waiting for {} bucket(s) to finish. Average queue size of {} requests", size, average);
+                    else if (size == 0)
+                        doShutdown = true;
+                }
+            }
+            if (doShutdown && !isShutdown)
+                shutdown();
+        });
     }
 
     @Override
