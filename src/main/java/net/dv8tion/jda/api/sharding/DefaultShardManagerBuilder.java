@@ -571,6 +571,18 @@ public class  DefaultShardManagerBuilder
         return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
     }
 
+    /**
+     * Custom {@link RestConfig} to use.
+     * <br>This can be used to customize how rate-limits are handled and configure a custom http proxy.
+     *
+     * @param  provider
+     *         The {@link RestConfig} provider to use
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public DefaultShardManagerBuilder setRestConfigProvider(@Nonnull IntFunction<? extends RestConfig> provider)
     {
@@ -579,6 +591,18 @@ public class  DefaultShardManagerBuilder
         return this;
     }
 
+    /**
+     * Custom {@link RestConfig} to use.
+     * <br>This can be used to customize how rate-limits are handled and configure a custom http proxy.
+     *
+     * @param  config
+     *         The {@link RestConfig} to use
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public DefaultShardManagerBuilder setRestConfig(@Nonnull RestConfig config)
     {

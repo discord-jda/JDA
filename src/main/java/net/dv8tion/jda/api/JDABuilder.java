@@ -571,6 +571,18 @@ public class JDABuilder
         return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
     }
 
+    /**
+     * Custom {@link RestConfig} to use for this JDA instance.
+     * <br>This can be used to customize how rate-limits are handled and configure a custom http proxy.
+     *
+     * @param  config
+     *         The {@link RestConfig} to use
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
     @Nonnull
     public JDABuilder setRestConfig(@Nonnull RestConfig config)
     {
