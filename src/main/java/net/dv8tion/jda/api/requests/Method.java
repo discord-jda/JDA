@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.requests;
 
+/**
+ * Enum used to specify the HTTP method to use for a request.
+ */
 public enum Method
 {
     DELETE,
