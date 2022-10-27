@@ -27,12 +27,14 @@ import java.util.Set;
 
 import static net.dv8tion.jda.api.requests.Method.*;
 
+/**
+ * Routes for API endpoints.
+ */
 @SuppressWarnings("unused")
 public class Route
 {
     public static class Misc
     {
-        public static final Route TRACK =             new Route(POST, "track");
         public static final Route GET_VOICE_REGIONS = new Route(GET,  "voice/regions");
         public static final Route GATEWAY =           new Route(GET,  "gateway");
         public static final Route GATEWAY_BOT =       new Route(GET,  "gateway/bot");
@@ -40,24 +42,7 @@ public class Route
 
     public static class Applications
     {
-        // Bot only
         public static final Route GET_BOT_APPLICATION =           new Route(GET,    "oauth2/applications/@me");
-
-        // Client only
-        public static final Route GET_APPLICATIONS =              new Route(GET,    "oauth2/applications");
-        public static final Route CREATE_APPLICATION =            new Route(POST,   "oauth2/applications");
-        public static final Route GET_APPLICATION =               new Route(GET,    "oauth2/applications/{application_id}");
-        public static final Route MODIFY_APPLICATION =            new Route(PUT,    "oauth2/applications/{application_id}");
-        public static final Route DELETE_APPLICATION =            new Route(DELETE, "oauth2/applications/{application_id}");
-
-        public static final Route CREATE_BOT =                    new Route(POST,   "oauth2/applications/{application_id}/bot");
-
-        public static final Route RESET_APPLICATION_SECRET =      new Route(POST,   "oauth2/applications/{application_id}/reset");
-        public static final Route RESET_BOT_TOKEN =               new Route(POST,   "oauth2/applications/{application_id}/bot/reset");
-
-        public static final Route GET_AUTHORIZED_APPLICATIONS =   new Route(GET,    "oauth2/tokens");
-        public static final Route GET_AUTHORIZED_APPLICATION =    new Route(GET,    "oauth2/tokens/{auth_id}");
-        public static final Route DELETE_AUTHORIZED_APPLICATION = new Route(DELETE, "oauth2/tokens/{auth_id}");
     }
 
     public static class Interactions
@@ -96,28 +81,11 @@ public class Route
         public static final Route LEAVE_GUILD =            new Route(DELETE, "users/@me/guilds/{guild_id}");
         public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");
         public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,   "users/@me/channels");
-
-        // Client only
-        public static final Route USER_SETTINGS =       new Route(GET, "users/@me/settings");
-        public static final Route GET_CONNECTIONS =     new Route(GET, "users/@me/connections");
-        public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend-suggestions");
-        public static final Route GET_RECENT_MENTIONS = new Route(GET, "users/@me/mentions");
     }
 
     public static class Users
     {
         public static final Route GET_USER    = new Route(GET, "users/{user_id}");
-        public static final Route GET_PROFILE = new Route(GET, "users/{user_id}/profile");
-        public static final Route GET_NOTE    = new Route(GET, "users/@me/notes/{user_id}");
-        public static final Route SET_NOTE    = new Route(PUT, "users/@me/notes/{user_id}");
-    }
-
-    public static class Relationships
-    {
-        public static final Route GET_RELATIONSHIPS =   new Route(GET,    "users/@me/relationships"); // Get Friends/Blocks/Incoming/Outgoing
-        public static final Route GET_RELATIONSHIP =    new Route(GET,    "users/@me/relationships/{user_id}");
-        public static final Route ADD_RELATIONSHIP =    new Route(PUT,    "users/@me/relationships/{user_id}"); // Add Friend/ Block
-        public static final Route DELETE_RELATIONSHIP = new Route(DELETE, "users/@me/relationships/{user_id}"); // Delete Block/Unfriend/Ignore Request/Cancel Outgoing
     }
 
     public static class Guilds
@@ -166,12 +134,8 @@ public class Route
         public static final Route DELETE_SCHEDULED_EVENT    = new Route(DELETE, "guilds/{guild_id}/scheduled-events/{scheduled_event_id}");
         public static final Route GET_SCHEDULED_EVENT_USERS = new Route(GET,    "guilds/{guild_id}/scheduled-events/{scheduled_event_id}/users");
 
-        //Client Only
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
         public static final Route DELETE_GUILD = new Route(POST, "guilds/{guild_id}/delete");
-        public static final Route ACK_GUILD =    new Route(POST, "guilds/{guild_id}/ack");
-
-        public static final Route MODIFY_NOTIFICATION_SETTINGS = new Route(PATCH, "users/@me/guilds/{guild_id}/settings");
     }
 
     public static class Emojis
@@ -207,7 +171,6 @@ public class Route
         public static final Route MODIFY_WEBHOOK       = new Route(PATCH,  "webhooks/{webhook_id}");
         public static final Route MODIFY_TOKEN_WEBHOOK = new Route(PATCH,  "webhooks/{webhook_id}/{token}");
 
-        // Separate
         public static final Route EXECUTE_WEBHOOK        = new Route(POST,   "webhooks/{webhook_id}/{token}");
         public static final Route EXECUTE_WEBHOOK_EDIT   = new Route(PATCH,  "webhooks/{webhook_id}/{token}/messages/{message_id}");
         public static final Route EXECUTE_WEBHOOK_DELETE = new Route(DELETE, "webhooks/{webhook_id}/{token}/messages/{message_id}");
@@ -251,14 +214,6 @@ public class Route
         public static final Route LIST_PUBLIC_ARCHIVED_THREADS =            new Route(GET,      "channels/{channel_id}/threads/archived/public");
         public static final Route LIST_PRIVATE_ARCHIVED_THREADS =           new Route(GET,      "channels/{channel_id}/threads/archived/private");
         public static final Route LIST_JOINED_PRIVATE_ARCHIVED_THREADS =    new Route(GET,      "channels/{channel_id}/users/@me/threads/archived/private");
-
-        // Client Only
-        public static final Route GET_RECIPIENTS =   new Route(GET,    "channels/{channel_id}/recipients");
-        public static final Route GET_RECIPIENT =    new Route(GET,    "channels/{channel_id}/recipients/{user_id}");
-        public static final Route ADD_RECIPIENT =    new Route(PUT,    "channels/{channel_id}/recipients/{user_id}");
-        public static final Route REMOVE_RECIPIENT = new Route(DELETE, "channels/{channel_id}/recipients/{user_id}");
-        public static final Route START_CALL =       new Route(POST,   "channels/{channel_id}/call/ring");
-        public static final Route STOP_CALL =        new Route(POST,   "channels/{channel_id}/call/stop_ringing"); // aka deny or end call
     }
 
     public static class StageInstances
@@ -287,12 +242,8 @@ public class Route
         public static final Route GET_MESSAGE_HISTORY = new Route(GET,    "channels/{channel_id}/messages");
         public static final Route CROSSPOST_MESSAGE =   new Route(POST,   "channels/{channel_id}/messages/{message_id}/crosspost");
 
-        //Bot only
         public static final Route GET_MESSAGE =     new Route(GET,  "channels/{channel_id}/messages/{message_id}");
         public static final Route DELETE_MESSAGES = new Route(POST, "channels/{channel_id}/messages/bulk-delete");
-
-        //Client only
-        public static final Route ACK_MESSAGE = new Route(POST, "channels/{channel_id}/messages/{message_id}/ack");
     }
 
     public static class Invites
@@ -369,11 +320,13 @@ public class Route
             throw new IllegalArgumentException("An argument does not have both {}'s for route: " + method + "  " + route);
     }
 
+    @Nonnull
     public Method getMethod()
     {
         return method;
     }
 
+    @Nonnull
     public String getRoute()
     {
         return route;
@@ -384,7 +337,8 @@ public class Route
         return paramCount;
     }
 
-    public CompiledRoute compile(String... params)
+    @Nonnull
+    public CompiledRoute compile(@Nonnull String... params)
     {
         if (params.length != paramCount)
         {
@@ -471,21 +425,25 @@ public class Route
             return new CompiledRoute(baseRoute, newRoute.toString(), major, true);
         }
 
+        @Nonnull
         public String getMajorParameters()
         {
             return major;
         }
 
+        @Nonnull
         public String getCompiledRoute()
         {
             return compiledRoute;
         }
 
+        @Nonnull
         public Route getBaseRoute()
         {
             return baseRoute;
         }
 
+        @Nonnull
         public Method getMethod()
         {
             return baseRoute.method;
