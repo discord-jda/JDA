@@ -138,6 +138,15 @@ public interface SessionController
      */
     void setGlobalRatelimit(long ratelimit);
 
+    /**
+     * Store for global rate limit.
+     * <br>This can be used to share the global rate-limit information between shards on the same IP.
+     *
+     * <p>By default, this uses {@link #getGlobalRatelimit()} and {@link #setGlobalRatelimit(long)}.
+     * If replaced, those methods will not be used.
+     *
+     * @return The global rate limit store
+     */
     @Nonnull
     default RestRateLimiter.GlobalRateLimit getGlobalRateLimitHandler()
     {
@@ -147,7 +156,7 @@ public interface SessionController
     /**
      * Discord's gateway URL, which is used to receive events.
      *
-     * Called by JDA when starting a new gateway session (Connecting, Reconnecting).
+     * <p>Called by JDA when starting a new gateway session (Connecting, Reconnecting).
      *
      * @return The gateway endpoint
      */
@@ -282,25 +291,39 @@ public interface SessionController
         void run(boolean isLast) throws InterruptedException;
     }
 
+    /**
+     * Wrapper for {@link #getGlobalRatelimit()} and {@link #setGlobalRatelimit(long)}.
+     */
     class GlobalRateLimiter implements RestRateLimiter.GlobalRateLimit
     {
         private final SessionController controller;
 
-        public GlobalRateLimiter(SessionController controller)
+        public GlobalRateLimiter(@Nonnull SessionController controller)
         {
             this.controller = controller;
         }
 
+        /**
+         * Forwarding to {@link SessionController#getGlobalRatelimit()}
+         *
+         * @return The current global ratelimit
+         */
         @Override
         public long get()
         {
             return controller.getGlobalRatelimit();
         }
 
+        /**
+         * Forwarding to {@link SessionController#setGlobalRatelimit(long)}
+         *
+         * @param ratelimit
+         *        The new global ratelimit
+         */
         @Override
-        public void set(long timestamp)
+        public void set(long ratelimit)
         {
-            controller.setGlobalRatelimit(timestamp);
+            controller.setGlobalRatelimit(ratelimit);
         }
     }
 }
