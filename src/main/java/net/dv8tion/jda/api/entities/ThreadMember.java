@@ -28,9 +28,19 @@ public interface ThreadMember extends IMentionable
     @Nonnull
     JDA getJDA();
 
+    /**
+     * The {@link Guild} containing this {@link ThreadMember ThreadMembers} related {@link ThreadChannel}.
+     *
+     * @return The {@link Guild} containing this {@link ThreadMember ThreadMembers} related {@link ThreadChannel}.
+     */
     @Nonnull
     Guild getGuild();
 
+    /**
+     * The {@link ThreadChannel} this entity is related to.
+     *
+     * @return The {@link ThreadChannel} this entity is related to.
+     */
     @Nonnull
     ThreadChannel getThread();
 
@@ -41,9 +51,18 @@ public interface ThreadMember extends IMentionable
     @Nonnull
     Member getMember();
 
+    /**
+     * The time this {@link ThreadMember} joined its related {@link ThreadChannel}.
+     *
+     * @return The time this {@link ThreadMember} joined its related {@link ThreadChannel}.
+     */
     @Nonnull
     OffsetDateTime getTimeJoined();
 
+    /**
+     *
+     * @return Whether this {@link ThreadMember} owns the {@link ThreadChannel} it's related to.
+     */
     default boolean isThreadOwner()
     {
         return getThread().getOwnerIdLong() == getIdLong();

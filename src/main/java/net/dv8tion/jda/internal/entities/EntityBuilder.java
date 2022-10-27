@@ -197,6 +197,23 @@ public class EntityBuilder
         }
     }
 
+    private void createScheduledEventPass(GuildImpl guildObj, DataArray array)
+    {
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
+            return;
+        SnowflakeCacheViewImpl<ScheduledEvent> eventView = guildObj.getScheduledEventsView();
+        for (int i = 0; i < array.length(); i++)
+        {
+            DataObject object = array.getObject(i);
+            if (object.isNull("id"))
+            {
+                LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
+                continue;
+            }
+            createScheduledEvent(guildObj, object);
+        }
+    }
+
     private void createGuildStickerPass(GuildImpl guildObj, DataArray array)
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.STICKER))
@@ -240,6 +257,7 @@ public class EntityBuilder
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
+        final DataArray scheduledEventsArray = guildJson.getArray("guild_scheduled_events");
         final DataArray emojisArray = guildJson.getArray("emojis");
         final DataArray stickersArray = guildJson.getArray("stickers");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
@@ -362,6 +380,7 @@ public class EntityBuilder
             }
         }
 
+        createScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmojiPass(guildObj, emojisArray);
         createGuildStickerPass(guildObj, stickersArray);
         guildJson.optArray("stage_instances")
@@ -960,6 +979,56 @@ public class EntityBuilder
                 .setManaged(json.getBoolean("managed"))
                 .setAvailable(json.getBoolean("available", true));
     }
+
+    public ScheduledEvent createScheduledEvent(GuildImpl guild, DataObject json)
+    {
+        final long id = json.getLong("id");
+        ScheduledEventImpl scheduledEvent = (ScheduledEventImpl) guild.getScheduledEventsView().get(id);
+        if (scheduledEvent == null)
+        {
+            SnowflakeCacheViewImpl<ScheduledEvent> scheduledEventView = guild.getScheduledEventsView();
+            try (UnlockHook hook = scheduledEventView.writeLock())
+            {
+                scheduledEvent = new ScheduledEventImpl(id, guild);
+                if (getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
+                {
+                    scheduledEventView.getMap().put(id, scheduledEvent);
+                }
+            }
+        }
+
+        scheduledEvent.setName(json.getString("name"))
+                .setDescription(json.getString("description", null))
+                .setStatus(ScheduledEvent.Status.fromKey(json.getInt("status", -1)))
+                .setInterestedUserCount(json.getInt("user_count", -1))
+                .setStartTime(json.getOffsetDateTime("scheduled_start_time"))
+                .setEndTime(json.getOffsetDateTime("scheduled_end_time", null))
+                .setImage(json.getString("image", null));
+
+        final long creatorId = json.getLong("creator_id", 0);
+        scheduledEvent.setCreatorId(creatorId);
+        if (creatorId != 0)
+        {
+            if (json.hasKey("creator"))
+                scheduledEvent.setCreator(createUser(json.getObject("creator")));
+            else
+                scheduledEvent.setCreator(getJDA().getUserById(creatorId));
+        }
+        final ScheduledEvent.Type type = ScheduledEvent.Type.fromKey(json.getInt("entity_type"));
+        scheduledEvent.setType(type);
+        switch (type)
+        {
+        case STAGE_INSTANCE:
+        case VOICE:
+            scheduledEvent.setLocation(json.getString("channel_id"));
+            break;
+        case EXTERNAL:
+            String externalLocation = json.getObject("entity_metadata").getString("location");
+            scheduledEvent.setLocation(externalLocation);
+        }
+        return scheduledEvent;
+    }
+
 
     public Category createCategory(DataObject json, long guildId)
     {

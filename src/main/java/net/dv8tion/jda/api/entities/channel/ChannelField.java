@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -280,6 +281,9 @@ public enum ChannelField
     @Override
     public String toString()
     {
-        return "ChannelField." + name() + '(' + fieldName + ')';
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("fieldName", fieldName)
+                .toString();
     }
 }

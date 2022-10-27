@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildMessageChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.TextChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -38,7 +39,8 @@ import java.util.stream.Collectors;
 
 public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<TextChannelImpl> implements
         TextChannel,
-        DefaultGuildChannelUnion
+        DefaultGuildChannelUnion,
+        ISlowmodeChannelMixin<TextChannelImpl>
 {
     private int slowmode;
 
@@ -109,13 +111,5 @@ public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<Tex
     protected void onPositionChange()
     {
         getGuild().getTextChannelsView().clearCachedLists();
-    }
-
-    // -- Object overrides --
-
-    @Override
-    public String toString()
-    {
-        return "TC:" + getName() + '(' + id + ')';
     }
 }

@@ -41,6 +41,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.ThreadChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
@@ -60,7 +61,8 @@ import java.util.stream.LongStream;
 
 public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements
         ThreadChannel,
-        GuildMessageChannelMixin<ThreadChannelImpl>
+        GuildMessageChannelMixin<ThreadChannelImpl>,
+        ISlowmodeChannelMixin<ThreadChannelImpl>
 {
     private final ChannelType type;
     private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
@@ -447,14 +449,6 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public int getRawFlags()
     {
         return flags;
-    }
-
-    // -- Object overrides --
-
-    @Override
-    public String toString()
-    {
-        return "ThC:" + getName() + '(' + id + ')';
     }
 
     private void checkUnarchived()

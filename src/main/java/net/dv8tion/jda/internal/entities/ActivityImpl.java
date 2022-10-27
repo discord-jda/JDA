@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.RichPresence;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -124,9 +125,12 @@ public class ActivityImpl implements Activity
     @Override
     public String toString()
     {
-        if (url != null)
-            return String.format("Activity(%s | %s)", name, url);
-        else
-            return String.format("Activity(%s)", name);
+        final EntityString entityString = new EntityString(this)
+                .setType(type)
+                .setName(name);
+        if (url != null) 
+            entityString.addMetadata("url", url);
+
+        return entityString.toString();
     }
 }

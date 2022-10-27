@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -81,7 +82,9 @@ public class UnicodeEmojiImpl implements UnicodeEmoji, EmojiUnion
     @Override
     public String toString()
     {
-        return "UnicodeEmoji(" + getAsCodepoints() + ')';
+        return new EntityString(this)
+                .addMetadata("codepoints", getAsCodepoints())
+                .toString();
     }
 
     @Nonnull

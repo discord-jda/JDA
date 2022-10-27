@@ -25,7 +25,8 @@ public interface ICategorizableChannelMixin<T extends ICategorizableChannelMixin
 {
     // ---- Default implementations of interface ----
     @Override
-    default boolean isSynced() {
+    default boolean isSynced()
+    {
         IPermissionContainerMixin<?> parent = (IPermissionContainerMixin<?>) getParentCategory();
         if (parent == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
