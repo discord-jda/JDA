@@ -22,24 +22,33 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
-//TODO-v5: docs
+/**
+ * A {@link ThreadMember} represents a {@link Member Member's} membership in a Thread.
+ * <br>ThreadMembers are subscribed to {@link ThreadChannel Threads} and receive updates for them, like new message and thread changes.
+ * Only subscribed members are shown in a thread's sidebar.
+ */
 public interface ThreadMember extends IMentionable
 {
+    /**
+     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this threadmember.
+     *
+     * @return the corresponding JDA instance
+     */
     @Nonnull
     JDA getJDA();
 
     /**
-     * The {@link Guild} containing this {@link ThreadMember ThreadMembers} related {@link ThreadChannel}.
+     * The {@link Guild} containing this {@link ThreadMember ThreadMembers} and it's {@link ThreadChannel}.
      *
-     * @return The {@link Guild} containing this {@link ThreadMember ThreadMembers} related {@link ThreadChannel}.
+     * @return The {@link Guild} containing this {@link ThreadMember ThreadMembers} and it's {@link ThreadChannel}.
      */
     @Nonnull
     Guild getGuild();
 
     /**
-     * The {@link ThreadChannel} this entity is related to.
+     * The {@link ThreadChannel} this threadmember is subscribed to.
      *
-     * @return The {@link ThreadChannel} this entity is related to.
+     * @return The {@link ThreadChannel} this threadmember is subscribed to.
      */
     @Nonnull
     ThreadChannel getThread();
@@ -48,20 +57,26 @@ public interface ThreadMember extends IMentionable
     @Nonnull
     User getUser();
 
+    /**
+     * The corresponding {@link Member GuildMember} to this threadmember.
+     *
+     * @return The corresponding {@link Member GuildMember} to this threadmember.
+     */
     @Nonnull
     Member getMember();
 
     /**
-     * The time this {@link ThreadMember} joined its related {@link ThreadChannel}.
+     * The time this {@link ThreadMember} joined the subscribed {@link ThreadChannel}.
      *
-     * @return The time this {@link ThreadMember} joined its related {@link ThreadChannel}.
+     * @return The time this {@link ThreadMember} joined the subscribed {@link ThreadChannel}.
      */
     @Nonnull
     OffsetDateTime getTimeJoined();
 
     /**
+     * Whether this {@link ThreadMember} owns the subscribed {@link ThreadChannel}.
      *
-     * @return Whether this {@link ThreadMember} owns the {@link ThreadChannel} it's related to.
+     * @return Whether this {@link ThreadMember} owns the subscribed {@link ThreadChannel}.
      */
     default boolean isThreadOwner()
     {
