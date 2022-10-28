@@ -121,18 +121,14 @@ public class RestConfig
      * however this is not recommended as Discord blocks requests with invalid or misbehaving User-Agents.
      *
      * @param  suffix
-     *         The suffix to append to the User-Agent
-     *
-     * @throws IllegalArgumentException
-     *         If the provided suffix is null
+     *         The suffix to append to the User-Agent, null to unset
      *
      * @return The current RestConfig for chaining convenience
      */
     @Nonnull
-    public RestConfig setUserAgentSuffix(@Nonnull String suffix)
+    public RestConfig setUserAgentSuffix(@Nullable String suffix)
     {
-        Checks.notNull(suffix, "Suffix");
-        if (Helpers.isBlank(suffix))
+        if (suffix == null || Helpers.isBlank(suffix))
             this.userAgent = USER_AGENT;
         else
             this.userAgent = USER_AGENT + " " + suffix;
