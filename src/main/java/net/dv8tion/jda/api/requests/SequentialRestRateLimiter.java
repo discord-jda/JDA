@@ -21,7 +21,6 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import okhttp3.Headers;
 import okhttp3.Response;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -93,7 +92,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     }
 
     @Override
-    public void enqueue(@NotNull RestRateLimiter.Work task)
+    public void enqueue(@Nonnull RestRateLimiter.Work task)
     {
         MiscUtil.locked(bucketLock, () -> {
             Bucket bucket = getBucket(task.getRoute(), true);
