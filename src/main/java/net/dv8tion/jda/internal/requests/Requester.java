@@ -279,6 +279,7 @@ public class Requester
     {
         builder.header("user-agent", userAgent)
                .header("accept-encoding", "gzip")
+               .header("authorization", authConfig.getToken())
                .header("x-ratelimit-precision", "millisecond"); // still sending this in case of regressions
 
         // Apply custom headers like X-Audit-Log-Reason
@@ -305,9 +306,9 @@ public class Requester
         this.retryOnTimeout = retryOnTimeout;
     }
 
-    public void stop(boolean shutdowm, Runnable callback)
+    public void stop(boolean shutdown, Runnable callback)
     {
-        rateLimiter.stop(shutdowm, callback);
+        rateLimiter.stop(shutdown, callback);
     }
 
     private static boolean shouldRetry(int code)
