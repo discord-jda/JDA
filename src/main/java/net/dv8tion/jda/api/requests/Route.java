@@ -17,10 +17,10 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
@@ -362,7 +362,7 @@ public class Route
                     major.add(paramName + "=" + params[i]);
             }
 
-            compiledRoute.replace(paramStart, paramEnd + 1, params[i]);
+            compiledRoute.replace(paramStart, paramEnd + 1, EncodingUtil.encodeUTF8(params[i]));
         }
 
         return new CompiledRoute(this, compiledRoute.toString(), major.isEmpty() ? "n/a" : String.join(":", major));
@@ -395,34 +395,27 @@ public class Route
         private final Route baseRoute;
         private final String major;
         private final String compiledRoute;
-        private final boolean hasQueryParams;
+        private final StringBuilder query = new StringBuilder();
 
-        private CompiledRoute(Route baseRoute, String compiledRoute, String major, boolean hasQueryParams)
+        private CompiledRoute(Route baseRoute, String compiledRoute, String major)
         {
             this.baseRoute = baseRoute;
             this.compiledRoute = compiledRoute;
             this.major = major;
-            this.hasQueryParams = hasQueryParams;
-        }
-
-        private CompiledRoute(Route baseRoute, String compiledRoute, String major)
-        {
-            this(baseRoute, compiledRoute, major, false);
         }
 
         @Nonnull
-        @CheckReturnValue
-        public CompiledRoute withQueryParams(String... params)
+        public CompiledRoute withQueryParams(@Nonnull String... params)
         {
-            Checks.check(params.length >= 2, "params length must be at least 2");
-            Checks.check(params.length % 2 == 0, "params length must be a multiple of 2");
+            Checks.notNull(params, "Params");
+            Checks.check(params.length >= 2, "Params length must be at least 2");
+            Checks.check((params.length & 1) == 0, "Params length must be a multiple of 2");
 
-            StringBuilder newRoute = new StringBuilder(compiledRoute);
+            // Assuming names don't need encoding
+            for (int i = 0; i < params.length; i += 2)
+                query.append(params[i]).append('=').append(EncodingUtil.encodeUTF8(params[i + 1])).append('&');
 
-            for (int i = 0; i < params.length; i++)
-                newRoute.append(!hasQueryParams && i == 0 ? '?' : '&').append(params[i]).append('=').append(params[++i]);
-
-            return new CompiledRoute(baseRoute, newRoute.toString(), major, true);
+            return this;
         }
 
         @Nonnull
@@ -434,7 +427,10 @@ public class Route
         @Nonnull
         public String getCompiledRoute()
         {
-            return compiledRoute;
+            if (query.length() == 0)
+                return compiledRoute;
+            // Append query to url without trailing &
+            return compiledRoute + '?' + query.substring(0, query.length() - 1);
         }
 
         @Nonnull

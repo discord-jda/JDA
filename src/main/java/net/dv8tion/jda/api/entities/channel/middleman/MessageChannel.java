@@ -53,7 +53,6 @@ import net.dv8tion.jda.internal.requests.restaction.MessageEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1672,8 +1671,7 @@ public interface MessageChannel extends Channel, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded, "@me");
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -1782,8 +1780,7 @@ public interface MessageChannel extends Channel, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, "@me");
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -1882,7 +1879,7 @@ public interface MessageChannel extends Channel, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
-        return new ReactionPaginationActionImpl(this, messageId, EncodingUtil.encodeReaction(emoji.getAsReactionCode()));
+        return new ReactionPaginationActionImpl(this, messageId, emoji.getAsReactionCode());
     }
 
     /**
