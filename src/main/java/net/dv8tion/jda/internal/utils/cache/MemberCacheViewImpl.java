@@ -94,9 +94,11 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         Checks.noneNull(roles, "Roles");
         if (isEmpty())
             return Collections.emptyList();
+
         List<Role> rolesWithoutPublicRole = roles.stream().filter(role -> !role.isPublicRole()).collect(Collectors.toList());
         if (rolesWithoutPublicRole.isEmpty())
             return asList();
+
         List<Member> members = new ArrayList<>();
         forEach(member ->
         {
