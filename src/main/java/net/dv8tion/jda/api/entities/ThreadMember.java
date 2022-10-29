@@ -46,7 +46,7 @@ public interface ThreadMember extends IMentionable
     Guild getGuild();
 
     /**
-     * The {@link ThreadChannel} this threadmember is subscribed to.
+     * The {@link ThreadChannel} this thread member is subscribed to.
      *
      * @return The {@link ThreadChannel} this threadmember is subscribed to.
      */
