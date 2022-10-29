@@ -23,14 +23,14 @@ import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
 /**
- * A {@link ThreadMember} represents a {@link Member Member's} membership in a Thread.
+ * A {@link ThreadMember} represents a {@link Member Member's} participation in a Thread.
  * <br>ThreadMembers are subscribed to {@link ThreadChannel Threads} and receive updates for them, like new message and thread changes.
  * Only subscribed members are shown in a thread's sidebar.
  */
 public interface ThreadMember extends IMentionable
 {
     /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this threadmember.
+     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this thread member.
      *
      * @return the corresponding JDA instance
      */
@@ -48,19 +48,25 @@ public interface ThreadMember extends IMentionable
     /**
      * The {@link ThreadChannel} this thread member is subscribed to.
      *
-     * @return The {@link ThreadChannel} this threadmember is subscribed to.
+     * @return The {@link ThreadChannel} this thread member is subscribed to.
      */
     @Nonnull
     ThreadChannel getThread();
 
+    /**
+     * The {@link net.dv8tion.jda.api.entities.User User} instance
+     * <br>Shortcut for {@code getMember().getUser()}
+     *
+     * @return The User instance
+     */
     //We might not actually be able to provide a user because we only get the `userId` in the ThreadMember object.
     @Nonnull
     User getUser();
 
     /**
-     * The corresponding {@link Member GuildMember} to this threadmember.
+     * The corresponding {@link Member GuildMember} to this thread member.
      *
-     * @return The corresponding {@link Member GuildMember} to this threadmember.
+     * @return The corresponding {@link Member GuildMember} to this thread member.
      */
     @Nonnull
     Member getMember();
@@ -74,9 +80,9 @@ public interface ThreadMember extends IMentionable
     OffsetDateTime getTimeJoined();
 
     /**
-     * Whether this {@link ThreadMember} owns the subscribed {@link ThreadChannel}.
+     * True, if this {@link ThreadMember} owns the subscribed {@link ThreadChannel}.
      *
-     * @return Whether this {@link ThreadMember} owns the subscribed {@link ThreadChannel}.
+     * @return True, if this {@link ThreadMember} owns the subscribed {@link ThreadChannel}.
      */
     default boolean isThreadOwner()
     {
