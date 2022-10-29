@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandReference;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -165,6 +166,20 @@ public class SelectMenuMentions implements Mentions
     @Nonnull
     @Override
     public Bag<CustomEmoji> getCustomEmojisBag()
+    {
+        return BagUtils.emptyBag();
+    }
+
+    @Nonnull
+    @Override
+    public List<SlashCommandReference> getSlashCommands()
+    {
+        return Collections.emptyList();
+    }
+
+    @Nonnull
+    @Override
+    public Bag<SlashCommandReference> getSlashCommandsBag()
     {
         return BagUtils.emptyBag();
     }
