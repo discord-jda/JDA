@@ -251,6 +251,12 @@ public final class Helpers
         return set;
     }
 
+    @SafeVarargs
+    public static <T> List<T> listOf(T... elements)
+    {
+        return Collections.unmodifiableList(Arrays.asList(elements));
+    }
+
     public static TLongObjectMap<DataObject> convertToMap(ToLongFunction<DataObject> getId, DataArray array)
     {
         TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();

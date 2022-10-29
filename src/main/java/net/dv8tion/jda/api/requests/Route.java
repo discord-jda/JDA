@@ -490,7 +490,17 @@ public class Route
         return custom(GET, route);
     }
 
-    private static final String majorParameters = "guild_id:channel_id:webhook_id:interaction_token";
+    /**
+     * The known major parameters used for rate-limits.
+     *
+     * <p>Instead of {@code webhook_id + webhook_token}, we use {@code interaction_token} for interaction routes.
+     *
+     * @see <a href="https://discord.com/developers/docs/topics/rate-limits" target="_blank">Rate Limit Documentation</a>
+     */
+    public static final List<String> MAJOR_PARAMETER_NAMES = Helpers.listOf(
+        "guild_id", "channel_id", "webhook_id", "interaction_token"
+    );
+
     private final String route;
     private final Method method;
     private final int paramCount;
@@ -571,7 +581,8 @@ public class Route
             int paramStart = compiledRoute.indexOf("{");
             int paramEnd = compiledRoute.indexOf("}");
             String paramName = compiledRoute.substring(paramStart+1, paramEnd);
-            if (majorParameters.contains(paramName))
+
+            if (MAJOR_PARAMETER_NAMES.contains(paramName))
             {
                 if (params[i].length() > 30) // probably a long interaction_token, hash it to keep logs clean (not useful anyway)
                     major.add(paramName + "=" + Integer.toUnsignedString(params[i].hashCode()));
