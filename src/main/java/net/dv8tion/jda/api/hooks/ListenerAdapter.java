@@ -55,9 +55,7 @@ import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEven
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.*;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.*;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
@@ -147,9 +145,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserContextInteraction(@Nonnull UserContextInteractionEvent event) {}
     public void onMessageContextInteraction(@Nonnull MessageContextInteractionEvent event) {}
     public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {}
-    public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {}
     public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {}
     public void onModalInteraction(@Nonnull ModalInteractionEvent event) {}
+    public void onStringSelectInteraction(@Nonnull StringSelectInteractionEvent event) {}
+    public void onEntitySelectInteraction(@Nonnull EntitySelectInteractionEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -359,6 +358,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
     public void onGenericCommandInteraction(@Nonnull GenericCommandInteractionEvent event) {}
     public void onGenericContextInteraction(@Nonnull GenericContextInteractionEvent<?> event) {}
+    public void onGenericSelectMenuInteraction(@Nonnull GenericSelectMenuInteractionEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
