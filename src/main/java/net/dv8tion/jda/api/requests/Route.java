@@ -21,8 +21,11 @@ import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static net.dv8tion.jda.api.requests.Method.*;
@@ -395,16 +398,26 @@ public class Route
         private final Route baseRoute;
         private final String major;
         private final String compiledRoute;
-        private final StringBuilder query = new StringBuilder();
+        private final List<String> query;
 
         private CompiledRoute(Route baseRoute, String compiledRoute, String major)
         {
             this.baseRoute = baseRoute;
             this.compiledRoute = compiledRoute;
             this.major = major;
+            this.query = null;
+        }
+
+        private CompiledRoute(CompiledRoute original, List<String> query)
+        {
+            this.baseRoute = original.baseRoute;
+            this.compiledRoute = original.compiledRoute;
+            this.major = original.major;
+            this.query = query;
         }
 
         @Nonnull
+        @CheckReturnValue
         public CompiledRoute withQueryParams(@Nonnull String... params)
         {
             Checks.notNull(params, "Params");
@@ -412,10 +425,21 @@ public class Route
             Checks.check((params.length & 1) == 0, "Params length must be a multiple of 2");
 
             // Assuming names don't need encoding
-            for (int i = 0; i < params.length; i += 2)
-                query.append(params[i]).append('=').append(EncodingUtil.encodeUTF8(params[i + 1])).append('&');
+            List<String> newQuery;
+            if (query == null)
+            {
+                newQuery = new ArrayList<>(params.length / 2);
+            }
+            else
+            {
+                newQuery = new ArrayList<>(query.size() + params.length / 2);
+                newQuery.addAll(query);
+            }
 
-            return this;
+            for (int i = 0; i < params.length; i += 2)
+                newQuery.add(params[i] + '=' + EncodingUtil.encodeUTF8(params[i + 1]));
+
+            return new CompiledRoute(this, newQuery);
         }
 
         @Nonnull
@@ -427,10 +451,10 @@ public class Route
         @Nonnull
         public String getCompiledRoute()
         {
-            if (query.length() == 0)
+            if (query == null)
                 return compiledRoute;
-            // Append query to url without trailing &
-            return compiledRoute + '?' + query.substring(0, query.length() - 1);
+            // Append query to url
+            return compiledRoute + '?' + String.join("&", query);
         }
 
         @Nonnull
