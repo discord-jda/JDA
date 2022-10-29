@@ -115,6 +115,4 @@ public class GenericChannelEvent extends Event
             throw new IllegalStateException("This channel event did not happen in a guild");
         return ((GuildChannel) channel).getGuild();
     }
-
-    //TODO-v5: Add getters for all channel types
 }
