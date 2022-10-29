@@ -34,7 +34,14 @@ public interface ICommandReference extends IMentionable
     String getName();
 
     /**
-     * Returns the entire path (separated with spaces) of this command
+     * Returns the entire path (separated with spaces) of this command, which joins the current command name, as well as the parent names.
+     *
+     * <p>Examples:
+     * <ul>
+     *     <li>You are in the subcommand {@code "ban"}, contained in the {@code "mod"} command: {@code "mod ban"}</li>
+     *     <li>You are in the subcommand {@code "owner"}, contained in the {@code "config"} group and in the {@code "admin"} command: {@code "admin config owner"}</li>
+     *     <li>You are in the command {@code "ban"}: {@code "ban"}</li>
+     * </ul>
      *
      * @return the entire path (separated with spaces) of this command
      */
