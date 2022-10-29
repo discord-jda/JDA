@@ -38,7 +38,7 @@ public interface ThreadMember extends IMentionable
     JDA getJDA();
 
     /**
-     * The {@link Guild} containing this {@link ThreadMember ThreadMembers} and it's {@link ThreadChannel}.
+     * The {@link Guild} containing this {@link ThreadMember} and it's {@link ThreadChannel}.
      *
      * @return The {@link Guild} containing this {@link ThreadMember ThreadMembers} and it's {@link ThreadChannel}.
      */
@@ -46,7 +46,7 @@ public interface ThreadMember extends IMentionable
     Guild getGuild();
 
     /**
-     * The {@link ThreadChannel} this threadmember is subscribed to.
+     * The {@link ThreadChannel} this thread member is subscribed to.
      *
      * @return The {@link ThreadChannel} this threadmember is subscribed to.
      */
