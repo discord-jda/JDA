@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild.scheduledevent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
@@ -31,11 +32,11 @@ import javax.annotation.Nonnull;
  *
  * <p><b>Requirements</b><br>
  *
- * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent and {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
- * <p> This class may be used to check if a gateway event is related to a {@link ScheduledEvent}
+ * <p>This class may be used to check if a gateway event is related to a {@link ScheduledEvent}
  * as all gateway events in the {@link net.dv8tion.jda.api.events.guild.scheduledevent} package extend this class.
  */
 public abstract class GenericScheduledEventGatewayEvent extends GenericGuildEvent
