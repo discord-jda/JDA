@@ -97,9 +97,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     int getMemberCount();
 
-    //TODO | This name is bad. Looking for alternatives.
-    //how about isParticipant? isThreadMember
-    // do you like isParticipating()?
     /**
      * Whether the currently logged in member has joined this thread.
      *
