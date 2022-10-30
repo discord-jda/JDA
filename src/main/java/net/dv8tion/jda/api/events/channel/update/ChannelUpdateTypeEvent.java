@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link Channel Channels} {@link ChannelType} was updated.
  *
  * @see Channel#getType()
+ * @see ChannelField#TYPE
  */
 public class ChannelUpdateTypeEvent extends GenericChannelUpdateEvent<ChannelType>
 {

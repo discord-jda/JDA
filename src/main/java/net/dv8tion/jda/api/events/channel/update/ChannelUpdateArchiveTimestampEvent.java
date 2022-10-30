@@ -38,6 +38,7 @@ import java.time.OffsetDateTime;
  * Limited to {@link ThreadChannel Thread Channels}.
  *
  * @see ThreadChannel#getTimeArchiveInfoLastModified()
+ * @see ChannelField#ARCHIVED_TIMESTAMP
  */
 public class ChannelUpdateArchiveTimestampEvent extends GenericChannelUpdateEvent<OffsetDateTime>
 {

@@ -19,13 +19,22 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channels} invitable-state has been updated.
+ *
+ * <p>Limited to {@link ThreadChannel Thread Channels}.
+ *
+ * @see ThreadChannel#isInvitable()
+ * @see ChannelField#INVITABLE
+ */
 public class ChannelUpdateInvitableEvent extends GenericChannelUpdateEvent<Boolean>
 {
     public static final ChannelField FIELD = ChannelField.INVITABLE;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateInvitableEvent(@Nonnull JDA api, long responseNumber, Channel channel, boolean oldValue, boolean newValue)
     {

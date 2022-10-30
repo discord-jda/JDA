@@ -25,9 +25,11 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that a {@link Channel Channels} user limit was updated.
+ *
  * <p>This event is currently limited to {@link VoiceChannel Voice Channels}.
  *
  * @see VoiceChannel#getUserLimit()
+ * @see ChannelField#USER_LIMIT
  */
 public class ChannelUpdateUserLimitEvent extends GenericChannelUpdateEvent<Integer>
 {
