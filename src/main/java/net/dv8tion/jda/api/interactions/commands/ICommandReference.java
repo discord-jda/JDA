@@ -26,7 +26,10 @@ import javax.annotation.Nonnull;
 public interface ICommandReference extends IMentionable
 {
     /**
-     * Returns the name of the slash command
+     * Returns the name of the slash command.
+     * <br>If used on a subcommand, it returns the subcommand name.
+     * And when used on a subcommand group, it returns the group name.
+     * <br>You can use {@link #getFullCommandName()} to get the full name including base command and group.
      *
      * @return the name of the slash command
      */
@@ -34,16 +37,17 @@ public interface ICommandReference extends IMentionable
     String getName();
 
     /**
-     * Returns the entire path (separated with spaces) of this command, which joins the current command name, as well as the parent names.
+     * Returns the full command name, including possible subcommand name and subcommand group name.
+     * <br>This is the name shown on messages or when writing the command in the text input.
      *
      * <p>Examples:
      * <ul>
-     *     <li>You are in the subcommand {@code "ban"}, contained in the {@code "mod"} command: {@code "mod ban"}</li>
-     *     <li>You are in the subcommand {@code "owner"}, contained in the {@code "config"} group and in the {@code "admin"} command: {@code "admin config owner"}</li>
-     *     <li>You are in the command {@code "ban"}: {@code "ban"}</li>
+     *     <li>When used on a normal base command,  the full name is the name itself, as in the name {@code "ban"} is equal to the full name {@code "ban"}.</li>
+     *     <li>When used on a subcommand {@code "ban"}, of the base command {@code "mod"}, the full name resolves to {@code "mod ban"}</li>
+     *     <li>When the subcommand is part of a subcommand group, {@code "action"} it resolves to {@code "mod action ban"}</li>
      * </ul>
      *
-     * @return the entire path (separated with spaces) of this command
+     * @return the full command name
      */
     @Nonnull
     String getFullCommandName();

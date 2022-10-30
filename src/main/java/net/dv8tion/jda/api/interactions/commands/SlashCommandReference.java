@@ -60,7 +60,7 @@ public class SlashCommandReference implements ICommandReference
      * @return the subcommand of the slash command
      */
     @Nullable
-    public String getSubcommand()
+    public String getSubcommandName()
     {
         return subcommand;
     }
