@@ -23,10 +23,15 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channels} {@link ChannelType} was updated.
+ *
+ * @see Channel#getType()
+ */
 public class ChannelUpdateTypeEvent extends GenericChannelUpdateEvent<ChannelType>
 {
     public static final ChannelField FIELD = ChannelField.TYPE;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateTypeEvent(@Nonnull JDA api, long responseNumber, Channel channel, ChannelType oldValue, ChannelType newValue)
     {

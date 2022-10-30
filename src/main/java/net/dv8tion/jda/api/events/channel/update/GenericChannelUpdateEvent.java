@@ -25,7 +25,13 @@ import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-//TODO-v5: Docs
+/**
+ * Top-level channel update event type indicating that a value of a {@link Channel} was updated.
+ * <br>All channel update events JDA fires are derived from this class.
+ *
+ * @param <T>
+ *        The value type
+ */
 public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements UpdateEvent<Channel, T>
 {
     protected final ChannelField channelField;
@@ -48,6 +54,12 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
         return channelField.getFieldName();
     }
 
+    /**
+     * The {@link Channel} entity affected by this update event.
+     * <br>Equivalent with {@code getChannel()}.
+     *
+     * @return The {@link Channel} entity affected by this update event.
+     */
     @Nonnull
     @Override
     public Channel getEntity()
