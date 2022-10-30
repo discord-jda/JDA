@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link Channel Channels} topic has been updated.
  *
- * <p>Limited to {@link NewsChannel NewsChannels}, {@link TextChannel TextChannels} and {@link ForumChannel ForumChannels}.
+ * <p>Limited to {@link NewsChannel NewsChannels}, {@link TextChannel TextChannels}, and {@link ForumChannel ForumChannels}.
  *
  * @see StandardGuildMessageChannel#getTopic()
  * @see ForumChannel#getTopic()

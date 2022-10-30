@@ -103,7 +103,7 @@ public enum ChannelField
     /**
      * The topic of the channel.
      *
-     * <p>Limited to {@link NewsChannel NewsChannels}, {@link TextChannel TextChannels} and {@link ForumChannel ForumChannels}.
+     * <p>Limited to {@link NewsChannel NewsChannels}, {@link TextChannel TextChannels}, and {@link ForumChannel ForumChannels}.
      *
      * @see StandardGuildMessageChannel#getTopic()
      * @see ForumChannel#getTopic()
