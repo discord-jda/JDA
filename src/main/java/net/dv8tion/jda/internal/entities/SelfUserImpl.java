@@ -31,12 +31,6 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     private boolean mfaEnabled;
     private long applicationId;
 
-    //Client only
-    private String email;
-    private String phoneNumber;
-    private boolean mobile;
-    private boolean nitro;
-
     public SelfUserImpl(long id, JDAImpl api)
     {
         super(id, api);
@@ -83,10 +77,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     @Override
     public long getAllowedFileSize()
     {
-        if (this.nitro) // by directly accessing the field we don't need to check the account type
-            return Message.MAX_FILE_SIZE_NITRO;
-        else
-            return Message.MAX_FILE_SIZE;
+        return Message.MAX_FILE_SIZE;
     }
 
     @Nonnull
@@ -108,30 +99,6 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return this;
     }
 
-    public SelfUserImpl setEmail(String email)
-    {
-        this.email = email;
-        return this;
-    }
-
-    public SelfUserImpl setPhoneNumber(String phoneNumber)
-    {
-        this.phoneNumber = phoneNumber;
-        return this;
-    }
-
-    public SelfUserImpl setMobile(boolean mobile)
-    {
-        this.mobile = mobile;
-        return this;
-    }
-
-    public SelfUserImpl setNitro(boolean nitro)
-    {
-        this.nitro = nitro;
-        return this;
-    }
-
     public SelfUserImpl setApplicationId(long id)
     {
         this.applicationId = id;
@@ -148,10 +115,6 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return selfUser
                 .setVerified(other.verified)
                 .setMfaEnabled(other.mfaEnabled)
-                .setEmail(other.email)
-                .setPhoneNumber(other.phoneNumber)
-                .setMobile(other.mobile)
-                .setNitro(other.nitro)
                 .setApplicationId(other.applicationId);
     }
 }
