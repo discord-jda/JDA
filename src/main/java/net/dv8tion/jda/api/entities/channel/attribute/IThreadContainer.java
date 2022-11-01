@@ -142,7 +142,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * @throws IllegalArgumentException
      *         If the provided name is null, blank, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters.
      * @throws IllegalStateException
-     *         If the guild does have the feature flag {@value "PRIVATE_THREADS"} enabled.
+     *         If the guild does have the feature flag {@code "PRIVATE_THREADS"} enabled.
      * @throws UnsupportedOperationException
      *         If this is a forum channel.
      *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData) createForumPost(...)} instead.
