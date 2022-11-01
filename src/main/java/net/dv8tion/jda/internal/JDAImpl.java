@@ -1014,7 +1014,7 @@ public class JDAImpl implements JDA
         {
             DataObject object = response.getObject();
             EntityBuilder builder = getEntityBuilder();
-            return builder.createWebhook(object);
+            return builder.createWebhook(object, true);
         });
     }
 
