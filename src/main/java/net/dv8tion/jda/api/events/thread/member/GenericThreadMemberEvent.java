@@ -26,8 +26,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link Member GuildMember} interacted with a {@link ThreadChannel} as a {@link ThreadMember}
+ * Indicates that a {@link Member GuildMember} interacted with a {@link ThreadChannel} as a {@link ThreadMember}.
  * Current possible interactions are {@link ThreadMemberJoinEvent} and {@link ThreadMemberLeaveEvent} event.
+ * If you can see the thread, you will be able to receive this generalized and these specialized events.
+ *
+ * @see Member
+ * @see ThreadChannel
+ * @see ThreadMember
  */
 public class GenericThreadMemberEvent extends GenericThreadEvent
 {
@@ -63,8 +68,9 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     }
 
     /**
+     * The interacting {@link ThreadMember}.
      *
-     * @return The interacting {@link ThreadMember}
+     * @return The interacting {@link ThreadMember}.
      */
     @Nullable
     public ThreadMember getThreadMember()
@@ -73,8 +79,9 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     }
 
     /**
-     * The interacting {@link ThreadMember} as a {@link Member GuildMember}
-     * @return The interacting {@link ThreadMember} as a {@link Member GuildMember}
+     * The interacting {@link ThreadMember} as a {@link Member GuildMember}.
+     *
+     * @return The interacting {@link ThreadMember} as a {@link Member GuildMember}.
      */
     @Nullable
     public Member getMember()

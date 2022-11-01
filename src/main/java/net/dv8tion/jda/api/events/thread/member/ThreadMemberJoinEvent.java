@@ -24,7 +24,10 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Member GuildMember} joined a {@link ThreadChannel}
+ * Indicates that a {@link Member GuildMember} joined a {@link ThreadChannel}.
+ *
+ * @see ThreadChannel
+ * @see ThreadMember
  */
 public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
 {

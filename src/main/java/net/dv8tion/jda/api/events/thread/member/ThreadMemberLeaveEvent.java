@@ -24,7 +24,10 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Member GuildMember} left a {@link ThreadChannel}
+ * Indicates that a {@link Member GuildMember} left a {@link ThreadChannel}.
+ *
+ * @see ThreadChannel
+ * @see ThreadMember
  */
 public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
 {
