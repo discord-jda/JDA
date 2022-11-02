@@ -45,6 +45,7 @@ import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.ShutdownReason;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.compress.Decompressor;
@@ -499,10 +500,28 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //or that a bot reached a new shard minimum and cannot connect with the current settings
                 //if that is the case we have to drop our connection and inform the user with a fatal error message
                 LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues\n{}", closeCode);
+
+                // Forward the close reason to any hooks to awaitStatus / awaitReady
+                // Since people cannot read logs, we have to explicitly forward this error.
+                switch (closeCode)
+                {
+                case SHARDING_REQUIRED:
+                case INVALID_SHARD:
+                    api.shutdownReason = ShutdownReason.INVALID_SHARDS;
+                    break;
+                case DISALLOWED_INTENTS:
+                    api.shutdownReason = ShutdownReason.DISALLOWED_INTENTS;
+                    break;
+                case GRACEFUL_CLOSE:
+                    break;
+                default:
+                    api.shutdownReason = new ShutdownReason("Connection closed with code " + closeCode);
+                }
             }
 
             if (decompressor != null)
                 decompressor.shutdown();
+
             api.shutdownInternals();
             api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
