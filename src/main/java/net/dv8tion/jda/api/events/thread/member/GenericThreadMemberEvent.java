@@ -58,7 +58,7 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     }
 
     /**
-     * The Snowflake id of the interacting {@link ThreadMember}. This is unique to every entity and will never change.
+     * The id of the {@link ThreadMember}.
      *
      * @return Long containing the Id.
      */
