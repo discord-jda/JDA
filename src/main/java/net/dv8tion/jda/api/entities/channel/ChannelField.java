@@ -100,13 +100,13 @@ public enum ChannelField
     DEFAULT_REACTION_EMOJI("default_reaction_emoji", AuditLogKey.CHANNEL_DEFAULT_REACTION_EMOJI),
 
     //Text Specific
-
     /**
      * The topic of the channel.
      *
-     * <p>Limited to {@link NewsChannel NewsChannels} and {@link TextChannel TextChannels}.
+     * <p>Limited to {@link NewsChannel NewsChannels}, {@link TextChannel TextChannels}, and {@link ForumChannel ForumChannels}.
      *
      * @see StandardGuildMessageChannel#getTopic()
+     * @see ForumChannel#getTopic()
      */
     TOPIC("topic", AuditLogKey.CHANNEL_TOPIC),
 
@@ -202,7 +202,7 @@ public enum ChannelField
     /**
      * The time this channel's archival information was last updated.
      *
-     * <p>This timestamp will be updated when any of the following happen:
+     * <p>This timestamp will be updated when any of the following happens:
      * <ul>
      *     <li>The channel is archived</li>
      *     <li>The channel is unarchived</li>

@@ -1838,6 +1838,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
+     * <br>If the webhook does not belong to any known guild of this JDA session, it will be {@link Webhook#isPartial() partial}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1867,6 +1868,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
+     * <br>If the webhook does not belong to any known guild of this JDA session, it will be {@link Webhook#isPartial() partial}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
