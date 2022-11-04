@@ -53,8 +53,9 @@ public class GenericThreadEvent extends Event
     }
 
     /**
+     * The {@link Guild} containing the {@link ThreadChannel}.
      *
-     * @return The {@link Guild} containing the {@link ThreadChannel}
+     * @return The {@link Guild} containing the {@link ThreadChannel}.
      */
     @Nonnull
     public Guild getGuild()
