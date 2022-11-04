@@ -64,9 +64,9 @@ public interface ThreadMember extends IMentionable
     User getUser();
 
     /**
-     * The corresponding guild {@link Member  to this thread member.
+     * The corresponding guild {@link Member} to this thread member.
      *
-     * @return The corresponding guild {@link Member  to this thread member.
+     * @return The corresponding guild {@link Member} to this thread member.
      */
     @Nonnull
     Member getMember();
