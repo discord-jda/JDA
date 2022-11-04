@@ -35,4 +35,30 @@ public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
     {
         super(api, responseNumber, thread, threadMemberId, threadMember);
     }
+
+    /**
+     * The left {@link ThreadMember}
+     * @return The left {@link ThreadMember}
+     */
+    @Nonnull
+    @Override
+    public ThreadMember getThreadMember()
+    {
+        return super.getThreadMember();
+    }
+
+    /**
+     * The left {@link ThreadMember} as a guild {@link Member}.
+     *
+     * @return The left {@link ThreadMember} as a guild {@link Member}.
+     */
+    @Nonnull
+    @Override
+    public Member getMember()
+    {
+        //Explicitly override the getter from the super class to use the member return in the thread member itself because
+        // the ThreadMember will always have the Member while the Guild itself might not because of
+        // the ChunkingFilter or a lack of GUILD_MEMBERS intent.
+        return getThreadMember().getMember();
+    }
 }

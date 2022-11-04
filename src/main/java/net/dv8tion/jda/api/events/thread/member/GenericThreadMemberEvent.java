@@ -73,9 +73,9 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     }
 
     /**
-     * The interacting {@link ThreadMember}.
+     * The {@link ThreadMember}.
      *
-     * @return The interacting {@link ThreadMember}.
+     * @return The {@link ThreadMember}.
      */
     @Nullable
     public ThreadMember getThreadMember()
@@ -84,9 +84,9 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     }
 
     /**
-     * The interacting {@link ThreadMember} as a guild {@link Member}.
+     * The {@link ThreadMember} as a guild {@link Member}.
      *
-     * @return The interacting {@link ThreadMember} as a guild {@link Member}.
+     * @return The {@link ThreadMember} as a guild {@link Member}.
      */
     @Nullable
     public Member getMember()
