@@ -447,4 +447,31 @@ public interface Widget extends ISnowflake
         @Nonnull
         Widget getWidget();
     }
+
+
+    /**
+     * Represents the color scheme of the widget
+     * <br>These color themes match Discord's dark and light themes
+     */
+    public enum WidgetTheme
+    {
+        LIGHT, DARK
+    }
+
+
+    /**
+     * Represents the available banner types
+     * <br>Each of these has a different appearance:
+     *
+     * <p>
+     * <br><b>Shield</b> - tiny, only contains Discord logo and online count
+     * <br><b>Banner1</b> - medium, contains server name, icon, and online count, and a "Powered by Discord" bar on the bottom
+     * <br><b>Banner2</b> - small, contains server name, icon, and online count, and a Discord logo on the side
+     * <br><b>Banner3</b> - medium, contains server name, icon, and online count, and a Discord logo with a "Chat Now" bar on the bottom
+     * <br><b>Banner4</b> - large, contains a very big Discord logo, server name, icon, and online count, and a big "Join My Server" button
+     */
+    public enum BannerType
+    {
+        SHIELD, BANNER1, BANNER2, BANNER3, BANNER4
+    }
 }

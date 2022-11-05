@@ -62,7 +62,7 @@ public class WidgetUtil
      * @return A String containing the URL of the banner image
      */
     @Nonnull
-    public static String getWidgetBanner(@Nonnull Guild guild, @Nonnull BannerType type)
+    public static String getWidgetBanner(@Nonnull Guild guild, @Nonnull Widget.BannerType type)
     {
         Checks.notNull(guild, "Guild");
         return getWidgetBanner(guild.getId(), type);
@@ -82,7 +82,7 @@ public class WidgetUtil
      * @return A String containing the URL of the banner image
      */
     @Nonnull
-    public static String getWidgetBanner(@Nonnull String guildId, @Nonnull BannerType type)
+    public static String getWidgetBanner(@Nonnull String guildId, @Nonnull Widget.BannerType type)
     {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(type, "BannerType");
@@ -106,7 +106,7 @@ public class WidgetUtil
      * @return a String containing the pre-made widget with the supplied settings
      */
     @Nonnull
-    public static String getPremadeWidgetHtml(@Nonnull Guild guild, @Nonnull WidgetTheme theme, int width, int height)
+    public static String getPremadeWidgetHtml(@Nonnull Guild guild, @Nonnull Widget.WidgetTheme theme, int width, int height)
     {
         Checks.notNull(guild, "Guild");
         return getPremadeWidgetHtml(guild.getId(), theme, width, height);
@@ -130,7 +130,7 @@ public class WidgetUtil
      * @return a String containing the pre-made widget with the supplied settings
      */
     @Nonnull
-    public static String getPremadeWidgetHtml(@Nonnull String guildId, @Nonnull WidgetTheme theme, int width, int height)
+    public static String getPremadeWidgetHtml(@Nonnull String guildId, @Nonnull Widget.WidgetTheme theme, int width, int height)
     {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(theme, "WidgetTheme");
@@ -253,30 +253,5 @@ public class WidgetUtil
         {
             throw new UncheckedIOException(e);
         }
-    }
-
-    /**
-     * Represents the available banner types
-     * <br>Each of these has a different appearance:
-     *
-     * <p>
-     * <br><b>Shield</b> - tiny, only contains Discord logo and online count
-     * <br><b>Banner1</b> - medium, contains server name, icon, and online count, and a "Powered by Discord" bar on the bottom
-     * <br><b>Banner2</b> - small, contains server name, icon, and online count, and a Discord logo on the side
-     * <br><b>Banner3</b> - medium, contains server name, icon, and online count, and a Discord logo with a "Chat Now" bar on the bottom
-     * <br><b>Banner4</b> - large, contains a very big Discord logo, server name, icon, and online count, and a big "Join My Server" button
-     */
-    public enum BannerType
-    {
-        SHIELD, BANNER1, BANNER2, BANNER3, BANNER4
-    }
-
-    /**
-     * Represents the color scheme of the widget
-     * <br>These color themes match Discord's dark and light themes
-     */
-    public enum WidgetTheme
-    {
-        LIGHT, DARK
     }
 }
