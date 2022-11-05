@@ -213,6 +213,26 @@ public final class Helpers
         return (int) string.codePoints().count();
     }
 
+    public static String[] split(String input, String match)
+    {
+        List<String> out = new ArrayList<>();
+        int i = 0;
+        while (i < input.length())
+        {
+            int j = input.indexOf(match, i);
+            if (j == -1)
+            {
+                out.add(input.substring(i));
+                break;
+            }
+
+            out.add(input.substring(i, j));
+            i = j + match.length();
+        }
+
+        return out.toArray(new String[0]);
+    }
+
     // ## CollectionUtils ##
 
     public static boolean deepEquals(Collection<?> first, Collection<?> second)

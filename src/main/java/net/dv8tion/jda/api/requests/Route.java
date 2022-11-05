@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -500,18 +501,16 @@ public class Route
         "guild_id", "channel_id", "webhook_id", "interaction_token"
     );
 
-    private final String route;
     private final Method method;
     private final int paramCount;
+    private final String[] template;
 
     private Route(Method method, String route)
     {
         this.method = method;
-        this.route = route;
-        this.paramCount = Helpers.countMatches(route, '{'); //All parameters start with {
-
-        if (paramCount != Helpers.countMatches(route, '}'))
-            throw new IllegalArgumentException("An argument does not have both {}'s for route: " + method + "  " + route);
+        this.paramCount = Helpers.countMatches(route, '{'); // All parameters start with {
+        this.template = Helpers.split(route, "/");
+        Checks.check(paramCount == Helpers.countMatches(route, '}'), "An argument does not have both {}'s for route: %s %s", method, route);
     }
 
     /**
@@ -534,7 +533,7 @@ public class Route
     @Nonnull
     public String getRoute()
     {
-        return route;
+        return String.join("/", template);
     }
 
     /**
@@ -569,27 +568,32 @@ public class Route
         Checks.check(
             params.length == paramCount,
             "Error Compiling Route: [%s], incorrect amount of parameters provided. Expected: %d, Provided: %d",
-            route, paramCount, params.length
+            this, paramCount, params.length
         );
 
-        //Compile the route for interfacing with discord.
         StringJoiner major = new StringJoiner(":").setEmptyValue("n/a");
-        StringBuilder compiledRoute = new StringBuilder(route);
-        for (int i = 0; i < paramCount; i++)
+        StringJoiner compiledRoute = new StringJoiner("/");
+
+        int paramIndex = 0;
+        for (String element : template)
         {
-            int paramStart = compiledRoute.indexOf("{");
-            int paramEnd = compiledRoute.indexOf("}");
-            String paramName = compiledRoute.substring(paramStart+1, paramEnd);
-
-            if (MAJOR_PARAMETER_NAMES.contains(paramName))
+            if (element.charAt(0) == '{')
             {
-                if (params[i].length() > 30) // probably a long interaction_token, hash it to keep logs clean (not useful anyway)
-                    major.add(paramName + "=" + Integer.toUnsignedString(params[i].hashCode()));
-                else
-                    major.add(paramName + "=" + params[i]);
+                String name = element.substring(1, element.length() - 1);
+                String value = params[paramIndex++];
+                if (MAJOR_PARAMETER_NAMES.contains(name))
+                {
+                    if (value.length() > 30) // probably a long interaction_token, hash it to keep logs clean (not useful anyway)
+                        major.add(name + "=" + Integer.toUnsignedString(value.hashCode()));
+                    else
+                        major.add(name + "=" + value);
+                }
+                compiledRoute.add(EncodingUtil.encodeUTF8(value));
             }
-
-            compiledRoute.replace(paramStart, paramEnd + 1, EncodingUtil.encodeUTF8(params[i]));
+            else
+            {
+                compiledRoute.add(element);
+            }
         }
 
         return new CompiledRoute(this, compiledRoute.toString(), major.toString());
@@ -598,7 +602,7 @@ public class Route
     @Override
     public int hashCode()
     {
-        return (route + method.toString()).hashCode();
+        return 31 * Arrays.hashCode(template) + method.hashCode();
     }
 
     @Override
@@ -608,13 +612,13 @@ public class Route
             return false;
 
         Route oRoute = (Route) o;
-        return method.equals(oRoute.method) && route.equals(oRoute.route);
+        return method.equals(oRoute.method) && Arrays.equals(template, oRoute.template);
     }
 
     @Override
     public String toString()
     {
-        return method + "/" + route;
+        return method + "/" + getRoute();
     }
 
     /**
@@ -686,7 +690,6 @@ public class Route
             Checks.check(params.length >= 2, "Params length must be at least 2");
             Checks.check((params.length & 1) == 0, "Params length must be a multiple of 2");
 
-            // Assuming names don't need encoding
             List<String> newQuery;
             if (query == null)
             {
@@ -698,6 +701,7 @@ public class Route
                 newQuery.addAll(query);
             }
 
+            // Assuming names don't need encoding
             for (int i = 0; i < params.length; i += 2)
                 newQuery.add(params[i] + '=' + EncodingUtil.encodeUTF8(params[i + 1]));
 
