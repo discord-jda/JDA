@@ -313,6 +313,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     /**
      * Applies the provided {@link MessageCreateData} to this request.
      *
+     * <p>Note that <b>files will not be copied</b>.
+     *
      * @param  data
      *         The message create data to apply
      *
@@ -329,14 +331,10 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
         final List<LayoutComponent> layoutComponents = data.getComponents().stream()
                 .map(LayoutComponent::createCopy)
                 .collect(Collectors.toList());
-        final List<FileUpload> files = data.getFiles().stream()
-                .map(f -> FileUpload.fromData(f.getData(), f.getName()).setDescription(f.getDescription()))
-                .collect(Collectors.toList());
         return setContent(data.getContent())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
-                .setComponents(layoutComponents)
-                .setFiles(files);
+                .setComponents(layoutComponents);
     }
 
     @Nonnull
