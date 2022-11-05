@@ -24,9 +24,8 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.StringJoiner;
 
 import static net.dv8tion.jda.api.requests.Method.*;
 
@@ -567,14 +566,14 @@ public class Route
     public CompiledRoute compile(@Nonnull String... params)
     {
         Checks.noneNull(params, "Arguments");
-        if (params.length != paramCount)
-        {
-            throw new IllegalArgumentException("Error Compiling Route: [" + route + "], incorrect amount of parameters provided." +
-                    "Expected: " + paramCount + ", Provided: " + params.length);
-        }
+        Checks.check(
+            params.length == paramCount,
+            "Error Compiling Route: [%s], incorrect amount of parameters provided. Expected: %d, Provided: %d",
+            route, paramCount, params.length
+        );
 
         //Compile the route for interfacing with discord.
-        Set<String> major = new HashSet<>();
+        StringJoiner major = new StringJoiner(":").setEmptyValue("n/a");
         StringBuilder compiledRoute = new StringBuilder(route);
         for (int i = 0; i < paramCount; i++)
         {
@@ -593,7 +592,7 @@ public class Route
             compiledRoute.replace(paramStart, paramEnd + 1, EncodingUtil.encodeUTF8(params[i]));
         }
 
-        return new CompiledRoute(this, compiledRoute.toString(), major.isEmpty() ? "n/a" : String.join(":", major));
+        return new CompiledRoute(this, compiledRoute.toString(), major.toString());
     }
 
     @Override
