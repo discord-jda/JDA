@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.unions.IPermissionContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -28,6 +29,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -119,7 +121,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public IPermissionContainerUnion getChannel()
     {
-        IPermissionContainer realChannel = (IPermissionContainer) api.getGuildChannelById(channel.getIdLong());
+        IPermissionContainer realChannel = api.getChannelById(IPermissionContainer.class, channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
 
@@ -201,7 +203,10 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public String toString()
     {
-        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + channel.getId() + " | " + getId() + ")";
+        return new EntityString(this)
+                .setType(isMemberOverride() ? "MEMBER" : "ROLE")
+                .addMetadata("channel", channel)
+                .toString();
     }
 
     private void checkPermissions()

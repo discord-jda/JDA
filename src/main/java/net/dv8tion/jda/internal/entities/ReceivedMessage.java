@@ -19,6 +19,14 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -44,6 +52,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -572,8 +581,9 @@ public class ReceivedMessage extends AbstractMessage
     public AuditableRestAction<Void> delete()
     {
         if (isEphemeral())
+        {
             throw new IllegalStateException("Cannot delete ephemeral messages.");
-        
+        }
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
             if (isFromType(ChannelType.PRIVATE))
@@ -695,9 +705,10 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String toString()
     {
-        return author != null
-            ? String.format("M:%#s:%.20s(%s)", author, this, getId())
-            : String.format("M:%.20s", this); // this message was made using MessageBuilder
+        return new EntityString(this)
+                .addMetadata("author", author.getAsTag())
+                .addMetadata("content", String.format("%.20s ...", this))
+                .toString();
     }
 
     @Override

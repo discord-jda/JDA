@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.update.GenericScheduledEventUpdateEvent;
 import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
@@ -141,12 +142,13 @@ public enum GatewayIntent
      * Typing events in private channels.
      */
     DIRECT_MESSAGE_TYPING(14),
+
     /**
      * <b>PRIVILEGED INTENT</b> Access to message content.
      *
      * <p>This specifically affects messages received through the message history of a channel, or through {@link GenericMessageEvent Message Events}.
      * The content restriction does not apply if the message <b>mentions the bot directly</b> (using @username), sent by the bot itself,
-     * or if the message is a direct message from a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
+     * or if the message is a direct message from a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel}.
      * Affected are all user-generated content fields of a message, such as:
      * <ul>
      *     <li>{@link Message#getContentRaw()}, {@link Message#getContentDisplay()}, {@link Message#getContentStripped()}</li>
@@ -158,6 +160,12 @@ public enum GatewayIntent
      * @see <a href="https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ" target="_blank">Message Content Privileged Intent FAQ</a>
      */
     MESSAGE_CONTENT(15),
+
+    /**
+     * Scheduled Events events.
+     */
+    SCHEDULED_EVENTS(16),
+    
     ;
 
     /**
@@ -373,6 +381,8 @@ public enum GatewayIntent
                 intents.add(GUILD_BANS);
             else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_EMOJIS_AND_STICKERS);
+            else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event))
+                intents.add(SCHEDULED_EVENTS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_INVITES);
             else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))

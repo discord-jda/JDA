@@ -25,11 +25,10 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * POJO for the guild information provided by a template.
@@ -197,7 +196,7 @@ public class TemplateGuild implements ISnowflake
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel} that has been set as the channel
      * which {@link net.dv8tion.jda.api.entities.Member Members} will be moved to after they have been inactive in a
-     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.
+     * {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.
      * <br>If no channel has been set as the AFK channel, this returns {@code null}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel} that is the AFK Channel.

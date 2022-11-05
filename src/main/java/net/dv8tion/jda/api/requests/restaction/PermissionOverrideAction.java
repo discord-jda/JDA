@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -37,7 +38,7 @@ import java.util.function.BooleanSupplier;
  * @since  3.0
  *
  * @see    net.dv8tion.jda.api.entities.PermissionOverride#getManager()
- * @see    IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
+ * @see    net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
  */
 public interface PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {

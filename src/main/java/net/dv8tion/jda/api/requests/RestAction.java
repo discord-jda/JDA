@@ -99,7 +99,7 @@ import java.util.stream.Collectors;
  * it was sent. Thus we can simply use the <b>asynchronous</b> {@link #queue()} operation which will
  * be executed on a rate limit worker thread in the background, without blocking your current thread:
  * <pre><code>
- *      {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *      {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} channel = event.getChannel();
  *     {@literal RestAction<Message>} action = channel.sendMessage("Hello World");
  *      action.{@link #queue() queue()}; // Execute the rest action asynchronously
  * </code></pre>
@@ -111,7 +111,7 @@ import java.util.stream.Collectors;
  *
  * <p><b>Example Queue: (recommended)</b><br>
  * <pre><code>
- *     {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} channel = event.getChannel();
  *     final long time = System.currentTimeMillis();
  *    {@literal RestAction<Message>} action = channel.sendMessage("Calculating Response Time...");
  *     {@link java.util.function.Consumer Consumer}{@literal <Message>} callback = (message) {@literal ->  {
@@ -125,7 +125,7 @@ import java.util.stream.Collectors;
  *
  * <p><b>Example Complete:</b><br>
  * <pre><code>
- *     {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} channel = event.getChannel();
  *     final long time = System.currentTimeMillis();
  *    {@literal RestAction<Message>} action = channel.sendMessage("Calculating Response Time...");
  *     Message message = action.{@link #complete() complete()};
@@ -135,7 +135,7 @@ import java.util.stream.Collectors;
  *
  * <p><b>Example Planning:</b><br>
  * <pre><code>
- *     {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} channel = event.getChannel();
+ *     {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} channel = event.getChannel();
  *    {@literal RestAction<Message>} action = channel.sendMessage("This message will destroy itself in 5 seconds!");
  *     action.queue((message) {@literal ->} message.delete().{@link #queueAfter(long, TimeUnit) queueAfter(5, TimeUnit.SECONDS)});
  * </code></pre>
@@ -529,7 +529,7 @@ public interface RestAction<T>
      * @throws java.util.concurrent.RejectedExecutionException
      *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      *
-     * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(java.lang.CharSequence) MessageChannel.sendMessage(CharSequence)
+     * @see net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#sendMessage(java.lang.CharSequence) MessageChannel.sendMessage(CharSequence)
      * @see #queue(java.util.function.Consumer) queue(Consumer)
      * @see #queue(java.util.function.Consumer, java.util.function.Consumer) queue(Consumer, Consumer)
      */
@@ -762,6 +762,46 @@ public interface RestAction<T>
     {
         Checks.notNull(map, "Function");
         return new MapRestAction<>(this, map);
+    }
+
+    /**
+     * An intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction, which will consume
+     * the actions result using the given consumer on successful execution.
+     * The resulting action continues with the previous result.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * public RestAction<String> retrieveMemberNickname(Guild guild, String userId) {
+     *     return guild.retrieveMemberById(userId)
+     *                 .map(Member::getNickname)
+     *                 .onSuccess(System.out::println);
+     * }
+     * }</pre>
+     *
+     * Prefer using {@link #queue(Consumer)} instead, if continuation of the action
+     * chain is not desired.
+     *
+     * @param  consumer
+     *         The consuming function to apply to the action result, failures are propagated
+     *         into the resulting action
+     *
+     *
+     * @throws IllegalArgumentException
+     *         If the consumer is null
+     *
+     * @return RestAction that consumes the action result
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer)
+    {
+        Checks.notNull(consumer, "Consumer");
+        return map(result -> {
+            consumer.accept(result);
+            return result;
+        });
     }
 
     /**

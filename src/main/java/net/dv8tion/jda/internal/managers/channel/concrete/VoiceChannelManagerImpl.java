@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.managers.channel.concrete;
 
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.internal.managers.channel.ChannelManagerImpl;
 

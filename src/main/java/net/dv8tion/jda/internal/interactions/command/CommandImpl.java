@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
@@ -32,10 +32,13 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -73,8 +76,8 @@ public class CommandImpl implements Command
         this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
         this.options = parseOptions(json, OPTION_TEST, Command.Option::new);
-        this.groups = parseOptions(json, GROUP_TEST, Command.SubcommandGroup::new);
-        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Command.Subcommand::new);
+        this.groups = parseOptions(json, GROUP_TEST, (DataObject o) -> new SubcommandGroup(this, o));
+        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
         this.version = json.getUnsignedLong("version", id);
 
         this.defaultMemberPermissions = json.isNull("default_member_permissions")
@@ -87,10 +90,10 @@ public class CommandImpl implements Command
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
     {
         return json.optArray("options").map(arr ->
-                arr.stream(DataArray::getObject)
-                        .filter(test)
-                        .map(transform)
-                        .collect(Collectors.toList())
+            arr.stream(DataArray::getObject)
+               .filter(test)
+               .map(transform)
+               .collect(Collectors.toList())
         ).orElse(Collections.emptyList());
     }
 
@@ -151,6 +154,13 @@ public class CommandImpl implements Command
     public LocalizationMap getNameLocalizations()
     {
         return nameLocalizations;
+    }
+
+    @Nonnull
+    @Override
+    public String getFullCommandName()
+    {
+        return name;
     }
 
     @Nonnull
@@ -219,10 +229,22 @@ public class CommandImpl implements Command
         return id;
     }
 
+    @Nonnull
+    @Override
+    public String getAsMention()
+    {
+        if (getType() != Type.SLASH)
+            throw new IllegalStateException("Only slash commands can be mentioned");
+        return Command.super.getAsMention();
+    }
+
     @Override
     public String toString()
     {
-        return "Command[" + getType() + "](" + getId() + ":" + getName() + ")";
+        return new EntityString(this)
+                .setType(getType())
+                .setName(getName())
+                .toString();
     }
 
     @Override

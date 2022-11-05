@@ -23,6 +23,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -68,8 +73,8 @@ import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
@@ -98,11 +103,13 @@ public class GuildImpl implements Guild
     private final JDAImpl api;
 
     private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ScheduledEvent> scheduledEventCache = new SortedSnowflakeCacheViewImpl<>(ScheduledEvent.class, ScheduledEvent::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ForumChannel> forumChannelCache = new SortedSnowflakeCacheViewImpl<>(ForumChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<RichCustomEmoji> emojicache = new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
@@ -155,6 +162,7 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
         SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
+        SnowflakeCacheViewImpl<ForumChannel> forumView = getJDA().getForumChannelsView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
         SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
 
@@ -179,6 +187,11 @@ public class GuildImpl implements Guild
         {
             getNewsChannelCache()
                 .forEachUnordered(chan -> newsView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = forumView.writeLock())
+        {
+            getForumChannelCache()
+                .forEachUnordered(chan -> forumView.getMap().remove(chan.getIdLong()));
         }
         try (UnlockHook hook = voiceView.writeLock())
         {
@@ -528,6 +541,44 @@ public class GuildImpl implements Guild
         return rulesChannel;
     }
 
+    @Nonnull
+    @Override
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new DeferredRestAction<>(getJDA(), ScheduledEvent.class,
+                () -> getScheduledEventById(id),
+                () ->
+                {
+                    Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id);
+                    return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createScheduledEvent(this, response.getObject()));
+                });
+    }
+
+    @Nonnull
+    @Override
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        return retrieveScheduledEventById(Long.toUnsignedString(id));
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime)
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new ScheduledEventActionImpl(name, location, startTime, endTime, this);
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime)
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new ScheduledEventActionImpl(name, channel, startTime, this);
+    }
+
+
     @Override
     public TextChannel getCommunityUpdatesChannel()
     {
@@ -616,6 +667,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
+    {
+        return scheduledEventCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<Category> getCategoryCache()
     {
         return categoryCache;
@@ -640,6 +698,13 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
+    }
+
+    @Nonnull
+    @Override
+    public SortedSnowflakeCacheView<ForumChannel> getForumChannelCache()
+    {
+        return forumChannelCache;
     }
 
     @Nonnull
@@ -682,13 +747,7 @@ public class GuildImpl implements Guild
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
         Member self = getSelfMember();
-        Predicate<GuildChannel> filterHidden = it -> {
-            //TODO-v5: Do we need to if-protected cast here? If the channel _isnt_ a IPermissionContainer, then would we even be using this filter on it?
-            if (it instanceof IPermissionContainer) {
-                return self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
-            }
-            return false;
-        };
+        Predicate<GuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
 
         List<GuildChannel> channels;
         SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
@@ -696,16 +755,19 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getNewsChannelView();
+        SnowflakeCacheViewImpl<ForumChannel> forumView = getForumChannelsView();
         List<TextChannel> textChannels;
         List<NewsChannel> newsChannels;
         List<VoiceChannel> voiceChannels;
         List<StageChannel> stageChannels;
+        List<ForumChannel> forumChannels;
         List<Category> categories;
         try (UnlockHook categoryHook = categoryView.readLock();
              UnlockHook voiceHook = voiceView.readLock();
              UnlockHook textHook = textView.readLock();
              UnlockHook newsHook = newsView.readLock();
-             UnlockHook stageHook = stageView.readLock())
+             UnlockHook stageHook = stageView.readLock();
+             UnlockHook forumHook = forumView.readLock())
         {
             if (includeHidden)
             {
@@ -713,6 +775,7 @@ public class GuildImpl implements Guild
                 newsChannels = newsView.asList();
                 voiceChannels = voiceView.asList();
                 stageChannels = stageView.asList();
+                forumChannels = forumView.asList();
             }
             else
             {
@@ -720,6 +783,7 @@ public class GuildImpl implements Guild
                 newsChannels = newsView.stream().filter(filterHidden).collect(Collectors.toList());
                 voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
                 stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
+                forumChannels = forumView.stream().filter(filterHidden).collect(Collectors.toList());
             }
             categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
             channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + stageChannels.size());
@@ -729,6 +793,7 @@ public class GuildImpl implements Guild
         newsChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         stageChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        forumChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         Collections.sort(channels);
 
         for (Category category : categories)
@@ -1207,8 +1272,18 @@ public class GuildImpl implements Guild
                     threadObj.put("member", selfThreadMemberObj);
                 }
 
-                ThreadChannel thread = builder.createThreadChannel(threadObj, this.getIdLong());
-                list.add(thread);
+                try
+                {
+                    ThreadChannel thread = builder.createThreadChannel(threadObj, this.getIdLong());
+                    list.add(thread);
+                }
+                catch (Exception e)
+                {
+                    if (EntityBuilder.MISSING_CHANNEL.equals(e.getMessage()))
+                        EntityBuilder.LOG.debug("Discarding thread without cached parent channel. JSON: {}", threadObj);
+                    else
+                        EntityBuilder.LOG.warn("Failed to create thread channel. JSON: {}", threadObj, e);
+                }
             }
 
             return Collections.unmodifiableList(list);
@@ -1309,11 +1384,12 @@ public class GuildImpl implements Guild
         if (channel == null)
             throw new IllegalStateException("You cannot move a Member who isn't in an AudioChannel!");
 
-        if (!PermissionUtil.checkPermission((IPermissionContainer) channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
+        Member selfMember = getSelfMember();
+        if (!selfMember.hasPermission(channel, Permission.VOICE_MOVE_OTHERS))
             throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (audioChannel != null
-            && !getSelfMember().hasPermission(audioChannel, Permission.VOICE_CONNECT)
+            && !selfMember.hasPermission(audioChannel, Permission.VOICE_CONNECT)
             && !member.hasPermission(audioChannel, Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(audioChannel, Permission.VOICE_CONNECT,
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
@@ -1388,7 +1464,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot kick the owner of a guild!");
+        checkOwner(user.getIdLong(), "kick");
         Member member = resolveMember(user);
         if (member != null) // If user is in guild. Check if we are able to ban.
             checkPosition(member);
@@ -1406,7 +1482,7 @@ public class GuildImpl implements Guild
         Checks.notNegative(duration, "Deletion Timeframe");
         Checks.check(unit.toDays(duration) <= 7, "Deletion timeframe must not be larger than 7 days");
         checkPermission(Permission.BAN_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot ban the owner of a guild!");
+        checkOwner(user.getIdLong(), "ban");
 
         Member member = resolveMember(user);
         if (member != null) // If user is in guild. Check if we are able to ban.
@@ -1442,7 +1518,7 @@ public class GuildImpl implements Guild
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
-        Checks.check(user.getIdLong() != ownerId, "Cannot put the owner of a guild in time out!");
+        checkOwner(user.getIdLong(), "time out");
 
         return timeoutUntilById0(user.getId(), date);
     }
@@ -1635,60 +1711,52 @@ public class GuildImpl implements Guild
     @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
+        return createChannel(ChannelType.TEXT, TextChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(NewsChannel.class, name, this, ChannelType.NEWS).setParent(parent);
+        return createChannel(ChannelType.NEWS, NewsChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
-
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
+        return createChannel(ChannelType.VOICE, VoiceChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<StageChannel> createStageChannel(@Nonnull String name, Category parent)
     {
-        checkCanCreateChannel(parent);
+        return createChannel(ChannelType.STAGE, StageChannel.class, name, parent);
+    }
 
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(StageChannel.class, name, this, ChannelType.STAGE).setParent(parent);
+    @Nonnull
+    @Override
+    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, Category parent)
+    {
+        return createChannel(ChannelType.FORUM, ForumChannel.class, name, parent);
     }
 
     @Nonnull
     @Override
     public ChannelAction<Category> createCategory(@Nonnull String name)
     {
-        checkPermission(Permission.MANAGE_CHANNEL);
+        return createChannel(ChannelType.CATEGORY, Category.class, name, null);
+    }
+
+    private <T extends GuildChannel> ChannelAction<T> createChannel(ChannelType type, Class<T> clazz, String name, Category parent)
+    {
+        checkCanCreateChannel(parent);
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
-        return new ChannelActionImpl<>(Category.class, name, this, ChannelType.CATEGORY);
+        return new ChannelActionImpl<>(clazz, name, this, type).setParent(parent);
     }
 
     @Nonnull
@@ -1831,6 +1899,8 @@ public class GuildImpl implements Guild
         return new RoleOrderActionImpl(this, useAscendingOrder);
     }
 
+    // ---- Checks ----
+
     protected void checkGuild(Guild providedGuild, String comment)
     {
         if (!equals(providedGuild))
@@ -1864,6 +1934,26 @@ public class GuildImpl implements Guild
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
+    }
+
+    private void checkCanCreateChannel(Category parent)
+    {
+        if (parent != null)
+        {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+        }
+        else
+        {
+            checkPermission(Permission.MANAGE_CHANNEL);
+        }
+    }
+
+    private void checkOwner(long userId, String what)
+    {
+        if (userId == ownerId)
+            throw new HierarchyException("Cannot " + what + " the owner of a guild.");
     }
 
     private Member resolveMember(UserSnowflake user)
@@ -2075,6 +2165,11 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
+    public SortedSnowflakeCacheViewImpl<ScheduledEvent> getScheduledEventsView()
+    {
+        return scheduledEventCache;
+    }
+
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categoryCache;
@@ -2103,6 +2198,11 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<ThreadChannel> getThreadChannelsView()
     {
         return threadChannelCache;
+    }
+
+    public SortedSnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
+    {
+        return forumChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()
@@ -2172,20 +2272,8 @@ public class GuildImpl implements Guild
     @Override
     public String toString()
     {
-        return "G:" + getName() + '(' + id + ')';
-    }
-
-    private void checkCanCreateChannel(Category parent)
-    {
-        if (parent != null)
-        {
-            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
-            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
-        }
-        else
-        {
-            checkPermission(Permission.MANAGE_CHANNEL);
-        }
+        return new EntityString(this)
+                .setName(getName())
+                .toString();
     }
 }

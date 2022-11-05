@@ -20,14 +20,16 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
-import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.InteractionMentions;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -314,14 +316,14 @@ public class OptionMapping
     }
 
     /**
-     * The resolved {@link GuildChannel} for this option value.
+     * The resolved {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} for this option value.
      * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
      *
      * @throws IllegalStateException
      *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
      *         or could not be resolved for unexpected reasons
      *
-     * @return The resolved {@link GuildChannel}
+     * @return The resolved {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      */
     @Nonnull
     public GuildChannelUnion getAsChannel()
@@ -339,7 +341,11 @@ public class OptionMapping
     @Override
     public String toString()
     {
-        return "Option[" + getType() + "](" + getName() + "=" + getAsString() + ")";
+        return new EntityString(this)
+                .setType(getType())
+                .addMetadata("name", name)
+                .addMetadata("value", getAsString())
+                .toString();
     }
 
     @Override

@@ -57,7 +57,7 @@ public interface CommandInteractionPayload extends Interaction
      *     <li>{@code /name}</li>
      * </ul>
      *
-     * You can use {@link #getCommandPath()} to simplify your checks.
+     * You can use {@link #getFullCommandName()} to simplify your checks.
      *
      * @return The command name
      */
@@ -75,7 +75,7 @@ public interface CommandInteractionPayload extends Interaction
      *     <li>{@code /name}</li>
      * </ul>
      *
-     * You can use {@link #getCommandPath()} to simplify your checks.
+     * You can use {@link #getFullCommandName()} to simplify your checks.
      *
      * @return The subcommand name, or null if this is not a subcommand
      */
@@ -93,7 +93,7 @@ public interface CommandInteractionPayload extends Interaction
      *     <li>{@code /name}</li>
      * </ul>
      *
-     * You can use {@link #getCommandPath()} to simplify your checks.
+     * You can use {@link #getFullCommandName()} to simplify your checks.
      *
      * @return The subcommand group name, or null if this is not a subcommand group
      */
@@ -102,25 +102,25 @@ public interface CommandInteractionPayload extends Interaction
 
     /**
      * Combination of {@link #getName()}, {@link #getSubcommandGroup()}, and {@link #getSubcommandName()}.
-     * <br>This will format the command into a path such as {@code mod/mute} where {@code mod} would be the {@link #getName()} and {@code mute} the {@link #getSubcommandName()}.
+     * <br>This will format the command into a path such as {@code mod mute} where {@code mod} would be the {@link #getName()} and {@code mute} the {@link #getSubcommandName()}.
      *
      * <p>Examples:
      * <ul>
-     *     <li>{@code /mod ban -> "mod/ban"}</li>
-     *     <li>{@code /admin config owner -> "admin/config/owner"}</li>
+     *     <li>{@code /mod ban -> "mod ban"}</li>
+     *     <li>{@code /admin config owner -> "admin config owner"}</li>
      *     <li>{@code /ban -> "ban"}</li>
      * </ul>
      *
      * @return The command path
      */
     @Nonnull
-    default String getCommandPath()
+    default String getFullCommandName()
     {
         StringBuilder builder = new StringBuilder(getName());
         if (getSubcommandGroup() != null)
-            builder.append('/').append(getSubcommandGroup());
+            builder.append(' ').append(getSubcommandGroup());
         if (getSubcommandName() != null)
-            builder.append('/').append(getSubcommandName());
+            builder.append(' ').append(getSubcommandName());
         return builder.toString();
     }
 

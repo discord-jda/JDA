@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.events.channel;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.channel.Channel;
 
 import javax.annotation.Nonnull;
 

@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.CheckReturnValue;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
  * @see Guild#retrieveCommandById(String)
  * @see Guild#retrieveCommands()
  */
-public interface Command extends ISnowflake
+public interface Command extends ISnowflake, ICommandReference
 {
     /**
      * Delete this command.
@@ -539,7 +540,10 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Choice(" + name + "," + stringValue + ")";
+            return new EntityString(this)
+                    .setName(name)
+                    .addMetadata("value", stringValue)
+                    .toString();
         }
 
         private void setIntValue(long value)
@@ -607,6 +611,7 @@ public interface Command extends ISnowflake
         private final List<Choice> choices;
         private Number minValue;
         private Number maxValue;
+        private Integer minLength, maxLength;
 
         public Option(@Nonnull DataObject json)
         {
@@ -627,6 +632,10 @@ public interface Command extends ISnowflake
                 this.minValue = json.getDouble("min_value");
             if (!json.isNull("max_value"))
                 this.maxValue = json.getDouble("max_value");
+            if (!json.isNull("min_length"))
+                this.minLength = json.getInt("min_length");
+            if (!json.isNull("max_length"))
+                this.maxLength = json.getInt("max_length");
         }
 
         /**
@@ -753,6 +762,32 @@ public interface Command extends ISnowflake
         }
 
         /**
+         * The minimum length for strings which can be provided for this option.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#STRING STRING}.
+         *
+         * @return The minimum length for strings for this option or {@code null}
+         */
+        @Nullable
+        public Integer getMinLength()
+        {
+            return minLength;
+        }
+
+        /**
+         * The maximum length for strings which can be provided for this option.
+         * <br>This returns {@code null} if the value is not set or if the option
+         * is not of type {@link OptionType#STRING STRING}.
+         *
+         * @return The maximum length for strings for this option or {@code null}
+         */
+        @Nullable
+        public Integer getMaxLength()
+        {
+            return maxLength;
+        }
+
+        /**
          * The predefined choices available for this option.
          * <br>If no choices are defined, this returns an empty list.
          *
@@ -767,7 +802,7 @@ public interface Command extends ISnowflake
         @Override
         public int hashCode()
         {
-            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue, required, autoComplete);
+            return Objects.hash(name, description, type, choices, channelTypes, minValue, maxValue, minLength, maxLength, required, autoComplete);
         }
 
         @Override
@@ -782,6 +817,8 @@ public interface Command extends ISnowflake
                 && Objects.equals(other.channelTypes, channelTypes)
                 && Objects.equals(other.minValue, minValue)
                 && Objects.equals(other.maxValue, maxValue)
+                && Objects.equals(other.minLength, minLength)
+                && Objects.equals(other.maxLength, maxLength)
                 && other.required == required
                 && other.autoComplete == autoComplete
                 && other.type == type;
@@ -790,27 +827,43 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Option[" + getType() + "](" + name + ")";
+            return new EntityString(this)
+                    .setType(getType())
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
     /**
      * An Subcommand for a command.
      */
-    class Subcommand
+    class Subcommand implements ICommandReference
     {
+        private final ICommandReference parentCommand; //Could be Command or SubcommandGroup
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
         private final List<Option> options;
 
-        public Subcommand(DataObject json)
+        public Subcommand(ICommandReference parentCommand, DataObject json)
         {
+            this.parentCommand = parentCommand;
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p><b>This will return the ID of the top level command</b>
+         */
+        @Override
+        public long getIdLong()
+        {
+            return parentCommand.getIdLong();
         }
 
         /**
@@ -833,6 +886,13 @@ public interface Command extends ISnowflake
         public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
+        }
+
+        @Nonnull
+        @Override
+        public String getFullCommandName()
+        {
+            return parentCommand.getFullCommandName() + " " + getName();
         }
 
         /**
@@ -888,27 +948,42 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Subcommand(" + name + ")";
+            return new EntityString(this)
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
     /**
      * An Subcommand Group for a command.
      */
-    class SubcommandGroup
+    class SubcommandGroup implements ICommandReference
     {
+        private final Command parentCommand;
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
-        public SubcommandGroup(DataObject json)
+        public SubcommandGroup(Command parentCommand, DataObject json)
         {
+            this.parentCommand = parentCommand;
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
-            this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, Subcommand::new);
+            this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p><b>This will return the ID of the top level command</b>
+         */
+        @Override
+        public long getIdLong()
+        {
+            return parentCommand.getIdLong();
         }
 
         /**
@@ -931,6 +1006,13 @@ public interface Command extends ISnowflake
         public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
+        }
+
+        @Nonnull
+        @Override
+        public String getFullCommandName()
+        {
+            return parentCommand.getFullCommandName() + " " + getName();
         }
 
         /**
@@ -986,7 +1068,9 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "SubcommandGroup(" + name + ")";
+            return new EntityString(this)
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 }

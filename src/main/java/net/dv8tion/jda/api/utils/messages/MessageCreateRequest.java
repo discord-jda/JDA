@@ -332,6 +332,10 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .map(LayoutComponent::createCopy)
                 .collect(Collectors.toList());
         return setContent(data.getContent())
+                .setAllowedMentions(data.getAllowedMentions())
+                .mentionUsers(data.getMentionedUsers())
+                .mentionRoles(data.getMentionedRoles())
+                .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
                 .setComponents(layoutComponents);

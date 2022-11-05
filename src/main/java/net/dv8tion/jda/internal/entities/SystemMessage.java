@@ -17,12 +17,15 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
@@ -102,6 +105,9 @@ public class SystemMessage extends ReceivedMessage
     @Override
     public String toString()
     {
-        return "M:[" + type + ']' + author + '(' + id + ')';
+        return new EntityString(this)
+                .setType(type)
+                .addMetadata("author", author)
+                .toString();
     }
 }

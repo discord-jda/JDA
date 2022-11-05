@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.modals;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -80,7 +81,10 @@ public class ModalMapping
     @Override
     public String toString()
     {
-        return "ModalMapping[" + getType() + "](" + getId() + "=" + getAsString() + ")";
+        return new EntityString(this)
+                .setType(getType())
+                .addMetadata("value", getAsString())
+                .toString();
     }
 
     @Override

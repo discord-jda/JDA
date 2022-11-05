@@ -17,7 +17,11 @@
 package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -163,9 +167,6 @@ public interface RichCustomEmoji extends CustomEmoji
      * properties of the emoji like name and role restrictions.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
-     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
-     * This getter is not thread-safe and would require guards by the user.
-     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}
      *
@@ -190,7 +191,7 @@ public interface RichCustomEmoji extends CustomEmoji
 
     /**
      * Whether the specified User can interact with this emoji within the provided MessageChannel
-     * <br>Same logic as {@link #canInteract(User, MessageChannel, boolean) canInteract(issuer, channel, true)}!
+     * <br>Same logic as {@link #canInteract(User, net.dv8tion.jda.api.entities.channel.middleman.MessageChannel, boolean) canInteract(issuer, channel, true)}!
      *
      * @param  issuer
      *         The User to test

@@ -77,10 +77,4 @@ public abstract class GenericEmojiUpdateEvent<T> extends GenericEmojiEvent imple
     {
         return next;
     }
-
-    @Override
-    public String toString()
-    {
-        return "EmojiUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
-    }
 }

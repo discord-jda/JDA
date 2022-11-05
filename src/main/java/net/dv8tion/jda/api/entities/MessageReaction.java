@@ -18,6 +18,11 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -31,6 +36,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -134,7 +140,7 @@ public class MessageReaction
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * The {@link ChannelType ChannelType}
      * this Reaction was used in.
      *
      * @return The ChannelType
@@ -147,7 +153,7 @@ public class MessageReaction
 
     /**
      * Whether this Reaction was used in a {@link MessageChannel}
-     * of the specified {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}.
+     * of the specified {@link ChannelType ChannelType}.
      *
      * @param  type
      *         The ChannelType to compare
@@ -186,7 +192,7 @@ public class MessageReaction
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel channel} this Reaction was used in.
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel channel} this Reaction was used in.
      *
      * @throws IllegalStateException
      *          If {@link #getChannel()} is not a guild channel
@@ -313,7 +319,7 @@ public class MessageReaction
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE manage messages}
      *         in the channel this reaction was used in
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the message is from another user in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *         If the message is from another user in a {@link PrivateChannel PrivateChannel}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      *         Nothing is returned on success
@@ -394,6 +400,9 @@ public class MessageReaction
     @Override
     public String toString()
     {
-        return "MR:(M:(" + messageId + ") / " + emoji + ")";
+        return new EntityString(this)
+                .addMetadata("messageId", messageId)
+                .addMetadata("emoji", emoji)
+                .toString();
     }
 }

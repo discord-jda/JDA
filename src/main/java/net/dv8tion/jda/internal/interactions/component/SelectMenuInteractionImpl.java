@@ -19,33 +19,25 @@ package net.dv8tion.jda.internal.interactions.component;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
-public class SelectMenuInteractionImpl extends ComponentInteractionImpl implements SelectMenuInteraction
+public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu> extends ComponentInteractionImpl implements SelectMenuInteraction<T, S>
 {
-    private final List<String> values;
-    private final SelectMenu menu;
+    private final S menu;
 
-    public SelectMenuInteractionImpl(JDAImpl jda, DataObject data)
+    public SelectMenuInteractionImpl(JDAImpl jda, Class<S> type, DataObject data)
     {
         super(jda, data);
-        values = Collections.unmodifiableList(data.getObject("data").getArray("values")
-            .stream(DataArray::getString)
-            .collect(Collectors.toList()));
         if (message != null)
         {
             menu = message.getActionRows()
                     .stream()
                     .flatMap(row -> row.getComponents().stream())
-                    .filter(SelectMenu.class::isInstance)
-                    .map(SelectMenu.class::cast)
+                    .filter(type::isInstance)
+                    .map(type::cast)
                     .filter(c -> customId.equals(c.getId()))
                     .findFirst()
                     .orElse(null);
@@ -58,7 +50,7 @@ public class SelectMenuInteractionImpl extends ComponentInteractionImpl implemen
 
     @Nonnull
     @Override
-    public SelectMenu getComponent()
+    public S getComponent()
     {
         return menu;
     }
@@ -67,13 +59,6 @@ public class SelectMenuInteractionImpl extends ComponentInteractionImpl implemen
     @Override
     public Component.Type getComponentType()
     {
-        return Component.Type.SELECT_MENU;
-    }
-
-    @Nonnull
-    @Override
-    public List<String> getValues()
-    {
-        return values;
+        return menu.getType();
     }
 }

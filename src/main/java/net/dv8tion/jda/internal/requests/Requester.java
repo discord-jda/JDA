@@ -159,29 +159,8 @@ public class Requester
         String url = DISCORD_API_PREFIX + route.getCompiledRoute();
         builder.url(url);
 
-        String method = apiRequest.getRoute().getMethod().toString();
-        RequestBody body = apiRequest.getBody();
-
-        if (body == null && HttpMethod.requiresRequestBody(method))
-            body = EMPTY_BODY;
-
-        builder.method(method, body)
-                .header("X-RateLimit-Precision", "millisecond")
-                .header("user-agent", USER_AGENT)
-                .header("accept-encoding", "gzip");
-
-        //adding token to all requests to the discord api or cdn pages
-        //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
-        if (url.startsWith(DISCORD_API_PREFIX))
-            builder.header("authorization", api.getToken());
-
-        // Apply custom headers like X-Audit-Log-Reason
-        // If customHeaders is null this does nothing
-        if (apiRequest.getHeaders() != null)
-        {
-            for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
-                builder.addHeader(header.getKey(), header.getValue());
-        }
+        applyBody(apiRequest, builder);
+        applyHeaders(apiRequest, builder, url.startsWith(DISCORD_API_PREFIX));
 
         okhttp3.Request request = builder.build();
 
@@ -193,8 +172,7 @@ public class Requester
         try
         {
             LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
-            int attempt = 0;
-            do
+            for (int attempt = 0; attempt < responses.length; attempt++)
             {
                 if (apiRequest.isSkipped())
                     return null;
@@ -206,24 +184,26 @@ public class Requester
                 if (cfRay != null)
                     rays.add(cfRay);
 
-                if (lastResponse.code() < 500)
-                    break; // break loop, got a successful response!
+                // Retry a few specific server errors that are related to server issues
+                if (!shouldRetry(lastResponse.code()))
+                    break;
 
-                attempt++;
                 LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
                         apiRequest.getRoute().getMethod(),
-                        url, lastResponse.code(), attempt);
+                        url, lastResponse.code(), attempt + 1);
                 try
                 {
-                    Thread.sleep(50 * attempt);
+                    Thread.sleep(500 << attempt);
                 }
-                catch (InterruptedException ignored) {}
+                catch (InterruptedException ignored)
+                {
+                    break;
+                }
             }
-            while (attempt < 3 && lastResponse.code() >= 500);
 
             LOG.trace("Finished Request {} {} with code {}", route.getMethod(), lastResponse.request().url(), lastResponse.code());
 
-            if (lastResponse.code() >= 500)
+            if (shouldRetry(lastResponse.code()))
             {
                 //Epic failure from other end. Attempted 4 times.
                 Response response = new Response(lastResponse, -1, rays);
@@ -329,4 +309,8 @@ public class Requester
         rateLimiter.shutdown();
     }
 
+    private static boolean shouldRetry(int code)
+    {
+        return code == 502 || code == 504 || code == 529;
+    }
 }
