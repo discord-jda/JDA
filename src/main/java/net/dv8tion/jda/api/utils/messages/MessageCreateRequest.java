@@ -383,7 +383,12 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
         if (data.isSet(MessageEditBuilder.EMBEDS))
             setEmbeds(data.getEmbeds());
         if (data.isSet(MessageEditBuilder.COMPONENTS))
-            setComponents(data.getComponents());
+        {
+            final List<LayoutComponent> layoutComponents = data.getComponents().stream()
+                    .map(LayoutComponent::createCopy)
+                    .collect(Collectors.toList());
+            setComponents(layoutComponents);
+        }
         if (data.isSet(MessageEditBuilder.ATTACHMENTS))
             setFiles(data.getFiles());
         if (data.isSet(MessageEditBuilder.MENTIONS))
