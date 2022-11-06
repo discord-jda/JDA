@@ -313,7 +313,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     /**
      * Applies the provided {@link MessageCreateData} to this request.
      *
-     * <p>Note that <b>files will not be copied</b>.
+     * <p>Note that files will be copied but the input streams themselves can only be consumed once.
      *
      * @param  data
      *         The message create data to apply
@@ -338,7 +338,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
-                .setComponents(layoutComponents);
+                .setComponents(layoutComponents)
+                .setFiles(data.getFiles());
     }
 
     @Nonnull
