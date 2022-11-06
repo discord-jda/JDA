@@ -306,6 +306,7 @@ public class FileUpload implements Closeable, AttachedFile
      *
      * @return The description
      */
+    @Nullable
     public String getDescription()
     {
         return description;
