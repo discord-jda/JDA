@@ -313,8 +313,6 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     /**
      * Applies the provided {@link MessageCreateData} to this request.
      *
-     * <p>Note that files will be copied but the input streams themselves can only be consumed once.
-     *
      * @param  data
      *         The message create data to apply
      *
