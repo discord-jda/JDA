@@ -271,7 +271,7 @@ public class ActionRow implements LayoutComponent
 
     @Nonnull
     @Override
-    public LayoutComponent createCopy()
+    public ActionRow createCopy()
     {
         return ActionRow.of(components);
     }
