@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Builder specialized for building a {@link MessageEditData}.
@@ -247,7 +248,12 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (data.isSet(EMBEDS))
             this.setEmbeds(data.getEmbeds());
         if (data.isSet(COMPONENTS))
-            this.setComponents(data.getComponents());
+        {
+            final List<LayoutComponent> layoutComponents = data.getComponents().stream()
+                    .map(LayoutComponent::createCopy)
+                    .collect(Collectors.toList());
+            this.setComponents(layoutComponents);
+        }
         if (data.isSet(ATTACHMENTS))
             this.setAttachments(data.getAttachments());
         if (data.isSet(MENTIONS))
