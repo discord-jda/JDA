@@ -168,4 +168,8 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Override
     @CheckReturnValue
     CommandCreateAction setGuildOnly(boolean guildOnly);
+
+    @Nonnull
+    @Override
+    CommandCreateAction setNSFW(boolean nsfw);
 }

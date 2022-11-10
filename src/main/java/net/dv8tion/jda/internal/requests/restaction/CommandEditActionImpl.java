@@ -46,6 +46,9 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private static final int NAME_SET        = 1 << 0;
     private static final int DESCRIPTION_SET = 1 << 1;
     private static final int OPTIONS_SET     = 1 << 2;
+    private static final int PERMISSIONS_SET = 1 << 3;
+    private static final int GUILD_ONLY_SET  = 1 << 4;
+    private static final int NSFW_SET        = 1 << 5;
     private final Guild guild;
     private int mask = 0;
     private CommandDataImpl data = new CommandDataImpl(UNDEFINED, UNDEFINED);
@@ -81,7 +84,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditAction apply(@Nonnull CommandData commandData)
     {
         Checks.notNull(commandData, "Command Data");
-        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET;
+        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET | PERMISSIONS_SET | GUILD_ONLY_SET | NSFW_SET;
         this.data = (CommandDataImpl) commandData;
         return this;
     }
@@ -119,6 +122,16 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditAction setGuildOnly(boolean guildOnly)
     {
         data.setGuildOnly(guildOnly);
+        mask |= GUILD_ONLY_SET;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction setNSFW(boolean nsfw)
+    {
+        data.setNSFW(nsfw);
+        mask |= NSFW_SET;
         return this;
     }
 
@@ -127,6 +140,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission)
     {
         data.setDefaultPermissions(permission);
+        mask |= PERMISSIONS_SET;
         return this;
     }
 
@@ -195,6 +209,12 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
             json.remove("description");
         if (isUnchanged(OPTIONS_SET))
             json.remove("options");
+        if (isUnchanged(PERMISSIONS_SET))
+            json.remove("default_member_permissions");
+        if (isUnchanged(GUILD_ONLY_SET))
+            json.remove("dm_permission");
+        if (isUnchanged(NSFW_SET))
+            json.remove("nsfw");
         mask = 0;
         data = new CommandDataImpl(UNDEFINED, UNDEFINED);
         return getRequestBody(json);

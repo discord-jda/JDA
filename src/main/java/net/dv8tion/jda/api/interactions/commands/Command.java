@@ -229,6 +229,15 @@ public interface Command extends ISnowflake, ICommandReference
     boolean isGuildOnly();
 
     /**
+     * Whether this command is restricted to NSFW (age-restricted) channels.
+     *
+     * @return True, if this command is NSFW
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    boolean isNSFW();
+
+    /**
      * Possible command types
      */
     enum Type
