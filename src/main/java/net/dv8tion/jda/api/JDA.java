@@ -1242,6 +1242,8 @@ public interface JDA extends IGuildChannelContainer
      * {@link SnowflakeCacheView} of
      * all cached {@link ScheduledEvent ScheduledEvents} visible to this JDA session.
      *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
      * @return {@link SnowflakeCacheView}
      */
     @Nonnull
@@ -1256,6 +1258,8 @@ public interface JDA extends IGuildChannelContainer
      * a local variable or use {@link #getScheduledEventCache()} and use its more efficient
      * versions of handling these values.
      *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
      * @return Possibly-empty immutable list of all known {@link ScheduledEvent ScheduledEvents}.
      */
     @Nonnull
@@ -1268,6 +1272,8 @@ public interface JDA extends IGuildChannelContainer
      * This returns the {@link ScheduledEvent} which has the same id as the one provided.
      * <br>If there is no known {@link ScheduledEvent} with an id that matches the provided
      * one, then this returns {@code null}.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
      *
      * @param  id
      *         The id of the {@link ScheduledEvent}.
@@ -1288,6 +1294,8 @@ public interface JDA extends IGuildChannelContainer
      * <br>If there is no known {@link ScheduledEvent} with an id that matches the provided
      * one, then this returns {@code null}.
      *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
      * @param  id
      *         The id of the {@link ScheduledEvent}.
      *
@@ -1302,6 +1310,8 @@ public interface JDA extends IGuildChannelContainer
     /**
      * An unmodifiable list of all {@link ScheduledEvent ScheduledEvents} that have the same name as the one provided.
      * <br>If there are no {@link ScheduledEvent ScheduledEvents} with the provided name, then this returns an empty list.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
      *
      * @param  name
      *         The name of the requested {@link ScheduledEvent}.
@@ -1828,6 +1838,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
+     * <br>If the webhook does not belong to any known guild of this JDA session, it will be {@link Webhook#isPartial() partial}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1857,6 +1868,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
+     * <br>If the webhook does not belong to any known guild of this JDA session, it will be {@link Webhook#isPartial() partial}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:

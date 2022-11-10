@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -29,18 +29,24 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Component Interaction for a {@link SelectMenu}.
  *
- * @see SelectMenuInteractionEvent
+ * @param <T>
+ *        The select menu value type
+ * @param <S>
+ *        The type of select menu
+ *
+ * @see GenericSelectMenuInteractionEvent
+ * @see EntitySelectInteraction
+ * @see StringSelectInteraction
  */
-public interface SelectMenuInteraction extends ComponentInteraction
+public interface SelectMenuInteraction<T, S extends SelectMenu> extends ComponentInteraction
 {
     @Nonnull
     @Override
-    SelectMenu getComponent();
+    S getComponent();
 
     /**
      * The {@link SelectMenu} this interaction belongs to.
@@ -50,35 +56,18 @@ public interface SelectMenuInteraction extends ComponentInteraction
      * @see    #getComponentId()
      */
     @Nonnull
-    default SelectMenu getSelectMenu()
+    default S getSelectMenu()
     {
         return getComponent();
     }
 
     /**
-     * If available, this will resolve the selected {@link #getValues() values} to the representative {@link SelectOption SelectOption} instances.
-     * <br>This is null if the message is ephemeral.
+     * The provided selection.
      *
-     * @return {@link List} of the selected options or null if this message is ephemeral
+     * @return {@link List} of {@link T}
      */
     @Nonnull
-    default List<SelectOption> getSelectedOptions()
-    {
-        SelectMenu menu = getComponent();
-        List<String> values = getValues();
-        return menu.getOptions()
-                .stream()
-                .filter(it -> values.contains(it.getValue()))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * The selected values. These are defined in the individual {@link SelectOption SelectOptions}.
-     *
-     * @return {@link List} of {@link SelectOption#getValue()}
-     */
-    @Nonnull
-    List<String> getValues();
+    List<T> getValues();
 
     /**
      * Update the select menu with a new select menu instance.
@@ -90,9 +79,6 @@ public interface SelectMenuInteraction extends ComponentInteraction
      *         The new select menu to use, or null to remove this menu from the message entirely
      *
      * @return {@link RestAction}
-     *
-     * @see    SelectMenu#createCopy()
-     * @see    SelectMenu#create(String)
      */
     @Nonnull
     @CheckReturnValue

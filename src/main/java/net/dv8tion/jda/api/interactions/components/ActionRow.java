@@ -19,7 +19,8 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
-import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.EntitySelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -69,10 +70,15 @@ public class ActionRow implements LayoutComponent
                 {
                 case BUTTON:
                     return new ButtonImpl(obj);
-                case SELECT_MENU:
-                    return new SelectMenuImpl(obj);
+                case STRING_SELECT:
+                    return new StringSelectMenuImpl(obj);
                 case TEXT_INPUT:
                     return new TextInputImpl(obj);
+                case USER_SELECT:
+                case ROLE_SELECT:
+                case CHANNEL_SELECT:
+                case MENTIONABLE_SELECT:
+                    return new EntitySelectMenuImpl(obj);
                 default:
                     return null;
                 }
@@ -261,6 +267,13 @@ public class ActionRow implements LayoutComponent
     public ActionRow asEnabled()
     {
         return withDisabled(false);
+    }
+
+    @Nonnull
+    @Override
+    public ActionRow createCopy()
+    {
+        return ActionRow.of(components);
     }
 
     @Nonnull

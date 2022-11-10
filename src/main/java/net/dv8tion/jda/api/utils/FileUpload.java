@@ -302,6 +302,17 @@ public class FileUpload implements Closeable, AttachedFile
     }
 
     /**
+     * The description for the file.
+     *
+     * @return The description
+     */
+    @Nullable
+    public String getDescription()
+    {
+        return description;
+    }
+
+    /**
      * The {@link InputStream} representing the data to upload as a file.
      *
      * @return The {@link InputStream}
