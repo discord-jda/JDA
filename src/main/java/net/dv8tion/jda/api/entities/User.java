@@ -525,6 +525,7 @@ public interface User extends UserSnowflake
          * Bot uses only HTTP interactions and is shown in the online member list
          */
         BOT_HTTP_INTERACTIONS(19, "HTTP Interactions Bot"),
+        ACTIVE_DEVELOPER(     22, "Active Developer"),
 
         UNKNOWN(-1, "Unknown");
 
