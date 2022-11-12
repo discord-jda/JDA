@@ -150,10 +150,14 @@ public interface CommandData extends SerializableData
      * Sets whether this command should only be usable in NSFW (age-restricted) channels.
      * <br>Default: false
      *
+     * <p>Note: Age-restricted commands will not show up in direct messages by default unless the user enables them in their settings.
+     *
      * @param  nsfw
      *         True, to make this command nsfw
      *
      * @return The builder instance, for chaining
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
      */
     @Nonnull
     CommandData setNSFW(boolean nsfw);

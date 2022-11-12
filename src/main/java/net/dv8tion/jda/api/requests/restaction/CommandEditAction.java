@@ -105,6 +105,8 @@ public interface CommandEditAction extends RestAction<Command>
      * Sets whether this command should only be usable in NSFW (age-restricted) channels.
      * <br>Default: false
      *
+     * <p>Note: Age-restricted commands will not show up in direct messages by default unless the user enables them in their settings.
+     *
      * @param  nsfw
      *         True, to make this command nsfw
      *
