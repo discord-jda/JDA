@@ -39,9 +39,10 @@ public class StringSelectInteractionImpl extends SelectMenuInteractionImpl<Strin
 
     protected List<String> parseValues(DataObject data)
     {
-        return data.getArray("values")
-                .stream(DataArray::getString)
-                .collect(Collectors.toList());
+        return data.optArray("values").map(arr ->
+            arr.stream(DataArray::getString)
+               .collect(Collectors.toList())
+        ).orElse(Collections.emptyList());
     }
 
     @Nonnull
