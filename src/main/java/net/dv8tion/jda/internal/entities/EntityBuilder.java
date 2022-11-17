@@ -1634,6 +1634,7 @@ public class EntityBuilder
 
         final String content = jsonObject.getString("content", "");
         final boolean fromWebhook = jsonObject.hasKey("webhook_id");
+        final long applicationId = jsonObject.getUnsignedLong("application_id", 0);
         final boolean pinned = jsonObject.getBoolean("pinned");
         final boolean tts = jsonObject.getBoolean("tts");
         final boolean mentionsEveryone = jsonObject.getBoolean("mention_everyone");
@@ -1753,12 +1754,12 @@ public class EntityBuilder
 
         if (!type.isSystem())
         {
-            return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+            return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
                     content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
         }
         else
         {
-            return new SystemMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+            return new SystemMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
                     content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
         }
     }
