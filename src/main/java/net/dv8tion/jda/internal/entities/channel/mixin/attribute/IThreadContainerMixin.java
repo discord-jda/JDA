@@ -48,8 +48,6 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         Checks.checkAccess(getGuild().getSelfMember(), this);
         if (isPrivate)
         {
-            if (!getGuild().getFeatures().contains("PRIVATE_THREADS"))
-                throw new IllegalStateException("Can only use private threads in Guilds with the PRIVATE_THREADS feature");
             checkPermission(Permission.CREATE_PRIVATE_THREADS);
         }
         else
