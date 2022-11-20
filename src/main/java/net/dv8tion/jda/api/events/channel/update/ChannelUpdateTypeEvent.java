@@ -26,6 +26,12 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link Channel Channels} {@link ChannelType} was updated.
  *
+ * This event will most likely be fired when a {@link Channel}:
+ * <ul>
+ *     <li>of type {@link ChannelType#TEXT} is converted to type {@link ChannelType#NEWS}</li>
+ *     <li>of type {@link ChannelType#NEWS} is converted to type {@link ChannelType#TEXT}</li>
+ * </ul>
+ *
  * @see Channel#getType()
  * @see ChannelField#TYPE
  */
