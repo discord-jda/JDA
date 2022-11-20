@@ -37,8 +37,10 @@ public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
     }
 
     /**
-     * The left {@link ThreadMember}
-     * @return The left {@link ThreadMember}
+     * The {@link ThreadMember} that just left the thread.
+     * This entity will not be present in {@link ThreadChannel#getThreadMembers()} list.
+     * 
+     * @return The {@link ThreadMember} that just left the thread
      */
     @Nonnull
     @Override
