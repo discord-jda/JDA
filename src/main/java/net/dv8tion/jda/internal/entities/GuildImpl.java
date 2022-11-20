@@ -747,72 +747,33 @@ public class GuildImpl implements Guild
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
         Member self = getSelfMember();
-        Predicate<GuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
+        Predicate<GuildChannel> filterHidden = includeHidden ? (it) -> true : it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
 
-        List<GuildChannel> channels;
-        SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
-        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
-        SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
-        SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
-        SnowflakeCacheViewImpl<NewsChannel> newsView = getNewsChannelView();
-        SnowflakeCacheViewImpl<ForumChannel> forumView = getForumChannelsView();
-        List<TextChannel> textChannels;
-        List<NewsChannel> newsChannels;
-        List<VoiceChannel> voiceChannels;
-        List<StageChannel> stageChannels;
-        List<ForumChannel> forumChannels;
-        List<Category> categories;
-        try (UnlockHook categoryHook = categoryView.readLock();
-             UnlockHook voiceHook = voiceView.readLock();
-             UnlockHook textHook = textView.readLock();
-             UnlockHook newsHook = newsView.readLock();
-             UnlockHook stageHook = stageView.readLock();
-             UnlockHook forumHook = forumView.readLock())
+        SnowflakeCacheViewImpl<Category> categories = getCategoriesView();
+        SnowflakeCacheViewImpl<VoiceChannel> voice = getVoiceChannelsView();
+        SnowflakeCacheViewImpl<StageChannel> stage = getStageChannelsView();
+        SnowflakeCacheViewImpl<TextChannel> text = getTextChannelsView();
+        SnowflakeCacheViewImpl<NewsChannel> news = getNewsChannelView();
+        SnowflakeCacheViewImpl<ForumChannel> forum = getForumChannelsView();
+
+        List<GuildChannel> channels = new ArrayList<>((int) (categories.size() + voice.size() + stage.size() + text.size() + news.size() + forum.size()));
+
+        voice.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        stage.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        text.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        news.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        forum.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+
+        categories.forEach(category ->
         {
-            if (includeHidden)
-            {
-                textChannels = textView.asList();
-                newsChannels = newsView.asList();
-                voiceChannels = voiceView.asList();
-                stageChannels = stageView.asList();
-                forumChannels = forumView.asList();
-            }
-            else
-            {
-                textChannels = textView.stream().filter(filterHidden).collect(Collectors.toList());
-                newsChannels = newsView.stream().filter(filterHidden).collect(Collectors.toList());
-                voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
-                stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
-                forumChannels = forumView.stream().filter(filterHidden).collect(Collectors.toList());
-            }
-            categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
-            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + stageChannels.size());
-        }
-
-        textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        newsChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        stageChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        forumChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        Collections.sort(channels);
-
-        for (Category category : categories)
-        {
-            List<GuildChannel> children;
-            if (includeHidden)
-            {
-                children = category.getChannels();
-            }
-            else
-            {
-                children = category.getChannels().stream().filter(filterHidden).collect(Collectors.toList());
-                if (children.isEmpty())
-                    continue;
-            }
+            if (!includeHidden && category.getChannels().stream().noneMatch(filterHidden))
+                return;
 
             channels.add(category);
-            channels.addAll(children);
-        }
+        });
+
+        // See AbstractGuildChannelImpl#compareTo for details on how this achieves the canonical order of the client
+        Collections.sort(channels);
 
         return Collections.unmodifiableList(channels);
     }
