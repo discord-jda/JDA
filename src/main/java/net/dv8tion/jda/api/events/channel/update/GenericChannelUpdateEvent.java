@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * <br>All channel update events JDA fires are derived from this class.
  *
  * @param <T>
- *        The value type
+ *        The type of the value that was updated
  * @see ChannelField
  */
 public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements UpdateEvent<Channel, T>
