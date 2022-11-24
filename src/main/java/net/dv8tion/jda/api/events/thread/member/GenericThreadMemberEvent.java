@@ -52,9 +52,9 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     }
 
     /**
-     * The id of the {@link ThreadMember}.
+     * The id of the {@link ThreadMember} that fired this and derived event.
      *
-     * @return Never-null String containing the Id.
+     * @return Never-null String containing the ID.
      */
     @Nonnull
     public String getThreadMemberId()
@@ -73,9 +73,9 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
     }
 
     /**
-     * The {@link ThreadMember}.
+     * The {@link ThreadMember} of the event that has been fired.
      *
-     * @return The {@link ThreadMember}.
+     * @return The {@link ThreadMember} of the event that has been fired.
      */
     @Nullable
     public ThreadMember getThreadMember()

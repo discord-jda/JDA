@@ -24,7 +24,9 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} position has been updated.
+ * Indicates that a {@link Channel Channel's} position has been updated.
+ *
+ * <p>Can be used to retrieve the old position and the new one.
  *
  * <p>Limited to {@link IPositionableChannel IPositionableChannels} (and implementations).
  *

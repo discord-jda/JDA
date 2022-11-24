@@ -26,11 +26,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Top-level channel update event type indicating that a value of a {@link Channel} was updated.
+ * Top-level channel update event type indicating that a field of a {@link Channel} was updated.
  * <br>All channel update events JDA fires are derived from this class.
  *
  * @param <T>
- *        The type of the value that was updated
+ *        The value type of the field that has been updated.
  * @see ChannelField
  */
 public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements UpdateEvent<Channel, T>
@@ -48,6 +48,11 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
         this.newValue = newValue;
     }
 
+    /**
+     * The identifier of the {@link Channel Channel's} field that has just been updated.
+     *
+     * @return The identifier of the {@link Channel Channel's} field that has just been updated.
+     */
     @Nonnull
     @Override
     public String getPropertyIdentifier()
@@ -68,6 +73,11 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
         return getChannel();
     }
 
+    /**
+     * The {@link Channel Channel's} old value of the just updated field.
+     *
+     * @return The old value of the just updated field.
+     */
     @Nullable
     @Override
     public T getOldValue()
@@ -75,6 +85,11 @@ public class GenericChannelUpdateEvent<T> extends GenericChannelEvent implements
         return oldValue;
     }
 
+    /**
+     * The {@link Channel Channel's} new value of the just updated field.
+     *
+     * @return The new value of the just updated field.
+     */
     @Nullable
     @Override
     public T getNewValue()

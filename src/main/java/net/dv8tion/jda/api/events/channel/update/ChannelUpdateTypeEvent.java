@@ -24,9 +24,11 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} {@link ChannelType} was updated.
+ * Indicates that a {@link Channel Channel's} {@link ChannelType} was updated.
  *
- * This event will most likely be fired when a {@link Channel}:
+ * <p>Can be used to retrieve the old {@link ChannelType} and the new one.
+ *
+ * <p>This event will most likely be fired when a {@link Channel}:
  * <ul>
  *     <li>of type {@link ChannelType#TEXT} is converted to type {@link ChannelType#NEWS}</li>
  *     <li>of type {@link ChannelType#NEWS} is converted to type {@link ChannelType#TEXT}</li>

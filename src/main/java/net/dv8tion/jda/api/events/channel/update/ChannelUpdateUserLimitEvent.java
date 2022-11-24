@@ -24,9 +24,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} user limit was updated.
+ * Indicates that a {@link Channel Channel's} user limit was updated.
  *
- * <p>This event is currently limited to {@link VoiceChannel Voice Channels}.
+ * <p>Can be used to retrieve the old user limit and the new one.
+ *
+ * <p>Limited to {@link VoiceChannel Voice Channels}.
  *
  * @see VoiceChannel#getUserLimit()
  * @see ChannelField#USER_LIMIT

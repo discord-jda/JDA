@@ -25,7 +25,9 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} region has been updated.
+ * Indicates that a {@link Channel Channel's} region has been updated.
+ *
+ * <p>Can be used to retrieve the old region and the new one.
  *
  * <p>Limited to {@link AudioChannel Audio Channels}.
  *

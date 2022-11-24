@@ -27,7 +27,9 @@ import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChanne
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} topic has been updated.
+ * Indicates that a {@link Channel Channel's} topic has been updated.
+ *
+ * <p>Can be used to retrieve the old topic and the new one.
  *
  * <p>Limited to {@link NewsChannel NewsChannels}, {@link TextChannel TextChannels}, and {@link ForumChannel ForumChannels}.
  *

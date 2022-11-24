@@ -50,9 +50,9 @@ public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
     }
 
     /**
-     * The left {@link ThreadMember} as a guild {@link Member}.
+     * The {@link ThreadMember} that just left the thread as a guild {@link Member}.
      *
-     * @return The left {@link ThreadMember} as a guild {@link Member}.
+     * @return The {@link ThreadMember} that just left the thread as a guild {@link Member}.
      */
     @Nonnull
     @Override

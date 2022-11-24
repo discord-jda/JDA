@@ -24,7 +24,9 @@ import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} slow mode has been updated.
+ * Indicates that a {@link Channel Channel's} slow mode has been updated.
+ *
+ * <p>Can be used to retrieve the old slow mode and the new one.
  *
  * <p>Limited to {@link ISlowmodeChannel ISlowmodeChannels} (and implementations).
  *

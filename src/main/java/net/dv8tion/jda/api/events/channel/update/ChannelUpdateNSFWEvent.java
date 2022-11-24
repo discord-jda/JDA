@@ -24,7 +24,9 @@ import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} nsfw-state has been updated.
+ * Indicates that a {@link Channel Channels} nsfw state has been updated.
+ *
+ * <p>Can be used to retrieve the old nsfw state and the new one.
  *
  * <p>Limited to {@link IAgeRestrictedChannel IAgeRestrictedChannels} (and implementations).
  *

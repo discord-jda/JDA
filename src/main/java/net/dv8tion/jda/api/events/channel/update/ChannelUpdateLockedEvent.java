@@ -24,7 +24,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} locked-state has been updated.
+ * Indicates that a {@link Channel Channel's} locked state has been updated.
+ *
+ * <p>Can be used to retrieve the old locked state and the new one.
  *
  * <p>Limited to {@link ThreadChannel Thread Channels}.
  *

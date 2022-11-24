@@ -37,8 +37,10 @@ public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
     }
 
     /**
-     * The joined {@link ThreadMember}
-     * @return The joined {@link ThreadMember}
+     * The {@link ThreadMember} that just joined the thread.
+     * This entity will be present in {@link ThreadChannel#getThreadMembers()} list.
+     *
+     * @return The {@link ThreadMember} that just joined the thread.
      */
     @Nonnull
     @Override
@@ -48,9 +50,9 @@ public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
     }
 
     /**
-     * The joined {@link ThreadMember} as a guild {@link Member}.
+     * The {@link ThreadMember} that just joined the thread as a guild {@link Member}.
      *
-     * @return The joined {@link ThreadMember} as a guild {@link Member}.
+     * @return The {@link ThreadMember} that just joined the thread as a guild {@link Member}.
      */
     @Nonnull
     @Override

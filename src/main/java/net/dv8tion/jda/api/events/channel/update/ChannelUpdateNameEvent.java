@@ -23,7 +23,9 @@ import net.dv8tion.jda.api.entities.channel.ChannelField;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} name has been updated.
+ * Indicates that a {@link Channel Channel's} name has been updated.
+ *
+ * <p>Can be used to retrieve the old name and the new one.
  *
  * @see Channel#getName()
  * @see ChannelField#NAME

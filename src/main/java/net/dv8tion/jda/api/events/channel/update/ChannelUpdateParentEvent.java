@@ -25,7 +25,9 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} parent has been updated.
+ * Indicates that a {@link Channel Channel's} parent has been updated.
+ *
+ * <p>Can be used to retrieve the old parent and the new one.
  *
  * <p>Limited to {@link ICategorizableChannel Categorizable Channels} (and implementations).
  *

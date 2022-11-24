@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link Channel Channels} bitrate has been updated.
+ * Indicates that a {@link Channel Channel's} bitrate has been updated.
  *
  * <p>Limited to {@link AudioChannel Audio Channels}.
  *
