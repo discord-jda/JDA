@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 
@@ -85,7 +84,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         for (int i = 0; i < addedMembersJson.length(); i++)
         {
             DataObject threadMemberJson = addedMembersJson.getObject(i);
-            ThreadMember threadMember = entityBuilder.createThreadMember((GuildImpl) thread.getGuild(), thread, threadMemberJson);
+            ThreadMember threadMember = entityBuilder.createThreadMember(thread.getGuild(), thread, threadMemberJson);
             addedThreadMembers.add(threadMember);
         }
 
