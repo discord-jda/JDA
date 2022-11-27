@@ -1,5 +1,5 @@
 [maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA?color=blue
-[jitpack]: https://img.shields.io/jitpack/v/github/DV8FromTheWorld/JDA?label=Snapshots&color=blue
+[jitpack]: https://img.shields.io/badge/Snapshots-JitPack-blue
 [download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
