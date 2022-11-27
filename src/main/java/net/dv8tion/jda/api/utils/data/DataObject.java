@@ -752,6 +752,33 @@ public class DataObject implements SerializableData
     }
 
     /**
+     * Renames an existing field to the new name.
+     * <br>This is a shorthand to {@link #remove(String) remove} under the old key and then {@link #put(String, Object) put} under the new key.
+     *
+     * <p>If there is nothing mapped to the old key, this does nothing.
+     *
+     * @param  key
+     *         The old key
+     * @param  newKey
+     *         The new key
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return A DataObject with the updated value
+     */
+    @Nonnull
+    public DataObject rename(@Nonnull String key, @Nonnull String newKey)
+    {
+        Checks.notNull(key, "Key");
+        Checks.notNull(newKey, "Key");
+        if (!this.data.containsKey(key))
+            return this;
+        this.data.put(newKey, this.data.remove(key));
+        return this;
+    }
+
+    /**
      * {@link java.util.Collection} of all values in this DataObject.
      *
      * @return {@link java.util.Collection} for all values
