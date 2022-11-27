@@ -19,13 +19,24 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channels} nsfw state has been updated.
+ *
+ * <p>Can be used to retrieve the old nsfw state and the new one.
+ *
+ * <p>Limited to {@link IAgeRestrictedChannel IAgeRestrictedChannels} (and implementations).
+ *
+ * @see IAgeRestrictedChannel#isNSFW()
+ * @see ChannelField#NSFW
+ */
 public class ChannelUpdateNSFWEvent extends GenericChannelUpdateEvent<Boolean>
 {
     public static ChannelField FIELD = ChannelField.NSFW;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateNSFWEvent(@Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue)
     {

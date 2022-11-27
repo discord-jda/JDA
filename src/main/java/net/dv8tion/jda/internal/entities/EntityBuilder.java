@@ -1325,8 +1325,7 @@ public class EntityBuilder
     {
         ThreadMemberImpl threadMember = new ThreadMemberImpl(member, threadChannel);
         threadMember
-            .setJoinedTimestamp(Helpers.toTimestamp(json.getString("join_timestamp")))
-            .setFlags(json.getInt("flags"));
+            .setJoinedTimestamp(Helpers.toTimestamp(json.getString("join_timestamp")));
 
         return threadMember;
     }

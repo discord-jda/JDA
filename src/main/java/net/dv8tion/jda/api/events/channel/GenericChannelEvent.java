@@ -21,12 +21,19 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Top-level channel event type
+ * <br>All channel events JDA fires are derived from this class.
+ *
+ * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.api.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
+ * <br>Adapter implementation: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
+ */
 public class GenericChannelEvent extends Event
 {
     protected final Channel channel;
@@ -49,17 +56,39 @@ public class GenericChannelEvent extends Event
         return getChannelType().isGuild();
     }
 
+    /**
+     * The {@link ChannelType} of the channel the event was fired from.
+     *
+     * @return The {@link ChannelType} of the channel the event was fired from.
+     */
     @Nonnull
     public ChannelType getChannelType()
     {
         return this.channel.getType();
     }
 
+    /**
+     * Used to determine if this event was received from a {@link Channel}
+     * of the {@link net.dv8tion.jda.api.entities.channel.ChannelType ChannelType} specified.
+     *
+     * <p>Useful for restricting functionality to a certain type of channels.
+     *
+     * @param  type
+     *         The {@link ChannelType ChannelType} to check against.
+     *
+     * @return True if the {@link net.dv8tion.jda.api.entities.channel.ChannelType ChannelType} which this message was received
+     *         from is the same as the one specified by {@code type}.
+     */
     public boolean isFromType(ChannelType type)
     {
         return getChannelType() == type;
     }
 
+    /**
+     * The {@link Channel} the event was fired from.
+     *
+     * @return The {@link ChannelType} of the channel the event was fired from.
+     */
     @Nonnull
     public ChannelUnion getChannel()
     {
@@ -68,7 +97,7 @@ public class GenericChannelEvent extends Event
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} in which this channel event happened.
-     * <br>If this channel event was not received in a {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannel},
+     * <br>If this channel event was not received in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel},
      * this will throw an {@link java.lang.IllegalStateException}.
      *
      * @throws java.lang.IllegalStateException
@@ -86,6 +115,4 @@ public class GenericChannelEvent extends Event
             throw new IllegalStateException("This channel event did not happen in a guild");
         return ((GuildChannel) channel).getGuild();
     }
-
-    //TODO-v5: Add getters for all channel types
 }

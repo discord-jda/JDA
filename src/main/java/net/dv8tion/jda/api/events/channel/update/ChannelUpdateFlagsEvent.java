@@ -33,9 +33,13 @@ import java.util.EnumSet;
  */
 public class ChannelUpdateFlagsEvent extends GenericChannelUpdateEvent<EnumSet<ChannelFlag>>
 {
+
+    public static final ChannelField FIELD = ChannelField.FLAGS;
+    public static final String IDENTIFIER = FIELD.getFieldName();
+
     public ChannelUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Channel channel, @Nonnull EnumSet<ChannelFlag> oldValue, @Nonnull EnumSet<ChannelFlag> newValue)
     {
-        super(api, responseNumber, channel, ChannelField.FLAGS, oldValue, newValue);
+        super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 
     @Nonnull

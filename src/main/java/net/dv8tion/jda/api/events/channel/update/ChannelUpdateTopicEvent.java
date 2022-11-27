@@ -19,13 +19,27 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channel's} topic has been updated.
+ *
+ * <p>Can be used to retrieve the old topic and the new one.
+ *
+ * <p>Limited to {@link NewsChannel NewsChannels}, {@link TextChannel TextChannels}, and {@link ForumChannel ForumChannels}.
+ *
+ * @see StandardGuildMessageChannel#getTopic()
+ * @see ForumChannel#getTopic()
+ */
 public class ChannelUpdateTopicEvent extends GenericChannelUpdateEvent<String>
 {
     public static final ChannelField FIELD = ChannelField.TOPIC;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateTopicEvent(@Nonnull JDA api, long responseNumber, Channel channel, String oldValue, String newValue)
     {

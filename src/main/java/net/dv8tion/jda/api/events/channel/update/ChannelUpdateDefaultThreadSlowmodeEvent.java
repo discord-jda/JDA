@@ -32,9 +32,13 @@ import javax.annotation.Nonnull;
  */
 public class ChannelUpdateDefaultThreadSlowmodeEvent extends GenericChannelUpdateEvent<Integer>
 {
+
+    public static final ChannelField FIELD = ChannelField.DEFAULT_THREAD_SLOWMODE;
+    public static final String IDENTIFIER = FIELD.getFieldName();
+
     public ChannelUpdateDefaultThreadSlowmodeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Channel channel, int oldValue, int newValue)
     {
-        super(api, responseNumber, channel, ChannelField.DEFAULT_THREAD_SLOWMODE, oldValue, newValue);
+        super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 
     @Nonnull
