@@ -18,8 +18,13 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -31,6 +36,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -118,10 +124,9 @@ public class InviteImpl implements Invite
 
         Route.CompiledRoute route;
 
-        //TODO-v5: There are more than Text and Voice channels now. Revisit this.
-        final IPermissionContainer channel = this.channel.getType() == ChannelType.TEXT
-                ? guild.getTextChannelById(this.channel.getIdLong())
-                : guild.getVoiceChannelById(this.channel.getIdLong());
+        final GuildChannel channel = guild.getChannelById(GuildChannel.class, this.channel.getIdLong());
+        if (channel == null)
+            throw new UnsupportedOperationException("Cannot expand invite without known channel. Channel ID: " + this.channel.getId());
 
         if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
         {
@@ -278,7 +283,9 @@ public class InviteImpl implements Invite
     @Override
     public String toString()
     {
-        return "Invite(" + this.code + ")";
+        return new EntityString(this)
+                .addMetadata("code", code)
+                .toString();
     }
 
     public static class ChannelImpl implements Channel
@@ -317,6 +324,15 @@ public class InviteImpl implements Invite
         public ChannelType getType()
         {
             return this.type;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setType(getType())
+                    .setName(name)
+                    .toString();
         }
     }
 
@@ -411,6 +427,14 @@ public class InviteImpl implements Invite
         {
             return features;
         }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
+        }
     }
 
     public static class GroupImpl implements Group
@@ -456,6 +480,14 @@ public class InviteImpl implements Invite
         public List<String> getUsers()
         {
             return users;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
         }
     }
 
@@ -504,6 +536,15 @@ public class InviteImpl implements Invite
         public EmbeddedApplication getApplication()
         {
             return targetApplication;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setType(getType())
+                    .addMetadata("target", getTargetEntity())
+                    .toString();
         }
 
         @Nonnull
@@ -578,6 +619,14 @@ public class InviteImpl implements Invite
         public int getMaxParticipants()
         {
             return maxParticipants;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setName(name)
+                    .toString();
         }
     }
 }

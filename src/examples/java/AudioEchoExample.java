@@ -20,13 +20,15 @@ import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import javax.security.auth.login.LoginException;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
 import java.util.List;
@@ -35,7 +37,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AudioEchoExample extends ListenerAdapter
 {
-    public static void main(String[] args) throws LoginException
+    public static void main(String[] args)
     {
         if (args.length == 0)
         {
@@ -44,12 +46,14 @@ public class AudioEchoExample extends ListenerAdapter
         }
         String token = args[0];
 
-        // We only need 2 gateway intents enabled for this example:
+        // We only need 3 gateway intents enabled for this example:
         EnumSet<GatewayIntent> intents = EnumSet.of(
             // We need messages in guilds to accept commands from users
             GatewayIntent.GUILD_MESSAGES,
             // We need voice states to connect to the voice channel
-            GatewayIntent.GUILD_VOICE_STATES
+            GatewayIntent.GUILD_VOICE_STATES,
+            // Enable access to message.getContentRaw()
+            GatewayIntent.MESSAGE_CONTENT
         );
 
         // Start the JDA session with default mode (voice member cache)
@@ -74,7 +78,8 @@ public class AudioEchoExample extends ListenerAdapter
             return;
 
         // We only want to handle message in Guilds
-        if (!event.isFromGuild()) {
+        if (!event.isFromGuild())
+        {
             return;
         }
 

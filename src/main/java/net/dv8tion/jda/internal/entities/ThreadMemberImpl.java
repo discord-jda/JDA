@@ -17,7 +17,13 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.ThreadMember;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -30,7 +36,6 @@ public class ThreadMemberImpl implements ThreadMember
     
     private Member member;
     private long joinedTimestamp;
-    private long flags;
 
     public ThreadMemberImpl(Member member, ThreadChannelImpl thread)
     {
@@ -82,12 +87,6 @@ public class ThreadMemberImpl implements ThreadMember
         return Helpers.toOffset(joinedTimestamp);
     }
 
-    @Override
-    public long getFlagsRaw()
-    {
-        return flags;
-    }
-
     @Nonnull
     @Override
     public String getAsMention()
@@ -109,9 +108,11 @@ public class ThreadMemberImpl implements ThreadMember
         return this;
     }
 
-    public ThreadMemberImpl setFlags(long flags)
+    @Override
+    public String toString()
     {
-        this.flags = flags;
-        return this;
+        return new EntityString(this)
+                .addMetadata("member", getMember())
+                .toString();
     }
 }

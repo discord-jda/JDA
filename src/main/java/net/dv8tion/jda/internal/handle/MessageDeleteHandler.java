@@ -16,12 +16,12 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageDeleteHandler extends SocketHandler
@@ -42,11 +42,11 @@ public class MessageDeleteHandler extends SocketHandler
             if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
 
-            guild = api.getGuildById(guildId);
+            guild = getJDA().getGuildById(guildId);
             if (guild == null)
             {
-                EventCache.LOG.debug("Caching MESSAGE_DELETE event for guild that is not currently cached. GuildID: {}", guildId);
-                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Got message delete for a guild that is not yet cached. GuildId: {}", guildId);
                 return null;
             }
         }
@@ -57,12 +57,13 @@ public class MessageDeleteHandler extends SocketHandler
         MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
             if (guild != null)
             {
-                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
-                if (guildChannel != null)
+                GuildChannel actual = guild.getGuildChannelById(channelId);
+                if (actual != null)
                 {
-                    WebSocketClient.LOG.debug("Discarding MESSAGE_DELETE event for unexpected channel type. Channel: {}", guildChannel);
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_DELETE for unexpected channel of type {}", actual.getType());
                     return null;
                 }
             }
@@ -76,13 +77,8 @@ public class MessageDeleteHandler extends SocketHandler
         {
             ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
 
-            //If we have less than 50 messages then we can still accurately track how many messages are in the message count.
-            //Once we exceed 50 messages Discord caps this value, so we cannot confidently decrement it.
-            int messageCount = gThread.getMessageCount();
-            if (messageCount < 50 && messageCount > 0)
-            {
-                gThread.setMessageCount(messageCount - 1);
-            }
+            gThread.setMessageCount(Math.max(0, gThread.getMessageCount() - 1));
+            // Not decrementing totalMessageCount since that should include deleted as well
         }
 
         getJDA().handleEvent(new MessageDeleteEvent(getJDA(), responseNumber, messageId, channel));

@@ -20,17 +20,19 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a Message was received in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
- * <br>This includes {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+ * Indicates that a Message was received in a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
+ * <br>This includes {@link TextChannel TextChannel} and {@link PrivateChannel PrivateChannel}!
  * 
  * <p>Can be used to detect that a Message is received in either a guild- or private channel. Providing a MessageChannel and Message.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>
@@ -79,7 +81,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
     /**
      * The Author of the Message received as {@link net.dv8tion.jda.api.entities.Member Member} object.
      * <br>This will be {@code null} in case of Message being received in
-     * a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     * a {@link PrivateChannel PrivateChannel}
      * or {@link #isWebhookMessage() isWebhookMessage()} returning {@code true}.
      *
      * @return The Author of the Message as null-able Member object.

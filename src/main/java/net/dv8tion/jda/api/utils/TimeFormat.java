@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * <p>These timestamps are rendered by the individual receiving discord client in a local timezone and language format.
  * Each timestamp can be displayed with different {@link TimeFormat TimeFormats}.
  *
- * <h2>Example</h2>
+ * <p><b>Example</b><br>
  * <pre>{@code
  * channel.sendMessage("Current Time: " + TimeFormat.RELATIVE.now()).queue();
  * channel.sendMessage("Uptime: " + TimeFormat.RELATIVE.format(getStartTime())).queue();
@@ -64,7 +64,7 @@ public enum TimeFormat
     /**
      * {@link Pattern} used for {@link #parse(String)}.
      *
-     * <h4>Groups</h4>
+     * <p><b>Groups</b><br>
      * <table>
      *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>

@@ -16,7 +16,15 @@
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -28,7 +36,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any MessageEvent.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>These events require at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>
@@ -49,18 +57,18 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} for this Message
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} for this Message
      *
      * @return The MessageChannel
      */
     @Nonnull
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildMessageChannel GuildMessageChannel} for this Message
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel GuildMessageChannel} for this Message
      *  if it was sent in a Guild.
      * <br>If this Message was not received from a {@link net.dv8tion.jda.api.entities.Guild Guild},
      * this will throw an {@link java.lang.IllegalStateException}.
@@ -71,11 +79,11 @@ public abstract class GenericMessageEvent extends Event
      * @return The GuildMessageChannel
      */
     @Nonnull
-    public GuildMessageChannel getGuildChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This message event did not happen in a guild");
-        return (GuildMessageChannel) channel;
+        return (GuildMessageChannelUnion) channel;
     }
 
     /**
@@ -100,7 +108,7 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * Indicates whether the message is from the specified {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * Indicates whether the message is from the specified {@link ChannelType ChannelType}
      *
      * @param  type
      *         The ChannelType
@@ -124,7 +132,7 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this message
+     * The {@link ChannelType ChannelType} for this message
      *
      * @return The ChannelType
      */
@@ -136,11 +144,11 @@ public abstract class GenericMessageEvent extends Event
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} the Message was received in.
-     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     * <br>If this Message was not received in a {@link TextChannel TextChannel},
      * this will throw an {@link java.lang.IllegalStateException}.
      *
      * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.GuildChannel}.
+     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}.
      *
      * @return The Guild the Message was received in
      *
@@ -170,96 +178,7 @@ public abstract class GenericMessageEvent extends Event
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} the Message was received in.
-     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
-     * this will throw an {@link java.lang.IllegalStateException}.
-     *
-     * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
-     *
-     * @return The TextChannel the Message was received in
-     *
-     * @see    #isFromGuild()
-     * @see    #isFromType(ChannelType)
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public TextChannel getTextChannel()
-    {
-        if (!isFromType(ChannelType.TEXT))
-            throw new IllegalStateException("This message event did not happen in a text channel");
-        return (TextChannel) channel;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel} the Message was received in.
-     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.NewsChannel NewsChannel},
-     * this will throw an {@link java.lang.IllegalStateException}.
-     *
-     * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.NewsChannel}.
-     *
-     * @return The NewsChannel the Message was received in
-     *
-     * @see    #isFromGuild()
-     * @see    #isFromType(ChannelType)
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public NewsChannel getNewsChannel()
-    {
-        if (!isFromType(ChannelType.NEWS))
-            throw new IllegalStateException("This message event did not happen in a news channel");
-        return (NewsChannel) channel;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} the Message was received in.
-     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel},
-     * this will throw an {@link java.lang.IllegalStateException}.
-     *
-     * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel}.
-     *
-     * @return The PrivateChannel the Message was received in
-     *
-     * @see    #isFromGuild()
-     * @see    #isFromType(ChannelType)
-     * @see    #getChannelType()
-     */
-    @Nonnull
-    public PrivateChannel getPrivateChannel()
-    {
-        if (!isFromType(ChannelType.PRIVATE))
-            throw new IllegalStateException("This message event did not happen in a private channel");
-        return (PrivateChannel) channel;
-    }
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel} the Message was received in.
-     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel},
-     * this will throw an {@link java.lang.IllegalStateException}.
-     *
-     * @throws java.lang.IllegalStateException
-     *         If this was not sent in a {@link net.dv8tion.jda.api.entities.ThreadChannel}.
-     *
-     * @return The ThreadChannel the Message was received in
-     *
-     * @see    #isFromGuild()
-     * @see    #isFromType(ChannelType)
-     * @see    #getChannelType()
-     * @see    #isFromThread()
-     */
-    @Nonnull
-    public ThreadChannel getThreadChannel()
-    {
-        if (!isFromThread())
-            throw new IllegalStateException("This message event did not happen in a thread channel");
-        return (ThreadChannel) channel;
-    }
-
-    /**
-     * If the message event was from a {@link net.dv8tion.jda.api.entities.ThreadChannel ThreadChannel}
+     * If the message event was from a {@link ThreadChannel ThreadChannel}
      *
      * @return If the message event was from a ThreadChannel
      *

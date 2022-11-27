@@ -16,15 +16,20 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Builder for Application Commands.
@@ -34,6 +39,31 @@ import java.util.Collection;
  */
 public interface CommandData extends SerializableData
 {
+    /**
+     * The maximum length the name of a command can be.
+     */
+    int MAX_NAME_LENGTH = 32;
+
+    /**
+     * The maximum length the description of a command can be.
+     */
+    int MAX_DESCRIPTION_LENGTH = 100;
+
+    /**
+     * Sets the {@link LocalizationFunction} for this command
+     * <br>This enables you to have the entirety of this command to be localized.
+     *
+     * @param  localizationFunction
+     *         The localization function
+     *
+     * @throws IllegalArgumentException
+     *         If the localization function is null
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
+
     /**
      * Configure the command name.
      *
@@ -47,6 +77,46 @@ public interface CommandData extends SerializableData
      */
     @Nonnull
     CommandData setName(@Nonnull String name);
+
+    /**
+     * Sets a {@link DiscordLocale language-specific} localization of this command's name.
+     *
+     * @param  locale
+     *         The locale to associate the translated name with
+     *
+     * @param  name
+     *         The translated name to put
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the name is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
+
+    /**
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this command's name.
+     *
+     * @param  map
+     *         The map from which to transfer the translated names
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.Permission Permissions} that a user must have in a specific channel to be able to use this command.
@@ -77,12 +147,36 @@ public interface CommandData extends SerializableData
     CommandData setGuildOnly(boolean guildOnly);
 
     /**
+     * Sets whether this command should only be usable in NSFW (age-restricted) channels.
+     * <br>Default: false
+     *
+     * <p>Note: Age-restricted commands will not show up in direct messages by default unless the user enables them in their settings.
+     *
+     * @param  nsfw
+     *         True, to make this command nsfw
+     *
+     * @return The builder instance, for chaining
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    @Nonnull
+    CommandData setNSFW(boolean nsfw);
+
+    /**
      * The current command name
      *
      * @return The command name
      */
     @Nonnull
     String getName();
+
+    /**
+     * The localizations of this command's name for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+     */
+    @Nonnull
+    LocalizationMap getNameLocalizations();
 
     /**
      * The {@link Command.Type}
@@ -113,6 +207,15 @@ public interface CommandData extends SerializableData
     boolean isGuildOnly();
 
     /**
+     * Whether this command should only be usable in NSFW (age-restricted) channels
+     *
+     * @return True, if this command is restricted to NSFW channels
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    boolean isNSFW();
+
+    /**
      * Converts the provided {@link Command} into a CommandData instance.
      *
      * @param  command
@@ -130,9 +233,14 @@ public interface CommandData extends SerializableData
     {
         Checks.notNull(command, "Command");
         if (command.getType() != Command.Type.SLASH)
-            return new CommandDataImpl(command.getType(), command.getName())
-                    .setDefaultPermissions(command.getDefaultPermissions())
-                    .setGuildOnly(command.isGuildOnly());
+        {
+            final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
+            return data.setDefaultPermissions(command.getDefaultPermissions())
+                    .setGuildOnly(command.isGuildOnly())
+                    .setNSFW(command.isNSFW())
+                    .setNameLocalizations(command.getNameLocalizations().toMap())
+                    .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
+        }
 
         return SlashCommandData.fromCommand(command);
     }
@@ -162,7 +270,7 @@ public interface CommandData extends SerializableData
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
         if (commandType != Command.Type.SLASH)
         {
-            CommandData data = new CommandDataImpl(commandType, name);
+            CommandDataImpl data = new CommandDataImpl(commandType, name);
             if (!object.isNull("default_member_permissions"))
             {
                 long defaultPermissions = object.getLong("default_member_permissions");
@@ -170,6 +278,9 @@ public interface CommandData extends SerializableData
             }
 
             data.setGuildOnly(!object.getBoolean("dm_permission", true));
+            data.setNSFW(object.getBoolean("nsfw"));
+            data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+            data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
             return data;
         }
 

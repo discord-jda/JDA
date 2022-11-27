@@ -16,13 +16,13 @@
 
 /**
  * The core events that are fired by this library, informing
- * the end-user about the connection state of the current JDA instance.
+ * the end-user about the state of the current JDA instance.
  *
  * <p>This package contains all implementations of {@link net.dv8tion.jda.api.events.Event Event}.
  * <br>These are specific depending on the event that has been received by the gateway connection.
  *
  * <p>All events are forwarded by an {@link net.dv8tion.jda.api.hooks.IEventManager IEventManager} implementation.
- * <br>Some events are specific for JDA internal events such as the {@link net.dv8tion.jda.api.events.ReadyEvent ReadyEvent}
+ * <br>Some events are specific for JDA internal events such as the {@link net.dv8tion.jda.api.events.session.ReadyEvent ReadyEvent}
  * which is only fired when JDA finishes to setup its internal cache.
  */
 package net.dv8tion.jda.api.events;

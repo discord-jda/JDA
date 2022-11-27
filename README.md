@@ -1,5 +1,5 @@
 [maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA?color=blue
-[jitpack]: https://img.shields.io/jitpack/v/github/DV8FromTheWorld/JDA?label=Snapshots&color=blue
+[jitpack]: https://img.shields.io/badge/Snapshots-JitPack-blue
 [download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://jda.wiki/introduction/migration-v3-v4/
@@ -142,7 +142,7 @@ configure it on the `JDABuilder` with `setEventManager(...)`.
 public class ReadyListener implements EventListener
 {
     public static void main(String[] args)
-            throws LoginException, InterruptedException
+            throws InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = JDABuilder.createDefault("token")
@@ -168,9 +168,10 @@ public class ReadyListener implements EventListener
 public class MessageListener extends ListenerAdapter
 {
     public static void main(String[] args)
-            throws LoginException
     {
-        JDA jda = JDABuilder.createDefault("token").build();
+        JDA jda = JDABuilder.createDefault("token")
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
+                .build();
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
@@ -200,7 +201,7 @@ public class MessageListener extends ListenerAdapter
 ```java
 public class Bot extends ListenerAdapter
 {
-    public static void main(String[] args) throws LoginException
+    public static void main(String[] args)
     {
         if (args.length < 1) {
             System.out.println("You have to provide a token as first argument!");

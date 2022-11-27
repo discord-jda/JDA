@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.audit;
 
+import net.dv8tion.jda.internal.utils.EntityString;
+
 /**
  * Enum constants for possible options
  * <br>Providing detailed description of possible occasions and expected types.
@@ -43,7 +45,7 @@ public enum AuditLogOption
 
     /**
      * Possible message id for actions of type {@link ActionType#MESSAGE_PIN} and {@link ActionType#MESSAGE_UNPIN}.
-     * <br>Use with {@link net.dv8tion.jda.api.entities.MessageChannel#retrieveMessageById(String)}.
+     * <br>Use with {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(String)}.
      *
      * <p>Expected type: <b>String</b>
      */
@@ -145,6 +147,9 @@ public enum AuditLogOption
     @Override
     public String toString()
     {
-        return name() + '(' + key + ')';
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("key", key)
+                .toString();
     }
 }

@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
+ * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
  * 
  * <p>Can be used to detect a Message is edited in either a private or guild channel. Providing a MessageChannel and Message.
  * <br>This also includes whether a message is being pinned.
@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  * <p><b>JDA does not have a cache for messages and is not able to provide previous information due to limitations by the
  * Discord API!</b>
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>

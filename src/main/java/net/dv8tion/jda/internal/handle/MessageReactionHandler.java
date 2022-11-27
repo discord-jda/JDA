@@ -16,16 +16,23 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
@@ -123,12 +130,13 @@ public class MessageReactionHandler extends SocketHandler
         MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
             if (guild != null)
             {
-                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
-                if (guildChannel != null)
+                GuildChannel actual = guild.getGuildChannelById(channelId);
+                if (actual != null)
                 {
-                    WebSocketClient.LOG.debug("Discarding reaction event for unexpected channel type. Channel: {}", guildChannel);
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION event for unexpected channel of type {}", actual.getType());
                     return null;
                 }
             }
@@ -139,6 +147,7 @@ public class MessageReactionHandler extends SocketHandler
                 EventCache.LOG.debug("Received a reaction for a channel that JDA does not currently have cached");
                 return null;
             }
+
             //create a new private channel with minimal information for this event
             channel = getJDA().getEntityBuilder().createPrivateChannel(
                     DataObject.empty()
@@ -147,9 +156,7 @@ public class MessageReactionHandler extends SocketHandler
         }
 
         // reaction remove has null name sometimes
-        if (emoji.isNull("name"))
-            emoji.put("name", "");
-        Emoji rEmoji = Emoji.fromData(emoji);
+        EmojiUnion rEmoji = EntityBuilder.createEmoji(emoji);
 
         MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, userId == api.getSelfUser().getIdLong(), -1);
 

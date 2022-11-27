@@ -19,28 +19,40 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
+import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -52,6 +64,7 @@ import java.util.regex.Pattern;
 
 public class ReceivedMessage extends AbstractMessage
 {
+    public static boolean didContentIntentWarning = false;
     private final Object mutex = new Object();
 
     protected final JDAImpl api;
@@ -60,6 +73,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final MessageChannel channel;
     protected final MessageReference messageReference;
     protected final boolean fromWebhook;
+    protected final long applicationId;
     protected final boolean pinned;
     protected final User author;
     protected final Member member;
@@ -70,12 +84,10 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<StickerItem> stickers;
-    protected final List<ActionRow> components;
+    protected final List<LayoutComponent> components;
     protected final int flags;
     protected final Message.Interaction interaction;
     protected final ThreadChannel startedThread;
-
-    protected InteractionHook interactionHook = null; // late-init
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -85,7 +97,7 @@ public class ReceivedMessage extends AbstractMessage
 
     public ReceivedMessage(
             long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-            boolean fromWebhook, boolean  tts, boolean pinned,
+            boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
             List<StickerItem> stickers, List<ActionRow> components,
@@ -96,8 +108,9 @@ public class ReceivedMessage extends AbstractMessage
         this.channel = channel;
         this.messageReference = messageReference;
         this.type = type;
-        this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
+        this.api = (JDAImpl) channel.getJDA();
         this.fromWebhook = fromWebhook;
+        this.applicationId = applicationId;
         this.pinned = pinned;
         this.author = author;
         this.member = member;
@@ -114,10 +127,26 @@ public class ReceivedMessage extends AbstractMessage
         this.startedThread = startedThread;
     }
 
-    public ReceivedMessage withHook(InteractionHook hook)
+    private void checkIntent()
     {
-        this.interactionHook = hook;
-        return this;
+        // Checks whether access to content is limited and the message content intent is not enabled
+        if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
+        {
+            SelfUser selfUser = api.getSelfUser();
+            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild())
+            {
+                didContentIntentWarning = true;
+                JDAImpl.LOG.warn(
+                    "Attempting to access message content without GatewayIntent.MESSAGE_CONTENT.\n" +
+                    "Discord now requires to explicitly enable access to this using the MESSAGE_CONTENT intent.\n" +
+                    "Useful resources to learn more:\n" +
+                    "\t- https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ\n" +
+                    "\t- https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/\n" +
+                    "\t- https://jda.wiki/using-jda/troubleshooting/#cannot-get-message-content-attempting-to-access-message-content-without-gatewayintent\n" +
+                    "Or suppress this warning if this is intentional with Message.suppressContentIntentWarning()"
+                );
+            }
+        }
     }
 
     @Nonnull
@@ -328,7 +357,7 @@ public class ReceivedMessage extends AbstractMessage
         {
             if (altContent != null)
                 return altContent;
-            String tmp = content;
+            String tmp = getContentRaw();
             for (User user : mentions.getUsers())
             {
                 String name;
@@ -358,6 +387,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getContentRaw()
     {
+        checkIntent();
         return content;
     }
 
@@ -400,51 +430,23 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return channel;
+        return (MessageChannelUnion) channel;
     }
 
     @Nonnull
     @Override
-    public GuildMessageChannel getGuildChannel()
+    public GuildMessageChannelUnion getGuildChannel()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This message was not sent in a guild.");
-        return (GuildMessageChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public PrivateChannel getPrivateChannel()
-    {
-        if (!isFromType(ChannelType.PRIVATE))
-            throw new IllegalStateException("This message was not sent in a private channel");
-        return (PrivateChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public TextChannel getTextChannel()
-    {
-        if (!isFromType(ChannelType.TEXT))
-            throw new IllegalStateException("This message was not sent in a text channel");
-        return (TextChannel) channel;
-    }
-
-    @Nonnull
-    @Override
-    public NewsChannel getNewsChannel()
-    {
-        if (!isFromType(ChannelType.NEWS))
-            throw new IllegalStateException("This message was not sent in a news channel");
-        return (NewsChannel) channel;
+        return (GuildMessageChannelUnion) channel;
     }
 
     @Override
     public Category getCategory()
     {
-        //TODO-v5: Should this actually throw an error here if the GuildMessageChannel doesn't implement ICategorizableChannel?
         GuildMessageChannel chan = getGuildChannel();
         return chan instanceof ICategorizableChannel
             ? ((ICategorizableChannel) chan).getParentCategory()
@@ -462,6 +464,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public List<Attachment> getAttachments()
     {
+        checkIntent();
         return attachments;
     }
 
@@ -469,13 +472,15 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public List<MessageEmbed> getEmbeds()
     {
+        checkIntent();
         return embeds;
     }
 
     @Nonnull
     @Override
-    public List<ActionRow> getActionRows()
+    public List<LayoutComponent> getComponents()
     {
+        checkIntent();
         return components;
     }
 
@@ -507,6 +512,12 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    public long getApplicationIdLong()
+    {
+        return applicationId;
+    }
+
+    @Override
     public boolean isTTS()
     {
         return isTTS;
@@ -521,42 +532,50 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull CharSequence newContent)
+    public MessageEditAction editMessage(@Nonnull CharSequence newContent)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
+        return channel.editMessageById(getId(), newContent);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageEmbedsById(getId(), embeds)).withHook(interactionHook);
+        return channel.editMessageEmbedsById(getId(), embeds);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageComponentsById(getId(), components)).withHook(interactionHook);
+        return channel.editMessageComponentsById(getId(), components);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageFormatById(getId(), format, args)).withHook(interactionHook);
+        return channel.editMessageFormatById(getId(), format, args);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull Message newContent)
+    public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
+        return channel.editMessageAttachmentsById(getId(), attachments);
+    }
+
+    @Nonnull
+    @Override
+    public MessageEditAction editMessage(@Nonnull MessageEditData newContent)
+    {
+        checkUser();
+        return channel.editMessageById(getId(), newContent);
     }
 
     private void checkUser()
@@ -570,8 +589,9 @@ public class ReceivedMessage extends AbstractMessage
     public AuditableRestAction<Void> delete()
     {
         if (isEphemeral())
+        {
             throw new IllegalStateException("Cannot delete ephemeral messages.");
-        
+        }
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
             if (isFromType(ChannelType.PRIVATE))
@@ -579,9 +599,8 @@ public class ReceivedMessage extends AbstractMessage
 
             GuildMessageChannel gChan = getGuildChannel();
             Member sMember = getGuild().getSelfMember();
-            if (!sMember.hasAccess(gChan))
-                throw new MissingAccessException(gChan, Permission.VIEW_CHANNEL);
-            else if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
+            Checks.checkAccess(sMember, gChan);
+            if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
         if (!type.canDelete())
@@ -626,14 +645,11 @@ public class ReceivedMessage extends AbstractMessage
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
 
-        //TODO-v5: Maybe we'll have a `getNewsChannel()` getter that will do this check there?
         if (!(getChannel() instanceof NewsChannel))
             throw new IllegalStateException("This message was not sent in a news channel");
 
-        //TODO-v5: Double check: Is this actually how we crosspost? This, to me, reads as "take the message we just received and crosspost it to the _same exact channel we just received it in_. Makes no sense.
         NewsChannel newsChannel = (NewsChannel) getChannel();
-        if (!getGuild().getSelfMember().hasAccess(newsChannel))
-            throw new MissingAccessException(newsChannel, Permission.VIEW_CHANNEL);
+        Checks.checkAccess(getGuild().getSelfMember(), newsChannel);
         if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
             throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
         return newsChannel.crosspostMessageById(getId());
@@ -672,9 +688,9 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public RestAction<ThreadChannel> createThreadChannel(String name)
+    public ThreadChannelAction createThreadChannel(String name)
     {
-        return ((IThreadContainer) getGuildChannel()).createThreadChannel(name, this.getIdLong());
+        return getGuildChannel().asThreadContainer().createThreadChannel(name, this.getIdLong());
     }
 
     @Override
@@ -697,9 +713,10 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String toString()
     {
-        return author != null
-            ? String.format("M:%#s:%.20s(%s)", author, this, getId())
-            : String.format("M:%.20s", this); // this message was made using MessageBuilder
+        return new EntityString(this)
+                .addMetadata("author", author.getAsTag())
+                .addMetadata("content", String.format("%.20s ...", this))
+                .toString();
     }
 
     @Override

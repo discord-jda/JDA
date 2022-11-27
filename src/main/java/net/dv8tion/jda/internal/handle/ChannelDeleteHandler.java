@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -90,19 +92,19 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                // This is done in the AudioWebSocket already
-//                //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
-//                AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guild.getIdLong());
-//                if (manager != null && manager.isConnected()
-//                        && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
-//                {
-//                    manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-//                }
+                //  This is done in the AudioWebSocket already
+                //  We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
+                //  AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guild.getIdLong());
+                //  if (manager != null && manager.isConnected()
+                //          && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
+                //  {
+                //      manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+                //  }
                 guild.getVoiceChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
-                    new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
-                        channel));
+                        new ChannelDeleteEvent(
+                                getJDA(), responseNumber,
+                                channel));
                 break;
             }
             case STAGE:
@@ -116,9 +118,10 @@ public class ChannelDeleteHandler extends SocketHandler
 
                 guild.getStageChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
-                    new ChannelDeleteEvent(
-                        getJDA(), responseNumber,
-                        channel));
+                        new ChannelDeleteEvent(
+                                getJDA(), responseNumber,
+                                channel));
+                break;
             }
 
             case CATEGORY:
@@ -135,6 +138,22 @@ public class ChannelDeleteHandler extends SocketHandler
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
                         category));
+                break;
+            }
+            case FORUM:
+            {
+                ForumChannel channel = getJDA().getForumChannelsView().remove(channelId);
+                if (channel == null || guild == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a forum channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getForumChannelsView().remove(channel.getIdLong());
+                getJDA().handleEvent(
+                    new ChannelDeleteEvent(
+                        getJDA(), responseNumber,
+                        channel));
                 break;
             }
             case PRIVATE:
@@ -157,6 +176,17 @@ public class ChannelDeleteHandler extends SocketHandler
             default:
                 WebSocketClient.LOG.debug("CHANNEL_DELETE provided an unknown channel type. JSON: {}", content);
         }
+
+        if (guild != null)
+        {
+            // Deleting any scheduled events associated to the deleted channel as they are deleted when the channel gets deleted.
+            // There is no delete event for the deletion of scheduled events in this case, so we do this to keep the cache in sync.
+            String channelId1 = Long.toUnsignedString(channelId);
+            guild.getScheduledEventsView().stream()
+                    .filter(scheduledEvent -> scheduledEvent.getType().isChannel() && scheduledEvent.getLocation().equals(channelId1))
+                    .forEach(scheduledEvent -> guild.getScheduledEventsView().remove(scheduledEvent.getIdLong()));
+        }
+
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
         return null;
     }

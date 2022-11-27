@@ -18,6 +18,9 @@ package net.dv8tion.jda.api;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -38,7 +41,6 @@ import okhttp3.OkHttpClient;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -520,6 +522,26 @@ public class JDABuilder
     }
 
     /**
+     * Whether JDA should store the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} for every discord event, accessible through {@link net.dv8tion.jda.api.events.GenericEvent#getRawData() getRawData()}.
+     * <br>You can expect to receive the full gateway message payload, including sequence, event name and dispatch type of the events
+     * <br>You can read more about payloads <a href="https://discord.com/developers/docs/topics/gateway" target="_blank">here</a> and the different events <a href="https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events" target="_blank">here</a>.
+     * <br>Warning: be aware that enabling this could consume a lot of memory if your event objects have a long lifetime.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to every discord event.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    Event#getRawData()
+     */
+    @Nonnull
+    public JDABuilder setEventPassthrough(boolean enable)
+    {
+        return setFlag(ConfigFlag.EVENT_PASSTHROUGH, enable);
+    }
+
+    /**
      * Whether the rate-limit should be relative to the current time plus latency.
      * <br>By default we use the {@code X-RateLimit-Reset-After} header to determine when
      * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
@@ -651,7 +673,7 @@ public class JDABuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public void configureCache(JDABuilder builder) {
      *     // Cache members who are in a voice channel
@@ -781,7 +803,7 @@ public class JDABuilder
      * Sets the token that will be used by the {@link net.dv8tion.jda.api.JDA} instance to log in when
      * {@link net.dv8tion.jda.api.JDABuilder#build() build()} is called.
      *
-     * <h4>For {@link net.dv8tion.jda.api.AccountType#BOT}</h4>
+     * <p><b>For {@link net.dv8tion.jda.api.AccountType#BOT}</b><br>
      * <ol>
      *     <li>Go to your <a href="https://discord.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
@@ -1717,9 +1739,9 @@ public class JDABuilder
      * <p>If you wish to be sure that the {@link net.dv8tion.jda.api.JDA} information is correct, please use
      * {@link net.dv8tion.jda.api.JDA#awaitReady() JDA.awaitReady()} or register an
      * {@link net.dv8tion.jda.api.hooks.EventListener EventListener} to listen for the
-     * {@link net.dv8tion.jda.api.events.ReadyEvent ReadyEvent}.
+     * {@link ReadyEvent ReadyEvent}.
      *
-     * @throws LoginException
+     * @throws InvalidTokenException
      *         If the provided token is invalid.
      * @throws IllegalArgumentException
      *         If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
@@ -1730,7 +1752,7 @@ public class JDABuilder
      * @see    net.dv8tion.jda.api.JDA#awaitReady()
      */
     @Nonnull
-    public JDA build() throws LoginException
+    public JDA build()
     {
         checkIntents();
         OkHttpClient httpClient = this.httpClient;

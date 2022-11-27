@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -23,12 +24,14 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -61,12 +64,37 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Nonnull
     @Override
     @CheckReturnValue
+    CommandCreateAction setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     CommandCreateAction setName(@Nonnull String name);
 
     @Nonnull
     @Override
     @CheckReturnValue
+    CommandCreateAction setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    CommandCreateAction setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     CommandCreateAction setDescription(@Nonnull String description);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    CommandCreateAction setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    CommandCreateAction setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
     @Nonnull
     @Override
@@ -140,4 +168,8 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @Override
     @CheckReturnValue
     CommandCreateAction setGuildOnly(boolean guildOnly);
+
+    @Nonnull
+    @Override
+    CommandCreateAction setNSFW(boolean nsfw);
 }

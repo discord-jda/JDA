@@ -22,10 +22,11 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.IPermissionContainer;
-import net.dv8tion.jda.api.events.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.events.ExceptionEvent;
+import net.dv8tion.jda.api.events.RawGatewayEvent;
+import net.dv8tion.jda.api.events.session.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.CloseCode;
@@ -44,6 +45,7 @@ import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.ShutdownReason;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.compress.Decompressor;
@@ -91,6 +93,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile String sessionId = null;
     protected final Object readLock = new Object();
     protected Decompressor decompressor;
+    protected String resumeUrl = null;
 
     protected final ReentrantLock queueLock = new ReentrantLock();
     protected final ScheduledExecutorService executor;
@@ -199,19 +202,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
                 }
                 JDAImpl.LOG.info("Finished Loading!");
-                api.handleEvent(new ReadyEvent(api, api.getResponseTotal()));
+                api.handleEvent(new ReadyEvent(api));
             }
             else
             {
                 updateAudioManagerReferences();
                 JDAImpl.LOG.info("Finished (Re)Loading!");
-                api.handleEvent(new ReconnectedEvent(api, api.getResponseTotal()));
+                api.handleEvent(new SessionRecreateEvent(api));
             }
         }
         else
         {
             JDAImpl.LOG.debug("Successfully resumed Session!");
-            api.handleEvent(new ResumedEvent(api, api.getResponseTotal()));
+            api.handleEvent(new SessionResumeEvent(api));
         }
         api.setStatus(JDA.Status.CONNECTED);
     }
@@ -346,39 +349,43 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = api.getGatewayUrl()
-                + "?encoding=" + encoding.name().toLowerCase()
-                + "&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
-        if (compression != Compression.NONE)
-        {
-            url += "&compress=" + compression.getKey();
-            switch (compression)
-            {
-                case ZLIB:
-                    if (decompressor == null || decompressor.getType() != Compression.ZLIB)
-                        decompressor = new ZlibDecompressor(api.getMaxBufferSize());
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown compression");
-            }
-        }
-
         try
         {
+            String gatewayUrl = resumeUrl != null ? resumeUrl : api.getGatewayUrl();
+            gatewayUrl = IOUtil.addQuery(gatewayUrl,
+                "encoding", encoding.name().toLowerCase(),
+                "v", JDAInfo.DISCORD_GATEWAY_VERSION
+            );
+            if (compression != Compression.NONE)
+            {
+                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compression.getKey());
+                switch (compression)
+                {
+                    case ZLIB:
+                        if (decompressor == null || decompressor.getType() != Compression.ZLIB)
+                            decompressor = new ZlibDecompressor(api.getMaxBufferSize());
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown compression");
+                }
+            }
+
             WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
-            IOUtil.setServerName(socketFactory, url);
+            IOUtil.setServerName(socketFactory, gatewayUrl);
             if (socketFactory.getSocketTimeout() > 0)
                 socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
             else
                 socketFactory.setSocketTimeout(10000);
-            socket = socketFactory.createSocket(url);
+
+            socket = socketFactory.createSocket(gatewayUrl);
             socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")
                   .addListener(this)
                   .connect();
         }
-        catch (IOException | WebSocketException e)
+        catch (IOException | WebSocketException | IllegalArgumentException e)
         {
+            resumeUrl = null;
             api.resetGatewayUrl();
             //Completely fail here. We couldn't make the connection.
             throw new IllegalStateException(e);
@@ -493,10 +500,28 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //or that a bot reached a new shard minimum and cannot connect with the current settings
                 //if that is the case we have to drop our connection and inform the user with a fatal error message
                 LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues\n{}", closeCode);
+
+                // Forward the close reason to any hooks to awaitStatus / awaitReady
+                // Since people cannot read logs, we have to explicitly forward this error.
+                switch (closeCode)
+                {
+                case SHARDING_REQUIRED:
+                case INVALID_SHARD:
+                    api.shutdownReason = ShutdownReason.INVALID_SHARDS;
+                    break;
+                case DISALLOWED_INTENTS:
+                    api.shutdownReason = ShutdownReason.DISALLOWED_INTENTS;
+                    break;
+                case GRACEFUL_CLOSE:
+                    break;
+                default:
+                    api.shutdownReason = new ShutdownReason("Connection closed with code " + closeCode);
+                }
             }
 
             if (decompressor != null)
                 decompressor.shutdown();
+
             api.shutdownInternals();
             api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
@@ -510,7 +535,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
-            api.handleEvent(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
+            api.handleEvent(new SessionDisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             try
             {
                 handleReconnect(rawCloseCode);
@@ -739,6 +764,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void invalidate()
     {
+        resumeUrl = null;
         sessionId = null;
         sentAuthInfo = false;
 
@@ -751,6 +777,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getPrivateChannelsView().clear();
         api.getStageChannelView().clear();
         api.getThreadChannelsView().clear();
+        api.getForumChannelsView().clear();
 
         api.getGuildsView().clear();
         api.getUsersView().clear();
@@ -758,6 +785,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
         chunkManager.clear();
+
+        api.handleEvent(new SessionInvalidateEvent(api));
     }
 
     protected void updateAudioManagerReferences()
@@ -927,6 +956,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     // otherwise the audio connection requests that are currently pending might be removed in the process
                     handlers.get("READY").handle(responseTotal, raw);
                     sessionId = content.getString("session_id");
+                    resumeUrl = content.getString("resume_gateway_url", null);
                     break;
                 case "RESUMED":
                     reconnectTimeoutS = 2;
@@ -1077,27 +1107,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected void maybeUnlock()
-    {
-        if (queueLock.isHeldByCurrentThread())
-            queueLock.unlock();
-    }
-
     protected void locked(String comment, Runnable task)
     {
         try
         {
-            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
-            task.run();
+            MiscUtil.locked(queueLock, task);
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             LOG.error(comment, e);
-        }
-        finally
-        {
-            maybeUnlock();
         }
     }
 
@@ -1105,18 +1123,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
-            return task.get();
+            return MiscUtil.locked(queueLock, task);
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             LOG.error(comment, e);
             return null;
-        }
-        finally
-        {
-            maybeUnlock();
         }
     }
 
@@ -1282,8 +1294,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         return false;
                     }
 
-                    IPermissionContainer permChannel = (IPermissionContainer) channel;
-                    if (!guild.getSelfMember().hasPermission(permChannel, Permission.VOICE_CONNECT))
+                    if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
                     {
                         if (listener != null)
                             listener.onStatusChange(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);
@@ -1329,6 +1340,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_CREATE",                           new GuildCreateHandler(api));
         handlers.put("GUILD_DELETE",                           new GuildDeleteHandler(api));
         handlers.put("GUILD_EMOJIS_UPDATE",                    new GuildEmojisUpdateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_CREATE",           new ScheduledEventCreateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_UPDATE",           new ScheduledEventUpdateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_DELETE",           new ScheduledEventDeleteHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_USER_ADD",         new ScheduledEventUserHandler(api, true));
+        handlers.put("GUILD_SCHEDULED_EVENT_USER_REMOVE",      new ScheduledEventUserHandler(api, false));
         handlers.put("GUILD_MEMBER_ADD",                       new GuildMemberAddHandler(api));
         handlers.put("GUILD_MEMBER_REMOVE",                    new GuildMemberRemoveHandler(api));
         handlers.put("GUILD_MEMBER_UPDATE",                    new GuildMemberUpdateHandler(api));

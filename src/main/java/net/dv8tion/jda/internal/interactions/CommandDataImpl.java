@@ -16,33 +16,42 @@
 
 package net.dv8tion.jda.internal.interactions;
 
-import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.command.localization.LocalizationMapper;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class CommandDataImpl implements SlashCommandData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description = "";
+    private LocalizationMapper localizationMapper;
+    private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
 
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;
     private boolean allowRequired = true;
     private boolean guildOnly = false;
+    private boolean nsfw = false;
     private DefaultMemberPermissions defaultMemberPermissions = DefaultMemberPermissions.ENABLED;
 
     private final Command.Type type;
@@ -68,20 +77,43 @@ public class CommandDataImpl implements SlashCommandData
             throw new IllegalStateException("Cannot " + action + " for commands of type " + type);
     }
 
+    public void checkName(@Nonnull String name)
+    {
+        Checks.inRange(name, 1, MAX_NAME_LENGTH, "Name");
+        if (type == Command.Type.SLASH)
+        {
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+            Checks.isLowercase(name, "Name");
+        }
+    }
+
+    public void checkDescription(@Nonnull String description)
+    {
+        checkType(Command.Type.SLASH, "set description");
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
     {
+        if (localizationMapper != null) localizationMapper.localizeCommand(this, options);
+
         DataObject json = DataObject.empty()
                 .put("type", type.getId())
                 .put("name", name)
+                .put("nsfw", nsfw)
                 .put("options", options)
                 .put("dm_permission", !guildOnly)
                 .put("default_member_permissions", defaultMemberPermissions == DefaultMemberPermissions.ENABLED
                         ? null
-                        : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()));
+                        : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()))
+                .put("name_localizations", nameLocalizations)
+                .put("options", options);
         if (type == Command.Type.SLASH)
-            json.put("description", description);
+            json.put("description", description)
+                .put("description_localizations", descriptionLocalizations);
         return json;
     }
 
@@ -105,6 +137,12 @@ public class CommandDataImpl implements SlashCommandData
         return guildOnly;
     }
 
+    @Override
+    public boolean isNSFW()
+    {
+        return nsfw;
+    }
+
     @Nonnull
     @Override
     public List<SubcommandData> getSubcommands()
@@ -116,7 +154,7 @@ public class CommandDataImpl implements SlashCommandData
                     return type == OptionType.SUB_COMMAND;
                 })
                 .map(SubcommandData::fromData)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -130,7 +168,7 @@ public class CommandDataImpl implements SlashCommandData
                     return type == OptionType.SUB_COMMAND_GROUP;
                 })
                 .map(SubcommandGroupData::fromData)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -147,6 +185,14 @@ public class CommandDataImpl implements SlashCommandData
     public CommandDataImpl setGuildOnly(boolean guildOnly)
     {
         this.guildOnly = guildOnly;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setNSFW(boolean nsfw)
+    {
+        this.nsfw = nsfw;
         return this;
     }
 
@@ -230,15 +276,36 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
+    public CommandDataImpl setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction) {
+        Checks.notNull(localizationFunction, "Localization function");
+
+        this.localizationMapper = LocalizationMapper.fromFunction(localizationFunction);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public CommandDataImpl setName(@Nonnull String name)
     {
-        Checks.inRange(name, 1, 32, "Name");
-        if (type == Command.Type.SLASH)
-        {
-            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-            Checks.isLowercase(name, "Name");
-        }
+        checkName(name);
         this.name = name;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
+    {
+        //Checks are done in LocalizationMap
+        nameLocalizations.setTranslation(locale, name);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        nameLocalizations.setTranslations(map);
         return this;
     }
 
@@ -246,10 +313,25 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setDescription(@Nonnull String description)
     {
-        checkType(Command.Type.SLASH, "set description");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         this.description = description;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
+    {
+        //Checks are done in LocalizationMap
+        descriptionLocalizations.setTranslation(locale, description);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        descriptionLocalizations.setTranslations(map);
         return this;
     }
 
@@ -262,9 +344,23 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
+    public LocalizationMap getNameLocalizations()
+    {
+        return nameLocalizations;
+    }
+
+    @Nonnull
+    @Override
     public String getDescription()
     {
         return description;
+    }
+
+    @Nonnull
+    @Override
+    public LocalizationMap getDescriptionLocalizations()
+    {
+        return descriptionLocalizations;
     }
 
     @Nonnull
@@ -274,6 +370,6 @@ public class CommandDataImpl implements SlashCommandData
         return options.stream(DataArray::getObject)
                 .map(OptionData::fromData)
                 .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 }

@@ -17,18 +17,22 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -38,6 +42,8 @@ public class SubcommandData implements SerializableData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
+    private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
+    private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
     private boolean allowRequired = true;
 
     /**
@@ -61,6 +67,19 @@ public class SubcommandData implements SerializableData
         setDescription(description);
     }
 
+    protected void checkName(@Nonnull String name)
+    {
+        Checks.inRange(name, 1, 32, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.isLowercase(name, "Name");
+    }
+
+    protected void checkDescription(@Nonnull String description)
+    {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
+    }
+
     /**
      * Configure the name
      *
@@ -75,10 +94,58 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public SubcommandData setName(@Nonnull String name)
     {
-        Checks.inRange(name, 1, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.isLowercase(name, "Name");
+        checkName(name);
         this.name = name;
+        return this;
+    }
+
+    /**
+     * Sets a {@link DiscordLocale language-specific} localization of this subcommand's name.
+     *
+     * @param  locale
+     *         The locale to associate the translated name with
+     *
+     * @param  name
+     *         The translated name to put
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the name is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    public SubcommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name)
+    {
+        //Checks are done in LocalizationMap
+        nameLocalizations.setTranslation(locale, name);
+        return this;
+    }
+
+    /**
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this subcommand's name.
+     *
+     * @param  map
+     *         The map from which to transfer the translated names
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    public SubcommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        //Checks are done in LocalizationMap
+        nameLocalizations.setTranslations(map);
         return this;
     }
 
@@ -96,9 +163,58 @@ public class SubcommandData implements SerializableData
     @Nonnull
     public SubcommandData setDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        checkDescription(description);
         this.description = description;
+        return this;
+    }
+
+    /**
+     * Sets a {@link DiscordLocale language-specific} localization of this subcommand's description.
+     *
+     * @param  locale
+     *         The locale to associate the translated description with
+     *
+     * @param  description
+     *         The translated description to put
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the locale is null</li>
+     *             <li>If the description is null</li>
+     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
+     *             <li>If the description does not pass the corresponding {@link #setDescription(String) description check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    public SubcommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description)
+    {
+        //Checks are done in LocalizationMap
+        descriptionLocalizations.setTranslation(locale, description);
+        return this;
+    }
+
+    /**
+     * Sets multiple {@link DiscordLocale language-specific} localizations of this subcommand's description.
+     *
+     * @param  map
+     *         The map from which to transfer the translated descriptions
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the map is null</li>
+     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
+     *             <li>If the map contains a description which does not pass the corresponding {@link #setDescription(String) description check}</li>
+     *         </ul>
+     *
+     * @return This builder instance, for chaining
+     */
+    @Nonnull
+    public SubcommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
+    {
+        //Checks are done in LocalizationMap
+        descriptionLocalizations.setTranslations(map);
         return this;
     }
 
@@ -276,7 +392,7 @@ public class SubcommandData implements SerializableData
         return options.stream(DataArray::getObject)
                 .map(OptionData::fromData)
                 .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -291,6 +407,17 @@ public class SubcommandData implements SerializableData
     }
 
     /**
+     * The localizations of this subcommand's name for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+     */
+    @Nonnull
+    public LocalizationMap getNameLocalizations()
+    {
+        return nameLocalizations;
+    }
+
+    /**
      * The configured description
      *
      * @return The description
@@ -301,6 +428,17 @@ public class SubcommandData implements SerializableData
         return description;
     }
 
+    /**
+     * The localizations of this subcommand's description for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+     */
+    @Nonnull
+    public LocalizationMap getDescriptionLocalizations()
+    {
+        return descriptionLocalizations;
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
@@ -308,7 +446,9 @@ public class SubcommandData implements SerializableData
         return DataObject.empty()
                 .put("type", OptionType.SUB_COMMAND.getKey())
                 .put("name", name)
+                .put("name_localizations", nameLocalizations)
                 .put("description", description)
+                .put("description_localizations", descriptionLocalizations)
                 .put("options", options);
     }
 
@@ -337,6 +477,9 @@ public class SubcommandData implements SerializableData
                         .map(OptionData::fromData)
                         .forEach(sub::addOptions)
         );
+        sub.setNameLocalizations(LocalizationUtils.mapFromProperty(json, "name_localizations"));
+        sub.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(json, "description_localizations"));
+
         return sub;
     }
 
@@ -356,6 +499,8 @@ public class SubcommandData implements SerializableData
     {
         Checks.notNull(subcommand, "Subcommand");
         SubcommandData data = new SubcommandData(subcommand.getName(), subcommand.getDescription());
+        data.setNameLocalizations(subcommand.getNameLocalizations().toMap());
+        data.setDescriptionLocalizations(subcommand.getDescriptionLocalizations().toMap());
         subcommand.getOptions()
                 .stream()
                 .map(OptionData::fromOption)

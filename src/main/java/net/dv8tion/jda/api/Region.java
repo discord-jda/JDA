@@ -15,13 +15,15 @@
  */
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.internal.utils.EntityString;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Represents the Regions used for Audio connections.
- * <br>This is used by {@link net.dv8tion.jda.api.entities.AudioChannel AudioChannels} to define where the audio server that hosts the
- * {@link net.dv8tion.jda.api.entities.AudioChannel} is located.
+ * <br>This is used by {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannels} to define where the audio server that hosts the
+ * {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel} is located.
  */
 public enum Region
 {
@@ -144,6 +146,8 @@ public enum Region
     @Override
     public String toString()
     {
-        return getName();
+        return new EntityString(this)
+                .setType(this)
+                .toString();
     }
 }

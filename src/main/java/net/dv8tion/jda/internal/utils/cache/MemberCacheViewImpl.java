@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implements MemberCacheView
 {
@@ -93,10 +94,15 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         Checks.noneNull(roles, "Roles");
         if (isEmpty())
             return Collections.emptyList();
+
+        List<Role> rolesWithoutPublicRole = roles.stream().filter(role -> !role.isPublicRole()).collect(Collectors.toList());
+        if (rolesWithoutPublicRole.isEmpty())
+            return asList();
+
         List<Member> members = new ArrayList<>();
         forEach(member ->
         {
-            if (member.getRoles().containsAll(roles))
+            if (member.getRoles().containsAll(rolesWithoutPublicRole))
                 members.add(member);
         });
         return members;

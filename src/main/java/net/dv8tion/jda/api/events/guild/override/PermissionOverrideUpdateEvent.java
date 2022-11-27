@@ -18,14 +18,14 @@ package net.dv8tion.jda.api.events.guild.override;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
- * Indicates that a {@link PermissionOverride} of a {@link GuildChannel} has been updated.
+ * Indicates that a {@link PermissionOverride} in a {@link IPermissionContainer guild channel} has been updated.
  *
  * <p>Can be used to retrieve the updated override and old {@link #getOldAllow() allow} and {@link #getOldDeny() deny}.
  */
@@ -34,7 +34,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
 {
     private final long oldAllow, oldDeny;
 
-    public PermissionOverrideUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
+    public PermissionOverrideUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPermissionContainer channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
     {
         super(api, responseNumber, channel, override);
         this.oldAllow = oldAllow;

@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -45,24 +45,25 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
             if (api.getGuildSetupController().isLocked(guildId))
                 return guildId;
 
-            guild = api.getGuildById(guildId);
+            guild = getJDA().getGuildById(guildId);
             if (guild == null)
             {
-                EventCache.LOG.debug("Caching MESSAGE_REACTION_REMOVE_ALL event for guild that is not currently cached. GuildID: {}", guildId);
-                api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                jda.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Got MESSAGE_REACTION_REMOVE_ALL for a guild that is not yet cached. GuildId: {}", guildId);
                 return null;
             }
         }
 
-        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
+        MessageChannel channel = jda.getChannelById(MessageChannel.class, channelId);
         if (channel == null)
         {
+            // If discord adds message support for unexpected types in the future, drop the event instead of caching it
             if (guild != null)
             {
-                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
-                if (guildChannel != null)
+                GuildChannel actual = guild.getGuildChannelById(channelId);
+                if (actual != null)
                 {
-                    WebSocketClient.LOG.debug("Discarding MESSAGE_REACTION_REMOVE_ALL event for unexpected channel type. Channel: {}", guildChannel);
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION_REMOVE_ALL for unexpected channel of type {}", actual.getType());
                     return null;
                 }
             }

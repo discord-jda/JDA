@@ -38,6 +38,7 @@ public enum Permission
     MANAGE_PERMISSIONS(        28, false, true,  "Manage Permissions"),
     MANAGE_WEBHOOKS(           29, true,  true,  "Manage Webhooks"),
     MANAGE_EMOJIS_AND_STICKERS(30, true,  false, "Manage Emojis and Stickers"),
+    MANAGE_EVENTS(             33, true,  true,  "Manage Events"),
 
     // Membership Permissions
     CREATE_INSTANT_INVITE(0, true, true,  "Create Instant Invite"),
@@ -197,7 +198,7 @@ public enum Permission
     }
 
     /**
-     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
+     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannels}
      *
      * @return True, if and only if this permission can only be applied to text channels
      */
@@ -207,7 +208,7 @@ public enum Permission
     }
 
     /**
-     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel VoiceChannels}
      *
      * @return True, if and only if this permission can only be applied to voice channels
      */

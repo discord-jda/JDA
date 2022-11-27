@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
+import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -27,9 +29,10 @@ import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 
@@ -40,7 +43,7 @@ import javax.annotation.Nonnull;
  */
 public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 {
-    private final BaseGuildMessageChannel channel;
+    private final IWebhookContainer channel;
     private final WebhookType type;
 
     private Member owner;
@@ -48,12 +51,12 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     private ChannelReference sourceChannel;
     private GuildReference sourceGuild;
 
-    public WebhookImpl(BaseGuildMessageChannel channel, long id, WebhookType type)
+    public WebhookImpl(IWebhookContainer channel, long id, WebhookType type)
     {
         this(channel, channel.getJDA(), id, type);
     }
 
-    public WebhookImpl(BaseGuildMessageChannel channel, JDA api, long id, WebhookType type)
+    public WebhookImpl(IWebhookContainer channel, JDA api, long id, WebhookType type)
     {
         super(id, null, api);
         this.channel = channel;
@@ -91,11 +94,11 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 
     @Nonnull
     @Override
-    public BaseGuildMessageChannel getChannel()
+    public IWebhookContainerUnion getChannel()
     {
         if (channel == null)
             throw new IllegalStateException("Cannot provide channel for this Webhook instance because it does not belong to this shard");
-        return channel;
+        return (IWebhookContainerUnion) channel;
     }
 
     @Override
@@ -242,28 +245,30 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     @Override
     public String toString()
     {
-        return "WH:" + getName() + "(" + id + ")";
+        return new EntityString(this)
+                .setName(getName())
+                .toString();
     }
 
     // TODO: Implement WebhookMessage
 
     @Override
-    public WebhookMessageActionImpl<Void> sendRequest()
+    public WebhookMessageCreateActionImpl<Void> sendRequest()
     {
         checkToken();
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, channel, route, (json) -> null);
+        WebhookMessageCreateActionImpl<Void> action = new WebhookMessageCreateActionImpl<>(api, route, (json) -> null);
         action.run();
         return action;
     }
 
     @Override
-    public WebhookMessageUpdateActionImpl<Void> editRequest(String messageId)
+    public WebhookMessageEditActionImpl<Void> editRequest(String messageId)
     {
         checkToken();
         Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
-        WebhookMessageUpdateActionImpl<Void> action = new WebhookMessageUpdateActionImpl<>(api, route, (json) -> null);
+        WebhookMessageEditActionImpl<Void> action = new WebhookMessageEditActionImpl<>(api, route, (json) -> null);
         action.run();
         return action;
     }

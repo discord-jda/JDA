@@ -16,14 +16,17 @@
 
 package net.dv8tion.jda.internal.entities.emoji;
 
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.internal.utils.EntityString;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
-public class UnicodeEmojiImpl implements UnicodeEmoji
+public class UnicodeEmojiImpl implements UnicodeEmoji, EmojiUnion
 {
     private final String name;
 
@@ -32,28 +35,28 @@ public class UnicodeEmojiImpl implements UnicodeEmoji
         this.name = name;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getAsReactionCode()
     {
         return name;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getAsCodepoints()
     {
         return EncodingUtil.encodeCodepoints(name);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public DataObject toData()
     {
@@ -79,6 +82,22 @@ public class UnicodeEmojiImpl implements UnicodeEmoji
     @Override
     public String toString()
     {
-        return "UnicodeEmoji(" + getAsCodepoints() + ')';
+        return new EntityString(this)
+                .addMetadata("codepoints", getAsCodepoints())
+                .toString();
+    }
+
+    @Nonnull
+    @Override
+    public UnicodeEmoji asUnicode()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CustomEmoji asCustom()
+    {
+        throw new IllegalStateException("Cannot convert UnicodeEmoji into CustomEmoji!");
     }
 }

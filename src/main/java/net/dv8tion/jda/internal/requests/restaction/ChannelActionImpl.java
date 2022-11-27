@@ -19,7 +19,20 @@ package net.dv8tion.jda.internal.requests.restaction;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -34,34 +47,47 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
 {
+    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM,
+                                                                              ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
+    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
+
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
     protected final Class<T> clazz;
+    protected final ChannelType type;
 
     // --all channels--
     protected String name;
     protected Category parent;
     protected Integer position;
-    protected ChannelType type;
 
-    // --text only--
+    // --forum only--
+    protected List<? extends BaseForumTag> availableTags;
+    protected Emoji defaultReactionEmoji;
+
+    // --text/forum/voice only--
     protected Integer slowmode = null;
 
-    // --text and news--
+    // --text/forum/voice/news--
     protected String topic = null;
     protected Boolean nsfw = null;
 
     // --voice only--
     protected Integer userlimit = null;
 
-    // --voice and stage--
+    // --audio only--
     protected Integer bitrate = null;
+    protected Region region = null;
 
     public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
     {
@@ -70,6 +96,13 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         this.guild = guild;
         this.type = type;
         this.name = name;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelActionImpl<T> reason(@Nullable String reason)
+    {
+        return (ChannelActionImpl<T>) super.reason(reason);
     }
 
     @Nonnull
@@ -113,31 +146,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setName(@Nonnull String name)
     {
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, 100, "Name");
+        Checks.notLonger(name, Channel.MAX_NAME_LENGTH, "Name");
         this.name = name;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public ChannelActionImpl<T> setType(@Nonnull ChannelType type)
-    {
-        Checks.check(type == ChannelType.TEXT || type == ChannelType.NEWS, "Can only change ChannelType to TEXT or NEWS");
-
-        if (this.type != ChannelType.TEXT && this.type != ChannelType.NEWS)
-            throw new UnsupportedOperationException("Can only set ChannelType for TextChannel and NewsChannels");
-        if (type == ChannelType.NEWS && !getGuild().getFeatures().contains("NEWS"))
-            throw new IllegalStateException("Can only set ChannelType to NEWS for guilds with NEWS feature");
-
-        this.type = type;
-
-        //After the type is changed, be sure to clean up any properties that are exclusive to a specific channel type
-        if (type != ChannelType.TEXT)
-        {
-            slowmode = null;
-        }
-
         return this;
     }
 
@@ -146,9 +156,12 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setParent(Category category)
     {
-        Checks.check(category == null || category.getGuild().equals(guild), "Category is not from same guild!");
-        if (type == ChannelType.CATEGORY)
-            throw new UnsupportedOperationException("Cannot set a parent Category on a Category");
+        if (category != null)
+        {
+            Checks.check(category.getGuild().equals(guild), "Category is not from same guild!");
+            if (type == ChannelType.CATEGORY)
+                throw new UnsupportedOperationException("Cannot set a parent Category on a Category");
+        }
 
         this.parent = category;
         return this;
@@ -169,10 +182,14 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setTopic(String topic)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
-            throw new UnsupportedOperationException("Can only set the topic for a TextChannel or NewsChannel!");
-        if (topic != null && topic.length() > 1024)
-            throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
+        Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "Topic");
+        if (topic != null)
+        {
+            if (type == ChannelType.FORUM)
+                Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
+            else
+                Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
+        }
         this.topic = topic;
         return this;
     }
@@ -182,8 +199,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setNSFW(boolean nsfw)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.NEWS)
-            throw new UnsupportedOperationException("Can only set nsfw for a TextChannel or NewsChannel!");
+        Checks.checkSupportedChannelTypes(NSFW_SUPPORTED, type, "NSFW (age-restricted)");
         this.nsfw = nsfw;
         return this;
     }
@@ -193,10 +209,30 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
-        if (type != ChannelType.TEXT)
-            throw new UnsupportedOperationException("Can only set slowmode on text channels");
-        Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
+        Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "Slowmode");
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji)
+    {
+        if (type != ChannelType.FORUM)
+            throw new UnsupportedOperationException("Can only set default reaction emoji on a ForumChannel!");
+        this.defaultReactionEmoji = emoji;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> setAvailableTags(@Nonnull List<? extends BaseForumTag> tags)
+    {
+        if (type != ChannelType.FORUM)
+            throw new UnsupportedOperationException("Can only set available tags on a ForumChannel!");
+        Checks.noneNull(tags, "Tags");
+        this.availableTags = new ArrayList<>(tags);
         return this;
     }
 
@@ -294,7 +330,6 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    // --voice only--
     @Nonnull
     @Override
     @CheckReturnValue
@@ -328,6 +363,17 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelActionImpl<T> setRegion(@Nullable Region region)
+    {
+        if (!type.isAudio())
+            throw new UnsupportedOperationException("Can only set the region for AudioChannels!");
+        this.region = region;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -342,15 +388,23 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (parent != null)
             object.put("parent_id", parent.getId());
 
-        //Text only
+        //Text and Forum
         if (slowmode != null)
             object.put("rate_limit_per_user", slowmode);
 
-        //Text and News
+        //Text, Forum, and News
         if (topic != null && !topic.isEmpty())
             object.put("topic", topic);
         if (nsfw != null)
             object.put("nsfw", nsfw);
+
+        //Forum only
+        if (defaultReactionEmoji instanceof CustomEmoji)
+            object.put("default_reaction_emoji", DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
+        else if (defaultReactionEmoji instanceof UnicodeEmoji)
+            object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
+        if (availableTags != null)
+            object.put("available_tags", DataArray.fromCollection(availableTags));
 
         //Voice only
         if (userlimit != null)
@@ -359,6 +413,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         //Voice and Stage
         if (bitrate != null)
             object.put("bitrate", bitrate);
+        if (region != null)
+            object.put("rtc_region", region.getKey());
 
         return getRequestBody(object);
     }
@@ -384,6 +440,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                 break;
             case CATEGORY:
                 channel = builder.createCategory(response.getObject(), guild.getIdLong());
+                break;
+            case FORUM:
+                channel = builder.createForumChannel(response.getObject(), guild.getIdLong());
                 break;
             default:
                 request.onFailure(new IllegalStateException("Created channel of unknown type!"));

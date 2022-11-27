@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.utils.cache;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
@@ -63,13 +65,17 @@ public enum CacheFlag
      */
     CLIENT_STATUS(GatewayIntent.GUILD_PRESENCES),
     /**
-     * Enables cache for {@link net.dv8tion.jda.api.entities.IPermissionContainer#getMemberPermissionOverrides()}
+     * Enables cache for {@link net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer#getMemberPermissionOverrides()}
      */
     MEMBER_OVERRIDES,
     /**
      * Enables cache for {@link Role#getTags()}
      */
     ROLE_TAGS,
+    /**
+     * Enables cache for {@link ForumChannel#getAvailableTagCache()} and {@link ThreadChannel#getAppliedTags()}
+     */
+    FORUM_TAGS,
     /**
      * Enables cache for {@link Member#getOnlineStatus()}
      * <br>This is enabled implicitly by {@link #ACTIVITY} and {@link #CLIENT_STATUS}.
@@ -78,7 +84,13 @@ public enum CacheFlag
      *
      * @since 4.3.0
      */
-    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES)
+    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES),
+    /**
+     * Enables cache for {@link Guild#getScheduledEventCache()}
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
+     */
+    SCHEDULED_EVENTS(GatewayIntent.SCHEDULED_EVENTS),
     ;
 
     private static final EnumSet<CacheFlag> privileged = EnumSet.of(ACTIVITY, CLIENT_STATUS, ONLINE_STATUS);

@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_BANS GUILD_BANS} intent to be enabled.
  */

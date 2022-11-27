@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
  * This means you can check {@link Member#getActivities()} when handling this event and it will already
  * contain all new activities, even ones that have not yet fired the start event.
  *
- * <h2>Requirements</h2>
+ * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and

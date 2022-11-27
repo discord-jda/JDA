@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.internal.utils.EntityString;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -41,7 +43,7 @@ public enum CloseCode
     INVALID_SHARD(        4010, "You sent an invalid shard when identifying.", false),
     SHARDING_REQUIRED(    4011, "The session would have handled too many guilds - you are required to shard your connection in order to connect.", false),
     INVALID_INTENTS(      4013, "Invalid intents.", false),
-    DISALLOWED_INTENTS(   4014, "Disallowed intents. Your bot might not be eligible to request a privileged intent such as GUILD_PRESENCES or GUILD_MEMBERS.", false);
+    DISALLOWED_INTENTS(   4014, "Disallowed intents. Your bot might not be eligible to request a privileged intent such as GUILD_PRESENCES, MESSAGE_CONTENT, or GUILD_MEMBERS.", false);
 
     private final int code;
     private final boolean isReconnect;
@@ -95,7 +97,11 @@ public enum CloseCode
     @Override
     public String toString()
     {
-        return "CloseCode(" + code + " / " + meaning + ")";
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("code", code)
+                .addMetadata("meaning", meaning)
+                .toString();
     }
 
     /**

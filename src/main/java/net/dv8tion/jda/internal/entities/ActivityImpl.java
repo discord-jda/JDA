@@ -17,7 +17,8 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.RichPresence;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,7 +30,7 @@ public class ActivityImpl implements Activity
     protected final String url;
     protected final ActivityType type;
     protected final Timestamps timestamps;
-    protected final Emoji emoji;
+    protected final EmojiUnion emoji;
 
     protected ActivityImpl(String name)
     {
@@ -46,7 +47,7 @@ public class ActivityImpl implements Activity
         this(name, url, type, null, null);
     }
 
-    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps, Emoji emoji)
+    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps, EmojiUnion emoji)
     {
         this.name = name;
         this.url = url;
@@ -95,7 +96,7 @@ public class ActivityImpl implements Activity
 
     @Nullable
     @Override
-    public Emoji getEmoji()
+    public EmojiUnion getEmoji()
     {
         return emoji;
     }
@@ -124,9 +125,12 @@ public class ActivityImpl implements Activity
     @Override
     public String toString()
     {
-        if (url != null)
-            return String.format("Activity(%s | %s)", name, url);
-        else
-            return String.format("Activity(%s)", name);
+        final EntityString entityString = new EntityString(this)
+                .setType(type)
+                .setName(name);
+        if (url != null) 
+            entityString.addMetadata("url", url);
+
+        return entityString.toString();
     }
 }

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
@@ -158,6 +159,13 @@ public class Route
 
         public static final Route LIST_ACTIVE_THREADS = new Route(GET,   "guilds/{guild_id}/threads/active");
 
+        public static final Route GET_SCHEDULED_EVENT       = new Route(GET,    "guilds/{guild_id}/scheduled-events/{scheduled_event_id}");
+        public static final Route GET_SCHEDULED_EVENTS      = new Route(GET,    "guilds/{guild_id}/scheduled-events");
+        public static final Route CREATE_SCHEDULED_EVENT    = new Route(POST,   "guilds/{guild_id}/scheduled-events");
+        public static final Route MODIFY_SCHEDULED_EVENT    = new Route(PATCH,  "guilds/{guild_id}/scheduled-events/{scheduled_event_id}");
+        public static final Route DELETE_SCHEDULED_EVENT    = new Route(DELETE, "guilds/{guild_id}/scheduled-events/{scheduled_event_id}");
+        public static final Route GET_SCHEDULED_EVENT_USERS = new Route(GET,    "guilds/{guild_id}/scheduled-events/{scheduled_event_id}/users");
+
         //Client Only
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
         public static final Route DELETE_GUILD = new Route(POST, "guilds/{guild_id}/delete");
@@ -232,8 +240,8 @@ public class Route
         public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}");
         public static final Route FOLLOW_CHANNEL =       new Route(POST,   "channels/{channel_id}/followers");
 
-        public static final Route CREATE_THREAD_WITH_MESSAGE =              new Route(POST,     "channels/{channel_id}/messages/{message_id}/threads");
-        public static final Route CREATE_THREAD_WITHOUT_MESSAGE =           new Route(POST,     "channels/{channel_id}/threads");
+        public static final Route CREATE_THREAD_FROM_MESSAGE =              new Route(POST,     "channels/{channel_id}/messages/{message_id}/threads");
+        public static final Route CREATE_THREAD =                           new Route(POST,     "channels/{channel_id}/threads");
         public static final Route JOIN_THREAD =                             new Route(PUT,      "channels/{channel_id}/thread-members/@me");
         public static final Route ADD_THREAD_MEMBER =                       new Route(PUT,      "channels/{channel_id}/thread-members/{user_id}");
         public static final Route LEAVE_THREAD =                            new Route(DELETE,   "channels/{channel_id}/thread-members/@me");
@@ -425,7 +433,10 @@ public class Route
     @Override
     public String toString()
     {
-        return method + "/" + route;
+        return new EntityString(this)
+                .setType(method)
+                .addMetadata("route", route)
+                .toString();
     }
 
     public class CompiledRoute
@@ -503,7 +514,10 @@ public class Route
         @Override
         public String toString()
         {
-            return "CompiledRoute(" + method + ": " + compiledRoute + ")";
+            return new EntityString(this)
+                    .setType(method)
+                    .addMetadata("compiledRoute", compiledRoute)
+                    .toString();
         }
     }
 }

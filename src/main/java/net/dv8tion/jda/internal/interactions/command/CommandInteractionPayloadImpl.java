@@ -20,7 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -109,41 +109,44 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
             })
         );
 
-        if (guild != null) // Technically these can function in DMs too ...
+        if (this.guild != null)
         {
+            GuildImpl guild = (GuildImpl) this.guild;
             resolveJson.optObject("members").ifPresent(members ->
-                members.keys().forEach(memberId -> {
-                    DataObject userJson = resolveJson.getObject("users").getObject(memberId);
+            {
+                DataObject users = resolveJson.getObject("users");
+                members.keys().forEach(memberId ->
+                {
                     DataObject memberJson = members.getObject(memberId);
-                    memberJson.put("user", userJson);
-                    MemberImpl optionMember = entityBuilder.createMember((GuildImpl) guild, memberJson);
+                    memberJson.put("user", users.getObject(memberId)); // Add user json as well for parsing
+                    MemberImpl optionMember = entityBuilder.createMember(guild, memberJson);
                     entityBuilder.updateMemberCache(optionMember);
                     resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
-                })
-            );
+                });
+            });
             resolveJson.optObject("roles").ifPresent(roles ->
                 roles.keys()
                     .stream()
-                    .map(guild::getRoleById)
+                    .map(this.guild::getRoleById)
                     .filter(Objects::nonNull)
                     .forEach(role -> resolved.put(role.getIdLong(), role))
             );
-            resolveJson.optObject("channels").ifPresent(channels -> {
+            resolveJson.optObject("channels").ifPresent(channels ->
                 channels.keys().forEach(id -> {
                     ISnowflake channelObj = jda.getGuildChannelById(id);
                     if (channelObj != null)
                         resolved.put(channelObj.getIdLong(), channelObj);
-                });
-            });
+                })
+            );
         }
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel()
+    public MessageChannelUnion getChannel()
     {
-        return (MessageChannel) super.getChannel();
+        return (MessageChannelUnion) super.getChannel();
     }
 
     @Nonnull

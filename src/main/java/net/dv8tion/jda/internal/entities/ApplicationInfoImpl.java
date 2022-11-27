@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +38,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final boolean doesBotRequireCodeGrant;
     private final boolean isBotPublic;
     private final long id;
+    private final long flags;
     private final String iconId;
     private final String description;
     private final String termsOfServiceUrl;
@@ -50,7 +52,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final List<String> defaultAuthUrlScopes;
     private String scopes = "bot";
 
-    public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
+    public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id, long flags,
             boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team,
             List<String> tags, String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
     {
@@ -59,6 +61,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.doesBotRequireCodeGrant = doesBotRequireCodeGrant;
         this.iconId = iconId;
         this.id = id;
+        this.flags = flags;
         this.isBotPublic = isBotPublic;
         this.name = name;
         this.termsOfServiceUrl = termsOfServiceUrl;
@@ -224,6 +227,12 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return defaultAuthUrlPerms;
     }
 
+    @Override
+    public long getFlagsRaw()
+    {
+        return flags;
+    }
+
     @Nonnull
     @Override
     public List<String> getScopes()
@@ -234,7 +243,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public String toString()
     {
-        return "ApplicationInfo(" + this.id + ")";
+        return new EntityString(this).toString();
     }
 
 }

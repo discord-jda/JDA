@@ -22,6 +22,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -56,7 +57,7 @@ public class MessageMentionsImpl extends AbstractMentions
                     }
 
                     DataObject member = obj.getObject("member");
-                    obj.remove("user");
+                    obj.remove("member");
                     member.put("user", obj).put("is_member", true);
                     this.userMentionMap.put(obj.getUnsignedLong("id"), member);
                 });

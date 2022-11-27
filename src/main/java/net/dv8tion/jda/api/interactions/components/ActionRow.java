@@ -19,9 +19,11 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
-import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.EntitySelectMenuImpl;
+import net.dv8tion.jda.internal.interactions.component.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.interactions.component.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -68,10 +70,15 @@ public class ActionRow implements LayoutComponent
                 {
                 case BUTTON:
                     return new ButtonImpl(obj);
-                case SELECT_MENU:
-                    return new SelectMenuImpl(obj);
+                case STRING_SELECT:
+                    return new StringSelectMenuImpl(obj);
                 case TEXT_INPUT:
                     return new TextInputImpl(obj);
+                case USER_SELECT:
+                case ROLE_SELECT:
+                case CHANNEL_SELECT:
+                case MENTIONABLE_SELECT:
+                    return new EntitySelectMenuImpl(obj);
                 default:
                     return null;
                 }
@@ -264,6 +271,13 @@ public class ActionRow implements LayoutComponent
 
     @Nonnull
     @Override
+    public ActionRow createCopy()
+    {
+        return ActionRow.of(components);
+    }
+
+    @Nonnull
+    @Override
     public Component.Type getType()
     {
         return Component.Type.ACTION_ROW;
@@ -288,7 +302,9 @@ public class ActionRow implements LayoutComponent
     @Override
     public String toString()
     {
-        return "ActionRow(" + components + ")";
+        return new EntityString(this)
+                .addMetadata("components", components)
+                .toString();
     }
 
     @Override

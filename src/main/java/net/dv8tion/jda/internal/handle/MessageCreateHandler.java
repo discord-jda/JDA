@@ -15,13 +15,18 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.ThreadChannelImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class MessageCreateHandler extends SocketHandler
@@ -74,10 +79,16 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    if (guild != null && guild.getGuildChannelById(channelId) != null)
+
+                    // If discord adds message support for unexpected types in the future, drop the event instead of caching it
+                    if (guild != null)
                     {
-                        WebSocketClient.LOG.debug("Discarding MESSAGE_CREATE event for unexpected channel type. Channel: {}", guild.getGuildChannelById(channelId));
-                        return null;
+                        GuildChannel actual = guild.getGuildChannelById(channelId);
+                        if (actual != null)
+                        {
+                            WebSocketClient.LOG.debug("Dropping MESSAGE_CREATE for unexpected channel of type {}", actual.getType());
+                            return null;
+                        }
                     }
 
                     jda.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -113,10 +124,8 @@ public class MessageCreateHandler extends SocketHandler
             {
                 ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
 
-                //Discord will only ever allow this property to show up to 50,
-                // so we don't want to update it to be over 50 because we don't want users to use it incorrectly.
-                int newMessageCount = Math.min(gThread.getMessageCount() + 1, 50);
-                gThread.setMessageCount(newMessageCount);
+                gThread.setMessageCount(gThread.getMessageCount() + 1);
+                gThread.setTotalMessageCount(gThread.getTotalMessageCount() + 1);
             }
         }
         else

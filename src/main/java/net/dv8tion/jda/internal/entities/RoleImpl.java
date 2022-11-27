@@ -19,7 +19,12 @@ package net.dv8tion.jda.internal.entities;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.RoleIcon;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -28,11 +33,12 @@ import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.mixin.channel.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
@@ -370,7 +376,9 @@ public class RoleImpl implements Role
     @Override
     public String toString()
     {
-        return "R:" + getName() + '(' + id + ')';
+        return new EntityString(this)
+                .setName(getName())
+                .toString();
     }
 
     @Override
@@ -535,7 +543,11 @@ public class RoleImpl implements Role
         @Override
         public String toString()
         {
-            return "RoleTags(bot=" + getBotId() + ",integration=" + getIntegrationId() + ",boost=" + isBoost() + ")";
+            return new EntityString(this)
+                    .addMetadata("bot", getBotId())
+                    .addMetadata("integration", getIntegrationId())
+                    .addMetadata("isBoost", isBoost())
+                    .toString();
         }
     }
 }

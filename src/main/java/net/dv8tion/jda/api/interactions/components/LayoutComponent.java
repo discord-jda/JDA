@@ -191,6 +191,15 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
     }
 
     /**
+     * Creates a copy of this {@link LayoutComponent}.
+     * <br>This does not create copies of the contained components.
+     *
+     * @return A copy of this {@link LayoutComponent}
+     */
+    @Nonnull
+    LayoutComponent createCopy();
+
+    /**
      * Find and replace a component in this layout.
      * <br>This will locate and replace the existing component with the specified ID. If you provide null it will be removed instead.
      *

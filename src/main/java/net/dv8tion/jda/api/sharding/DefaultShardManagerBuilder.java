@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -39,7 +41,6 @@ import okhttp3.OkHttpClient;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.IntFunction;
@@ -519,6 +520,26 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * Whether JDA should store the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} for every discord event, accessible through {@link net.dv8tion.jda.api.events.GenericEvent#getRawData() getRawData()}.
+     * <br>You can expect to receive the full gateway message payload, including sequence, event name and dispatch type of the events
+     * <br>You can read more about payloads <a href="https://discord.com/developers/docs/topics/gateway" target="_blank">here</a> and the different events <a href="https://discord.com/developers/docs/topics/gateway#commands-and-events-gateway-events" target="_blank">here</a>.
+     * <br>Warning: be aware that enabling this could consume a lot of memory if your event objects have a long lifetime.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should add the raw {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to every discord event.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    Event#getRawData()
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setEventPassthrough(boolean enable)
+    {
+        return setFlag(ConfigFlag.EVENT_PASSTHROUGH, enable);
+    }
+
+    /**
      * Whether the rate-limit should be relative to the current time plus latency.
      * <br>By default we use the {@code X-RateLimit-Rest-After} header to determine when
      * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
@@ -650,7 +671,7 @@ public class  DefaultShardManagerBuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
-     * <h4>Example</h4>
+     * <p><b>Example</b><br>
      * <pre>{@code
      * public void configureCache(DefaultShardManagerBuilder builder) {
      *     // Cache members who are in a voice channel
@@ -2121,7 +2142,7 @@ public class  DefaultShardManagerBuilder
      *
      * <p>Note that this method is async and as such will <b>not</b> block until all shards are started.
      *
-     * @throws  LoginException
+     * @throws  InvalidTokenException
      *          If the provided token is invalid.
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
@@ -2132,7 +2153,7 @@ public class  DefaultShardManagerBuilder
      *         to whether or not loading has finished when this returns.
      */
     @Nonnull
-    public ShardManager build() throws LoginException, IllegalArgumentException
+    public ShardManager build() throws IllegalArgumentException
     {
         return build(true);
     }
@@ -2150,7 +2171,7 @@ public class  DefaultShardManagerBuilder
      *         Whether the login process will be started. If this is false, then you will need to manually call
      *         {@link net.dv8tion.jda.api.sharding.ShardManager#login()} to start it.
      *
-     * @throws  LoginException
+     * @throws  InvalidTokenException
      *          If the provided token is invalid and {@code login} is true
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
@@ -2160,7 +2181,7 @@ public class  DefaultShardManagerBuilder
      * finished when this returns.
      */
     @Nonnull
-    public ShardManager build(boolean login) throws LoginException, IllegalArgumentException
+    public ShardManager build(boolean login) throws IllegalArgumentException
     {
         checkIntents();
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);

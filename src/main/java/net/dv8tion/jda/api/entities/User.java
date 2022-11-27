@@ -17,11 +17,13 @@ package net.dv8tion.jda.api.entities;
 
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -36,7 +38,7 @@ import java.util.regex.Pattern;
  * Represents a Discord User.
  * Contains all publicly available information about a specific Discord User.
  *
- * <h2>Formattable</h2>
+ * <p><b>Formattable</b><br>
  * This interface extends {@link java.util.Formattable Formattable} and can be used with a {@link java.util.Formatter Formatter}
  * such as used by {@link String#format(String, Object...) String.format(String, Object...)}
  * or {@link java.io.PrintStream#printf(String, Object...) PrintStream.printf(String, Object...)}.
@@ -289,7 +291,7 @@ public interface User extends UserSnowflake
 
     /**
      * Whether or not the currently logged in user and this user have a currently open
-     * {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} or not.
+     * {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} or not.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -299,13 +301,13 @@ public interface User extends UserSnowflake
     boolean hasPrivateChannel();
 
     /**
-     * Opens a {@link PrivateChannel} with this User.
+     * Opens a {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel} with this User.
      * <br>If a channel has already been opened with this user, it is immediately returned in the RestAction's
      * success consumer without contacting the Discord API.
      * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to force the request for a new channel object,
      * which is rarely useful since the channel id never changes.
      *
-     * <h4>Examples</h4>
+     * <p><b>Examples</b><br>
      * <pre>{@code
      * // Send message without response handling
      * public void sendMessage(User user, String content) {
@@ -327,7 +329,7 @@ public interface User extends UserSnowflake
      *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser})
      *         or if the user was created with {@link #fromId(long)}
      *
-     * @return {@link CacheRestAction} - Type: {@link PrivateChannel}
+     * @return {@link CacheRestAction} - Type: {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel}
      *         <br>Retrieves the PrivateChannel to use to directly message this User.
      *
      * @see    JDA#openPrivateChannelById(long)
@@ -487,11 +489,11 @@ public interface User extends UserSnowflake
         @Override
         public String toString()
         {
-            return "UserProfile(" +
-                    "userId=" + userId +
-                    ", bannerId='" + bannerId + "'" +
-                    ", accentColor=" + accentColor +
-                    ')';
+            return new EntityString(this)
+                    .addMetadata("userId", userId)
+                    .addMetadata("bannerId", bannerId)
+                    .addMetadata("accentColor", accentColor)
+                    .toString();
         }
     }
 
@@ -523,6 +525,10 @@ public interface User extends UserSnowflake
          * Bot uses only HTTP interactions and is shown in the online member list
          */
         BOT_HTTP_INTERACTIONS(19, "HTTP Interactions Bot"),
+        /**
+         * User is an <a href="https://support-dev.discord.com/hc/articles/10113997751447">Active Developer</a>
+         */
+        ACTIVE_DEVELOPER(     22, "Active Developer"),
 
         UNKNOWN(-1, "Unknown");
 

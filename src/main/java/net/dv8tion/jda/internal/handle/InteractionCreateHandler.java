@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -25,20 +25,22 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import net.dv8tion.jda.internal.interactions.ModalInteractionImpl;
+import net.dv8tion.jda.internal.interactions.modal.ModalInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandAutoCompleteInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.ButtonInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.SelectMenuInteractionImpl;
+import net.dv8tion.jda.internal.interactions.component.EntitySelectInteractionImpl;
+import net.dv8tion.jda.internal.interactions.component.StringSelectInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class InteractionCreateHandler extends SocketHandler
@@ -52,9 +54,10 @@ public class InteractionCreateHandler extends SocketHandler
     protected Long handleInternally(DataObject content)
     {
         int type = content.getInt("type");
-        if (content.getInt("version", 1) != 1)
+        int version = content.getInt("version", 1);
+        if (version != 1)
         {
-            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", content.getInt("version", 1));
+            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", version);
             return null;
         }
 
@@ -132,10 +135,18 @@ public class InteractionCreateHandler extends SocketHandler
                 new ButtonInteractionEvent(api, responseNumber,
                     new ButtonInteractionImpl(api, content)));
             break;
-        case SELECT_MENU:
+        case STRING_SELECT:
             api.handleEvent(
-                new SelectMenuInteractionEvent(api, responseNumber,
-                    new SelectMenuInteractionImpl(api, content)));
+                new StringSelectInteractionEvent(api, responseNumber,
+                    new StringSelectInteractionImpl(api, content)));
+            break;
+        case USER_SELECT:
+        case ROLE_SELECT:
+        case MENTIONABLE_SELECT:
+        case CHANNEL_SELECT:
+            api.handleEvent(
+                new EntitySelectInteractionEvent(api, responseNumber,
+                    new EntitySelectInteractionImpl(api, content)));
             break;
         }
     }

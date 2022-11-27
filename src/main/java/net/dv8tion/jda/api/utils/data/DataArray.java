@@ -35,6 +35,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -523,6 +525,56 @@ public class DataArray implements Iterable<Object>, SerializableArray
     }
 
     /**
+     * Resolves the value at the specified index to an {@link OffsetDateTime}.
+     * <br><b>Note:</b> This method should be used on ISO8601 timestamps
+     *
+     * @param  index
+     *         The index to resolve
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is missing, null, or not a valid ISO8601 timestamp
+     *
+     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
+     */
+    @Nonnull
+    public OffsetDateTime getOffsetDateTime(int index)
+    {
+        OffsetDateTime value = getOffsetDateTime(index, null);
+        if(value == null)
+            throw valueError(index, "OffsetDateTime");
+        return value;
+    }
+    /**
+     * Resolves the value at the specified index to an {@link OffsetDateTime}.
+     * <br><b>Note:</b> This method should only be used on ISO8601 timestamps
+     *
+     * @param  index
+     *         The index to resolve
+     * @param  defaultValue
+     *         Alternative value to use when no value or null value is associated with the key
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is not a valid ISO8601 timestamp
+     *
+     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
+     */
+    @Contract("_, !null -> !null")
+    public OffsetDateTime getOffsetDateTime(int index, @Nullable OffsetDateTime defaultValue)
+    {
+        OffsetDateTime value;
+        try
+        {
+            value = get(OffsetDateTime.class, index, OffsetDateTime::parse, null);
+        }
+        catch (DateTimeParseException e)
+        {
+            String reason = "Cannot parse value for %s into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestamp";
+            throw new ParsingException(String.format(reason, e.getParsedString()));
+        }
+        return value == null ? defaultValue : value;
+    }
+
+    /**
      * Resolves the value at the specified index to an unsigned long.
      *
      * @param  index
@@ -538,6 +590,44 @@ public class DataArray implements Iterable<Object>, SerializableArray
     public long getUnsignedLong(int index, long defaultValue)
     {
         Long value = get(Long.class, index, Long::parseUnsignedLong, Number::longValue);
+        return value == null ? defaultValue : value;
+    }
+
+    /**
+     * Resolves the value at the specified index to a double.
+     *
+     * @param  index
+     *         The index to resolve
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is of the wrong type
+     *
+     * @return The resolved double value
+     */
+    public double getDouble(int index)
+    {
+        Double value = get(Double.class, index, Double::parseDouble, Number::doubleValue);
+        if (value == null)
+            throw valueError(index, "double");
+        return value;
+    }
+
+    /**
+     * Resolves the value at the specified index to a double.
+     *
+     * @param  index
+     *         The index to resolve
+     * @param  defaultValue
+     *         Alternative value to use when the value associated with the index is null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is of the wrong type
+     *
+     * @return The resolved double value
+     */
+    public double getDouble(int index, double defaultValue)
+    {
+        Double value = get(Double.class, index, Double::parseDouble, Number::doubleValue);
         return value == null ? defaultValue : value;
     }
 

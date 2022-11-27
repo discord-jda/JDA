@@ -17,19 +17,27 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.components.Modal;
+import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.interactions.modals.ModalInteraction;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 /**
  * Abstract representation for any kind of Discord interaction.
  * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction Slash-Commands},
- * {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons} or {@link net.dv8tion.jda.api.interactions.ModalInteraction Modals}.
+ * {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons} or {@link ModalInteraction Modals}.
  *
  * <p>To properly handle an interaction you must acknowledge it.
  * Each interaction has different callbacks which acknowledge the interaction. These are added by the individual {@code I...Callback} interfaces:
@@ -132,6 +140,14 @@ public interface Interaction extends ISnowflake
     Member getMember();
 
     /**
+     * Whether this interaction has already been acknowledged.
+     * <br><b>Each interaction can only be acknowledged once.</b>
+     *
+     * @return True, if this interaction has already been acknowledged
+     */
+    boolean isAcknowledged();
+
+    /**
      * The channel this interaction happened in.
      * <br>This is currently never null, but might be nullable in the future.
      *
@@ -141,138 +157,33 @@ public interface Interaction extends ISnowflake
     Channel getChannel();
 
     /**
-     * Whether this interaction has already been acknowledged.
-     * <br><b>Each interaction can only be acknowledged once.</b>
-     *
-     * @return True, if this interaction has already been acknowledged
-     */
-    boolean isAcknowledged();
-
-
-    /**
-     * The {@link GuildChannel} this interaction happened in.
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} this interaction happened in.
      * <br>If {@link #getChannelType()} is not a guild type, this throws {@link IllegalStateException}!
      *
      * @throws IllegalStateException
      *         If {@link #getChannel()} is not a guild channel
      *
-     * @return The {@link GuildChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel}
      */
     @Nonnull
     default GuildChannel getGuildChannel()
     {
-        Channel channel = getChannel();
-        if (channel instanceof GuildChannel)
-            return (GuildChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to GuildChannel");
+       return Helpers.safeChannelCast(getChannel(), GuildChannel.class);
     }
 
     /**
-     * The {@link MessageChannel} this interaction happened in.
+     * The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel} this interaction happened in.
      * <br>If {@link #getChannelType()} is not a message channel type, this throws {@link IllegalStateException}!
      *
      * @throws IllegalStateException
      *         If {@link #getChannel()} is not a message channel
      *
-     * @return The {@link MessageChannel}
+     * @return The {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel}
      */
     @Nonnull
     default MessageChannel getMessageChannel()
     {
-        Channel channel = getChannel();
-        if (channel instanceof MessageChannel)
-            return (MessageChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to MessageChannel");
-    }
-
-    /**
-     * The {@link TextChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#TEXT}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a text channel
-     *
-     * @return The {@link TextChannel}
-     */
-    @Nonnull
-    default TextChannel getTextChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof TextChannel)
-            return (TextChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to TextChannel");
-    }
-
-    /**
-     * The {@link NewsChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#NEWS}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a news channel
-     *
-     * @return The {@link NewsChannel}
-     */
-    @Nonnull
-    default NewsChannel getNewsChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof NewsChannel)
-            return (NewsChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to NewsChannel");
-    }
-
-    /**
-     * The {@link VoiceChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#VOICE}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a voice channel
-     *
-     * @return The {@link VoiceChannel}
-     */
-    @Nonnull
-    default VoiceChannel getVoiceChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof VoiceChannel)
-            return (VoiceChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to VoiceChannel");
-    }
-
-    /**
-     * The {@link PrivateChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#PRIVATE}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a private channel
-     *
-     * @return The {@link PrivateChannel}
-     */
-    @Nonnull
-    default PrivateChannel getPrivateChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof PrivateChannel)
-            return (PrivateChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to PrivateChannel");
-    }
-
-    /**
-     * The {@link ThreadChannel} this interaction happened in.
-     * <br>If {@link #getChannelType()} is not {@link ChannelType#isThread()}, this throws {@link IllegalStateException}!
-     *
-     * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a thread channel
-     *
-     * @return The {@link ThreadChannel}
-     */
-    @Nonnull
-    default ThreadChannel getThreadChannel()
-    {
-        Channel channel = getChannel();
-        if (channel instanceof ThreadChannel)
-            return (ThreadChannel) channel;
-        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to ThreadChannel");
+        return Helpers.safeChannelCast(getChannel(), MessageChannel.class);
     }
 
     /**
@@ -281,7 +192,7 @@ public interface Interaction extends ISnowflake
      * @return The language of the invoking user
      */
     @Nonnull
-    Locale getUserLocale();
+    DiscordLocale getUserLocale();
 
     /**
      * Returns the preferred language of the Guild.
@@ -293,7 +204,7 @@ public interface Interaction extends ISnowflake
      * @return The preferred language of the Guild
      */
     @Nonnull
-    default Locale getGuildLocale()
+    default DiscordLocale getGuildLocale()
     {
         if (!isFromGuild())
             throw new IllegalStateException("This interaction did not happen in a guild");

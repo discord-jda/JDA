@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.Nonnull;
@@ -74,10 +75,18 @@ public interface Component extends SerializableData
         ACTION_ROW(1, 0, true, true),
         /** A button */
         BUTTON(2, 5, true, false),
-        /** A select menu */
-        SELECT_MENU(3, 1, true, false),
+        /** A select menu of strings */
+        STRING_SELECT(3, 1, true, false),
         /** A text input field */
-        TEXT_INPUT(4, 1, false, true)
+        TEXT_INPUT(4, 1, false, true),
+        /** A select menu of users */
+        USER_SELECT(5, 1, true, false),
+        /** A select menu of roles */
+        ROLE_SELECT(6, 1, true, false),
+        /** A select menu of users and roles */
+        MENTIONABLE_SELECT(7, 1, true, false),
+        /** A select menu of channels */
+        CHANNEL_SELECT(8, 1, true, false),
         ;
 
         private final int key;
