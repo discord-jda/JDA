@@ -35,12 +35,13 @@ import javax.annotation.Nonnull;
  *
  * <p><b>Example</b><br>
  * <pre>{@code
- * // Revoke all bans from a guild with a certain reason
- * public static CompletableFuture<AtomicInteger> countMembers(ThreadChannel thread) {
+ * // Count all thread members who are bots
+ * public static CompletableFuture<AtomicInteger> countBotMembers(ThreadChannel thread) {
  *     AtomicInteger count = new AtomicInteger();
  *     ThreadMemberPaginationAction members = thread.retrieveThreadMembers();
- *     return members.forEachAsync((ban) -> {
- *         count.incrementAndGet();
+ *     return members.forEachAsync((threadMember) -> {
+ *         if (threadMember.getUser().isBot())
+ *             count.incrementAndGet();
  *         return true; // continues iterating if this returns true
  *     }).thenApply((v) -> count);
  * }
