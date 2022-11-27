@@ -486,6 +486,28 @@ public interface Message extends ISnowflake, Formattable
     boolean isWebhookMessage();
 
     /**
+     * If this message is from an application-owned {@link net.dv8tion.jda.api.entities.Webhook Webhook} or
+     * is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}, this will return
+     * the application's id.
+     * 
+     * @return The application's id or {@code null} if this message was not sent by an application
+     */
+    @Nullable
+    default String getApplicationId()
+    {
+        return getApplicationIdLong() == 0 ? null : Long.toUnsignedString(getApplicationIdLong());
+    }
+
+    /**
+     * If this message is from an application-owned {@link net.dv8tion.jda.api.entities.Webhook Webhook} or
+     * is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}, this will return
+     * the application's id.
+     * 
+     * @return The application's id or 0 if this message was not sent by an application
+     */
+    long getApplicationIdLong();
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} that this message was sent in.
      *
      * @return The MessageChannel of this Message
