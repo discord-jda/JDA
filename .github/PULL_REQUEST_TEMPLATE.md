@@ -1,4 +1,4 @@
-[contributing]: https://github.com/DV8FromTheWorld/JDA/wiki/5%29-Contributing
+[contributing]: https://jda.wiki/contributing/contributing/
 
 ## Pull Request Etiquette
 
