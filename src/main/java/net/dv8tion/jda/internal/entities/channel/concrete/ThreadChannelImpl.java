@@ -204,7 +204,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
                 () -> {
                     Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id)).withQueryParams("with_member", "true");
                     return new RestActionImpl<>(jda, route, (resp, req) ->
-                        jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject().rename("guild_member", "member")));
+                        jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject()));
                 });
     }
 
