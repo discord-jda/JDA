@@ -59,7 +59,7 @@ public class CommandImpl implements Command
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
     private final long id, guildId, applicationId, version;
-    private final boolean guildOnly;
+    private final boolean guildOnly, nsfw;
     private final Command.Type type;
     private final DefaultMemberPermissions defaultMemberPermissions;
 
@@ -85,6 +85,7 @@ public class CommandImpl implements Command
                 : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
         this.guildOnly = !json.getBoolean("dm_permission", true);
+        this.nsfw = json.getBoolean("nsfw");
     }
 
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -221,6 +222,12 @@ public class CommandImpl implements Command
     public boolean isGuildOnly()
     {
         return guildOnly;
+    }
+
+    @Override
+    public boolean isNSFW()
+    {
+        return nsfw;
     }
 
     @Override

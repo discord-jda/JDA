@@ -23,7 +23,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a guild {@link Member} joined a {@link ThreadChannel}.
+ *
+ * @see ThreadChannel
+ * @see ThreadMember
+ */
 public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
 {
     public ThreadMemberJoinEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, ThreadMember threadMember)
@@ -31,6 +36,12 @@ public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
         super(api, responseNumber, thread, threadMember.getIdLong(), threadMember);
     }
 
+    /**
+     * The {@link ThreadMember} that just joined the thread.
+     * This entity will be present in {@link ThreadChannel#getThreadMembers()} list.
+     *
+     * @return The {@link ThreadMember} that just joined the thread.
+     */
     @Nonnull
     @Override
     public ThreadMember getThreadMember()
@@ -38,6 +49,11 @@ public class ThreadMemberJoinEvent extends GenericThreadMemberEvent
         return super.getThreadMember();
     }
 
+    /**
+     * The {@link ThreadMember} that just joined the thread as a guild {@link Member}.
+     *
+     * @return The {@link ThreadMember} that just joined the thread as a guild {@link Member}.
+     */
     @Nonnull
     @Override
     public Member getMember()

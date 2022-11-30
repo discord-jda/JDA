@@ -23,7 +23,13 @@ import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Top-level thread event type
+ * <br>All thread events JDA fires are derived from this class.
+ *
+ * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.api.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
+ * <br>Adapter implementation: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
+ */
 public class GenericThreadEvent extends Event
 {
     protected final ThreadChannel thread;
@@ -35,12 +41,22 @@ public class GenericThreadEvent extends Event
         this.thread = thread;
     }
 
+    /**
+     * The event related {@link ThreadChannel} object
+     *
+     * @return The event related {@link ThreadChannel} object
+     */
     @Nonnull
     public ThreadChannel getThread()
     {
         return thread;
     }
 
+    /**
+     * The {@link Guild} containing the {@link ThreadChannel}.
+     *
+     * @return The {@link Guild} containing the {@link ThreadChannel}.
+     */
     @Nonnull
     public Guild getGuild()
     {

@@ -36,7 +36,6 @@ public class ThreadMemberImpl implements ThreadMember
     
     private Member member;
     private long joinedTimestamp;
-    private long flags;
 
     public ThreadMemberImpl(Member member, ThreadChannelImpl thread)
     {
@@ -88,12 +87,6 @@ public class ThreadMemberImpl implements ThreadMember
         return Helpers.toOffset(joinedTimestamp);
     }
 
-    @Override
-    public long getFlagsRaw()
-    {
-        return flags;
-    }
-
     @Nonnull
     @Override
     public String getAsMention()
@@ -112,12 +105,6 @@ public class ThreadMemberImpl implements ThreadMember
     public ThreadMemberImpl setJoinedTimestamp(long joinedTimestamp)
     {
         this.joinedTimestamp = joinedTimestamp;
-        return this;
-    }
-
-    public ThreadMemberImpl setFlags(long flags)
-    {
-        this.flags = flags;
         return this;
     }
 

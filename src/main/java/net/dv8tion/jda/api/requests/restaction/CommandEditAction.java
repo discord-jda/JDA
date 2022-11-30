@@ -102,6 +102,23 @@ public interface CommandEditAction extends RestAction<Command>
     CommandEditAction setGuildOnly(boolean guildOnly);
 
     /**
+     * Sets whether this command should only be usable in NSFW (age-restricted) channels.
+     * <br>Default: false
+     *
+     * <p>Note: Age-restricted commands will not show up in direct messages by default unless the user enables them in their settings.
+     *
+     * @param  nsfw
+     *         True, to make this command nsfw
+     *
+     * @return The CommandEditAction instance, for chaining
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction setNSFW(boolean nsfw);
+
+    /**
      * Sets the {@link net.dv8tion.jda.api.Permission Permissions} that a user must have in a specific channel to be able to use this command.
      * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). Additionally, a command can be disabled for everyone but admins via {@link DefaultMemberPermissions#DISABLED}.
      * <p>These configurations can be overwritten by moderators in each guild. See {@link Command#retrievePrivileges(net.dv8tion.jda.api.entities.Guild)} to get moderator defined overrides.

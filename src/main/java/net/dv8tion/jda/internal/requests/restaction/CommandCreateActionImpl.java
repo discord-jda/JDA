@@ -99,6 +99,14 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    public CommandCreateAction setNSFW(boolean nsfw)
+    {
+        data.setNSFW(nsfw);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public CommandCreateAction setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction)
     {
         data.setLocalizationFunction(localizationFunction);
@@ -137,6 +145,12 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public boolean isGuildOnly()
     {
         return data.isGuildOnly();
+    }
+
+    @Override
+    public boolean isNSFW()
+    {
+        return data.isNSFW();
     }
 
     @Nonnull

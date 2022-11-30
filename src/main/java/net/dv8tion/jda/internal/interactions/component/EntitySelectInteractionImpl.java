@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Mentions;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectInteraction;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -39,8 +40,8 @@ public class EntitySelectInteractionImpl extends SelectMenuInteractionImpl<IMent
         this.mentions = new SelectMenuMentions(
                 jda,
                 (GuildImpl) getGuild(),
-                content.getObject("resolved"),
-                content.getArray("values")
+                content.optObject("resolved").orElseGet(DataObject::empty),
+                content.optArray("values").orElseGet(DataArray::empty)
         );
     }
 

@@ -19,7 +19,9 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -482,6 +484,28 @@ public interface Message extends ISnowflake, Formattable
      * @return True if this message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
      */
     boolean isWebhookMessage();
+
+    /**
+     * If this message is from an application-owned {@link net.dv8tion.jda.api.entities.Webhook Webhook} or
+     * is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}, this will return
+     * the application's id.
+     * 
+     * @return The application's id or {@code null} if this message was not sent by an application
+     */
+    @Nullable
+    default String getApplicationId()
+    {
+        return getApplicationIdLong() == 0 ? null : Long.toUnsignedString(getApplicationIdLong());
+    }
+
+    /**
+     * If this message is from an application-owned {@link net.dv8tion.jda.api.entities.Webhook Webhook} or
+     * is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}, this will return
+     * the application's id.
+     * 
+     * @return The application's id or 0 if this message was not sent by an application
+     */
+    long getApplicationIdLong();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel} that this message was sent in.
@@ -1954,7 +1978,47 @@ public interface Message extends ISnowflake, Formattable
     @Nullable
     Interaction getInteraction();
 
-    //TODO-v5: Docs
+    /**
+     * Creates a new, public {@link ThreadChannel} spawning/starting at this {@link Message} inside the {@link IThreadContainer} this message was sent in.
+     * <br>The starting message will copy this message, and will be of type {@link MessageType#THREAD_STARTER_MESSAGE MessageType.THREAD_STARTER_MESSAGE}.
+     *
+     * <p>The resulting {@link ThreadChannel ThreadChannel} may be one of:
+     * <ul>
+     *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
+     *     <li>{@link ChannelType#GUILD_NEWS_THREAD}</li>
+     * </ul>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#THREAD_WITH_THIS_MESSAGE_ALREADY_EXISTS}
+     *     <br>This message has already been used to create a thread</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_ACTIVE_THREADS}
+     *     <br>The maximum number of active threads has been reached, and no more may be created.</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the new ThreadChannel (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *
+     * @throws IllegalArgumentException
+     *         If the provided name is null, blank, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
+     * @throws IllegalStateException
+     *         If the message's channel is not actually a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
+     * @throws UnsupportedOperationException
+     *         If this is a forum channel.
+     *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData) createForumPost(...)} instead.
+     * @throws InsufficientPermissionException
+     *         If the bot does not have {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS} in this channel
+     *
+     * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
+     */
     @CheckReturnValue
     ThreadChannelAction createThreadChannel(String name);
 

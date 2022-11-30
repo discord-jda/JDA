@@ -63,6 +63,10 @@ public interface SlashCommandData extends CommandData
     @Override
     SlashCommandData setGuildOnly(boolean guildOnly);
 
+    @Nonnull
+    @Override
+    SlashCommandData setNSFW(boolean nsfw);
+
     /**
      * Configure the description
      *
@@ -405,6 +409,7 @@ public interface SlashCommandData extends CommandData
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
         data.setGuildOnly(command.isGuildOnly());
+        data.setNSFW(command.isNSFW());
         data.setDefaultPermissions(command.getDefaultPermissions());
         //Command localizations are unmodifiable, make a copy
         data.setNameLocalizations(command.getNameLocalizations().toMap());
@@ -454,6 +459,7 @@ public interface SlashCommandData extends CommandData
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
         command.setGuildOnly(!object.getBoolean("dm_permission", true));
+        command.setNSFW(object.getBoolean("nsfw"));
 
         command.setDefaultPermissions(
                 object.isNull("default_member_permissions")

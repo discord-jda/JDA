@@ -1107,27 +1107,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected void maybeUnlock()
-    {
-        if (queueLock.isHeldByCurrentThread())
-            queueLock.unlock();
-    }
-
     protected void locked(String comment, Runnable task)
     {
         try
         {
-            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
-            task.run();
+            MiscUtil.locked(queueLock, task);
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             LOG.error(comment, e);
-        }
-        finally
-        {
-            maybeUnlock();
         }
     }
 
@@ -1135,18 +1123,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
-            return task.get();
+            return MiscUtil.locked(queueLock, task);
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             LOG.error(comment, e);
             return null;
-        }
-        finally
-        {
-            maybeUnlock();
         }
     }
 
