@@ -83,7 +83,7 @@ public interface StringSelectMenu extends SelectMenu
     }
 
     /**
-     * An <b>unmodifiable</b> list of up to {@value #OPTIONS_MAX_AMOUNT} available options to choose from.
+     * A list of up to {@value #OPTIONS_MAX_AMOUNT} available options to choose from.
      *
      * @return The {@link SelectOption SelectOptions} this menu provides
      *
