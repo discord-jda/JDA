@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,7 +63,7 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
     @Override
     public List<SelectOption> getOptions()
     {
-        return options;
+        return Collections.unmodifiableList(options);
     }
 
     @Nonnull
