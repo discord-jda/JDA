@@ -77,9 +77,8 @@ public class ThreadMemberPaginationActionImpl
             try
             {
                 DataObject object = array.getObject(i);
-                if (object.isNull("guild_member"))
+                if (object.isNull("member"))
                     continue;
-                object.rename("guild_member", "member");
                 ThreadMember threadMember = builder.createThreadMember(channel.getGuild(), channel, object);
                 members.add(threadMember);
             }
