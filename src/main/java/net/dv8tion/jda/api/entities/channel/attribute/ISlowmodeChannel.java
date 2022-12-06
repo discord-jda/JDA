@@ -45,4 +45,7 @@ public interface ISlowmodeChannel extends GuildChannel
      * @return The slowmode for this channel, between 1 and {@value #MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
      */
     int getSlowmode();
+    
+    // TODO: does this need docs?
+    ISlowmodeChannelManager<?, ?> getManager();
 }
