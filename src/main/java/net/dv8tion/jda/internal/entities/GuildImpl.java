@@ -46,6 +46,7 @@ import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
+import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -65,6 +66,7 @@ import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
+import net.dv8tion.jda.internal.managers.GuildWelcomeScreenManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
@@ -1331,6 +1333,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public RestAction<GuildWelcomeScreen> retrieveWelcomeScreen()
+    {
+        final Route.CompiledRoute route = Route.Guilds.GET_WELCOME_SCREEN.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            return entityBuilder.createWelcomeScreen(this, response.getObject());
+        });
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel)
     {
         Checks.notNull(member, "Member");
@@ -1858,6 +1872,13 @@ public class GuildImpl implements Guild
     public RoleOrderAction modifyRolePositions(boolean useAscendingOrder)
     {
         return new RoleOrderActionImpl(this, useAscendingOrder);
+    }
+
+    @Nonnull
+    @Override
+    public GuildWelcomeScreenManager modifyWelcomeScreen()
+    {
+        return new GuildWelcomeScreenManagerImpl(this);
     }
 
     // ---- Checks ----
