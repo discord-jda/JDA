@@ -54,7 +54,7 @@ public interface ISlowmodeChannel extends GuildChannel
     /**
      * Returns the {@link ISlowmodeChannelManager} for this {@link ISlowmodeChannel slow mode channel}.
      * <br>With the provided ChannelManager, you can additionally modify the {@link ChannelField#SLOWMODE}
-     * compared to a guild channel {@link ChannelManager}.
+     * compared to a guild channel's {@link ChannelManager}.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -62,7 +62,7 @@ public interface ISlowmodeChannel extends GuildChannel
      *
      * @return The {@link ISlowmodeChannelManager} of this {@link ISlowmodeChannel}
      *
-     * @see ChannelManager ChannelManager, for modifying fields each guild channel has
+     * @see ChannelManager ChannelManager, for modifying fields each guild channel provides
      * @see ChannelField   ChannelField, for all possible channel fields
      */
     @Nonnull
