@@ -188,7 +188,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
             {
             case STAGE_INSTANCE:
             case VOICE:
-                object.put("entity_metadata", DataObject.empty());
+                object.putNull("entity_metadata");
                 object.put("channel_id", channelId);
                 break;
             case EXTERNAL:
