@@ -67,4 +67,9 @@ public class GenericSelectMenuInteractionEvent<T, S extends SelectMenu> extends 
     {
         return menuInteraction.getValues();
     }
+    
+    @Nonnull
+    public <T> getSelectedElement() {
+        return getValues().get(0);
+    }
 }
