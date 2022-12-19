@@ -2244,7 +2244,9 @@ public class EntityBuilder
         for (int i = 0; i < welcomeChannelsArray.length(); i++)
         {
             final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
-            final EmojiUnion emoji = createEmoji(welcomeChannelObj, "emoji_name", "emoji_id");
+            EmojiUnion emoji = null;
+            if (!welcomeChannelObj.isNull("emoji_id") || !welcomeChannelObj.isNull("emoji_name"))
+                emoji = createEmoji(welcomeChannelObj, "emoji_name", "emoji_id");
 
             welcomeChannels.add(new GuildWelcomeScreenImpl.ChannelImpl(
                     guild,
