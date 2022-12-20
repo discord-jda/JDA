@@ -16,7 +16,12 @@
 
 package net.dv8tion.jda.api.entities.channel.attribute;
 
+import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.managers.channel.ChannelManager;
+import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+
+import javax.annotation.Nonnull;
 
 /**
  * Channels which support slowmode.
@@ -45,4 +50,22 @@ public interface ISlowmodeChannel extends GuildChannel
      * @return The slowmode for this channel, between 1 and {@value #MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
      */
     int getSlowmode();
+
+    /**
+     * Returns the {@link ISlowmodeChannelManager} for this {@link ISlowmodeChannel slow mode channel}.
+     * <br>With the provided ChannelManager, you can additionally modify the {@link ChannelField#SLOWMODE}
+     * compared to a guild channel's {@link ChannelManager}.
+     * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
+     *
+     * @return The {@link ISlowmodeChannelManager} of this {@link ISlowmodeChannel}
+     *
+     * @see ChannelManager ChannelManager, for modifying fields each guild channel provides
+     * @see ChannelField   ChannelField, for all possible channel fields
+     */
+    @Nonnull
+    @Override
+    ISlowmodeChannelManager<?, ?> getManager();
 }

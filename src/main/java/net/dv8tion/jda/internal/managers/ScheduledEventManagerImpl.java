@@ -188,6 +188,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
             {
             case STAGE_INSTANCE:
             case VOICE:
+                object.putNull("entity_metadata");
                 object.put("channel_id", channelId);
                 break;
             case EXTERNAL:
@@ -214,11 +215,11 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     {
         if (shouldUpdate(LOCATION))
         {
-            if (entityType == ScheduledEvent.Type.EXTERNAL)
-                Checks.check((endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
             Checks.check(getScheduledEvent().getStatus() == ScheduledEvent.Status.SCHEDULED, "Cannot update location of non-scheduled event.");
             if (entityType == ScheduledEvent.Type.EXTERNAL && endTime == null && getScheduledEvent().getEndTime() == null)
                 throw new IllegalStateException("Missing required parameter: End Time");
+            if (entityType == ScheduledEvent.Type.EXTERNAL)
+                Checks.check((endTime != null ? endTime : getScheduledEvent().getEndTime()).isAfter(startTime), "Cannot schedule event to end before starting!");
         }
 
         if (shouldUpdate(START_TIME))

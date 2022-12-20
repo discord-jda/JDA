@@ -19,10 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
-import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.Invite;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -343,9 +340,11 @@ public class InviteImpl implements Invite
         private final long id;
         private final VerificationLevel verificationLevel;
         private final Set<String> features;
+        private final GuildWelcomeScreen welcomeScreen;
 
         public GuildImpl(final long id, final String iconId, final String name, final String splashId,
-                         final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features)
+                         final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features,
+                         final GuildWelcomeScreen welcomeScreen)
         {
             this.id = id;
             this.iconId = iconId;
@@ -355,12 +354,13 @@ public class InviteImpl implements Invite
             this.presenceCount = presenceCount;
             this.memberCount = memberCount;
             this.features = features;
+            this.welcomeScreen = welcomeScreen;
         }
 
         public GuildImpl(final net.dv8tion.jda.api.entities.Guild guild)
         {
             this(guild.getIdLong(), guild.getIconId(), guild.getName(), guild.getSplashId(),
-                 guild.getVerificationLevel(), -1, -1, guild.getFeatures());
+                 guild.getVerificationLevel(), -1, -1, guild.getFeatures(), null);
         }
 
         @Override
@@ -426,6 +426,13 @@ public class InviteImpl implements Invite
         public Set<String> getFeatures()
         {
             return features;
+        }
+
+        @Nullable
+        @Override
+        public GuildWelcomeScreen getWelcomeScreen()
+        {
+            return welcomeScreen;
         }
 
         @Override
