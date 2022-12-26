@@ -557,14 +557,20 @@ public class MarkdownSanitizer
         String end = handleQuote(sequence, false);
         if (end != null) return end;
 
+        boolean onlySpacesSinceNewLine = true;
         for (int i = 0; i < sequence.length();)
         {
             int nextRegion = getRegion(i, sequence);
+            char c = sequence.charAt(i);
+            boolean isNewLine = c == '\n';
+            boolean isSpace = c == ' ';
+            onlySpacesSinceNewLine = isNewLine || (onlySpacesSinceNewLine && isSpace);
+
             if (nextRegion == NORMAL)
             {
-                if (sequence.charAt(i) == '\n' && i + 1 < sequence.length())
+                if ((isNewLine || (isSpace && onlySpacesSinceNewLine)) && i + 1 < sequence.length())
                 {
-                    String result = handleQuote(sequence.substring(i + 1), true);
+                    String result = handleQuote(sequence.substring(i + 1), isNewLine);
                     if (result != null)
                         return builder.append(result).toString();
                 }
