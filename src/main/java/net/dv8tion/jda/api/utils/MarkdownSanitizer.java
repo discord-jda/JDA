@@ -562,9 +562,11 @@ public class MarkdownSanitizer
             int nextRegion = getRegion(i, sequence);
             if (nextRegion == NORMAL)
             {
-                if (sequence.charAt(i) == '\n' && i + 1 < sequence.length())
+                char c = sequence.charAt(i);
+                boolean isNewLine = c == '\n';
+                if ((isNewLine || c == ' ') && i + 1 < sequence.length())
                 {
-                    String result = handleQuote(sequence.substring(i + 1), true);
+                    String result = handleQuote(sequence.substring(i + 1), isNewLine);
                     if (result != null)
                         return builder.append(result).toString();
                 }
