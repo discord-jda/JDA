@@ -369,7 +369,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalStateException
      *         If this message was not sent in a {@link ThreadChannel}.
      *
-     * @return The approximate position of this message, or {@code -1} if this message was retrieved.
+     * @return The approximate position of this message.
      *
      * @see    <a href="https://discord.com/developers/docs/resources/channel#message-object" target="_blank">Discord docs: <code>position</code> property on the message object</a>
      */
