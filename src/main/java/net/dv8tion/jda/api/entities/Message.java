@@ -364,11 +364,7 @@ public interface Message extends ISnowflake, Formattable
      * Returns the approximate position of this message in a {@link ThreadChannel}.
      * <br>This can be used to estimate the relative position of a message in a thread, by comparing against {@link ThreadChannel#getTotalMessageCount()}.
      *
-     * <p><b>Notes:</b>
-     * <ul>
-     *     <li>The position might contain gaps or duplicates.</li>
-     *     <li>The position is not set on retrieved messages.</li>
-     * </ul>
+     * <p><b>Note:</b> The position might contain gaps or duplicates.
      *
      * @throws IllegalStateException
      *         If this message was not sent in a {@link ThreadChannel}.
