@@ -361,6 +361,19 @@ public interface Message extends ISnowflake, Formattable
     Member getMember();
 
     /**
+     * Returns the approximate position of this message in a {@link ThreadChannel}.
+     * <br>This can be used to estimate the relative position of a message in a thread, by comparing against {@link ThreadChannel#getTotalMessageCount()}.
+     * <br>This will return -1 if the message is not from a thread
+     *
+     * <p><b>Be aware that the position might contain gaps or duplicates.</b>
+     *
+     * @return The approximate position of this message, or {@code -1} if this message is not from a thread.
+     *
+     * @see    <a href="https://discord.com/developers/docs/resources/channel#message-object" target="_blank">Discord docs: <code>position</code> property on the message object</a>
+     */
+    int getApproximatePosition();
+
+    /**
      * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
      * jump to the specified message.
      *
