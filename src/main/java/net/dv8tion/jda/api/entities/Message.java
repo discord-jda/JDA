@@ -363,11 +363,17 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the approximate position of this message in a {@link ThreadChannel}.
      * <br>This can be used to estimate the relative position of a message in a thread, by comparing against {@link ThreadChannel#getTotalMessageCount()}.
-     * <br>This will return -1 if the message is not from a thread
      *
-     * <p><b>Be aware that the position might contain gaps or duplicates.</b>
+     * <p><b>Notes:</b>
+     * <ul>
+     *     <li>The position might contain gaps or duplicates.</li>
+     *     <li>The position is not set on retrieved messages.</li>
+     * </ul>
      *
-     * @return The approximate position of this message, or {@code -1} if this message is not from a thread.
+     * @throws IllegalStateException
+     *         If this message was not sent in a {@link ThreadChannel}.
+     *
+     * @return The approximate position of this message, or {@code -1} if this message was retrieved.
      *
      * @see    <a href="https://discord.com/developers/docs/resources/channel#message-object" target="_blank">Discord docs: <code>position</code> property on the message object</a>
      */

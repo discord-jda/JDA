@@ -337,6 +337,9 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public int getApproximatePosition()
     {
+        if (!getChannelType().isThread())
+            throw new IllegalStateException("This message was not sent in a thread.");
+
         return position;
     }
 
