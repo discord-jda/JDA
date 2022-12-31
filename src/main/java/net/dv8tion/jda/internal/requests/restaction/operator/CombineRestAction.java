@@ -19,16 +19,14 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -101,9 +99,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
     @Override
     public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
     {
-        ReentrantLock lock = new ReentrantLock();
-        AtomicBoolean done1 = new AtomicBoolean(false);
-        AtomicBoolean done2 = new AtomicBoolean(false);
+        AtomicInteger count = new AtomicInteger(0);
         AtomicReference<I1> result1 = new AtomicReference<>();
         AtomicReference<I2> result2 = new AtomicReference<>();
         Consumer<Throwable> failureCallback = (e) ->
@@ -112,34 +108,32 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
             failed = true;
             RestActionOperator.doFailure(failure, e);
         };
-        action1.queue((s) -> MiscUtil.locked(lock, () ->
+        action1.queue((s) ->
         {
             try
             {
-                done1.set(true);
                 result1.set(s);
-                if (done2.get())
+                if (count.incrementAndGet() == 2)
                     RestActionOperator.doSuccess(success, accumulator.apply(result1.get(), result2.get()));
             }
             catch (Exception e)
             {
                 failureCallback.accept(e);
             }
-        }), failureCallback);
-        action2.queue((s) -> MiscUtil.locked(lock, () ->
+        }, failureCallback);
+        action2.queue((s) ->
         {
             try
             {
-                done2.set(true);
                 result2.set(s);
-                if (done1.get())
+                if (count.incrementAndGet() == 2)
                     RestActionOperator.doSuccess(success, accumulator.apply(result1.get(), result2.get()));
             }
             catch (Exception e)
             {
                 failureCallback.accept(e);
             }
-        }), failureCallback);
+        }, failureCallback);
     }
 
     @Override
