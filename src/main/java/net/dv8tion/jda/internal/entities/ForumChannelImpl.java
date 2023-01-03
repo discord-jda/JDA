@@ -38,8 +38,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IThreadContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IAgeRestrictedChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IThreadContainerMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ITopicChannelMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildChannelMixin;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.managers.channel.concrete.ForumChannelManagerImpl;
@@ -58,8 +61,11 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         implements ForumChannel,
                    GuildChannelUnion,
                    StandardGuildChannelMixin<ForumChannelImpl>,
+                   IAgeRestrictedChannelMixin<ForumChannelImpl>,
+                   ISlowmodeChannelMixin<ForumChannelImpl>,
                    IWebhookContainerMixin<ForumChannelImpl>,
-                   IThreadContainerMixin<ForumChannelImpl>
+                   IThreadContainerMixin<ForumChannelImpl>,
+                   ITopicChannelMixin<ForumChannelImpl>
 {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
     private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());

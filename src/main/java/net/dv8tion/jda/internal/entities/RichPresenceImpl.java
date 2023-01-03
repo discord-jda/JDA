@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.ActivityFlag;
 import net.dv8tion.jda.api.entities.RichPresence;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -144,7 +145,10 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     @Override
     public String toString()
     {
-        return String.format("RichPresence(%s / %s)", name, getApplicationId());
+        return new EntityString(this)
+                .setName(name)
+                .addMetadata("applicationId", applicationId)
+                .toString();
     }
 
     @Override

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -242,7 +243,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public String toString()
     {
-        return "ApplicationInfo(" + this.id + ")";
+        return new EntityString(this).toString();
     }
 
 }

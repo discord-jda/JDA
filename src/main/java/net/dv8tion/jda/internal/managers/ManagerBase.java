@@ -146,7 +146,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
 
     protected boolean shouldUpdate(long bit)
     {
-        return (set & bit) == bit;
+        return (set & bit) != 0;
     }
 
     protected <E> void withLock(E object, Consumer<? super E> consumer)

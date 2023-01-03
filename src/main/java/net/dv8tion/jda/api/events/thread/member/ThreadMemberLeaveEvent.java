@@ -17,16 +17,50 @@
 package net.dv8tion.jda.api.events.thread.member;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.ThreadMember;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a guild {@link Member} left a {@link ThreadChannel}.
+ *
+ * @see ThreadChannel
+ * @see ThreadMember
+ */
 public class ThreadMemberLeaveEvent extends GenericThreadMemberEvent
 {
     public ThreadMemberLeaveEvent(@Nonnull JDA api, long responseNumber, ThreadChannel thread, long threadMemberId, ThreadMember threadMember)
     {
         super(api, responseNumber, thread, threadMemberId, threadMember);
+    }
+
+    /**
+     * The {@link ThreadMember} that just left the thread.
+     * This entity will not be present in {@link ThreadChannel#getThreadMembers()} list.
+     * 
+     * @return The {@link ThreadMember} that just left the thread
+     */
+    @Nonnull
+    @Override
+    public ThreadMember getThreadMember()
+    {
+        return super.getThreadMember();
+    }
+
+    /**
+     * The {@link ThreadMember} that just left the thread as a guild {@link Member}.
+     *
+     * @return The {@link ThreadMember} that just left the thread as a guild {@link Member}.
+     */
+    @Nonnull
+    @Override
+    public Member getMember()
+    {
+        //Explicitly override the getter from the super class to use the member return in the thread member itself because
+        // the ThreadMember will always have the Member while the Guild itself might not because of
+        // the ChunkingFilter or a lack of GUILD_MEMBERS intent.
+        return getThreadMember().getMember();
     }
 }

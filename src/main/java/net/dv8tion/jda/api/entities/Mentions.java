@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandReference;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
@@ -324,6 +325,48 @@ public interface Mentions
      */
     @Nonnull
     Bag<Member> getMembersBag();
+
+    /**
+     * An immutable list of all mentioned {@link SlashCommandReference slash commands}.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
+     *
+     * <p>Be aware these mentions could be mentioning a non-existent command
+     *
+     * @return Immutable list of mentioned slash commands, or an empty list
+     */
+    @Nonnull
+    List<SlashCommandReference> getSlashCommands();
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned {@link SlashCommandReference slash commands}.
+     * <br>This can be used to retrieve the amount of times a slash commands was mentioned.
+     *
+     * <p>Be aware these mentions could be mentioning a non-existent command
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * void sendCount(Message msg)
+     * {
+     *     List<SlashCommandReference> mentions = msg.getMentions().getSlashCommands(); // distinct list, in order of appearance
+     *     Bag<SlashCommandReference> count = msg.getMentions().getSlashCommandsBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (SlashCommandReference commandRef : mentions)
+     *     {
+     *         content.append(commandRef.getAsMention())
+     *                .append(": ")
+     *                .append(count.getCount(commandRef))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned slash commands
+     *
+     * @see    #getSlashCommands()
+     */
+    @Nonnull
+    Bag<SlashCommandReference> getSlashCommandsBag();
 
     /**
      * Combines all instances of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}

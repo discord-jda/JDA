@@ -89,10 +89,4 @@ public class StatusChangeEvent extends Event implements UpdateEvent<JDA, JDA.Sta
     {
         return newStatus;
     }
-
-    @Override
-    public String toString()
-    {
-        return "StatusUpdate(" + getOldStatus() + "->" + getNewStatus() + ')';
-    }
 }

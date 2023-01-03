@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities.sticker;
 
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 public class StickerSnowflakeImpl implements StickerSnowflake
 {
@@ -52,6 +53,6 @@ public class StickerSnowflakeImpl implements StickerSnowflake
     @Override
     public String toString()
     {
-        return "StickerSnowflake(" + getId() + ')';
+        return new EntityString(this).toString();
     }
 }

@@ -57,7 +57,7 @@ public class MessageMentionsImpl extends AbstractMentions
                     }
 
                     DataObject member = obj.getObject("member");
-                    obj.remove("user");
+                    obj.remove("member");
                     member.put("user", obj).put("is_member", true);
                     this.userMentionMap.put(obj.getUnsignedLong("id"), member);
                 });

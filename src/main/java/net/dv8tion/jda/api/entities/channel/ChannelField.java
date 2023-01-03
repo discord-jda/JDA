@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -99,13 +100,13 @@ public enum ChannelField
     DEFAULT_REACTION_EMOJI("default_reaction_emoji", AuditLogKey.CHANNEL_DEFAULT_REACTION_EMOJI),
 
     //Text Specific
-
     /**
      * The topic of the channel.
      *
-     * <p>Limited to {@link NewsChannel NewsChannels} and {@link TextChannel TextChannels}.
+     * <p>Limited to {@link NewsChannel NewsChannels}, {@link TextChannel TextChannels}, and {@link ForumChannel ForumChannels}.
      *
      * @see StandardGuildMessageChannel#getTopic()
+     * @see ForumChannel#getTopic()
      */
     TOPIC("topic", AuditLogKey.CHANNEL_TOPIC),
 
@@ -201,7 +202,7 @@ public enum ChannelField
     /**
      * The time this channel's archival information was last updated.
      *
-     * <p>This timestamp will be updated when any of the following happen:
+     * <p>This timestamp will be updated when any of the following happens:
      * <ul>
      *     <li>The channel is archived</li>
      *     <li>The channel is unarchived</li>
@@ -280,6 +281,9 @@ public enum ChannelField
     @Override
     public String toString()
     {
-        return "ChannelField." + name() + '(' + fieldName + ')';
+        return new EntityString(this)
+                .setType(this)
+                .addMetadata("fieldName", fieldName)
+                .toString();
     }
 }

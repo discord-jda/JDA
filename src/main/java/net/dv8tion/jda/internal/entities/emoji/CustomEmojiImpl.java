@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -106,7 +107,9 @@ public class CustomEmojiImpl implements CustomEmoji, EmojiUnion
     @Override
     public String toString()
     {
-        return "CustomEmoji:" + name + "(" + id + ")";
+        return new EntityString(this)
+                .setName(name)
+                .toString();
     }
 
     @Nonnull

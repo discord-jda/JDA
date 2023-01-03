@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 
@@ -81,8 +82,9 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag
 
     public ForumTagImpl setEmoji(DataObject json)
     {
-        if (!json.isNull("emoji_id"))
-            this.emoji = new CustomEmojiImpl("", json.getUnsignedLong("emoji_id"), false);
+        long id = json.getUnsignedLong("emoji_id", 0);
+        if (id != 0)
+            this.emoji = new CustomEmojiImpl(json.getString("emoji_name", ""), id, false);
         else if (!json.isNull("emoji_name"))
             this.emoji = Emoji.fromUnicode(json.getString("emoji_name"));
         else
@@ -93,6 +95,8 @@ public class ForumTagImpl extends ForumTagSnowflakeImpl implements ForumTag
     @Override
     public String toString()
     {
-        return "ForumTag:" + name + "(" + id + ')';
+        return new EntityString(this)
+                .setName(name)
+                .toString();
     }
 }

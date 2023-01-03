@@ -17,23 +17,17 @@
 package net.dv8tion.jda.internal.interactions.component;
 
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 
-public class SelectMenuImpl implements SelectMenu
+public abstract class SelectMenuImpl implements SelectMenu
 {
-    private final String id, placeholder;
-    private final int minValues, maxValues;
-    private final boolean disabled;
-    private final List<SelectOption> options;
+    protected final String id, placeholder;
+    protected final int minValues, maxValues;
+    protected final boolean disabled;
 
     public SelectMenuImpl(DataObject data)
     {
@@ -42,35 +36,17 @@ public class SelectMenuImpl implements SelectMenu
             data.getString("placeholder", null),
             data.getInt("min_values", 1),
             data.getInt("max_values", 1),
-            data.getBoolean("disabled"),
-            parseOptions(data.getArray("options"))
+            data.getBoolean("disabled")
         );
     }
 
-    public SelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
+    public SelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled)
     {
         this.id = id;
         this.placeholder = placeholder;
         this.minValues = minValues;
         this.maxValues = maxValues;
         this.disabled = disabled;
-        this.options = Collections.unmodifiableList(options);
-    }
-
-    private static List<SelectOption> parseOptions(DataArray array)
-    {
-        List<SelectOption> options = new ArrayList<>(array.length());
-        array.stream(DataArray::getObject)
-            .map(SelectOption::fromData)
-            .forEach(options::add);
-        return options;
-    }
-
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.SELECT_MENU;
     }
 
     @Nullable
@@ -99,13 +75,6 @@ public class SelectMenuImpl implements SelectMenu
         return maxValues;
     }
 
-    @Nonnull
-    @Override
-    public List<SelectOption> getOptions()
-    {
-        return options;
-    }
-
     @Override
     public boolean isDisabled()
     {
@@ -117,12 +86,10 @@ public class SelectMenuImpl implements SelectMenu
     public DataObject toData()
     {
         DataObject data = DataObject.empty();
-        data.put("type", 3);
         data.put("custom_id", id);
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
         data.put("disabled", disabled);
-        data.put("options", DataArray.fromCollection(options));
         if (placeholder != null)
             data.put("placeholder", placeholder);
         return data;
@@ -131,28 +98,10 @@ public class SelectMenuImpl implements SelectMenu
     @Override
     public String toString()
     {
-        return "SelectMenu:" + id + "(" + placeholder + ")";
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(id, placeholder, minValues, maxValues, disabled, options);
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
-            return true;
-        if (!(obj instanceof SelectMenu))
-            return false;
-        SelectMenu other = (SelectMenu) obj;
-        return Objects.equals(id, other.getId())
-                && Objects.equals(placeholder, other.getPlaceholder())
-                && minValues == other.getMinValues()
-                && maxValues == other.getMaxValues()
-                && disabled == other.isDisabled()
-                && Objects.equals(options, other.getOptions());
+        return new EntityString(SelectMenu.class)
+                .setType(getType())
+                .addMetadata("id", id)
+                .addMetadata("placeholder", placeholder)
+                .toString();
     }
 }

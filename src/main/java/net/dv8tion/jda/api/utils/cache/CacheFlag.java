@@ -84,7 +84,13 @@ public enum CacheFlag
      *
      * @since 4.3.0
      */
-    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES)
+    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES),
+    /**
+     * Enables cache for {@link Guild#getScheduledEventCache()}
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent to be enabled.
+     */
+    SCHEDULED_EVENTS(GatewayIntent.SCHEDULED_EVENTS),
     ;
 
     private static final EnumSet<CacheFlag> privileged = EnumSet.of(ACTIVITY, CLIENT_STATUS, ONLINE_STATUS);

@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.entities.WebhookImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -370,7 +371,11 @@ public class AuditLogEntry implements ISnowflake
     @Override
     public String toString()
     {
-        return "ALE:" + type + "(ID:" + id + " / TID:" + targetId + " / " + guild + ')';
+        return new EntityString(this)
+                .setType(type)
+                .addMetadata("targetId", targetId)
+                .addMetadata("guild", guild)
+                .toString();
     }
 
 }

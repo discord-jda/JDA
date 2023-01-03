@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.IOFunction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
@@ -160,9 +161,16 @@ public class Response implements Closeable
     @Override
     public String toString()
     {
-        return this.exception == null
-                ? "HTTPResponse[" + this.code + (this.object == null ? "" : ", " + this.object.toString()) + ']'
-                : "HTTPException[" + this.exception.getMessage() + ']';
+        final EntityString entityString = new EntityString(exception == null ? "HTTPResponse" : "HTTPException");
+        if (exception == null) {
+            entityString.addMetadata("code", code);
+            if (object != null)
+                entityString.addMetadata("object", object.toString());
+        } else {
+            entityString.addMetadata("exceptionMessage", exception.getMessage());
+        }
+
+        return entityString.toString();
     }
 
     @Override

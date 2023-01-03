@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities.sticker;
 
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -91,7 +92,9 @@ public class StickerPackImpl implements StickerPack
     @Override
     public String toString()
     {
-        return "StickerPack:" + name + '(' + getId() + ')';
+        return new EntityString(this)
+                .setName(name)
+                .toString();
     }
 
     @Override

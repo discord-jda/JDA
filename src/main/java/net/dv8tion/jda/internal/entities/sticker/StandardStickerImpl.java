@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities.sticker;
 
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
@@ -57,7 +58,10 @@ public class StandardStickerImpl extends RichStickerImpl implements StandardStic
     @Override
     public String toString()
     {
-        return "StandardSticker:" + name + '(' + getId() + ", pack=" + getPackId() + ')';
+        return new EntityString(this)
+                .setName(name)
+                .addMetadata("pack", getPackId())
+                .toString();
     }
 
     @Override
