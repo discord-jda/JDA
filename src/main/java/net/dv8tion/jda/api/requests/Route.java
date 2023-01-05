@@ -507,14 +507,14 @@ public class Route
     private final Method method;
     private final int paramCount;
     private final String[] template;
-    private final boolean bypassGlobal;
+    private final boolean interaction;
 
-    private Route(Method method, String route, boolean bypassGlobal)
+    private Route(Method method, String route, boolean interaction)
     {
         this.method = method;
         this.paramCount = Helpers.countMatches(route, '{'); // All parameters start with {
         this.template = Helpers.split(route, "/");
-        this.bypassGlobal = bypassGlobal;
+        this.interaction = interaction;
         Checks.check(paramCount == Helpers.countMatches(route, '}'), "An argument does not have both {}'s for route: %s %s", method, route);
     }
 
@@ -524,15 +524,14 @@ public class Route
     }
 
     /**
-     * Whether this route can bypass the global rate-limit bucket.
-     * <br>The rate-limit handling should not hold back requests for this request when the global rate-limit is hit.
-     * <b>This is crucial for interaction replies.</b>
+     * Whether this route is a route related to interactions.
+     * <br>Interactions have some special handling, since they are exempt from global rate-limits and are limited to 15 minute uptime.
      *
-     * @return True, if this request can bypass the global rate-limit bucket
+     * @return True, if this route is for interactions
      */
-    public boolean isGlobalBypass()
+    public boolean isInteractionBucket()
     {
-        return bypassGlobal;
+        return interaction;
     }
 
     /**

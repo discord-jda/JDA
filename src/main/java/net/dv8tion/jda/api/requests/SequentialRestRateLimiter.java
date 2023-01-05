@@ -212,7 +212,13 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             String hash = getRouteHash(route.getBaseRoute());
             // Get or create a bucket for the hash + major parameters
             String bucketId = hash + ":" + route.getMajorParameters();
-            return this.buckets.computeIfAbsent(bucketId, Bucket::new);
+            return this.buckets.computeIfAbsent(bucketId, (id) ->
+            {
+                if (route.getBaseRoute().isInteractionBucket())
+                    return new InteractionBucket(id);
+                else
+                    return new ClassicBucket(id);
+            });
         });
     }
 
@@ -286,6 +292,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                     {
                         config.getGlobalRateLimit().set(now + retryAfter);
                         log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter / 1000);
+                        bucket.onCloudflareBan(retryAfter);
                     }
                     // Handle hard rate limit, pretty much just log that it happened
                     else
@@ -314,13 +321,13 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 String resetAfterHeader = headers.get(RESET_AFTER_HEADER);
                 String resetHeader = headers.get(RESET_HEADER);
 
-                bucket.limit = (int) Math.max(1L, parseLong(limitHeader));
+//                bucket.limit = (int) Math.max(1L, parseLong(limitHeader));
                 bucket.remaining = (int) parseLong(remainingHeader);
                 if (config.isRelative())
                     bucket.reset = now + parseDouble(resetAfterHeader);
                 else
                     bucket.reset = parseDouble(resetHeader);
-                log.trace("Updated bucket {} to ({}/{}, {})", bucket.bucketId, bucket.remaining, bucket.limit, bucket.reset - now);
+                log.trace("Updated bucket {} to ({}/{}, {})", bucket.bucketId, bucket.remaining, limitHeader, bucket.reset - now);
                 return bucket;
             }
             catch (Exception e)
@@ -333,18 +340,22 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         });
     }
 
-    private class Bucket implements Runnable
+    private abstract class Bucket implements Runnable
     {
-        private final String bucketId;
-        private final Deque<Work> requests = new ConcurrentLinkedDeque<>();
+        protected final String bucketId;
+        protected final Deque<Work> requests = new ConcurrentLinkedDeque<>();
 
-        private long reset = 0;
-        private int remaining = 1;
-        private int limit = 1;
+        protected long reset = 0;
+        protected int remaining = 1;
 
         public Bucket(String bucketId)
         {
             this.bucketId = bucketId;
+        }
+
+        public boolean isUninit()
+        {
+            return bucketId.startsWith(UNINIT_BUCKET);
         }
 
         public void enqueue(Work request)
@@ -357,36 +368,6 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             requests.addFirst(request);
         }
 
-        private boolean isGlobalRateLimit()
-        {
-            return config.getGlobalRateLimit().get() > getNow();
-        }
-
-        private boolean isUnlimitedRoute()
-        {
-            Work work = requests.peekFirst();
-            return work != null && work.getRoute().getBaseRoute().isGlobalBypass();
-        }
-
-        public long getRateLimit()
-        {
-            long now = getNow();
-            long global = isUnlimitedRoute() ? 0 : config.getGlobalRateLimit().get();
-            // Global rate limit is more important to handle
-            if (global > now)
-                return global - now;
-            // Check if the bucket reset time has expired
-            if (reset <= now)
-            {
-                // Update the remaining uses to the limit (we don't know better)
-                remaining = limit;
-                return 0L;
-            }
-
-            // If there are remaining requests we don't need to do anything, otherwise return backoff in milliseconds
-            return remaining < 1 ? reset - now : 0L;
-        }
-
         public long getReset()
         {
             return reset;
@@ -397,17 +378,16 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return remaining;
         }
 
-        public int getLimit()
+        public void onCloudflareBan(long retryAfter) {}
+
+        public abstract long getRateLimit();
+
+        protected boolean isGlobalRateLimit()
         {
-            return limit;
+            return config.getGlobalRateLimit().get() > getNow();
         }
 
-        private boolean isUninit()
-        {
-            return bucketId.startsWith(UNINIT_BUCKET);
-        }
-
-        private void backoff()
+        protected void backoff()
         {
             // Schedule backoff if requests are not done
             MiscUtil.locked(lock, () -> {
@@ -419,6 +399,81 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 if (isStopped && buckets.isEmpty())
                     shutdown();
             });
+        }
+
+        public Queue<Work> getRequests()
+        {
+            return requests;
+        }
+
+        protected Boolean moveRequest(Work request)
+        {
+            return MiscUtil.locked(lock, () ->
+            {
+                // Attempt moving request to correct bucket if it has been created
+                Bucket bucket = getBucket(request.getRoute());
+                if (bucket != this)
+                {
+                    bucket.enqueue(request);
+                    runBucket(bucket);
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        protected boolean execute(Work request)
+        {
+            try
+            {
+                Response response = request.execute();
+                if (response != null)
+                    updateBucket(request.getRoute(), response);
+                if (!request.isDone())
+                    retry(request);
+            }
+            catch (Throwable ex)
+            {
+                log.error("Encountered exception trying to execute request", ex);
+                if (ex instanceof Error)
+                    throw (Error) ex;
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public String toString()
+        {
+            return bucketId;
+        }
+    }
+
+    private class ClassicBucket extends Bucket
+    {
+        public ClassicBucket(String bucketId)
+        {
+            super(bucketId);
+        }
+
+        @Override
+        public long getRateLimit()
+        {
+            long now = getNow();
+            long global = config.getGlobalRateLimit().get();
+            // Global rate limit is more important to handle
+            if (global > now)
+                return global - now;
+            // Check if the bucket reset time has expired
+            if (reset <= now)
+            {
+                // Update the remaining uses to the limit (we don't know better)
+                remaining = 1;
+                return 0L;
+            }
+
+            // If there are remaining requests we don't need to do anything, otherwise return backoff in milliseconds
+            return remaining < 1 ? reset - now : 0L;
         }
 
         @Override
@@ -446,49 +501,90 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 // Check if a bucket has been discovered and initialized for this route
                 if (isUninit())
                 {
-                    boolean shouldSkip = MiscUtil.locked(lock, () -> {
-                        // Attempt moving request to correct bucket if it has been created
-                        Bucket bucket = getBucket(request.getRoute());
-                        if (bucket != this)
-                        {
-                            bucket.enqueue(request);
-                            runBucket(bucket);
-                            return true;
-                        }
-                        return false;
-                    });
+                    boolean shouldSkip = moveRequest(request);
                     if (shouldSkip) continue;
                 }
 
-                try
-                {
-                    Response response = request.execute();
-                    if (response != null)
-                        updateBucket(request.getRoute(), response);
-                    if (!request.isDone())
-                        retry(request);
-                }
-                catch (Throwable ex)
-                {
-                    log.error("Encountered exception trying to execute request", ex);
-                    if (ex instanceof Error)
-                        throw (Error) ex;
-                    break;
-                }
+                if (execute(request)) break;
             }
 
             backoff();
         }
+    }
 
-        public Queue<Work> getRequests()
+    private class InteractionBucket extends Bucket
+    {
+        private boolean dead = false;
+
+        public InteractionBucket(@Nonnull String bucketId)
         {
-            return requests;
+            super(bucketId);
         }
 
         @Override
-        public String toString()
+        public void onCloudflareBan(long retryAfter)
         {
-            return bucketId;
+            dead = TimeUnit.MILLISECONDS.toMinutes(retryAfter) >= 15;
+            reset = getNow() + retryAfter;
+            remaining = 0;
+        }
+
+        // Specialized implementation that ignores global rate-limits (which do not apply to interactions)
+        @Override
+        public long getRateLimit()
+        {
+            long now = getNow();
+            // Check if the bucket reset time has expired
+            if (reset <= now)
+            {
+                // Update the remaining uses to the limit (we don't know better)
+                remaining = 1;
+                return 0L;
+            }
+
+            // If there are remaining requests we don't need to do anything, otherwise return backoff in milliseconds
+            return remaining < 1 ? reset - now : 0L;
+        }
+
+        @Override
+        public void run()
+        {
+            log.trace("Bucket {} is running {} requests", bucketId, requests.size());
+            while (!requests.isEmpty())
+            {
+                long rateLimit = getRateLimit();
+                if (rateLimit > 0L)
+                {
+                    // We need to backoff since we ran out of remaining uses or hit the global rate limit
+                    Work request = requests.peekFirst(); // this *should* not be null
+                    String baseRoute = request != null ? request.getRoute().getBaseRoute().toString() : "N/A";
+                    log.debug("Backing off {} ms for bucket {} on route {}", rateLimit, bucketId, baseRoute);
+                    break;
+                }
+
+                Work request = requests.removeFirst();
+                if (request.isSkipped())
+                    continue;
+
+                // When we get cloudflare banned and requests would never finish, we cancel them here
+                if (dead)
+                {
+                    request.cancel();
+                    continue;
+                }
+
+                // Check if a bucket has been discovered and initialized for this route
+                if (isUninit())
+                {
+                    boolean shouldSkip = moveRequest(request);
+                    if (shouldSkip) continue;
+                }
+
+
+                if (execute(request)) break;
+            }
+
+            backoff();
         }
     }
 }
