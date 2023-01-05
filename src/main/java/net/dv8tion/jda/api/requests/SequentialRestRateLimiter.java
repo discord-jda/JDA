@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * <p>A bucket is determined via the Path+Method+Major in the following way:
+ * A bucket is determined via the Path+Method+Major in the following way:
  * <ol>
  *     <li>Get Hash from Path+Method (we call this route)</li>
  *     <li>Get bucket from Hash+Major (we call this bucketid)</li>
@@ -43,7 +43,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * <p>To explain this further, lets look at the example of message history. The endpoint to fetch message history is {@code GET/channels/{channel.id}/messages}.
  * This endpoint does not have any rate limit (uninit) and will thus use the hash {@code uninit+GET/channels/{channel.id}/messages}.
- * The bucket id for this will be {@code uninit+GET/channels/{channel.id}/messages:guild_id:{channel.id}:webhook_id} where {@code {channel.id}} would be replaced with the respective id.
+ * The bucket id for this will be {@code uninit+GET/channels/{channel.id}/messages:channel_id={channel.id}} where {@code {channel.id}} would be replaced with the respective id.
  * This means you can fetch history concurrently for multiple channels, but it will be in sequence for the same channel.
  *
  * <p>If the endpoint is not uninit we will receive a hash on the first response.
@@ -60,7 +60,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * }
  * }</pre>
  *
- * <p>This will send 100 messages on startup. At this point we don't yet know the hash for this route, so we put them all in {@code uninit+POST/channels/{channel.id}/messages:guild_id:123:webhook_id}.
+ * <p>This will send 100 messages on startup. At this point we don't yet know the hash for this route, so we put them all in {@code uninit+POST/channels/{channel.id}/messages:channel_id=123}.
  * The bucket iterates the requests in sync and gets the first response. This response provides the hash for this route, and we create a bucket for it.
  * Once the response is handled we continue with the next request in the uninit bucket and notice the new bucket. We then move all related requests to this bucket.
  */
