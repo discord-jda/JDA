@@ -20,12 +20,14 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import okhttp3.Headers;
 import okhttp3.Response;
-import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -35,17 +37,17 @@ import java.util.concurrent.locks.ReentrantLock;
  *     <li>Get bucket from Hash+Major (we call this bucketid)</li>
  * </ol>
  *
- * <p>If no hash is known we default to the constant "unlimited" hash. The hash is loaded from HTTP responses using the "X-RateLimit-Bucket" response header.
+ * <p>If no hash is known we default to the constant "uninit" hash. The hash is loaded from HTTP responses using the "X-RateLimit-Bucket" response header.
  * This hash is per Method+Path and can be stored indefinitely once received.
- * Some endpoints don't return a hash, this means that the endpoint is <b>unlimited</b> and will be in queue with only the major parameter.
+ * Some endpoints don't return a hash, this means that the endpoint is <b>uninit</b> and will be in queue with only the major parameter.
  *
  * <p>To explain this further, lets look at the example of message history. The endpoint to fetch message history is {@code GET/channels/{channel.id}/messages}.
- * This endpoint does not have any rate limit (unlimited) and will thus use the hash {@code unlimited+GET/channels/{channel.id}/messages}.
- * The bucket id for this will be {@code unlimited+GET/channels/{channel.id}/messages:guild_id:{channel.id}:webhook_id} where {@code {channel.id}} would be replaced with the respective id.
+ * This endpoint does not have any rate limit (uninit) and will thus use the hash {@code uninit+GET/channels/{channel.id}/messages}.
+ * The bucket id for this will be {@code uninit+GET/channels/{channel.id}/messages:guild_id:{channel.id}:webhook_id} where {@code {channel.id}} would be replaced with the respective id.
  * This means you can fetch history concurrently for multiple channels, but it will be in sequence for the same channel.
  *
- * <p>If the endpoint is not unlimited we will receive a hash on the first response.
- * Once this happens every unlimited bucket will start moving its queue to the correct bucket.
+ * <p>If the endpoint is not uninit we will receive a hash on the first response.
+ * Once this happens every uninit bucket will start moving its queue to the correct bucket.
  * This is done during the queue work iteration so many requests to one endpoint would be moved correctly.
  *
  * <p>For example, the first message sending:
@@ -58,14 +60,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * }
  * }</pre>
  *
- * <p>This will send 100 messages on startup. At this point we don't yet know the hash for this route, so we put them all in {@code unlimited+POST/channels/{channel.id}/messages:guild_id:123:webhook_id}.
+ * <p>This will send 100 messages on startup. At this point we don't yet know the hash for this route, so we put them all in {@code uninit+POST/channels/{channel.id}/messages:guild_id:123:webhook_id}.
  * The bucket iterates the requests in sync and gets the first response. This response provides the hash for this route, and we create a bucket for it.
- * Once the response is handled we continue with the next request in the unlimited bucket and notice the new bucket. We then move all related requests to this bucket.
+ * Once the response is handled we continue with the next request in the uninit bucket and notice the new bucket. We then move all related requests to this bucket.
  */
 public final class SequentialRestRateLimiter implements RestRateLimiter
 {
     private static final Logger log = JDALogger.getLog(RestRateLimiter.class);
-    private static final String UNLIMITED_BUCKET = "unlimited"; // we generate an unlimited bucket for every major parameter configuration
+    private static final String UNINIT_BUCKET = "uninit"; // we generate an uninit bucket for every major parameter configuration
 
     private final CompletableFuture<?> shutdownHandle = new CompletableFuture<>();
 
@@ -74,15 +76,15 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
 
     private boolean isStopped, isShutdown;
 
-    private final ReentrantLock bucketLock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
     // Route -> Should we print warning for 429? AKA did we already hit it once before
-    private final Set<Route> hitRatelimit = ConcurrentHashMap.newKeySet(5);
+    private final Set<Route> hitRatelimit = new HashSet<>(5);
     // Route -> Hash
-    private final Map<Route, String> hashes = new ConcurrentHashMap<>();
+    private final Map<Route, String> hashes = new HashMap<>();
     // Hash + Major Parameter -> Bucket
-    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
+    private final Map<String, Bucket> buckets = new HashMap<>();
     // Bucket -> Rate-Limit Worker
-    private final Map<Bucket, Future<?>> rateLimitQueue = new ConcurrentHashMap<>();
+    private final Map<Bucket, Future<?>> rateLimitQueue = new HashMap<>();
 
     @Override
     public void init(@Nonnull RateLimitConfig config)
@@ -94,8 +96,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     @Override
     public void enqueue(@Nonnull RestRateLimiter.Work task)
     {
-        MiscUtil.locked(bucketLock, () -> {
-            Bucket bucket = getBucket(task.getRoute(), true);
+        MiscUtil.locked(lock, () -> {
+            Bucket bucket = getBucket(task.getRoute());
             bucket.enqueue(task);
             runBucket(bucket);
         });
@@ -104,7 +106,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     @Override
     public void stop(boolean shutdown, @Nonnull Runnable callback)
     {
-        MiscUtil.locked(bucketLock, () -> {
+        MiscUtil.locked(lock, () -> {
             boolean doShutdown = shutdown;
             if (!isStopped)
             {
@@ -140,7 +142,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     @Override
     public int cancelRequests()
     {
-        return MiscUtil.locked(bucketLock, () -> {
+        return MiscUtil.locked(lock, () -> {
             // Empty buckets will be removed by the cleanup worker, which also checks for rate limit parameters
             int cancelled = (int) buckets.values()
                     .stream()
@@ -169,7 +171,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     {
         // This will remove buckets that are no longer needed every 30 seconds to avoid memory leakage
         // We will keep the hashes in memory since they are very limited (by the amount of possible routes)
-        MiscUtil.locked(bucketLock, () -> {
+        MiscUtil.locked(lock, () -> {
             int size = buckets.size();
             Iterator<Map.Entry<String, Bucket>> entries = buckets.entrySet().iterator();
 
@@ -181,8 +183,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 bucket.requests.removeIf(Work::isSkipped);
 
                 // Check if the bucket is empty
-                if (bucket.isUnlimited() && bucket.requests.isEmpty())
-                    entries.remove(); // remove unlimited if requests are empty
+                if (bucket.isUninit() && bucket.requests.isEmpty())
+                    entries.remove(); // remove uninit if requests are empty
                 // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
                 else if (bucket.requests.isEmpty() && bucket.reset <= getNow())
                     entries.remove();
@@ -199,23 +201,18 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
 
     private String getRouteHash(Route route)
     {
-        return hashes.getOrDefault(route, UNLIMITED_BUCKET + "+" + route);
+        return hashes.getOrDefault(route, UNINIT_BUCKET + "+" + route);
     }
 
-    @Contract("_,true->!null")
-    private Bucket getBucket(Route.CompiledRoute route, boolean create)
+    private Bucket getBucket(Route.CompiledRoute route)
     {
-        return MiscUtil.locked(bucketLock, () ->
+        return MiscUtil.locked(lock, () ->
         {
             // Retrieve the hash via the route
             String hash = getRouteHash(route.getBaseRoute());
             // Get or create a bucket for the hash + major parameters
             String bucketId = hash + ":" + route.getMajorParameters();
-            Bucket bucket = this.buckets.get(bucketId);
-            if (bucket == null && create)
-                this.buckets.put(bucketId, bucket = new Bucket(bucketId));
-
-            return bucket;
+            return this.buckets.computeIfAbsent(bucketId, Bucket::new);
         });
     }
 
@@ -224,7 +221,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         if (isShutdown)
             return;
         // Schedule a new bucket worker if no worker is running
-        MiscUtil.locked(bucketLock, () ->
+        MiscUtil.locked(lock, () ->
                 rateLimitQueue.computeIfAbsent(bucket,
                         (k) -> config.getPool().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
     }
@@ -246,12 +243,13 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         return System.currentTimeMillis();
     }
 
-    private Bucket updateBucket(Route.CompiledRoute route, okhttp3.Response response)
+    private void updateBucket(Route.CompiledRoute route, Response response)
     {
-        return MiscUtil.locked(bucketLock, () -> {
+        MiscUtil.locked(lock, () ->
+        {
             try
             {
-                Bucket bucket = getBucket(route, true);
+                Bucket bucket = getBucket(route);
                 Headers headers = response.headers();
 
                 boolean global = headers.get(GLOBAL_HEADER) != null;
@@ -270,7 +268,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                         log.debug("Caching bucket hash {} -> {}", baseRoute, hash);
                     }
 
-                    bucket = getBucket(route, true);
+                    bucket = getBucket(route);
                 }
 
                 if (response.code() == 429)
@@ -327,7 +325,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             }
             catch (Exception e)
             {
-                Bucket bucket = getBucket(route, true);
+                Bucket bucket = getBucket(route);
                 log.error("Encountered Exception while updating a bucket. Route: {} Bucket: {} Code: {} Headers:\n{}",
                         route.getBaseRoute(), bucket, response.code(), response.headers(), e);
                 return bucket;
@@ -364,10 +362,16 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return config.getGlobalRateLimit().get() > getNow();
         }
 
+        private boolean isUnlimitedRoute()
+        {
+            Work work = requests.peekFirst();
+            return work != null && work.getRoute().getBaseRoute().isGlobalBypass();
+        }
+
         public long getRateLimit()
         {
             long now = getNow();
-            long global = config.getGlobalRateLimit().get();
+            long global = isUnlimitedRoute() ? 0 : config.getGlobalRateLimit().get();
             // Global rate limit is more important to handle
             if (global > now)
                 return global - now;
@@ -398,15 +402,15 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return limit;
         }
 
-        private boolean isUnlimited()
+        private boolean isUninit()
         {
-            return bucketId.startsWith("unlimited");
+            return bucketId.startsWith(UNINIT_BUCKET);
         }
 
         private void backoff()
         {
             // Schedule backoff if requests are not done
-            MiscUtil.locked(bucketLock, () -> {
+            MiscUtil.locked(lock, () -> {
                 rateLimitQueue.remove(this);
                 if (!requests.isEmpty())
                     runBucket(this);
@@ -438,11 +442,13 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 Work request = requests.removeFirst();
                 if (request.isSkipped())
                     continue;
-                if (isUnlimited())
+
+                // Check if a bucket has been discovered and initialized for this route
+                if (isUninit())
                 {
-                    boolean shouldSkip = MiscUtil.locked(bucketLock, () -> {
+                    boolean shouldSkip = MiscUtil.locked(lock, () -> {
                         // Attempt moving request to correct bucket if it has been created
-                        Bucket bucket = getBucket(request.getRoute(), true);
+                        Bucket bucket = getBucket(request.getRoute());
                         if (bucket != this)
                         {
                             bucket.enqueue(request);

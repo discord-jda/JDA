@@ -69,11 +69,11 @@ public class Route
         public static final Route GET_COMMAND_PERMISSIONS =      new Route(GET, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
         public static final Route EDIT_COMMAND_PERMISSIONS =     new Route(PUT, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
 
-        public static final Route CALLBACK =        new Route(POST,   "interactions/{interaction_id}/{interaction_token}/callback");
-        public static final Route CREATE_FOLLOWUP = new Route(POST,   "webhooks/{application_id}/{interaction_token}");
-        public static final Route EDIT_FOLLOWUP =   new Route(PATCH,  "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
-        public static final Route DELETE_FOLLOWUP = new Route(DELETE, "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
-        public static final Route GET_ORIGINAL =    new Route(GET,    "webhooks/{application_id}/{interaction_token}/messages/@original");
+        public static final Route CALLBACK =        new Route(POST,   "interactions/{interaction_id}/{interaction_token}/callback", true);
+        public static final Route CREATE_FOLLOWUP = new Route(POST,   "webhooks/{application_id}/{interaction_token}", true);
+        public static final Route EDIT_FOLLOWUP =   new Route(PATCH,  "webhooks/{application_id}/{interaction_token}/messages/{message_id}", true);
+        public static final Route DELETE_FOLLOWUP = new Route(DELETE, "webhooks/{application_id}/{interaction_token}/messages/{message_id}", true);
+        public static final Route GET_ORIGINAL =    new Route(GET,    "webhooks/{application_id}/{interaction_token}/messages/@original", true);
     }
 
     public static class Self
@@ -507,13 +507,32 @@ public class Route
     private final Method method;
     private final int paramCount;
     private final String[] template;
+    private final boolean bypassGlobal;
 
-    private Route(Method method, String route)
+    private Route(Method method, String route, boolean bypassGlobal)
     {
         this.method = method;
         this.paramCount = Helpers.countMatches(route, '{'); // All parameters start with {
         this.template = Helpers.split(route, "/");
+        this.bypassGlobal = bypassGlobal;
         Checks.check(paramCount == Helpers.countMatches(route, '}'), "An argument does not have both {}'s for route: %s %s", method, route);
+    }
+
+    private Route(Method method, String route)
+    {
+        this(method, route, false);
+    }
+
+    /**
+     * Whether this route can bypass the global rate-limit bucket.
+     * <br>The rate-limit handling should not hold back requests for this request when the global rate-limit is hit.
+     * <b>This is crucial for interaction replies.</b>
+     *
+     * @return True, if this request can bypass the global rate-limit bucket
+     */
+    public boolean isGlobalBypass()
+    {
+        return bypassGlobal;
     }
 
     /**
