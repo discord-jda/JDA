@@ -150,6 +150,15 @@ public enum MessageType
      */
     AUTO_MODERATION_ACTION(24, true, true),
 
+    ROLE_SUBSCRIPTION_PURCHASE(25, true, true),
+    INTERACTION_PREMIUM_UPSELL(26, true, true),
+    STAGE_START(27, true, true),
+    STAGE_END(28, true, true),
+    STAGE_SPEAKER(29, true, true),
+    STAGE_RAISE_HAND(30, true, true),
+    STAGE_TOPIC(31, true, true),
+    GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, false),
+
     /**
      * Unknown MessageType.
      */
