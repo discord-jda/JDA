@@ -373,5 +373,17 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
         {
             return isIntegration() ? Long.toUnsignedString(getIntegrationIdLong()) : null;
         }
+
+        boolean hasSubscriptionListing();
+
+        long getSubscriptionIdLong();
+
+        @Nullable
+        default String getSubscriptionId()
+        {
+            return hasSubscriptionListing() ? Long.toUnsignedString(getSubscriptionIdLong()) : null;
+        }
+
+        boolean isAvailableForPurchase();
     }
 }
