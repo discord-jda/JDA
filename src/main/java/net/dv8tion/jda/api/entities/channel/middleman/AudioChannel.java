@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.entities.channel.middleman;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
@@ -46,7 +48,7 @@ import javax.annotation.Nullable;
  * @see JDA#getVoiceChannelById(long)
  * @see JDA#getStageChannelById(long)
  */
-public interface AudioChannel extends StandardGuildChannel
+public interface AudioChannel extends StandardGuildChannel, GuildMessageChannel, IWebhookContainer, IAgeRestrictedChannel
 {
     //TODO-v5: Docs
     @Override
