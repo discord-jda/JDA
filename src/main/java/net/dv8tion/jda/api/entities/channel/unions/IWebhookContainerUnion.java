@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
@@ -236,4 +237,25 @@ public interface IWebhookContainerUnion extends IWebhookContainer
      */
     @Nonnull
     StandardGuildMessageChannel asStandardGuildMessageChannel();
+
+    /**
+     * Casts this union to a {@link AudioChannel}.
+     * This method exists for developer discoverability.
+     *
+     * Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * AudioChannel channel = union.asAudioChannel();
+     * AudioChannel channel2 = (AudioChannel) union;
+     * </code></pre>
+     *
+     * You can use <code>channel instanceof AudioChannel</code> to validate whether you can call this method.
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link AudioChannel}.
+     *
+     * @return The channel as a {@link AudioChannel}
+     */
+    @Nonnull
+    AudioChannel asAudioChannel();
 }
