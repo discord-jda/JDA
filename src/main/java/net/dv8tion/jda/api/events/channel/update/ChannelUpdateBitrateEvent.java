@@ -19,13 +19,22 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channel's} bitrate has been updated.
+ *
+ * <p>Limited to {@link AudioChannel Audio Channels}.
+ *
+ * @see AudioChannel#getBitrate()
+ * @see ChannelField#BITRATE
+ */
 public class ChannelUpdateBitrateEvent extends GenericChannelUpdateEvent<Integer>
 {
     public static final ChannelField FIELD = ChannelField.BITRATE;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateBitrateEvent(@Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
     {

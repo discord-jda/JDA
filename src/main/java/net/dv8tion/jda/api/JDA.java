@@ -44,6 +44,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
 
@@ -190,7 +191,10 @@ public interface JDA extends IGuildChannelContainer
         @Override
         public String toString()
         {
-            return "Shard " + getShardString();
+            return new EntityString(this)
+                    .addMetadata("currentShard", getShardString())
+                    .addMetadata("totalShards", getShardTotal())
+                    .toString();
         }
 
         @Override
@@ -1234,6 +1238,97 @@ public interface JDA extends IGuildChannelContainer
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
+    /**
+     * {@link SnowflakeCacheView} of
+     * all cached {@link ScheduledEvent ScheduledEvents} visible to this JDA session.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
+     * @return {@link SnowflakeCacheView}
+     */
+    @Nonnull
+    SnowflakeCacheView<ScheduledEvent> getScheduledEventCache();
+    
+    /**
+     * An unmodifiable list of all {@link ScheduledEvent ScheduledEvents} of all connected
+     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getScheduledEventCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
+     * @return Possibly-empty immutable list of all known {@link ScheduledEvent ScheduledEvents}.
+     */
+    @Nonnull
+    default List<ScheduledEvent> getScheduledEvents()
+    {
+        return getScheduledEventCache().asList();
+    }
+    
+    /**
+     * This returns the {@link ScheduledEvent} which has the same id as the one provided.
+     * <br>If there is no known {@link ScheduledEvent} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
+     * @param  id
+     *         The id of the {@link ScheduledEvent}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link ScheduledEvent} with a matching id.
+     */
+    @Nullable
+    default ScheduledEvent getScheduledEventById(@Nonnull String id)
+    {
+        return getScheduledEventCache().getElementById(id);
+    }
+    
+    /**
+     * This returns the {@link ScheduledEvent} which has the same id as the one provided.
+     * <br>If there is no known {@link ScheduledEvent} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
+     * @param  id
+     *         The id of the {@link ScheduledEvent}.
+     *
+     * @return Possibly-null {@link ScheduledEvent} with a matching id.
+     */
+    @Nullable
+    default ScheduledEvent getScheduledEventById(long id)
+    {
+        return getScheduledEventCache().getElementById(id);
+    }
+    
+    /**
+     * An unmodifiable list of all {@link ScheduledEvent ScheduledEvents} that have the same name as the one provided.
+     * <br>If there are no {@link ScheduledEvent ScheduledEvents} with the provided name, then this returns an empty list.
+     *
+     * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
+     *
+     * @param  name
+     *         The name of the requested {@link ScheduledEvent}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link ScheduledEvent#getName()}.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided name is null.
+     *
+     * @return Possibly-empty immutable list of all the {@link ScheduledEvent ScheduledEvents} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getScheduledEventCache().getElementsByName(name, ignoreCase);
+    }
 
     @Nullable
     @Override
@@ -1743,6 +1838,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
+     * <br>If the webhook does not belong to any known guild of this JDA session, it will be {@link Webhook#isPartial() partial}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1772,6 +1868,7 @@ public interface JDA extends IGuildChannelContainer
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Webhook Webhook} by its id.
+     * <br>If the webhook does not belong to any known guild of this JDA session, it will be {@link Webhook#isPartial() partial}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:

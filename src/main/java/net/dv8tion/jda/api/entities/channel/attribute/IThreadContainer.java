@@ -135,12 +135,14 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * </ul>
      *
      * @param  name
-     *         The name of the new ThreadChannel (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *         The name of the new ThreadChannel (up to {@value Channel#MAX_NAME_LENGTH} characters).
      * @param  isPrivate
      *         The public/private status of the new ThreadChannel. If true, the new ThreadChannel will be private.
      *
      * @throws IllegalArgumentException
-     *         If the provided name is null, blank, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
+     *         If the provided name is null, blank, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters.
+     * @throws IllegalStateException
+     *         If the guild does have the feature flag {@code "PRIVATE_THREADS"} enabled.
      * @throws UnsupportedOperationException
      *         If this is a forum channel.
      *         You must use {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData) createForumPost(...)} instead.

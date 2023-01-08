@@ -25,7 +25,19 @@ import net.dv8tion.jda.api.events.thread.GenericThreadEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link ThreadMember} event has been fired.
+ * If you can see a {@link ThreadChannel}, you will receive all derived thread member events for it.
+ * Current derived events:
+ * <ul>
+ *     <li>{@link ThreadMemberJoinEvent}</li>
+ *     <li>{@link ThreadMemberLeaveEvent}</li>
+ * </ul>
+ *
+ * @see Member
+ * @see ThreadChannel
+ * @see ThreadMember
+ */
 public class GenericThreadMemberEvent extends GenericThreadEvent
 {
     protected final long threadMemberId;
@@ -39,22 +51,43 @@ public class GenericThreadMemberEvent extends GenericThreadEvent
         this.threadMember = threadMember;
     }
 
+    /**
+     * The id of the {@link ThreadMember} that fired this and derived event.
+     *
+     * @return Never-null String containing the ID.
+     */
+    @Nonnull
     public String getThreadMemberId()
     {
         return Long.toUnsignedString(getThreadMemberIdLong());
     }
 
+    /**
+     * The id of the {@link ThreadMember}.
+     *
+     * @return Long containing the Id.
+     */
     public long getThreadMemberIdLong()
     {
         return threadMemberId;
     }
 
+    /**
+     * The {@link ThreadMember} of the event that has been fired.
+     *
+     * @return The {@link ThreadMember} of the event that has been fired.
+     */
     @Nullable
     public ThreadMember getThreadMember()
     {
         return threadMember;
     }
 
+    /**
+     * The {@link ThreadMember} as a guild {@link Member}.
+     *
+     * @return The {@link ThreadMember} as a guild {@link Member}.
+     */
     @Nullable
     public Member getMember()
     {

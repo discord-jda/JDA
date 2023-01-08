@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.SocketHandler;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -88,5 +89,22 @@ public abstract class Event implements GenericEvent
         }
 
         return rawData;
+    }
+
+    @Override
+    public String toString()
+    {
+        if (this instanceof UpdateEvent<?, ?>)
+        {
+            final UpdateEvent<?, ?> event = (UpdateEvent<?, ?>) this;
+            return new EntityString(this)
+                    .setType(event.getPropertyIdentifier())
+                    .addMetadata(null, event.getOldValue() + " -> " + event.getNewValue())
+                    .toString();
+        }
+        else
+        {
+            return new EntityString(this).toString();
+        }
     }
 }

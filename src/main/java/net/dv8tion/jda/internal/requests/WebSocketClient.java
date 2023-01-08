@@ -45,6 +45,7 @@ import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.ShutdownReason;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.compress.Decompressor;
@@ -499,10 +500,28 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //or that a bot reached a new shard minimum and cannot connect with the current settings
                 //if that is the case we have to drop our connection and inform the user with a fatal error message
                 LOG.error("WebSocket connection was closed and cannot be recovered due to identification issues\n{}", closeCode);
+
+                // Forward the close reason to any hooks to awaitStatus / awaitReady
+                // Since people cannot read logs, we have to explicitly forward this error.
+                switch (closeCode)
+                {
+                case SHARDING_REQUIRED:
+                case INVALID_SHARD:
+                    api.shutdownReason = ShutdownReason.INVALID_SHARDS;
+                    break;
+                case DISALLOWED_INTENTS:
+                    api.shutdownReason = ShutdownReason.DISALLOWED_INTENTS;
+                    break;
+                case GRACEFUL_CLOSE:
+                    break;
+                default:
+                    api.shutdownReason = new ShutdownReason("Connection closed with code " + closeCode);
+                }
             }
 
             if (decompressor != null)
                 decompressor.shutdown();
+
             api.shutdownInternals();
             api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
@@ -1088,27 +1107,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    protected void maybeUnlock()
-    {
-        if (queueLock.isHeldByCurrentThread())
-            queueLock.unlock();
-    }
-
     protected void locked(String comment, Runnable task)
     {
         try
         {
-            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
-            task.run();
+            MiscUtil.locked(queueLock, task);
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             LOG.error(comment, e);
-        }
-        finally
-        {
-            maybeUnlock();
         }
     }
 
@@ -1116,18 +1123,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
-            return task.get();
+            return MiscUtil.locked(queueLock, task);
         }
-        catch (InterruptedException e)
+        catch (Exception e)
         {
             LOG.error(comment, e);
             return null;
-        }
-        finally
-        {
-            maybeUnlock();
         }
     }
 
@@ -1339,6 +1340,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_CREATE",                           new GuildCreateHandler(api));
         handlers.put("GUILD_DELETE",                           new GuildDeleteHandler(api));
         handlers.put("GUILD_EMOJIS_UPDATE",                    new GuildEmojisUpdateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_CREATE",           new ScheduledEventCreateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_UPDATE",           new ScheduledEventUpdateHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_DELETE",           new ScheduledEventDeleteHandler(api));
+        handlers.put("GUILD_SCHEDULED_EVENT_USER_ADD",         new ScheduledEventUserHandler(api, true));
+        handlers.put("GUILD_SCHEDULED_EVENT_USER_REMOVE",      new ScheduledEventUserHandler(api, false));
         handlers.put("GUILD_MEMBER_ADD",                       new GuildMemberAddHandler(api));
         handlers.put("GUILD_MEMBER_REMOVE",                    new GuildMemberRemoveHandler(api));
         handlers.put("GUILD_MEMBER_UPDATE",                    new GuildMemberUpdateHandler(api));

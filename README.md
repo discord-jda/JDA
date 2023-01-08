@@ -1,12 +1,12 @@
 [maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA?color=blue
-[jitpack]: https://img.shields.io/jitpack/v/github/DV8FromTheWorld/JDA?label=Snapshots&color=blue
+[jitpack]: https://img.shields.io/badge/Snapshots-JitPack-blue
 [download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
-[migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
+[migration]: https://jda.wiki/introduction/migration-v3-v4/
 [jenkins]: https://ci.dv8tion.net/job/JDA5
 [license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
-[faq]: https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ
-[troubleshooting]: https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting
+[faq]: https://jda.wiki/introduction/faq/
+[troubleshooting]: https://jda.wiki/using-jda/troubleshooting/
 [discord-shield]: https://discord.com/api/guilds/125227483518861312/widget.png
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-darkgreen.svg
@@ -88,8 +88,6 @@ public static void main(String[] args) {
     builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
     // Enable the bulk delete event
     builder.setBulkDeleteSplittingEnabled(false);
-    // Disable compression (not recommended)
-    builder.setCompression(Compression.NONE);
     // Set activity (like "playing Something")
     builder.setActivity(Activity.watching("TV"));
     
@@ -198,43 +196,6 @@ public class MessageListener extends ListenerAdapter
 }
 ```
 
-**Ping-Pong Bot**:
-
-```java
-public class Bot extends ListenerAdapter
-{
-    public static void main(String[] args)
-    {
-        if (args.length < 1) {
-            System.out.println("You have to provide a token as first argument!");
-            System.exit(1);
-        }
-        // args[0] should be the token
-        // We only need 3 intents in this bot. We only respond to messages in guilds and private channels.
-        // All other events will be disabled.
-        JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
-            .addEventListeners(new Bot())
-            .setActivity(Activity.playing("Type !ping"))
-            .build();
-    }
-    
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
-        Message msg = event.getMessage();
-        if (msg.getContentRaw().equals("!ping"))
-        {
-            MessageChannel channel = event.getChannel();
-            long time = System.currentTimeMillis();
-            channel.sendMessage("Pong!") /* => RestAction<Message> */
-                   .queue(response /* => Message */ -> {
-                       response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
-                   });
-        }
-    }
-}
-```
-
 **Slash-Commands**:
 
 ```java
@@ -246,25 +207,65 @@ public class Bot extends ListenerAdapter
             System.out.println("You have to provide a token as first argument!");
             System.exit(1);
         }
-        // args[0] should be the token
+        // args[0] would be the token (using an environment variable or config file is preferred for security)
         // We don't need any intents for this bot. Slash commands work without any intents!
         JDA jda = JDABuilder.createLight(args[0], Collections.emptyList())
             .addEventListeners(new Bot())
             .setActivity(Activity.playing("Type /ping"))
             .build();
 
-        jda.upsertCommand("ping", "Calculate ping of the bot").queue(); // This can take up to 1 hour to show up in the client
+        // Sets the global command list to the provided commands (removing all others)
+        jda.updateCommands().addCommands(
+            Commands.slash("ping", "Calculate ping of the bot"),
+            Commands.slash("ban", "Ban a user from the server")
+                    .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS) // only usable with ban permissions
+                    .setGuildOnly(true) // Ban command only works inside a guild
+                    .addOption(OptionType.USER, "user", "The user to ban", true) // required option of type user (target to ban)
+                    .addOption(OptionType.STRING, "reason", "The ban reason") // optional reason
+        ).queue();
     }
     
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
-        if (!event.getName().equals("ping")) return; // make sure we handle the right command
-        long time = System.currentTimeMillis();
-        event.reply("Pong!").setEphemeral(true) // reply or acknowledge
-             .flatMap(v ->
-                 event.getHook().editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time) // then edit original
-             ).queue(); // Queue both reply and edit
+        // make sure we handle the right command
+        switch (event.getName()) {
+            case "ping":
+                long time = System.currentTimeMillis();
+                event.reply("Pong!").setEphemeral(true) // reply or acknowledge
+                     .flatMap(v ->
+                          event.getHook().editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time) // then edit original
+                     ).queue(); // Queue both reply and edit
+                break;
+            case "ban":
+                // double check permissions, don't trust discord on this!
+                if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
+                    event.reply("You cannot ban members! Nice try ;)").setEphemeral(true).queue();
+                    break;
+                }
+                User target = event.getOption("user", OptionMapping::getUser);
+                // optionally check for member information
+                Member member = event.getOption("user", OptionMapping::getMember);
+                if (!event.getMember().canInteract(member)) {
+                    event.reply("You cannot ban this user.").setEphemeral(true).queue();
+                    break;
+                }
+                // Before starting our ban request, tell the user we received the command
+                // This sends a "Bot is thinking..." message which is later edited once we finished
+                event.deferReply().queue();
+                String reason = event.getOption("reason", OptionMapping::getAsString);
+                AuditableRestAction<Void> action = event.getGuild().ban(target, 0); // Start building our ban request
+                if (reason != null) // reason is optional
+                    action = action.reason(reason); // set the reason for the ban in the audit logs and ban log
+                action.queue(v -> {
+                    // Edit the thinking message with our response on success
+                    event.getHook().editOriginal("**" + target.getAsTag() + "** was banned by **" + event.getUser().getAsTag() + "**!").queue();
+                }, error -> {
+                    // Tell the user we encountered some error
+                    event.getHook().editOriginal("Some error occurred, try again!").queue();
+                    error.printStackTrace();
+                });
+        }
     }
 }
 ```
@@ -509,40 +510,40 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 JDA currently provides a fallback Logger in case that no SLF4J implementation is present.
 We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as log to files
 
-There is a guide for logback-classic available in our wiki: [Logging Setup](https://github.com/DV8FromTheWorld/JDA/wiki/Logging-Setup)
+There is a guide for logback-classic available in our wiki: [Logging Setup](https://jda.wiki/setup/logging/)
 
 ## Documentation
 
 Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA5/javadoc/)
-<br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
+<br>A simple Wiki can also be found at [jda.wiki](https://jda.wiki/)
 
 ### Annotations
 
 We use a number of annotations to indicate future plans for implemented functionality such as new features of
 the Discord API.
 
-- [Incubating](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/Incubating.java)
+- [Incubating](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/Incubating.java)
     <br>This annotation is used to indicate that functionality may change in the future. Often used when a new feature is added.
-- [ReplaceWith](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/ReplaceWith.java)
+- [ReplaceWith](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ReplaceWith.java)
     <br>Paired with `@Deprecated` this is used to inform you how the new code-fragment is supposed to look once the hereby annotated functionality is removed.
-- [ForRemoval](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
+- [ForRemoval](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
     <br>Paired with `@Deprecated` this indicates that we plan to entirely remove the hereby annotated functionality in the future.
-- [DeprecatedSince](https://github.com/DV8FromTheWorld/JDA/blob/development/src/main/java/net/dv8tion/jda/annotations/DeprecatedSince.java)
+- [DeprecatedSince](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/DeprecatedSince.java)
     <br>Paired with `@Deprecated` this specifies when a feature was marked as deprecated.
 
-[Sources](https://github.com/DV8FromTheWorld/JDA/tree/development/src/main/java/net/dv8tion/jda/annotations)
+[Sources](https://github.com/DV8FromTheWorld/JDA/tree/master/src/main/java/net/dv8tion/jda/annotations)
 
 ## Getting Help
 
-For general troubleshooting you can visit our wiki [Troubleshooting](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting) and [FAQ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ).
+For general troubleshooting you can visit our wiki [Troubleshooting][troubleshooting] and [FAQ][faq].
 <br>If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
 
 Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/discord-api).
 Once you joined, you can find JDA-specific help in the `#java_jda` channel.
 
-For guides and setup help you can also take a look at the [wiki](https://github.com/DV8FromTheWorld/JDA/wiki)
-<br>Especially interesting are the [Getting Started](https://github.com/DV8FromTheWorld/JDA/wiki/3\)-Getting-Started)
-and [Setup](https://github.com/DV8FromTheWorld/JDA/wiki/2\)-Setup) Pages.
+For guides and setup help you can also take a look at the [wiki](https://jda.wiki/)
+<br>Especially interesting are the [Getting Started](https://jda.wiki/introduction/jda/)
+and [Setup](https://jda.wiki/setup/intellij/) Pages.
 
 ## Third Party Recommendations
 
@@ -652,7 +653,7 @@ All dependencies are managed automatically by Gradle.
    * Version: **4.4**
    * [Website](https://commons.apache.org/proper/commons-collections)
  * jackson
-   * Version: **2.13.2**
+   * Version: **2.14.1**
    * [Github](https://github.com/FasterXML/jackson)
  * Trove4j
    * Version: **3.0.3**
@@ -671,4 +672,4 @@ All dependencies are managed automatically by Gradle.
 - [discord.py](https://github.com/Rapptz/discord.py)
 - [serenity](https://github.com/serenity-rs/serenity)
 
-**See also:** https://discord.com/developers/docs/topics/community-resources#libraries
+**See also:** [Discord API Community Libraries](https://github.com/apacheli/discord-api-libs)

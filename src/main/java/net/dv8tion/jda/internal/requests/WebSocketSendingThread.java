@@ -109,6 +109,9 @@ class WebSocketSendingThread implements Runnable
 
         ConnectionRequest audioRequest = null;
         DataObject chunkRequest = null;
+
+        boolean hasLock = false;
+
         try
         {
             api.setContext();
@@ -116,7 +119,9 @@ class WebSocketSendingThread implements Runnable
             needRateLimit = false;
             // We do this outside of the lock because otherwise we could potentially deadlock here
             audioRequest = client.getNextAudioConnectRequest();
-            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
+
+            hasLock = queueLock.tryLock() || queueLock.tryLock(10, TimeUnit.SECONDS);
+            if (!hasLock)
             {
                 scheduleNext();
                 return;
@@ -155,8 +160,8 @@ class WebSocketSendingThread implements Runnable
         }
         finally
         {
-            // on any exception that might cause this lock to not release
-            client.maybeUnlock();
+            if (hasLock)
+                queueLock.unlock();
         }
 
         scheduleNext();

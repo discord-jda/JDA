@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
@@ -32,6 +31,11 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class GuildManagerImpl extends ManagerBase<GuildManager> implements GuildManager
 {
@@ -47,11 +51,11 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected int explicitContentLevel;
     protected int verificationLevel;
     protected boolean boostProgressBarEnabled;
+    protected Set<String> features;
 
     public GuildManagerImpl(Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
-        JDA api = guild.getJDA();
         this.guild = guild;
         if (isPermissionChecksEnabled())
             checkPermissions();
@@ -91,6 +95,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             this.description = null;
         if ((fields & BANNER) == BANNER)
             this.banner = null;
+        if ((fields & FEATURES) == FEATURES)
+            this.features = null;
         return this;
     }
 
@@ -116,6 +122,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         this.banner = null;
         this.afkChannel = null;
         this.systemChannel = null;
+        this.features = null;
         return this;
     }
 
@@ -284,6 +291,44 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
+    @Override
+    public GuildManager setFeatures(@Nonnull Collection<String> features)
+    {
+        Checks.noneNull(features, "Features");
+        this.features = features.stream()
+                .map(String::toUpperCase)
+                .collect(Collectors.toSet());
+        set |= FEATURES;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager addFeatures(@Nonnull Collection<String> features)
+    {
+        return updateFeatures(features, feature -> this.features.add(feature));
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager removeFeatures(@Nonnull Collection<String> features)
+    {
+        return updateFeatures(features, feature -> this.features.remove(feature));
+    }
+
+    private GuildManager updateFeatures(Collection<String> changed, Consumer<String> op)
+    {
+        Checks.noneNull(changed, "Features");
+        if (this.features == null)
+            this.features = new HashSet<>(getGuild().getFeatures());
+        changed.stream()
+               .map(String::toUpperCase)
+               .forEach(op);
+        set |= FEATURES;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -318,6 +363,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("description", description);
         if (shouldUpdate(BOOST_PROGRESS_BAR_ENABLED))
             body.put("premium_progress_bar_enabled", boostProgressBarEnabled);
+        if (shouldUpdate(FEATURES))
+            body.put("features", features);
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         return getRequestBody(body);

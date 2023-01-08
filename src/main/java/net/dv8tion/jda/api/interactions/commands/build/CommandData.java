@@ -147,6 +147,22 @@ public interface CommandData extends SerializableData
     CommandData setGuildOnly(boolean guildOnly);
 
     /**
+     * Sets whether this command should only be usable in NSFW (age-restricted) channels.
+     * <br>Default: false
+     *
+     * <p>Note: Age-restricted commands will not show up in direct messages by default unless the user enables them in their settings.
+     *
+     * @param  nsfw
+     *         True, to make this command nsfw
+     *
+     * @return The builder instance, for chaining
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    @Nonnull
+    CommandData setNSFW(boolean nsfw);
+
+    /**
      * The current command name
      *
      * @return The command name
@@ -191,6 +207,15 @@ public interface CommandData extends SerializableData
     boolean isGuildOnly();
 
     /**
+     * Whether this command should only be usable in NSFW (age-restricted) channels
+     *
+     * @return True, if this command is restricted to NSFW channels
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    boolean isNSFW();
+
+    /**
      * Converts the provided {@link Command} into a CommandData instance.
      *
      * @param  command
@@ -212,6 +237,7 @@ public interface CommandData extends SerializableData
             final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
             return data.setDefaultPermissions(command.getDefaultPermissions())
                     .setGuildOnly(command.isGuildOnly())
+                    .setNSFW(command.isNSFW())
                     .setNameLocalizations(command.getNameLocalizations().toMap())
                     .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
         }
@@ -252,6 +278,7 @@ public interface CommandData extends SerializableData
             }
 
             data.setGuildOnly(!object.getBoolean("dm_permission", true));
+            data.setNSFW(object.getBoolean("nsfw"));
             data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
             data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
             return data;

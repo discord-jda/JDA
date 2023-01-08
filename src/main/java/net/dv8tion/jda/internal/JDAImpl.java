@@ -76,10 +76,7 @@ import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandListUpdateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
@@ -133,6 +130,7 @@ public class JDAImpl implements JDA
     protected final SessionConfig sessionConfig;
     protected final MetaConfig metaConfig;
 
+    public ShutdownReason shutdownReason = ShutdownReason.USER_SHUTDOWN; // indicates why shutdown happened in awaitStatus / awaitReady
     protected WebSocketClient client;
     protected Requester requester;
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
@@ -299,10 +297,7 @@ public class JDAImpl implements JDA
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
-        String token = authConfig.getToken();
         setStatus(Status.LOGGING_IN);
-        if (token == null || token.isEmpty())
-            throw new InvalidTokenException("Provided token was null or empty!");
 
         Map<String, String> previousContext = null;
         ConcurrentMap<String, String> contextMap = metaConfig.getMdcContextMap();
@@ -503,7 +498,7 @@ public class JDAImpl implements JDA
                  || current.ordinal() < status.ordinal()) // If we missed the status (e.g. LOGGING_IN -> CONNECTED happened while waiting for lock)
             {
                 if (current == Status.SHUTDOWN)
-                    throw new IllegalStateException("Was shutdown trying to await status");
+                    throw new IllegalStateException("Was shutdown trying to await status.\nReason: " + shutdownReason);
                 if (endCondition.contains(current))
                     return this;
 
@@ -678,6 +673,13 @@ public class JDAImpl implements JDA
             }
             return Collections.unmodifiableList(packs);
         });
+    }
+
+    @Nonnull
+    @Override
+    public SnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
+    {
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getScheduledEventCache));
     }
 
     @Nonnull
@@ -1029,7 +1031,7 @@ public class JDAImpl implements JDA
         {
             DataObject object = response.getObject();
             EntityBuilder builder = getEntityBuilder();
-            return builder.createWebhook(object);
+            return builder.createWebhook(object, true);
         });
     }
 

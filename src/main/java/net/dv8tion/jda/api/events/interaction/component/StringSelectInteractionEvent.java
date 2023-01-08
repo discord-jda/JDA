@@ -17,49 +17,37 @@
 package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
- * Indicates that a custom {@link SelectMenu} on one of the bots messages was used by a user.
+ * Indicates that a custom {@link StringSelectMenu} on one of the bots messages was used by a user.
  *
  * <p>This fires when a user selects the options on one of the custom select menus attached to a bot or webhook message.
+ * Use {@link #getValues()} or {@link #getSelectedOptions()} to handle the selected options.
  *
  * <p><b>Requirements</b><br>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
+ *
+ * @see EntitySelectInteractionEvent
  */
-public class SelectMenuInteractionEvent extends GenericComponentInteractionCreateEvent implements SelectMenuInteraction
+public class StringSelectInteractionEvent extends GenericSelectMenuInteractionEvent<String, StringSelectMenu> implements StringSelectInteraction
 {
-    private final SelectMenuInteraction menuInteraction;
+    private final StringSelectInteraction interaction;
 
-    public SelectMenuInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectMenuInteraction interaction)
+    public StringSelectInteractionEvent(@Nonnull JDA api, long responseNumber, @Nonnull StringSelectInteraction interaction)
     {
         super(api, responseNumber, interaction);
-        this.menuInteraction = interaction;
+        this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public SelectMenuInteraction getInteraction()
+    public StringSelectInteraction getInteraction()
     {
-        return menuInteraction;
-    }
-
-    @Nonnull
-    @Override
-    public SelectMenu getComponent()
-    {
-        return menuInteraction.getComponent();
-    }
-
-    @Nonnull
-    @Override
-    public List<String> getValues()
-    {
-        return menuInteraction.getValues();
+        return interaction;
     }
 }

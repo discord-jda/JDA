@@ -43,6 +43,11 @@ import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventDeleteEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventUserAddEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventUserRemoveEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.update.*;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
@@ -50,9 +55,7 @@ import net.dv8tion.jda.api.events.interaction.GenericAutoCompleteInteractionEven
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.*;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.*;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
@@ -142,9 +145,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserContextInteraction(@Nonnull UserContextInteractionEvent event) {}
     public void onMessageContextInteraction(@Nonnull MessageContextInteractionEvent event) {}
     public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {}
-    public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {}
     public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {}
     public void onModalInteraction(@Nonnull ModalInteractionEvent event) {}
+    public void onStringSelectInteraction(@Nonnull StringSelectInteractionEvent event) {}
+    public void onEntitySelectInteraction(@Nonnull EntitySelectInteractionEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -265,6 +269,19 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
     public void onGuildUpdateNSFWLevel(@Nonnull GuildUpdateNSFWLevelEvent event) {}
 
+    //Scheduled Event Events
+    public void onScheduledEventUpdateDescription(@Nonnull ScheduledEventUpdateDescriptionEvent event) {}
+    public void onScheduledEventUpdateEndTime(@Nonnull ScheduledEventUpdateEndTimeEvent event) {}
+    public void onScheduledEventUpdateLocation(@Nonnull ScheduledEventUpdateLocationEvent event) {}
+    public void onScheduledEventUpdateName(@Nonnull ScheduledEventUpdateNameEvent event) {}
+    public void onScheduledEventUpdateStartTime(@Nonnull ScheduledEventUpdateStartTimeEvent event) {}
+    public void onScheduledEventUpdateStatus(@Nonnull ScheduledEventUpdateStatusEvent event) {}
+
+    public void onScheduledEventCreate(@Nonnull ScheduledEventCreateEvent event) {}
+    public void onScheduledEventDelete(@Nonnull ScheduledEventDeleteEvent event) {}
+    public void onScheduledEventUserAdd(@Nonnull ScheduledEventUserAddEvent event) {}
+    public void onScheduledEventUserRemove(@Nonnull ScheduledEventUserRemoveEvent event) {}
+
     //Guild Invite Events
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
     public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {}
@@ -341,6 +358,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
     public void onGenericCommandInteraction(@Nonnull GenericCommandInteractionEvent event) {}
     public void onGenericContextInteraction(@Nonnull GenericContextInteractionEvent<?> event) {}
+    public void onGenericSelectMenuInteraction(@Nonnull GenericSelectMenuInteractionEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
@@ -365,6 +383,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
+    public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent event) {}
     public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
     public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent event) {}
 

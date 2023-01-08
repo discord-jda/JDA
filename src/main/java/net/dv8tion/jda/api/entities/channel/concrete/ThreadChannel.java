@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ThreadMemberPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -97,8 +98,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      */
     int getMemberCount();
 
-    //TODO | This name is bad. Looking for alternatives.
-    //how about isParticipant? isThreadMember
     /**
      * Whether the currently logged in member has joined this thread.
      *
@@ -284,7 +283,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #retrieveThreadMember(Member)
      */
     @Nullable
-    default ThreadMember getThreadMember(Member member)
+    default ThreadMember getThreadMember(@Nonnull Member member)
     {
         Checks.notNull(member, "Member");
         return getThreadMemberById(member.getId());
@@ -309,7 +308,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #retrieveThreadMember(Member)
      */
     @Nullable
-    default ThreadMember getThreadMember(User user)
+    default ThreadMember getThreadMember(@Nonnull User user)
     {
         Checks.notNull(user, "User");
         return getThreadMemberById(user.getId());
@@ -334,7 +333,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @see    #retrieveThreadMember(Member)
      */
     @Nullable
-    default ThreadMember getThreadMemberById(String id)
+    default ThreadMember getThreadMemberById(@Nonnull String id)
     {
         return getThreadMemberById(MiscUtil.parseSnowflake(id));
     }
@@ -442,13 +441,14 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
     /**
      * Retrieves the {@link ThreadMember ThreadMembers} of this thread.
      *
-     * <p>This requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS} intent to be enabled.
+     * <p>This requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS} intent to be enabled
+     * in the <a href="https://discord.com/developers/applications" target="_blank">Application Dashboard</a>.
      *
-     * @return a RestAction that resolves into a List of {@link ThreadMember ThreadMembers} of this thread.
+     * @return {@link ThreadMemberPaginationAction}
      */
-    //TODO-v5: docs - documentation depends on implementation cleanup.
+    @Nonnull
     @CheckReturnValue
-    RestAction<List<ThreadMember>> retrieveThreadMembers();
+    ThreadMemberPaginationAction retrieveThreadMembers();
 
     /**
      * Whether the current account is the owner of this thread.
@@ -545,6 +545,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @see    ChannelField#ARCHIVED_TIMESTAMP
      */
+    @Nonnull
     OffsetDateTime getTimeArchiveInfoLastModified();
 
     /**
@@ -594,6 +595,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> join();
 
@@ -616,6 +618,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> leave();
 
@@ -656,6 +659,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> addThreadMemberById(long id);
 
@@ -696,6 +700,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> addThreadMemberById(@Nonnull String id)
     {
@@ -732,6 +737,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> addThreadMember(@Nonnull User user)
     {
@@ -769,6 +775,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> addThreadMember(@Nonnull Member member)
     {
@@ -808,6 +815,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     RestAction<Void> removeThreadMemberById(long id);
 
@@ -845,6 +853,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> removeThreadMemberById(@Nonnull String id)
     {
@@ -879,6 +888,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> removeThreadMember(@Nonnull User user)
     {
@@ -914,6 +924,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *
      * @return {@link RestAction}
      */
+    @Nonnull
     @CheckReturnValue
     default RestAction<Void> removeThreadMember(@Nonnull Member member)
     {

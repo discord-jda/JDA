@@ -325,10 +325,18 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     default R applyData(@Nonnull MessageCreateData data)
     {
         Checks.notNull(data, "MessageCreateData");
+
+        final List<LayoutComponent> layoutComponents = data.getComponents().stream()
+                .map(LayoutComponent::createCopy)
+                .collect(Collectors.toList());
         return setContent(data.getContent())
+                .setAllowedMentions(data.getAllowedMentions())
+                .mentionUsers(data.getMentionedUsers())
+                .mentionRoles(data.getMentionedRoles())
+                .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
-                .setComponents(data.getComponents())
+                .setComponents(layoutComponents)
                 .setFiles(data.getFiles());
     }
 
@@ -373,7 +381,12 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
         if (data.isSet(MessageEditBuilder.EMBEDS))
             setEmbeds(data.getEmbeds());
         if (data.isSet(MessageEditBuilder.COMPONENTS))
-            setComponents(data.getComponents());
+        {
+            final List<LayoutComponent> layoutComponents = data.getComponents().stream()
+                    .map(LayoutComponent::createCopy)
+                    .collect(Collectors.toList());
+            setComponents(layoutComponents);
+        }
         if (data.isSet(MessageEditBuilder.ATTACHMENTS))
             setFiles(data.getFiles());
         if (data.isSet(MessageEditBuilder.MENTIONS))

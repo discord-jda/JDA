@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
@@ -58,7 +59,7 @@ public class CommandImpl implements Command
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
     private final long id, guildId, applicationId, version;
-    private final boolean guildOnly;
+    private final boolean guildOnly, nsfw;
     private final Command.Type type;
     private final DefaultMemberPermissions defaultMemberPermissions;
 
@@ -75,8 +76,8 @@ public class CommandImpl implements Command
         this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
         this.options = parseOptions(json, OPTION_TEST, Command.Option::new);
-        this.groups = parseOptions(json, GROUP_TEST, Command.SubcommandGroup::new);
-        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Command.Subcommand::new);
+        this.groups = parseOptions(json, GROUP_TEST, (DataObject o) -> new SubcommandGroup(this, o));
+        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
         this.version = json.getUnsignedLong("version", id);
 
         this.defaultMemberPermissions = json.isNull("default_member_permissions")
@@ -84,6 +85,7 @@ public class CommandImpl implements Command
                 : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
         this.guildOnly = !json.getBoolean("dm_permission", true);
+        this.nsfw = json.getBoolean("nsfw");
     }
 
     public static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -157,6 +159,13 @@ public class CommandImpl implements Command
 
     @Nonnull
     @Override
+    public String getFullCommandName()
+    {
+        return name;
+    }
+
+    @Nonnull
+    @Override
     public String getDescription()
     {
         return description;
@@ -216,15 +225,33 @@ public class CommandImpl implements Command
     }
 
     @Override
+    public boolean isNSFW()
+    {
+        return nsfw;
+    }
+
+    @Override
     public long getIdLong()
     {
         return id;
     }
 
+    @Nonnull
+    @Override
+    public String getAsMention()
+    {
+        if (getType() != Type.SLASH)
+            throw new IllegalStateException("Only slash commands can be mentioned");
+        return Command.super.getAsMention();
+    }
+
     @Override
     public String toString()
     {
-        return "Command[" + getType() + "](" + getId() + ":" + getName() + ")";
+        return new EntityString(this)
+                .setType(getType())
+                .setName(getName())
+                .toString();
     }
 
     @Override

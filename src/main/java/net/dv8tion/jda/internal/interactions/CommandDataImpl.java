@@ -51,6 +51,7 @@ public class CommandDataImpl implements SlashCommandData
     private boolean allowOption = true;
     private boolean allowRequired = true;
     private boolean guildOnly = false;
+    private boolean nsfw = false;
     private DefaultMemberPermissions defaultMemberPermissions = DefaultMemberPermissions.ENABLED;
 
     private final Command.Type type;
@@ -102,6 +103,7 @@ public class CommandDataImpl implements SlashCommandData
         DataObject json = DataObject.empty()
                 .put("type", type.getId())
                 .put("name", name)
+                .put("nsfw", nsfw)
                 .put("options", options)
                 .put("dm_permission", !guildOnly)
                 .put("default_member_permissions", defaultMemberPermissions == DefaultMemberPermissions.ENABLED
@@ -133,6 +135,12 @@ public class CommandDataImpl implements SlashCommandData
     public boolean isGuildOnly()
     {
         return guildOnly;
+    }
+
+    @Override
+    public boolean isNSFW()
+    {
+        return nsfw;
     }
 
     @Nonnull
@@ -177,6 +185,14 @@ public class CommandDataImpl implements SlashCommandData
     public CommandDataImpl setGuildOnly(boolean guildOnly)
     {
         this.guildOnly = guildOnly;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setNSFW(boolean nsfw)
+    {
+        this.nsfw = nsfw;
         return this;
     }
 

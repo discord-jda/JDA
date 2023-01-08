@@ -46,6 +46,7 @@ import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
+import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -65,6 +66,7 @@ import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
+import net.dv8tion.jda.internal.managers.GuildWelcomeScreenManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
@@ -73,6 +75,7 @@ import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -102,6 +105,7 @@ public class GuildImpl implements Guild
     private final JDAImpl api;
 
     private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ScheduledEvent> scheduledEventCache = new SortedSnowflakeCacheViewImpl<>(ScheduledEvent.class, ScheduledEvent::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SortedSnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName, Comparator.naturalOrder());
@@ -539,6 +543,44 @@ public class GuildImpl implements Guild
         return rulesChannel;
     }
 
+    @Nonnull
+    @Override
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new DeferredRestAction<>(getJDA(), ScheduledEvent.class,
+                () -> getScheduledEventById(id),
+                () ->
+                {
+                    Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENT.compile(getId(), id);
+                    return new RestActionImpl<>(getJDA(), route, (response, request) -> api.getEntityBuilder().createScheduledEvent(this, response.getObject()));
+                });
+    }
+
+    @Nonnull
+    @Override
+    public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(long id)
+    {
+        return retrieveScheduledEventById(Long.toUnsignedString(id));
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull String location, @Nonnull OffsetDateTime startTime, @Nonnull OffsetDateTime endTime)
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new ScheduledEventActionImpl(name, location, startTime, endTime, this);
+    }
+
+    @Nonnull
+    @Override
+    public ScheduledEventAction createScheduledEvent(@Nonnull String name, @Nonnull GuildChannel channel, @Nonnull OffsetDateTime startTime)
+    {
+        checkPermission(Permission.MANAGE_EVENTS);
+        return new ScheduledEventActionImpl(name, channel, startTime, this);
+    }
+
+
     @Override
     public TextChannel getCommunityUpdatesChannel()
     {
@@ -627,6 +669,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache()
+    {
+        return scheduledEventCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<Category> getCategoryCache()
     {
         return categoryCache;
@@ -700,72 +749,33 @@ public class GuildImpl implements Guild
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
         Member self = getSelfMember();
-        Predicate<GuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
+        Predicate<GuildChannel> filterHidden = includeHidden ? (it) -> true : it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
 
-        List<GuildChannel> channels;
-        SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
-        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
-        SnowflakeCacheViewImpl<StageChannel> stageView = getStageChannelsView();
-        SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
-        SnowflakeCacheViewImpl<NewsChannel> newsView = getNewsChannelView();
-        SnowflakeCacheViewImpl<ForumChannel> forumView = getForumChannelsView();
-        List<TextChannel> textChannels;
-        List<NewsChannel> newsChannels;
-        List<VoiceChannel> voiceChannels;
-        List<StageChannel> stageChannels;
-        List<ForumChannel> forumChannels;
-        List<Category> categories;
-        try (UnlockHook categoryHook = categoryView.readLock();
-             UnlockHook voiceHook = voiceView.readLock();
-             UnlockHook textHook = textView.readLock();
-             UnlockHook newsHook = newsView.readLock();
-             UnlockHook stageHook = stageView.readLock();
-             UnlockHook forumHook = forumView.readLock())
+        SnowflakeCacheViewImpl<Category> categories = getCategoriesView();
+        SnowflakeCacheViewImpl<VoiceChannel> voice = getVoiceChannelsView();
+        SnowflakeCacheViewImpl<StageChannel> stage = getStageChannelsView();
+        SnowflakeCacheViewImpl<TextChannel> text = getTextChannelsView();
+        SnowflakeCacheViewImpl<NewsChannel> news = getNewsChannelView();
+        SnowflakeCacheViewImpl<ForumChannel> forum = getForumChannelsView();
+
+        List<GuildChannel> channels = new ArrayList<>((int) (categories.size() + voice.size() + stage.size() + text.size() + news.size() + forum.size()));
+
+        voice.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        stage.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        text.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        news.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        forum.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+
+        categories.forEach(category ->
         {
-            if (includeHidden)
-            {
-                textChannels = textView.asList();
-                newsChannels = newsView.asList();
-                voiceChannels = voiceView.asList();
-                stageChannels = stageView.asList();
-                forumChannels = forumView.asList();
-            }
-            else
-            {
-                textChannels = textView.stream().filter(filterHidden).collect(Collectors.toList());
-                newsChannels = newsView.stream().filter(filterHidden).collect(Collectors.toList());
-                voiceChannels = voiceView.stream().filter(filterHidden).collect(Collectors.toList());
-                stageChannels = stageView.stream().filter(filterHidden).collect(Collectors.toList());
-                forumChannels = forumView.stream().filter(filterHidden).collect(Collectors.toList());
-            }
-            categories = categoryView.asList(); // we filter categories out when they are empty (no visible channels inside)
-            channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + newsChannels.size() + stageChannels.size());
-        }
-
-        textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        newsChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        stageChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        forumChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
-        Collections.sort(channels);
-
-        for (Category category : categories)
-        {
-            List<GuildChannel> children;
-            if (includeHidden)
-            {
-                children = category.getChannels();
-            }
-            else
-            {
-                children = category.getChannels().stream().filter(filterHidden).collect(Collectors.toList());
-                if (children.isEmpty())
-                    continue;
-            }
+            if (!includeHidden && category.getChannels().stream().noneMatch(filterHidden))
+                return;
 
             channels.add(category);
-            channels.addAll(children);
-        }
+        });
+
+        // See AbstractGuildChannelImpl#compareTo for details on how this achieves the canonical order of the client
+        Collections.sort(channels);
 
         return Collections.unmodifiableList(channels);
     }
@@ -1323,6 +1333,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public RestAction<GuildWelcomeScreen> retrieveWelcomeScreen()
+    {
+        final Route.CompiledRoute route = Route.Guilds.GET_WELCOME_SCREEN.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            return entityBuilder.createWelcomeScreen(this, response.getObject());
+        });
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel)
     {
         Checks.notNull(member, "Member");
@@ -1852,6 +1874,13 @@ public class GuildImpl implements Guild
         return new RoleOrderActionImpl(this, useAscendingOrder);
     }
 
+    @Nonnull
+    @Override
+    public GuildWelcomeScreenManager modifyWelcomeScreen()
+    {
+        return new GuildWelcomeScreenManagerImpl(this);
+    }
+
     // ---- Checks ----
 
     protected void checkGuild(Guild providedGuild, String comment)
@@ -2118,6 +2147,11 @@ public class GuildImpl implements Guild
 
     // -- Map getters --
 
+    public SortedSnowflakeCacheViewImpl<ScheduledEvent> getScheduledEventsView()
+    {
+        return scheduledEventCache;
+    }
+
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
     {
         return categoryCache;
@@ -2220,6 +2254,8 @@ public class GuildImpl implements Guild
     @Override
     public String toString()
     {
-        return "G:" + getName() + '(' + id + ')';
+        return new EntityString(this)
+                .setName(getName())
+                .toString();
     }
 }

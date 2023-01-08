@@ -19,15 +19,32 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channel's} archival timestamp was updated.
+ *
+ * <p>This timestamp will be updated when any of the following happens:
+ * <ul>
+ *     <li>The channel is archived</li>
+ *     <li>The channel is unarchived</li>
+ *     <li>The AUTO_ARCHIVE_DURATION is changed</li>
+ * </ul>
+ *
+ * Limited to {@link ThreadChannel Thread Channels}.
+ *
+ * @see ThreadChannel#getTimeArchiveInfoLastModified()
+ * @see ChannelField#ARCHIVED_TIMESTAMP
+ */
 public class ChannelUpdateArchiveTimestampEvent extends GenericChannelUpdateEvent<OffsetDateTime>
 {
     public static final ChannelField FIELD = ChannelField.ARCHIVED_TIMESTAMP;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     private final long oldTimestamp;
     private final long newTimestamp;

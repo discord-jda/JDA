@@ -19,14 +19,26 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channel's} auto archive duration has been updated.
+ *
+ * <p>Can be used to retrieve the old auto archive duration and the new one.
+ *
+ * <p>Limited to {@link ThreadChannel Thread Channels}.
+ *
+ * @see ThreadChannel#getAutoArchiveDuration()
+ * @see ThreadChannel.AutoArchiveDuration
+ * @see ChannelField#AUTO_ARCHIVE_DURATION
+ */
 public class ChannelUpdateAutoArchiveDurationEvent extends GenericChannelUpdateEvent<ThreadChannel.AutoArchiveDuration>
 {
     public static final ChannelField FIELD = ChannelField.AUTO_ARCHIVE_DURATION;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateAutoArchiveDurationEvent(@Nonnull JDA api, long responseNumber, Channel channel, ThreadChannel.AutoArchiveDuration oldValue, ThreadChannel.AutoArchiveDuration newValue)
     {

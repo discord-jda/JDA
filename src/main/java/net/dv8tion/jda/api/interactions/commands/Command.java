@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.CheckReturnValue;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
  * @see Guild#retrieveCommandById(String)
  * @see Guild#retrieveCommands()
  */
-public interface Command extends ISnowflake
+public interface Command extends ISnowflake, ICommandReference
 {
     /**
      * Delete this command.
@@ -226,6 +227,15 @@ public interface Command extends ISnowflake
      * @return True, if this command is restricted to guilds.
      */
     boolean isGuildOnly();
+
+    /**
+     * Whether this command is restricted to NSFW (age-restricted) channels.
+     *
+     * @return True, if this command is NSFW
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    boolean isNSFW();
 
     /**
      * Possible command types
@@ -539,7 +549,10 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Choice(" + name + "," + stringValue + ")";
+            return new EntityString(this)
+                    .setName(name)
+                    .addMetadata("value", stringValue)
+                    .toString();
         }
 
         private void setIntValue(long value)
@@ -823,27 +836,43 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Option[" + getType() + "](" + name + ")";
+            return new EntityString(this)
+                    .setType(getType())
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
     /**
      * An Subcommand for a command.
      */
-    class Subcommand
+    class Subcommand implements ICommandReference
     {
+        private final ICommandReference parentCommand; //Could be Command or SubcommandGroup
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
         private final List<Option> options;
 
-        public Subcommand(DataObject json)
+        public Subcommand(ICommandReference parentCommand, DataObject json)
         {
+            this.parentCommand = parentCommand;
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
             this.options = CommandImpl.parseOptions(json, CommandImpl.OPTION_TEST, Option::new);
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p><b>This will return the ID of the top level command</b>
+         */
+        @Override
+        public long getIdLong()
+        {
+            return parentCommand.getIdLong();
         }
 
         /**
@@ -866,6 +895,13 @@ public interface Command extends ISnowflake
         public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
+        }
+
+        @Nonnull
+        @Override
+        public String getFullCommandName()
+        {
+            return parentCommand.getFullCommandName() + " " + getName();
         }
 
         /**
@@ -921,27 +957,42 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "Subcommand(" + name + ")";
+            return new EntityString(this)
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 
     /**
      * An Subcommand Group for a command.
      */
-    class SubcommandGroup
+    class SubcommandGroup implements ICommandReference
     {
+        private final Command parentCommand;
         private final String name, description;
         private final LocalizationMap nameLocalizations;
         private final LocalizationMap descriptionLocalizations;
         private final List<Subcommand> subcommands;
 
-        public SubcommandGroup(DataObject json)
+        public SubcommandGroup(Command parentCommand, DataObject json)
         {
+            this.parentCommand = parentCommand;
             this.name = json.getString("name");
             this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
             this.description = json.getString("description");
             this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
-            this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, Subcommand::new);
+            this.subcommands = CommandImpl.parseOptions(json, CommandImpl.SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p><b>This will return the ID of the top level command</b>
+         */
+        @Override
+        public long getIdLong()
+        {
+            return parentCommand.getIdLong();
         }
 
         /**
@@ -964,6 +1015,13 @@ public interface Command extends ISnowflake
         public LocalizationMap getNameLocalizations()
         {
             return nameLocalizations;
+        }
+
+        @Nonnull
+        @Override
+        public String getFullCommandName()
+        {
+            return parentCommand.getFullCommandName() + " " + getName();
         }
 
         /**
@@ -1019,7 +1077,9 @@ public interface Command extends ISnowflake
         @Override
         public String toString()
         {
-            return "SubcommandGroup(" + name + ")";
+            return new EntityString(this)
+                    .addMetadata("name", name)
+                    .toString();
         }
     }
 }

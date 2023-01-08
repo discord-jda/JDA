@@ -16,17 +16,12 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.component.SelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 /**
  * Represents a select menu in a message.
@@ -36,26 +31,12 @@ import java.util.stream.Collectors;
  * <p>The selections a user makes are only visible within their current client session.
  * Other users cannot see the choices selected, and they will disappear when the client restarts or the message is reloaded.
  *
- * <p><b>Examples</b><br>
- * <pre>{@code
- * public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
- *   if (!event.getName().equals("class")) return;
+ * <p>This is a generic interface for all types of select menus.
+ * <br>You can use {@link EntitySelectMenu#create(String, Collection)} to create a select menu of Discord entities such as {@link net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget#USER users}.
+ * <br>Alternatively, you can use {@link StringSelectMenu#create(String)} to create a select menu of up to {@value #OPTIONS_MAX_AMOUNT} pre-defined strings to pick from.
  *
- *   SelectMenu menu = SelectMenu.create("menu:class")
- *     .setPlaceholder("Choose your class") // shows the placeholder indicating what this menu is for
- *     .setRequireRange(1, 1) // only one can be selected
- *     .addOption("Arcane Mage", "mage-arcane")
- *     .addOption("Fire Mage", "mage-fire")
- *     .addOption("Frost Mage", "mage-frost")
- *     .build();
- *
- *   event.reply("Please pick your class below")
- *     .setEphemeral(true)
- *     .addActionRow(menu)
- *     .queue();
- * }
- * }</pre>
- *
+ * @see StringSelectMenu
+ * @see EntitySelectMenu
  * @see SelectMenuInteraction
  */
 public interface SelectMenu extends ActionComponent
@@ -98,107 +79,20 @@ public interface SelectMenu extends ActionComponent
     int getMaxValues();
 
     /**
-     * An <b>unmodifiable</b> list of up to {@value OPTIONS_MAX_AMOUNT} available options to choose from.
-     *
-     * @return The {@link SelectOption SelectOptions} this menu provides
-     *
-     * @see    Builder#getOptions()
-     */
-    @Nonnull
-    List<SelectOption> getOptions();
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    default SelectMenu asDisabled()
-    {
-        return withDisabled(true);
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    default SelectMenu asEnabled()
-    {
-        return withDisabled(false);
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    default SelectMenu withDisabled(boolean disabled)
-    {
-        return createCopy().setDisabled(disabled).build();
-    }
-
-    /**
-     * Creates a new preconfigured {@link Builder} with the same settings used for this select menu.
-     * <br>This can be useful to create an updated version of this menu without needing to rebuild it from scratch.
-     *
-     * @return The {@link Builder} used to create the select menu
-     */
-    @Nonnull
-    @CheckReturnValue
-    default Builder createCopy()
-    {
-        //noinspection ConstantConditions
-        Builder builder = create(getId());
-        builder.setRequiredRange(getMinValues(), getMaxValues());
-        builder.setPlaceholder(getPlaceholder());
-        builder.addOptions(getOptions());
-        builder.setDisabled(isDisabled());
-        return builder;
-    }
-
-    /**
-     * Creates a new {@link Builder} for a select menu with the provided custom id.
-     *
-     * @param  customId
-     *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
-     *
-     * @throws IllegalArgumentException
-     *         If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters
-     *
-     * @return The {@link Builder} used to create the select menu
-     */
-    @Nonnull
-    @CheckReturnValue
-    static Builder create(@Nonnull String customId)
-    {
-        return new Builder(customId);
-    }
-
-    /**
-     * Inverse function for {@link #toData()} which parses the serialized select menu data.
-     * <br>Returns a {@link Builder} which allows for further configuration.
-     *
-     * @param  data
-     *         The serialized select menu data
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the data representation is invalid
-     * @throws IllegalArgumentException
-     *         If some part of the data has an invalid length or null is provided
-     *
-     * @return The parsed SelectMenu Builder instance
-     */
-    @Nonnull
-    @CheckReturnValue
-    static Builder fromData(@Nonnull DataObject data)
-    {
-        return new SelectMenuImpl(data).createCopy();
-    }
-
-    /**
      * A preconfigured builder for the creation of select menus.
+     *
+     * @param <T>
+     *        The output type
+     * @param <B>
+     *        The builder type (used for fluent interface)
      */
-    class Builder
+    @SuppressWarnings("unchecked")
+    abstract class Builder<T extends SelectMenu, B extends Builder<T, B>>
     {
-        private String customId;
-        private String placeholder;
-        private int minValues = 1, maxValues = 1;
-        private boolean disabled = false;
-        private final List<SelectOption> options = new ArrayList<>();
+        protected String customId;
+        protected String placeholder;
+        protected int minValues = 1, maxValues = 1;
+        protected boolean disabled = false;
 
         protected Builder(@Nonnull String customId)
         {
@@ -212,17 +106,17 @@ public interface SelectMenu extends ActionComponent
          *         The new custom id to use
          *
          * @throws IllegalArgumentException
-         *         If the provided id is null, empty, or longer than {@value ID_MAX_LENGTH} characters
+         *         If the provided id is null, empty, or longer than {@value #ID_MAX_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setId(@Nonnull String customId)
+        public B setId(@Nonnull String customId)
         {
             Checks.notEmpty(customId, "Component ID");
             Checks.notLonger(customId, ID_MAX_LENGTH, "Component ID");
             this.customId = customId;
-            return this;
+            return (B) this;
         }
 
         /**
@@ -232,12 +126,12 @@ public interface SelectMenu extends ActionComponent
          *         The placeholder or null
          *
          * @throws IllegalArgumentException
-         *         If the provided placeholder is empty or longer than {@value PLACEHOLDER_MAX_LENGTH} characters
+         *         If the provided placeholder is empty or longer than {@value #PLACEHOLDER_MAX_LENGTH} characters
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setPlaceholder(@Nullable String placeholder)
+        public B setPlaceholder(@Nullable String placeholder)
         {
             if (placeholder != null)
             {
@@ -245,7 +139,7 @@ public interface SelectMenu extends ActionComponent
                 Checks.notLonger(placeholder, PLACEHOLDER_MAX_LENGTH, "Placeholder");
             }
             this.placeholder = placeholder;
-            return this;
+            return (B) this;
         }
 
         /**
@@ -258,17 +152,17 @@ public interface SelectMenu extends ActionComponent
          *         The min values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is negative or greater than {@value OPTIONS_MAX_AMOUNT}
+         *         If the provided amount is negative or greater than {@value #OPTIONS_MAX_AMOUNT}
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setMinValues(int minValues)
+        public B setMinValues(int minValues)
         {
             Checks.notNegative(minValues, "Min Values");
             Checks.check(minValues <= OPTIONS_MAX_AMOUNT, "Min Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, minValues);
             this.minValues = minValues;
-            return this;
+            return (B) this;
         }
 
         /**
@@ -281,17 +175,17 @@ public interface SelectMenu extends ActionComponent
          *         The max values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is less than 1 or greater than {@value OPTIONS_MAX_AMOUNT}
+         *         If the provided amount is less than 1 or greater than {@value #OPTIONS_MAX_AMOUNT}
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setMaxValues(int maxValues)
+        public B setMaxValues(int maxValues)
         {
             Checks.positive(maxValues, "Max Values");
             Checks.check(maxValues <= OPTIONS_MAX_AMOUNT, "Max Values may not be greater than %d! Provided: %d", OPTIONS_MAX_AMOUNT, maxValues);
             this.maxValues = maxValues;
-            return this;
+            return (B) this;
         }
 
         /**
@@ -311,7 +205,7 @@ public interface SelectMenu extends ActionComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setRequiredRange(int min, int max)
+        public B setRequiredRange(int min, int max)
         {
             Checks.check(min <= max, "Min Values should be less than or equal to Max Values! Provided: [%d, %d]", min, max);
             return setMinValues(min).setMaxValues(max);
@@ -327,199 +221,10 @@ public interface SelectMenu extends ActionComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setDisabled(boolean disabled)
+        public B setDisabled(boolean disabled)
         {
             this.disabled = disabled;
-            return this;
-        }
-
-        /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
-         *
-         * @param  options
-         *         The {@link SelectOption SelectOptions} to add
-         *
-         * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT} or null is provided
-         *
-         * @return The same builder instance for chaining
-         *
-         * @see    SelectOption#of(String, String)
-         */
-        @Nonnull
-        public Builder addOptions(@Nonnull SelectOption... options)
-        {
-            Checks.noneNull(options, "Options");
-            Checks.check(this.options.size() + options.length <= OPTIONS_MAX_AMOUNT, "Cannot have more than %d options for a select menu!", OPTIONS_MAX_AMOUNT);
-            Collections.addAll(this.options, options);
-            return this;
-        }
-
-        /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
-         *
-         * @param  options
-         *         The {@link SelectOption SelectOptions} to add
-         *
-         * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT} or null is provided
-         *
-         * @return The same builder instance for chaining
-         *
-         * @see    SelectOption#of(String, String)
-         */
-        @Nonnull
-        public Builder addOptions(@Nonnull Collection<? extends SelectOption> options)
-        {
-            Checks.noneNull(options, "Options");
-            Checks.check(this.options.size() + options.size() <= OPTIONS_MAX_AMOUNT, "Cannot have more than %d options for a select menu!", OPTIONS_MAX_AMOUNT);
-            this.options.addAll(options);
-            return this;
-        }
-
-        /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
-         *
-         * @param  label
-         *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
-         * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
-         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
-         *
-         * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
-         *         or any of the individual parameter requirements are violated.
-         *
-         * @return The same builder instance for chaining
-         */
-        @Nonnull
-        public Builder addOption(@Nonnull String label, @Nonnull String value)
-        {
-            return addOptions(new SelectOption(label, value));
-        }
-
-        /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
-         *
-         * @param  label
-         *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
-         * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
-         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
-         * @param  emoji
-         *         The {@link Emoji} shown next to this option, or null
-         *
-         * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided, or any of the individual parameter requirements are violated.
-         *
-         * @return The same builder instance for chaining
-         */
-        @Nonnull
-        public Builder addOption(@Nonnull String label, @Nonnull String value, @Nonnull Emoji emoji)
-        {
-            return addOption(label, value, null, emoji);
-        }
-
-        /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
-         *
-         * @param  label
-         *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
-         * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
-         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
-         * @param  description
-         *         The description explaining the meaning of this option in more detail, up to 50 characters
-         *
-         * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
-         *         or any of the individual parameter requirements are violated.
-         *
-         * @return The same builder instance for chaining
-         */
-        @Nonnull
-        public Builder addOption(@Nonnull String label, @Nonnull String value, @Nonnull String description)
-        {
-            return addOption(label, value, description, null);
-        }
-
-        /**
-         * Adds up to {@value OPTIONS_MAX_AMOUNT} possible options to this select menu.
-         *
-         * @param  label
-         *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
-         * @param  value
-         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
-         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
-         * @param  description
-         *         The description explaining the meaning of this option in more detail, up to 50 characters
-         * @param  emoji
-         *         The {@link Emoji} shown next to this option, or null
-         *
-         * @throws IllegalArgumentException
-         *         If the total amount of options is greater than {@value OPTIONS_MAX_AMOUNT}, invalid null is provided,
-         *         or any of the individual parameter requirements are violated.
-         *
-         * @return The same builder instance for chaining
-         */
-        @Nonnull
-        public Builder addOption(@Nonnull String label, @Nonnull String value, @Nullable String description, @Nullable Emoji emoji)
-        {
-            return addOptions(new SelectOption(label, value, description, false, emoji));
-        }
-
-        /**
-         * Modifiable list of options currently configured in this builder.
-         *
-         * @return The list of {@link SelectOption SelectOptions}
-         */
-        @Nonnull
-        public List<SelectOption> getOptions()
-        {
-            return options;
-        }
-
-        /**
-         * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
-         *
-         * @param  values
-         *         The {@link SelectOption#getValue() option values}
-         *
-         * @throws IllegalArgumentException
-         *         If null is provided
-         *
-         * @return The same builder instance for chaining
-         */
-        @Nonnull
-        public Builder setDefaultValues(@Nonnull Collection<String> values)
-        {
-            Checks.noneNull(values, "Values");
-            Set<String> set = new HashSet<>(values);
-            for (ListIterator<SelectOption> it = getOptions ().listIterator(); it.hasNext();)
-            {
-                SelectOption option = it.next();
-                it.set(option.withDefault(set.contains(option.getValue())));
-            }
-            return this;
-        }
-
-
-        /**
-         * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
-         *
-         * @param  values
-         *         The {@link SelectOption SelectOptions}
-         *
-         * @throws IllegalArgumentException
-         *         If null is provided
-         *
-         * @return The same builder instance for chaining
-         */
-        @Nonnull
-        public Builder setDefaultOptions(@Nonnull Collection<? extends SelectOption> values)
-        {
-            Checks.noneNull(values, "Values");
-            return setDefaultValues(values.stream().map(SelectOption::getValue).collect(Collectors.toSet()));
+            return (B) this;
         }
 
         /**
@@ -576,24 +281,13 @@ public interface SelectMenu extends ActionComponent
 
         /**
          * Creates a new {@link SelectMenu} instance if all requirements are satisfied.
-         * <br>A select menu may not have more than {@value OPTIONS_MAX_AMOUNT} options at once.
-         *
-         * <p>The values for {@link #setMinValues(int)} and {@link #setMaxValues(int)} are bounded by the length of {@link #getOptions()}.
-         * This means they will automatically be adjusted to not be greater than {@code getOptions().size()}.
          *
          * @throws IllegalArgumentException
-         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()} or more than {@value OPTIONS_MAX_AMOUNT} options are provided
+         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()}
          *
          * @return The new {@link SelectMenu} instance
          */
         @Nonnull
-        public SelectMenu build()
-        {
-            Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
-            Checks.check(options.size() <= OPTIONS_MAX_AMOUNT, "Cannot build a select menu with more than %d options.", OPTIONS_MAX_AMOUNT);
-            int min = Math.min(minValues, options.size());
-            int max = Math.min(maxValues, options.size());
-            return new SelectMenuImpl(customId, placeholder, min, max, disabled, options);
-        }
+        public abstract T build();
     }
 }

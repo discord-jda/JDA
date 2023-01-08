@@ -87,7 +87,6 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
      * <br>Limitations:
      * <ul>
-     *     <li>Cannot be deleted by the bot</li>
      *     <li>Cannot contain any files/attachments</li>
      *     <li>Cannot be reacted to</li>
      *     <li>Cannot be retrieved</li>
