@@ -76,6 +76,7 @@ import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandListUpdateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -88,11 +89,9 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
+import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -512,6 +511,28 @@ public class JDAImpl implements JDA
         }
 
         return this;
+    }
+
+    @Override
+    public boolean awaitShutdown(@Nonnull Duration timeout) throws InterruptedException
+    {
+        long deadline = timeout.isZero() || timeout.isNegative() ? Long.MAX_VALUE : System.currentTimeMillis() + timeout.toMillis();
+        MiscUtil.tryLock(statusLock);
+        try
+        {
+            Status current = getStatus();
+            while (current != Status.SHUTDOWN)
+            {
+                if (!statusCondition.await(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS))
+                    return false;
+                current = getStatus();
+            }
+            return true;
+        }
+        finally
+        {
+            statusLock.unlock();
+        }
     }
 
     @Override

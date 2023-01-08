@@ -55,6 +55,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -376,6 +377,71 @@ public interface JDA extends IGuildChannelContainer
     default JDA awaitReady() throws InterruptedException
     {
         return awaitStatus(Status.CONNECTED);
+    }
+
+    /**
+     * Blocks the current thread until {@link #getStatus()} returns {@link Status#SHUTDOWN}.
+     * <br>This can be useful in certain situations like disabling class loading.
+     *
+     * <p>Note that shutdown time depends on the length of the rate-limit queue.
+     * You can use {@link #shutdownNow()} to cancel all pending requests and immediately shutdown.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * jda.shutdown();
+     * // Allow at most 10 seconds for remaining requests to finish
+     * if (!jda.awaitShutdown(Duration.ofSeconds(10))) {
+     *     jda.shutdownNow(); // Cancel all remaining requests
+     *     jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
+     * }
+     * }</pre>
+     *
+     * <p><b>This will not implicitly call {@code shutdown()}, you are responsible to ensure that the shutdown process has started.</b>
+     *
+     * @param  timeout
+     *         The maximum time to wait, or {@link Duration#ZERO} to wait indefinitely
+     *
+     * @throws IllegalArgumentException
+     *         If the provided timeout is null
+     * @throws InterruptedException
+     *         If the current thread is interrupted while waiting
+     *
+     * @return False, if the timeout has elapsed before the shutdown has completed, true otherwise.
+     */
+    @CheckReturnValue
+    boolean awaitShutdown(@Nonnull Duration timeout) throws InterruptedException;
+
+    /**
+     * Blocks the current thread until {@link #getStatus()} returns {@link Status#SHUTDOWN}.
+     * <br>This can be useful in certain situations like disabling class loading.
+     *
+     * <p>This will wait indefinitely by default. Use {@link #awaitShutdown(Duration)} to set a timeout.
+     *
+     * <p>Note that shutdown time depends on the length of the rate-limit queue.
+     * You can use {@link #shutdownNow()} to cancel all pending requests and immediately shutdown.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * jda.shutdown();
+     * // Allow at most 10 seconds for remaining requests to finish
+     * if (!jda.awaitShutdown(Duration.ofSeconds(10))) {
+     *     jda.shutdownNow(); // Cancel all remaining requests
+     *     jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
+     * }
+     * }</pre>
+     *
+     * <p><b>This will not implicitly call {@code shutdown()}, you are responsible to ensure that the shutdown process has started.</b>
+     *
+     * @throws IllegalArgumentException
+     *         If the provided timeout is null
+     * @throws InterruptedException
+     *         If the current thread is interrupted while waiting
+     *
+     * @return Always true
+     */
+    default boolean awaitShutdown() throws InterruptedException
+    {
+        return awaitShutdown(Duration.ZERO);
     }
 
     /**
