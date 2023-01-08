@@ -374,16 +374,38 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
             return isIntegration() ? Long.toUnsignedString(getIntegrationIdLong()) : null;
         }
 
+        /**
+         * Whether this role can be acquired through a premium subscription purchase.
+         *
+         * @return True, if this is a subscription role
+         *
+         * @see    #getSubscriptionIdLong()
+         */
         boolean hasSubscriptionListing();
 
+        /**
+         * The subscription listing id for this role.
+         *
+         * @return The listing id, or 0 if this role is not for a subscription listing
+         */
         long getSubscriptionIdLong();
 
+        /**
+         * The subscription listing id for this role.
+         *
+         * @return The listing id, or null if this role is not for a subscription listing
+         */
         @Nullable
         default String getSubscriptionId()
         {
             return hasSubscriptionListing() ? Long.toUnsignedString(getSubscriptionIdLong()) : null;
         }
 
+        /**
+         * Whether this role can be purchased by a user.
+         *
+         * @return True, if this role is purchasable
+         */
         boolean isAvailableForPurchase();
     }
 }
