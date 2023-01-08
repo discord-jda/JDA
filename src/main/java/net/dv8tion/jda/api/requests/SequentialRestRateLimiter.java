@@ -284,15 +284,14 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                     // Handle global rate limit if necessary
                     if (global)
                     {
-                        config.getGlobalRateLimit().set(now + retryAfter);
+                        config.getGlobalRateLimit().setClassic(now + retryAfter);
                         log.error("Encountered global rate limit! Retry-After: {} ms Scope: {}", retryAfter, scope);
                     }
                     // Handle cloudflare rate limits, this applies to all routes and uses seconds for retry-after
                     else if (cloudflare)
                     {
-                        config.getGlobalRateLimit().set(now + retryAfter);
+                        config.getGlobalRateLimit().setCloudflare(now + retryAfter);
                         log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter / 1000);
-                        bucket.onCloudflareBan(retryAfter);
                     }
                     // Handle hard rate limit, pretty much just log that it happened
                     else
@@ -378,13 +377,32 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return remaining;
         }
 
-        public void onCloudflareBan(long retryAfter) {}
+        public abstract long getGlobalRateLimit(long now);
 
-        public abstract long getRateLimit();
+        public long getRateLimit()
+        {
+            long now = getNow();
+
+            long global = getGlobalRateLimit(now);
+            // Global rate limit is more important to handle
+            if (global > 0)
+                return global;
+
+            // Check if the bucket reset time has expired
+            if (reset <= now)
+            {
+                // Update the remaining uses to the limit (we don't know better)
+                remaining = 1;
+                return 0L;
+            }
+
+            // If there are remaining requests we don't need to do anything, otherwise return backoff in milliseconds
+            return remaining < 1 ? reset - now : 0L;
+        }
 
         protected boolean isGlobalRateLimit()
         {
-            return config.getGlobalRateLimit().get() > getNow();
+            return getGlobalRateLimit(getNow()) > 0;
         }
 
         protected void backoff()
@@ -442,41 +460,6 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return false;
         }
 
-        @Override
-        public String toString()
-        {
-            return bucketId;
-        }
-    }
-
-    private class ClassicBucket extends Bucket
-    {
-        public ClassicBucket(String bucketId)
-        {
-            super(bucketId);
-        }
-
-        @Override
-        public long getRateLimit()
-        {
-            long now = getNow();
-            long global = config.getGlobalRateLimit().get();
-            // Global rate limit is more important to handle
-            if (global > now)
-                return global - now;
-            // Check if the bucket reset time has expired
-            if (reset <= now)
-            {
-                // Update the remaining uses to the limit (we don't know better)
-                remaining = 1;
-                return 0L;
-            }
-
-            // If there are remaining requests we don't need to do anything, otherwise return backoff in milliseconds
-            return remaining < 1 ? reset - now : 0L;
-        }
-
-        @Override
         public void run()
         {
             log.trace("Bucket {} is running {} requests", bucketId, requests.size());
@@ -510,81 +493,42 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
 
             backoff();
         }
+
+        @Override
+        public String toString()
+        {
+            return bucketId;
+        }
+    }
+
+    private class ClassicBucket extends Bucket
+    {
+        public ClassicBucket(String bucketId)
+        {
+            super(bucketId);
+        }
+
+        @Override
+        public long getGlobalRateLimit(long now)
+        {
+            GlobalRateLimit holder = config.getGlobalRateLimit();
+            long global = Math.max(holder.getClassic(), holder.getCloudflare());
+            return global - now;
+        }
     }
 
     private class InteractionBucket extends Bucket
     {
-        private boolean dead = false;
-
         public InteractionBucket(@Nonnull String bucketId)
         {
             super(bucketId);
         }
 
         @Override
-        public void onCloudflareBan(long retryAfter)
+        public long getGlobalRateLimit(long now)
         {
-            dead = TimeUnit.MILLISECONDS.toMinutes(retryAfter) >= 15;
-            reset = getNow() + retryAfter;
-            remaining = 0;
-        }
-
-        // Specialized implementation that ignores global rate-limits (which do not apply to interactions)
-        @Override
-        public long getRateLimit()
-        {
-            long now = getNow();
-            // Check if the bucket reset time has expired
-            if (reset <= now)
-            {
-                // Update the remaining uses to the limit (we don't know better)
-                remaining = 1;
-                return 0L;
-            }
-
-            // If there are remaining requests we don't need to do anything, otherwise return backoff in milliseconds
-            return remaining < 1 ? reset - now : 0L;
-        }
-
-        @Override
-        public void run()
-        {
-            log.trace("Bucket {} is running {} requests", bucketId, requests.size());
-            while (!requests.isEmpty())
-            {
-                long rateLimit = getRateLimit();
-                if (rateLimit > 0L)
-                {
-                    // We need to backoff since we ran out of remaining uses or hit the global rate limit
-                    Work request = requests.peekFirst(); // this *should* not be null
-                    String baseRoute = request != null ? request.getRoute().getBaseRoute().toString() : "N/A";
-                    log.debug("Backing off {} ms for bucket {} on route {}", rateLimit, bucketId, baseRoute);
-                    break;
-                }
-
-                Work request = requests.removeFirst();
-                if (request.isSkipped())
-                    continue;
-
-                // When we get cloudflare banned and requests would never finish, we cancel them here
-                if (dead)
-                {
-                    request.cancel();
-                    continue;
-                }
-
-                // Check if a bucket has been discovered and initialized for this route
-                if (isUninit())
-                {
-                    boolean shouldSkip = moveRequest(request);
-                    if (shouldSkip) continue;
-                }
-
-
-                if (execute(request)) break;
-            }
-
-            backoff();
+            // Only cloudflare bans apply to interactions
+            return config.getGlobalRateLimit().getCloudflare() - now;
         }
     }
 }

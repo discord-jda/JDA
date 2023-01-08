@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Blocking;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Interface used to handle requests to the Discord API.
@@ -177,18 +178,77 @@ public interface RestRateLimiter
     {
         /**
          * The current global rate-limit reset time.
+         * <br>This is the rate-limit applied on the bot token.
          *
          * @return The timestamp when the global rate-limit expires (unix timestamp in milliseconds)
          */
-        long get();
+        long getClassic();
 
         /**
          * Set the current global rate-limit reset time.
+         * <br>This is the rate-limit applied on the bot token.
          *
          * @param timestamp
          *        The timestamp when the global rate-limit expires (unix timestamp in milliseconds)
          */
-        void set(long timestamp);
+        void setClassic(long timestamp);
+
+        /**
+         * The current cloudflare rate-limit reset time.
+         * <br>This is the rate-limit applied on the current IP.
+         *
+         * @return The timestamp when the cloudflare rate-limit expires (unix timestamp in milliseconds)
+         */
+        long getCloudflare();
+
+        /**
+         * Set the current cloudflare rate-limit reset time.
+         * <br>This is the rate-limit applied on the current IP.
+         *
+         * @param timestamp
+         *        The timestamp when the cloudflare rate-limit expires (unix timestamp in milliseconds)
+         */
+        void setCloudflare(long timestamp);
+
+        /**
+         * Creates a default instance of this interface.
+         * <br>This uses {@link AtomicLong} to keep track of rate-limits.
+         *
+         * @return The default implementation
+         */
+        @Nonnull
+        static GlobalRateLimit create()
+        {
+            return new GlobalRateLimit()
+            {
+                private final AtomicLong classic = new AtomicLong(-1);
+                private final AtomicLong cloudflare = new AtomicLong(-1);
+
+                @Override
+                public long getClassic()
+                {
+                    return classic.get();
+                }
+
+                @Override
+                public void setClassic(long timestamp)
+                {
+                    classic.set(timestamp);
+                }
+
+                @Override
+                public long getCloudflare()
+                {
+                    return cloudflare.get();
+                }
+
+                @Override
+                public void setCloudflare(long timestamp)
+                {
+                    cloudflare.set(timestamp);
+                }
+            };
+        }
     }
 
     /**

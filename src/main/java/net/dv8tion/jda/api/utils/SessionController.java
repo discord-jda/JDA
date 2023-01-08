@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestRateLimiter;
 
@@ -127,30 +129,40 @@ public interface SessionController
      * Provides the cross-session global REST ratelimit it received through {@link #setGlobalRatelimit(long)}.
      *
      * @return The current global REST ratelimit or -1 if unset
+     *
+     * @deprecated Use {@link #getRateLimitHandle()} instead
      */
-    long getGlobalRatelimit();
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("getRateLimitHandle().getClassic()")
+    default long getGlobalRatelimit()
+    {
+        return -1;
+    }
 
     /**
      * Called by the RateLimiter if the global rest ratelimit has changed.
      *
      * @param ratelimit
      *        The new global ratelimit
+     *
+     * @deprecated Use {@link #getRateLimitHandle()} instead
      */
-    void setGlobalRatelimit(long ratelimit);
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("getRateLimitHandle().getClassic()")
+    default void setGlobalRatelimit(long ratelimit) {}
 
     /**
-     * Store for global rate limit.
+     * The store for global rate-limits of all types.
      * <br>This can be used to share the global rate-limit information between shards on the same IP.
      *
-     * <p>By default, this uses {@link #getGlobalRatelimit()} and {@link #setGlobalRatelimit(long)}.
-     * If replaced, those methods will not be used.
-     *
-     * @return The global rate limit store
+     * @return The global rate-limiter
      */
     @Nonnull
-    default RestRateLimiter.GlobalRateLimit getGlobalRateLimitHandler()
+    default RestRateLimiter.GlobalRateLimit getRateLimitHandle()
     {
-        return new GlobalRateLimiter(this);
+        return new GlobalRateLimitAdapter(this);
     }
 
     /**
@@ -294,12 +306,17 @@ public interface SessionController
     /**
      * Wrapper for {@link #getGlobalRatelimit()} and {@link #setGlobalRatelimit(long)}.
      */
-    class GlobalRateLimiter implements RestRateLimiter.GlobalRateLimit
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("getRateLimitHandle()")
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    class GlobalRateLimitAdapter implements RestRateLimiter.GlobalRateLimit
     {
         private final SessionController controller;
 
-        public GlobalRateLimiter(@Nonnull SessionController controller)
+        public GlobalRateLimitAdapter(@Nonnull SessionController controller)
         {
+            SessionControllerAdapter.log.warn("Using outdated implementation of global rate-limit handling. It is recommended to use GlobalRateLimit interface instead!");
             this.controller = controller;
         }
 
@@ -309,7 +326,7 @@ public interface SessionController
          * @return The current global ratelimit
          */
         @Override
-        public long get()
+        public long getClassic()
         {
             return controller.getGlobalRatelimit();
         }
@@ -321,9 +338,32 @@ public interface SessionController
          *        The new global ratelimit
          */
         @Override
-        public void set(long ratelimit)
+        public void setClassic(long ratelimit)
         {
             controller.setGlobalRatelimit(ratelimit);
+        }
+
+        /**
+         * Forwarding to {@link SessionController#getGlobalRatelimit()}
+         *
+         * @return The current global ratelimit
+         */
+        @Override
+        public long getCloudflare()
+        {
+            return getClassic();
+        }
+
+        /**
+         * Forwarding to {@link SessionController#setGlobalRatelimit(long)}
+         *
+         * @param timestamp
+         *        The new global ratelimit
+         */
+        @Override
+        public void setCloudflare(long timestamp)
+        {
+            setClassic(timestamp);
         }
     }
 }

@@ -288,7 +288,7 @@ public class JDAImpl implements JDA
         threadConfig.init(this::getIdentifierString);
         requester.getRateLimiter().init(new RestRateLimiter.RateLimitConfig(
                 threadConfig.getRateLimitPool(),
-                getSessionController().getGlobalRateLimitHandler(),
+                getSessionController().getRateLimitHandle(),
                 sessionConfig.isRelativeRateLimit())
         );
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
