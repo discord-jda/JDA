@@ -407,5 +407,13 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
          * @return True, if this role is purchasable
          */
         boolean isAvailableForPurchase();
+
+        /**
+         * Whether this role is acquired through a user connection.
+         * <br>Such as twitter or reddit.
+         *
+         * @return True, if this role is acquired through a user connection
+         */
+        boolean isGuildConnections();
     }
 }

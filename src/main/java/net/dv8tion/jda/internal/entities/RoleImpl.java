@@ -478,6 +478,7 @@ public class RoleImpl implements Role
         private final long subscriptionListingId;
         private final boolean premiumSubscriber;
         private final boolean availableForPurchase;
+        private final boolean isGuildConnections;
 
         public RoleTagsImpl()
         {
@@ -486,6 +487,7 @@ public class RoleImpl implements Role
             this.subscriptionListingId = 0L;
             this.premiumSubscriber = false;
             this.availableForPurchase = false;
+            this.isGuildConnections = false;
         }
 
         public RoleTagsImpl(DataObject tags)
@@ -495,6 +497,7 @@ public class RoleImpl implements Role
             this.subscriptionListingId = tags.getUnsignedLong("subscription_listing_id", 0L);
             this.premiumSubscriber = tags.hasKey("premium_subscriber");
             this.availableForPurchase = tags.hasKey("available_for_purchase");
+            this.isGuildConnections = tags.hasKey("guild_connections");
         }
 
         @Override
@@ -546,9 +549,15 @@ public class RoleImpl implements Role
         }
 
         @Override
+        public boolean isGuildConnections()
+        {
+            return isGuildConnections;
+        }
+
+        @Override
         public int hashCode()
         {
-            return Objects.hash(botId, integrationId, premiumSubscriber, availableForPurchase, subscriptionListingId);
+            return Objects.hash(botId, integrationId, premiumSubscriber, availableForPurchase, subscriptionListingId, isGuildConnections);
         }
 
         @Override
@@ -563,7 +572,8 @@ public class RoleImpl implements Role
                 && integrationId == other.integrationId
                 && premiumSubscriber == other.premiumSubscriber
                 && availableForPurchase == other.availableForPurchase
-                && subscriptionListingId == other.subscriptionListingId;
+                && subscriptionListingId == other.subscriptionListingId
+                && isGuildConnections == other.isGuildConnections;
         }
 
         @Override
@@ -575,6 +585,7 @@ public class RoleImpl implements Role
                     .addMetadata("subscriptionListing", getSubscriptionId())
                     .addMetadata("isBoost", isBoost())
                     .addMetadata("isAvailableForPurchase", isAvailableForPurchase())
+                    .addMetadata("isGuildConnections", isGuildConnections())
                     .toString();
         }
     }
