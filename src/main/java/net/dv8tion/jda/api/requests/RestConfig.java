@@ -24,11 +24,12 @@ import okhttp3.Request;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Configuration for REST-request handling.
  *
- * <p>This can be used to replace the {@link #setRateLimiter(RestRateLimiter) rate-limit handling}
+ * <p>This can be used to replace the {@link #setRateLimiterFactory(Function) rate-limit handling}
  * or to use a different {@link #setBaseUrl(String) base url} for requests, e.g. for mocked HTTP responses or proxies.
  */
 public class RestConfig
@@ -47,7 +48,7 @@ public class RestConfig
     private String baseUrl = DEFAULT_BASE_URL;
     private boolean relativeRateLimit = true;
     private Consumer<? super Request.Builder> customBuilder;
-    private RestRateLimiter rateLimiter = new SequentialRestRateLimiter();
+    private Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> rateLimiter = SequentialRestRateLimiter::new;
 
     /**
      * Whether to use {@code X-RateLimit-Reset-After} to determine the rate-limit backoff.
@@ -78,7 +79,7 @@ public class RestConfig
      * @return The current RestConfig for chaining convenience
      */
     @Nonnull
-    public RestConfig setRateLimiter(@Nonnull RestRateLimiter rateLimiter)
+    public RestConfig setRateLimiterFactory(@Nonnull Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> rateLimiter)
     {
         Checks.notNull(rateLimiter, "RateLimiter");
         this.rateLimiter = rateLimiter;
@@ -187,7 +188,7 @@ public class RestConfig
      * @return The rate-limiter
      */
     @Nonnull
-    public RestRateLimiter getRateLimiter()
+    public Function<? super RestRateLimiter.RateLimitConfig, ? extends RestRateLimiter> getRateLimiterFactory()
     {
         return rateLimiter;
     }

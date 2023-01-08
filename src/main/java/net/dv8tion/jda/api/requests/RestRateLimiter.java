@@ -50,14 +50,6 @@ public interface RestRateLimiter
     String SCOPE_HEADER = "X-RateLimit-Scope";
 
     /**
-     * Initialize your rate limiter with the provided configuration.
-     *
-     * @param config
-     *        The {@link RestConfig} to use
-     */
-    void init(@Nonnull RateLimitConfig config);
-
-    /**
      * Enqueue a new request.
      *
      * <p>Use {@link Work#getRoute()} to determine the correct bucket.

@@ -71,8 +71,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
 
     private final CompletableFuture<?> shutdownHandle = new CompletableFuture<>();
 
-    private Future<?> cleanupWorker;
-    private RateLimitConfig config;
+    private final Future<?> cleanupWorker;
+    private final RateLimitConfig config;
 
     private boolean isStopped, isShutdown;
 
@@ -86,8 +86,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     // Bucket -> Rate-Limit Worker
     private final Map<Bucket, Future<?>> rateLimitQueue = new HashMap<>();
 
-    @Override
-    public void init(@Nonnull RateLimitConfig config)
+    public SequentialRestRateLimiter(@Nonnull RateLimitConfig config)
     {
         this.config = config;
         this.cleanupWorker = config.getPool().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);

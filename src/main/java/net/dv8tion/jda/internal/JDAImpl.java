@@ -157,12 +157,19 @@ public class JDAImpl implements JDA
         this.restConfig = restConfig == null ? new RestConfig() : restConfig;
         this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this, this.authConfig, this.restConfig);
-        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
         this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
+
+        RestRateLimiter rateLimiter = this.restConfig.getRateLimiterFactory().apply(
+            new RestRateLimiter.RateLimitConfig(
+                this.threadConfig.getRateLimitPool(),
+                getSessionController().getRateLimitHandle(),
+                this.sessionConfig.isRelativeRateLimit() && this.restConfig.isRelativeRateLimit()
+        ));
+        this.requester = new Requester(this, this.authConfig, this.restConfig, rateLimiter);
+        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -178,11 +185,6 @@ public class JDAImpl implements JDA
     public boolean isEventPassthrough()
     {
         return sessionConfig.isEventPassthrough();
-    }
-
-    public boolean isRelativeRateLimit()
-    {
-        return restConfig.isRelativeRateLimit();
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)
@@ -286,11 +288,6 @@ public class JDAImpl implements JDA
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
-        requester.getRateLimiter().init(new RestRateLimiter.RateLimitConfig(
-                threadConfig.getRateLimitPool(),
-                getSessionController().getRateLimitHandle(),
-                sessionConfig.isRelativeRateLimit())
-        );
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
@@ -502,7 +499,7 @@ public class JDAImpl implements JDA
     @Override
     public int cancelRequests()
     {
-        return restConfig.getRateLimiter().cancelRequests();
+        return requester.getRateLimiter().cancelRequests();
     }
 
     @Nonnull

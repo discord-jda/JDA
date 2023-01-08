@@ -67,17 +67,17 @@ public class Requester
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api, AuthorizationConfig authConfig, RestConfig restConfig)
+    public Requester(JDA api, AuthorizationConfig authConfig, RestConfig config, RestRateLimiter rateLimiter)
     {
         if (authConfig == null)
             throw new NullPointerException("Provided config was null!");
 
         this.authConfig = authConfig;
         this.api = (JDAImpl) api;
-        this.rateLimiter = restConfig.getRateLimiter();
-        this.baseUrl = restConfig.getBaseUrl();
-        this.userAgent = restConfig.getUserAgent();
-        this.customBuilder = restConfig.getCustomBuilder();
+        this.rateLimiter = rateLimiter;
+        this.baseUrl = config.getBaseUrl();
+        this.userAgent = config.getUserAgent();
+        this.customBuilder = config.getCustomBuilder();
         this.httpClient = this.api.getHttpClient();
     }
 
