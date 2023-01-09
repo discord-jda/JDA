@@ -1796,11 +1796,14 @@ public class GuildImpl implements Guild
             case "png":
                 mediaType = Requester.MEDIA_TYPE_PNG;
                 break;
+            case "gif":
+                mediaType = Requester.MEDIA_TYPE_GIF;
+                break;
             case "json":
                 mediaType = Requester.MEDIA_TYPE_JSON;
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported file extension: '." + extension + "', must be PNG or JSON.");
+                throw new IllegalArgumentException("Unsupported file extension: '." + extension + "', must be PNG, GIF, or JSON.");
         }
 
         // Add sticker metadata as form parts (because payload_json is broken)
