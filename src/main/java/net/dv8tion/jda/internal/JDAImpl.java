@@ -89,7 +89,6 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -514,9 +513,10 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public boolean awaitShutdown(@Nonnull Duration timeout) throws InterruptedException
+    public boolean awaitShutdown(long timeout, @Nonnull TimeUnit unit) throws InterruptedException
     {
-        long deadline = timeout.isZero() || timeout.isNegative() ? Long.MAX_VALUE : System.currentTimeMillis() + timeout.toMillis();
+        timeout = unit.toMillis(timeout);
+        long deadline = timeout == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + timeout;
         MiscUtil.tryLock(statusLock);
         try
         {
