@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
@@ -89,6 +90,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -148,6 +150,7 @@ public class JDAImpl implements JDA
     protected final ReentrantLock statusLock = new ReentrantLock();
     protected final Condition statusCondition = statusLock.newCondition();
     protected final AtomicInteger subsystemShutdown = new AtomicInteger(0);
+    protected ShutdownEvent shutdownEvent = null;
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
@@ -162,7 +165,7 @@ public class JDAImpl implements JDA
         this.threadConfig = threadConfig == null ? ThreadingConfig.getDefault() : threadConfig;
         this.sessionConfig = sessionConfig == null ? SessionConfig.getDefault() : sessionConfig;
         this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
-        this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
+        this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdownNow, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
@@ -842,11 +845,11 @@ public class JDAImpl implements JDA
         }
         else
         {
-            shutdownInternals();
+            shutdownInternals(new ShutdownEvent(this, OffsetDateTime.now(), 1000));
         }
     }
 
-    public void shutdownInternals()
+    public void shutdownInternals(ShutdownEvent event)
     {
         if (getStatus() == Status.SHUTDOWN)
             return;
@@ -868,9 +871,14 @@ public class JDAImpl implements JDA
             catch (Exception ignored) {}
         }
 
+        this.shutdownEvent = event;
+
         // This indicates that the websocket has shutdown (no more events are dispatched)
         if (subsystemShutdown.incrementAndGet() == 2)
+        {
             setStatus(Status.SHUTDOWN);
+            handleEvent(shutdownEvent);
+        }
     }
 
     public void shutdownRequester()
@@ -881,7 +889,10 @@ public class JDAImpl implements JDA
 
         // This indicates that the requester has shutdown (no more requests are sent)
         if (subsystemShutdown.incrementAndGet() == 2)
+        {
             setStatus(Status.SHUTDOWN);
+            handleEvent(shutdownEvent);
+        }
     }
 
     private void closeAudioConnections()
