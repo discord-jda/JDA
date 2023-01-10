@@ -91,6 +91,7 @@ import org.slf4j.MDC;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -146,6 +147,7 @@ public class JDAImpl implements JDA
     protected final AtomicReference<Status> status = new AtomicReference<>(Status.INITIALIZING);
     protected final ReentrantLock statusLock = new ReentrantLock();
     protected final Condition statusCondition = statusLock.newCondition();
+    protected final AtomicInteger subsystemShutdown = new AtomicInteger(0);
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
@@ -366,7 +368,8 @@ public class JDAImpl implements JDA
             return new StatusChangeEvent(this, status, oldStatus);
         });
 
-        handleEvent(event);
+        if (event.getOldStatus() != event.getNewStatus())
+            handleEvent(event);
     }
 
     public void verifyToken()
@@ -830,7 +833,6 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
-        shutdownInternals();
 
         WebSocketClient client = getClient();
         if (client != null)
@@ -838,9 +840,13 @@ public class JDAImpl implements JDA
             client.getChunkManager().shutdown();
             client.shutdown();
         }
+        else
+        {
+            shutdownInternals();
+        }
     }
 
-    public synchronized void shutdownInternals()
+    public void shutdownInternals()
     {
         if (getStatus() == Status.SHUTDOWN)
             return;
@@ -849,7 +855,7 @@ public class JDAImpl implements JDA
         guildSetupController.close();
 
         // stop accepting new requests
-        if (requester.stop()) // returns true if no more requests will be executed
+        if (requester.stop())    // returns true if no more requests will be executed
             shutdownRequester(); // in that case shutdown entirely
         threadConfig.shutdown();
 
@@ -862,7 +868,9 @@ public class JDAImpl implements JDA
             catch (Exception ignored) {}
         }
 
-        setStatus(Status.SHUTDOWN);
+        // This indicates that the websocket has shutdown (no more events are dispatched)
+        if (subsystemShutdown.incrementAndGet() == 2)
+            setStatus(Status.SHUTDOWN);
     }
 
     public void shutdownRequester()
@@ -870,6 +878,10 @@ public class JDAImpl implements JDA
         // Stop all request processing
         requester.shutdown();
         threadConfig.shutdownRequester();
+
+        // This indicates that the requester has shutdown (no more requests are sent)
+        if (subsystemShutdown.incrementAndGet() == 2)
+            setStatus(Status.SHUTDOWN);
     }
 
     private void closeAudioConnections()
