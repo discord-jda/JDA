@@ -36,7 +36,6 @@ import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -145,8 +144,6 @@ public class AuditLogPaginationActionImpl
 
         if (!list.isEmpty())
         {
-            if (order == PaginationOrder.FORWARD)
-                Collections.reverse(list);
             if (this.useCache)
                 this.cached.addAll(list);
             this.last = list.get(list.size() - 1);
