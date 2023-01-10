@@ -93,7 +93,7 @@ import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -149,8 +149,8 @@ public class JDAImpl implements JDA
     protected final AtomicReference<Status> status = new AtomicReference<>(Status.INITIALIZING);
     protected final ReentrantLock statusLock = new ReentrantLock();
     protected final Condition statusCondition = statusLock.newCondition();
-    protected final AtomicInteger subsystemShutdown = new AtomicInteger(0);
-    protected ShutdownEvent shutdownEvent = null;
+    protected final AtomicBoolean requesterShutdown = new AtomicBoolean(false);
+    protected final AtomicReference<ShutdownEvent> shutdownEvent = new AtomicReference<>(null);
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
@@ -871,14 +871,10 @@ public class JDAImpl implements JDA
             catch (Exception ignored) {}
         }
 
-        this.shutdownEvent = event;
-
-        // This indicates that the websocket has shutdown (no more events are dispatched)
-        if (subsystemShutdown.incrementAndGet() == 2)
-        {
-            setStatus(Status.SHUTDOWN);
-            handleEvent(shutdownEvent);
-        }
+        // If the requester has been shutdown too, we can fire the shutdown event
+        boolean signal = MiscUtil.locked(statusLock, () -> shutdownEvent.getAndSet(event) == null && requesterShutdown.get());
+        if (signal)
+            signalShutdown();
     }
 
     public void shutdownRequester()
@@ -887,12 +883,16 @@ public class JDAImpl implements JDA
         requester.shutdown();
         threadConfig.shutdownRequester();
 
-        // This indicates that the requester has shutdown (no more requests are sent)
-        if (subsystemShutdown.incrementAndGet() == 2)
-        {
-            setStatus(Status.SHUTDOWN);
-            handleEvent(shutdownEvent);
-        }
+        // If the websocket has been shutdown too, we can fire the shutdown event
+        boolean signal = MiscUtil.locked(statusLock, () -> !requesterShutdown.getAndSet(true) && shutdownEvent.get() != null);
+        if (signal)
+            signalShutdown();
+    }
+
+    private void signalShutdown()
+    {
+        setStatus(Status.SHUTDOWN);
+        handleEvent(shutdownEvent.get());
     }
 
     private void closeAudioConnections()
