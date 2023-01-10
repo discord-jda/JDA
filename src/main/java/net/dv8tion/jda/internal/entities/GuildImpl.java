@@ -1785,7 +1785,7 @@ public class GuildImpl implements Guild
 
         // Extract file extension and map to media type
         int index = file.getName().lastIndexOf('.');
-        Checks.check(index > -1, "Filename for sticker is missing file extension. Provided: '" + file.getName() + "'. Must be PNG or JSON.");
+        Checks.check(index > -1, "Filename for sticker is missing file extension. Provided: '" + file.getName() + "'. Must be PNG, GIF, or JSON.");
 
         // Convert file extension to media-type
         String extension = file.getName().substring(index + 1).toLowerCase(Locale.ROOT);
