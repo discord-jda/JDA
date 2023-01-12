@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.channel.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
@@ -31,13 +32,20 @@ import java.util.Objects;
 /**
  * Indicates that the tags applied to a {@link ThreadChannel forum post thread} have been updated.
  *
+ * <p>Limited to {@link ThreadChannel ThreadChannels} inside of {@link ForumChannel ForumChannels}
+ *
+ * @see ThreadChannel#getAppliedTags()
  * @see ChannelField#APPLIED_TAGS
  */
 public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<List<Long>>
 {
+
+    public static final ChannelField FIELD = ChannelField.APPLIED_TAGS;
+    public static final String IDENTIFIER = FIELD.getFieldName();
+
     public ChannelUpdateAppliedTagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull ThreadChannel channel, @Nonnull List<Long> oldValue, @Nonnull List<Long> newValue)
     {
-        super(api, responseNumber, channel, ChannelField.APPLIED_TAGS, oldValue, newValue);
+        super(api, responseNumber, channel, FIELD, oldValue, newValue);
     }
 
     /**

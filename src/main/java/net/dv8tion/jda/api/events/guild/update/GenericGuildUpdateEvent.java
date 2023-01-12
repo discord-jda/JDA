@@ -71,10 +71,4 @@ public abstract class GenericGuildUpdateEvent<T> extends GenericGuildEvent imple
     {
         return next;
     }
-
-    @Override
-    public String toString()
-    {
-        return "GuildUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
-    }
 }

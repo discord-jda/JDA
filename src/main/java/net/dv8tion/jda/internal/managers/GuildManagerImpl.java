@@ -307,14 +307,14 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     public GuildManager addFeatures(@Nonnull Collection<String> features)
     {
-        return updateFeatures(features, this.features::add);
+        return updateFeatures(features, feature -> this.features.add(feature));
     }
 
     @Nonnull
     @Override
     public GuildManager removeFeatures(@Nonnull Collection<String> features)
     {
-        return updateFeatures(features, this.features::remove);
+        return updateFeatures(features, feature -> this.features.remove(feature));
     }
 
     private GuildManager updateFeatures(Collection<String> changed, Consumer<String> op)

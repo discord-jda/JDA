@@ -40,14 +40,19 @@ import java.util.Map;
 public interface CommandData extends SerializableData
 {
     /**
-     * The maximum length the name of a command can be.
+     * The maximum length the name of a command can be. ({@value})
      */
     int MAX_NAME_LENGTH = 32;
 
     /**
-     * The maximum length the description of a command can be.
+     * The maximum length the description of a command can be. ({@value})
      */
     int MAX_DESCRIPTION_LENGTH = 100;
+
+    /**
+     * The maximum amount of options/subcommands/groups that can be added to a command or subcommand. ({@value})
+     */
+    int MAX_OPTIONS = 25;
 
     /**
      * Sets the {@link LocalizationFunction} for this command
@@ -68,10 +73,10 @@ public interface CommandData extends SerializableData
      * Configure the command name.
      *
      * @param  name
-     *         The name, 1-32 characters (lowercase and alphanumeric for {@link Command.Type#SLASH})
+     *         The name, 1-{@value #MAX_NAME_LENGTH} characters (lowercase and alphanumeric for {@link Command.Type#SLASH})
      *
      * @throws IllegalArgumentException
-     *         If the name is not between 1-32 characters long, or not lowercase and alphanumeric for slash commands
+     *         If the name is not between 1-{@value #MAX_NAME_LENGTH} characters long, or not lowercase and alphanumeric for slash commands
      *
      * @return The builder instance, for chaining
      */
@@ -147,6 +152,22 @@ public interface CommandData extends SerializableData
     CommandData setGuildOnly(boolean guildOnly);
 
     /**
+     * Sets whether this command should only be usable in NSFW (age-restricted) channels.
+     * <br>Default: false
+     *
+     * <p>Note: Age-restricted commands will not show up in direct messages by default unless the user enables them in their settings.
+     *
+     * @param  nsfw
+     *         True, to make this command nsfw
+     *
+     * @return The builder instance, for chaining
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    @Nonnull
+    CommandData setNSFW(boolean nsfw);
+
+    /**
      * The current command name
      *
      * @return The command name
@@ -191,6 +212,15 @@ public interface CommandData extends SerializableData
     boolean isGuildOnly();
 
     /**
+     * Whether this command should only be usable in NSFW (age-restricted) channels
+     *
+     * @return True, if this command is restricted to NSFW channels
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+     */
+    boolean isNSFW();
+
+    /**
      * Converts the provided {@link Command} into a CommandData instance.
      *
      * @param  command
@@ -212,6 +242,7 @@ public interface CommandData extends SerializableData
             final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
             return data.setDefaultPermissions(command.getDefaultPermissions())
                     .setGuildOnly(command.isGuildOnly())
+                    .setNSFW(command.isNSFW())
                     .setNameLocalizations(command.getNameLocalizations().toMap())
                     .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
         }
@@ -252,6 +283,7 @@ public interface CommandData extends SerializableData
             }
 
             data.setGuildOnly(!object.getBoolean("dm_permission", true));
+            data.setNSFW(object.getBoolean("nsfw"));
             data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
             data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
             return data;

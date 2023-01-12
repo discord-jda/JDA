@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
@@ -36,12 +37,12 @@ public class SystemMessage extends ReceivedMessage
 {
     public SystemMessage(
             long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-            boolean fromWebhook, boolean  tts, boolean pinned,
+            boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
             List<StickerItem> stickers, int flags, ThreadChannel startedThread)
     {
-        super(id, channel, type, messageReference, fromWebhook, tts, pinned, content, nonce, author, member,
+        super(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned, content, nonce, author, member,
                 activity, editTime, mentions, reactions, attachments, embeds, stickers, Collections.emptyList(), flags, null, startedThread);
     }
 
@@ -104,6 +105,9 @@ public class SystemMessage extends ReceivedMessage
     @Override
     public String toString()
     {
-        return "M:[" + type + ']' + author + '(' + id + ')';
+        return new EntityString(this)
+                .setType(type)
+                .addMetadata("author", author)
+                .toString();
     }
 }

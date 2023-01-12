@@ -19,13 +19,24 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channel's} slow mode has been updated.
+ *
+ * <p>Can be used to retrieve the old slow mode and the new one.
+ *
+ * <p>Limited to {@link ISlowmodeChannel ISlowmodeChannels} (and implementations).
+ *
+ * @see ISlowmodeChannel#getSlowmode()
+ * @see ChannelField#SLOWMODE
+ */
 public class ChannelUpdateSlowmodeEvent extends GenericChannelUpdateEvent<Integer>
 {
     public static final ChannelField FIELD = ChannelField.SLOWMODE;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateSlowmodeEvent(@Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
     {

@@ -52,6 +52,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -72,6 +73,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final MessageChannel channel;
     protected final MessageReference messageReference;
     protected final boolean fromWebhook;
+    protected final long applicationId;
     protected final boolean pinned;
     protected final User author;
     protected final Member member;
@@ -95,7 +97,7 @@ public class ReceivedMessage extends AbstractMessage
 
     public ReceivedMessage(
             long id, MessageChannel channel, MessageType type, MessageReference messageReference,
-            boolean fromWebhook, boolean  tts, boolean pinned,
+            boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
             List<StickerItem> stickers, List<ActionRow> components,
@@ -108,6 +110,7 @@ public class ReceivedMessage extends AbstractMessage
         this.type = type;
         this.api = (JDAImpl) channel.getJDA();
         this.fromWebhook = fromWebhook;
+        this.applicationId = applicationId;
         this.pinned = pinned;
         this.author = author;
         this.member = member;
@@ -509,6 +512,12 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    public long getApplicationIdLong()
+    {
+        return applicationId;
+    }
+
+    @Override
     public boolean isTTS()
     {
         return isTTS;
@@ -704,9 +713,10 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String toString()
     {
-        return author != null
-            ? String.format("M:%#s:%.20s(%s)", author, this, getId())
-            : String.format("M:%.20s", this); // this message was made using MessageBuilder
+        return new EntityString(this)
+                .addMetadata("author", author.getAsTag())
+                .addMetadata("content", String.format("%.20s ...", this))
+                .toString();
     }
 
     @Override

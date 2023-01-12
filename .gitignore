@@ -30,6 +30,12 @@ gradle.properties
 *.ipr
 *.iws
 
+# fleet files
+.fleet/
+
+# vscode files
+.vscode/
+
 # netbeans files
 /.nb-gradle/
 *.nb-gradle-properties

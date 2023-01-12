@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 public class ForumTagSnowflakeImpl implements ForumTagSnowflake
 {
@@ -36,7 +37,7 @@ public class ForumTagSnowflakeImpl implements ForumTagSnowflake
     @Override
     public String toString()
     {
-        return "ForumTag(" + id + ')';
+        return new EntityString(this).toString();
     }
 
     @Override

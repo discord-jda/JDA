@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -488,11 +489,11 @@ public interface User extends UserSnowflake
         @Override
         public String toString()
         {
-            return "UserProfile(" +
-                    "userId=" + userId +
-                    ", bannerId='" + bannerId + "'" +
-                    ", accentColor=" + accentColor +
-                    ')';
+            return new EntityString(this)
+                    .addMetadata("userId", userId)
+                    .addMetadata("bannerId", bannerId)
+                    .addMetadata("accentColor", accentColor)
+                    .toString();
         }
     }
 
@@ -524,6 +525,10 @@ public interface User extends UserSnowflake
          * Bot uses only HTTP interactions and is shown in the online member list
          */
         BOT_HTTP_INTERACTIONS(19, "HTTP Interactions Bot"),
+        /**
+         * User is an <a href="https://support-dev.discord.com/hc/articles/10113997751447">Active Developer</a>
+         */
+        ACTIVE_DEVELOPER(     22, "Active Developer"),
 
         UNKNOWN(-1, "Unknown");
 

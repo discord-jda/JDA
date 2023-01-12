@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.update.GenericScheduledEventUpdateEvent;
 import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
@@ -141,6 +142,7 @@ public enum GatewayIntent
      * Typing events in private channels.
      */
     DIRECT_MESSAGE_TYPING(14),
+
     /**
      * <b>PRIVILEGED INTENT</b> Access to message content.
      *
@@ -158,6 +160,12 @@ public enum GatewayIntent
      * @see <a href="https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ" target="_blank">Message Content Privileged Intent FAQ</a>
      */
     MESSAGE_CONTENT(15),
+
+    /**
+     * Scheduled Events events.
+     */
+    SCHEDULED_EVENTS(16),
+    
     ;
 
     /**
@@ -373,6 +381,8 @@ public enum GatewayIntent
                 intents.add(GUILD_BANS);
             else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_EMOJIS_AND_STICKERS);
+            else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event))
+                intents.add(SCHEDULED_EVENTS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_INVITES);
             else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))

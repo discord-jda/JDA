@@ -33,19 +33,19 @@ import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.ThreadChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ThreadMemberPaginationAction;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.ThreadChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ThreadMemberPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -54,13 +54,13 @@ import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.LongStream;
 
 public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements
         ThreadChannel,
-        GuildMessageChannelMixin<ThreadChannelImpl>
+        GuildMessageChannelMixin<ThreadChannelImpl>,
+        ISlowmodeChannelMixin<ThreadChannelImpl>
 {
     private final ChannelType type;
     private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
@@ -202,33 +202,17 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return new DeferredRestAction<>(jda, ThreadMember.class,
                 () -> getThreadMemberById(id),
                 () -> {
-                    Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id));
+                    Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id)).withQueryParams("with_member", "true");
                     return new RestActionImpl<>(jda, route, (resp, req) ->
                         jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject()));
                 });
     }
 
+    @Nonnull
     @Override
-    public RestAction<List<ThreadMember>> retrieveThreadMembers()
+    public ThreadMemberPaginationAction retrieveThreadMembers()
     {
-        //TODO-threads: This interacts with GUILD_MEMBERS in some way. Need to test and document how.
-
-        Route.CompiledRoute route = Route.Channels.LIST_THREAD_MEMBERS.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-        {
-            EntityBuilder builder = api.getEntityBuilder();
-            List<ThreadMember> threadMembers = new LinkedList<>();
-            DataArray memberArr = response.getArray();
-
-            for (int i = 0; i < memberArr.length(); i++)
-            {
-                final DataObject object = memberArr.getObject(i);
-                //Very possible this is gonna break because we don't get user/member info with threadmembers
-                //TODO revisit the @Nonnull annotations in ThreadMember due to the lack of user/member info. Might be a time to introduce RestX entities?
-                threadMembers.add(builder.createThreadMember((GuildImpl) this.getGuild(), this, object));
-            }
-            return Collections.unmodifiableList(threadMembers);
-        });
+        return new ThreadMemberPaginationActionImpl(this);
     }
 
     @Override
@@ -447,14 +431,6 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public int getRawFlags()
     {
         return flags;
-    }
-
-    // -- Object overrides --
-
-    @Override
-    public String toString()
-    {
-        return "ThC:" + getName() + '(' + id + ')';
     }
 
     private void checkUnarchived()

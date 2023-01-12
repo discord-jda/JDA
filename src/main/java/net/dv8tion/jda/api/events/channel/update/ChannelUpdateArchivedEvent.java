@@ -19,13 +19,24 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channel's} archived state has been updated.
+ *
+ * <p>Can be used to retrieve the old archived state and the new one.
+ *
+ * <p>Limited to {@link ThreadChannel Thread Channels}.
+ *
+ * @see ThreadChannel#isArchived()
+ * @see ChannelField#ARCHIVED
+ */
 public class ChannelUpdateArchivedEvent extends GenericChannelUpdateEvent<Boolean>
 {
     public static final ChannelField FIELD = ChannelField.ARCHIVED;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateArchivedEvent(@Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue)
     {

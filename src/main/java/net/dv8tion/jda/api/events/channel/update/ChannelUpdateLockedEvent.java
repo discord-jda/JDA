@@ -19,13 +19,24 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channel's} locked state has been updated.
+ *
+ * <p>Can be used to retrieve the old locked state and the new one.
+ *
+ * <p>Limited to {@link ThreadChannel Thread Channels}.
+ *
+ * @see ThreadChannel#isLocked()
+ * @see ChannelField#LOCKED
+ */
 public class ChannelUpdateLockedEvent extends GenericChannelUpdateEvent<Boolean>
 {
     public static final ChannelField FIELD = ChannelField.LOCKED;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateLockedEvent(@Nonnull JDA api, long responseNumber, Channel channel, Boolean oldValue, Boolean newValue)
     {

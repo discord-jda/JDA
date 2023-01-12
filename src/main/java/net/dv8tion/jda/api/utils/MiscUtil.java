@@ -126,29 +126,27 @@ public class MiscUtil
 
     public static <E> E locked(ReentrantLock lock, Supplier<E> task)
     {
+        tryLock(lock);
         try
         {
-            tryLock(lock);
             return task.get();
         }
         finally
         {
-            if (lock.isHeldByCurrentThread())
-                lock.unlock();
+            lock.unlock();
         }
     }
 
     public static void locked(ReentrantLock lock, Runnable task)
     {
+        tryLock(lock);
         try
         {
-            tryLock(lock);
             task.run();
         }
         finally
         {
-            if (lock.isHeldByCurrentThread())
-                lock.unlock();
+            lock.unlock();
         }
     }
 

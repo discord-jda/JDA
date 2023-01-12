@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.InteractionMentions;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -340,7 +341,11 @@ public class OptionMapping
     @Override
     public String toString()
     {
-        return "Option[" + getType() + "](" + getName() + "=" + getAsString() + ")";
+        return new EntityString(this)
+                .setType(getType())
+                .addMetadata("name", name)
+                .addMetadata("value", getAsString())
+                .toString();
     }
 
     @Override

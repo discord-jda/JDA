@@ -26,6 +26,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -169,6 +171,14 @@ public class ThreadUpdateHandler extends SocketHandler
                         api, responseNumber,
                         thread, oldTagList, newTagList));
             }
+        }
+
+        if (thread.isArchived())
+        {
+            SortedSnowflakeCacheViewImpl<ThreadChannel> guildView = thread.getGuild().getThreadChannelsView();
+            SnowflakeCacheViewImpl<ThreadChannel> globalView = api.getThreadChannelsView();
+            guildView.remove(threadId);
+            globalView.remove(threadId);
         }
 
         return null;

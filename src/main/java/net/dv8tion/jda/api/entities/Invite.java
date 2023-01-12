@@ -47,7 +47,7 @@ import java.util.Set;
 public interface Invite
 {
     /**
-     * Retrieves a new {@link net.dv8tion.jda.api.entities.Invite Invite} instance for the given invite code.
+     * Retrieves a new {@link Invite Invite} instance for the given invite code.
      * <br><b>You cannot resolve invites if you were banned from the origin Guild!</b>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -61,7 +61,7 @@ public interface Invite
      * @param  code
      *         A valid invite code
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Invite Invite}
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Invite Invite}
      *         <br>The Invite object
      */
     @Nonnull
@@ -71,7 +71,7 @@ public interface Invite
     }
     
     /**
-     * Retrieves a new {@link net.dv8tion.jda.api.entities.Invite Invite} instance for the given invite code.
+     * Retrieves a new {@link Invite Invite} instance for the given invite code.
      * <br><b>You cannot resolve invites if you were banned from the origin Guild!</b>
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -87,7 +87,7 @@ public interface Invite
      * @param  withCounts
      *         Whether or not to include online and member counts for guild invites or users for group invites
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Invite Invite}
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Invite Invite}
      *         <br>The Invite object
      */
     @Nonnull
@@ -111,7 +111,7 @@ public interface Invite
     AuditableRestAction<Void> delete();
 
     /**
-     * Tries to retrieve a new expanded {@link net.dv8tion.jda.api.entities.Invite Invite} with more info.
+     * Tries to retrieve a new expanded {@link Invite Invite} with more info.
      * <br>As bots can't be in groups this is only available for guild invites and will throw an {@link java.lang.IllegalStateException IllegalStateException}
      * for other types.
      * <br>Requires either {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild or
@@ -124,7 +124,7 @@ public interface Invite
      * @throws java.lang.IllegalStateException
      *         If this is a group invite
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Invite Invite}
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Invite Invite}
      *         <br>The expanded Invite object
      *
      * @see    #getType()
@@ -153,23 +153,23 @@ public interface Invite
     Invite.TargetType getTargetType();
 
     /**
-     * An {@link net.dv8tion.jda.api.entities.Invite.Channel Invite.Channel} object
+     * An {@link Invite.Channel Invite.Channel} object
      * containing information about this invite's origin channel.
      *
      * @return Information about this invite's origin channel or null in case of a group invite
      * 
-     * @see    net.dv8tion.jda.api.entities.Invite.Channel
+     * @see    Invite.Channel
      */
     @Nullable
     Channel getChannel();
 
     /**
-     * An {@link net.dv8tion.jda.api.entities.Invite.Group Invite.Group} object
+     * An {@link Invite.Group Invite.Group} object
      * containing information about this invite's origin group.
      *
      * @return Information about this invite's origin group or null in case of a guild invite
      *
-     * @see    net.dv8tion.jda.api.entities.Invite.Group
+     * @see    Invite.Group
      */
     @Nullable
     Group getGroup();
@@ -181,7 +181,7 @@ public interface Invite
      *
      * @return Information about this invite's target or {@code null}
      *
-     * @see    net.dv8tion.jda.api.entities.Invite.InviteTarget
+     * @see    Invite.InviteTarget
      */
     @Nullable
     InviteTarget getTarget();
@@ -207,12 +207,12 @@ public interface Invite
     }
 
     /**
-     * An {@link net.dv8tion.jda.api.entities.Invite.Guild Invite.Guild} object
+     * An {@link Invite.Guild Invite.Guild} object
      * containing information about this invite's origin guild.
      *
      * @return Information about this invite's origin guild or null in case of a group invite
      * 
-     * @see    net.dv8tion.jda.api.entities.Invite.Guild
+     * @see    Invite.Guild
      */
     @Nullable
     Guild getGuild();
@@ -461,7 +461,7 @@ public interface Invite
         int getMemberCount();
 
         /**
-         * The Features of the {@link net.dv8tion.jda.api.entities.Invite.Guild Guild}.
+         * The Features of the {@link Invite.Guild Guild}.
          * <p>
          * <b>Possible known features:</b>
          * <ul>
@@ -476,6 +476,16 @@ public interface Invite
          */
         @Nonnull
         Set<String> getFeatures();
+
+        /**
+         * The welcome screen of the {@link Invite.Guild Guild}.
+         * <br>This will be {@code null} if the Guild has no welcome screen,
+         * or if the invite came from a {@link net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent GuildInviteCreateEvent}.
+         *
+         * @return The welcome screen of this Guild or {@code null}
+         */
+        @Nullable
+        GuildWelcomeScreen getWelcomeScreen();
     }
 
     /**
@@ -591,7 +601,7 @@ public interface Invite
          *
          * @return The target application of this invite
          *
-         * @see    net.dv8tion.jda.api.entities.Invite.EmbeddedApplication
+         * @see    Invite.EmbeddedApplication
          */
         @Nullable
         EmbeddedApplication getApplication();

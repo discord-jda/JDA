@@ -55,6 +55,7 @@ public class Requester
     public static final MediaType MEDIA_TYPE_JSON  = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_OCTET = MediaType.parse("application/octet-stream; charset=utf-8");
     public static final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+    public static final MediaType MEDIA_TYPE_GIF = MediaType.parse("image/gif");
 
     protected final JDAImpl api;
     protected final AuthorizationConfig authConfig;

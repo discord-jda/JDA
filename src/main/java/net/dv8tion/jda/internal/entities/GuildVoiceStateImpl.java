@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -243,7 +244,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public String toString()
     {
-        return "VS:" + getGuild().getName() + '(' + getId() + ')';
+        return new EntityString(this)
+                .addMetadata("member", getMember()) //Guild metadata is included in Member metadata
+                .toString();
     }
 
     // -- Setters --

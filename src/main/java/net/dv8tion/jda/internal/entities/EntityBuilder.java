@@ -197,6 +197,23 @@ public class EntityBuilder
         }
     }
 
+    private void createScheduledEventPass(GuildImpl guildObj, DataArray array)
+    {
+        if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
+            return;
+        SnowflakeCacheViewImpl<ScheduledEvent> eventView = guildObj.getScheduledEventsView();
+        for (int i = 0; i < array.length(); i++)
+        {
+            DataObject object = array.getObject(i);
+            if (object.isNull("id"))
+            {
+                LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
+                continue;
+            }
+            createScheduledEvent(guildObj, object);
+        }
+    }
+
     private void createGuildStickerPass(GuildImpl guildObj, DataArray array)
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.STICKER))
@@ -240,6 +257,7 @@ public class EntityBuilder
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
+        final DataArray scheduledEventsArray = guildJson.getArray("guild_scheduled_events");
         final DataArray emojisArray = guildJson.getArray("emojis");
         final DataArray stickersArray = guildJson.getArray("stickers");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
@@ -362,6 +380,7 @@ public class EntityBuilder
             }
         }
 
+        createScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmojiPass(guildObj, emojisArray);
         createGuildStickerPass(guildObj, stickersArray);
         guildJson.optArray("stage_instances")
@@ -961,6 +980,56 @@ public class EntityBuilder
                 .setAvailable(json.getBoolean("available", true));
     }
 
+    public ScheduledEvent createScheduledEvent(GuildImpl guild, DataObject json)
+    {
+        final long id = json.getLong("id");
+        ScheduledEventImpl scheduledEvent = (ScheduledEventImpl) guild.getScheduledEventsView().get(id);
+        if (scheduledEvent == null)
+        {
+            SnowflakeCacheViewImpl<ScheduledEvent> scheduledEventView = guild.getScheduledEventsView();
+            try (UnlockHook hook = scheduledEventView.writeLock())
+            {
+                scheduledEvent = new ScheduledEventImpl(id, guild);
+                if (getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
+                {
+                    scheduledEventView.getMap().put(id, scheduledEvent);
+                }
+            }
+        }
+
+        scheduledEvent.setName(json.getString("name"))
+                .setDescription(json.getString("description", null))
+                .setStatus(ScheduledEvent.Status.fromKey(json.getInt("status", -1)))
+                .setInterestedUserCount(json.getInt("user_count", -1))
+                .setStartTime(json.getOffsetDateTime("scheduled_start_time"))
+                .setEndTime(json.getOffsetDateTime("scheduled_end_time", null))
+                .setImage(json.getString("image", null));
+
+        final long creatorId = json.getLong("creator_id", 0);
+        scheduledEvent.setCreatorId(creatorId);
+        if (creatorId != 0)
+        {
+            if (json.hasKey("creator"))
+                scheduledEvent.setCreator(createUser(json.getObject("creator")));
+            else
+                scheduledEvent.setCreator(getJDA().getUserById(creatorId));
+        }
+        final ScheduledEvent.Type type = ScheduledEvent.Type.fromKey(json.getInt("entity_type"));
+        scheduledEvent.setType(type);
+        switch (type)
+        {
+        case STAGE_INSTANCE:
+        case VOICE:
+            scheduledEvent.setLocation(json.getString("channel_id"));
+            break;
+        case EXTERNAL:
+            String externalLocation = json.getObject("entity_metadata").getString("location");
+            scheduledEvent.setLocation(externalLocation);
+        }
+        return scheduledEvent;
+    }
+
+
     public Category createCategory(DataObject json, long guildId)
     {
         return createCategory(null, json, guildId);
@@ -1256,8 +1325,7 @@ public class EntityBuilder
     {
         ThreadMemberImpl threadMember = new ThreadMemberImpl(member, threadChannel);
         threadMember
-            .setJoinedTimestamp(Helpers.toTimestamp(json.getString("join_timestamp")))
-            .setFlags(json.getInt("flags"));
+            .setJoinedTimestamp(Helpers.toTimestamp(json.getString("join_timestamp")));
 
         return threadMember;
     }
@@ -1565,6 +1633,7 @@ public class EntityBuilder
 
         final String content = jsonObject.getString("content", "");
         final boolean fromWebhook = jsonObject.hasKey("webhook_id");
+        final long applicationId = jsonObject.getUnsignedLong("application_id", 0);
         final boolean pinned = jsonObject.getBoolean("pinned");
         final boolean tts = jsonObject.getBoolean("tts");
         final boolean mentionsEveryone = jsonObject.getBoolean("mention_everyone");
@@ -1684,12 +1753,12 @@ public class EntityBuilder
 
         if (!type.isSystem())
         {
-            return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+            return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
                     content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
         }
         else
         {
-            return new SystemMessage(id, channel, type, messageReference, fromWebhook, tts, pinned,
+            return new SystemMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
                     content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
         }
     }
@@ -2093,7 +2162,11 @@ public class EntityBuilder
             else
                 guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
 
-            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
+            final GuildWelcomeScreen welcomeScreen = guildObject.isNull("welcome_screen")
+                    ? null
+                    : createWelcomeScreen(null, guildObject.getObject("welcome_screen"));
+
+            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
             final String channelName = channelObject.getString("name");
             final long channelId = channelObject.getLong("id");
@@ -2162,6 +2235,27 @@ public class EntityBuilder
         return new InviteImpl(getJDA(), code, expanded, inviter,
                               maxAge, maxUses, temporary, timeCreated,
                               uses, channel, guild, group, target, type);
+    }
+
+    public GuildWelcomeScreen createWelcomeScreen(Guild guild, DataObject object)
+    {
+        final DataArray welcomeChannelsArray = object.getArray("welcome_channels");
+        final List<GuildWelcomeScreen.Channel> welcomeChannels = new ArrayList<>(welcomeChannelsArray.length());
+        for (int i = 0; i < welcomeChannelsArray.length(); i++)
+        {
+            final DataObject welcomeChannelObj = welcomeChannelsArray.getObject(i);
+            EmojiUnion emoji = null;
+            if (!welcomeChannelObj.isNull("emoji_id") || !welcomeChannelObj.isNull("emoji_name"))
+                emoji = createEmoji(welcomeChannelObj, "emoji_name", "emoji_id");
+
+            welcomeChannels.add(new GuildWelcomeScreenImpl.ChannelImpl(
+                    guild,
+                    welcomeChannelObj.getLong("channel_id"),
+                    welcomeChannelObj.getString("description"),
+                    emoji)
+            );
+        }
+        return new GuildWelcomeScreenImpl(guild, object.getString("description", null), Collections.unmodifiableList(welcomeChannels));
     }
 
     public Template createTemplate(DataObject object)

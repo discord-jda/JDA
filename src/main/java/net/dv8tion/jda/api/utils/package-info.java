@@ -24,7 +24,7 @@
  *     <br>Various operations that don't have specific utility classes yet, mostly internals that are accessible from JDA entities</li>
  *
  *     <li>{@link net.dv8tion.jda.api.utils.WidgetUtil WidgetUtil}
- *     <br>This is not bound to a JDA instance and can view the {@link net.dv8tion.jda.api.utils.WidgetUtil.Widget Widget}
+ *     <br>This is not bound to a JDA instance and can view the {@link net.dv8tion.jda.api.entities.Widget Widget}
  *         for a specified Guild. (by id)</li>
  *
  *     <li>{@link net.dv8tion.jda.api.utils.MarkdownSanitizer MarkdownSanitizer}

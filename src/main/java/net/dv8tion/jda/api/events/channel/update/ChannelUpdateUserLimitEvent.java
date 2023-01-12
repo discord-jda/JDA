@@ -19,13 +19,24 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel Channel's} user limit was updated.
+ *
+ * <p>Can be used to retrieve the old user limit and the new one.
+ *
+ * <p>Limited to {@link VoiceChannel Voice Channels}.
+ *
+ * @see VoiceChannel#getUserLimit()
+ * @see ChannelField#USER_LIMIT
+ */
 public class ChannelUpdateUserLimitEvent extends GenericChannelUpdateEvent<Integer>
 {
     public static final ChannelField FIELD = ChannelField.USER_LIMIT;
+    public static final String IDENTIFIER = FIELD.getFieldName();
 
     public ChannelUpdateUserLimitEvent(@Nonnull JDA api, long responseNumber, Channel channel, Integer oldValue, Integer newValue)
     {
