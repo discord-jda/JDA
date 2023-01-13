@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.events.guild.GuildAuditLogEntryCreateEvent;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.entities.WebhookImpl;
@@ -43,6 +44,7 @@ public class AuditLogEntry implements ISnowflake
 {
     protected final long id;
     protected final long targetId;
+    protected final long userId;
     protected final GuildImpl guild;
     protected final UserImpl user;
     protected final WebhookImpl webhook;
@@ -53,12 +55,13 @@ public class AuditLogEntry implements ISnowflake
     protected final ActionType type;
     protected final int rawType;
 
-    public AuditLogEntry(ActionType type, int rawType, long id, long targetId, GuildImpl guild, UserImpl user, WebhookImpl webhook,
+    public AuditLogEntry(ActionType type, int rawType, long id, long userId, long targetId, GuildImpl guild, UserImpl user, WebhookImpl webhook,
                          String reason, Map<String, AuditLogChange> changes, Map<String, Object> options)
     {
-        this.rawType = rawType;
         this.type = type;
+        this.rawType = rawType;
         this.id = id;
+        this.userId = userId;
         this.targetId = targetId;
         this.guild = guild;
         this.user = user;
@@ -126,8 +129,30 @@ public class AuditLogEntry implements ISnowflake
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.User User} responsible
-     * for this action.
+     * The id for the user that executed the action.
+     *
+     * @return The user id
+     */
+    public long getUserIdLong()
+    {
+        return userId;
+    }
+
+    /**
+     * The id for the user that executed the action.
+     *
+     * @return The user id
+     */
+    @Nonnull
+    public String getUserId()
+    {
+        return Long.toUnsignedString(userId);
+    }
+
+    /**
+     * The {@link User} responsible for this action.
+     *
+     * <p>This will not be available for {@link GuildAuditLogEntryCreateEvent}, you can use {@link #getUserIdLong()} instead.
      *
      * @return Possibly-null User instance
      */
