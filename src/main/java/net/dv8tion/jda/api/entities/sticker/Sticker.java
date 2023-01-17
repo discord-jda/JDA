@@ -146,6 +146,10 @@ public interface Sticker extends StickerSnowflake
          */
         LOTTIE(3, "json"),
         /**
+         * The GIF format.
+         */
+        GIF(4, "gif"),
+        /**
          * Represents any unknown or unsupported format types.
          */
         UNKNOWN(-1, null);

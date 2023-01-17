@@ -1785,7 +1785,7 @@ public class GuildImpl implements Guild
 
         // Extract file extension and map to media type
         int index = file.getName().lastIndexOf('.');
-        Checks.check(index > -1, "Filename for sticker is missing file extension. Provided: '" + file.getName() + "'. Must be PNG or JSON.");
+        Checks.check(index > -1, "Filename for sticker is missing file extension. Provided: '" + file.getName() + "'. Must be PNG, GIF, or JSON.");
 
         // Convert file extension to media-type
         String extension = file.getName().substring(index + 1).toLowerCase(Locale.ROOT);
@@ -1796,11 +1796,14 @@ public class GuildImpl implements Guild
             case "png":
                 mediaType = Requester.MEDIA_TYPE_PNG;
                 break;
+            case "gif":
+                mediaType = Requester.MEDIA_TYPE_GIF;
+                break;
             case "json":
                 mediaType = Requester.MEDIA_TYPE_JSON;
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported file extension: '." + extension + "', must be PNG or JSON.");
+                throw new IllegalArgumentException("Unsupported file extension: '." + extension + "', must be PNG, GIF, or JSON.");
         }
 
         // Add sticker metadata as form parts (because payload_json is broken)

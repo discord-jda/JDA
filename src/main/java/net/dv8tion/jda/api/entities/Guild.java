@@ -4582,7 +4582,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  description
      *         The sticker description (2-100 characters, or empty)
      * @param  file
-     *         The sticker file containing the asset (png/apng/lottie) with valid file extension (png or json)
+     *         The sticker file containing the asset (png/apng/gif/lottie) with valid file extension (png, gif, or json)
      * @param  tags
      *         The tags to use for auto-suggestions (Up to 200 characters in total)
      *
@@ -4592,7 +4592,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
      *             <li>If the description is more than 100 characters long or exactly 1 character long</li>
-     *             <li>If the asset file is null or of an invalid format (must be PNG or LOTTIE)</li>
+     *             <li>If the asset file is null or of an invalid format (must be PNG, GIF, or LOTTIE)</li>
      *             <li>If anything is {@code null}</li>
      *         </ul>
      *
@@ -4618,7 +4618,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @param  description
      *         The sticker description (2-100 characters, or empty)
      * @param  file
-     *         The sticker file containing the asset (png/apng/lottie) with valid file extension (png or json)
+     *         The sticker file containing the asset (png/apng/gif/lottie) with valid file extension (png, gif, or json)
      * @param  tag
      *         The sticker tag used for suggestions (emoji or tag words)
      * @param  tags
@@ -4630,7 +4630,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
      *             <li>If the description is more than 100 characters long or exactly 1 character long</li>
-     *             <li>If the asset file is null or of an invalid format (must be PNG or LOTTIE)</li>
+     *             <li>If the asset file is null or of an invalid format (must be PNG, GIF, or LOTTIE)</li>
      *             <li>If anything is {@code null}</li>
      *         </ul>
      *

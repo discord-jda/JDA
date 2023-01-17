@@ -34,17 +34,19 @@ import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 
 public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
 {
     private final Guild guild;
-    private CommandDataImpl data;
+    private final CommandDataImpl data;
 
     public CommandCreateActionImpl(JDAImpl api, CommandDataImpl command)
     {
@@ -220,6 +222,24 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public LocalizationMap getDescriptionLocalizations()
     {
         return data.getDescriptionLocalizations();
+    }
+
+    @Override
+    public boolean removeOptions(@NotNull Predicate<? super OptionData> condition)
+    {
+        return data.removeOptions(condition);
+    }
+
+    @Override
+    public boolean removeSubcommands(@NotNull Predicate<? super SubcommandData> condition)
+    {
+        return data.removeSubcommands(condition);
+    }
+
+    @Override
+    public boolean removeSubcommandGroups(@NotNull Predicate<? super SubcommandGroupData> condition)
+    {
+        return data.removeSubcommandGroups(condition);
     }
 
     @Nonnull
