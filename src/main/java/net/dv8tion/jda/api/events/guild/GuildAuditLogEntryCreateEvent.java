@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that an {@link AuditLogEntry} was added to the a {@link Guild}.
+ * Indicates that an {@link AuditLogEntry} was added to a {@link Guild}.
  *
  * <p>This never provides a {@link AuditLogEntry#getUser() responsible user} instance.
  * You can use {@link AuditLogEntry#getUserIdLong()} instead.
