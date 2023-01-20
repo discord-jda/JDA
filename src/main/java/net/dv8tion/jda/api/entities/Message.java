@@ -367,7 +367,7 @@ public interface Message extends ISnowflake, Formattable
      * <p><b>Notes:</b>
      * <ul>
      *     <li>The position might contain gaps or duplicates.</li>
-     *     <li>The position is not set on messages sent earlier than July 19th 2022, and will return -1.</li>
+     *     <li>The position is not set on messages sent earlier than July 19th, 2022, and will return -1.</li>
      * </ul>
      *
      * @throws IllegalStateException
