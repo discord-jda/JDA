@@ -2392,6 +2392,7 @@ public class EntityBuilder
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, DataObject userJson, DataObject webhookJson)
     {
         final long targetId = entryJson.getLong("target_id", 0);
+        final long userId = entryJson.getLong("user_id", 0);
         final long id = entryJson.getLong("id");
         final int typeKey = entryJson.getInt("action_type");
         final DataArray changes = entryJson.isNull("changes") ? null : entryJson.getArray("changes");
@@ -2422,7 +2423,7 @@ public class EntityBuilder
         CaseInsensitiveMap<String, Object> optionMap = options != null
                 ? new CaseInsensitiveMap<>(options.toMap()) : null;
 
-        return new AuditLogEntry(type, typeKey, id, targetId, guild, user, webhook, reason, changeMap, optionMap);
+        return new AuditLogEntry(type, typeKey, id, userId, targetId, guild, user, webhook, reason, changeMap, optionMap);
     }
 
     public AuditLogChange createAuditLogChange(DataObject change)
