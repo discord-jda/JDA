@@ -161,15 +161,6 @@ public class JDAImpl implements JDA
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
         this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
-
-        RestRateLimiter rateLimiter = this.restConfig.getRateLimiterFactory().apply(
-            new RestRateLimiter.RateLimitConfig(
-                this.threadConfig.getRateLimitPool(),
-                getSessionController().getRateLimitHandle(),
-                this.sessionConfig.isRelativeRateLimit() && this.restConfig.isRelativeRateLimit()
-        ));
-        this.requester = new Requester(this, this.authConfig, this.restConfig, rateLimiter);
-        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -287,7 +278,19 @@ public class JDAImpl implements JDA
     public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding)
     {
         this.shardInfo = shardInfo;
-        threadConfig.init(this::getIdentifierString);
+
+        // Delayed init for thread-pools so they can set the shard info as their name
+        this.threadConfig.init(this::getIdentifierString);
+        // Setup rest-module and rate-limiter subsystem
+        RestRateLimiter rateLimiter = this.restConfig.getRateLimiterFactory().apply(
+                new RestRateLimiter.RateLimitConfig(
+                        this.threadConfig.getRateLimitPool(),
+                        getSessionController().getRateLimitHandle(),
+                        this.sessionConfig.isRelativeRateLimit() && this.restConfig.isRelativeRateLimit()
+                ));
+        this.requester = new Requester(this, this.authConfig, this.restConfig, rateLimiter);
+        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
+
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
