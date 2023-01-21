@@ -143,6 +143,28 @@ public class RoleConnectionMetadata implements SerializableData
     }
 
     /**
+     * The localizations of this record's name for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
+     */
+    @Nonnull
+    public LocalizationMap getNameLocalizations()
+    {
+        return nameLocalization;
+    }
+
+    /**
+     * The localizations of this record's description for {@link DiscordLocale various languages}.
+     *
+     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
+     */
+    @Nonnull
+    public LocalizationMap getDescriptionLocalizations()
+    {
+        return descriptionLocalization;
+    }
+
+    /**
      * Sets a {@link DiscordLocale language-specific} localization of this record's name.
      *
      * <p>This change will not take effect in Discord until you update the role connection metadata using {@link JDA#updateRoleConnectionMetadata(Collection)}.
