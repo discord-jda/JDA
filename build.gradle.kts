@@ -40,7 +40,7 @@ plugins {
 }
 
 val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "beta.2")
+val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "beta.3")
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
@@ -105,7 +105,7 @@ dependencies {
 
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.14")
-    api("com.squareup.okhttp3:okhttp:4.9.3")
+    api("com.squareup.okhttp3:okhttp:4.10.0")
 
     //Opus library support
     api("club.minnced:opus-java:1.1.1")
