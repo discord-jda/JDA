@@ -556,15 +556,58 @@ public interface Message extends ISnowflake, Formattable
     Guild getGuild();
 
     /**
+     * Returns {@code true} if this message has any attachments.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
+     * @return True, if this message has attachments.
+     *
+     * @see    #getAttachments()
+     */
+    boolean hasAttachments();
+
+    /**
      * An immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} that are attached to this message.
      * <br>Most likely this will only ever be 1 {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} at most.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
+     *
+     * @see    #hasAttachments()
+     * @see    #getAttachmentsByExtension(String)
      */
     @Nonnull
     List<Attachment> getAttachments();
+
+    /**
+     * Returns {@code true} if this message has any attachments with the provided extension.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
+     * @param extension The extension to filter by (ex. "png")
+     *
+     * @return True, if this message has an attachment with the provided extension.
+     *
+     * @see    #getAttachmentsByExtension(String)
+     */
+    boolean hasAttachmentsByExtension(@Nonnull String extension);
+
+    /**
+     * An immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} that are attached to this message, filtered by file extension.
+     * <br>Most likely this will only ever be 1 {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} at most.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
+     * @param extension The extension to filter by (ex. "png")
+     *
+     * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} filtered by the provided extension.
+     *
+     * @see    #hasAttachmentsByExtension(String)
+     * @see    #getAttachments()
+     */
+    @Nonnull
+    List<Attachment> getAttachmentsByExtension(@Nonnull String extension);
 
     /**
      * An immutable list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that are part of this Message.

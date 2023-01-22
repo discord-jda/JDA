@@ -61,6 +61,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ReceivedMessage extends AbstractMessage
 {
@@ -460,12 +461,36 @@ public class ReceivedMessage extends AbstractMessage
         return getGuildChannel().getGuild();
     }
 
+    @Override
+    public boolean hasAttachments()
+    {
+        return getAttachments().size() > 0;
+    }
+
     @Nonnull
     @Override
     public List<Attachment> getAttachments()
     {
         checkIntent();
         return attachments;
+    }
+
+    @Override
+    public boolean hasAttachmentsByExtension(@Nonnull String extension)
+    {
+        Checks.notEmpty(extension, "Extension");
+        return getAttachmentsByExtension(extension).size() > 0;
+    }
+
+    @Nonnull
+    @Override
+    public List<Attachment> getAttachmentsByExtension(@Nonnull String extension)
+    {
+        Checks.notEmpty(extension, "Extension");
+        List<Attachment> results = getAttachments().stream() //No need to check intents here, we already did in getAttachments()
+                .filter(a -> Objects.equals(a.getFileExtension(), extension))
+                .collect(Collectors.toList());
+        return Collections.unmodifiableList(results);
     }
 
     @Nonnull

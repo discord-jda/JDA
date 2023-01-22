@@ -165,7 +165,10 @@ public enum GatewayIntent
      * <ul>
      *     <li>{@link Message#getContentRaw()}, {@link Message#getContentDisplay()}, {@link Message#getContentStripped()}</li>
      *     <li>{@link Message#getEmbeds()}</li>
+     *     <li>{@link Message#hasAttachments()}</li>
      *     <li>{@link Message#getAttachments()}</li>
+     *     <li>{@link Message#hasAttachmentsByExtension(String)}</li>
+     *     <li>{@link Message#getAttachmentsByExtension(String)}</li>
      *     <li>{@link Message#getActionRows()}, {@link Message#getButtons()}</li>
      * </ul>
      *

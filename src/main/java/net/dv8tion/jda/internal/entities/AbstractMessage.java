@@ -244,9 +244,31 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Override
+    public boolean hasAttachments()
+    {
+        unsupported();
+        return false;
+    }
+
     @Nonnull
     @Override
     public List<Attachment> getAttachments()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public boolean hasAttachmentsByExtension(@Nonnull String extension)
+    {
+        unsupported();
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public List<Attachment> getAttachmentsByExtension(@Nonnull String extension)
     {
         unsupported();
         return null;
