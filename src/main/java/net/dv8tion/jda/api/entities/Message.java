@@ -595,7 +595,6 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * An immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} that are attached to this message, filtered by file extension.
-     * <br>Most likely this will only ever be 1 {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} at most.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
