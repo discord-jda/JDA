@@ -585,7 +585,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
-     * @param extension The extension to filter by (ex. "png")
+     * @param extension  The extension to filter by (ex. "png")
      *
      * @return True, if this message has an attachment with the provided extension.
      *
@@ -599,7 +599,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
-     * @param extension The extension to filter by (ex. "png")
+     * @param extension  The extension to filter by (ex. "png")
      *
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} filtered by the provided extension.
      *

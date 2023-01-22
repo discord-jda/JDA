@@ -464,7 +464,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public boolean hasAttachments()
     {
-        return getAttachments().size() > 0;
+        return !getAttachments().isEmpty();
     }
 
     @Nonnull
@@ -479,7 +479,7 @@ public class ReceivedMessage extends AbstractMessage
     public boolean hasAttachmentsByExtension(@Nonnull String extension)
     {
         Checks.notEmpty(extension, "Extension");
-        return getAttachmentsByExtension(extension).size() > 0;
+        return !getAttachmentsByExtension(extension).isEmpty();
     }
 
     @Nonnull
@@ -487,10 +487,9 @@ public class ReceivedMessage extends AbstractMessage
     public List<Attachment> getAttachmentsByExtension(@Nonnull String extension)
     {
         Checks.notEmpty(extension, "Extension");
-        List<Attachment> results = getAttachments().stream() //No need to check intents here, we already did in getAttachments()
+        return getAttachments().stream() //No need to check intents here, we already did in getAttachments()
                 .filter(a -> Objects.equals(a.getFileExtension(), extension))
-                .collect(Collectors.toList());
-        return Collections.unmodifiableList(results);
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
