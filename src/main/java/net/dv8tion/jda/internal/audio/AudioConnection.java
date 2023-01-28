@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
@@ -49,6 +50,8 @@ import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioConnection
 {
@@ -68,12 +71,16 @@ public class AudioConnection
     private final AudioWebSocket webSocket;
     private final JDAImpl api;
 
+    protected final ReentrantLock readyLock = new ReentrantLock();
+    protected final Condition readyCondvar = readyLock.newCondition();
+
     private AudioChannel channel;
     private PointerByReference opusEncoder;
     private ScheduledExecutorService combinedAudioExecutor;
     private IAudioSendSystem sendSystem;
     private Thread receiveThread;
     private long queueTimeout;
+    private boolean shutdown = false;
 
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
@@ -167,6 +174,7 @@ public class AudioConnection
 
     public synchronized void shutdown()
     {
+        shutdown = true;
         if (sendSystem != null)
         {
             sendSystem.shutdown();
@@ -190,6 +198,8 @@ public class AudioConnection
 
         opusDecoders.valueCollection().forEach(Decoder::close);
         opusDecoders.clear();
+
+        MiscUtil.locked(readyLock, readyCondvar::signalAll);
     }
 
     public WebSocket getWebSocket()
@@ -204,32 +214,36 @@ public class AudioConnection
         Thread readyThread = new Thread(() ->
         {
             getJDA().setContext();
-            final long timeout = getGuild().getAudioManager().getConnectTimeout();
 
-            final long started = System.currentTimeMillis();
-            while (!webSocket.isReady()) // TODO: This should use a conditional variable
-            {
-                if (timeout > 0 && System.currentTimeMillis() - started > timeout)
-                    break;
+            boolean ready = MiscUtil.locked(readyLock, () -> {
+                final long timeout = getGuild().getAudioManager().getConnectTimeout();
+                while (!webSocket.isReady())
+                {
+                    try
+                    {
+                        boolean activated = readyCondvar.await(timeout, TimeUnit.MILLISECONDS);
+                        if (!activated)
+                        {
+                            webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
+                            shutdown = true;
+                        }
+                        if (shutdown)
+                            return false;
+                    }
+                    catch (InterruptedException e)
+                    {
+                        LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
+                        return false;
+                    }
+                }
 
-                try
-                {
-                    Thread.sleep(10);
-                }
-                catch (InterruptedException e)
-                {
-                    LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
-                    Thread.currentThread().interrupt();
-                }
-            }
-            if (webSocket.isReady())
+                return true;
+            });
+
+            if (ready)
             {
                 setupSendSystem();
                 setupReceiveSystem();
-            }
-            else
-            {
-                webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
             }
         });
         readyThread.setUncaughtExceptionHandler((thread, throwable) ->

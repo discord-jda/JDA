@@ -139,10 +139,19 @@ public class BotRateLimiter extends RateLimiter
             while (entries.hasNext())
             {
                 Map.Entry<String, Bucket> entry = entries.next();
-                String key = entry.getKey();
                 Bucket bucket = entry.getValue();
-                // Remove cancelled requests
-                bucket.requests.removeIf(Request::isSkipped);
+                if (isShutdown)
+                {
+                    bucket.requests.forEach(Request::cancel);
+                    bucket.requests.clear();
+                    entries.remove();
+                    continue;
+                }
+                else
+                {
+                    // Remove cancelled requests
+                    bucket.requests.removeIf(Request::isSkipped);
+                }
 
                 // Check if the bucket is empty
                 if (bucket.isUnlimited() && bucket.requests.isEmpty())
@@ -170,26 +179,28 @@ public class BotRateLimiter extends RateLimiter
     protected boolean stop()
     {
         return MiscUtil.locked(bucketLock, () -> {
-            if (isStopped)
-                return false;
-            super.stop();
-            if (cleanupWorker != null)
-                cleanupWorker.cancel(false);
-            cleanup();
-            int size = buckets.size();
-            if (!isShutdown && size > 0) // Tell user about active buckets so they don't get confused by the longer shutdown
+            if (!isStopped)
             {
-                int average = (int) Math.ceil(
-                        buckets.values().stream()
-                            .map(Bucket::getRequests)
-                            .mapToInt(Collection::size)
-                            .average().orElse(0)
-                );
+                super.stop();
+                if (cleanupWorker != null)
+                    cleanupWorker.cancel(false);
+                cleanup();
+                int size = buckets.size();
+                if (!isShutdown && size > 0) // Tell user about active buckets so they don't get confused by the longer shutdown
+                {
+                    int average = (int) Math.ceil(
+                            buckets.values().stream()
+                                    .map(Bucket::getRequests)
+                                    .mapToInt(Collection::size)
+                                    .average().orElse(0)
+                    );
 
-                log.info("Waiting for {} bucket(s) to finish. Average queue size of {} requests", size, average);
+                    log.info("Waiting for {} bucket(s) to finish. Average queue size of {} requests", size, average);
+                }
             }
+
             // No more requests to process?
-            return size < 1;
+            return buckets.isEmpty();
         });
     }
 
