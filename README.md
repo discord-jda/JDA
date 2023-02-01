@@ -218,7 +218,7 @@ public class Bot extends ListenerAdapter
         jda.updateCommands().addCommands(
             Commands.slash("ping", "Calculate ping of the bot"),
             Commands.slash("ban", "Ban a user from the server")
-                    .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS) // only usable with ban permissions
+                    .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)) // only usable with ban permissions
                     .setGuildOnly(true) // Ban command only works inside a guild
                     .addOption(OptionType.USER, "user", "The user to ban", true) // required option of type user (target to ban)
                     .addOption(OptionType.STRING, "reason", "The ban reason") // optional reason
