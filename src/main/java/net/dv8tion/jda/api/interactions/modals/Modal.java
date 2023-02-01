@@ -372,7 +372,7 @@ public interface Modal extends SerializableData
         }
 
         /**
-         * Returns a immutable list of all ActionRow components
+         * Returns an immutable list of all ActionRow components
          *
          * @return An immutable list of all ActionRow components
          */
