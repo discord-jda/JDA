@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -42,7 +43,8 @@ public class SystemMessage extends ReceivedMessage
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
             List<StickerItem> stickers, int flags, ThreadChannel startedThread)
     {
-        super(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned, content, nonce, author, member,
+        super(id, channel.getIdLong(), channel.getJDA(), channel instanceof GuildChannel ? ((GuildChannel) channel).getGuild() : null, channel,
+                type, messageReference, fromWebhook, applicationId, tts, pinned, content, nonce, author, member,
                 activity, editTime, mentions, reactions, attachments, embeds, stickers, Collections.emptyList(), flags, null, startedThread);
     }
 

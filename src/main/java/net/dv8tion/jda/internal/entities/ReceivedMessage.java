@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -69,11 +70,13 @@ public class ReceivedMessage extends AbstractMessage
 
     protected final JDAImpl api;
     protected final long id;
+    protected final long channelId;
+    protected final long applicationId;
     protected final MessageType type;
     protected final MessageChannel channel;
+    protected final Guild guild;
     protected final MessageReference messageReference;
     protected final boolean fromWebhook;
-    protected final long applicationId;
     protected final boolean pinned;
     protected final User author;
     protected final Member member;
@@ -96,7 +99,7 @@ public class ReceivedMessage extends AbstractMessage
     protected List<String> invites = null;
 
     public ReceivedMessage(
-            long id, MessageChannel channel, MessageType type, MessageReference messageReference,
+            long id, long channelId, JDA jda, Guild guild, MessageChannel channel, MessageType type, MessageReference messageReference,
             boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
@@ -105,10 +108,12 @@ public class ReceivedMessage extends AbstractMessage
     {
         super(content, nonce, tts);
         this.id = id;
+        this.channelId = channelId;
         this.channel = channel;
+        this.guild = guild;
         this.messageReference = messageReference;
         this.type = type;
-        this.api = (JDAImpl) channel.getJDA();
+        this.api = (JDAImpl) jda;
         this.fromWebhook = fromWebhook;
         this.applicationId = applicationId;
         this.pinned = pinned;
@@ -176,7 +181,7 @@ public class ReceivedMessage extends AbstractMessage
         if (isEphemeral())
             throw new IllegalStateException("Cannot pin ephemeral messages.");
         
-        return channel.pinMessageById(getId());
+        return getChannel().pinMessageById(getId());
     }
 
     @Nonnull
@@ -186,7 +191,7 @@ public class ReceivedMessage extends AbstractMessage
         if (isEphemeral())
             throw new IllegalStateException("Cannot unpin ephemeral messages.");
         
-        return channel.unpinMessageById(getId());
+        return getChannel().unpinMessageById(getId());
     }
 
     @Nonnull
@@ -202,12 +207,12 @@ public class ReceivedMessage extends AbstractMessage
                    .map(MessageReaction::getEmoji)
                    .noneMatch(r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
 
-        if (missingReaction && emoji instanceof RichCustomEmoji)
+        if (missingReaction && emoji instanceof RichCustomEmoji && hasChannel())
         {
-            Checks.check(((RichCustomEmoji) emoji).canInteract(getJDA().getSelfUser(), channel),
-                         "Cannot react with the provided emoji because it is not available in the current channel.");
+            Checks.check(((RichCustomEmoji) emoji).canInteract(getJDA().getSelfUser(), getChannel()),
+                         "Cannot react with the provided emoji because it is not available in the current getChannel().");
         }
-        return channel.addReactionById(getId(), emoji);
+        return getChannel().addReactionById(getId(), emoji);
     }
 
     @Nonnull
@@ -239,7 +244,7 @@ public class ReceivedMessage extends AbstractMessage
         if (isEphemeral())
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         
-        return channel.removeReactionById(getId(), emoji);
+        return getChannel().removeReactionById(getId(), emoji);
     }
 
     @Nonnull
@@ -252,7 +257,7 @@ public class ReceivedMessage extends AbstractMessage
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), emoji);
+            return getChannel().removeReactionById(getIdLong(), emoji);
 
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
@@ -266,7 +271,7 @@ public class ReceivedMessage extends AbstractMessage
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
         
-        return channel.retrieveReactionUsersById(id, emoji);
+        return getChannel().retrieveReactionUsersById(id, emoji);
     }
 
     @Nullable
@@ -421,27 +426,35 @@ public class ReceivedMessage extends AbstractMessage
         return getChannelType() == type;
     }
 
+    @Override
+    public boolean isFromGuild()
+    {
+        return guild != null;
+    }
+
     @Nonnull
     @Override
     public ChannelType getChannelType()
     {
-        return channel.getType();
+        return getChannel().getType();
     }
 
     @Nonnull
     @Override
     public MessageChannelUnion getChannel()
     {
-        return (MessageChannelUnion) channel;
+        if (channel != null)
+            return (MessageChannelUnion) channel;
+        throw new IllegalStateException("Channel is unavailable in this context. Use getChannelIdLong() instead!");
     }
 
     @Nonnull
     @Override
     public GuildMessageChannelUnion getGuildChannel()
     {
-        if (!isFromGuild())
-            throw new IllegalStateException("This message was not sent in a guild.");
-        return (GuildMessageChannelUnion) channel;
+        if (channel == null || channel instanceof GuildMessageChannelUnion)
+            return (GuildMessageChannelUnion) getChannel();
+        throw new IllegalStateException("This message was not sent in a guild.");
     }
 
     @Override
@@ -457,7 +470,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Guild getGuild()
     {
-        return getGuildChannel().getGuild();
+        return guild;
     }
 
     @Nonnull
@@ -518,6 +531,18 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    public boolean hasChannel()
+    {
+        return channel != null;
+    }
+
+    @Override
+    public long getChannelIdLong()
+    {
+        return channelId;
+    }
+
+    @Override
     public boolean isTTS()
     {
         return isTTS;
@@ -535,7 +560,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessage(@Nonnull CharSequence newContent)
     {
         checkUser();
-        return channel.editMessageById(getId(), newContent);
+        return getChannel().editMessageById(getId(), newContent);
     }
 
     @Nonnull
@@ -543,7 +568,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkUser();
-        return channel.editMessageEmbedsById(getId(), embeds);
+        return getChannel().editMessageEmbedsById(getId(), embeds);
     }
 
     @Nonnull
@@ -551,7 +576,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         checkUser();
-        return channel.editMessageComponentsById(getId(), components);
+        return getChannel().editMessageComponentsById(getId(), components);
     }
 
     @Nonnull
@@ -559,7 +584,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         checkUser();
-        return channel.editMessageFormatById(getId(), format, args);
+        return getChannel().editMessageFormatById(getId(), format, args);
     }
 
     @Nonnull
@@ -567,7 +592,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
         checkUser();
-        return channel.editMessageAttachmentsById(getId(), attachments);
+        return getChannel().editMessageAttachmentsById(getId(), attachments);
     }
 
     @Nonnull
@@ -575,7 +600,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessage(@Nonnull MessageEditData newContent)
     {
         checkUser();
-        return channel.editMessageById(getId(), newContent);
+        return getChannel().editMessageById(getId(), newContent);
     }
 
     private void checkUser()
@@ -605,7 +630,7 @@ public class ReceivedMessage extends AbstractMessage
         }
         if (!type.canDelete())
             throw new IllegalStateException("Cannot delete messages of type " + type);
-        return channel.deleteMessageById(getIdLong());
+        return getChannel().deleteMessageById(getIdLong());
     }
 
     @Nonnull
