@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
@@ -98,14 +99,14 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     @Override
     protected void handleSuccess(Response response, Request<Message> request)
     {
-        Message message;
+        ReceivedMessage message;
         EntityBuilder entityBuilder = api.getEntityBuilder();
         DataObject json = response.getObject();
         if (channel == null)
             message = entityBuilder.createMessageWithGuild(json, guild);
         else
             message = entityBuilder.createMessageWithChannel(json, channel, false);
-        request.onSuccess(message);
+        request.onSuccess(message.withHook(interactionHook));
     }
 
     @Nonnull
