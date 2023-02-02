@@ -156,6 +156,15 @@ public interface Interaction extends ISnowflake
     @Nullable
     Channel getChannel();
 
+    long getChannelIdLong();
+
+    @Nullable
+    default String getChannelId()
+    {
+        long id = getChannelIdLong();
+        return id != 0 ? Long.toUnsignedString(getChannelIdLong()) : null;
+    }
+
     /**
      * The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} this interaction happened in.
      * <br>If {@link #getChannelType()} is not a guild type, this throws {@link IllegalStateException}!

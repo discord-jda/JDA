@@ -1544,6 +1544,11 @@ public class EntityBuilder
         return role;
     }
 
+    public ReceivedMessage createMessageWithGuild(DataObject json, @Nonnull Guild guild)
+    {
+        return createMessage0(json, null, (GuildImpl) guild, false);
+    }
+
     public ReceivedMessage createMessageWithChannel(DataObject json, @Nonnull MessageChannel channel, boolean modifyCache)
     {
         // Use channel directly if message is from a known guild channel

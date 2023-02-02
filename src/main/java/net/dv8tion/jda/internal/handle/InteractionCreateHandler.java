@@ -33,7 +33,6 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
-import net.dv8tion.jda.internal.interactions.modal.ModalInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandAutoCompleteInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
@@ -41,6 +40,7 @@ import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.ButtonInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.EntitySelectInteractionImpl;
 import net.dv8tion.jda.internal.interactions.component.StringSelectInteractionImpl;
+import net.dv8tion.jda.internal.interactions.modal.ModalInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class InteractionCreateHandler extends SocketHandler
@@ -70,7 +70,7 @@ public class InteractionCreateHandler extends SocketHandler
         if (guild != null)
         {
             GuildChannel channel = guild.getGuildChannelById(content.getUnsignedLong("channel_id", 0));
-            if (channel == null || !channel.getType().isMessage()) // TODO: This might break when interactions can be used outside of message channels in the future, not the case right now though!
+            if (channel != null && !channel.getType().isMessage()) // TODO: This might break when interactions can be used outside of message channels in the future, not the case right now though!
             {
                 WebSocketClient.LOG.debug("Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channel);
                 return null;

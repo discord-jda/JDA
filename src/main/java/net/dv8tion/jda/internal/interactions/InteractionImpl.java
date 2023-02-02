@@ -37,6 +37,7 @@ import javax.annotation.Nullable;
 public class InteractionImpl implements Interaction
 {
     protected final long id;
+    protected final long channelId;
     protected final int type;
     protected final String token;
     protected final Guild guild;
@@ -57,6 +58,7 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
+        this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
         if (guild != null)
         {
@@ -140,6 +142,12 @@ public class InteractionImpl implements Interaction
     public Channel getChannel()
     {
         return channel;
+    }
+
+    @Override
+    public long getChannelIdLong()
+    {
+        return channelId;
     }
 
     @Nonnull

@@ -17,13 +17,16 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
+import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
@@ -71,7 +74,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     public void ready()
     {
-        MiscUtil.locked(mutex, () -> {
+        MiscUtil.locked(mutex, () ->
+        {
             timeoutHandle.cancel(false);
             isReady = true;
             readyCallbacks.forEach(TriggerRestAction::run);
@@ -80,7 +84,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     public void fail(Exception exception)
     {
-        MiscUtil.locked(mutex, () -> {
+        MiscUtil.locked(mutex, () ->
+        {
             if (!isReady && this.exception == null)
             {
                 this.exception = exception;
@@ -96,7 +101,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     private <T extends TriggerRestAction<R>, R> T onReady(T runnable)
     {
-        return MiscUtil.locked(mutex, () -> {
+        return MiscUtil.locked(mutex, () ->
+        {
             if (isReady)
                 runnable.run();
             else if (exception != null)
@@ -134,18 +140,38 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     public RestAction<Message> retrieveOriginal()
     {
         JDAImpl jda = (JDAImpl) getJDA();
+
+        MessageChannel channel = (MessageChannel) interaction.getChannel();
+        Guild guild = interaction.getGuild();
+        if (guild == null && channel == null)
+            channel = new PrivateChannelImpl(jda, interaction.getChannelIdLong(), interaction.getUser());
+        MessageChannel finalChannel = channel;
+
         Route.CompiledRoute route = Route.Interactions.GET_ORIGINAL.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
         return onReady(new TriggerRestAction<>(jda, route, (response, request) ->
-                jda.getEntityBuilder().createMessageWithChannel(response.getObject(), getInteraction().getMessageChannel(), false)));
+        {
+            if (finalChannel != null)
+                return jda.getEntityBuilder().createMessageWithChannel(response.getObject(), finalChannel, false);
+            return jda.getEntityBuilder().createMessageWithGuild(response.getObject(), guild);
+        }));
     }
 
     @Nonnull
     @Override
     public WebhookMessageCreateActionImpl<Message> sendRequest()
     {
-        Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
+        JDAImpl jda = (JDAImpl) getJDA();
+
+        MessageChannel channel = (MessageChannel) interaction.getChannel();
+        Guild guild = interaction.getGuild();
+        if (guild == null && channel == null)
+            channel = new PrivateChannelImpl(jda, interaction.getChannelIdLong(), interaction.getUser());
+        MessageChannel finalChannel = channel;
+
+        Function<DataObject, Message> transform = buildWith(jda, guild, finalChannel);
+
+        Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
-        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false);
         return onReady(new WebhookMessageCreateActionImpl<>(getJDA(), route, transform)).setEphemeral(ephemeral);
     }
 
@@ -155,9 +181,19 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
+
+        JDAImpl jda = (JDAImpl) getJDA();
+
+        MessageChannel channel = (MessageChannel) interaction.getChannel();
+        Guild guild = interaction.getGuild();
+        if (guild == null && channel == null)
+            channel = new PrivateChannelImpl(jda, interaction.getChannelIdLong(), interaction.getUser());
+        MessageChannel finalChannel = channel;
+
+        Function<DataObject, Message> transform = buildWith(jda, guild, finalChannel);
+
+        Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(jda.getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false);
         return onReady(new WebhookMessageEditActionImpl<>(getJDA(), route, transform));
     }
 
@@ -169,5 +205,16 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         return onReady(new TriggerRestAction<>(getJDA(), route));
+    }
+
+    @Nonnull
+    private Function<DataObject, Message> buildWith(JDAImpl jda, Guild guild, MessageChannel finalChannel)
+    {
+        return (json) ->
+        {
+            if (finalChannel != null)
+                return jda.getEntityBuilder().createMessageWithChannel(json, finalChannel, false);
+            return jda.getEntityBuilder().createMessageWithGuild(json, guild);
+        };
     }
 }
