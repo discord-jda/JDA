@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interaction on a message {@link ActionComponent}.
@@ -91,9 +92,9 @@ public interface ComponentInteraction extends IReplyCallback, IMessageEditCallba
     /**
      * The respective {@link MessageChannelUnion} for this interaction.
      *
-     * @return The {@link MessageChannelUnion}
+     * @return The {@link MessageChannelUnion}, or {@code null} if the channel is uncached (hidden threads)
      */
-    @Nonnull
+    @Nullable
     @Override
     MessageChannelUnion getChannel();
 

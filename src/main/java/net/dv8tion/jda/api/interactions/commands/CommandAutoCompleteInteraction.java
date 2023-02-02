@@ -48,6 +48,11 @@ public interface CommandAutoCompleteInteraction extends IAutoCompleteCallback, C
     @Nonnull
     AutoCompleteQuery getFocusedOption();
 
+    /**
+     * The respective {@link MessageChannelUnion} for this interaction.
+     *
+     * @return The {@link MessageChannelUnion}, or {@code null} if the channel is uncached (hidden threads)
+     */
     @Nullable
     @Override
     MessageChannelUnion getChannel();

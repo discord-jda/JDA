@@ -35,6 +35,7 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -141,9 +142,8 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
         }
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    @SuppressWarnings("ConstantConditions")
     public MessageChannelUnion getChannel()
     {
         return (MessageChannelUnion) super.getChannel();
