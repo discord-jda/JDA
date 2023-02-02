@@ -50,9 +50,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -91,6 +93,8 @@ public class ReceivedMessage extends AbstractMessage
     protected final int flags;
     protected final Message.Interaction interaction;
     protected final ThreadChannel startedThread;
+
+    protected InteractionHook interactionHook;
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -180,8 +184,12 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot pin ephemeral messages.");
-        
-        return getChannel().pinMessageById(getId());
+
+        if (hasChannel())
+            return getChannel().pinMessageById(getIdLong());
+
+        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getChannelId(), getId());
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -190,8 +198,12 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot unpin ephemeral messages.");
-        
-        return getChannel().unpinMessageById(getId());
+
+        if (hasChannel())
+            return getChannel().unpinMessageById(getIdLong());
+
+        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getChannelId(), getId());
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -203,16 +215,24 @@ public class ReceivedMessage extends AbstractMessage
         
         Checks.notNull(emoji, "Emoji");
 
-        boolean missingReaction = reactions.stream()
-                   .map(MessageReaction::getEmoji)
-                   .noneMatch(r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
-
-        if (missingReaction && emoji instanceof RichCustomEmoji && hasChannel())
+        if (hasChannel())
         {
-            Checks.check(((RichCustomEmoji) emoji).canInteract(getJDA().getSelfUser(), getChannel()),
-                         "Cannot react with the provided emoji because it is not available in the current getChannel().");
+            boolean missingReaction = reactions.stream()
+                    .map(MessageReaction::getEmoji)
+                    .noneMatch(r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
+
+            if (missingReaction && emoji instanceof RichCustomEmoji)
+            {
+                Checks.check(((RichCustomEmoji) emoji).canInteract(getJDA().getSelfUser(), getChannel()),
+                        "Cannot react with the provided emoji because it is not available in the current getChannel().");
+            }
+
+            return getChannel().addReactionById(getId(), emoji);
         }
-        return getChannel().addReactionById(getId(), emoji);
+
+        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getChannelId(), getId(), encoded, "@me");
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -223,7 +243,12 @@ public class ReceivedMessage extends AbstractMessage
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getGuildChannel().clearReactionsById(getId());
+
+        if (channel instanceof GuildMessageChannel)
+            return ((GuildMessageChannel) channel).clearReactionsById(getId());
+
+        Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getChannelId(), getId());
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -234,7 +259,13 @@ public class ReceivedMessage extends AbstractMessage
             throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
-        return getGuildChannel().clearReactionsById(getId(), emoji);
+
+        if (channel instanceof GuildMessageChannel)
+            return ((GuildMessageChannel) channel).clearReactionsById(getId(), emoji);
+
+        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getChannelId(), getId(), encoded);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -243,25 +274,37 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
-        
-        return getChannel().removeReactionById(getId(), emoji);
+
+        if (hasChannel())
+            return getChannel().removeReactionById(getId(), emoji);
+
+        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getChannelId(), getId(), encoded, "@me");
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
     public RestAction<Void> removeReaction(@Nonnull Emoji emoji, @Nonnull User user)
     {
-        Checks.notNull(user, "User");  // to prevent NPEs
+        Checks.notNull(user, "User");
         if (isEphemeral())
             throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
+
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
-            return getChannel().removeReactionById(getIdLong(), emoji);
+            return removeReaction(emoji);
 
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
-        return getGuildChannel().removeReactionById(getIdLong(), emoji, user);
+
+        if (channel instanceof GuildMessageChannel)
+            return ((GuildMessageChannel) channel).removeReactionById(getIdLong(), emoji, user);
+
+        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getChannelId(), getId(), encoded, user.getId());
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -270,7 +313,8 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
-        
+
+        // TODO: Nullable channel for this class
         return getChannel().retrieveReactionUsersById(id, emoji);
     }
 
@@ -309,7 +353,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        return Helpers.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
+        return Helpers.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannelId(), getId());
     }
 
     @Override
@@ -555,6 +599,8 @@ public class ReceivedMessage extends AbstractMessage
         return activity;
     }
 
+    // TODO: All these edit actions currently require channel instances
+
     @Nonnull
     @Override
     public MessageEditAction editMessage(@Nonnull CharSequence newContent)
@@ -614,23 +660,30 @@ public class ReceivedMessage extends AbstractMessage
     public AuditableRestAction<Void> delete()
     {
         if (isEphemeral())
-        {
             throw new IllegalStateException("Cannot delete ephemeral messages.");
-        }
-        if (!getJDA().getSelfUser().equals(getAuthor()))
-        {
-            if (isFromType(ChannelType.PRIVATE))
-                throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
-
-            GuildMessageChannel gChan = getGuildChannel();
-            Member sMember = getGuild().getSelfMember();
-            Checks.checkAccess(sMember, gChan);
-            if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
-        }
         if (!type.canDelete())
             throw new IllegalStateException("Cannot delete messages of type " + type);
-        return getChannel().deleteMessageById(getIdLong());
+
+        if (!getJDA().getSelfUser().equals(getAuthor()))
+        {
+            if (!isFromGuild())
+                throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
+
+            if (hasChannel())
+            {
+                GuildMessageChannel gChan = getGuildChannel();
+                Member sMember = getGuild().getSelfMember();
+                Checks.checkAccess(sMember, gChan);
+                if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
+                    throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
+            }
+        }
+
+        if (hasChannel())
+            return getChannel().deleteMessageById(getIdLong());
+
+        Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getChannelId(), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -642,15 +695,19 @@ public class ReceivedMessage extends AbstractMessage
         
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
-            if (isFromType(ChannelType.PRIVATE))
+            if (!isFromGuild())
                 throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
 
-            GuildMessageChannel gChan = getGuildChannel();
-            if (!getGuild().getSelfMember().hasPermission(gChan, Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
+            if (hasChannel())
+            {
+                GuildMessageChannel gChan = getGuildChannel();
+                if (!getGuild().getSelfMember().hasPermission(gChan, Permission.MESSAGE_MANAGE))
+                    throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
+            }
         }
+
         JDAImpl jda = (JDAImpl) getJDA();
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
+        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannelId(), getId());
         int newFlags = flags;
         int suppressionValue = MessageFlag.EMBEDS_SUPPRESSED.getValue();
         if (suppressed)
@@ -670,10 +727,10 @@ public class ReceivedMessage extends AbstractMessage
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
 
-        if (!(getChannel() instanceof NewsChannel))
+        MessageChannelUnion channel = getChannel();
+        if (!(channel instanceof NewsChannel))
             throw new IllegalStateException("This message was not sent in a news channel");
-
-        NewsChannel newsChannel = (NewsChannel) getChannel();
+        NewsChannel newsChannel = (NewsChannel) channel;
         Checks.checkAccess(getGuild().getSelfMember(), newsChannel);
         if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
             throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
