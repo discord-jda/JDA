@@ -786,31 +786,43 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public AuditableRestAction<Void> suppressEmbeds(boolean suppressed)
     {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot suppress embeds on ephemeral messages.");
-        
-        if (!getJDA().getSelfUser().equals(getAuthor()))
-        {
-            if (!isFromGuild())
-                throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
+        SelfUser self = api.getSelfUser();
 
-            if (hasChannel())
+        Route.CompiledRoute route;
+        if (interactionHook != null)
+        {
+            route = Route.Interactions.EDIT_FOLLOWUP.compile(self.getApplicationId(), interactionHook.getInteraction().getToken(), getId());
+        }
+        else
+        {
+            if (isEphemeral())
+                throw new IllegalStateException("Cannot suppress embeds on ephemeral messages.");
+
+            if (!self.equals(getAuthor()))
             {
-                GuildMessageChannel gChan = getGuildChannel();
-                if (!getGuild().getSelfMember().hasPermission(gChan, Permission.MESSAGE_MANAGE))
-                    throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
+                if (!isFromGuild())
+                    throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
+
+                if (hasChannel())
+                {
+                    GuildMessageChannel gChan = getGuildChannel();
+                    if (!getGuild().getSelfMember().hasPermission(gChan, Permission.MESSAGE_MANAGE))
+                        throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
+                }
             }
+
+            route = Route.Messages.EDIT_MESSAGE.compile(getChannelId(), getId());
         }
 
-        JDAImpl jda = (JDAImpl) getJDA();
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannelId(), getId());
         int newFlags = flags;
         int suppressionValue = MessageFlag.EMBEDS_SUPPRESSED.getValue();
         if (suppressed)
             newFlags |= suppressionValue;
         else
             newFlags &= ~suppressionValue;
-        return new AuditableRestActionImpl<>(jda, route, DataObject.empty().put("flags", newFlags));
+        DataObject body = DataObject.empty().put("flags", newFlags);
+
+        return new AuditableRestActionImpl<>(api, route, body);
     }
 
     @Nonnull
