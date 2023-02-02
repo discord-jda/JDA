@@ -53,6 +53,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -156,6 +157,12 @@ public class ReceivedMessage extends AbstractMessage
                 );
             }
         }
+    }
+
+    public ReceivedMessage withHook(InteractionHook hook)
+    {
+        this.interactionHook = hook;
+        return this;
     }
 
     @Nonnull
@@ -599,14 +606,26 @@ public class ReceivedMessage extends AbstractMessage
         return activity;
     }
 
-    // TODO: All these edit actions currently require channel instances
-
     @Nonnull
     @Override
     public MessageEditAction editMessage(@Nonnull CharSequence newContent)
     {
         checkUser();
-        return getChannel().editMessageById(getId(), newContent);
+
+        MessageEditActionImpl action;
+        if (hasChannel())
+        {
+            if (interactionHook == null) // only perform perm checks if its not an interaction
+                action = (MessageEditActionImpl) getChannel().editMessageById(getId(), newContent);
+            else
+                action = new MessageEditActionImpl(getChannel(), getId());
+        }
+        else
+        {
+            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
+        }
+
+        return action.withHook(this.interactionHook).setContent(newContent.toString());
     }
 
     @Nonnull
@@ -614,7 +633,21 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkUser();
-        return getChannel().editMessageEmbedsById(getId(), embeds);
+
+        MessageEditActionImpl action;
+        if (hasChannel())
+        {
+            if (interactionHook == null) // only perform perm checks if its not an interaction
+                action = (MessageEditActionImpl) getChannel().editMessageEmbedsById(getId(), embeds);
+            else
+                action = new MessageEditActionImpl(getChannel(), getId());
+        }
+        else
+        {
+            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
+        }
+
+        return action.withHook(this.interactionHook).setEmbeds(embeds);
     }
 
     @Nonnull
@@ -622,7 +655,21 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         checkUser();
-        return getChannel().editMessageComponentsById(getId(), components);
+
+        MessageEditActionImpl action;
+        if (hasChannel())
+        {
+            if (interactionHook == null) // only perform perm checks if its not an interaction
+                action = (MessageEditActionImpl) getChannel().editMessageComponentsById(getId(), components);
+            else
+                action = new MessageEditActionImpl(getChannel(), getId());
+        }
+        else
+        {
+            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
+        }
+
+        return action.withHook(this.interactionHook).setComponents(components);
     }
 
     @Nonnull
@@ -630,7 +677,21 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         checkUser();
-        return getChannel().editMessageFormatById(getId(), format, args);
+
+        MessageEditActionImpl action;
+        if (hasChannel())
+        {
+            if (interactionHook == null) // only perform perm checks if its not an interaction
+                action = (MessageEditActionImpl) getChannel().editMessageFormatById(getId(), format, args);
+            else
+                action = new MessageEditActionImpl(getChannel(), getId());
+        }
+        else
+        {
+            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
+        }
+
+        return action.withHook(this.interactionHook).setContent(String.format(format, args));
     }
 
     @Nonnull
@@ -638,7 +699,21 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
         checkUser();
-        return getChannel().editMessageAttachmentsById(getId(), attachments);
+
+        MessageEditActionImpl action;
+        if (hasChannel())
+        {
+            if (interactionHook == null) // only perform perm checks if its not an interaction
+                action = (MessageEditActionImpl) getChannel().editMessageAttachmentsById(getId(), attachments);
+            else
+                action = new MessageEditActionImpl(getChannel(), getId());
+        }
+        else
+        {
+            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
+        }
+
+        return action.withHook(this.interactionHook).setAttachments(attachments);
     }
 
     @Nonnull
@@ -646,7 +721,21 @@ public class ReceivedMessage extends AbstractMessage
     public MessageEditAction editMessage(@Nonnull MessageEditData newContent)
     {
         checkUser();
-        return getChannel().editMessageById(getId(), newContent);
+
+        MessageEditActionImpl action;
+        if (hasChannel())
+        {
+            if (interactionHook == null) // only perform perm checks if its not an interaction
+                action = (MessageEditActionImpl) getChannel().editMessageById(getId(), newContent);
+            else
+                action = new MessageEditActionImpl(getChannel(), getId());
+        }
+        else
+        {
+            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
+        }
+
+        return action.withHook(this.interactionHook).applyData(newContent);
     }
 
     private void checkUser()

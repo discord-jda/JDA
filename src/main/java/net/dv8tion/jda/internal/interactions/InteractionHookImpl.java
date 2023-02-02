@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
@@ -150,9 +151,12 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         Route.CompiledRoute route = Route.Interactions.GET_ORIGINAL.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
         return onReady(new TriggerRestAction<>(jda, route, (response, request) ->
         {
+            ReceivedMessage message;
             if (finalChannel != null)
-                return jda.getEntityBuilder().createMessageWithChannel(response.getObject(), finalChannel, false);
-            return jda.getEntityBuilder().createMessageWithGuild(response.getObject(), guild);
+                message = jda.getEntityBuilder().createMessageWithChannel(response.getObject(), finalChannel, false);
+            else
+                message = jda.getEntityBuilder().createMessageWithGuild(response.getObject(), guild);
+            return message.withHook(this);
         }));
     }
 
@@ -212,9 +216,12 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     {
         return (json) ->
         {
+            ReceivedMessage message;
             if (finalChannel != null)
-                return jda.getEntityBuilder().createMessageWithChannel(json, finalChannel, false);
-            return jda.getEntityBuilder().createMessageWithGuild(json, guild);
+                message = jda.getEntityBuilder().createMessageWithChannel(json, finalChannel, false);
+            else
+                message = jda.getEntityBuilder().createMessageWithGuild(json, guild);
+            return message.withHook(this);
         };
     }
 }
