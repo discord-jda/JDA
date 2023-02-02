@@ -748,17 +748,27 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot delete ephemeral messages.");
         if (!type.canDelete())
             throw new IllegalStateException("Cannot delete messages of type " + type);
 
-        if (!getJDA().getSelfUser().equals(getAuthor()))
-        {
-            if (!isFromGuild())
-                throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
+        SelfUser self = getJDA().getSelfUser();
+        boolean isSelfAuthored = self.equals(getAuthor());
 
-            if (hasChannel())
+        if (!isSelfAuthored && !isFromGuild())
+            throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
+
+        if (interactionHook != null)
+        {
+            Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(self.getApplicationId(), interactionHook.getInteraction().getToken(), getId());
+            return new AuditableRestActionImpl<>(getJDA(), route);
+        }
+
+        if (isEphemeral())
+            throw new IllegalStateException("Cannot delete ephemeral messages.");
+
+        if (hasChannel())
+        {
+            if (!isSelfAuthored)
             {
                 GuildMessageChannel gChan = getGuildChannel();
                 Member sMember = getGuild().getSelfMember();
@@ -767,9 +777,6 @@ public class ReceivedMessage extends AbstractMessage
                     throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
             }
         }
-
-        if (hasChannel())
-            return getChannel().deleteMessageById(getIdLong());
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getChannelId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
