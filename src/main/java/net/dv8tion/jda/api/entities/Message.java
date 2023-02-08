@@ -1948,6 +1948,15 @@ public interface Message extends ISnowflake, Formattable
     boolean isEphemeral();
 
     /**
+     * Whether this message is silent.
+     * <br>The message being ephemeral means it is only visible to the bot and the interacting user
+     * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL}
+     *
+     * @return Whether the message is silent
+     */
+    boolean isSilent();
+
+    /**
      * Returns a possibly {@code null} {@link ThreadChannel ThreadChannel} that was started from this message.
      * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
      *
@@ -2129,7 +2138,12 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Indicates, that this Message is an interaction response and the bot is "thinking"
          */
-        LOADING(7);
+        LOADING(7),
+        /**
+         * Indicates, that this Message is ephemeral, the Message is only visible to the bot and the interacting user
+         * @see Message#isSilent
+         */
+        SUPPRESS_NOTIFICATIONS(12);
 
         private final int value;
 

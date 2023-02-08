@@ -92,4 +92,8 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
     @Nonnull
     @CheckReturnValue
     WebhookMessageCreateAction<T> setEphemeral(boolean ephemeral);
+
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageCreateAction<T> setSilent(boolean silent);
 }

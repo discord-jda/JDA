@@ -53,4 +53,8 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
     @Nonnull
     @CheckReturnValue
     ReplyCallbackAction setEphemeral(boolean ephemeral);
+
+    @Nonnull
+    @CheckReturnValue
+    ReplyCallbackAction setSilent(boolean silent);
 }

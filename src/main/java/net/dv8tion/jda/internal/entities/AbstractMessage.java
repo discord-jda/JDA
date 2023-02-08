@@ -472,6 +472,13 @@ public abstract class AbstractMessage implements Message
         return false;
     }
 
+    @Override
+    public boolean isSilent()
+    {
+        unsupported();
+        return false;
+    }
+
     @Nullable
     @Override
     public ThreadChannel getStartedThread()

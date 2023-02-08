@@ -43,6 +43,7 @@ public class WebhookMessageCreateActionImpl<T>
     private final Function<DataObject, T> transformer;
 
     private boolean ephemeral;
+    private boolean silent;
 
     public WebhookMessageCreateActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
     {
@@ -64,6 +65,14 @@ public class WebhookMessageCreateActionImpl<T>
         return this;
     }
 
+    @Nonnull
+    @Override
+    public WebhookMessageCreateActionImpl<T> setSilent(boolean silent)
+    {
+        this.silent = silent;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -73,6 +82,8 @@ public class WebhookMessageCreateActionImpl<T>
             DataObject json = data.toData();
             if (ephemeral)
                 json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.getValue());
+            if (ephemeral)
+                json.put("flags", json.getInt("flags", 0) | MessageFlag.SUPPRESS_NOTIFICATIONS.getValue());
 
             return getMultipartBody(files, json);
         }
