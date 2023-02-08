@@ -1949,8 +1949,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Whether this message is silent.
-     * <br>The message being ephemeral means it is only visible to the bot and the interacting user
-     * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL}
+     * <br>The message being silent means it will not trigger push and desktop notifications
+     * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#SUPPRESS_NOTIFICATIONS}
      *
      * @return Whether the message is silent
      */
