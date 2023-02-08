@@ -2140,7 +2140,7 @@ public interface Message extends ISnowflake, Formattable
          */
         LOADING(7),
         /**
-         * Indicates, that this Message is ephemeral, the Message is only visible to the bot and the interacting user
+         * Indicates, that this message will not trigger push and desktop notifications
          * @see Message#isSilent
          */
         SUPPRESS_NOTIFICATIONS(12);
