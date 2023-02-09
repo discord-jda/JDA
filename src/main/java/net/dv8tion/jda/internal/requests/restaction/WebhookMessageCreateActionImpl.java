@@ -83,7 +83,7 @@ public class WebhookMessageCreateActionImpl<T>
             if (ephemeral)
                 json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.getValue());
             if (silent)
-                json.put("flags", json.getInt("flags", 0) | MessageFlag.SUPPRESS_NOTIFICATIONS.getValue());
+                json.put("flags", json.getInt("flags", 0) | MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue());
 
             return getMultipartBody(files, json);
         }

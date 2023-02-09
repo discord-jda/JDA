@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import static net.dv8tion.jda.api.entities.Message.MessageFlag.EPHEMERAL;
-import static net.dv8tion.jda.api.entities.Message.MessageFlag.SUPPRESS_NOTIFICATIONS;
+import static net.dv8tion.jda.api.entities.Message.MessageFlag.NOTIFICATIONS_SUPPRESSED;
 
 public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implements ReplyCallbackAction, MessageCreateBuilderMixin<ReplyCallbackAction>
 {
@@ -93,7 +93,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     @Override
     public ReplyCallbackActionImpl setSilent(boolean silent)
     {
-        int flag = SUPPRESS_NOTIFICATIONS.getValue();
+        int flag = NOTIFICATIONS_SUPPRESSED.getValue();
         if (silent)
             this.flags |= flag;
         else

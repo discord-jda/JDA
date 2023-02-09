@@ -1950,7 +1950,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Whether this message is silent.
      * <br>The message being silent means it will not trigger push and desktop notifications
-     * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#SUPPRESS_NOTIFICATIONS}
+     * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#NOTIFICATIONS_SUPPRESSED}
      *
      * @return Whether the message is silent
      */
@@ -2143,7 +2143,7 @@ public interface Message extends ISnowflake, Formattable
          * Indicates, that this message will not trigger push and desktop notifications
          * @see Message#isSilent
          */
-        SUPPRESS_NOTIFICATIONS(12);
+        NOTIFICATIONS_SUPPRESSED(12);
 
         private final int value;
 
