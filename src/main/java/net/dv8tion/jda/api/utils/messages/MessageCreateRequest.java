@@ -336,6 +336,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
+                .setSilent(data.isSilent())
                 .setComponents(layoutComponents)
                 .setFiles(data.getFiles());
     }
@@ -352,7 +353,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
         return setContent(message.getContentRaw())
                 .setEmbeds(embeds)
                 .setTTS(message.isTTS())
-                .setComponents(message.getActionRows());
+                .setComponents(message.getActionRows())
+                .setSilent(message.isSilent());
     }
 
     /**

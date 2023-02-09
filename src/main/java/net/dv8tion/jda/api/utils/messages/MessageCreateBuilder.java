@@ -264,7 +264,6 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         super.clear();
         this.files.clear();
         this.tts = false;
-        messageFlags &= ~Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
         return this;
     }
 
