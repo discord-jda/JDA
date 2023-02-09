@@ -260,7 +260,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     public boolean isSilent()
     {
-        return flags == 1 << 12;
+        return (flags & Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
     }
 
     /**

@@ -311,6 +311,18 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     R setTTS(boolean tts);
 
     /**
+     * Set whether this message should trigger push/desktop notifications to other users.
+     * <br>When a message is silent, it will not trigger push/desktop notifications.
+     *
+     * @param  silent
+     *         True, if this message should not trigger push/desktop notifications
+     *
+     * @return The same reply action, for chaining convenience
+     */
+    @Nonnull
+    R setSilent(boolean silent);
+
+    /**
      * Applies the provided {@link MessageCreateData} to this request.
      *
      * @param  data
@@ -353,8 +365,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
         return setContent(message.getContentRaw())
                 .setEmbeds(embeds)
                 .setTTS(message.isTTS())
-                .setComponents(message.getActionRows())
-                .setSilent(message.isSilent());
+                .setSilent(message.isSilent())
+                .setComponents(message.getActionRows());
     }
 
     /**
@@ -401,16 +413,4 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
         return (R) this;
     }
-
-    /**
-     * Set whether this message should trigger push/desktop notifications to other users.
-     * <br>When a message is silent, it will not trigger push/desktop notifications.
-     *
-     * @param  silent
-     *         True, if this message should not trigger push/desktop notifications
-     *
-     * @return The same reply action, for chaining convenience
-     */
-    @Nonnull
-    R setSilent(boolean silent);
 }
