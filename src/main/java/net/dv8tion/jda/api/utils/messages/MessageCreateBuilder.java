@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +61,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 {
     private final List<FileUpload> files = new ArrayList<>(10);
     private boolean tts;
+    private boolean silent;
 
     public MessageCreateBuilder() {}
 
@@ -208,6 +210,14 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         return this;
     }
 
+    @NotNull
+    @Override
+    public MessageCreateBuilder setSilent(boolean silent)
+    {
+        this.silent = silent;
+        return this;
+    }
+
     @Override
     public boolean isEmpty()
     {
@@ -232,6 +242,11 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         List<LayoutComponent> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
+        if(silent)
+            messageFlags |= Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
+        else
+            messageFlags &= ~Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
+
         if (content.isEmpty() && embeds.isEmpty() && files.isEmpty() && components.isEmpty())
             throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, components, or files");
 
@@ -253,6 +268,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         super.clear();
         this.files.clear();
         this.tts = false;
+        this.silent = false;
         return this;
     }
 

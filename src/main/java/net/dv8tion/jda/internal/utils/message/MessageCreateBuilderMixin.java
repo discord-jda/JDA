@@ -84,4 +84,12 @@ public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> ex
     {
         return getBuilder().getAttachments();
     }
+
+    @Nonnull
+    @Override
+    default R setSilent(boolean silent)
+    {
+        getBuilder().setSilent(silent);
+        return (R) this;
+    }
 }

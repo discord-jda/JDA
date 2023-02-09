@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,6 +52,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     private String nonce;
     private String messageReferenceId;
     private boolean failOnInvalidReply = defaultFailOnInvalidReply;
+    private boolean silent;
 
     public static void setDefaultFailOnInvalidReply(boolean fail)
     {
@@ -95,6 +97,8 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
                         .put("fail_if_not_exists", failOnInvalidReply)
                 );
             }
+            if (silent)
+                json.put("flags", json.getInt("flags", 0) | Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue());
 
             return getMultipartBody(data.getFiles(), json);
         }
@@ -178,5 +182,13 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     public MessageCreateAction deadline(long timestamp)
     {
         return (MessageCreateAction) super.deadline(timestamp);
+    }
+
+    @NotNull
+    @Override
+    public MessageCreateAction setSilent(boolean silent)
+    {
+        this.silent = silent;
+        return this;
     }
 }
