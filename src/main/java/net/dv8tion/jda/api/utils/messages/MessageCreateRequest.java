@@ -312,15 +312,15 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Set whether this message should trigger push/desktop notifications to other users.
-     * <br>When a message is silent, it will not trigger push/desktop notifications.
+     * <br>When a message is suppressed, it will not trigger push/desktop notifications.
      *
-     * @param  silent
+     * @param  suppressed
      *         True, if this message should not trigger push/desktop notifications
      *
      * @return The same reply action, for chaining convenience
      */
     @Nonnull
-    R setSilent(boolean silent);
+    R setSuppressedNotifications(boolean suppressed);
 
     /**
      * Applies the provided {@link MessageCreateData} to this request.
@@ -348,7 +348,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
-                .setSilent(data.isSilent())
+                .setSuppressedNotifications(data.isSuppressedNotifications())
                 .setComponents(layoutComponents)
                 .setFiles(data.getFiles());
     }
@@ -365,7 +365,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
         return setContent(message.getContentRaw())
                 .setEmbeds(embeds)
                 .setTTS(message.isTTS())
-                .setSilent(message.isSilent())
+                .setSuppressedNotifications(message.isSuppressedNotifications())
                 .setComponents(message.getActionRows());
     }
 

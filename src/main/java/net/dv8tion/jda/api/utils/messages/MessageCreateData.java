@@ -258,7 +258,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      *
      * @return True, if the message will not trigger push and desktop notifications
      */
-    public boolean isSilent()
+    public boolean isSuppressedNotifications()
     {
         return (flags & Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
     }

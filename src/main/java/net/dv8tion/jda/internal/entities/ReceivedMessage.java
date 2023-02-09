@@ -681,7 +681,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public boolean isSilent()
+    public boolean isSuppressedNotifications()
     {
         return (this.flags & MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
     }

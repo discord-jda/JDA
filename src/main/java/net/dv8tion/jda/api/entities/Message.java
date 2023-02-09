@@ -1954,7 +1954,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Whether the message is silent
      */
-    boolean isSilent();
+    boolean isSuppressedNotifications();
 
     /**
      * Returns a possibly {@code null} {@link ThreadChannel ThreadChannel} that was started from this message.
@@ -2141,7 +2141,7 @@ public interface Message extends ISnowflake, Formattable
         LOADING(7),
         /**
          * Indicates, that this message will not trigger push and desktop notifications
-         * @see Message#isSilent
+         * @see Message#isSuppressedNotifications
          */
         NOTIFICATIONS_SUPPRESSED(12);
 

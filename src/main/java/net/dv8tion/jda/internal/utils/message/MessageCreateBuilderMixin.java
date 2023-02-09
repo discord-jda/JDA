@@ -87,9 +87,9 @@ public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> ex
 
     @Nonnull
     @Override
-    default R setSilent(boolean silent)
+    default R setSuppressedNotifications(boolean suppressed)
     {
-        getBuilder().setSilent(silent);
+        getBuilder().setSuppressedNotifications(suppressed);
         return (R) this;
     }
 }

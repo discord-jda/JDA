@@ -473,7 +473,7 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public boolean isSilent()
+    public boolean isSuppressedNotifications()
     {
         unsupported();
         return false;
