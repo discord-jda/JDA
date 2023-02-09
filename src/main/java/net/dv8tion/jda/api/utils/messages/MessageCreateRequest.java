@@ -23,9 +23,11 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.Arrays;
@@ -399,4 +401,16 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
         return (R) this;
     }
+
+    /**
+     * Set whether this message should trigger push/desktop notifications to other users.
+     * <br>When a message is silent, it will not trigger push/desktop notifications.
+     *
+     * @param  silent
+     *         True, if this message should not trigger push/desktop notifications
+     *
+     * @return The same reply action, for chaining convenience
+     */
+    @Nonnull
+    R setSilent(boolean silent);
 }

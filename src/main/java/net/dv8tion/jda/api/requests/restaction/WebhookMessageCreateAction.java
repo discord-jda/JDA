@@ -92,17 +92,4 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
     @Nonnull
     @CheckReturnValue
     WebhookMessageCreateAction<T> setEphemeral(boolean ephemeral);
-
-    /**
-     * Set whether this message should trigger push/desktop notifications to other users.
-     * <br>When a message is silent, it will not trigger push/desktop notifications.
-     *
-     * @param  silent
-     *         True, if this message should not trigger push/desktop notifications
-     *
-     * @return The same reply action, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageCreateAction<T> setSilent(boolean silent);
 }
