@@ -22,10 +22,12 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A metadata record used for role connections.
@@ -264,6 +266,36 @@ public class RoleConnectionMetadata implements SerializableData
     {
         this.descriptionLocalization.setTranslations(map);
         return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+            .setType(type)
+            .addMetadata("key", key)
+            .addMetadata("name", name)
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof RoleConnectionMetadata))
+            return false;
+        if (this == obj)
+            return true;
+        RoleConnectionMetadata o = (RoleConnectionMetadata) obj;
+        return this.type == o.type
+            && this.key.equals(o.key)
+            && this.name.equals(o.name)
+            && this.description.equals(o.description);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(type, key, name, description);
     }
 
     @Nonnull
