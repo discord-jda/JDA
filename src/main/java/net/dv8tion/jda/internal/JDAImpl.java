@@ -980,7 +980,7 @@ public class JDAImpl implements JDA
                 response.getArray()
                     .stream(DataArray::getObject)
                     .map(RoleConnectionMetadata::fromData)
-                    .collect(Collectors.toList()));
+                    .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull
@@ -992,8 +992,7 @@ public class JDAImpl implements JDA
 
         Route.CompiledRoute route = Route.Applications.UPDATE_ROLE_CONNECTION_METADATA.compile(getSelfUser().getApplicationId());
 
-        DataArray array = DataArray.empty();
-        records.stream().map(RoleConnectionMetadata::toData).forEach(array::add);
+        DataArray array = DataArray.fromCollection(records);
         RequestBody body = RequestBody.create(array.toJson(), Requester.MEDIA_TYPE_JSON);
 
         return new RestActionImpl<>(this, route, body,
@@ -1001,7 +1000,7 @@ public class JDAImpl implements JDA
                 response.getArray()
                     .stream(DataArray::getObject)
                     .map(RoleConnectionMetadata::fromData)
-                    .collect(Collectors.toList()));
+                    .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull
