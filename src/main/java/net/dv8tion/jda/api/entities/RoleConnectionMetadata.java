@@ -81,6 +81,8 @@ public class RoleConnectionMetadata implements SerializableData
         Checks.notNull(key, "Key");
         Checks.inRange(key, 1, MAX_KEY_LENGTH, "Key");
         Checks.matches(key, Checks.LOWERCASE_ASCII_ALPHANUMERIC, "Key");
+        checkName(name);
+        checkDescription(description);
 
         this.type = type;
         this.name = name;
@@ -316,18 +318,24 @@ public class RoleConnectionMetadata implements SerializableData
      * <br>This is the reverse of {@link #toData()}.
      *
      * @param  data
-     *         The data object to parse values from
+     *         The data object to parse values from#
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data object is null
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided data does not have a valid int type value
      *
      * @return The parsed metadata instance
      */
     @Nonnull
     public static RoleConnectionMetadata fromData(@Nonnull DataObject data)
     {
+        Checks.notNull(data, "Data");
         return new RoleConnectionMetadata(
-            MetadataType.fromValue(data.getInt("type", -1)),
-            data.getString("name", ""),
-            data.getString("key", ""),
-            data.getString("description", "")
+            MetadataType.fromValue(data.getInt("type")),
+            data.getString("name", null),
+            data.getString("key", null),
+            data.getString("description", null)
         );
     }
 
