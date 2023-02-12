@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -331,12 +332,14 @@ public class RoleConnectionMetadata implements SerializableData
     public static RoleConnectionMetadata fromData(@Nonnull DataObject data)
     {
         Checks.notNull(data, "Data");
-        return new RoleConnectionMetadata(
+        RoleConnectionMetadata metadata = new RoleConnectionMetadata(
             MetadataType.fromValue(data.getInt("type")),
             data.getString("name", null),
             data.getString("key", null),
             data.getString("description", null)
         );
+        return metadata.setNameLocalizations(LocalizationUtils.mapFromProperty(data, "name_localizations"))
+                       .setDescriptionLocalizations(LocalizationUtils.mapFromProperty(data, "description_localizations"));
     }
 
     /**
