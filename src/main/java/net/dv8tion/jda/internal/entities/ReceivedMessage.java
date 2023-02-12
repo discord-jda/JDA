@@ -680,6 +680,12 @@ public class ReceivedMessage extends AbstractMessage
         return (this.flags & MessageFlag.EPHEMERAL.getValue()) != 0;
     }
 
+    @Override
+    public boolean isSuppressedNotifications()
+    {
+        return (this.flags & MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
+    }
+
     @Nullable
     @Override
     public ThreadChannel getStartedThread()

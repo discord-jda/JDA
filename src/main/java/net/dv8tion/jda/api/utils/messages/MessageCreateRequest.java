@@ -311,6 +311,18 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     R setTTS(boolean tts);
 
     /**
+     * Set whether this message should trigger push/desktop notifications to other users.
+     * <br>When a message is suppressed, it will not trigger push/desktop notifications.
+     *
+     * @param  suppressed
+     *         True, if this message should not trigger push/desktop notifications
+     *
+     * @return The same reply action, for chaining convenience
+     */
+    @Nonnull
+    R setSuppressedNotifications(boolean suppressed);
+
+    /**
      * Applies the provided {@link MessageCreateData} to this request.
      *
      * @param  data
@@ -336,6 +348,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
+                .setSuppressedNotifications(data.isSuppressedNotifications())
                 .setComponents(layoutComponents)
                 .setFiles(data.getFiles());
     }
@@ -352,6 +365,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
         return setContent(message.getContentRaw())
                 .setEmbeds(embeds)
                 .setTTS(message.isTTS())
+                .setSuppressedNotifications(message.isSuppressedNotifications())
                 .setComponents(message.getActionRows());
     }
 
