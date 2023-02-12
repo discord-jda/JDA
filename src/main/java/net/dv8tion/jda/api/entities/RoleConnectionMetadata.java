@@ -276,8 +276,8 @@ public class RoleConnectionMetadata implements SerializableData
     {
         return new EntityString(this)
             .setType(type)
+            .setName(name)
             .addMetadata("key", key)
-            .addMetadata("name", name)
             .toString();
     }
 
