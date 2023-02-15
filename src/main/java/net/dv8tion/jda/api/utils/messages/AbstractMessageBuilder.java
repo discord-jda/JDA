@@ -255,6 +255,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
         this.components.clear();
         this.content.setLength(0);
         this.mentions.clear();
+        this.messageFlags = 0;
         return (R) this;
     }
 

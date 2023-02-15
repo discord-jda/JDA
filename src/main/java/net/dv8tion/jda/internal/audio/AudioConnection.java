@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
@@ -49,6 +50,8 @@ import java.nio.ShortBuffer;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioConnection
 {
@@ -56,7 +59,6 @@ public class AudioConnection
 
     public static final long MAX_UINT_32 = 4294967295L;
 
-    private static final int NOT_SPEAKING = 0;
     private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE});
     private static boolean printedError = false;
 
@@ -69,22 +71,22 @@ public class AudioConnection
     private final AudioWebSocket webSocket;
     private final JDAImpl api;
 
+    protected final ReentrantLock readyLock = new ReentrantLock();
+    protected final Condition readyCondvar = readyLock.newCondition();
+
     private AudioChannel channel;
     private PointerByReference opusEncoder;
     private ScheduledExecutorService combinedAudioExecutor;
     private IAudioSendSystem sendSystem;
     private Thread receiveThread;
     private long queueTimeout;
-    private boolean sentSilenceOnConnect = false;
-    private int speakingDelay = 10;
+    private boolean shutdown = false;
 
     private volatile AudioSendHandler sendHandler = null;
     private volatile AudioReceiveHandler receiveHandler = null;
 
     private volatile boolean couldReceive = false;
-    private volatile boolean speaking = false;      //Also acts as "couldProvide"
     private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
-    private volatile int silenceCounter = 0;
 
     public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token, AudioChannel channel)
     {
@@ -112,9 +114,9 @@ public class AudioConnection
         webSocket.setAutoReconnect(shouldReconnect);
     }
 
+    @Deprecated
     public void setSpeakingDelay(int millis)
     {
-        speakingDelay = Math.max(millis / 20, 10); // max { millis / frame-length, 200 millis }
     }
 
     public void setSendingHandler(AudioSendHandler handler)
@@ -134,7 +136,7 @@ public class AudioConnection
     public void setSpeakingMode(EnumSet<SpeakingMode> mode)
     {
         int raw = SpeakingMode.getRaw(mode);
-        if (raw != this.speakingMode && speaking)
+        if (raw != this.speakingMode && webSocket.isReady())
             setSpeaking(raw);
         this.speakingMode = raw;
     }
@@ -172,6 +174,7 @@ public class AudioConnection
 
     public synchronized void shutdown()
     {
+        shutdown = true;
         if (sendSystem != null)
         {
             sendSystem.shutdown();
@@ -195,6 +198,8 @@ public class AudioConnection
 
         opusDecoders.valueCollection().forEach(Decoder::close);
         opusDecoders.clear();
+
+        MiscUtil.locked(readyLock, readyCondvar::signalAll);
     }
 
     public WebSocket getWebSocket()
@@ -209,32 +214,36 @@ public class AudioConnection
         Thread readyThread = new Thread(() ->
         {
             getJDA().setContext();
-            final long timeout = getGuild().getAudioManager().getConnectTimeout();
 
-            final long started = System.currentTimeMillis();
-            while (!webSocket.isReady())
-            {
-                if (timeout > 0 && System.currentTimeMillis() - started > timeout)
-                    break;
+            boolean ready = MiscUtil.locked(readyLock, () -> {
+                final long timeout = getGuild().getAudioManager().getConnectTimeout();
+                while (!webSocket.isReady())
+                {
+                    try
+                    {
+                        boolean activated = readyCondvar.await(timeout, TimeUnit.MILLISECONDS);
+                        if (!activated)
+                        {
+                            webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
+                            shutdown = true;
+                        }
+                        if (shutdown)
+                            return false;
+                    }
+                    catch (InterruptedException e)
+                    {
+                        LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
+                        return false;
+                    }
+                }
 
-                try
-                {
-                    Thread.sleep(10);
-                }
-                catch (InterruptedException e)
-                {
-                    LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
-                    Thread.currentThread().interrupt();
-                }
-            }
-            if (webSocket.isReady())
+                return true;
+            });
+
+            if (ready)
             {
                 setupSendSystem();
                 setupReceiveSystem();
-            }
-            else
-            {
-                webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
             }
         });
         readyThread.setUncaughtExceptionHandler((thread, throwable) ->
@@ -295,6 +304,7 @@ public class AudioConnection
     {
         if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
         {
+            setSpeaking(speakingMode);
             IAudioSendFactory factory = getJDA().getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider(new TweetNaclFast.SecretBox(webSocket.getSecretKey())));
             sendSystem.setContextMap(getJDA().getContextMap());
@@ -366,11 +376,7 @@ public class AudioConnection
                         boolean canReceive = receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined() || receiveHandler.canReceiveEncoded());
                         if (canReceive && webSocket.getSecretKey() != null)
                         {
-                            if (!couldReceive)
-                            {
-                                couldReceive = true;
-                                sendSilentPackets();
-                            }
+                            couldReceive = true;
                             AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(webSocket.encryption, receivedPacket, webSocket.getSecretKey());
                             if (decryptedPacket == null)
                                 continue;
@@ -435,10 +441,9 @@ public class AudioConnection
                                 queue.add(new AudioData(decodedAudio));
                             }
                         }
-                        else if (couldReceive)
+                        else
                         {
                             couldReceive = false;
-                            sendSilentPackets();
                         }
                     }
                     catch (SocketTimeoutException e)
@@ -593,7 +598,6 @@ public class AudioConnection
 
     private void setSpeaking(int raw)
     {
-        this.speaking = raw != 0;
         DataObject obj = DataObject.empty()
                 .put("speaking", raw)
                 .put("ssrc", webSocket.getSSRC())
@@ -601,10 +605,6 @@ public class AudioConnection
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
     }
 
-    private void sendSilentPackets()
-    {
-        silenceCounter = 0;
-    }
 
     @Override
     @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
@@ -615,13 +615,13 @@ public class AudioConnection
 
     private class PacketProvider implements IPacketProvider
     {
+        private final TweetNaclFast.SecretBox boxer;
+        private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
         private char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
-        private TweetNaclFast.SecretBox boxer;
         private long nonce = 0;
         private ByteBuffer buffer = ByteBuffer.allocate(512);
         private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
-        private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
 
         public PacketProvider(TweetNaclFast.SecretBox boxer)
         {
@@ -657,73 +657,43 @@ public class AudioConnection
         }
 
         @Override
-        public DatagramPacket getNextPacket(boolean changeTalking)
+        public DatagramPacket getNextPacket(boolean unused)
         {
-            ByteBuffer buffer = getNextPacketRaw(changeTalking);
+            ByteBuffer buffer = getNextPacketRaw(unused);
             return buffer == null ? null : getDatagramPacket(buffer);
         }
 
         @Override
-        public ByteBuffer getNextPacketRaw(boolean changeTalking)
+        public ByteBuffer getNextPacketRaw(boolean unused)
         {
             ByteBuffer nextPacket = null;
             try
             {
-                cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
+                if (sendHandler != null && sendHandler.canProvide())
                 {
-                    silenceCounter = -1;
                     ByteBuffer rawAudio = sendHandler.provide20MsAudio();
                     if (rawAudio != null && !rawAudio.hasArray())
                     {
                         // we can't use the boxer without an array so encryption would not work
                         LOG.error("AudioSendHandler provided ByteBuffer without a backing array! This is unsupported.");
                     }
-                    if (rawAudio == null || !rawAudio.hasRemaining() || !rawAudio.hasArray())
-                    {
-                        if (speaking && changeTalking)
-                            sendSilentPackets();
-                    }
-                    else
+
+                    if (rawAudio != null && rawAudio.hasRemaining() && rawAudio.hasArray())
                     {
                         if (!sendHandler.isOpus())
                         {
                             rawAudio = encodeAudio(rawAudio);
                             if (rawAudio == null)
-                                break cond;
+                                return null;
                         }
 
                         nextPacket = getPacketData(rawAudio);
-                        if (!speaking)
-                            setSpeaking(speakingMode);
 
                         if (seq + 1 > Character.MAX_VALUE)
                             seq = 0;
                         else
                             seq++;
                     }
-                }
-                else if (silenceCounter > -1)
-                {
-                    nextPacket = getPacketData(silenceBytes);
-                    if (seq + 1 > Character.MAX_VALUE)
-                        seq = 0;
-                    else
-                        seq++;
-
-                    silenceCounter++;
-                    //If we have sent our 10 silent packets on initial connect, or if we have sent enough silent packets
-                    // to satisfy the speaking delay, stop transmitting silence.
-                    if ((!sentSilenceOnConnect && silenceCounter > 10) || silenceCounter > speakingDelay)
-                    {
-                        if (sentSilenceOnConnect)
-                            setSpeaking(NOT_SPEAKING);
-                        silenceCounter = -1;
-                        sentSilenceOnConnect = true;
-                    }
-                }
-                else if (speaking && changeTalking)
-                {
-                    sendSilentPackets();
                 }
             }
             catch (Exception e)

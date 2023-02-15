@@ -40,14 +40,19 @@ import java.util.Map;
 public interface CommandData extends SerializableData
 {
     /**
-     * The maximum length the name of a command can be.
+     * The maximum length the name of a command can be. ({@value})
      */
     int MAX_NAME_LENGTH = 32;
 
     /**
-     * The maximum length the description of a command can be.
+     * The maximum length the description of a command can be. ({@value})
      */
     int MAX_DESCRIPTION_LENGTH = 100;
+
+    /**
+     * The maximum amount of options/subcommands/groups that can be added to a command or subcommand. ({@value})
+     */
+    int MAX_OPTIONS = 25;
 
     /**
      * Sets the {@link LocalizationFunction} for this command
@@ -68,10 +73,10 @@ public interface CommandData extends SerializableData
      * Configure the command name.
      *
      * @param  name
-     *         The name, 1-32 characters (lowercase and alphanumeric for {@link Command.Type#SLASH})
+     *         The name, 1-{@value #MAX_NAME_LENGTH} characters (lowercase and alphanumeric for {@link Command.Type#SLASH})
      *
      * @throws IllegalArgumentException
-     *         If the name is not between 1-32 characters long, or not lowercase and alphanumeric for slash commands
+     *         If the name is not between 1-{@value #MAX_NAME_LENGTH} characters long, or not lowercase and alphanumeric for slash commands
      *
      * @return The builder instance, for chaining
      */

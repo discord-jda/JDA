@@ -254,6 +254,16 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     }
 
     /**
+     * Whether this message is silent.
+     *
+     * @return True, if the message will not trigger push and desktop notifications
+     */
+    public boolean isSuppressedNotifications()
+    {
+        return (flags & Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
+    }
+
+    /**
      * The IDs for users which are allowed to be mentioned, or an empty list.
      *
      * @return The user IDs which are mention whitelisted
