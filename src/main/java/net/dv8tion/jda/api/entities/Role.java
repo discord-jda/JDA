@@ -432,6 +432,6 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
          *
          * @return True, if this role is acquired through a user connection
          */
-        boolean isGuildConnections();
+        boolean isLinkedRole();
     }
 }

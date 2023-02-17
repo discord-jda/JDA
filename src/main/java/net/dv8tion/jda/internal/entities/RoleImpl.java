@@ -543,7 +543,7 @@ public class RoleImpl implements Role
         }
 
         @Override
-        public boolean isGuildConnections()
+        public boolean isLinkedRole()
         {
             return isGuildConnections;
         }
@@ -579,7 +579,7 @@ public class RoleImpl implements Role
                     .addMetadata("subscriptionListing", getSubscriptionId())
                     .addMetadata("isBoost", isBoost())
                     .addMetadata("isAvailableForPurchase", isAvailableForPurchase())
-                    .addMetadata("isGuildConnections", isGuildConnections())
+                    .addMetadata("isGuildConnections", isLinkedRole())
                     .toString();
         }
     }
