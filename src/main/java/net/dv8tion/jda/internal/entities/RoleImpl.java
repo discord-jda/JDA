@@ -531,12 +531,6 @@ public class RoleImpl implements Role
         }
 
         @Override
-        public boolean hasSubscriptionListing()
-        {
-            return subscriptionListingId != 0;
-        }
-
-        @Override
         public long getSubscriptionIdLong()
         {
             return subscriptionListingId;

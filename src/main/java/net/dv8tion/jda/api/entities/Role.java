@@ -384,7 +384,10 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
          * @see    #getSubscriptionIdLong()
          * @see    #isAvailableForPurchase()
          */
-        boolean hasSubscriptionListing();
+        default boolean hasSubscriptionListing()
+        {
+            return getSubscriptionIdLong() != 0;
+        }
 
         /**
          * The subscription listing id for this role. If a role has a subscription id then it is a premium role that 
@@ -424,7 +427,8 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 
         /**
          * Whether this role is acquired through a user connection.
-         * <br>Such as twitter or reddit.
+         * <br>Such as external services like twitter or reddit.
+         * This also includes custom third-party applications, such as those managed by bots via {@link RoleConnectionMetadata}.
          *
          * @return True, if this role is acquired through a user connection
          */
