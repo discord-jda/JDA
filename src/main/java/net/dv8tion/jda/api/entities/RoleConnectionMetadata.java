@@ -34,6 +34,7 @@ import java.util.Objects;
  * A metadata record used for role connections.
  *
  * @see <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
+ * @see Role.RoleTags#isLinkedRole()
  */
 public class RoleConnectionMetadata implements SerializableData
 {

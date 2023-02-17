@@ -431,6 +431,8 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
          * This also includes custom third-party applications, such as those managed by bots via {@link RoleConnectionMetadata}.
          *
          * @return True, if this role is acquired through a user connection
+         *
+         * @see    <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
          */
         boolean isLinkedRole();
     }
