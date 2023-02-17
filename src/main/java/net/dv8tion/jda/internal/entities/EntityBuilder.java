@@ -1751,15 +1751,17 @@ public class EntityBuilder
         if (guild != null && !jsonObject.isNull("thread"))
             startedThread = createThreadChannel(guild, jsonObject.getObject("thread"), guild.getIdLong());
 
+        int position = jsonObject.getInt("position", -1);
+
         if (!type.isSystem())
         {
             return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread, position);
         }
         else
         {
             return new SystemMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread, position);
         }
     }
 
