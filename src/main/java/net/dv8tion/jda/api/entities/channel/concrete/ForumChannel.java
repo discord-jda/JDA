@@ -212,6 +212,9 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
 //    @Nonnull
 //    SortOrder getDefaultSortOrder();
 
+    @Nonnull
+    Layout getDefaultLayout();
+
     /**
      * Creates a new forum post (thread) in this forum.
      *
@@ -242,6 +245,37 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
     @Incubating
     @CheckReturnValue
     ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message);
+
+    enum Layout
+    {
+        DEFAULT_VIEW(0),
+        LIST_VIEW(1),
+        GALLERY_VIEW(2);
+
+        private final int layout;
+
+        Layout(int layout)
+        {
+            this.layout = layout;
+        }
+
+        public int getKey()
+        {
+            return layout;
+        }
+
+        @Nonnull
+        public static Layout fromKey(int key)
+        {
+            for (Layout layout : values())
+            {
+                if (layout.layout == key)
+                    return layout;
+            }
+
+            return DEFAULT_VIEW;
+        }
+    }
 
 //    /**
 //     * The order used to sort forum posts.

@@ -246,6 +246,9 @@ public enum ChannelField
      */
     APPLIED_TAGS("applied_tags", AuditLogKey.THREAD_APPLIED_TAGS),
 
+
+    DEFAULT_FORUM_LAYOUT("default_forum_layout", AuditLogKey.DEFAULT_FORUM_LAYOUT),
+
 //    /**
 //     * The default sort order of a forum channel.
 //     *

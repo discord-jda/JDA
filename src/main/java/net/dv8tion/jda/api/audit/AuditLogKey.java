@@ -320,6 +320,8 @@ public enum AuditLogKey
 //     */
 //    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
 
+    DEFAULT_FORUM_LAYOUT("default_sort_order"),
+
     // THREADS
 
     /**
