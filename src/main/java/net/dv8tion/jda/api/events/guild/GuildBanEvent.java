@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
  *
  * <p><b>Requirements</b><br>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_BANS GUILD_BANS} intent to be enabled.
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MODERATION GUILD_MODERATION} intent to be enabled.
  */
 public class GuildBanEvent extends GenericGuildEvent
 {

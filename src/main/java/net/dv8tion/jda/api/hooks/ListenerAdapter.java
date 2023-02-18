@@ -242,6 +242,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUnavailableGuildLeave(@Nonnull UnavailableGuildLeaveEvent event) {}
     public void onGuildBan(@Nonnull GuildBanEvent event) {}
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {}
+    public void onGuildAuditLogEntryCreate(@Nonnull GuildAuditLogEntryCreateEvent event) {}
     public void onGuildMemberRemove(@Nonnull GuildMemberRemoveEvent event) {}
 
     //Guild Update Events

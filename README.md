@@ -218,7 +218,7 @@ public class Bot extends ListenerAdapter
         jda.updateCommands().addCommands(
             Commands.slash("ping", "Calculate ping of the bot"),
             Commands.slash("ban", "Ban a user from the server")
-                    .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS) // only usable with ban permissions
+                    .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)) // only usable with ban permissions
                     .setGuildOnly(true) // Ban command only works inside a guild
                     .addOption(OptionType.USER, "user", "The user to ban", true) // required option of type user (target to ban)
                     .addOption(OptionType.STRING, "reason", "The ban reason") // optional reason
@@ -647,7 +647,7 @@ All dependencies are managed automatically by Gradle.
    * Version: **2.14**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
  * OkHttp
-   * Version: **4.9.3**
+   * Version: **4.10.0**
    * [Github](https://github.com/square/okhttp)
  * Apache Commons Collections4
    * Version: **4.4**

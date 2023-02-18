@@ -1751,15 +1751,17 @@ public class EntityBuilder
         if (guild != null && !jsonObject.isNull("thread"))
             startedThread = createThreadChannel(guild, jsonObject.getObject("thread"), guild.getIdLong());
 
+        int position = jsonObject.getInt("position", -1);
+
         if (!type.isSystem())
         {
             return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread, position);
         }
         else
         {
             return new SystemMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread, position);
         }
     }
 
@@ -2392,6 +2394,7 @@ public class EntityBuilder
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, DataObject userJson, DataObject webhookJson)
     {
         final long targetId = entryJson.getLong("target_id", 0);
+        final long userId = entryJson.getLong("user_id", 0);
         final long id = entryJson.getLong("id");
         final int typeKey = entryJson.getInt("action_type");
         final DataArray changes = entryJson.isNull("changes") ? null : entryJson.getArray("changes");
@@ -2422,7 +2425,7 @@ public class EntityBuilder
         CaseInsensitiveMap<String, Object> optionMap = options != null
                 ? new CaseInsensitiveMap<>(options.toMap()) : null;
 
-        return new AuditLogEntry(type, typeKey, id, targetId, guild, user, webhook, reason, changeMap, optionMap);
+        return new AuditLogEntry(type, typeKey, id, userId, targetId, guild, user, webhook, reason, changeMap, optionMap);
     }
 
     public AuditLogChange createAuditLogChange(DataObject change)

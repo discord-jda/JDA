@@ -151,6 +151,14 @@ public enum MessageType
     AUTO_MODERATION_ACTION(24, true, true),
 
     /**
+     * Sent when someone purchases a role subscription.
+     *
+     * @see Role.RoleTags#isAvailableForPurchase()
+     * @see Role.RoleTags#hasSubscriptionListing()
+     */
+    ROLE_SUBSCRIPTION_PURCHASE(25, true, true),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1, false, true);

@@ -13,41 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events.guild;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.User User} was unbanned from a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ * Indicates that an {@link AuditLogEntry} was added to a {@link Guild}.
  *
- * <p>Can be used to retrieve the user who was unbanned (if available) and the guild which they were unbanned from.
+ * <p>This never provides a {@link AuditLogEntry#getUser() responsible user} instance.
+ * You can use {@link AuditLogEntry#getUserIdLong()} instead.
  *
  * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MODERATION GUILD_MODERATION} intent to be enabled.
  */
-public class GuildUnbanEvent extends GenericGuildEvent
+public class GuildAuditLogEntryCreateEvent extends GenericGuildEvent
 {
-    private final User user;
+    private final AuditLogEntry entry;
 
-    public GuildUnbanEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user)
+    public GuildAuditLogEntryCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull AuditLogEntry entry)
     {
-        super(api, responseNumber, guild);
-        this.user = user;
+        super(api, responseNumber, entry.getGuild());
+        this.entry = entry;
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.User User} who was unbanned
+     * The {@link AuditLogEntry} that was added to the {@link Guild}
      *
-     * @return The unbanned user
+     * @return The added entry
      */
     @Nonnull
-    public User getUser()
+    public AuditLogEntry getEntry()
     {
-        return user;
+        return entry;
     }
 }

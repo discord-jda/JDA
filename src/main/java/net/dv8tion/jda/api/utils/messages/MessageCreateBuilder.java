@@ -208,6 +208,17 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         return this;
     }
 
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setSuppressedNotifications(boolean suppressed)
+    {
+        if(suppressed)
+            messageFlags |= Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
+        else
+            messageFlags &= ~Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
+        return this;
+    }
+
     @Override
     public boolean isEmpty()
     {

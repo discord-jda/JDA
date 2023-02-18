@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
@@ -71,10 +72,10 @@ public interface SlashCommandData extends CommandData
      * Configure the description
      *
      * @param  description
-     *         The description, 1-100 characters
+     *         The description, 1-{@value #MAX_DESCRIPTION_LENGTH} characters
      *
      * @throws IllegalArgumentException
-     *         If the name is null or not between 1-100 characters
+     *         If the name is null or not between 1-{@value #MAX_DESCRIPTION_LENGTH} characters
      *
      * @return The builder, for chaining
      */
@@ -138,9 +139,112 @@ public interface SlashCommandData extends CommandData
     LocalizationMap getDescriptionLocalizations();
 
     /**
+     * Removes all options that evaluate to {@code true} under the provided {@code condition}.
+     * <br>This will not affect options within subcommands.
+     * Use {@link SubcommandData#removeOptions(Predicate)} instead.
+     *
+     * <p><b>Example: Remove all options</b>
+     * <pre>{@code
+     * command.removeOptions(option -> true);
+     * }</pre>
+     * <p><b>Example: Remove all options that are required</b>
+     * <pre>{@code
+     * command.removeOptions(option -> option.isRequired());
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any options were removed
+     */
+    boolean removeOptions(@Nonnull Predicate<? super OptionData> condition);
+
+    /**
+     * Removes options by the provided name.
+     * <br>This will not affect options within subcommands.
+     * Use {@link SubcommandData#removeOptionByName(String)} instead.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> option name
+     *
+     * @return True, if any options were removed
+     */
+    default boolean removeOptionByName(@Nonnull String name)
+    {
+        return removeOptions(option -> option.getName().equals(name));
+    }
+
+    /**
+     * Removes all subcommands that evaluate to {@code true} under the provided {@code condition}.
+     * <br>This will not apply to subcommands within subcommand groups.
+     * Use {@link SubcommandGroupData#removeSubcommand(Predicate)} instead.
+     *
+     * <p><b>Example: Remove all subcommands</b>
+     * <pre>{@code
+     * command.removeSubcommands(subcommand -> true);
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any subcommands were removed
+     */
+    boolean removeSubcommands(@Nonnull Predicate<? super SubcommandData> condition);
+
+    /**
+     * Removes subcommands by the provided name.
+     * <br>This will not apply to subcommands within subcommand groups.
+     * Use {@link SubcommandGroupData#removeSubcommandByName(String)} instead.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> subcommand name
+     *
+     * @return True, if any subcommands were removed
+     */
+    default boolean removeSubcommandByName(@Nonnull String name)
+    {
+        return removeSubcommands(subcommand -> subcommand.getName().equals(name));
+    }
+
+    /**
+     * Removes all subcommand groups that evaluate to {@code true} under the provided {@code condition}.
+     *
+     * <p><b>Example: Remove all subcommand groups</b>
+     * <pre>{@code
+     * command.removeSubcommandGroups(group -> true);
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any subcommand groups were removed
+     */
+    boolean removeSubcommandGroups(@Nonnull Predicate<? super SubcommandGroupData> condition);
+
+    /**
+     * Removes subcommand groups by the provided name.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> subcommand group name
+     *
+     * @return True, if any subcommand groups were removed
+     */
+    default boolean removeSubcommandGroupByName(@Nonnull String name)
+    {
+        return removeSubcommandGroups(group -> group.getName().equals(name));
+    }
+
+    /**
      * The {@link SubcommandData Subcommands} in this command.
-     * <br>These subcommand instances are <b>reconstructed</b>,
-     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandData}
      */
@@ -149,8 +253,6 @@ public interface SlashCommandData extends CommandData
 
     /**
      * The {@link SubcommandGroupData Subcommand Groups} in this command.
-     * <br>These subcommand group instances are <b>reconstructed</b>,
-     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandGroupData}
      */
@@ -159,8 +261,6 @@ public interface SlashCommandData extends CommandData
 
     /**
      * The options for this command.
-     * <br>These option instances are <b>reconstructed</b>,
-     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link OptionData}
      */
@@ -168,7 +268,7 @@ public interface SlashCommandData extends CommandData
     List<OptionData> getOptions();
 
     /**
-     * Adds up to 25 options to this command.
+     * Adds up to {@value CommandData#MAX_OPTIONS} options to this command.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -177,10 +277,10 @@ public interface SlashCommandData extends CommandData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -191,7 +291,7 @@ public interface SlashCommandData extends CommandData
     SlashCommandData addOptions(@Nonnull OptionData... options);
 
     /**
-     * Adds up to 25 options to this command.
+     * Adds up to {@value CommandData#MAX_OPTIONS} options to this command.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -200,10 +300,10 @@ public interface SlashCommandData extends CommandData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -225,9 +325,9 @@ public interface SlashCommandData extends CommandData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      * @param  autoComplete
@@ -236,12 +336,12 @@ public interface SlashCommandData extends CommandData
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If the provided option type does not support auto-complete</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -264,19 +364,19 @@ public interface SlashCommandData extends CommandData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -298,17 +398,17 @@ public interface SlashCommandData extends CommandData
      * @param  type
      *         The {@link OptionType}
      * @param  name
-     *         The lowercase option name, 1-32 characters
+     *         The lowercase option name, 1-{@value OptionData#MAX_NAME_LENGTH} characters
      * @param  description
-     *         The option description, 1-100 characters
+     *         The option description, 1-{@value OptionData#MAX_DESCRIPTION_LENGTH} characters
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If there already is a subcommand or subcommand group on this command (See {@link #addSubcommands(SubcommandData...)} for details).</li>
      *             <li>If the option type is {@link OptionType#UNKNOWN UNKNOWN}.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
-     *             <li>If more than 25 options are provided.</li>
+     *             <li>If more than {@value CommandData#MAX_OPTIONS} options are provided.</li>
      *             <li>If the option name is not unique</li>
      *             <li>If null is provided</li>
      *         </ul>
@@ -322,14 +422,35 @@ public interface SlashCommandData extends CommandData
     }
 
     /**
-     * Add up to 25 {@link SubcommandData Subcommands} to this command.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandData Subcommands} to this command.
+     * <br>When a subcommand or subcommand group is added, the base command itself cannot be used.
+     * Thus using {@link #addOptions(OptionData...)} and {@link #addSubcommands(SubcommandData...)} / {@link #addSubcommandGroups(SubcommandGroupData...)}
+     * for the same command, is not supported.
+     *
+     * <p>Valid command layouts are as follows:
+     * <pre>{@code
+     * command
+     * |-- subcommand
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |-- option
+     * |__ option
+     * }</pre>
+     *
+     * Having an option and subcommand simultaneously is not allowed.
      *
      * @param  subcommands
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommands, or duplicate subcommand names are provided.
+     *         Also throws if you try adding subcommands when options are already present.
      *
      * @return The builder instance, for chaining
      */
@@ -337,14 +458,35 @@ public interface SlashCommandData extends CommandData
     SlashCommandData addSubcommands(@Nonnull SubcommandData... subcommands);
 
     /**
-     * Add up to 25 {@link SubcommandData Subcommands} to this command.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandData Subcommands} to this command.
+     * <br>When a subcommand or subcommand group is added, the base command itself cannot be used.
+     * Thus using {@link #addOptions(OptionData...)} and {@link #addSubcommands(SubcommandData...)} / {@link #addSubcommandGroups(SubcommandGroupData...)}
+     * for the same command, is not supported.
+     *
+     * <p>Valid command layouts are as follows:
+     * <pre>{@code
+     * command
+     * |-- subcommand
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |-- option
+     * |__ option
+     * }</pre>
+     *
+     * Having an option and subcommand simultaneously is not allowed.
      *
      * @param  subcommands
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommands, or duplicate subcommand names are provided.
+     *         Also throws if you try adding subcommands when options are already present.
      *
      * @return The builder instance, for chaining
      */
@@ -356,14 +498,35 @@ public interface SlashCommandData extends CommandData
     }
 
     /**
-     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandGroupData Subcommand-Groups} to this command.
+     * <br>When a subcommand or subcommand group is added, the base command itself cannot be used.
+     * Thus using {@link #addOptions(OptionData...)} and {@link #addSubcommands(SubcommandData...)} / {@link #addSubcommandGroups(SubcommandGroupData...)}
+     * for the same command, is not supported.
+     *
+     * <p>Valid command layouts are as follows:
+     * <pre>{@code
+     * command
+     * |-- subcommand
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |-- option
+     * |__ option
+     * }</pre>
+     *
+     * Having an option and subcommand simultaneously is not allowed.
      *
      * @param  groups
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommand groups, or duplicate group names are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommand groups, or duplicate group names are provided.
+     *         Also throws if you try adding subcommand groups when options are already present.
      *
      * @return The builder instance, for chaining
      */
@@ -371,14 +534,35 @@ public interface SlashCommandData extends CommandData
     SlashCommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
 
     /**
-     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandGroupData Subcommand-Groups} to this command.
+     * <br>When a subcommand or subcommand group is added, the base command itself cannot be used.
+     * Thus using {@link #addOptions(OptionData...)} and {@link #addSubcommands(SubcommandData...)} / {@link #addSubcommandGroups(SubcommandGroupData...)}
+     * for the same command, is not supported.
+     *
+     * <p>Valid command layouts are as follows:
+     * <pre>{@code
+     * command
+     * |-- subcommand
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |__ subcommand group
+     *     |__ subcommand
+     *
+     * command
+     * |-- option
+     * |__ option
+     * }</pre>
+     *
+     * Having an option and subcommand simultaneously is not allowed.
      *
      * @param  groups
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommand groups, or duplicate group names are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommand groups, or duplicate group names are provided.
+     *         Also throws if you try adding subcommand groups when options are already present.
      *
      * @return The builder instance, for chaining
      */

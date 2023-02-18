@@ -84,7 +84,7 @@ public class AuditLogPaginationActionImpl
     @Override
     public EnumSet<PaginationOrder> getSupportedOrders()
     {
-        return EnumSet.of(PaginationOrder.BACKWARD);
+        return EnumSet.of(PaginationOrder.BACKWARD, PaginationOrder.FORWARD);
     }
 
     @Override
@@ -135,15 +135,19 @@ public class AuditLogPaginationActionImpl
                 DataObject webhook = webhookMap.get(entry.getLong("target_id", 0));
                 AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user, webhook);
                 list.add(result);
-                if (this.useCache)
-                    this.cached.add(result);
-                this.last = result;
-                this.lastKey = last.getIdLong();
             }
             catch (ParsingException | NullPointerException e)
             {
                 LOG.warn("Encountered exception in AuditLogPagination", e);
             }
+        }
+
+        if (!list.isEmpty())
+        {
+            if (this.useCache)
+                this.cached.addAll(list);
+            this.last = list.get(list.size() - 1);
+            this.lastKey = last.getIdLong();
         }
 
         request.onSuccess(list);

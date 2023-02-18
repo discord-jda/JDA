@@ -24,14 +24,11 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -39,7 +36,7 @@ import java.util.stream.Stream;
  */
 public class SubcommandGroupData implements SerializableData
 {
-    private final DataArray options = DataArray.empty();
+    private final List<SubcommandData> subcommands = new ArrayList<>(CommandData.MAX_OPTIONS);
     private String name, description;
     private final LocalizationMap nameLocalizations = new LocalizationMap(this::checkName);
     private final LocalizationMap descriptionLocalizations = new LocalizationMap(this::checkDescription);
@@ -268,28 +265,59 @@ public class SubcommandGroupData implements SerializableData
     }
 
     /**
+     * Removes all subcommands that evaluate to {@code true} under the provided {@code condition}.
+     *
+     * <p><b>Example: Remove all subcommands</b>
+     * <pre>{@code
+     * command.removeSubcommands(subcommand -> true);
+     * }</pre>
+     *
+     * @param  condition
+     *         The removal condition (must not throw)
+     *
+     * @throws IllegalArgumentException
+     *         If the condition is null
+     *
+     * @return True, if any subcommands were removed
+     */
+    public boolean removeSubcommand(@Nonnull Predicate<? super SubcommandData> condition)
+    {
+        Checks.notNull(condition, "Condition");
+        return subcommands.removeIf(condition);
+    }
+
+    /**
+     * Removes subcommands by the provided name.
+     *
+     * @param  name
+     *         The <b>case-sensitive</b> subcommand name
+     *
+     * @return True, if any subcommands were removed
+     */
+    public boolean removeSubcommandByName(@Nonnull String name)
+    {
+        return removeSubcommand(subcommand -> subcommand.getName().equals(name));
+    }
+
+    /**
      * The {@link SubcommandData Subcommands} in this group.
-     * <br>These subcommand instances are <b>reconstructed</b>,
-     * which means that any modifications will not be reflected in the backing state.
      *
      * @return Immutable list of {@link SubcommandData}
      */
     @Nonnull
     public List<SubcommandData> getSubcommands()
     {
-        return options.stream(DataArray::getObject)
-                .map(SubcommandData::fromData)
-                .collect(Helpers.toUnmodifiableList());
+        return Collections.unmodifiableList(subcommands);
     }
 
     /**
-     * Add up to 25 {@link SubcommandData Subcommands} to this group.
+     * Add up to {@value CommandData#MAX_OPTIONS} {@link SubcommandData Subcommands} to this group.
      *
      * @param  subcommands
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null, more than 25 subcommands, or duplicate subcommand names are provided.
+     *         If null, more than {@value CommandData#MAX_OPTIONS} subcommands, or duplicate subcommand names are provided.
      *
      * @return The SubcommandGroupData instance, for chaining
      */
@@ -297,14 +325,13 @@ public class SubcommandGroupData implements SerializableData
     public SubcommandGroupData addSubcommands(@Nonnull SubcommandData... subcommands)
     {
         Checks.noneNull(subcommands, "Subcommand");
-        Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands in one group!");
+        Checks.check(subcommands.length + this.subcommands.size() <= CommandData.MAX_OPTIONS, "Cannot have more than %d subcommands in one group!", CommandData.MAX_OPTIONS);
         Checks.checkUnique(
             Stream.concat(getSubcommands().stream(), Arrays.stream(subcommands)).map(SubcommandData::getName),
             "Cannot have multiple subcommands with the same name. Name: \"%s\" appeared %d times!",
             (count, value) -> new Object[]{ value, count }
         );
-        for (SubcommandData subcommand : subcommands)
-            options.add(subcommand);
+        this.subcommands.addAll(Arrays.asList(subcommands));
         return this;
     }
 
@@ -336,7 +363,7 @@ public class SubcommandGroupData implements SerializableData
                 .put("name_localizations", nameLocalizations)
                 .put("description", description)
                 .put("description_localizations", descriptionLocalizations)
-                .put("options", options);
+                .put("options", DataArray.fromCollection(subcommands));
     }
 
     /**

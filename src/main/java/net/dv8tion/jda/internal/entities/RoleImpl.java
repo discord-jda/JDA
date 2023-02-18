@@ -475,20 +475,29 @@ public class RoleImpl implements Role
         public static final RoleTags EMPTY = new RoleTagsImpl();
         private final long botId;
         private final long integrationId;
+        private final long subscriptionListingId;
         private final boolean premiumSubscriber;
+        private final boolean availableForPurchase;
+        private final boolean isGuildConnections;
 
         public RoleTagsImpl()
         {
             this.botId = 0L;
             this.integrationId = 0L;
+            this.subscriptionListingId = 0L;
             this.premiumSubscriber = false;
+            this.availableForPurchase = false;
+            this.isGuildConnections = false;
         }
 
         public RoleTagsImpl(DataObject tags)
         {
-            this.botId = tags.hasKey("bot_id") ? tags.getUnsignedLong("bot_id") : 0L;
-            this.integrationId = tags.hasKey("integration_id") ? tags.getUnsignedLong("integration_id") : 0L;
+            this.botId = tags.getUnsignedLong("bot_id", 0L);
+            this.integrationId = tags.getUnsignedLong("integration_id", 0L);
+            this.subscriptionListingId = tags.getUnsignedLong("subscription_listing_id", 0L);
             this.premiumSubscriber = tags.hasKey("premium_subscriber");
+            this.availableForPurchase = tags.hasKey("available_for_purchase");
+            this.isGuildConnections = tags.hasKey("guild_connections");
         }
 
         @Override
@@ -522,9 +531,27 @@ public class RoleImpl implements Role
         }
 
         @Override
+        public long getSubscriptionIdLong()
+        {
+            return subscriptionListingId;
+        }
+
+        @Override
+        public boolean isAvailableForPurchase()
+        {
+            return availableForPurchase;
+        }
+
+        @Override
+        public boolean isLinkedRole()
+        {
+            return isGuildConnections;
+        }
+
+        @Override
         public int hashCode()
         {
-            return Objects.hash(botId, integrationId, premiumSubscriber);
+            return Objects.hash(botId, integrationId, premiumSubscriber, availableForPurchase, subscriptionListingId, isGuildConnections);
         }
 
         @Override
@@ -537,7 +564,10 @@ public class RoleImpl implements Role
             RoleTagsImpl other = (RoleTagsImpl) obj;
             return botId == other.botId
                 && integrationId == other.integrationId
-                && premiumSubscriber == other.premiumSubscriber;
+                && premiumSubscriber == other.premiumSubscriber
+                && availableForPurchase == other.availableForPurchase
+                && subscriptionListingId == other.subscriptionListingId
+                && isGuildConnections == other.isGuildConnections;
         }
 
         @Override
@@ -546,7 +576,10 @@ public class RoleImpl implements Role
             return new EntityString(this)
                     .addMetadata("bot", getBotId())
                     .addMetadata("integration", getIntegrationId())
+                    .addMetadata("subscriptionListing", getSubscriptionId())
                     .addMetadata("isBoost", isBoost())
+                    .addMetadata("isAvailableForPurchase", isAvailableForPurchase())
+                    .addMetadata("isGuildConnections", isLinkedRole())
                     .toString();
         }
     }

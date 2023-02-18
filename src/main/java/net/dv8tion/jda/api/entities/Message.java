@@ -361,6 +361,25 @@ public interface Message extends ISnowflake, Formattable
     Member getMember();
 
     /**
+     * Returns the approximate position of this message in a {@link ThreadChannel}.
+     * <br>This can be used to estimate the relative position of a message in a thread, by comparing against {@link ThreadChannel#getTotalMessageCount()}.
+     *
+     * <p><b>Notes:</b>
+     * <ul>
+     *     <li>The position might contain gaps or duplicates.</li>
+     *     <li>The position is not set on messages sent earlier than July 19th, 2022, and will return -1.</li>
+     * </ul>
+     *
+     * @throws IllegalStateException
+     *         If this message was not sent in a {@link ThreadChannel}.
+     *
+     * @return The approximate position of this message, or {@code -1} if this message is too old.
+     *
+     * @see    <a href="https://discord.com/developers/docs/resources/channel#message-object" target="_blank">Discord docs: <code>position</code> property on the message object</a>
+     */
+    int getApproximatePosition();
+
+    /**
      * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
      * jump to the specified message.
      *
@@ -1948,6 +1967,15 @@ public interface Message extends ISnowflake, Formattable
     boolean isEphemeral();
 
     /**
+     * Whether this message is silent.
+     * <br>The message being silent means it will not trigger push and desktop notifications
+     * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#NOTIFICATIONS_SUPPRESSED}
+     *
+     * @return Whether the message is silent
+     */
+    boolean isSuppressedNotifications();
+
+    /**
      * Returns a possibly {@code null} {@link ThreadChannel ThreadChannel} that was started from this message.
      * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
      *
@@ -2129,7 +2157,12 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Indicates, that this Message is an interaction response and the bot is "thinking"
          */
-        LOADING(7);
+        LOADING(7),
+        /**
+         * Indicates, that this message will not trigger push and desktop notifications
+         * @see Message#isSuppressedNotifications
+         */
+        NOTIFICATIONS_SUPPRESSED(12);
 
         private final int value;
 
