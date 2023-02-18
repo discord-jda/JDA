@@ -1029,7 +1029,12 @@ public class EntityBuilder
             scheduledEvent.setLocation(json.getString("channel_id"));
             break;
         case EXTERNAL:
-            String externalLocation = json.getObject("entity_metadata").getString("location");
+            String externalLocation;
+            if (json.isNull("entity_metadata") || json.getObject("entity_metadata").isNull("location"))
+                externalLocation = "";
+            else
+                externalLocation = json.getObject("entity_metadata").getString("location");
+
             scheduledEvent.setLocation(externalLocation);
         }
         return scheduledEvent;

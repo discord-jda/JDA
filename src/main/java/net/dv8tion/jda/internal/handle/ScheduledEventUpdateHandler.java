@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -28,7 +28,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.ScheduledEventImpl;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.Objects;
 
 public class ScheduledEventUpdateHandler extends SocketHandler
 {
@@ -70,10 +70,11 @@ public class ScheduledEventUpdateHandler extends SocketHandler
         String location = content.getString("channel_id", null);
         GuildChannel channel = null;
         String oldLocation = event.getLocation();
-        if (location == null)
-            location = content.getObject("entity_metadata").getString("location", null);
-        else
+
+        if (location != null)
             channel = guild.getGuildChannelById(location);
+        else if (!content.isNull("entity_metadata")) // null in some cases due to discord validation bugs
+            location = content.getObject("entity_metadata").getString("location", null);
 
         if (!Objects.equals(name, event.getName()))
         {
