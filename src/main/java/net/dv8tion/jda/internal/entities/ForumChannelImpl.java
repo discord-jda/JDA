@@ -78,6 +78,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     private int flags;
     private int slowmode;
 //    private int defaultSortOrder;
+    private int defaultLayout;
     protected int defaultThreadSlowmode;
 
     public ForumChannelImpl(long id, GuildImpl guild)
@@ -202,6 +203,13 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
 
     @Nonnull
     @Override
+    public Layout getDefaultLayout()
+    {
+        return Layout.fromKey(defaultLayout);
+    }
+
+    @Nonnull
+    @Override
     public ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message)
     {
         checkPermission(Permission.MESSAGE_SEND);
@@ -231,6 +239,11 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
 //    {
 //        return defaultSortOrder;
 //    }
+
+    public int getRawLayout()
+    {
+        return defaultLayout;
+    }
 
     // Setters
 
@@ -295,4 +308,10 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
 //        this.defaultSortOrder = defaultSortOrder;
 //        return this;
 //    }
+
+    public ForumChannelImpl setDefaultLayout(int layout)
+    {
+        this.defaultLayout = defaultLayout;
+        return this;
+    }
 }

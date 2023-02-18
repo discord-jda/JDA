@@ -1369,6 +1369,7 @@ public class EntityBuilder
                 .setFlags(json.getInt("flags", 0))
                 .setDefaultReaction(json.optObject("default_reaction_emoji").orElse(null))
 //                .setDefaultSortOrder(json.getInt("default_sort_order", -1))
+                .setDefaultLayout(json.getInt("default_forum_layout", 0))
                 .setName(json.getString("name"))
                 .setTopic(json.getString("topic", null))
                 .setPosition(json.getInt("position"))
