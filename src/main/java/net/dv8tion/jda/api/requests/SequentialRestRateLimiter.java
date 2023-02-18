@@ -163,6 +163,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     {
         isShutdown = true;
         cleanupWorker.cancel(false);
+        cleanup();
         shutdownHandle.complete(null);
     }
 
@@ -178,8 +179,9 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             {
                 Map.Entry<String, Bucket> entry = entries.next();
                 Bucket bucket = entry.getValue();
-                // Remove cancelled requests
-                bucket.requests.removeIf(Work::isSkipped);
+                if (isShutdown)
+                    bucket.requests.forEach(Work::cancel); // Cancel all requests
+                bucket.requests.removeIf(Work::isSkipped); // Remove cancelled requests
 
                 // Check if the bucket is empty
                 if (bucket.isUninit() && bucket.requests.isEmpty())
