@@ -204,13 +204,20 @@ public class EntityBuilder
         SnowflakeCacheViewImpl<ScheduledEvent> eventView = guildObj.getScheduledEventsView();
         for (int i = 0; i < array.length(); i++)
         {
-            DataObject object = array.getObject(i);
-            if (object.isNull("id"))
+            try
             {
-                LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
-                continue;
+                DataObject object = array.getObject(i);
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
+                    continue;
+                }
+                createScheduledEvent(guildObj, object);
             }
-            createScheduledEvent(guildObj, object);
+            catch (ParsingException exception)
+            {
+                LOG.error("Received GUILD_CREATE with a scheduled event that failed to parse. JSON: {}", array.getObject(i), exception);
+            }
         }
     }
 
