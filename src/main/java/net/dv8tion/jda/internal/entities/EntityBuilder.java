@@ -201,12 +201,11 @@ public class EntityBuilder
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
             return;
-        SnowflakeCacheViewImpl<ScheduledEvent> eventView = guildObj.getScheduledEventsView();
         for (int i = 0; i < array.length(); i++)
         {
+            DataObject object = array.getObject(i);
             try
             {
-                DataObject object = array.getObject(i);
                 if (object.isNull("id"))
                 {
                     LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
@@ -216,7 +215,7 @@ public class EntityBuilder
             }
             catch (ParsingException exception)
             {
-                LOG.error("Received GUILD_CREATE with a scheduled event that failed to parse. JSON: {}", array.getObject(i), exception);
+                LOG.error("Received GUILD_CREATE with a scheduled event that failed to parse. JSON: {}", object, exception);
             }
         }
     }
