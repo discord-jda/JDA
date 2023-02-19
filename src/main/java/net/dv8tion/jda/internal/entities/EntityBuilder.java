@@ -201,16 +201,22 @@ public class EntityBuilder
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
             return;
-        SnowflakeCacheViewImpl<ScheduledEvent> eventView = guildObj.getScheduledEventsView();
         for (int i = 0; i < array.length(); i++)
         {
             DataObject object = array.getObject(i);
-            if (object.isNull("id"))
+            try
             {
-                LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
-                continue;
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
+                    continue;
+                }
+                createScheduledEvent(guildObj, object);
             }
-            createScheduledEvent(guildObj, object);
+            catch (ParsingException exception)
+            {
+                LOG.error("Received GUILD_CREATE with a scheduled event that failed to parse. JSON: {}", object, exception);
+            }
         }
     }
 
@@ -1023,7 +1029,12 @@ public class EntityBuilder
             scheduledEvent.setLocation(json.getString("channel_id"));
             break;
         case EXTERNAL:
-            String externalLocation = json.getObject("entity_metadata").getString("location");
+            String externalLocation;
+            if (json.isNull("entity_metadata") || json.getObject("entity_metadata").isNull("location"))
+                externalLocation = "";
+            else
+                externalLocation = json.getObject("entity_metadata").getString("location");
+
             scheduledEvent.setLocation(externalLocation);
         }
         return scheduledEvent;
