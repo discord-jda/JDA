@@ -28,10 +28,7 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
@@ -145,12 +142,14 @@ public class ChannelUpdateHandler extends SocketHandler
 
                 int flags = content.getInt("flags", 0);
 //                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
+                int layout = content.getInt("default_forum_layout", ((ForumChannelImpl) channel).getRawLayout());
                 EmojiUnion defaultReaction =  content.optObject("default_reaction_emoji")
                         .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
                         .orElse(null);
 
                 int oldFlags = forumChannel.getRawFlags();
 //                int oldSortOrder = forumChannel.getRawSortOrder();
+                int oldLayout = forumChannel.getRawLayout();
                 EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
 
                 content.optArray("available_tags").ifPresent(
@@ -173,6 +172,14 @@ public class ChannelUpdateHandler extends SocketHandler
 //                                    getJDA(), responseNumber,
 //                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
 //                }
+                if (oldLayout != layout)
+                {
+                    forumChannel.setDefaultLayout(layout);
+                    getJDA().handleEvent(
+                            new ChannelUpdateDefaultLayoutEvent(
+                                    getJDA(), responseNumber,
+                                    forumChannel, ForumChannel.Layout.fromKey(oldLayout), ForumChannel.Layout.fromKey(layout)));
+                }
                 if (!Objects.equals(oldDefaultReaction, defaultReaction))
                 {
                     forumChannel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
