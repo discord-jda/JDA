@@ -246,7 +246,13 @@ public enum ChannelField
      */
     APPLIED_TAGS("applied_tags", AuditLogKey.THREAD_APPLIED_TAGS),
 
-
+    /**
+     * The default layout of a forum channel.
+     *
+     * <p>Limited to {@link ForumChannel Forum Channels}.
+     *
+     * @see ForumChannel#getDefaultLayout()
+     */
     DEFAULT_FORUM_LAYOUT("default_forum_layout", AuditLogKey.DEFAULT_FORUM_LAYOUT),
 
 //    /**

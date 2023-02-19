@@ -212,6 +212,11 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
 //    @Nonnull
 //    SortOrder getDefaultSortOrder();
 
+    /**
+     * The default layout used to show threads.
+     *
+     * @return The default layout used to show threads.
+     */
     @Nonnull
     Layout getDefaultLayout();
 
@@ -246,10 +251,22 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
     @CheckReturnValue
     ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message);
 
+    /**
+     * The layout used to sort forum posts.
+     */
     enum Layout
     {
+        /**
+         * Displayed as default (not set).
+         */
         DEFAULT_VIEW(0),
+        /**
+         * Displayed as a chronological list.
+         */
         LIST_VIEW(1),
+        /**
+         * Displayed as a collection of tiles.
+         */
         GALLERY_VIEW(2);
 
         private final int layout;
@@ -259,11 +276,24 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
             this.layout = layout;
         }
 
+        /**
+         * The underlying value as used by Discord.
+         *
+         * @return The raw order key
+         */
         public int getKey()
         {
             return layout;
         }
 
+        /**
+         * The {@link Layout} for the provided key.
+         *
+         * @param  key
+         *         The key to get the {@link Layout} for
+         *
+         * @return The {@link Layout} for the provided key, or {@link #DEFAULT_VIEW} if the key is not known
+         */
         @Nonnull
         public static Layout fromKey(int key)
         {

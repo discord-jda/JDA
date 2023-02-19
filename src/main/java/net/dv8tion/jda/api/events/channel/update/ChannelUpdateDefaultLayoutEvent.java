@@ -8,11 +8,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that the {@link ForumChannel#getDefaultSortOrder() default sort order} of a {@link ForumChannel} changed.
+ * Indicates that the {@link ForumChannel#getDefaultLayout() default layout} of a {@link ForumChannel} changed.
  *
- * <p>Can be used to retrieve the old default sort order and the new one.
+ * <p>Can be used to retrieve the old default layout and the new one.
  *
- * @see ChannelField#DEFAULT_SORT_ORDER
+ * @see ChannelField#DEFAULT_FORUM_LAYOUT
  */
 @SuppressWarnings("ConstantConditions")
 public class ChannelUpdateDefaultLayoutEvent extends GenericChannelUpdateEvent<ForumChannel.Layout>
