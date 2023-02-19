@@ -326,7 +326,7 @@ public enum AuditLogKey
      *
      * <p>Expected type: <b>Integer</b>
      */
-    DEFAULT_FORUM_LAYOUT("default_sort_order"),
+    DEFAULT_FORUM_LAYOUT("default_forum_layout"),
 
     // THREADS
 
