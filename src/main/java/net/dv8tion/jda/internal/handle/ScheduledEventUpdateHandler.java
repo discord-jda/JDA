@@ -73,8 +73,8 @@ public class ScheduledEventUpdateHandler extends SocketHandler
 
         if (location != null)
             channel = guild.getGuildChannelById(location);
-        else if (!content.isNull("entity_metadata")) // null in some cases due to discord validation bugs
-            location = content.getObject("entity_metadata").getString("location", null);
+        else // null in some cases due to discord validation bugs
+            location = content.optObject("entity_metadata").map(o -> o.getString("location", "")).orElse("");
 
         if (!Objects.equals(name, event.getName()))
         {
@@ -108,7 +108,7 @@ public class ScheduledEventUpdateHandler extends SocketHandler
             event.setStatus(status);
             getJDA().handleEvent(new ScheduledEventUpdateStatusEvent(getJDA(), responseNumber, event, oldStatus));
         }
-        if (channel == null && location != null && !location.equals(event.getLocation()))
+        if (channel == null && !location.equals(event.getLocation()))
         {
             event.setLocation(location);
             event.setType(ScheduledEvent.Type.EXTERNAL);
