@@ -211,6 +211,20 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji);
 
     /**
+     * Sets the <b><u>default layout</u></b> of the new {@link ForumChannel}.
+     *
+     * @param  layout
+     *         The new default layout.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    ForumChannel#getDefaultLayout()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setDefaultLayout(int layout);
+
+    /**
      * Sets the <b><u>available tags</u></b> of the new {@link ForumChannel}.
      * <br>Tags will be ordered based on the provided list order.
      *

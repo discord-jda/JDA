@@ -60,6 +60,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                                                                               ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
     private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
     private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> DEFAULT_LAYOUT_SUPPORTED = EnumSet.of(ChannelType.FORUM);
 
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
@@ -88,6 +89,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     // --audio only--
     protected Integer bitrate = null;
     protected Region region = null;
+
+    // --forum only--
+    protected Integer defaultLayout = null;
 
     public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
     {
@@ -222,6 +226,15 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (type != ChannelType.FORUM)
             throw new UnsupportedOperationException("Can only set default reaction emoji on a ForumChannel!");
         this.defaultReactionEmoji = emoji;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> setDefaultLayout(int layout)
+    {
+        Checks.checkSupportedChannelTypes(DEFAULT_LAYOUT_SUPPORTED, type, "Default Layout");
+        this.defaultLayout = layout;
         return this;
     }
 
@@ -405,6 +418,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
         if (availableTags != null)
             object.put("available_tags", DataArray.fromCollection(availableTags));
+        if (defaultLayout != null)
+            object.put("default_forum_layout", defaultLayout);
 
         //Voice only
         if (userlimit != null)

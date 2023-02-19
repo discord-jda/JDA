@@ -112,7 +112,8 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
                 .setNSFW(nsfw)
                 .setTopic(topic)
                 .setSlowmode(slowmode)
-                .setAvailableTags(getAvailableTags());
+                .setAvailableTags(getAvailableTags())
+                .setDefaultLayout(defaultLayout);
         if (defaultReaction instanceof UnicodeEmoji)
             action.setDefaultReaction(defaultReaction);
         if (guild.equals(getGuild()))
@@ -311,7 +312,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
 
     public ForumChannelImpl setDefaultLayout(int layout)
     {
-        this.defaultLayout = defaultLayout;
+        this.defaultLayout = layout;
         return this;
     }
 }
