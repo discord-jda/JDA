@@ -829,6 +829,36 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
+     * Retrieves the currently configured {@link RoleConnectionMetadata} records for this application.
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link RoleConnectionMetadata}
+     *
+     * @see <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<RoleConnectionMetadata>> retrieveRoleConnectionMetadata();
+
+    /**
+     * Updates the currently configured {@link RoleConnectionMetadata} records for this application.
+     *
+     * <p>Returns the updated connection metadata records on success.
+     *
+     * @param  records
+     *         The new records to set
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than {@value RoleConnectionMetadata#MAX_RECORDS} records are configured.
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link RoleConnectionMetadata}
+     *
+     * @see <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<RoleConnectionMetadata>> updateRoleConnectionMetadata(@Nonnull Collection<? extends RoleConnectionMetadata> records);
+
+    /**
      * Constructs a new {@link Guild Guild} with the specified name
      * <br>Use the returned {@link GuildAction GuildAction} to provide
      * further details and settings for the resulting Guild!

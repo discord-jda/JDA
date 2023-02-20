@@ -86,6 +86,7 @@ import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -1030,6 +1031,39 @@ public class JDAImpl implements JDA
         Checks.isSnowflake(commandId);
         Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(getSelfUser().getApplicationId(), commandId);
         return new RestActionImpl<>(this, route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<RoleConnectionMetadata>> retrieveRoleConnectionMetadata()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_ROLE_CONNECTION_METADATA.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route,
+            (response, request) ->
+                response.getArray()
+                    .stream(DataArray::getObject)
+                    .map(RoleConnectionMetadata::fromData)
+                    .collect(Helpers.toUnmodifiableList()));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<RoleConnectionMetadata>> updateRoleConnectionMetadata(@Nonnull Collection<? extends RoleConnectionMetadata> records)
+    {
+        Checks.noneNull(records, "Records");
+        Checks.check(records.size() <= RoleConnectionMetadata.MAX_RECORDS, "An application can have a maximum of %d metadata records", RoleConnectionMetadata.MAX_RECORDS);
+
+        Route.CompiledRoute route = Route.Applications.UPDATE_ROLE_CONNECTION_METADATA.compile(getSelfUser().getApplicationId());
+
+        DataArray array = DataArray.fromCollection(records);
+        RequestBody body = RequestBody.create(array.toJson(), Requester.MEDIA_TYPE_JSON);
+
+        return new RestActionImpl<>(this, route, body,
+            (response, request) ->
+                response.getArray()
+                    .stream(DataArray::getObject)
+                    .map(RoleConnectionMetadata::fromData)
+                    .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull
