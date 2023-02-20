@@ -152,8 +152,18 @@ public enum MessageType
      */
     AUTO_MODERATION_ACTION(24, true, true),
 
+    /**
+     * Sent when someone purchases a role subscription.
+     *
+     * @see Role.RoleTags#isAvailableForPurchase()
+     * @see Role.RoleTags#hasSubscriptionListing()
+     */
     ROLE_SUBSCRIPTION_PURCHASE(25, true, true),
 
+    /**
+     * Sent by a bot when a command is restricted to premium users.
+     * <br>Contains a button which allows to upgrade to premium.
+     */
     INTERACTION_PREMIUM_UPSELL(26, true, true),
 
     /**
@@ -187,14 +197,6 @@ public enum MessageType
     STAGE_TOPIC(31, true, true),
 
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, false),
-
-    /**
-     * Sent when someone purchases a role subscription.
-     *
-     * @see Role.RoleTags#isAvailableForPurchase()
-     * @see Role.RoleTags#hasSubscriptionListing()
-     */
-    ROLE_SUBSCRIPTION_PURCHASE(25, true, true),
 
     /**
      * Unknown MessageType.
