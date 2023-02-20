@@ -60,7 +60,6 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                                                                               ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
     private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
     private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
-    private static final EnumSet<ChannelType> DEFAULT_LAYOUT_SUPPORTED = EnumSet.of(ChannelType.FORUM);
 
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
@@ -233,7 +232,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setDefaultLayout(int layout)
     {
-        Checks.checkSupportedChannelTypes(DEFAULT_LAYOUT_SUPPORTED, type, "Default Layout");
+        Checks.checkSupportedChannelTypes(EnumSet.of(ChannelType.FORUM), type, "Default Layout");
         this.defaultLayout = layout;
         return this;
     }

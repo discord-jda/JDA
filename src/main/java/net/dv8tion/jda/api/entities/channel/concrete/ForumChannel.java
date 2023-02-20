@@ -269,11 +269,11 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
          */
         GALLERY_VIEW(2);
 
-        private final int layout;
+        private final int key;
 
-        Layout(int layout)
+        Layout(int key)
         {
-            this.layout = layout;
+            this.key = key;
         }
 
         /**
@@ -283,7 +283,7 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
          */
         public int getKey()
         {
-            return layout;
+            return key;
         }
 
         /**
@@ -299,7 +299,7 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
         {
             for (Layout layout : values())
             {
-                if (layout.layout == key)
+                if (layout.key == key)
                     return layout;
             }
 
