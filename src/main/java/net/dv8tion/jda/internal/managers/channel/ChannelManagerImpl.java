@@ -74,6 +74,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected List<BaseForumTag> availableTags;
     protected List<String> appliedTags;
     protected Emoji defaultReactionEmoji;
+    protected int defaultLayout;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -630,6 +631,15 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setDefaultLayout(int layout)
+    {
+        if (type != ChannelType.FORUM)
+            throw new IllegalStateException("Can only set default reaction on forum channels.");
+        this.defaultLayout = layout;
+        set |= DEFAULT_LAYOUT;
+        return (M) this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -677,6 +687,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             else
                 frame.put("default_reaction_emoji", null);
         }
+        if (shouldUpdate(DEFAULT_LAYOUT))
+            frame.put("default_forum_layout", defaultLayout);
 
         withLock(lock, (lock) ->
         {
