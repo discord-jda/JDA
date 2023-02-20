@@ -113,7 +113,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
                 .setTopic(topic)
                 .setSlowmode(slowmode)
                 .setAvailableTags(getAvailableTags())
-                .setDefaultLayout(defaultLayout);
+                .setDefaultLayout(Layout.fromKey(defaultLayout));
         if (defaultReaction instanceof UnicodeEmoji)
             action.setDefaultReaction(defaultReaction);
         if (guild.equals(getGuild()))

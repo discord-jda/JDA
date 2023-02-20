@@ -90,7 +90,7 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     /** Used to reset the default reaction emoji field */
     long DEFAULT_REACTION      = 1 << 19;
     /** Used to reset the default layout field */
-    long DEFAULT_LAYOUT      = 1 << 20;
+    long DEFAULT_LAYOUT        = 1 << 20;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.

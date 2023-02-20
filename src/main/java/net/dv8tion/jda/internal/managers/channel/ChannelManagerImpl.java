@@ -631,11 +631,14 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
-    public M setDefaultLayout(int layout)
+    public M setDefaultLayout(ForumChannel.Layout layout)
     {
         if (type != ChannelType.FORUM)
             throw new IllegalStateException("Can only set default reaction on forum channels.");
-        this.defaultLayout = layout;
+        Checks.notNull(layout, "layout");
+        if (layout == ForumChannel.Layout.UNKNOWN)
+            throw new IllegalStateException("This value cannot be set for default layout on forum channels.");
+        this.defaultLayout = layout.getKey();
         set |= DEFAULT_LAYOUT;
         return (M) this;
     }

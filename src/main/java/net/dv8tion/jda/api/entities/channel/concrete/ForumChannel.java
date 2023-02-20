@@ -267,7 +267,9 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
         /**
          * Displayed as a collection of tiles.
          */
-        GALLERY_VIEW(2);
+        GALLERY_VIEW(2),
+
+        UNKNOWN(-1);
 
         private final int key;
 
@@ -303,7 +305,7 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
                     return layout;
             }
 
-            return DEFAULT_VIEW;
+            return UNKNOWN;
         }
     }
 

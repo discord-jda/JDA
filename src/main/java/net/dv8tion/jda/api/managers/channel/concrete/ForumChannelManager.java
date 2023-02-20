@@ -121,5 +121,5 @@ public interface ForumChannelManager extends
      */
     @Nonnull
     @CheckReturnValue
-    ForumChannelManager setDefaultLayout(@Nonnull int layout);
+    ForumChannelManager setDefaultLayout(@Nonnull ForumChannel.Layout layout);
 }
