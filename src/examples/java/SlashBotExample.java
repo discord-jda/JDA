@@ -42,7 +42,7 @@ public class SlashBotExample extends ListenerAdapter
 {
     public static void main(String[] args)
     {
-        JDA jda = JDABuilder.createLight("ODc2ODYzNzU1NDU4MzMwNjk0.G8XV4f.TPepglTI46Bns5c7ik-rHTs7en8OfpPMQgQirE", EnumSet.noneOf(GatewayIntent.class)) // slash commands don't need any intents
+        JDA jda = JDABuilder.createLight("BOT_TOKEN_HERE", EnumSet.noneOf(GatewayIntent.class)) // slash commands don't need any intents
                 .addEventListeners(new SlashBotExample())
                 .build();
 
