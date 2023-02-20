@@ -637,7 +637,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             throw new IllegalStateException("Can only set default reaction on forum channels.");
         Checks.notNull(layout, "layout");
         if (layout == ForumChannel.Layout.UNKNOWN)
-            throw new IllegalStateException("This value cannot be set for default layout on forum channels.");
+            throw new IllegalStateException("Layout type cannot be UNKNOWN.");
         this.defaultLayout = layout.getKey();
         set |= DEFAULT_LAYOUT;
         return (M) this;

@@ -269,6 +269,9 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
          */
         GALLERY_VIEW(2),
 
+        /**
+         * Placeholder for future layout types.
+         */
         UNKNOWN(-1);
 
         private final int key;
@@ -294,7 +297,7 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
          * @param  key
          *         The key to get the {@link Layout} for
          *
-         * @return The {@link Layout} for the provided key, or {@link #DEFAULT_VIEW} if the key is not known
+         * @return The {@link Layout} for the provided key, or {@link #UNKNOWN} if the key is not known
          */
         @Nonnull
         public static Layout fromKey(int key)

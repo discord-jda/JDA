@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -41,7 +42,7 @@ public class SlashBotExample extends ListenerAdapter
 {
     public static void main(String[] args)
     {
-        JDA jda = JDABuilder.createLight("BOT_TOKEN_HERE", EnumSet.noneOf(GatewayIntent.class)) // slash commands don't need any intents
+        JDA jda = JDABuilder.createLight("ODc2ODYzNzU1NDU4MzMwNjk0.G8XV4f.TPepglTI46Bns5c7ik-rHTs7en8OfpPMQgQirE", EnumSet.noneOf(GatewayIntent.class)) // slash commands don't need any intents
                 .addEventListeners(new SlashBotExample())
                 .build();
 
@@ -179,6 +180,7 @@ public class SlashBotExample extends ListenerAdapter
 
     public void say(SlashCommandInteractionEvent event, String content)
     {
+        event.getGuild().createForumChannel(content).setDefaultLayout(ForumChannel.Layout.DEFAULT_VIEW).queue();
         event.reply(content).queue(); // This requires no permissions!
     }
 

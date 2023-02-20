@@ -222,7 +222,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      */
     @Nonnull
     @CheckReturnValue
-    ChannelAction<T> setDefaultLayout(ForumChannel.Layout layout);
+    ChannelAction<T> setDefaultLayout(@Nonnull ForumChannel.Layout layout);
 
     /**
      * Sets the <b><u>available tags</u></b> of the new {@link ForumChannel}.

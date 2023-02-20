@@ -230,12 +230,12 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     @Nonnull
     @Override
-    public ChannelAction<T> setDefaultLayout(ForumChannel.Layout layout)
+    public ChannelAction<T> setDefaultLayout(@Nonnull ForumChannel.Layout layout)
     {
         Checks.checkSupportedChannelTypes(EnumSet.of(ChannelType.FORUM), type, "Default Layout");
         Checks.notNull(layout, "layout");
         if (layout == ForumChannel.Layout.UNKNOWN)
-            throw new IllegalStateException("This value cannot be set for default layout on forum channels.");
+            throw new IllegalStateException("Layout type cannot be UNKNOWN.");
         this.defaultLayout = layout.getKey();
         return this;
     }
