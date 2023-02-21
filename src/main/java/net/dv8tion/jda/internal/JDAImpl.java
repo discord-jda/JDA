@@ -394,14 +394,22 @@ public class JDAImpl implements JDA
             }
         }.priority();
 
-        DataObject userResponse = login.complete();
-        if (userResponse != null)
+        try
         {
-            getEntityBuilder().createSelfUser(userResponse);
-            return;
+            DataObject userResponse = login.complete();
+            if (userResponse != null)
+            {
+                getEntityBuilder().createSelfUser(userResponse);
+                return;
+            }
+
+            throw new InvalidTokenException("The provided token is invalid!");
         }
-        shutdownNow();
-        throw new InvalidTokenException("The provided token is invalid!");
+        catch (Throwable error)
+        {
+            shutdownNow();
+            throw error;
+        }
     }
 
     public AuthorizationConfig getAuthorizationConfig()
