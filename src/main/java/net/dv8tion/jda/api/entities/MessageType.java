@@ -185,17 +185,14 @@ public enum MessageType
     STAGE_SPEAKER(29, true, true),
 
     /**
-     * Messages created in {@link StageChannel StageChannels} to indicate that an {@link StageInstance#getAudience() audience} member is {@link GuildVoiceState#getRequestToSpeakTimestamp() requesting to speak}.
-     * <br>The author is the user who is raising their hand.
-     */
-    STAGE_RAISE_HAND(30, true, true),
-
-    /**
      * Messages created in {@link StageChannel StageChannels} to indicate that a stage instance topic has been changed.
      * <br>The message content will be the new {@link StageInstance#getTopic() topic} and the author is the user who updated the topic.
      */
     STAGE_TOPIC(31, true, true),
 
+    /**
+     * Sent when a guild administrator subscribes to the premium plan of an application.
+     */
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, false),
 
     /**
