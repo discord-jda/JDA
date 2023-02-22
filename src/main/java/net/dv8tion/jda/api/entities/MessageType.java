@@ -191,9 +191,9 @@ public enum MessageType
     STAGE_TOPIC(31, true, true),
 
     /**
-     * Sent when a guild administrator subscribes to the premium plan of an application.
+     * Sent to the {@link Guild#getSystemChannel() system channel} when a guild administrator subscribes to the premium plan of an application.
      */
-    GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, false),
+    GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, true),
 
     /**
      * Unknown MessageType.
