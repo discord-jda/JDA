@@ -80,10 +80,11 @@ public class MessageMentionsImpl extends AbstractMentions
         // Parse members from mentions array in order of appearance
         EntityBuilder entityBuilder = jda.getEntityBuilder();
         TLongSet unseen = new TLongHashSet(userMentionMap.keySet());
-        ArrayList<Member> members = processMentions(Message.MentionType.USER, new ArrayList<>(), true, (matcher) -> {
-            unseen.remove(Long.parseUnsignedLong(matcher.group(1)));
-            return matchMember(matcher);
-        });
+        List<Member> members = processMentions(Message.MentionType.USER, false, (matcher) -> {
+            if (unseen.remove(Long.parseUnsignedLong(matcher.group(1))))
+                return matchMember(matcher);
+            return null;
+        }, Collectors.toCollection(ArrayList::new));
 
         // Add reply mentions at beginning
         for (TLongIterator iter = unseen.iterator(); iter.hasNext();)
@@ -111,10 +112,12 @@ public class MessageMentionsImpl extends AbstractMentions
         // Parse members from mentions array in order of appearance
         EntityBuilder entityBuilder = jda.getEntityBuilder();
         TLongSet unseen = new TLongHashSet(userMentionMap.keySet());
-        List<User> users = processMentions(Message.MentionType.USER, new ArrayList<>(), true, (matcher) -> {
-            unseen.remove(Long.parseUnsignedLong(matcher.group(1)));
-            return matchUser(matcher);
-        });
+        List<User> users = processMentions(Message.MentionType.USER, false, (matcher) -> {
+            if (unseen.remove(Long.parseUnsignedLong(matcher.group(1))))
+                return matchUser(matcher);
+            return null;
+        }, Collectors.toCollection(ArrayList::new));
+
 
         // Add reply mentions at beginning
         for (TLongIterator iter = unseen.iterator(); iter.hasNext();)
