@@ -87,7 +87,16 @@ public abstract class AbstractMentions implements Mentions
     @Override
     public Bag<User> getUsersBag()
     {
-        return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchUser);
+        Bag<User> bag = processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchUser);
+
+        // Handle reply mentions
+        for (User user : getUsers())
+        {
+            if (!bag.contains(user))
+                bag.add(user, 1);
+        }
+
+        return bag;
     }
 
     @Nonnull
@@ -183,7 +192,16 @@ public abstract class AbstractMentions implements Mentions
     {
         if (guild == null)
             return new HashBag<>();
-        return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchMember);
+        Bag<Member> bag = processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchMember);
+
+        // Handle reply mentions
+        for (Member member : getMembers())
+        {
+            if (!bag.contains(member))
+                bag.add(member, 1);
+        }
+
+        return bag;
     }
 
     @Nonnull
