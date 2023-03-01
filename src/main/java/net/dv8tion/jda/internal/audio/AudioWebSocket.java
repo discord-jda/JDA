@@ -583,8 +583,8 @@ class AudioWebSocket extends WebSocketAdapter
             //Create new UDP socket for communication
             audioConnection.udpSocket = new DatagramSocket();
 
-            //Create a byte array of length 70 containing our ssrc.
-            ByteBuffer buffer = ByteBuffer.allocate(70);    //70 taken from documentation
+            //Create a byte array of length 74 containing our ssrc.
+            ByteBuffer buffer = ByteBuffer.allocate(74);    //74 taken from documentation
             buffer.putShort((short) 1);                     // 1 = send (receive will be 2)
             buffer.putShort((short) 70);                    // length = 70 bytes (required)
             buffer.putInt(ssrc);                            // Put the ssrc that we were given into the packet to send back to discord.
@@ -595,7 +595,7 @@ class AudioWebSocket extends WebSocketAdapter
             audioConnection.udpSocket.send(discoveryPacket);
 
             //Discord responds to our packet, returning a packet containing our external ip and the port we connected through.
-            DatagramPacket receivedPacket = new DatagramPacket(new byte[70], 70);   //Give a buffer the same size as the one we sent.
+            DatagramPacket receivedPacket = new DatagramPacket(new byte[74], 74);   //Give a buffer the same size as the one we sent.
             audioConnection.udpSocket.setSoTimeout(1000);
             audioConnection.udpSocket.receive(receivedPacket);
 
@@ -609,7 +609,7 @@ class AudioWebSocket extends WebSocketAdapter
 
             //Take bytes between SSRC and PORT and put them into a string
             // null bytes at the beginning are skipped and the rest are appended to the end of the string
-            String ourIP = new String(received, 4, received.length - 6);
+            String ourIP = new String(received, 8, received.length - 10);
             // Removes the extra nulls attached to the end of the IP string
             ourIP = ourIP.trim();
 
