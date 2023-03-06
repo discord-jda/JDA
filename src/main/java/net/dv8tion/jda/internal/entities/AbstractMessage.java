@@ -159,6 +159,13 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Override
+    public int getApproximatePosition()
+    {
+        unsupported();
+        return 0;
+    }
+
     @Nonnull
     @Override
     public String getJumpUrl()

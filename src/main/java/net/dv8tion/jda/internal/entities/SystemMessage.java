@@ -40,10 +40,10 @@ public class SystemMessage extends ReceivedMessage
             boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
-            List<StickerItem> stickers, int flags, ThreadChannel startedThread)
+            List<StickerItem> stickers, int flags, ThreadChannel startedThread, int position)
     {
         super(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned, content, nonce, author, member,
-                activity, editTime, mentions, reactions, attachments, embeds, stickers, Collections.emptyList(), flags, null, startedThread);
+                activity, editTime, mentions, reactions, attachments, embeds, stickers, Collections.emptyList(), flags, null, startedThread, position);
     }
 
     @Nonnull
