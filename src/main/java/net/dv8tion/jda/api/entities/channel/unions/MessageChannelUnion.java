@@ -35,7 +35,6 @@ import javax.annotation.Nonnull;
  *     <li>{@link TextChannel}</li>
  *     <li>{@link NewsChannel}</li>
  *     <li>{@link VoiceChannel}</li>
- *     <li>{@link StageChannel}</li>
  *     <li>{@link ThreadChannel}</li>
  *     <li>{@link PrivateChannel}</li>
  * </ul>
@@ -151,28 +150,6 @@ public interface MessageChannelUnion extends MessageChannel
      */
     @Nonnull
     VoiceChannel asVoiceChannel();
-
-    /**
-     * Casts this union to a {@link StageChannel}.
-     * This method exists for developer discoverability.
-     *
-     * Note: This is effectively equivalent to using the cast operator:
-     * <pre><code>
-     * //These are the same!
-     * StageChannel channel = union.asStageChannel();
-     * StageChannel channel2 = (StageChannel) union;
-     * </code></pre>
-     *
-     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#STAGE} to validate
-     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof StageChannel</code>
-     *
-     * @throws IllegalStateException
-     *         If the channel represented by this union is not actually a {@link StageChannel}.
-     *
-     * @return The channel as a {@link StageChannel}
-     */
-    @Nonnull
-    StageChannel asStageChannel();
 
     /**
      * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.

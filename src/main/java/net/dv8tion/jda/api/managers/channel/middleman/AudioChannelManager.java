@@ -21,15 +21,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
-import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 //todo-v5: Docs
-public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>>
-        extends StandardGuildChannelManager<T, M>,
-                IAgeRestrictedChannelManager<T, M>
+public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends StandardGuildChannelManager<T, M>
 {
     /**
      * Sets the <b><u>bitrate</u></b> of the selected {@link VoiceChannel VoiceChannel}.
@@ -77,17 +74,15 @@ public interface AudioChannelManager<T extends AudioChannel, M extends AudioChan
      *
      * <br><b>This is only available to {@link VoiceChannel VoiceChannels}!</b>
      *
-     * @param  region
-     *         The new {@link Region Region}
-     *
+     * @param region
+     *        The new {@link Region Region}
      * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}'s type is not {@link ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
      *         If the provided Region is not in the list of usable values
-     *
      * @return ChannelManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    M setRegion(@Nonnull Region region);
+    M setRegion(Region region);
 }
