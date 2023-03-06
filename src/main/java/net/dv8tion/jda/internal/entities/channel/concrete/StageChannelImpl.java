@@ -67,6 +67,7 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     private StageInstance instance;
     private String region;
     private int bitrate;
+    private int userlimit;
     private int slowmode;
     private boolean ageRestricted;
     private long latestMessageId;
@@ -87,6 +88,12 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     public int getBitrate()
     {
         return bitrate;
+    }
+
+    @Override
+    public int getUserLimit()
+    {
+        return userlimit;
     }
 
     @Nullable
@@ -230,6 +237,13 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     public StageChannelImpl setBitrate(int bitrate)
     {
         this.bitrate = bitrate;
+        return this;
+    }
+
+    @Override
+    public StageChannelImpl setUserLimit(int userlimit)
+    {
+        this.userlimit = userlimit;
         return this;
     }
 

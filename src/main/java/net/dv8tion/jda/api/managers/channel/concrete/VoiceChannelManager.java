@@ -16,40 +16,17 @@
 
 package net.dv8tion.jda.api.managers.channel.concrete;
 
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
+import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 //TODO-v5: Docs
 public interface VoiceChannelManager extends
         AudioChannelManager<VoiceChannel, VoiceChannelManager>,
         StandardGuildChannelManager<VoiceChannel, VoiceChannelManager>,
-        IAgeRestrictedChannelManager<VoiceChannel, VoiceChannelManager>
+        IAgeRestrictedChannelManager<VoiceChannel, VoiceChannelManager>,
+        ISlowmodeChannelManager<VoiceChannel, VoiceChannelManager>
 {
-    /**
-     * Sets the <b><u>user-limit</u></b> of the selected {@link VoiceChannel VoiceChannel}.
-     * <br>Provide {@code 0} to reset the user-limit of the {@link VoiceChannel VoiceChannel}
-     *
-     * <p>A channel user-limit <b>must not</b> be negative nor greater than {@code 99}!
-     * <br><b>This is only available to {@link VoiceChannel VoiceChannels}</b>
-     *
-     * @param  userLimit
-     *         The new user-limit for the selected {@link VoiceChannel VoiceChannel}
-     *
-     * @throws IllegalStateException
-     *         If the selected {@link GuildChannel GuildChannel}'s type is not {@link ChannelType#VOICE VOICE}
-     * @throws IllegalArgumentException
-     *         If the provided user-limit is negative or greater than {@code 99}
-     *
-     * @return ChannelManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    VoiceChannelManager setUserLimit(int userLimit);
 }

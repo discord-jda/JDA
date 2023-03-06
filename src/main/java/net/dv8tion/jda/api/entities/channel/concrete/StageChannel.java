@@ -48,6 +48,11 @@ import java.util.EnumSet;
 public interface StageChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
 {
     /**
+     * The maximum limit you can set with {@link StageChannelManager#setUserLimit(int)}. ({@value})
+     */
+    int MAX_USERLIMIT = 10000;
+
+    /**
      * {@link StageInstance} attached to this stage channel.
      *
      * <p>This indicates whether a stage channel is currently "live".
