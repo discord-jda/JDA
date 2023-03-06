@@ -27,6 +27,8 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
@@ -355,10 +357,16 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setUserlimit(Integer userlimit)
     {
-        if (type != ChannelType.VOICE)
-            throw new UnsupportedOperationException("Can only set the userlimit for a VoiceChannel!");
-        if (userlimit != null && (userlimit < 0 || userlimit > 99))
-            throw new IllegalArgumentException("Userlimit must be between 0-99!");
+        if (userlimit != null)
+        {
+            Checks.notNegative(userlimit, "Userlimit");
+            if (type == ChannelType.VOICE)
+                Checks.check(userlimit <= VoiceChannel.MAX_USERLIMIT, "Userlimit may not be greater than %d for voice channels", VoiceChannel.MAX_USERLIMIT);
+            else if (type == ChannelType.STAGE)
+                Checks.check(userlimit <= StageChannel.MAX_USERLIMIT, "Userlimit may not be greater than %d for stage channels", StageChannel.MAX_USERLIMIT);
+            else
+                throw new IllegalStateException("Can only set userlimit on audio channels");
+        }
         this.userlimit = userlimit;
         return this;
     }
