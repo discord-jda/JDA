@@ -846,11 +846,11 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be less than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be greater than %f", MAX_POSITIVE_NUMBER);
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
         return this;
     }
@@ -882,11 +882,11 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Long value may not be less than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Long value may not be greater than %f", MAX_POSITIVE_NUMBER);
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.INTEGER)
             throw new IllegalArgumentException("Cannot add long choice for OptionType." + type);
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
         return this;
     }
@@ -918,11 +918,11 @@ public class OptionData implements SerializableData
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
-        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (isAutoComplete)
             throw new IllegalStateException("Cannot add choices to auto-complete options");
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         choices.add(new Command.Choice(name, value));
         return this;
     }
