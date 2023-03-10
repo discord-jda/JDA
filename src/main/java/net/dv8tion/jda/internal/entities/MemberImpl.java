@@ -55,6 +55,7 @@ public class MemberImpl implements Member
     private String avatarId;
     private long joinDate, boostDate, timeOutEnd;
     private boolean pending = false;
+    private int flags;
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -223,6 +224,12 @@ public class MemberImpl implements Member
                 return colorRaw;
         }
         return Role.DEFAULT_COLOR_RAW;
+    }
+
+    @Override
+    public int getFlagsRaw()
+    {
+        return flags;
     }
 
     @Nonnull
@@ -403,6 +410,12 @@ public class MemberImpl implements Member
     public MemberImpl setPending(boolean pending)
     {
         this.pending = pending;
+        return this;
+    }
+
+    public MemberImpl setFlags(int flags)
+    {
+        this.flags = flags;
         return this;
     }
 

@@ -600,6 +600,8 @@ public class EntityBuilder
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
             member.setAvatarId(memberJson.getString("avatar", null));
+            if (!memberJson.isNull("flags"))
+                member.setFlags(memberJson.getInt("flags"));
 
             long boostTimestamp = memberJson.isNull("premium_since")
                 ? 0
@@ -765,6 +767,20 @@ public class EntityBuilder
                     new GuildMemberUpdatePendingEvent(
                         getJDA(), responseNumber,
                         member, oldPending));
+            }
+        }
+
+        if (!content.isNull("flags"))
+        {
+            int flags = content.getInt("flags");
+            int oldFlags = member.getFlagsRaw();
+            if (flags != oldFlags)
+            {
+                member.setFlags(flags);
+                getJDA().handleEvent(
+                    new GuildMemberUpdateFlagsEvent(
+                        getJDA(), responseNumber,
+                        member, Member.MemberFlag.fromRaw(oldFlags)));
             }
         }
 
