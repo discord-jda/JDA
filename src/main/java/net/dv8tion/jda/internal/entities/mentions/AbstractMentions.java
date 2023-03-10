@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
@@ -37,6 +38,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public abstract class AbstractMentions implements Mentions
@@ -80,14 +82,23 @@ public abstract class AbstractMentions implements Mentions
     {
         if (mentionedUsers != null)
             return mentionedUsers;
-        return mentionedUsers = Collections.unmodifiableList(processMentions(Message.MentionType.USER, new ArrayList<>(), true, this::matchUser));
+        return mentionedUsers = processMentions(Message.MentionType.USER, true, this::matchUser, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
     @Override
     public Bag<User> getUsersBag()
     {
-        return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchUser);
+        Bag<User> bag = processMentions(Message.MentionType.USER, false, this::matchUser, toBag());
+
+        // Handle reply mentions
+        for (User user : getUsers())
+        {
+            if (!bag.contains(user))
+                bag.add(user, 1);
+        }
+
+        return bag;
     }
 
     @Nonnull
@@ -96,14 +107,14 @@ public abstract class AbstractMentions implements Mentions
     {
         if (mentionedChannels != null)
             return mentionedChannels;
-        return mentionedChannels = Collections.unmodifiableList(processMentions(Message.MentionType.CHANNEL, new ArrayList<>(), true, this::matchChannel));
+        return mentionedChannels = processMentions(Message.MentionType.CHANNEL, true, this::matchChannel, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
     @Override
     public Bag<GuildChannel> getChannelsBag()
     {
-        return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), false, this::matchChannel);
+        return processMentions(Message.MentionType.CHANNEL, false, this::matchChannel, toBag());
     }
 
     @Nonnull
@@ -127,7 +138,7 @@ public abstract class AbstractMentions implements Mentions
             return clazz.isInstance(channel) ? clazz.cast(channel) : null;
         };
 
-        return processMentions(Message.MentionType.CHANNEL, new HashBag<>(), false, matchTypedChannel);
+        return processMentions(Message.MentionType.CHANNEL, false, matchTypedChannel, toBag());
     }
 
     @Nonnull
@@ -138,7 +149,7 @@ public abstract class AbstractMentions implements Mentions
             return Collections.emptyList();
         if (mentionedRoles != null)
             return mentionedRoles;
-        return mentionedRoles = Collections.unmodifiableList(processMentions(Message.MentionType.ROLE, new ArrayList<>(), true, this::matchRole));
+        return mentionedRoles = processMentions(Message.MentionType.ROLE, true, this::matchRole, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -147,7 +158,7 @@ public abstract class AbstractMentions implements Mentions
     {
         if (guild == null)
             return new HashBag<>();
-        return processMentions(Message.MentionType.ROLE, new HashBag<>(), false, this::matchRole);
+        return processMentions(Message.MentionType.ROLE, false, this::matchRole, toBag());
     }
 
     @Nonnull
@@ -156,14 +167,14 @@ public abstract class AbstractMentions implements Mentions
     {
         if (mentionedEmojis != null)
             return mentionedEmojis;
-        return mentionedEmojis = Collections.unmodifiableList(processMentions(Message.MentionType.EMOJI, new ArrayList<>(), true, this::matchEmoji));
+        return mentionedEmojis = processMentions(Message.MentionType.EMOJI, true, this::matchEmoji, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
     @Override
     public Bag<CustomEmoji> getCustomEmojisBag()
     {
-        return processMentions(Message.MentionType.EMOJI, new HashBag<>(), false, this::matchEmoji);
+        return processMentions(Message.MentionType.EMOJI, false, this::matchEmoji, toBag());
     }
 
     @Nonnull
@@ -174,7 +185,7 @@ public abstract class AbstractMentions implements Mentions
             return Collections.emptyList();
         if (mentionedMembers != null)
             return mentionedMembers;
-        return mentionedMembers = Collections.unmodifiableList(processMentions(Message.MentionType.USER, new ArrayList<>(), true, this::matchMember));
+        return mentionedMembers = processMentions(Message.MentionType.USER, true, this::matchMember, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -183,7 +194,16 @@ public abstract class AbstractMentions implements Mentions
     {
         if (guild == null)
             return new HashBag<>();
-        return processMentions(Message.MentionType.USER, new HashBag<>(), false, this::matchMember);
+        Bag<Member> bag = processMentions(Message.MentionType.USER, false, this::matchMember, toBag());
+
+        // Handle reply mentions
+        for (Member member : getMembers())
+        {
+            if (!bag.contains(member))
+                bag.add(member, 1);
+        }
+
+        return bag;
     }
 
     @Nonnull
@@ -192,14 +212,14 @@ public abstract class AbstractMentions implements Mentions
     {
         if (mentionedSlashCommands != null)
             return mentionedSlashCommands;
-        return mentionedSlashCommands = Collections.unmodifiableList(processMentions(Message.MentionType.SLASH_COMMAND, new ArrayList<>(), true, this::matchSlashCommand));
+        return mentionedSlashCommands = processMentions(Message.MentionType.SLASH_COMMAND, true, this::matchSlashCommand, Helpers.toUnmodifiableList());
     }
 
     @Nonnull
     @Override
     public Bag<SlashCommandReference> getSlashCommandsBag()
     {
-        return processMentions(Message.MentionType.SLASH_COMMAND, new HashBag<>(), false, this::matchSlashCommand);
+        return processMentions(Message.MentionType.SLASH_COMMAND, false, this::matchSlashCommand, toBag());
     }
 
     @Nonnull
@@ -292,21 +312,27 @@ public abstract class AbstractMentions implements Mentions
 
     // Internal parsing methods
 
-    protected  <T, C extends Collection<T>> C processMentions(Message.MentionType type, C collection, boolean distinct, Function<Matcher, T> map)
+    protected  <T, A, C extends Collection<T>> C processMentions(Message.MentionType type, boolean distinct, Function<Matcher, ? extends T> mapping, Collector<? super T, A, C> collector)
     {
+        A accumulator = collector.supplier().get();
         Matcher matcher = type.getPattern().matcher(content);
+        Set<T> unique = distinct ? new HashSet<>() : null;
         while (matcher.find())
         {
             try
             {
-                T elem = map.apply(matcher);
-                if (elem == null || (distinct && collection.contains(elem)))
-                    continue;
-                collection.add(elem);
+                T elem = mapping.apply(matcher);
+                if (elem != null && (unique == null || unique.add(elem)))
+                    collector.accumulator().accept(accumulator, elem);
             }
             catch (NumberFormatException ignored) {}
         }
-        return collection;
+        return collector.finisher().apply(accumulator);
+    }
+
+    protected static <T> Collector<T, ?, HashBag<T>> toBag()
+    {
+        return Collectors.toCollection(HashBag::new);
     }
 
     protected abstract User matchUser(Matcher matcher);
