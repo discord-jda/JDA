@@ -35,6 +35,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link TextChannel}</li>
  *     <li>{@link NewsChannel}</li>
  *     <li>{@link VoiceChannel}</li>
+ *     <li>{@link StageChannel}</li>
  *     <li>{@link ThreadChannel}</li>
  *     <li>{@link PrivateChannel}</li>
  * </ul>
