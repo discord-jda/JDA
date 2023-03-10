@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -871,6 +872,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     @CheckReturnValue
     default AuditableRestAction<Void> modifyFlags(@Nonnull EnumSet<MemberFlag> newFlags)
     {
+        Checks.noneNull(newFlags, "Flags");
+        if (!getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS))
+            throw new InsufficientPermissionException(getGuild(), Permission.MODERATE_MEMBERS);
         int flags = getFlagsRaw();
         for (MemberFlag flag : MemberFlag.values())
         {
