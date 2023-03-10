@@ -159,7 +159,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code type} is null</li>
-     *             <li>If {@code type} is {@link OptionType#UNKNOWN UNKNOWN}</li>
+     *             <li>If {@code type} is {@link OptionType#UNKNOWN UNKNOWN}, {@link OptionType#SUB_COMMAND SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP SUB_COMMAND_GROUP}</li>
      *             <li>If {@code name} is not alphanumeric (with dash), lowercase and between 1 and {@value #MAX_NAME_LENGTH} characters long</li>
      *             <li>If {@code description} is not between 1 and {@value #MAX_DESCRIPTION_LENGTH} characters long</li>
      *             <li>If {@link OptionType#canSupportChoices()} is false and {@code isAutoComplete} is true</li>
