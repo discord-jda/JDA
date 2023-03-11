@@ -88,6 +88,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final int flags;
     protected final Message.Interaction interaction;
     protected final ThreadChannel startedThread;
+    protected final int position;
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -101,7 +102,7 @@ public class ReceivedMessage extends AbstractMessage
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
             List<StickerItem> stickers, List<ActionRow> components,
-            int flags, Message.Interaction interaction, ThreadChannel startedThread)
+            int flags, Message.Interaction interaction, ThreadChannel startedThread, int position)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -125,6 +126,7 @@ public class ReceivedMessage extends AbstractMessage
         this.flags = flags;
         this.interaction = interaction;
         this.startedThread = startedThread;
+        this.position = position;
     }
 
     private void checkIntent()
@@ -330,6 +332,15 @@ public class ReceivedMessage extends AbstractMessage
     public Member getMember()
     {
         return member;
+    }
+
+    @Override
+    public int getApproximatePosition()
+    {
+        if (!getChannelType().isThread())
+            throw new IllegalStateException("This message was not sent in a thread.");
+
+        return position;
     }
 
     @Nonnull
@@ -678,6 +689,12 @@ public class ReceivedMessage extends AbstractMessage
     public boolean isEphemeral()
     {
         return (this.flags & MessageFlag.EPHEMERAL.getValue()) != 0;
+    }
+
+    @Override
+    public boolean isSuppressedNotifications()
+    {
+        return (this.flags & MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
     }
 
     @Nullable

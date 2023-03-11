@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.entities.sticker.StickerUnion;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
@@ -76,6 +77,7 @@ import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandListUpdateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -84,15 +86,18 @@ import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -131,7 +136,6 @@ public class JDAImpl implements JDA
     protected WebSocketClient client;
     protected Requester requester;
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
-    protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected long responseTotal;
@@ -142,6 +146,12 @@ public class JDAImpl implements JDA
     protected String clientId = null,  requiredScopes = "bot";
     protected ShardManager shardManager = null;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
+
+    protected final AtomicReference<Status> status = new AtomicReference<>(Status.INITIALIZING);
+    protected final ReentrantLock statusLock = new ReentrantLock();
+    protected final Condition statusCondition = statusLock.newCondition();
+    protected final AtomicBoolean requesterShutdown = new AtomicBoolean(false);
+    protected final AtomicReference<ShutdownEvent> shutdownEvent = new AtomicReference<>(null);
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
@@ -156,7 +166,7 @@ public class JDAImpl implements JDA
         this.threadConfig = threadConfig == null ? ThreadingConfig.getDefault() : threadConfig;
         this.sessionConfig = sessionConfig == null ? SessionConfig.getDefault() : sessionConfig;
         this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
-        this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
+        this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdownNow, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this);
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
@@ -355,14 +365,15 @@ public class JDAImpl implements JDA
 
     public void setStatus(Status status)
     {
-        //noinspection SynchronizeOnNonFinalField
-        synchronized (this.status)
-        {
-            Status oldStatus = this.status;
-            this.status = status;
+        StatusChangeEvent event = MiscUtil.locked(statusLock, () -> {
+            Status oldStatus = this.status.getAndSet(status);
+            this.statusCondition.signalAll();
 
-            handleEvent(new StatusChangeEvent(this, status, oldStatus));
-        }
+            return new StatusChangeEvent(this, status, oldStatus);
+        });
+
+        if (event.getOldStatus() != event.getNewStatus())
+            handleEvent(event);
     }
 
     public void verifyToken()
@@ -383,14 +394,22 @@ public class JDAImpl implements JDA
             }
         }.priority();
 
-        DataObject userResponse = login.complete();
-        if (userResponse != null)
+        try
         {
-            getEntityBuilder().createSelfUser(userResponse);
-            return;
+            DataObject userResponse = login.complete();
+            if (userResponse != null)
+            {
+                getEntityBuilder().createSelfUser(userResponse);
+                return;
+            }
+
+            throw new InvalidTokenException("The provided token is invalid!");
         }
-        shutdownNow();
-        throw new InvalidTokenException("The provided token is invalid!");
+        catch (Throwable error)
+        {
+            shutdownNow();
+            throw error;
+        }
     }
 
     public AuthorizationConfig getAuthorizationConfig()
@@ -437,7 +456,7 @@ public class JDAImpl implements JDA
     @Override
     public Status getStatus()
     {
-        return status;
+        return status.get();
     }
 
     @Nonnull
@@ -480,20 +499,55 @@ public class JDAImpl implements JDA
     public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn) throws InterruptedException
     {
         Checks.notNull(status, "Status");
-        Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
         if (getStatus() == Status.CONNECTED)
             return this;
-        List<Status> failStatus = Arrays.asList(failOn);
-        while (!getStatus().isInit()                         // JDA might disconnect while starting
-                || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
+
+        MiscUtil.tryLock(statusLock);
+        try
         {
-            if (getStatus() == Status.SHUTDOWN)
-                throw new IllegalStateException("Was shutdown trying to await status.\nReason: " + shutdownReason);
-            else if (failStatus.contains(getStatus()))
-                return this;
-            Thread.sleep(50);
+            EnumSet<Status> endCondition = EnumSet.of(status, failOn);
+            Status current = getStatus();
+            while (!current.isInit()                      // In case of disconnects during startup
+                 || current.ordinal() < status.ordinal()) // If we missed the status (e.g. LOGGING_IN -> CONNECTED happened while waiting for lock)
+            {
+                if (current == Status.SHUTDOWN)
+                    throw new IllegalStateException("Was shutdown trying to await status.\nReason: " + shutdownReason);
+                if (endCondition.contains(current))
+                    return this;
+
+                statusCondition.await();
+                current = getStatus();
+            }
         }
+        finally
+        {
+            statusLock.unlock();
+        }
+
         return this;
+    }
+
+    @Override
+    public boolean awaitShutdown(long timeout, @Nonnull TimeUnit unit) throws InterruptedException
+    {
+        timeout = unit.toMillis(timeout);
+        long deadline = timeout == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + timeout;
+        MiscUtil.tryLock(statusLock);
+        try
+        {
+            Status current = getStatus();
+            while (current != Status.SHUTDOWN)
+            {
+                if (!statusCondition.await(deadline - System.currentTimeMillis(), TimeUnit.MILLISECONDS))
+                    return false;
+                current = getStatus();
+            }
+            return true;
+        }
+        finally
+        {
+            statusLock.unlock();
+        }
     }
 
     @Override
@@ -786,11 +840,11 @@ public class JDAImpl implements JDA
     @Override
     public synchronized void shutdown()
     {
+        Status status = getStatus();
         if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN)
             return;
 
         setStatus(Status.SHUTTING_DOWN);
-        shutdownInternals();
 
         WebSocketClient client = getClient();
         if (client != null)
@@ -798,18 +852,22 @@ public class JDAImpl implements JDA
             client.getChunkManager().shutdown();
             client.shutdown();
         }
+        else
+        {
+            shutdownInternals(new ShutdownEvent(this, OffsetDateTime.now(), 1000));
+        }
     }
 
-    public synchronized void shutdownInternals()
+    public void shutdownInternals(ShutdownEvent event)
     {
-        if (status == Status.SHUTDOWN)
+        if (getStatus() == Status.SHUTDOWN)
             return;
         //so we can shutdown from WebSocketClient properly
         closeAudioConnections();
         guildSetupController.close();
 
         // stop accepting new requests
-        if (requester.stop()) // returns true if no more requests will be executed
+        if (requester.stop())    // returns true if no more requests will be executed
             shutdownRequester(); // in that case shutdown entirely
         threadConfig.shutdown();
 
@@ -822,7 +880,10 @@ public class JDAImpl implements JDA
             catch (Exception ignored) {}
         }
 
-        setStatus(Status.SHUTDOWN);
+        // If the requester has been shutdown too, we can fire the shutdown event
+        boolean signal = MiscUtil.locked(statusLock, () -> shutdownEvent.getAndSet(event) == null && requesterShutdown.get());
+        if (signal)
+            signalShutdown();
     }
 
     public void shutdownRequester()
@@ -830,6 +891,17 @@ public class JDAImpl implements JDA
         // Stop all request processing
         requester.shutdown();
         threadConfig.shutdownRequester();
+
+        // If the websocket has been shutdown too, we can fire the shutdown event
+        boolean signal = MiscUtil.locked(statusLock, () -> !requesterShutdown.getAndSet(true) && shutdownEvent.get() != null);
+        if (signal)
+            signalShutdown();
+    }
+
+    private void signalShutdown()
+    {
+        setStatus(Status.SHUTDOWN);
+        handleEvent(shutdownEvent.get());
     }
 
     private void closeAudioConnections()
@@ -967,6 +1039,39 @@ public class JDAImpl implements JDA
         Checks.isSnowflake(commandId);
         Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(getSelfUser().getApplicationId(), commandId);
         return new RestActionImpl<>(this, route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<RoleConnectionMetadata>> retrieveRoleConnectionMetadata()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_ROLE_CONNECTION_METADATA.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route,
+            (response, request) ->
+                response.getArray()
+                    .stream(DataArray::getObject)
+                    .map(RoleConnectionMetadata::fromData)
+                    .collect(Helpers.toUnmodifiableList()));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<RoleConnectionMetadata>> updateRoleConnectionMetadata(@Nonnull Collection<? extends RoleConnectionMetadata> records)
+    {
+        Checks.noneNull(records, "Records");
+        Checks.check(records.size() <= RoleConnectionMetadata.MAX_RECORDS, "An application can have a maximum of %d metadata records", RoleConnectionMetadata.MAX_RECORDS);
+
+        Route.CompiledRoute route = Route.Applications.UPDATE_ROLE_CONNECTION_METADATA.compile(getSelfUser().getApplicationId());
+
+        DataArray array = DataArray.fromCollection(records);
+        RequestBody body = RequestBody.create(array.toJson(), Requester.MEDIA_TYPE_JSON);
+
+        return new RestActionImpl<>(this, route, body,
+            (response, request) ->
+                response.getArray()
+                    .stream(DataArray::getObject)
+                    .map(RoleConnectionMetadata::fromData)
+                    .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull

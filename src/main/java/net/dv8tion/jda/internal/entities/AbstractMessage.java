@@ -159,6 +159,13 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Override
+    public int getApproximatePosition()
+    {
+        unsupported();
+        return 0;
+    }
+
     @Nonnull
     @Override
     public String getJumpUrl()
@@ -467,6 +474,13 @@ public abstract class AbstractMessage implements Message
 
     @Override
     public boolean isEphemeral()
+    {
+        unsupported();
+        return false;
+    }
+
+    @Override
+    public boolean isSuppressedNotifications()
     {
         unsupported();
         return false;

@@ -373,5 +373,67 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
         {
             return isIntegration() ? Long.toUnsignedString(getIntegrationIdLong()) : null;
         }
+
+        /**
+         * Whether this role can be acquired through a premium subscription purchase.
+         * A role would also need {@link #isAvailableForPurchase()} to also be true for a user to actually be
+         * able to purchase the role. 
+         *
+         * @return True, if this is a subscription role
+         *
+         * @see    #getSubscriptionIdLong()
+         * @see    #isAvailableForPurchase()
+         */
+        default boolean hasSubscriptionListing()
+        {
+            return getSubscriptionIdLong() != 0;
+        }
+
+        /**
+         * The subscription listing id for this role. If a role has a subscription id then it is a premium role that 
+         * can be acquired by users via purchase.
+         *
+         * @return The listing id, or 0 if this role is not for a subscription listing
+         *
+         * @see    #isAvailableForPurchase()
+         */
+        long getSubscriptionIdLong();
+
+        /**
+         * The subscription listing id for this role. If a role has a subscription id then it is a premium role that 
+         * can be acquired by users via purchase.
+         *
+         * @return The listing id, or null if this role is not for a subscription listing
+         *
+         * @see    #isAvailableForPurchase()
+         */
+        @Nullable
+        default String getSubscriptionId()
+        {
+            return hasSubscriptionListing() ? Long.toUnsignedString(getSubscriptionIdLong()) : null;
+        }
+
+        /**
+         * Whether this role has been published for user purchasing. Only {@link #hasSubscriptionListing() premium roles} 
+         * can be purchased. However, a premium role must be published before it can be purchased. 
+         * Additionally, a premium role can be unpublished after it has been published. Doing so will make it 
+         * no longer available for purchase but will not remove the role from users who have already purchased it.
+         *
+         * @return True, if this role is purchasable
+         *
+         * @see    #hasSubscriptionListing()
+         */
+        boolean isAvailableForPurchase();
+
+        /**
+         * Whether this role is acquired through a user connection.
+         * <br>Such as external services like twitter or reddit.
+         * This also includes custom third-party applications, such as those managed by bots via {@link RoleConnectionMetadata}.
+         *
+         * @return True, if this role is acquired through a user connection
+         *
+         * @see    <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
+         */
+        boolean isLinkedRole();
     }
 }

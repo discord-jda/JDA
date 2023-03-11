@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -151,6 +153,49 @@ public enum MessageType
     AUTO_MODERATION_ACTION(24, true, true),
 
     /**
+     * Sent when someone purchases a role subscription.
+     *
+     * @see Role.RoleTags#isAvailableForPurchase()
+     * @see Role.RoleTags#hasSubscriptionListing()
+     */
+    ROLE_SUBSCRIPTION_PURCHASE(25, true, true),
+
+    /**
+     * Sent by a bot when a command is restricted to premium users.
+     * <br>Contains a button which allows to upgrade to premium.
+     */
+    INTERACTION_PREMIUM_UPSELL(26, true, true),
+
+    /**
+     * Messages created in {@link StageChannel StageChannels} to indicate that a stage instance has started.
+     * <br>The message content will be the {@link StageInstance#getTopic() topic} and the author is the user who started the stage instance.
+     */
+    STAGE_START(27, true, true),
+
+    /**
+     * Messages created in {@link StageChannel StageChannels} to indicate that a stage instance has ended.
+     * <br>The message content will be the {@link StageInstance#getTopic() topic} and the author is the user who ended the stage instance.
+     */
+    STAGE_END(28, true, true),
+
+    /**
+     * Messages created in {@link StageChannel StageChannels} to indicate that a new {@link StageInstance#getSpeakers() speaker} is up.
+     * <br>The author is the user who became speaker.
+     */
+    STAGE_SPEAKER(29, true, true),
+
+    /**
+     * Messages created in {@link StageChannel StageChannels} to indicate that a stage instance topic has been changed.
+     * <br>The message content will be the new {@link StageInstance#getTopic() topic} and the author is the user who updated the topic.
+     */
+    STAGE_TOPIC(31, true, true),
+
+    /**
+     * Sent to the {@link Guild#getSystemChannel() system channel} when a guild administrator subscribes to the premium plan of an application.
+     */
+    GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, true),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1, false, true);
@@ -205,6 +250,7 @@ public enum MessageType
      *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING}</li>
      *     <li>{@link #GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING}</li>
      *     <li>{@link #THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link #GUILD_APPLICATION_PREMIUM_SUBSCRIPTION}</li>
      * </ul>
      *
      * @return True, if delete is supported

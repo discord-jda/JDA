@@ -17,10 +17,12 @@
 package net.dv8tion.jda.internal.interactions.modal;
 
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -31,19 +33,19 @@ public class ModalImpl implements Modal
 {
     private final String id;
     private final String title;
-    private final List<ActionRow> components;
+    private final List<LayoutComponent> components;
 
     public ModalImpl(DataObject object)
     {
         this.id = object.getString("id");
         this.title = object.getString("title");
-        this.components = Collections.unmodifiableList(object.optArray("components").orElseGet(DataArray::empty)
+        this.components = object.optArray("components").orElseGet(DataArray::empty)
                     .stream(DataArray::getObject)
                     .map(ActionRow::fromData)
-                    .collect(Collectors.toList()));
+                    .collect(Helpers.toUnmodifiableList());
     }
 
-    public ModalImpl(String id, String title, List<ActionRow> components)
+    public ModalImpl(String id, String title, List<LayoutComponent> components)
     {
         this.id = id;
         this.title = title;
@@ -66,7 +68,7 @@ public class ModalImpl implements Modal
 
     @Nonnull
     @Override
-    public List<ActionRow> getActionRows()
+    public List<LayoutComponent> getComponents()
     {
         return components;
     }
@@ -80,7 +82,7 @@ public class ModalImpl implements Modal
                 .put("title", title);
 
         object.put("components", DataArray.fromCollection(components.stream()
-                .map(ActionRow::toData)
+                .map(LayoutComponent::toData)
                 .collect(Collectors.toList())));
         return object;
     }

@@ -68,6 +68,8 @@ public class GuildRoleUpdateHandler extends SocketHandler
         String iconId = rolejson.getString("icon", null);
         String emoji = rolejson.getString("unicode_emoji", null);
 
+        rolejson.optObject("tags").ifPresent(role::setTags);
+
         if (!Objects.equals(name, role.getName()))
         {
             String oldName = role.getName();
