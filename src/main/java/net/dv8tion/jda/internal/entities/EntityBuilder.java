@@ -889,14 +889,14 @@ public class EntityBuilder
             type = Activity.ActivityType.PLAYING;
         }
 
-        RichPresence.Timestamps timestamps = null;
+        Activity.Timestamps timestamps = null;
         if (!gameJson.isNull("timestamps"))
         {
             DataObject obj = gameJson.getObject("timestamps");
             long start, end;
             start = obj.getLong("start", 0L);
             end = obj.getLong("end", 0L);
-            timestamps = new RichPresence.Timestamps(start, end);
+            timestamps = new Activity.Timestamps(start, end);
         }
 
         EmojiUnion emoji = null;
