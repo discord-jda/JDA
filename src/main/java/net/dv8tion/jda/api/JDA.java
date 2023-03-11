@@ -1863,15 +1863,6 @@ public interface JDA extends IGuildChannelContainer
     //AuditableRestAction<Void> installAuxiliaryCable(int port);
 
     /**
-     * The {@link net.dv8tion.jda.api.AccountType} of the currently logged in account.
-     * <br>Used when determining functions that are restricted based on the type of account.
-     *
-     * @return The current AccountType.
-     */
-    @Nonnull
-    AccountType getAccountType();
-
-    /**
      * Retrieves the {@link ApplicationInfo ApplicationInfo} for
      * the application that owns the logged in Bot-Account.
      * <br>This contains information about the owner of the currently logged in bot account!
