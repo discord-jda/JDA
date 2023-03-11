@@ -1876,9 +1876,6 @@ public interface JDA extends IGuildChannelContainer
      * the application that owns the logged in Bot-Account.
      * <br>This contains information about the owner of the currently logged in bot account!
      *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
-     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link ApplicationInfo ApplicationInfo}
      *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
      */
@@ -1931,9 +1928,6 @@ public interface JDA extends IGuildChannelContainer
      *         The permissions to use in your invite, these can be changed by the link user.
      *         <br>If no permissions are provided the {@code permissions} parameter is omitted
      *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
-     *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
     @Nonnull
@@ -1949,9 +1943,6 @@ public interface JDA extends IGuildChannelContainer
      * @param  permissions
      *         The permissions to use in your invite, these can be changed by the link user.
      *         <br>If no permissions are provided the {@code permissions} parameter is omitted
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */

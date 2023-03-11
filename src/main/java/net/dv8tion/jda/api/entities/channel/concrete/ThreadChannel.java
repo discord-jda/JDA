@@ -208,8 +208,6 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *     <br>The request was attempted after the parent channel was deleted.</li>
      * </ul>
      *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
