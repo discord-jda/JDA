@@ -89,6 +89,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected Integer bitrate = null;
     protected Region region = null;
 
+    // --forum only--
+    protected Integer defaultLayout = null;
+
     public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
     {
         super(guild.getJDA(), Route.Guilds.CREATE_CHANNEL.compile(guild.getId()));
@@ -222,6 +225,18 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (type != ChannelType.FORUM)
             throw new UnsupportedOperationException("Can only set default reaction emoji on a ForumChannel!");
         this.defaultReactionEmoji = emoji;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> setDefaultLayout(@Nonnull ForumChannel.Layout layout)
+    {
+        Checks.checkSupportedChannelTypes(EnumSet.of(ChannelType.FORUM), type, "Default Layout");
+        Checks.notNull(layout, "layout");
+        if (layout == ForumChannel.Layout.UNKNOWN)
+            throw new IllegalStateException("Layout type cannot be UNKNOWN.");
+        this.defaultLayout = layout.getKey();
         return this;
     }
 
@@ -405,6 +420,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
         if (availableTags != null)
             object.put("available_tags", DataArray.fromCollection(availableTags));
+        if (defaultLayout != null)
+            object.put("default_forum_layout", defaultLayout);
 
         //Voice only
         if (userlimit != null)

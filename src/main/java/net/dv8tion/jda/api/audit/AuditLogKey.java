@@ -320,6 +320,14 @@ public enum AuditLogKey
 //     */
 //    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
 
+    /**
+     * The {@link ForumChannel#getDefaultLayout()} value.
+     * <br>Only for {@link ChannelType#FORUM}.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    DEFAULT_FORUM_LAYOUT("default_forum_layout"),
+
     // THREADS
 
     /**
