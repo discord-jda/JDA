@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.channel.concrete;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -46,16 +47,12 @@ import javax.annotation.Nonnull;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends AudioChannel, StandardGuildChannel, GuildMessageChannel, IWebhookContainer, IAgeRestrictedChannel
+public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
 {
     /**
-     * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
-     * {@link VoiceChannel VoiceChannel} at once.
-     * <br>0 - No limit
-     *
-     * @return The maximum amount of members allowed in this channel at once.
+     * The maximum limit you can set with {@link VoiceChannelManager#setUserLimit(int)}. ({@value})
      */
-    int getUserLimit();
+    int MAX_USERLIMIT = 99;
 
     @Nonnull
     @Override

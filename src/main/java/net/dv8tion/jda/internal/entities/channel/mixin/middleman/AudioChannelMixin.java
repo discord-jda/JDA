@@ -28,5 +28,7 @@ public interface AudioChannelMixin<T extends AudioChannelMixin<T>>
 
     T setBitrate(int bitrate);
 
+    T setUserLimit(int userlimit);
+
     T setRegion(String region);
 }

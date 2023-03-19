@@ -48,7 +48,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.entities.channel.concrete.NewsChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.TextChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.concrete.VoiceChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
@@ -190,19 +189,6 @@ public class ChannelUpdateHandler extends SocketHandler
                 }
                 break;
             case VOICE:
-                VoiceChannelImpl voiceChannel = (VoiceChannelImpl) channel;
-
-                int userLimit = content.getInt("user_limit");
-                int oldLimit = voiceChannel.getUserLimit();
-                if (oldLimit != userLimit)
-                {
-                    voiceChannel.setUserLimit(userLimit);
-                    getJDA().handleEvent(
-                            new ChannelUpdateUserLimitEvent(
-                                    getJDA(), responseNumber,
-                                    voiceChannel, oldLimit, userLimit));
-                }
-                break;
             case TEXT:
             case NEWS:
             case STAGE:
@@ -560,6 +546,18 @@ public class ChannelUpdateHandler extends SocketHandler
                 new ChannelUpdateBitrateEvent(
                     api, responseNumber,
                     channel, oldBitrate, bitrate));
+        }
+
+        int userLimit = content.getInt("user_limit");
+        int oldLimit = channel.getUserLimit();
+
+        if (oldLimit != userLimit)
+        {
+            channel.setUserLimit(userLimit);
+            getJDA().handleEvent(
+                new ChannelUpdateUserLimitEvent(
+                    getJDA(), responseNumber,
+                    channel, oldLimit, userLimit));
         }
 
         String oldRegion = channel.getRegionRaw();

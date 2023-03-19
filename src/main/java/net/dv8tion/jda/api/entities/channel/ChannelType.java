@@ -143,6 +143,7 @@ public enum ChannelType
         {
             case TEXT:
             case VOICE:
+            case STAGE:
             case NEWS:
             case PRIVATE:
             case GROUP:

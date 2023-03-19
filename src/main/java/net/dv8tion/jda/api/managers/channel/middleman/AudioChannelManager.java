@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.managers.channel.middleman;
 
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
@@ -29,17 +29,17 @@ import javax.annotation.Nonnull;
 public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends StandardGuildChannelManager<T, M>
 {
     /**
-     * Sets the <b><u>bitrate</u></b> of the selected {@link VoiceChannel VoiceChannel}.
+     * Sets the <b><u>bitrate</u></b> of the selected {@link AudioChannel}.
      * <br>The default value is {@code 64000}
      *
      * <p>A channel bitrate <b>must not</b> be less than {@code 8000} nor greater than {@link Guild#getMaxBitrate()}!
-     * <br><b>This is only available to {@link VoiceChannel VoiceChannels}</b>
+     * <br><b>This is only available to {@link AudioChannel AudioChannels}</b>
      *
      * @param  bitrate
-     *         The new bitrate for the selected {@link VoiceChannel VoiceChannel}
+     *         The new bitrate for the selected {@link AudioChannel}
      *
      * @throws IllegalStateException
-     *         If the selected {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}'s type is not {@link ChannelType#VOICE VOICE}
+     *         If the selected channel is not an {@link AudioChannel}
      * @throws IllegalArgumentException
      *         If the provided bitrate is less than 8000 or greater than {@link Guild#getMaxBitrate()}.
      *
@@ -52,7 +52,29 @@ public interface AudioChannelManager<T extends AudioChannel, M extends AudioChan
     M setBitrate(int bitrate);
 
     /**
-     * Sets the {@link Region Region} of the selected {@link VoiceChannel VoiceChannel}.
+     * Sets the <b><u>user-limit</u></b> of the selected {@link AudioChannel}.
+     * <br>Provide {@code 0} to reset the user-limit of the {@link AudioChannel}
+     *
+     * <p>A channel user-limit <b>must not</b> be negative nor greater than {@value VoiceChannel#MAX_USERLIMIT} for {@link VoiceChannel}
+     * and not greater than {@value StageChannel#MAX_USERLIMIT} for {@link StageChannel}!
+     * <br><b>This is only available to {@link AudioChannel AudioChannels}</b>
+     *
+     * @param  userLimit
+     *         The new user-limit for the selected {@link AudioChannel}
+     *
+     * @throws IllegalStateException
+     *         If the selected channel is not an {@link AudioChannel}
+     * @throws IllegalArgumentException
+     *         If the provided user-limit is negative or greater than the permitted maximum
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    M setUserLimit(int userLimit);
+
+    /**
+     * Sets the {@link Region Region} of the selected {@link AudioChannel}.
      * <br>The default value is {@link Region#AUTOMATIC}
      *
      * Possible values are:
@@ -72,14 +94,16 @@ public interface AudioChannelManager<T extends AudioChannel, M extends AudioChan
      *     <li>{@link Region#RUSSIA}</li>
      * </ul>
      *
-     * <br><b>This is only available to {@link VoiceChannel VoiceChannels}!</b>
+     * <br><b>This is only available to {@link AudioChannel AudioChannels}!</b>
      *
      * @param region
      *        The new {@link Region Region}
+     *
      * @throws IllegalStateException
-     *         If the selected {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel}'s type is not {@link ChannelType#VOICE VOICE}
+     *         If the selected channel is not an {@link AudioChannel}
      * @throws IllegalArgumentException
      *         If the provided Region is not in the list of usable values
+     *
      * @return ChannelManager for chaining convenience
      */
     @Nonnull

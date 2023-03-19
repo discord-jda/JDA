@@ -21,8 +21,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
@@ -42,8 +45,13 @@ import java.util.EnumSet;
  *
  * <p>This is a specialized AudioChannel that can be used to host events with speakers and listeners.
  */
-public interface StageChannel extends GuildChannel, AudioChannel, StandardGuildChannel
+public interface StageChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
 {
+    /**
+     * The maximum limit you can set with {@link StageChannelManager#setUserLimit(int)}. ({@value})
+     */
+    int MAX_USERLIMIT = 10000;
+
     /**
      * {@link StageInstance} attached to this stage channel.
      *
