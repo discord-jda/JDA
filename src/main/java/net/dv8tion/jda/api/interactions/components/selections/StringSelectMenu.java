@@ -209,6 +209,52 @@ public interface StringSelectMenu extends SelectMenu
         /**
          * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
          *
+         * @param  emoji
+         *         The {@link Emoji} shown next to this option
+         * @param  value
+         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
+         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
+         *
+         * @throws IllegalArgumentException
+         *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT}, invalid null is provided,
+         *         or any of the individual parameter requirements are violated.
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder addOption(@Nonnull Emoji emoji, @Nonnull String value)
+        {
+            Checks.notNull(emoji, "Emoji");
+            return addOptions(new SelectOption(emoji, value));
+        }
+
+        /**
+         * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
+         *
+         * @param  emoji
+         *         The {@link Emoji} shown next to this option
+         * @param  value
+         *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
+         *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
+         * @param  description
+         *         The description explaining the meaning of this option in more detail, up to {@value SelectOption#DESCRIPTION_MAX_LENGTH} characters
+         *
+         * @throws IllegalArgumentException
+         *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT}, invalid null is provided,
+         *         or any of the individual parameter requirements are violated.
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder addOption(@Nonnull Emoji emoji, @Nonnull String value, @Nonnull String description)
+        {
+            Checks.notNull(emoji, "Emoji");
+            return addOption("", value, description, emoji);
+        }
+
+        /**
+         * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
+         *
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
@@ -237,7 +283,7 @@ public interface StringSelectMenu extends SelectMenu
          *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
          *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          * @param  description
-         *         The description explaining the meaning of this option in more detail, up to 50 characters
+         *         The description explaining the meaning of this option in more detail, up to {@value SelectOption#DESCRIPTION_MAX_LENGTH} characters
          *
          * @throws IllegalArgumentException
          *         If the total amount of options is greater than {@value #OPTIONS_MAX_AMOUNT}, invalid null is provided,
@@ -254,13 +300,15 @@ public interface StringSelectMenu extends SelectMenu
         /**
          * Adds up to {@value #OPTIONS_MAX_AMOUNT} possible options to this select menu.
          *
+         * <p>If the provided label is an empty string, the {@code emoji} must not be null.
+         *
          * @param  label
          *         The label for the option, up to {@value SelectOption#LABEL_MAX_LENGTH} characters
          * @param  value
          *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
          *         up to {@value SelectOption#VALUE_MAX_LENGTH} characters
          * @param  description
-         *         The description explaining the meaning of this option in more detail, up to 50 characters
+         *         The description explaining the meaning of this option in more detail, up to {@value SelectOption#DESCRIPTION_MAX_LENGTH} characters
          * @param  emoji
          *         The {@link Emoji} shown next to this option, or null
          *

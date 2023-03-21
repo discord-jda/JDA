@@ -72,6 +72,23 @@ public class SelectOption implements SerializableData
     /**
      * Creates a new SelectOption instance
      *
+     * @param  emoji
+     *         The {@link Emoji} shown next to this option
+     * @param  value
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
+     *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
+     *
+     * @throws IllegalArgumentException
+     *         If the null is provided, or any of the individual parameter requirements are violated.
+     */
+    protected SelectOption(@Nonnull Emoji emoji, @Nonnull String value)
+    {
+        this("", value, null, false, emoji);
+    }
+
+    /**
+     * Creates a new SelectOption instance
+     *
      * @param  label
      *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
@@ -89,7 +106,10 @@ public class SelectOption implements SerializableData
      */
     protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable Emoji emoji)
     {
-        Checks.notEmpty(label, "Label");
+        if (emoji == null)
+            Checks.notEmpty(label, "Label");
+        else
+            Checks.notNull(label, "Label");
         Checks.notEmpty(value, "Value");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         Checks.notLonger(value, VALUE_MAX_LENGTH, "Value");
@@ -125,13 +145,38 @@ public class SelectOption implements SerializableData
     }
 
     /**
+     * Creates a new SelectOption instance.
+     * <br>You can further configure this with the various setters that return new instances.
+     *
+     * @param  emoji
+     *         The {@link Emoji} shown next to this option
+     * @param  value
+     *         The value for the option used to indicate which option was selected with {@link SelectMenuInteraction#getValues()},
+     *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or any of the individual parameter requirements are violated.
+     *
+     * @return The new select option instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static SelectOption of(@Nonnull Emoji emoji, @Nonnull String value)
+    {
+        Checks.notNull(emoji, "Emoji");
+        return new SelectOption(emoji, value);
+    }
+
+    /**
      * Returns a copy of this select option with the changed label.
+     *
+     * <p>If an {@link #withEmoji(Emoji) emoji} is configured, this is allowed to be an empty string.
      *
      * @param  label
      *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
-     *         If the label is null, empty, or longer than {@value #LABEL_MAX_LENGTH} characters
+     *         If the label is null, empty (unless emoji is provided), or longer than {@value #LABEL_MAX_LENGTH} characters
      *
      * @return The new select option instance
      */
@@ -301,8 +346,8 @@ public class SelectOption implements SerializableData
     {
         Checks.notNull(data, "DataObject");
         return new SelectOption(
-            data.getString("label"),
-            data.getString("value"),
+            data.getString("label", ""),
+            data.getString("value", ""),
             data.getString("description", null),
             data.getBoolean("default", false),
             data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null)
