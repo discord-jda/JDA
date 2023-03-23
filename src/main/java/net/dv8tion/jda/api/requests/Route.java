@@ -23,10 +23,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 import static net.dv8tion.jda.api.requests.Method.*;
 
@@ -625,7 +622,7 @@ public class Route
     @Override
     public int hashCode()
     {
-        return 31 * Arrays.hashCode(template) + method.hashCode();
+        return Objects.hash(method, Arrays.hashCode(template));
     }
 
     @Override
