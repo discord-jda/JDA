@@ -726,7 +726,11 @@ public class Route
 
             // Assuming names don't need encoding
             for (int i = 0; i < params.length; i += 2)
+            {
+                Checks.notEmpty(params[i], "Query key");
+                Checks.notNull(params[i + 1], "Query value");
                 newQuery.add(params[i] + '=' + EncodingUtil.encodeUTF8(params[i + 1]));
+            }
 
             return new CompiledRoute(this, newQuery);
         }
