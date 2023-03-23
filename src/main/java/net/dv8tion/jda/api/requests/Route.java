@@ -506,13 +506,13 @@ public class Route
     private final Method method;
     private final int paramCount;
     private final String[] template;
-    private final boolean interaction;
+    private final boolean isInteraction;
 
-    private Route(Method method, String route, boolean interaction)
+    private Route(Method method, String route, boolean isInteraction)
     {
         this.method = method;
         this.template = Helpers.split(route, "/");
-        this.interaction = interaction;
+        this.isInteraction = isInteraction;
 
         // Validate route syntax
         int paramCount = 0;
@@ -553,7 +553,7 @@ public class Route
      */
     public boolean isInteractionBucket()
     {
-        return interaction;
+        return isInteraction;
     }
 
     /**
