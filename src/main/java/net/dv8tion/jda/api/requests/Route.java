@@ -511,10 +511,33 @@ public class Route
     private Route(Method method, String route, boolean interaction)
     {
         this.method = method;
-        this.paramCount = Helpers.countMatches(route, '{'); // All parameters start with {
         this.template = Helpers.split(route, "/");
         this.interaction = interaction;
-        Checks.check(paramCount == Helpers.countMatches(route, '}'), "An argument does not have both {}'s for route: %s %s", method, route);
+
+        // Validate route syntax
+        int paramCount = 0;
+        for (String element : this.template)
+        {
+            int opening = Helpers.countMatches(element, '{');
+            int closing = Helpers.countMatches(element, '}');
+            if (element.startsWith("{") && element.endsWith("}"))
+            {
+                // Ensure the brackets are only on the start and end
+                // Valid: {guild_id}
+                // Invalid: {guild_id}abc
+                // Invalid: {{guild_id}}
+                Checks.check(closing == 1 && opening == 1, "Route element has invalid syntax: '%s'", element);
+                paramCount += 1;
+            }
+            else if (opening > 0 || closing > 0)
+            {
+                // Handle potential stray brackets
+                // Invalid: guilds{/guild_id} -> ["guilds{", "guild_id}"]
+                throw new IllegalArgumentException("Route element has invalid syntax: '" + element + "'");
+            }
+        }
+        this.paramCount = paramCount;
+
     }
 
     private Route(Method method, String route)
