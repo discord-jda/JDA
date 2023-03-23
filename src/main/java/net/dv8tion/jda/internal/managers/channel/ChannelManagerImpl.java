@@ -651,7 +651,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (shouldUpdate(NAME))
             frame.put("name", name);
         if (shouldUpdate(TYPE))
-            frame.put("type", type);
+            frame.put("type", type.getId());
         if (shouldUpdate(POSITION))
             frame.put("position", position);
         if (shouldUpdate(TOPIC))
