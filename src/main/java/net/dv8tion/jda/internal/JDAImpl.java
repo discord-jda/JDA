@@ -47,10 +47,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
@@ -131,6 +128,7 @@ public class JDAImpl implements JDA
     protected final ThreadingConfig threadConfig;
     protected final SessionConfig sessionConfig;
     protected final MetaConfig metaConfig;
+    protected final RestConfig restConfig;
 
     public ShutdownReason shutdownReason = ShutdownReason.USER_SHUTDOWN; // indicates why shutdown happened in awaitStatus / awaitReady
     protected WebSocketClient client;
@@ -155,21 +153,20 @@ public class JDAImpl implements JDA
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
-        this(authConfig, null, null, null);
+        this(authConfig, null, null, null, null);
     }
 
     public JDAImpl(
             AuthorizationConfig authConfig, SessionConfig sessionConfig,
-            ThreadingConfig threadConfig, MetaConfig metaConfig)
+            ThreadingConfig threadConfig, MetaConfig metaConfig, RestConfig restConfig)
     {
         this.authConfig = authConfig;
         this.threadConfig = threadConfig == null ? ThreadingConfig.getDefault() : threadConfig;
         this.sessionConfig = sessionConfig == null ? SessionConfig.getDefault() : sessionConfig;
         this.metaConfig = metaConfig == null ? MetaConfig.getDefault() : metaConfig;
+        this.restConfig = restConfig == null ? new RestConfig() : restConfig;
         this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdownNow, "JDA Shutdown Hook") : null;
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
-        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
@@ -189,11 +186,6 @@ public class JDAImpl implements JDA
     public boolean isEventPassthrough()
     {
         return sessionConfig.isEventPassthrough();
-    }
-
-    public boolean isRelativeRateLimit()
-    {
-        return sessionConfig.isRelativeRateLimit();
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)
@@ -296,8 +288,19 @@ public class JDAImpl implements JDA
     public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding)
     {
         this.shardInfo = shardInfo;
-        threadConfig.init(this::getIdentifierString);
-        requester.getRateLimiter().init();
+
+        // Delayed init for thread-pools so they can set the shard info as their name
+        this.threadConfig.init(this::getIdentifierString);
+        // Setup rest-module and rate-limiter subsystem
+        RestRateLimiter rateLimiter = this.restConfig.getRateLimiterFactory().apply(
+                new RestRateLimiter.RateLimitConfig(
+                        this.threadConfig.getRateLimitPool(),
+                        getSessionController().getRateLimitHandle(),
+                        this.sessionConfig.isRelativeRateLimit() && this.restConfig.isRelativeRateLimit()
+                ));
+        this.requester = new Requester(this, this.authConfig, this.restConfig, rateLimiter);
+        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
+
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
@@ -832,7 +835,7 @@ public class JDAImpl implements JDA
     @Override
     public synchronized void shutdownNow()
     {
-        requester.shutdown(); // stop all requests
+        requester.stop(true, this::shutdownRequester); // stop all requests
         shutdown();
         threadConfig.shutdownNow();
     }
@@ -867,8 +870,7 @@ public class JDAImpl implements JDA
         guildSetupController.close();
 
         // stop accepting new requests
-        if (requester.stop())    // returns true if no more requests will be executed
-            shutdownRequester(); // in that case shutdown entirely
+        requester.stop(false, this::shutdownRequester);
         threadConfig.shutdown();
 
         if (shutdownHook != null)
@@ -889,7 +891,6 @@ public class JDAImpl implements JDA
     public void shutdownRequester()
     {
         // Stop all request processing
-        requester.shutdown();
         threadConfig.shutdownRequester();
 
         // If the websocket has been shutdown too, we can fire the shutdown event

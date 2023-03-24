@@ -16,8 +16,8 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.exceptions.HttpException;
+import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
-import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -135,7 +135,7 @@ public class FileProxy
     {
         return new Request.Builder()
                 .url(url)
-                .addHeader("user-agent", Requester.USER_AGENT)
+                .addHeader("user-agent", RestConfig.USER_AGENT)
                 .addHeader("accept-encoding", "gzip, deflate")
                 .build();
     }

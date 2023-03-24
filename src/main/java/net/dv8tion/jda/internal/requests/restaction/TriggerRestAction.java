@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;

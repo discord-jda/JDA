@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.exceptions;
 
-import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 /**

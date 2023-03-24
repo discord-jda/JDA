@@ -16,15 +16,18 @@
 package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -93,6 +96,7 @@ public class JDABuilder
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
     protected GatewayEncoding encoding = GatewayEncoding.JSON;
+    protected RestConfig restConfig = new RestConfig();
 
     private JDABuilder(@Nullable String token, int intents)
     {
@@ -557,13 +561,34 @@ public class JDABuilder
      *         True, if the relative {@code X-RateLimit-Reset-After} header should be used.
      *
      * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @since  4.1.0
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
+    @ReplaceWith("setRestConfig(new RestConfig().setRelativeRateLimit(enable))")
     public JDABuilder setRelativeRateLimit(boolean enable)
     {
         return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
+    }
+
+    /**
+     * Custom {@link RestConfig} to use for this JDA instance.
+     * <br>This can be used to customize how rate-limits are handled and configure a custom http proxy.
+     *
+     * @param  config
+     *         The {@link RestConfig} to use
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setRestConfig(@Nonnull RestConfig config)
+    {
+        Checks.notNull(config, "RestConfig");
+        this.restConfig = config;
+        return this;
     }
 
     /**
@@ -1778,7 +1803,7 @@ public class JDABuilder
         SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
-        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
         jda.setMemberCachePolicy(memberCachePolicy);
         // We can only do member chunking with the GUILD_MEMBERS intent
         if ((intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0)
