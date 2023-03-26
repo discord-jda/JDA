@@ -59,4 +59,13 @@ public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBu
         allowList.addAll(keywords);
         return (B) this;
     }
+
+    @Nonnull
+    @Override
+    public AutoModRuleData build()
+    {
+        AutoModRuleData rule = super.build();
+        rule.setAllowlist(allowList);
+        return rule;
+    }
 }

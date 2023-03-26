@@ -19,7 +19,9 @@ package net.dv8tion.jda.api.entities.automod;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.automod.build.CustomKeywordRuleBuilder;
 import net.dv8tion.jda.api.entities.automod.build.MentionSpamRuleBuilder;
+import net.dv8tion.jda.api.entities.automod.build.PresetKeywordRuleBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import javax.annotation.Nonnull;
@@ -37,6 +39,18 @@ public interface AutoModRule extends ISnowflake
     static MentionSpamRuleBuilder createMentionSpamRule(@Nonnull String name, int limit)
     {
         return new MentionSpamRuleBuilder(name, limit);
+    }
+
+    @Nonnull
+    static CustomKeywordRuleBuilder createCustomKeywordRule(@Nonnull String name, @Nonnull String... keywords)
+    {
+        return new CustomKeywordRuleBuilder(name).addKeywords(keywords);
+    }
+
+    @Nonnull
+    static PresetKeywordRuleBuilder createPresetKeywordRule(@Nonnull String name, @Nonnull KeywordPreset... presets)
+    {
+        return new PresetKeywordRuleBuilder(name).enablePresets(presets);
     }
 
     @Nonnull
