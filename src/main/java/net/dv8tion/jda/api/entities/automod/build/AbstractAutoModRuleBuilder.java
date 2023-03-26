@@ -21,6 +21,7 @@ import gnu.trove.list.array.TLongArrayList;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModEventType;
 import net.dv8tion.jda.api.entities.automod.AutoModResponse;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -54,6 +55,7 @@ public abstract class AbstractAutoModRuleBuilder<B extends AbstractAutoModRuleBu
     public B setName(@Nonnull String name)
     {
         Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, AutoModRule.MAX_RULE_NAME_LENGTH, "Name");
         this.name = name;
         return (B) this;
     }
