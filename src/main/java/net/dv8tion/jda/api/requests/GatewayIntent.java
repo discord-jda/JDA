@@ -67,6 +67,10 @@ import java.util.EnumSet;
  *     <li><b>DIRECT_MESSAGES</b> - This is used to receive incoming messages in private channels (DMs). You can still send private messages without this intent.</li>
  *     <li><b>DIRECT_MESSAGE_REACTIONS</b> - This is used to track reactions on messages in private channels (DMs).</li>
  *     <li><b>DIRECT_MESSAGE_TYPING</b> - This is used to track when a user starts typing in private channels (DMs). Almost no bot will have a use for this.</li>
+ *     <li><b>MESSAGE_CONTENT</b> - This is a <b>privileged</b> gateway intent this is only used to enable access to the user content in messages (also including embeds/attachments/components).</li>
+ *     <li><b>SCHEDULED_EVENTS</b> - This is used to keep track of scheduled events in guilds.</li>
+ *     <li><b>AUTO_MODERATION_CONFIGURATION</b> - This is used to keep track of auto-mod rule changes in guilds.</li>
+ *     <li><b>AUTO_MODERATION_EXECUTION</b> - This is used to receive events related to auto-mod response actions.</li>
  * </ol>
  *
  * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use it (and its related events).
@@ -177,7 +181,17 @@ public enum GatewayIntent
      * Scheduled Events events.
      */
     SCHEDULED_EVENTS(16),
-    
+
+    /**
+     * Events related to {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule} changes.
+     */
+    AUTO_MODERATION_CONFIGURATION(20),
+
+    /**
+     * Events related to {@link net.dv8tion.jda.api.entities.automod.AutoModResponse AutoModResponse} triggers.
+     */
+    AUTO_MODERATION_EXECUTION(21),
+
     ;
 
     /**
