@@ -68,6 +68,12 @@ public class PresetKeywordRuleBuilder extends AbstractKeywordRuleBuilder<PresetK
         return this;
     }
 
+    @Override
+    protected int maxAllowListAmount()
+    {
+        return AutoModRule.MAX_ALLOWLIST_PRESET_AMOUNT;
+    }
+
     @Nonnull
     @Override
     public AutoModRuleData build()

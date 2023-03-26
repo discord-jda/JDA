@@ -149,7 +149,7 @@ public class AutoModRuleData implements SerializableData
 
         switch (triggerType)
         {
-        case MENTION:
+        case MENTION_SPAM:
             if (mentionLimit != -1)
                 metadata.put("mention_total_limit", mentionLimit);
             break;

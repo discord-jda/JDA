@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities.automod.build;
 
 import net.dv8tion.jda.api.entities.automod.AutoModEventType;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -28,7 +29,7 @@ public class MentionSpamRuleBuilder extends AbstractAutoModRuleBuilder<MentionSp
 
     public MentionSpamRuleBuilder(@Nonnull String name, int limit)
     {
-        super(AutoModTriggerType.MENTION, AutoModEventType.MESSAGE_SEND, name);
+        super(AutoModTriggerType.MENTION_SPAM, AutoModEventType.MESSAGE_SEND, name);
         Checks.positive(limit, "Mention Limit");
         this.mentionLimit = limit;
     }
@@ -37,6 +38,7 @@ public class MentionSpamRuleBuilder extends AbstractAutoModRuleBuilder<MentionSp
     public MentionSpamRuleBuilder setMentionLimit(int limit)
     {
         Checks.positive(limit, "Mention Limit");
+        Checks.check(limit <= AutoModRule.MAX_MENTION_LIMIT, "Mention Limit cannot be higher than %d. Provided: %d", AutoModRule.MAX_MENTION_LIMIT, limit);
         this.mentionLimit = limit;
         return this;
     }

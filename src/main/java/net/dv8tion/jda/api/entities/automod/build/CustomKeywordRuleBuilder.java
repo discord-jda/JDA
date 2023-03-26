@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities.automod.build;
 
 import net.dv8tion.jda.api.entities.automod.AutoModEventType;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -37,6 +38,7 @@ public class CustomKeywordRuleBuilder extends AbstractKeywordRuleBuilder<CustomK
     public CustomKeywordRuleBuilder addKeywords(@Nonnull String... keywords)
     {
         Checks.noneNull(keywords, "Keywords");
+        Checks.check(this.keywords.size() + keywords.length <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
         for (String keyword : keywords)
             checkKeyword(keyword);
 
@@ -48,6 +50,7 @@ public class CustomKeywordRuleBuilder extends AbstractKeywordRuleBuilder<CustomK
     public CustomKeywordRuleBuilder addKeywords(@Nonnull Collection<String> keywords)
     {
         Checks.noneNull(keywords, "Keywords");
+        Checks.check(this.keywords.size() + keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
         for (String keyword : keywords)
             checkKeyword(keyword);
 
@@ -59,6 +62,7 @@ public class CustomKeywordRuleBuilder extends AbstractKeywordRuleBuilder<CustomK
     public CustomKeywordRuleBuilder setKeywords(@Nonnull Collection<String> keywords)
     {
         Checks.noneNull(keywords, "Keywords");
+        Checks.check(keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
         for (String keyword : keywords)
             checkKeyword(keyword);
 
@@ -72,6 +76,7 @@ public class CustomKeywordRuleBuilder extends AbstractKeywordRuleBuilder<CustomK
     public CustomKeywordRuleBuilder addPatterns(@Nonnull String... patterns)
     {
         Checks.noneNull(patterns, "Patterns");
+        Checks.check(this.patterns.size() + patterns.length <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
         for (String pattern : patterns)
             checkPattern(pattern);
 
@@ -83,6 +88,7 @@ public class CustomKeywordRuleBuilder extends AbstractKeywordRuleBuilder<CustomK
     public CustomKeywordRuleBuilder addPatterns(@Nonnull Collection<String> patterns)
     {
         Checks.noneNull(patterns, "Patterns");
+        Checks.check(this.patterns.size() + patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
         for (String pattern : patterns)
             checkPattern(pattern);
 
@@ -94,6 +100,7 @@ public class CustomKeywordRuleBuilder extends AbstractKeywordRuleBuilder<CustomK
     public CustomKeywordRuleBuilder setPatterns(@Nonnull Collection<String> patterns)
     {
         Checks.noneNull(patterns, "Patterns");
+        Checks.check(patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
         for (String pattern : patterns)
             checkPattern(pattern);
 
@@ -102,20 +109,23 @@ public class CustomKeywordRuleBuilder extends AbstractKeywordRuleBuilder<CustomK
         return this;
     }
 
-    protected static void checkKeyword(String keyword)
-    {
-        Checks.notEmpty(keyword, "Keyword");
-    }
-
     protected static void checkPattern(String pattern)
     {
         Checks.notEmpty(pattern, "Pattern");
+        Checks.notLonger(pattern, AutoModRule.MAX_PATTERN_LENGTH, "Pattern");
+    }
+
+    @Override
+    protected int maxAllowListAmount()
+    {
+        return AutoModRule.MAX_ALLOWLIST_CUSTOM_AMOUNT;
     }
 
     @Nonnull
     @Override
     public AutoModRuleData build()
     {
+        Checks.check(!keywords.isEmpty() || !patterns.isEmpty(), "Must have at least one keyword or pattern!");
         AutoModRuleData rule = super.build();
         rule.setFilteredKeywords(new ArrayList<>(keywords));
         rule.setFilteredRegex(new ArrayList<>(patterns));

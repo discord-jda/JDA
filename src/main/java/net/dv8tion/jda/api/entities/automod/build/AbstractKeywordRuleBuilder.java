@@ -17,14 +17,12 @@
 package net.dv8tion.jda.api.entities.automod.build;
 
 import net.dv8tion.jda.api.entities.automod.AutoModEventType;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBuilder<B>> extends AbstractAutoModRuleBuilder<B>
 {
@@ -39,6 +37,8 @@ public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBu
     public B addAllowList(@Nonnull String... keywords)
     {
         Checks.noneNull(keywords, "Keywords");
+        Checks.check(this.allowList.size() + keywords.length <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
+        Arrays.stream(keywords).forEach(AbstractKeywordRuleBuilder::checkKeyword);
         Collections.addAll(allowList, keywords);
         return (B) this;
     }
@@ -47,6 +47,8 @@ public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBu
     public B addAllowList(@Nonnull Collection<String> keywords)
     {
         Checks.noneNull(keywords, "Keywords");
+        Checks.check(this.allowList.size() + keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
+        keywords.forEach(AbstractKeywordRuleBuilder::checkKeyword);
         allowList.addAll(keywords);
         return (B) this;
     }
@@ -55,9 +57,19 @@ public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBu
     public B setAllowList(@Nonnull Collection<String> keywords)
     {
         Checks.noneNull(keywords, "Keywords");
+        Checks.check(keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
+        keywords.forEach(AbstractKeywordRuleBuilder::checkKeyword);
         allowList.clear();
         allowList.addAll(keywords);
         return (B) this;
+    }
+
+    protected abstract int maxAllowListAmount();
+
+    protected static void checkKeyword(String keyword)
+    {
+        Checks.notEmpty(keyword, "Keyword");
+        Checks.notLonger(keyword, AutoModRule.MAX_KEYWORD_LENGTH, "Keyword");
     }
 
     @Nonnull

@@ -32,9 +32,12 @@ import java.util.List;
 public interface AutoModRule extends ISnowflake
 {
     int MAX_KEYWORD_LENGTH = 60;
-    int MAX_KEYWORD_TOTAL_LENGTH = 1000;
-    int MAX_ALLOWLIST_TOTAL_LENGTH = 100;
-    int MAX_ALLOWLIST_PRESET_LENGTH = 1000;
+    int MAX_KEYWORD_AMOUNT = 1000;
+    int MAX_ALLOWLIST_CUSTOM_AMOUNT = 100;
+    int MAX_ALLOWLIST_PRESET_AMOUNT = 1000;
+    int MAX_PATTERN_LENGTH = 260;
+    int MAX_PATTERN_AMOUNT = 10;
+    int MAX_MENTION_LIMIT = 50;
 
     @Nonnull
     static MentionSpamRuleBuilder createMentionSpamRule(@Nonnull String name, int limit)

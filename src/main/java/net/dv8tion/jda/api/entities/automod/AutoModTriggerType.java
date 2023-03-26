@@ -23,7 +23,7 @@ public enum AutoModTriggerType
     KEYWORD(1, 6),
     SPAM(3, 1),
     KEYWORD_PRESET(4, 1),
-    MENTION(5, 1),
+    MENTION_SPAM(5, 1),
     UNKNOWN(-1, 1),
     ;
 
