@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
@@ -61,6 +63,7 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.automod.AutoModRuleImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
@@ -356,6 +359,58 @@ public class GuildImpl implements Guild
             }
             return set;
         });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<AutoModRule>> retrieveAutoModRules()
+    {
+        Route.CompiledRoute route = Route.AutoModeration.LIST_RULES.compile(getId());
+        return new RestActionImpl<>(api, route, (response, request) ->
+        {
+            DataArray array = response.getArray();
+            List<AutoModRule> rules = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+            {
+                try
+                {
+                    DataObject obj = array.getObject(i);
+                    rules.add(AutoModRuleImpl.fromData(this, obj));
+                }
+                catch (ParsingException exception)
+                {
+                    EntityBuilder.LOG.error("Failed to parse AutoModRule", exception);
+                }
+            }
+            return Collections.unmodifiableList(rules);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<AutoModRule> retrieveAutoModRuleById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.AutoModeration.GET_RULE.compile(getId(), id);
+        return new RestActionImpl<>(api, route, (response, request) -> AutoModRuleImpl.fromData(this, response.getObject()));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData rule)
+    {
+        Checks.notNull(rule, "AutoMod Rule");
+        Route.CompiledRoute route = Route.AutoModeration.CREATE_RULE.compile(getId());
+        return new RestActionImpl<>(api, route, rule.toData(), (response, request) -> AutoModRuleImpl.fromData(this, response.getObject()));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteAutoModRuleById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.AutoModeration.DELETE_RULE.compile(getId(), id);
+        return new RestActionImpl<>(api, route);
     }
 
     @Nonnull

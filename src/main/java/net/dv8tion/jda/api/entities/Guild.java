@@ -21,6 +21,8 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
@@ -404,6 +406,36 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<AutoModRule>> retrieveAutoModRules();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<AutoModRule> retrieveAutoModRuleById(@Nonnull String id);
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<AutoModRule> retrieveAutoModRuleById(long id)
+    {
+        return retrieveAutoModRuleById(Long.toUnsignedString(id));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData data);
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> deleteAutoModRuleById(@Nonnull String id);
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> deleteAutoModRuleById(long id)
+    {
+        return deleteAutoModRuleById(Long.toUnsignedString(id));
+    }
 
     /**
      * Adds the user to this guild as a member.
