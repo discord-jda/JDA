@@ -42,7 +42,7 @@ public class AutoModExecutionHandler extends SocketHandler
         }
 
         AutoModExecutionImpl execution = new AutoModExecutionImpl(guild, content);
-        api.getEventManager().handle(
+        api.handleEvent(
             new AutoModExecutionEvent(
                 api, responseNumber,
                 execution));

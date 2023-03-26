@@ -53,19 +53,19 @@ public class AutoModRuleHandler extends SocketHandler
         switch (type)
         {
         case "CREATE":
-            api.getEventManager().handle(
+            api.handleEvent(
                 new AutoModRuleCreateEvent(
                     api, responseNumber,
                     rule));
             break;
         case "UPDATE":
-            api.getEventManager().handle(
+            api.handleEvent(
                 new AutoModRuleUpdateEvent(
                     api, responseNumber,
                     rule));
             break;
         case "DELETE":
-            api.getEventManager().handle(
+            api.handleEvent(
                 new AutoModRuleDeleteEvent(
                     api, responseNumber,
                     rule));
