@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,8 +40,6 @@ public class AutoModExecutionImpl implements AutoModExecution
     {
         this.guild = guild;
         this.channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id"));
-        if (this.channel == null)
-            throw new IllegalStateException(EntityBuilder.MISSING_CHANNEL);
         this.response = new AutoModResponseImpl(guild, json.getObject("action"));
         this.type = AutoModTriggerType.fromKey(json.getInt("trigger_type", -1));
         this.userId = json.getUnsignedLong("user_id");
@@ -61,7 +58,7 @@ public class AutoModExecutionImpl implements AutoModExecution
         return guild;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public GuildMessageChannelUnion getChannel()
     {

@@ -44,7 +44,7 @@ public class AutoModExecutionEvent extends Event implements AutoModExecution
         return execution.getGuild();
     }
     
-    @Nonnull
+    @Nullable
     @Override
     public GuildMessageChannelUnion getChannel()
     {

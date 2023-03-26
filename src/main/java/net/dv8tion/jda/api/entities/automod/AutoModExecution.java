@@ -27,7 +27,7 @@ public interface AutoModExecution
     @Nonnull
     Guild getGuild();
 
-    @Nonnull
+    @Nullable
     GuildMessageChannelUnion getChannel();
 
     @Nonnull
