@@ -16,92 +16,152 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModEventType;
 import net.dv8tion.jda.api.entities.automod.AutoModResponse;
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
-import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
 
 public class AutoModRuleData implements SerializableData
 {
-    private final AutoModTriggerType triggerType;
-    private final AutoModEventType eventType;
-    private final String name;
+    protected final AutoModEventType eventType;
+    protected String name;
+    protected boolean enabled = true;
+    protected TriggerConfig triggerMetadata;
 
-    private boolean enabled = true;
-    private int mentionLimit = -1;
-    private List<AutoModResponse> actions;
-    private long[] exemptRoles;
-    private long[] exemptChannels;
-    private List<String> filteredKeywords;
-    private List<String> filteredRegex;
-    private EnumSet<AutoModRule.KeywordPreset> filteredPresets;
-    private List<String> allowlist;
+    protected final EnumMap<AutoModResponse.Type, AutoModResponse> actions = new EnumMap<>(AutoModResponse.Type.class);
+    protected final Collection<String> exemptChannels = new ArrayList<>();
+    protected final Collection<String> exemptRoles = new ArrayList<>();
 
-    protected AutoModRuleData(AutoModTriggerType triggerType, AutoModEventType eventType, String name)
+    protected AutoModRuleData(AutoModEventType eventType, String name, TriggerConfig triggerMetadata)
     {
-        this.triggerType = triggerType;
         this.eventType = eventType;
         this.name = name;
+        this.triggerMetadata = triggerMetadata;
     }
 
-    protected AutoModRuleData setEnabled(boolean enabled)
+    @Nonnull
+    public static AutoModRuleData onMessage(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
+    {
+        return new AutoModRuleData(AutoModEventType.MESSAGE_SEND, name, triggerConfig);
+    }
+
+    @Nonnull
+    public AutoModRuleData setName(@Nonnull String name)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, AutoModRule.MAX_RULE_NAME_LENGTH, "Name");
+        this.name = name;
+        return this;
+    }
+
+    @Nonnull
+    public AutoModRuleData setEnabled(boolean enabled)
     {
         this.enabled = enabled;
         return this;
     }
 
-    protected AutoModRuleData setMentionLimit(int mentionLimit)
+    @Nonnull
+    public AutoModRuleData putResponses(@Nonnull AutoModResponse... responses)
     {
-        this.mentionLimit = mentionLimit;
+        Checks.noneNull(responses, "Responses");
+        for (AutoModResponse response : responses)
+            actions.put(response.getType(), response);
         return this;
     }
 
-    protected AutoModRuleData setActions(List<AutoModResponse> actions)
+    @Nonnull
+    public AutoModRuleData putResponses(@Nonnull Collection<? extends AutoModResponse> responses)
     {
-        this.actions = actions;
+        Checks.noneNull(responses, "Responses");
+        for (AutoModResponse response : responses)
+            actions.put(response.getType(), response);
         return this;
     }
 
-    protected AutoModRuleData setExemptRoles(long... exemptRoles)
+    @Nonnull
+    public AutoModRuleData setResponses(@Nonnull Collection<? extends AutoModResponse> responses)
     {
-        this.exemptRoles = exemptRoles;
+        Checks.noneNull(responses, "Responses");
+        actions.clear();
+        for (AutoModResponse response : responses)
+            actions.put(response.getType(), response);
         return this;
     }
 
-    protected AutoModRuleData setExemptChannels(long... exemptChannels)
+    @Nonnull
+    public AutoModRuleData addExemptRoles(@Nonnull Role... roles)
     {
-        this.exemptChannels = exemptChannels;
+        Checks.noneNull(roles, "Roles");
+        for (Role role : roles)
+            exemptRoles.add(role.getId());
         return this;
     }
 
-    protected AutoModRuleData setFilteredKeywords(List<String> filteredKeywords)
+    @Nonnull
+    public AutoModRuleData addExemptRoles(@Nonnull Collection<? extends Role> roles)
     {
-        this.filteredKeywords = filteredKeywords;
+        Checks.noneNull(roles, "Roles");
+        for (Role role : roles)
+            exemptRoles.add(role.getId());
         return this;
     }
 
-    protected AutoModRuleData setFilteredRegex(List<String> filteredRegex)
+    @Nonnull
+    public AutoModRuleData setExemptRoles(@Nonnull Collection<? extends Role> roles)
     {
-        this.filteredRegex = filteredRegex;
+        Checks.noneNull(roles, "Roles");
+        exemptRoles.clear();
+        for (Role role : roles)
+            exemptRoles.add(role.getId());
         return this;
     }
 
-    protected AutoModRuleData setFilteredPresets(EnumSet<AutoModRule.KeywordPreset> filteredPresets)
+    @Nonnull
+    public AutoModRuleData addExemptChannels(@Nonnull GuildChannel... channels)
     {
-        this.filteredPresets = filteredPresets;
+        Checks.noneNull(channels, "Channels");
+        for (GuildChannel channel : channels)
+            exemptChannels.add(channel.getId());
         return this;
     }
 
-    protected AutoModRuleData setAllowlist(List<String> allowlist)
+    @Nonnull
+    public AutoModRuleData addExemptChannels(@Nonnull Collection<? extends GuildChannel> channels)
     {
-        this.allowlist = allowlist;
+        Checks.noneNull(channels, "Channels");
+        for (GuildChannel channel : channels)
+            exemptChannels.add(channel.getId());
+        return this;
+    }
+
+    @Nonnull
+    public AutoModRuleData setExemptChannels(@Nonnull Collection<? extends GuildChannel> channels)
+    {
+        Checks.noneNull(channels, "Channels");
+        exemptChannels.clear();
+        for (GuildChannel channel : channels)
+            exemptChannels.add(channel.getId());
+        return this;
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public AutoModRuleData setTriggerConfig(@Nonnull TriggerConfig config)
+    {
+        Checks.notNull(config, "TriggerConfig");
+        this.triggerMetadata = config;
         return this;
     }
 
@@ -111,77 +171,16 @@ public class AutoModRuleData implements SerializableData
     {
         DataObject data = DataObject.empty()
                 .put("name", name)
-                .put("trigger_type", triggerType.getKey())
+                .put("enabled", enabled)
                 .put("event_type", eventType.getKey());
 
-        data.put("enabled", enabled);
+        data.put("actions", DataArray.fromCollection(actions.values()));
 
-        if (actions != null)
-            data.put("actions", DataArray.fromCollection(actions));
-        else
-            data.put("actions", DataArray.empty());
+        data.put("exempt_roles", DataArray.fromCollection(exemptRoles));
+        data.put("exempt_channels", DataArray.fromCollection(exemptChannels));
 
-        if (exemptRoles != null)
-        {
-            DataArray array = DataArray.empty();
-            for (long id : exemptRoles)
-                array.add(id);
-            data.put("exempt_roles", array);
-        }
-        else
-        {
-            data.put("exempt_roles", DataArray.empty());
-        }
-
-        if (exemptChannels != null)
-        {
-            DataArray array = DataArray.empty();
-            for (long id : exemptChannels)
-                array.add(id);
-            data.put("exempt_channels", array);
-        }
-        else
-        {
-            data.put("exempt_channels", DataArray.empty());
-        }
-
-        DataObject metadata = DataObject.empty();
-
-        switch (triggerType)
-        {
-        case MENTION_SPAM:
-            if (mentionLimit != -1)
-                metadata.put("mention_total_limit", mentionLimit);
-            break;
-        case SPAM:
-            break;
-        case KEYWORD:
-            if (filteredKeywords != null)
-                metadata.put("filtered_keywords", DataArray.fromCollection(filteredKeywords));
-            else
-                metadata.put("filtered_keywords", DataArray.empty());
-            if (filteredRegex != null)
-                metadata.put("filtered_regex", DataArray.fromCollection(filteredRegex));
-            else
-                metadata.put("filtered_regex", DataArray.empty());
-            if (allowlist != null)
-                metadata.put("allow_list", DataArray.fromCollection(allowlist));
-            else
-                metadata.put("allow_list", DataArray.empty());
-            break;
-        case KEYWORD_PRESET:
-            if (filteredPresets != null)
-                metadata.put("filtered_presets", DataArray.fromCollection(filteredPresets));
-            else
-                metadata.put("filtered_presets", DataArray.empty());
-            if (allowlist != null)
-                metadata.put("allow_list", DataArray.fromCollection(allowlist));
-            else
-                metadata.put("allow_list", DataArray.empty());
-            break;
-        }
-
-        data.put("trigger_metadata", metadata);
+        data.put("trigger_type", triggerMetadata.getType().getKey());
+        data.put("trigger_metadata", triggerMetadata.toData());
 
         return data;
     }

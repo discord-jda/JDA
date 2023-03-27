@@ -16,9 +16,10 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
-import net.dv8tion.jda.api.entities.automod.AutoModEventType;
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -26,17 +27,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 
-public class PresetKeywordRuleBuilder extends AbstractKeywordRuleBuilder<PresetKeywordRuleBuilder>
+public class PresetKeywordRuleData extends AbstractKeywordRuleData<PresetKeywordRuleData>
 {
     private final EnumSet<AutoModRule.KeywordPreset> presets = EnumSet.noneOf(AutoModRule.KeywordPreset.class);
 
-    public PresetKeywordRuleBuilder(@Nonnull String name)
+    protected PresetKeywordRuleData()
     {
-        super(AutoModTriggerType.KEYWORD_PRESET, AutoModEventType.MESSAGE_SEND, name);
+        super(AutoModTriggerType.KEYWORD_PRESET);
     }
 
     @Nonnull
-    public PresetKeywordRuleBuilder enablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
+    public PresetKeywordRuleData enablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
         Checks.noneNull(presets, "Presets");
         Collections.addAll(this.presets, presets);
@@ -44,7 +45,7 @@ public class PresetKeywordRuleBuilder extends AbstractKeywordRuleBuilder<PresetK
     }
 
     @Nonnull
-    public PresetKeywordRuleBuilder enablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
+    public PresetKeywordRuleData enablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
     {
         Checks.noneNull(presets, "Presets");
         this.presets.addAll(presets);
@@ -52,7 +53,7 @@ public class PresetKeywordRuleBuilder extends AbstractKeywordRuleBuilder<PresetK
     }
 
     @Nonnull
-    public PresetKeywordRuleBuilder disablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
+    public PresetKeywordRuleData disablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
         Checks.noneNull(presets, "Presets");
         for (AutoModRule.KeywordPreset preset : presets)
@@ -61,7 +62,7 @@ public class PresetKeywordRuleBuilder extends AbstractKeywordRuleBuilder<PresetK
     }
 
     @Nonnull
-    public PresetKeywordRuleBuilder disablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
+    public PresetKeywordRuleData disablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
     {
         Checks.noneNull(presets, "Presets");
         this.presets.removeAll(presets);
@@ -76,11 +77,11 @@ public class PresetKeywordRuleBuilder extends AbstractKeywordRuleBuilder<PresetK
 
     @Nonnull
     @Override
-    public AutoModRuleData build()
+    public DataObject toData()
     {
-        AutoModRuleData rule = super.build();
+        DataObject data = super.toData();
         presets.remove(AutoModRule.KeywordPreset.UNKNOWN);
-        rule.setFilteredPresets(presets);
-        return rule;
+        data.put("presets", DataArray.fromCollection(presets));
+        return data;
     }
 }

@@ -16,15 +16,31 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
-import net.dv8tion.jda.api.entities.automod.AutoModEventType;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
-public class AntiSpamRuleBuilder extends AbstractAutoModRuleBuilder<AntiSpamRuleBuilder>
+public class AbstractTriggerData<B extends AbstractTriggerData<B>> implements TriggerConfig
 {
-    public AntiSpamRuleBuilder(@Nonnull String name)
+    protected final AutoModTriggerType type;
+
+    protected AbstractTriggerData(AutoModTriggerType type)
     {
-        super(AutoModTriggerType.SPAM, AutoModEventType.MESSAGE_SEND, name);
+        this.type = type;
+    }
+
+    @Nonnull
+    @Override
+    public AutoModTriggerType getType()
+    {
+        return type;
+    }
+
+    @Nonnull
+    @Override
+    public DataObject toData()
+    {
+        return DataObject.empty();
     }
 }

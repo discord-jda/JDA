@@ -16,21 +16,22 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
-import net.dv8tion.jda.api.entities.automod.AutoModEventType;
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBuilder<B>> extends AbstractAutoModRuleBuilder<B>
+public abstract class AbstractKeywordRuleData<B extends AbstractKeywordRuleData<B>> extends AbstractTriggerData<B>
 {
     protected final List<String> allowList = new ArrayList<>();
 
-    protected AbstractKeywordRuleBuilder(AutoModTriggerType triggerType, AutoModEventType eventType, String name)
+    protected AbstractKeywordRuleData(AutoModTriggerType triggerType)
     {
-        super(triggerType, eventType, name);
+        super(triggerType);
     }
 
     @Nonnull
@@ -38,7 +39,7 @@ public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBu
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(this.allowList.size() + keywords.length <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
-        Arrays.stream(keywords).forEach(AbstractKeywordRuleBuilder::checkKeyword);
+        Arrays.stream(keywords).forEach(AbstractKeywordRuleData::checkKeyword);
         Collections.addAll(allowList, keywords);
         return (B) this;
     }
@@ -48,7 +49,7 @@ public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBu
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(this.allowList.size() + keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
-        keywords.forEach(AbstractKeywordRuleBuilder::checkKeyword);
+        keywords.forEach(AbstractKeywordRuleData::checkKeyword);
         allowList.addAll(keywords);
         return (B) this;
     }
@@ -58,7 +59,7 @@ public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBu
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
-        keywords.forEach(AbstractKeywordRuleBuilder::checkKeyword);
+        keywords.forEach(AbstractKeywordRuleData::checkKeyword);
         allowList.clear();
         allowList.addAll(keywords);
         return (B) this;
@@ -74,10 +75,10 @@ public abstract class AbstractKeywordRuleBuilder<B extends AbstractKeywordRuleBu
 
     @Nonnull
     @Override
-    public AutoModRuleData build()
+    public DataObject toData()
     {
-        AutoModRuleData rule = super.build();
-        rule.setAllowlist(allowList);
-        return rule;
+        DataObject data = super.toData();
+        data.put("allow_list", DataArray.fromCollection(allowList));
+        return data;
     }
 }

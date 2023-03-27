@@ -16,39 +16,38 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
-import net.dv8tion.jda.api.entities.automod.AutoModEventType;
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
-public class MentionSpamRuleBuilder extends AbstractAutoModRuleBuilder<MentionSpamRuleBuilder>
+public class MentionRuleData extends AbstractTriggerData<MentionRuleData> implements TriggerConfig
 {
     private int mentionLimit;
 
-    public MentionSpamRuleBuilder(@Nonnull String name, int limit)
+    public MentionRuleData(int mentionLimit)
     {
-        super(AutoModTriggerType.MENTION_SPAM, AutoModEventType.MESSAGE_SEND, name);
-        Checks.positive(limit, "Mention Limit");
-        this.mentionLimit = limit;
+        super(AutoModTriggerType.MENTION_SPAM);
+        this.mentionLimit = mentionLimit;
     }
 
     @Nonnull
-    public MentionSpamRuleBuilder setMentionLimit(int limit)
+    public MentionRuleData setMentionLimit(int mentionLimit)
     {
-        Checks.positive(limit, "Mention Limit");
-        Checks.check(limit <= AutoModRule.MAX_MENTION_LIMIT, "Mention Limit cannot be higher than %d. Provided: %d", AutoModRule.MAX_MENTION_LIMIT, limit);
-        this.mentionLimit = limit;
+        Checks.positive(mentionLimit, "Mention Limit");
+        Checks.check(mentionLimit <= AutoModRule.MAX_MENTION_LIMIT, "Mention Limit cannot be higher than %d. Provided: %d", AutoModRule.MAX_MENTION_LIMIT, mentionLimit);
+        this.mentionLimit = mentionLimit;
         return this;
     }
 
     @Nonnull
     @Override
-    public AutoModRuleData build()
+    public DataObject toData()
     {
-        AutoModRuleData rule = super.build();
-        rule.setMentionLimit(mentionLimit);
-        return rule;
+        DataObject data = super.toData();
+        data.put("mention_total_limit", mentionLimit);
+        return data;
     }
 }

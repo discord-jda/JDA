@@ -43,10 +43,7 @@ import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
-import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.managers.GuildManager;
-import net.dv8tion.jda.api.managers.GuildStickerManager;
-import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
+import net.dv8tion.jda.api.managers.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -65,6 +62,7 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.managers.AutoModRuleManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -425,6 +423,21 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData data);
+
+    @Nonnull
+    @CheckReturnValue
+    default AutoModRuleManager modifyAutoModRuleById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new AutoModRuleManagerImpl(this, id);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default AutoModRuleManager modifyAutoModRuleById(long id)
+    {
+        return modifyAutoModRuleById(Long.toUnsignedString(id));
+    }
 
     @Nonnull
     @CheckReturnValue
