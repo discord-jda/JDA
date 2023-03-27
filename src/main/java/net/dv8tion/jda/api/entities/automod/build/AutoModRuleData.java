@@ -16,10 +16,12 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModEventType;
 import net.dv8tion.jda.api.entities.automod.AutoModResponse;
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -31,6 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.EnumSet;
 
 public class AutoModRuleData implements SerializableData
 {
@@ -166,9 +169,25 @@ public class AutoModRuleData implements SerializableData
     }
 
     @Nonnull
+    public EnumSet<Permission> getRequiredPermissions()
+    {
+        if (actions.containsKey(AutoModResponse.Type.TIMEOUT))
+            return EnumSet.of(Permission.MANAGE_SERVER, Permission.MODERATE_MEMBERS);
+        else
+            return EnumSet.of(Permission.MANAGE_SERVER);
+    }
+
+    @Nonnull
     @Override
     public DataObject toData()
     {
+        AutoModTriggerType triggerType = triggerMetadata.getType();
+        for (AutoModResponse response : actions.values())
+        {
+            if (!response.getType().isSupportedTrigger(triggerType))
+                throw new IllegalStateException("Cannot create a rule of trigger type " + triggerType + " with response type " + response.getType());
+        }
+
         DataObject data = DataObject.empty()
                 .put("name", name)
                 .put("enabled", enabled)
@@ -179,7 +198,7 @@ public class AutoModRuleData implements SerializableData
         data.put("exempt_roles", DataArray.fromCollection(exemptRoles));
         data.put("exempt_channels", DataArray.fromCollection(exemptChannels));
 
-        data.put("trigger_type", triggerMetadata.getType().getKey());
+        data.put("trigger_type", triggerType.getKey());
         data.put("trigger_metadata", triggerMetadata.toData());
 
         return data;

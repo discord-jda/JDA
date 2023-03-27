@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
+import java.util.EnumSet;
 
 public interface AutoModResponse extends SerializableData
 {
@@ -64,20 +65,40 @@ public interface AutoModResponse extends SerializableData
     {
         BLOCK_MESSAGE(1),
         SEND_ALERT_MESSAGE(2),
-        TIMEOUT(3),
+        TIMEOUT(3, EnumSet.of(AutoModTriggerType.KEYWORD, AutoModTriggerType.MENTION_SPAM)),
         UNKNOWN(-1)
         ;
 
         private final int key;
+        private final EnumSet<AutoModTriggerType> supportedTypes;
 
         Type(int key)
         {
             this.key = key;
+            this.supportedTypes = EnumSet.complementOf(EnumSet.of(AutoModTriggerType.UNKNOWN));
+        }
+
+        Type(int key, EnumSet<AutoModTriggerType> supportedTypes)
+        {
+            this.key = key;
+            this.supportedTypes = supportedTypes;
         }
 
         public int getKey()
         {
             return key;
+        }
+
+        @Nonnull
+        public EnumSet<AutoModTriggerType> getSupportedTypes()
+        {
+            return EnumSet.copyOf(supportedTypes);
+        }
+
+        public boolean isSupportedTrigger(@Nonnull AutoModTriggerType type)
+        {
+            Checks.notNull(type, "AutoModTriggerType");
+            return supportedTypes.contains(type);
         }
 
         @Nonnull

@@ -394,7 +394,7 @@ public class GuildImpl implements Guild
     public AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData rule)
     {
         Checks.notNull(rule, "AutoMod Rule");
-        checkPermission(Permission.MANAGE_SERVER);
+        rule.getRequiredPermissions().forEach(this::checkPermission);
         Route.CompiledRoute route = Route.AutoModeration.CREATE_RULE.compile(getId());
         return new AuditableRestActionImpl<>(api, route, rule.toData(), (response, request) -> AutoModRuleImpl.fromData(this, response.getObject()));
     }
