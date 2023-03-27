@@ -25,11 +25,11 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public abstract class AbstractKeywordRuleData<B extends AbstractKeywordRuleData<B>> extends AbstractTriggerData<B>
+public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTriggerConfig<B>> extends AbstractTriggerConfig<B>
 {
     protected final List<String> allowList = new ArrayList<>();
 
-    protected AbstractKeywordRuleData(AutoModTriggerType triggerType)
+    protected AbstractKeywordTriggerConfig(AutoModTriggerType triggerType)
     {
         super(triggerType);
     }
@@ -39,7 +39,7 @@ public abstract class AbstractKeywordRuleData<B extends AbstractKeywordRuleData<
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(this.allowList.size() + keywords.length <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
-        Arrays.stream(keywords).forEach(AbstractKeywordRuleData::checkKeyword);
+        Arrays.stream(keywords).forEach(AbstractKeywordTriggerConfig::checkKeyword);
         Collections.addAll(allowList, keywords);
         return (B) this;
     }
@@ -49,7 +49,7 @@ public abstract class AbstractKeywordRuleData<B extends AbstractKeywordRuleData<
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(this.allowList.size() + keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
-        keywords.forEach(AbstractKeywordRuleData::checkKeyword);
+        keywords.forEach(AbstractKeywordTriggerConfig::checkKeyword);
         allowList.addAll(keywords);
         return (B) this;
     }
@@ -59,7 +59,7 @@ public abstract class AbstractKeywordRuleData<B extends AbstractKeywordRuleData<
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(keywords.size() <= maxAllowListAmount(), "Cannot add more than %d keywords!", maxAllowListAmount());
-        keywords.forEach(AbstractKeywordRuleData::checkKeyword);
+        keywords.forEach(AbstractKeywordTriggerConfig::checkKeyword);
         allowList.clear();
         allowList.addAll(keywords);
         return (B) this;

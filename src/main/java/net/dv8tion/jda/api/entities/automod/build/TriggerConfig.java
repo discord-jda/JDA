@@ -27,26 +27,26 @@ public interface TriggerConfig extends SerializableData
     AutoModTriggerType getType();
 
     @Nonnull
-    static MentionRuleData mentionSpam(int limit)
+    static MentionSpamTriggerConfig mentionSpam(int limit)
     {
-        return new MentionRuleData(limit);
+        return new MentionSpamTriggerConfig(limit);
     }
 
     @Nonnull
-    static AntiSpamRuleData antiSpam()
+    static AntiSpamTriggerConfig antiSpam()
     {
-        return new AntiSpamRuleData();
+        return new AntiSpamTriggerConfig();
     }
 
     @Nonnull
-    static CustomKeywordRuleData keywordFilter()
+    static CustomKeywordTriggerConfig keywordFilter()
     {
-        return new CustomKeywordRuleData();
+        return new CustomKeywordTriggerConfig();
     }
 
     @Nonnull
-    static PresetKeywordRuleData presetKeywordFilter()
+    static PresetKeywordTriggerConfig presetKeywordFilter()
     {
-        return new PresetKeywordRuleData();
+        return new PresetKeywordTriggerConfig();
     }
 }

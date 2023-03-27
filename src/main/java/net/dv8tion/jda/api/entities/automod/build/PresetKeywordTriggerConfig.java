@@ -27,17 +27,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 
-public class PresetKeywordRuleData extends AbstractKeywordRuleData<PresetKeywordRuleData>
+public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<PresetKeywordTriggerConfig>
 {
     private final EnumSet<AutoModRule.KeywordPreset> presets = EnumSet.noneOf(AutoModRule.KeywordPreset.class);
 
-    protected PresetKeywordRuleData()
+    protected PresetKeywordTriggerConfig()
     {
         super(AutoModTriggerType.KEYWORD_PRESET);
     }
 
     @Nonnull
-    public PresetKeywordRuleData enablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
+    public PresetKeywordTriggerConfig enablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
         Checks.noneNull(presets, "Presets");
         Collections.addAll(this.presets, presets);
@@ -45,7 +45,7 @@ public class PresetKeywordRuleData extends AbstractKeywordRuleData<PresetKeyword
     }
 
     @Nonnull
-    public PresetKeywordRuleData enablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
+    public PresetKeywordTriggerConfig enablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
     {
         Checks.noneNull(presets, "Presets");
         this.presets.addAll(presets);
@@ -53,7 +53,7 @@ public class PresetKeywordRuleData extends AbstractKeywordRuleData<PresetKeyword
     }
 
     @Nonnull
-    public PresetKeywordRuleData disablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
+    public PresetKeywordTriggerConfig disablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
         Checks.noneNull(presets, "Presets");
         for (AutoModRule.KeywordPreset preset : presets)
@@ -62,7 +62,7 @@ public class PresetKeywordRuleData extends AbstractKeywordRuleData<PresetKeyword
     }
 
     @Nonnull
-    public PresetKeywordRuleData disablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
+    public PresetKeywordTriggerConfig disablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
     {
         Checks.noneNull(presets, "Presets");
         this.presets.removeAll(presets);

@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.entities.automod.build;
 
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 
-public class AntiSpamRuleData extends AbstractTriggerData<AntiSpamRuleData>
+public class AntiSpamTriggerConfig extends AbstractTriggerConfig<AntiSpamTriggerConfig>
 {
-    protected AntiSpamRuleData()
+    protected AntiSpamTriggerConfig()
     {
         super(AutoModTriggerType.SPAM);
     }

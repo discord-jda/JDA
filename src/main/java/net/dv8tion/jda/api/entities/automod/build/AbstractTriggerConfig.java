@@ -21,11 +21,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
-public class AbstractTriggerData<B extends AbstractTriggerData<B>> implements TriggerConfig
+public class AbstractTriggerConfig<B extends AbstractTriggerConfig<B>> implements TriggerConfig
 {
     protected final AutoModTriggerType type;
 
-    protected AbstractTriggerData(AutoModTriggerType type)
+    protected AbstractTriggerConfig(AutoModTriggerType type)
     {
         this.type = type;
     }

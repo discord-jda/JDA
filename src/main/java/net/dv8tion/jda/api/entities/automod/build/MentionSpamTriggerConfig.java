@@ -23,18 +23,18 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
-public class MentionRuleData extends AbstractTriggerData<MentionRuleData> implements TriggerConfig
+public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamTriggerConfig> implements TriggerConfig
 {
     private int mentionLimit;
 
-    public MentionRuleData(int mentionLimit)
+    public MentionSpamTriggerConfig(int mentionLimit)
     {
         super(AutoModTriggerType.MENTION_SPAM);
         this.mentionLimit = mentionLimit;
     }
 
     @Nonnull
-    public MentionRuleData setMentionLimit(int mentionLimit)
+    public MentionSpamTriggerConfig setMentionLimit(int mentionLimit)
     {
         Checks.positive(mentionLimit, "Mention Limit");
         Checks.check(mentionLimit <= AutoModRule.MAX_MENTION_LIMIT, "Mention Limit cannot be higher than %d. Provided: %d", AutoModRule.MAX_MENTION_LIMIT, mentionLimit);

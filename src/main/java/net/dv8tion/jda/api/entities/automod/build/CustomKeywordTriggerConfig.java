@@ -28,18 +28,18 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CustomKeywordRuleData extends AbstractKeywordRuleData<CustomKeywordRuleData>
+public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<CustomKeywordTriggerConfig>
 {
     protected final Set<String> keywords = new HashSet<>();
     protected final Set<String> patterns = new HashSet<>();
 
-    protected CustomKeywordRuleData()
+    protected CustomKeywordTriggerConfig()
     {
         super(AutoModTriggerType.KEYWORD);
     }
 
     @Nonnull
-    public CustomKeywordRuleData addKeywords(@Nonnull String... keywords)
+    public CustomKeywordTriggerConfig addKeywords(@Nonnull String... keywords)
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(this.keywords.size() + keywords.length <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
@@ -51,7 +51,7 @@ public class CustomKeywordRuleData extends AbstractKeywordRuleData<CustomKeyword
     }
 
     @Nonnull
-    public CustomKeywordRuleData addKeywords(@Nonnull Collection<String> keywords)
+    public CustomKeywordTriggerConfig addKeywords(@Nonnull Collection<String> keywords)
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(this.keywords.size() + keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
@@ -63,7 +63,7 @@ public class CustomKeywordRuleData extends AbstractKeywordRuleData<CustomKeyword
     }
 
     @Nonnull
-    public CustomKeywordRuleData setKeywords(@Nonnull Collection<String> keywords)
+    public CustomKeywordTriggerConfig setKeywords(@Nonnull Collection<String> keywords)
     {
         Checks.noneNull(keywords, "Keywords");
         Checks.check(keywords.size() <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
@@ -77,7 +77,7 @@ public class CustomKeywordRuleData extends AbstractKeywordRuleData<CustomKeyword
 
 
     @Nonnull
-    public CustomKeywordRuleData addPatterns(@Nonnull String... patterns)
+    public CustomKeywordTriggerConfig addPatterns(@Nonnull String... patterns)
     {
         Checks.noneNull(patterns, "Patterns");
         Checks.check(this.patterns.size() + patterns.length <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
@@ -89,7 +89,7 @@ public class CustomKeywordRuleData extends AbstractKeywordRuleData<CustomKeyword
     }
 
     @Nonnull
-    public CustomKeywordRuleData addPatterns(@Nonnull Collection<String> patterns)
+    public CustomKeywordTriggerConfig addPatterns(@Nonnull Collection<String> patterns)
     {
         Checks.noneNull(patterns, "Patterns");
         Checks.check(this.patterns.size() + patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
@@ -101,7 +101,7 @@ public class CustomKeywordRuleData extends AbstractKeywordRuleData<CustomKeyword
     }
 
     @Nonnull
-    public CustomKeywordRuleData setPatterns(@Nonnull Collection<String> patterns)
+    public CustomKeywordTriggerConfig setPatterns(@Nonnull Collection<String> patterns)
     {
         Checks.noneNull(patterns, "Patterns");
         Checks.check(patterns.size() <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
