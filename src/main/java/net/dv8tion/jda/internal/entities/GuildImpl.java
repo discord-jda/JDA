@@ -45,10 +45,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
-import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.managers.GuildManager;
-import net.dv8tion.jda.api.managers.GuildStickerManager;
-import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
+import net.dv8tion.jda.api.managers.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
@@ -67,10 +64,7 @@ import net.dv8tion.jda.internal.entities.automod.AutoModRuleImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
-import net.dv8tion.jda.internal.managers.AudioManagerImpl;
-import net.dv8tion.jda.internal.managers.GuildManagerImpl;
-import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
-import net.dv8tion.jda.internal.managers.GuildWelcomeScreenManagerImpl;
+import net.dv8tion.jda.internal.managers.*;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
@@ -397,20 +391,31 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData rule)
+    public AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData rule)
     {
         Checks.notNull(rule, "AutoMod Rule");
+        checkPermission(Permission.MANAGE_SERVER);
         Route.CompiledRoute route = Route.AutoModeration.CREATE_RULE.compile(getId());
-        return new RestActionImpl<>(api, route, rule.toData(), (response, request) -> AutoModRuleImpl.fromData(this, response.getObject()));
+        return new AuditableRestActionImpl<>(api, route, rule.toData(), (response, request) -> AutoModRuleImpl.fromData(this, response.getObject()));
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteAutoModRuleById(@Nonnull String id)
+    public AutoModRuleManager modifyAutoModRuleById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
+        checkPermission(Permission.MANAGE_SERVER);
+        return new AutoModRuleManagerImpl(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> deleteAutoModRuleById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        checkPermission(Permission.MANAGE_SERVER);
         Route.CompiledRoute route = Route.AutoModeration.DELETE_RULE.compile(getId(), id);
-        return new RestActionImpl<>(api, route);
+        return new AuditableRestActionImpl<>(api, route);
     }
 
     @Nonnull

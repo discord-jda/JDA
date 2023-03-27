@@ -62,7 +62,6 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-import net.dv8tion.jda.internal.managers.AutoModRuleManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -422,15 +421,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     @Nonnull
     @CheckReturnValue
-    RestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData data);
+    AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData data);
 
     @Nonnull
     @CheckReturnValue
-    default AutoModRuleManager modifyAutoModRuleById(@Nonnull String id)
-    {
-        Checks.isSnowflake(id);
-        return new AutoModRuleManagerImpl(this, id);
-    }
+    AutoModRuleManager modifyAutoModRuleById(@Nonnull String id);
 
     @Nonnull
     @CheckReturnValue
@@ -441,11 +436,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
 
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteAutoModRuleById(@Nonnull String id);
+    AuditableRestAction<Void> deleteAutoModRuleById(@Nonnull String id);
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteAutoModRuleById(long id)
+    default AuditableRestAction<Void> deleteAutoModRuleById(long id)
     {
         return deleteAutoModRuleById(Long.toUnsignedString(id));
     }
