@@ -41,27 +41,27 @@ public interface AutoModRule extends ISnowflake
      */
     int MAX_RULE_NAME_LENGTH = 100;
     /**
-     * The maximum length of a keyword in {@link TriggerConfig#keywordFilter()}. ({@value})
+     * The maximum length of a keyword in {@link TriggerConfig#keywordFilter(String...)}. ({@value})
      */
     int MAX_KEYWORD_LENGTH = 60;
     /**
-     * The maximum amount of keywords in {@link TriggerConfig#keywordFilter()}. ({@value})
+     * The maximum amount of keywords in {@link TriggerConfig#keywordFilter(String...)}. ({@value})
      */
     int MAX_KEYWORD_AMOUNT = 1000;
     /**
-     * The maximum amount of whitelisted keywords in {@link TriggerConfig#keywordFilter()}. ({@value})
+     * The maximum amount of whitelisted keywords in {@link TriggerConfig#keywordFilter(String...)}. ({@value})
      */
     int MAX_ALLOWLIST_CUSTOM_AMOUNT = 100;
     /**
-     * The maximum amount of whitelisted keywords in {@link TriggerConfig#presetKeywordFilter()}. ({@value})
+     * The maximum amount of whitelisted keywords in {@link TriggerConfig#presetKeywordFilter(KeywordPreset...)}. ({@value})
      */
     int MAX_ALLOWLIST_PRESET_AMOUNT = 1000;
     /**
-     * The maximum length of a regex pattern in {@link TriggerConfig#keywordFilter()}. ({@value})
+     * The maximum length of a regex pattern in {@link TriggerConfig#patternFilter(String...)}. ({@value})
      */
     int MAX_PATTERN_LENGTH = 260;
     /**
-     * The maximum amount of regex patterns in {@link TriggerConfig#keywordFilter()}. ({@value})
+     * The maximum amount of regex patterns in {@link TriggerConfig#patternFilter(String...)}. ({@value})
      */
     int MAX_PATTERN_AMOUNT = 10;
     /**

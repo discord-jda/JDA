@@ -53,6 +53,18 @@ public interface TriggerConfig extends SerializableData
     }
 
     @Nonnull
+    static CustomKeywordTriggerConfig patternFilter(@Nonnull Collection<String> keywords)
+    {
+        return new CustomKeywordTriggerConfig().addPatterns(keywords);
+    }
+
+    @Nonnull
+    static CustomKeywordTriggerConfig patternFilter(@Nonnull String... keywords)
+    {
+        return new CustomKeywordTriggerConfig().addPatterns(keywords);
+    }
+
+    @Nonnull
     static PresetKeywordTriggerConfig presetKeywordFilter(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
     {
         return new PresetKeywordTriggerConfig().enablePresets(presets);
