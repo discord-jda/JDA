@@ -21,6 +21,12 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Abstract base class for all trigger configurations.
+ *
+ * @param <B>
+ *        The builder type
+ */
 public class AbstractTriggerConfig<B extends AbstractTriggerConfig<B>> implements TriggerConfig
 {
     protected final AutoModTriggerType type;
@@ -30,6 +36,11 @@ public class AbstractTriggerConfig<B extends AbstractTriggerConfig<B>> implement
         this.type = type;
     }
 
+    /**
+     * The type of trigger this config applies to.
+     *
+     * @return {@link AutoModTriggerType}
+     */
     @Nonnull
     @Override
     public AutoModTriggerType getType()

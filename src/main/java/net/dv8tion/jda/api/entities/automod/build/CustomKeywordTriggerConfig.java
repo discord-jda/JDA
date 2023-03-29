@@ -28,6 +28,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Configuration for a {@link net.dv8tion.jda.api.entities.automod.AutoModTriggerType#KEYWORD KEYWORD} trigger.
+ */
 public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<CustomKeywordTriggerConfig>
 {
     protected final Set<String> keywords = new HashSet<>();
@@ -38,6 +41,29 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
         super(AutoModTriggerType.KEYWORD);
     }
 
+    /**
+     * Add more keywords match against.
+     * <br>Keywords are matched case-insensitively, and may also contain whitespace.
+     *
+     * <p>You can use wildcards at the keyword boundaries to extend the matches:
+     * <br>{@code "foo*"} can match {@code "foo"}, {@code "foobar"}, {@code "foo-bar"}, etc.
+     * <br>{@code "*foo*"} can match {@code "foo"}, {@code "foobar"}, {@code "barfoo"}, etc.
+     * <br>{@code "*foo"} can match {@code "foo"}, {@code "barfoo"}, {@code "bar-foo"}, etc.
+     *
+     * <p>You can also use regex patterns using {@link #patternFilter(String...)}.
+     *
+     * @param  keywords
+     *         The keywords to match
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the keywords are empty, blank, or null</li>
+     *             <li>If more than {@value AutoModRule#MAX_KEYWORD_AMOUNT} keywords are added</li>
+     *             <li>If any of the keywords is longer than {@value AutoModRule#MAX_KEYWORD_LENGTH} characters</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public CustomKeywordTriggerConfig addKeywords(@Nonnull String... keywords)
     {
@@ -50,6 +76,29 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
         return this;
     }
 
+    /**
+     * Add more keywords match against.
+     * <br>Keywords are matched case-insensitively, and may also contain whitespace.
+     *
+     * <p>You can use wildcards at the keyword boundaries to extend the matches:
+     * <br>{@code "foo*"} can match {@code "foo"}, {@code "foobar"}, {@code "foo-bar"}, etc.
+     * <br>{@code "*foo*"} can match {@code "foo"}, {@code "foobar"}, {@code "barfoo"}, etc.
+     * <br>{@code "*foo"} can match {@code "foo"}, {@code "barfoo"}, {@code "bar-foo"}, etc.
+     *
+     * <p>You can also use regex patterns using {@link #patternFilter(Collection)}.
+     *
+     * @param  keywords
+     *         The keywords to match
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the keywords are empty, blank, or null</li>
+     *             <li>If more than {@value AutoModRule#MAX_KEYWORD_AMOUNT} keywords are added</li>
+     *             <li>If any of the keywords is longer than {@value AutoModRule#MAX_KEYWORD_LENGTH} characters</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public CustomKeywordTriggerConfig addKeywords(@Nonnull Collection<String> keywords)
     {
@@ -62,6 +111,29 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
         return this;
     }
 
+    /**
+     * Changes the keywords to match against to the new list.
+     * <br>Keywords are matched case-insensitively, and may also contain whitespace.
+     *
+     * <p>You can use wildcards at the keyword boundaries to extend the matches:
+     * <br>{@code "foo*"} can match {@code "foo"}, {@code "foobar"}, {@code "foo-bar"}, etc.
+     * <br>{@code "*foo*"} can match {@code "foo"}, {@code "foobar"}, {@code "barfoo"}, etc.
+     * <br>{@code "*foo"} can match {@code "foo"}, {@code "barfoo"}, {@code "bar-foo"}, etc.
+     *
+     * <p>You can also use regex patterns using {@link #patternFilter(Collection)}.
+     *
+     * @param  keywords
+     *         The keywords to match
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the keywords are empty, blank, or null</li>
+     *             <li>If more than {@value AutoModRule#MAX_KEYWORD_AMOUNT} keywords are added</li>
+     *             <li>If any of the keywords is longer than {@value AutoModRule#MAX_KEYWORD_LENGTH} characters</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public CustomKeywordTriggerConfig setKeywords(@Nonnull Collection<String> keywords)
     {
@@ -76,6 +148,27 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
     }
 
 
+    /**
+     * Add keywords regex patterns to match against.
+     * <br>Keyword patterns are matched case-insensitively, and may also contain whitespace.
+     *
+     * <p>Patterns may use anything supported by the rust regex crate.
+     * You can use a validator such as <a href="https://rustexp.lpil.uk/" target="_blank">Rustexp</a> to validate your pattern.
+     *
+     * <p>You can also use simple substring keywords using {@link #keywordFilter(String...)}.
+     *
+     * @param  patterns
+     *         The keyword patterns to match
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the patterns are empty, blank, or null</li>
+     *             <li>If more than {@value AutoModRule#MAX_PATTERN_AMOUNT} patterns are added</li>
+     *             <li>If any of the patterns is longer than {@value AutoModRule#MAX_PATTERN_LENGTH} characters</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public CustomKeywordTriggerConfig addPatterns(@Nonnull String... patterns)
     {
@@ -88,6 +181,27 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
         return this;
     }
 
+    /**
+     * Add keywords regex patterns to match against.
+     * <br>Keyword patterns are matched case-insensitively, and may also contain whitespace.
+     *
+     * <p>Patterns may use anything supported by the rust regex crate.
+     * You can use a validator such as <a href="https://rustexp.lpil.uk/" target="_blank">Rustexp</a> to validate your pattern.
+     *
+     * <p>You can also use simple substring keywords using {@link #keywordFilter(String...)}.
+     *
+     * @param  patterns
+     *         The keyword patterns to match
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the patterns are empty, blank, or null</li>
+     *             <li>If more than {@value AutoModRule#MAX_PATTERN_AMOUNT} patterns are added</li>
+     *             <li>If any of the patterns is longer than {@value AutoModRule#MAX_PATTERN_LENGTH} characters</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public CustomKeywordTriggerConfig addPatterns(@Nonnull Collection<String> patterns)
     {
@@ -100,6 +214,27 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
         return this;
     }
 
+    /**
+     * Change the list of keywords regex patterns to match against.
+     * <br>Keyword patterns are matched case-insensitively, and may also contain whitespace.
+     *
+     * <p>Patterns may use anything supported by the rust regex crate.
+     * You can use a validator such as <a href="https://rustexp.lpil.uk/" target="_blank">Rustexp</a> to validate your pattern.
+     *
+     * <p>You can also use simple substring keywords using {@link #keywordFilter(String...)}.
+     *
+     * @param  patterns
+     *         The keyword patterns to match
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the patterns are empty, blank, or null</li>
+     *             <li>If more than {@value AutoModRule#MAX_PATTERN_AMOUNT} patterns are added</li>
+     *             <li>If any of the patterns is longer than {@value AutoModRule#MAX_PATTERN_LENGTH} characters</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public CustomKeywordTriggerConfig setPatterns(@Nonnull Collection<String> patterns)
     {
@@ -115,7 +250,7 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
 
     protected static void checkPattern(String pattern)
     {
-        Checks.notEmpty(pattern, "Pattern");
+        Checks.notBlank(pattern, "Pattern");
         Checks.notLonger(pattern, AutoModRule.MAX_PATTERN_LENGTH, "Pattern");
     }
 

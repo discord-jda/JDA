@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 
+/**
+ * Configuration for a {@link AutoModTriggerType#KEYWORD_PRESET KEYWORD_PRESET} trigger.
+ */
 public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<PresetKeywordTriggerConfig>
 {
     private final EnumSet<AutoModRule.KeywordPreset> presets = EnumSet.noneOf(AutoModRule.KeywordPreset.class);
@@ -36,6 +39,17 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
         super(AutoModTriggerType.KEYWORD_PRESET);
     }
 
+    /**
+     * Enable the provided keyword preset lists.
+     *
+     * @param  presets
+     *         The keyword presets to enable
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided presets is null or {@link net.dv8tion.jda.api.entities.automod.AutoModRule.KeywordPreset#UNKNOWN UNKNOWN}
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public PresetKeywordTriggerConfig enablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
@@ -46,6 +60,17 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
         return this;
     }
 
+    /**
+     * Enable the provided keyword preset lists.
+     *
+     * @param  presets
+     *         The keyword presets to enable
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided presets is null or {@link net.dv8tion.jda.api.entities.automod.AutoModRule.KeywordPreset#UNKNOWN UNKNOWN}
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public PresetKeywordTriggerConfig enablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
     {
@@ -55,6 +80,17 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
         return this;
     }
 
+    /**
+     * Disable the provided keyword preset lists.
+     *
+     * @param  presets
+     *         The keyword presets to disable
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided presets is null
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public PresetKeywordTriggerConfig disablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
@@ -64,6 +100,17 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
         return this;
     }
 
+    /**
+     * Disable the provided keyword preset lists.
+     *
+     * @param  presets
+     *         The keyword presets to disable
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided presets is null
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public PresetKeywordTriggerConfig disablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
     {

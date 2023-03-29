@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.automod.build.TriggerConfig;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.AutoModRuleManager;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -118,6 +119,12 @@ public interface AutoModRule extends ISnowflake
     default AutoModRuleManager getManager()
     {
         return getGuild().modifyAutoModRuleById(getId());
+    }
+
+    @Nonnull
+    default AuditableRestAction<Void> delete()
+    {
+        return getGuild().deleteAutoModRuleById(getId());
     }
 
     enum KeywordPreset

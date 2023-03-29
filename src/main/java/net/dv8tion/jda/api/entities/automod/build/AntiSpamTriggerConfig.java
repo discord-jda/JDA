@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.entities.automod.build;
 
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 
+/**
+ * Configuration for the {@link net.dv8tion.jda.api.entities.automod.AutoModTriggerType#SPAM SPAM} trigger.
+ */
 public class AntiSpamTriggerConfig extends AbstractTriggerConfig<AntiSpamTriggerConfig>
 {
     protected AntiSpamTriggerConfig()

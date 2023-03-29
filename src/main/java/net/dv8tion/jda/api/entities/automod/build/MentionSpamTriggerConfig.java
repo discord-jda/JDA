@@ -23,6 +23,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Configuration for {@link AutoModTriggerType#MENTION_SPAM MENTION_SPAM} trigger.
+ */
 public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamTriggerConfig> implements TriggerConfig
 {
     private int mentionLimit;
@@ -33,6 +36,17 @@ public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamT
         this.mentionLimit = mentionLimit;
     }
 
+    /**
+     * Configure the maximum number of unique mentions allowed in a message.
+     *
+     * @param  mentionLimit
+     *         The maximum number of unique mentions allowed in a message (1-{@value AutoModRule#MAX_MENTION_LIMIT})
+     *
+     * @throws IllegalArgumentException
+     *         If the provided mention limit is not between 1 and {@value AutoModRule#MAX_MENTION_LIMIT}
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public MentionSpamTriggerConfig setMentionLimit(int mentionLimit)
     {

@@ -18,12 +18,30 @@ package net.dv8tion.jda.api.entities.automod;
 
 import javax.annotation.Nonnull;
 
+/**
+ * The type which defines what triggers an {@link AutoModRule}.
+ */
 public enum AutoModTriggerType
 {
+    /**
+     * The rule is triggered by user content containing specific keywords or phrases.
+     */
     KEYWORD(1, 6),
+    /**
+     * The rule is triggered by user content containing classified spam content.
+     */
     SPAM(3, 1),
+    /**
+     * The rule is triggered by user content containing keywords from a predefined list (such as {@link AutoModRule.KeywordPreset#SLURS slurs}).
+     */
     KEYWORD_PRESET(4, 1),
+    /**
+     * The rule is triggered by user content containing more than the allowed number of mentions.
+     */
     MENTION_SPAM(5, 1),
+    /**
+     * Placeholder for unknown trigger types that haven't been added yet.
+     */
     UNKNOWN(-1, 1),
     ;
 
@@ -36,16 +54,34 @@ public enum AutoModTriggerType
         this.maxPerGuild = maxPerGuild;
     }
 
+    /**
+     * The raw API key used to indicate this type.
+     *
+     * @return The int key
+     */
     public int getKey()
     {
         return key;
     }
 
+    /**
+     * The maximum number of rules that can use this trigger type in a guild.
+     *
+     * @return The maximum number of rules
+     */
     public int getMaxPerGuild()
     {
         return maxPerGuild;
     }
 
+    /**
+     * The {@link AutoModTriggerType} that matches the provided key.
+     *
+     * @param  key
+     *         The key to match
+     *
+     * @return The matching {@link AutoModTriggerType} or {@link #UNKNOWN}
+     */
     @Nonnull
     public static AutoModTriggerType fromKey(int key)
     {

@@ -25,6 +25,13 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+/**
+ * Abstract for all keyword trigger types.
+ *
+ * @param <B>
+ *        The builder type
+ */
+@SuppressWarnings("unchecked")
 public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTriggerConfig<B>> extends AbstractTriggerConfig<B>
 {
     protected final List<String> allowList = new ArrayList<>();
@@ -34,6 +41,26 @@ public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTrig
         super(triggerType);
     }
 
+    /**
+     * Add keywords to the allow list.
+     * <p>Keywords added to the allow list will not be considered as a match and won't trigger the rule execution.
+     *
+     * <p>Keywords follow the same rules as {@link CustomKeywordTriggerConfig#addKeywords(String...)}.
+     *
+     * @param  keywords
+     *         The keywords to allow
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the keywords is empty, blank, or null</li>
+     *             <li>If more than the allowed number of keywords are added to the list
+     *                 ({@value AutoModRule#MAX_ALLOWLIST_CUSTOM_AMOUNT} for custom keyword lists,
+     *                  {@value AutoModRule#MAX_ALLOWLIST_PRESET_AMOUNT} for preset keyword lists)</li>
+     *             <li>If any keyword is longer than {@link AutoModRule#MAX_KEYWORD_LENGTH}</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public B addAllowList(@Nonnull String... keywords)
     {
@@ -44,6 +71,26 @@ public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTrig
         return (B) this;
     }
 
+    /**
+     * Add keywords to the allow list.
+     * <p>Keywords added to the allow list will not be considered as a match and won't trigger the rule execution.
+     *
+     * <p>Keywords follow the same rules as {@link CustomKeywordTriggerConfig#addKeywords(String...)}.
+     *
+     * @param  keywords
+     *         The keywords to allow
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the keywords is empty, blank, or null</li>
+     *             <li>If more than the allowed number of keywords are added to the list
+     *                 ({@value AutoModRule#MAX_ALLOWLIST_CUSTOM_AMOUNT} for custom keyword lists,
+     *                  {@value AutoModRule#MAX_ALLOWLIST_PRESET_AMOUNT} for preset keyword lists)</li>
+     *             <li>If any keyword is longer than {@link AutoModRule#MAX_KEYWORD_LENGTH}</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public B addAllowList(@Nonnull Collection<String> keywords)
     {
@@ -54,6 +101,26 @@ public abstract class AbstractKeywordTriggerConfig<B extends AbstractKeywordTrig
         return (B) this;
     }
 
+    /**
+     * Change the allow list to the provided keywords.
+     * <p>Keywords added to the allow list will not be considered as a match and won't trigger the rule execution.
+     *
+     * <p>Keywords follow the same rules as {@link CustomKeywordTriggerConfig#addKeywords(String...)}.
+     *
+     * @param  keywords
+     *         The keywords to allow
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the keywords is empty, blank, or null</li>
+     *             <li>If more than the allowed number of keywords are added to the list
+     *                 ({@value AutoModRule#MAX_ALLOWLIST_CUSTOM_AMOUNT} for custom keyword lists,
+     *                  {@value AutoModRule#MAX_ALLOWLIST_PRESET_AMOUNT} for preset keyword lists)</li>
+     *             <li>If any keyword is longer than {@link AutoModRule#MAX_KEYWORD_LENGTH}</li>
+     *         </ul>
+     *
+     * @return The current config for chaining convenience
+     */
     @Nonnull
     public B setAllowList(@Nonnull Collection<String> keywords)
     {
