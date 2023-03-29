@@ -35,6 +35,28 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 
+/**
+ * Data class used to create new {@link AutoModRule AutoModRules}.
+ *
+ * <p><b>Example</b><br>
+ *
+ * <pre>{@code
+ * TriggerConfig config = TriggerConfig.keywordFilter("discord.gg/*").addAllowList("gateway.discord.gg/*");
+ * AutoModRuleData data = AutoModRuleData.onMessage("Invite Block", config);
+ * data.addExemptRoles(guild.getRolesByName("Moderator", true));
+ * data.putResponse(AutoModResponse.blockMessage());
+ * }</pre>
+ *
+ * <ol>
+ *   <li>The {@link TriggerConfig} defines under what conditions the rule should be triggered and execute a response.
+ *       It should trigger on all invite links, but not trigger on the gateway subdomain.</li>
+ *   <li>The rule is then created with this trigger config and we name it {@code "Invite Block"}.</li>
+ *   <li>Using {@link #addExemptRoles(Role...)}, the moderator role has been excluded to allow moderators to post links.</li>
+ *   <li>With {@link #putResponses(AutoModResponse...)}, an automatic action is enabled to block the message, whenever it triggers the rule.</li>
+ * </ol>
+ *
+ * @see net.dv8tion.jda.api.entities.Guild#createAutoModRule(AutoModRuleData)
+ */
 public class AutoModRuleData implements SerializableData
 {
     protected final AutoModEventType eventType;
@@ -53,12 +75,36 @@ public class AutoModRuleData implements SerializableData
         this.triggerMetadata = triggerMetadata;
     }
 
+    /**
+     * Create a new {@link AutoModRule} which triggers on a message being sent in a channel.
+     *
+     * @param  name
+     *         The name of the rule (1-{@value AutoModRule#MAX_RULE_NAME_LENGTH} characters)
+     * @param  triggerConfig
+     *         The trigger configuration for this rule
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is not between 1 and {@value AutoModRule#MAX_RULE_NAME_LENGTH} characters
+     *
+     * @return The new {@link AutoModRuleData} instance
+     */
     @Nonnull
     public static AutoModRuleData onMessage(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
     {
         return new AutoModRuleData(AutoModEventType.MESSAGE_SEND, name, triggerConfig);
     }
 
+    /**
+     * Change the name of the rule.
+     *
+     * @param  name
+     *         The new name (1-{@value AutoModRule#MAX_RULE_NAME_LENGTH} characters)
+     *
+     * @throws IllegalArgumentException
+     *         If the name is not between 1 and {@value AutoModRule#MAX_RULE_NAME_LENGTH} characters
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData setName(@Nonnull String name)
     {
@@ -75,6 +121,21 @@ public class AutoModRuleData implements SerializableData
         return this;
     }
 
+    /**
+     * Configure what the rule should do upon triggering.
+     * <br>This is accumulative and adds ontop of the currently configured responses.
+     *
+     * <p>Note that each response type can only be used once.
+     * If multiple responses of the same type are provided, the last one is used.
+     *
+     * @param  responses
+     *         The responses to configure
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData putResponses(@Nonnull AutoModResponse... responses)
     {
@@ -84,6 +145,21 @@ public class AutoModRuleData implements SerializableData
         return this;
     }
 
+    /**
+     * Configure what the rule should do upon triggering.
+     * <br>This is accumulative and adds ontop of the currently configured responses.
+     *
+     * <p>Note that each response type can only be used once.
+     * If multiple responses of the same type are provided, the last one is used.
+     *
+     * @param  responses
+     *         The responses to configure
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData putResponses(@Nonnull Collection<? extends AutoModResponse> responses)
     {
@@ -93,6 +169,21 @@ public class AutoModRuleData implements SerializableData
         return this;
     }
 
+    /**
+     * Configure what the rule should do upon triggering.
+     * <br>This replaces the currently configured responses, removing all previously configured responses.
+     *
+     * <p>Note that each response type can only be used once.
+     * If multiple responses of the same type are provided, the last one is used.
+     *
+     * @param  responses
+     *         The responses to configure
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData setResponses(@Nonnull Collection<? extends AutoModResponse> responses)
     {
@@ -103,62 +194,157 @@ public class AutoModRuleData implements SerializableData
         return this;
     }
 
+    /**
+     * Add roles which can bypass this rule.
+     *
+     * <p>Roles added to the exemptions will allow all of its members to bypass this rule.
+     *
+     * @param  roles
+     *         The roles to add (up to {@value AutoModRule#MAX_EXEMPT_ROLES} roles)
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the number of roles exceeds {@value AutoModRule#MAX_EXEMPT_ROLES}
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData addExemptRoles(@Nonnull Role... roles)
     {
         Checks.noneNull(roles, "Roles");
+        Checks.check(roles.length + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot add more than %d roles", AutoModRule.MAX_EXEMPT_ROLES);
         for (Role role : roles)
             exemptRoles.add(role.getId());
         return this;
     }
 
+    /**
+     * Add roles which can bypass this rule.
+     *
+     * <p>Roles added to the exemptions will allow all of its members to bypass this rule.
+     *
+     * @param  roles
+     *         The roles to add (up to {@value AutoModRule#MAX_EXEMPT_ROLES} roles)
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the number of roles exceeds {@value AutoModRule#MAX_EXEMPT_ROLES}
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData addExemptRoles(@Nonnull Collection<? extends Role> roles)
     {
         Checks.noneNull(roles, "Roles");
+        Checks.check(roles.size() + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot add more than %d roles", AutoModRule.MAX_EXEMPT_ROLES);
         for (Role role : roles)
             exemptRoles.add(role.getId());
         return this;
     }
 
+    /**
+     * Set which roles can bypass this rule.
+     *
+     * <p>Roles added to the exemptions will allow all of its members to bypass this rule.
+     *
+     * @param  roles
+     *         The roles to exempt (up to {@value AutoModRule#MAX_EXEMPT_ROLES} roles)
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the number of roles exceeds {@value AutoModRule#MAX_EXEMPT_ROLES}
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData setExemptRoles(@Nonnull Collection<? extends Role> roles)
     {
         Checks.noneNull(roles, "Roles");
+        Checks.check(roles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot add more than %d roles", AutoModRule.MAX_EXEMPT_ROLES);
         exemptRoles.clear();
         for (Role role : roles)
             exemptRoles.add(role.getId());
         return this;
     }
 
+    /**
+     * Add channels which can bypass this rule.
+     *
+     * <p>No messages sent in this channel will trigger the rule.
+     *
+     * @param  channels
+     *         The channels to add (up to {@value AutoModRule#MAX_EXEMPT_CHANNELS} channels)
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the number of channels exceeds {@value AutoModRule#MAX_EXEMPT_CHANNELS}
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData addExemptChannels(@Nonnull GuildChannel... channels)
     {
         Checks.noneNull(channels, "Channels");
+        Checks.check(channels.length + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot add more than %d channels", AutoModRule.MAX_EXEMPT_CHANNELS);
         for (GuildChannel channel : channels)
             exemptChannels.add(channel.getId());
         return this;
     }
 
+    /**
+     * Add channels which can bypass this rule.
+     *
+     * <p>No messages sent in this channel will trigger the rule.
+     *
+     * @param  channels
+     *         The channels to add (up to {@value AutoModRule#MAX_EXEMPT_CHANNELS} channels)
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the number of channels exceeds {@value AutoModRule#MAX_EXEMPT_CHANNELS}
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData addExemptChannels(@Nonnull Collection<? extends GuildChannel> channels)
     {
         Checks.noneNull(channels, "Channels");
+        Checks.check(channels.size() + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot add more than %d channels", AutoModRule.MAX_EXEMPT_CHANNELS);
         for (GuildChannel channel : channels)
             exemptChannels.add(channel.getId());
         return this;
     }
 
+    /**
+     * Set which channels can bypass this rule.
+     *
+     * <p>No messages sent in this channel will trigger the rule.
+     *
+     * @param  channels
+     *         The channels to add (up to {@value AutoModRule#MAX_EXEMPT_CHANNELS} channels)
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the number of channels exceeds {@value AutoModRule#MAX_EXEMPT_CHANNELS}
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData setExemptChannels(@Nonnull Collection<? extends GuildChannel> channels)
     {
         Checks.noneNull(channels, "Channels");
+        Checks.check(channels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot add more than %d channels", AutoModRule.MAX_EXEMPT_CHANNELS);
         exemptChannels.clear();
         for (GuildChannel channel : channels)
             exemptChannels.add(channel.getId());
         return this;
     }
 
+    /**
+     * Change the {@link TriggerConfig} for this rule.
+     *
+     * @param  config
+     *         The new config
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     @CheckReturnValue
     public AutoModRuleData setTriggerConfig(@Nonnull TriggerConfig config)
@@ -168,6 +354,13 @@ public class AutoModRuleData implements SerializableData
         return this;
     }
 
+    /**
+     * Returns the {@link Permission Permissions} required to create this rule.
+     * <br>Certain {@link AutoModResponse.Type Types} require additional permissions, such as {@link AutoModResponse.Type#TIMEOUT}.
+     * All rules require {@link Permission#MANAGE_SERVER} to be created.
+     *
+     * @return The required permissions to create this rule
+     */
     @Nonnull
     public EnumSet<Permission> getRequiredPermissions()
     {

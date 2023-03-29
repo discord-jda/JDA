@@ -41,6 +41,12 @@ public interface AutoModResponse extends SerializableData
     Duration getTimeoutDuration();
 
     @Nonnull
+    static AutoModResponse blockMessage()
+    {
+        return blockMessage(null);
+    }
+
+    @Nonnull
     static AutoModResponse blockMessage(@Nullable String customMessage)
     {
         return new AutoModResponseImpl(Type.BLOCK_MESSAGE, customMessage);

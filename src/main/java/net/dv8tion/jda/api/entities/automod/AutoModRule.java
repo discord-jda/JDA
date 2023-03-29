@@ -69,6 +69,14 @@ public interface AutoModRule extends ISnowflake
      * The maximum limit of mentions in {@link TriggerConfig#mentionSpam(int)}. ({@value})
      */
     int MAX_MENTION_LIMIT = 50;
+    /**
+     * The maximum amount of roles that can be added to {@link AutoModRule#getExemptRoles()}. ({@value})
+     */
+    int MAX_EXEMPT_ROLES = 20;
+    /**
+     * The maximum amount of channels that can be added to {@link AutoModRule#getExemptChannels()}. ({@value})
+     */
+    int MAX_EXEMPT_CHANNELS = 50;
 
     @Nonnull
     Guild getGuild();
