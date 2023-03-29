@@ -586,6 +586,36 @@ public enum ActionType
      */
     APPLICATION_COMMAND_PRIVILEGES_UPDATE(121, TargetType.INTEGRATION),
 
+    /**
+     * A moderator created a new {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}
+     */
+    AUTO_MODERATION_RULE_CREATE(140, TargetType.AUTO_MODERATION_RULE),
+
+    /**
+     * A moderator updated an existing {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}
+     */
+    AUTO_MODERATION_RULE_UPDATE(141, TargetType.AUTO_MODERATION_RULE),
+
+    /**
+     * A moderator deleted an existing {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}
+     */
+    AUTO_MODERATION_RULE_DELETE(142, TargetType.AUTO_MODERATION_RULE),
+
+    /**
+     * An automod rule blocked a message from being sent
+     */
+    AUTO_MODERATION_RULE_BLOCK_MESSAGE(         143, TargetType.UNKNOWN),
+
+    /**
+     * An automod rule sent an alert to a channel
+     */
+    AUTO_MODERATION_FLAG_TO_CHANNEL(            144, TargetType.UNKNOWN),
+
+    /**
+     * An automod rule put a user in {@link Member#isTimedOut() timeout}
+     */
+    AUTO_MODERATION_USER_COMMUNICATION_DISABLED(145, TargetType.UNKNOWN),
+
     UNKNOWN(-1, TargetType.UNKNOWN);
 
     private final int key;

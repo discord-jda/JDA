@@ -43,5 +43,6 @@ public enum TargetType
     STICKER,
     THREAD,
 	SCHEDULED_EVENT,
+    AUTO_MODERATION_RULE,
     UNKNOWN
 }
