@@ -16,10 +16,12 @@
 
 package net.dv8tion.jda.api.entities.automod.build;
 
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 
 public interface TriggerConfig extends SerializableData
 {
@@ -39,14 +41,26 @@ public interface TriggerConfig extends SerializableData
     }
 
     @Nonnull
-    static CustomKeywordTriggerConfig keywordFilter()
+    static CustomKeywordTriggerConfig keywordFilter(@Nonnull Collection<String> keywords)
     {
-        return new CustomKeywordTriggerConfig();
+        return new CustomKeywordTriggerConfig().addKeywords(keywords);
     }
 
     @Nonnull
-    static PresetKeywordTriggerConfig presetKeywordFilter()
+    static CustomKeywordTriggerConfig keywordFilter(@Nonnull String... keywords)
     {
-        return new PresetKeywordTriggerConfig();
+        return new CustomKeywordTriggerConfig().addKeywords(keywords);
+    }
+
+    @Nonnull
+    static PresetKeywordTriggerConfig presetKeywordFilter(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
+    {
+        return new PresetKeywordTriggerConfig().enablePresets(presets);
+    }
+
+    @Nonnull
+    static PresetKeywordTriggerConfig presetKeywordFilter(@Nonnull AutoModRule.KeywordPreset... presets)
+    {
+        return new PresetKeywordTriggerConfig().enablePresets(presets);
     }
 }
