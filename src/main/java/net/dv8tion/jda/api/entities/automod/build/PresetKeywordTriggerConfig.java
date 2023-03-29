@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.entities.automod.build;
 
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -39,7 +39,9 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
     @Nonnull
     public PresetKeywordTriggerConfig enablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
-        Checks.noneNull(presets, "Presets");
+        Checks.notNull(presets, "Presets");
+        for (AutoModRule.KeywordPreset preset : presets)
+            checkKnown(preset);
         Collections.addAll(this.presets, presets);
         return this;
     }
@@ -47,7 +49,8 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
     @Nonnull
     public PresetKeywordTriggerConfig enablePresets(@Nonnull Collection<AutoModRule.KeywordPreset> presets)
     {
-        Checks.noneNull(presets, "Presets");
+        Checks.notNull(presets, "Presets");
+        presets.forEach(PresetKeywordTriggerConfig::checkKnown);
         this.presets.addAll(presets);
         return this;
     }
@@ -75,13 +78,18 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
         return AutoModRule.MAX_ALLOWLIST_PRESET_AMOUNT;
     }
 
+    private static void checkKnown(AutoModRule.KeywordPreset preset)
+    {
+        Checks.notNull(preset, "Presets");
+        Checks.check(preset != AutoModRule.KeywordPreset.UNKNOWN, "Cannot use unknown preset");
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
     {
         DataObject data = super.toData();
-        presets.remove(AutoModRule.KeywordPreset.UNKNOWN);
-        data.put("presets", DataArray.fromCollection(presets));
+        data.put("presets", presets.stream().map(AutoModRule.KeywordPreset::getKey).collect(Helpers.toDataArray()));
         return data;
     }
 }
