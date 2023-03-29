@@ -22,6 +22,8 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.automod.AutoModExecutionEvent;
+import net.dv8tion.jda.api.events.automod.GenericAutoModRuleEvent;
 import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent;
 import net.dv8tion.jda.api.events.guild.GuildAuditLogEntryCreateEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
@@ -425,6 +427,11 @@ public enum GatewayIntent
 
             else if (UserTypingEvent.class.isAssignableFrom(event))
                 Collections.addAll(intents, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
+
+            else if (AutoModExecutionEvent.class.isAssignableFrom(event))
+                intents.add(AUTO_MODERATION_EXECUTION);
+            else if (GenericAutoModRuleEvent.class.isAssignableFrom(event))
+                intents.add(AUTO_MODERATION_CONFIGURATION);
         }
         return intents;
     }
