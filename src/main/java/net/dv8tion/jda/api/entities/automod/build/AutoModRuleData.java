@@ -114,6 +114,14 @@ public class AutoModRuleData implements SerializableData
         return this;
     }
 
+    /**
+     * Enable or disable the rule.
+     *
+     * @param  enabled
+     *         True, if the rule should be enabled
+     *
+     * @return The same {@link AutoModRuleData} instance
+     */
     @Nonnull
     public AutoModRuleData setEnabled(boolean enabled)
     {

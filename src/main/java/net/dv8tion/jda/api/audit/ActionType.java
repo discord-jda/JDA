@@ -603,16 +603,35 @@ public enum ActionType
 
     /**
      * An automod rule blocked a message from being sent
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_NAME AUTO_MODERATION_RULE_NAME}</li>
+     *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
+     *     <li>{@link AuditLogKey#CHANNEL_ID CHANNEL_ID}</li>
+     * </ul>
      */
-    AUTO_MODERATION_RULE_BLOCK_MESSAGE(         143, TargetType.UNKNOWN),
+    AUTO_MODERATION_RULE_BLOCK_MESSAGE(         143, TargetType.MEMBER),
 
     /**
      * An automod rule sent an alert to a channel
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_NAME AUTO_MODERATION_RULE_NAME}</li>
+     *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
+     * </ul>
      */
     AUTO_MODERATION_FLAG_TO_CHANNEL(            144, TargetType.UNKNOWN),
 
     /**
      * An automod rule put a user in {@link Member#isTimedOut() timeout}
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_NAME AUTO_MODERATION_RULE_NAME}</li>
+     *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
+     * </ul>
      */
     AUTO_MODERATION_USER_COMMUNICATION_DISABLED(145, TargetType.UNKNOWN),
 

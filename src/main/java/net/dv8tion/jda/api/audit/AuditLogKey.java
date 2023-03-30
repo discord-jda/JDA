@@ -314,6 +314,13 @@ public enum AuditLogKey
      */
     CHANNEL_AVAILABLE_TAGS("available_tags"),
 
+    /**
+     * The relevant channel for the audit log entry.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    CHANNEL_ID("channel_id"),
+
 //    /**
 //     * The {@link ForumChannel#getDefaultSortOrder()} value.
 //     * <br>Only for {@link ChannelType#FORUM}.
