@@ -22,6 +22,13 @@ import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that na {@link AutoModRule} was created/removed/updated.
+ *
+ * <p><b>Requirements</b><br>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#AUTO_MODERATION_CONFIGURATION AUTO_MODERATION_CONFIGURATION} intent to be enabled.
+ */
 public class GenericAutoModRuleEvent extends Event
 {
     private final AutoModRule rule;
@@ -32,6 +39,11 @@ public class GenericAutoModRuleEvent extends Event
         this.rule = rule;
     }
 
+    /**
+     * The {@link AutoModRule} that was created/removed/updated.
+     *
+     * @return The {@link AutoModRule}
+     */
     @Nonnull
     public AutoModRule getRule()
     {

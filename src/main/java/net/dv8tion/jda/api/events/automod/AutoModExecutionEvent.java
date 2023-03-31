@@ -20,13 +20,22 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.automod.AutoModExecution;
 import net.dv8tion.jda.api.entities.automod.AutoModResponse;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that an automated {@link AutoModResponse} has been triggered through an {@link AutoModRule}.
+ *
+ * <p><b>Requirements</b><br>
+ * This event requires the {@link GatewayIntent#AUTO_MODERATION_EXECUTION AUTO_MODERATION_EXECUTION} intent to be enabled.
+ * Additionally, access to {@link #getContent()} and {@link #getMatchedContent()} requires the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent to be enabled.
+ */
 public class AutoModExecutionEvent extends Event implements AutoModExecution
 {
     private final AutoModExecution execution;

@@ -21,6 +21,13 @@ import net.dv8tion.jda.api.entities.automod.AutoModRule;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a {@link AutoModRule} was created.
+ *
+ * <p><b>Requirements</b><br>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#AUTO_MODERATION_CONFIGURATION AUTO_MODERATION_CONFIGURATION} intent to be enabled.
+ */
 public class AutoModRuleCreateEvent extends GenericAutoModRuleEvent
 {
     public AutoModRuleCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModRule rule)
