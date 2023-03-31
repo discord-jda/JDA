@@ -16,11 +16,27 @@
 
 package net.dv8tion.jda.api.entities.automod;
 
+import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
+import net.dv8tion.jda.api.entities.automod.build.TriggerConfig;
+
 import javax.annotation.Nonnull;
 
+/**
+ * The type of event an {@link AutoModRule} is triggered by.
+ *
+ * @see AutoModRule#getEventType()
+ * @see AutoModRuleData#onMessage(String, TriggerConfig)
+ */
 public enum AutoModEventType
 {
+    /**
+     * The rule is triggered by a message being sent in a guild channel.
+     */
     MESSAGE_SEND(1),
+
+    /**
+     * Placeholder for unknown types which haven't been added yet.
+     */
     UNKNOWN(-1);
 
     private final int key;
@@ -30,11 +46,24 @@ public enum AutoModEventType
         this.key = key;
     }
 
+    /**
+     * The raw value used by Discord to represent this type.
+     *
+     * @return The raw value
+     */
     public int getKey()
     {
         return key;
     }
 
+    /**
+     * The {@link AutoModEventType} represented by the provided key.
+     *
+     * @param  key
+     *         The raw key
+     *
+     * @return The {@link AutoModEventType} or {@link #UNKNOWN}
+     */
     @Nonnull
     public static AutoModEventType fromKey(int key)
     {
