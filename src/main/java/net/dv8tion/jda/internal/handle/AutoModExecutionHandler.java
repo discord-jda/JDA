@@ -32,7 +32,9 @@ public class AutoModExecutionHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        long guildId = content.getLong("guild_id");
+        long guildId = content.getUnsignedLong("guild_id");
+        if (api.getGuildSetupController().isLocked(guildId))
+            return guildId;
         Guild guild = api.getGuildById(guildId);
         if (guild == null)
         {
