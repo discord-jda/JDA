@@ -41,11 +41,11 @@ public class AutoModExecutionImpl implements AutoModExecution
         this.guild = guild;
         this.channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id"));
         this.response = new AutoModResponseImpl(guild, json.getObject("action"));
-        this.type = AutoModTriggerType.fromKey(json.getInt("trigger_type", -1));
+        this.type = AutoModTriggerType.fromKey(json.getInt("rule_trigger_type", -1));
         this.userId = json.getUnsignedLong("user_id");
         this.ruleId = json.getUnsignedLong("rule_id");
         this.messageId = json.getUnsignedLong("message_id", 0L);
-        this.alertMessageId = json.getUnsignedLong("alert_message_id", 0L);
+        this.alertMessageId = json.getUnsignedLong("alert_system_message_id", 0L);
         this.content = json.getString("content", "");
         this.matchedContent = json.getString("matched_content", null);
         this.matchedKeyword = json.getString("matched_keyword", null);
