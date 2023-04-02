@@ -622,7 +622,7 @@ public enum ActionType
      *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
      * </ul>
      */
-    AUTO_MODERATION_FLAG_TO_CHANNEL(   144, TargetType.UNKNOWN),
+    AUTO_MODERATION_FLAG_TO_CHANNEL(   144, TargetType.MEMBER),
 
     /**
      * An automod rule put a user in {@link Member#isTimedOut() timeout}
@@ -633,7 +633,7 @@ public enum ActionType
      *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
      * </ul>
      */
-    AUTO_MODERATION_MEMBER_TIMEOUT(    145, TargetType.UNKNOWN),
+    AUTO_MODERATION_MEMBER_TIMEOUT(    145, TargetType.MEMBER),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 
