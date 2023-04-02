@@ -78,7 +78,7 @@ public class AutoModRuleImpl implements AutoModRule
     }
 
     @Override
-    public long getOwnerIdLong()
+    public long getCreatorIdLong()
     {
         return ownerId;
     }
