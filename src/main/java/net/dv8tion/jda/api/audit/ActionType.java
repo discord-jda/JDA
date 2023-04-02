@@ -611,7 +611,7 @@ public enum ActionType
      *     <li>{@link AuditLogKey#CHANNEL_ID CHANNEL_ID}</li>
      * </ul>
      */
-    AUTO_MODERATION_RULE_BLOCK_MESSAGE(         143, TargetType.MEMBER),
+    AUTO_MODERATION_RULE_BLOCK_MESSAGE(143, TargetType.MEMBER),
 
     /**
      * An automod rule sent an alert to a channel
@@ -622,7 +622,7 @@ public enum ActionType
      *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
      * </ul>
      */
-    AUTO_MODERATION_FLAG_TO_CHANNEL(            144, TargetType.UNKNOWN),
+    AUTO_MODERATION_FLAG_TO_CHANNEL(   144, TargetType.UNKNOWN),
 
     /**
      * An automod rule put a user in {@link Member#isTimedOut() timeout}
@@ -633,7 +633,7 @@ public enum ActionType
      *     <li>{@link AuditLogKey#AUTO_MODERATION_RULE_TRIGGER_TYPE AUTO_MODERATION_RULE_TRIGGER_TYPE}</li>
      * </ul>
      */
-    AUTO_MODERATION_USER_COMMUNICATION_DISABLED(145, TargetType.UNKNOWN),
+    AUTO_MODERATION_MEMBER_TIMEOUT(    145, TargetType.UNKNOWN),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 
