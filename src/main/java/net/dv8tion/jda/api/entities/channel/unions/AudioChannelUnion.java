@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 
 import javax.annotation.Nonnull;
 
@@ -79,4 +80,23 @@ public interface AudioChannelUnion extends AudioChannel
      */
     @Nonnull
     StageChannel asStageChannel();
+
+    /**
+     * Casts this union to a {@link GuildMessageChannel}.
+     * <br>This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre>{@code
+     * //These are the same!
+     * GuildMessageChannel channel = union.asGuildMessageChannel();
+     * GuildMessageChannel channel2 = (GuildMessageChannel) union;
+     * }</pre>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link GuildMessageChannel}.
+     *
+     * @return The channel as a {@link GuildMessageChannel}
+     */
+    @Nonnull
+    GuildMessageChannel asGuildMessageChannel();
 }

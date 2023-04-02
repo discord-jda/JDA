@@ -29,16 +29,20 @@ import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IAgeRestrictedChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.StageChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -52,13 +56,21 @@ import java.util.List;
 
 public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChannelImpl> implements
         StageChannel,
-        AudioChannelMixin<StageChannelImpl>
+        AudioChannelMixin<StageChannelImpl>,
+        GuildMessageChannelMixin<StageChannelImpl>,
+        IWebhookContainerMixin<StageChannelImpl>,
+        IAgeRestrictedChannelMixin<StageChannelImpl>,
+        ISlowmodeChannelMixin<StageChannelImpl>
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
 
     private StageInstance instance;
     private String region;
     private int bitrate;
+    private int userlimit;
+    private int slowmode;
+    private boolean ageRestricted;
+    private long latestMessageId;
 
     public StageChannelImpl(long id, GuildImpl guild)
     {
@@ -76,6 +88,12 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     public int getBitrate()
     {
         return bitrate;
+    }
+
+    @Override
+    public int getUserLimit()
+    {
+        return userlimit;
     }
 
     @Nullable
@@ -143,6 +161,31 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
         return action;
     }
 
+    @Override
+    public int getSlowmode()
+    {
+        return slowmode;
+    }
+
+    @Override
+    public boolean isNSFW()
+    {
+        return ageRestricted;
+    }
+
+    @Override
+    public boolean canTalk(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return member.hasPermission(this, Permission.MESSAGE_SEND);
+    }
+
+    @Override
+    public long getLatestMessageIdLong()
+    {
+        return latestMessageId;
+    }
+
     @Nonnull
     @Override
     public StageChannelManager getManager()
@@ -198,6 +241,13 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     }
 
     @Override
+    public StageChannelImpl setUserLimit(int userlimit)
+    {
+        this.userlimit = userlimit;
+        return this;
+    }
+
+    @Override
     public StageChannelImpl setRegion(String region)
     {
         this.region = region;
@@ -207,6 +257,27 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     public StageChannelImpl setStageInstance(StageInstance instance)
     {
         this.instance = instance;
+        return this;
+    }
+
+    @Override
+    public StageChannelImpl setNSFW(boolean ageRestricted)
+    {
+        this.ageRestricted = ageRestricted;
+        return this;
+    }
+
+    @Override
+    public StageChannelImpl setSlowmode(int slowmode)
+    {
+        this.slowmode = slowmode;
+        return this;
+    }
+
+    @Override
+    public StageChannelImpl setLatestMessageIdLong(long latestMessageId)
+    {
+        this.latestMessageId = latestMessageId;
         return this;
     }
 

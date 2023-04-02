@@ -905,14 +905,14 @@ public class EntityBuilder
             type = Activity.ActivityType.PLAYING;
         }
 
-        RichPresence.Timestamps timestamps = null;
+        Activity.Timestamps timestamps = null;
         if (!gameJson.isNull("timestamps"))
         {
             DataObject obj = gameJson.getObject("timestamps");
             long start, end;
             start = obj.getLong("start", 0L);
             end = obj.getLong("end", 0L);
-            timestamps = new RichPresence.Timestamps(start, end);
+            timestamps = new Activity.Timestamps(start, end);
         }
 
         EmojiUnion emoji = null;
@@ -1215,7 +1215,9 @@ public class EntityBuilder
             .setUserLimit(json.getInt("user_limit"))
             .setNSFW(json.getBoolean("nsfw"))
             .setBitrate(json.getInt("bitrate"))
-            .setRegion(json.getString("rtc_region", null));
+            .setRegion(json.getString("rtc_region", null))
+//            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
+            .setSlowmode(json.getInt("rate_limit_per_user", 0));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
@@ -1252,10 +1254,15 @@ public class EntityBuilder
 
         channel
             .setParentCategory(json.getLong("parent_id", 0))
+            .setLatestMessageIdLong(json.getLong("last_message_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setBitrate(json.getInt("bitrate"))
-            .setRegion(json.getString("rtc_region", null));
+            .setUserLimit(json.getInt("user_limit", 0))
+            .setNSFW(json.getBoolean("nsfw"))
+            .setRegion(json.getString("rtc_region", null))
+//            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
+            .setSlowmode(json.getInt("rate_limit_per_user", 0));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
@@ -1396,6 +1403,7 @@ public class EntityBuilder
                 .setFlags(json.getInt("flags", 0))
                 .setDefaultReaction(json.optObject("default_reaction_emoji").orElse(null))
 //                .setDefaultSortOrder(json.getInt("default_sort_order", -1))
+                .setDefaultLayout(json.getInt("default_forum_layout", -1))
                 .setName(json.getString("name"))
                 .setTopic(json.getString("topic", null))
                 .setPosition(json.getInt("position"))

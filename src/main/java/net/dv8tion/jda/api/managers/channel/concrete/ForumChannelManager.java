@@ -108,4 +108,18 @@ public interface ForumChannelManager extends
     @Nonnull
     @CheckReturnValue
     ForumChannelManager setDefaultReaction(@Nullable Emoji emoji);
+
+    /**
+     * Sets the <b><u>default layout</u></b> of the selected {@link ForumChannel}.
+     *
+     * @param  layout
+     *         The new default layout.
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    ForumChannel#getDefaultLayout()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ForumChannelManager setDefaultLayout(@Nonnull ForumChannel.Layout layout);
 }

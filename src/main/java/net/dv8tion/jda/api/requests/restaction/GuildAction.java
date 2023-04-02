@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -645,7 +644,7 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData addPermissionOverride(@Nonnull GuildActionImpl.RoleData role, long allow, long deny)
+        public ChannelData addPermissionOverride(@Nonnull GuildAction.RoleData role, long allow, long deny)
         {
             Checks.notNull(role, "Role");
             this.overrides.add(new PermOverrideData(PermOverrideData.ROLE_TYPE, role.id, allow, deny));
@@ -673,7 +672,7 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData addPermissionOverride(@Nonnull GuildActionImpl.RoleData role, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+        public ChannelData addPermissionOverride(@Nonnull GuildAction.RoleData role, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
         {
             long allowRaw = 0;
             long denyRaw = 0;

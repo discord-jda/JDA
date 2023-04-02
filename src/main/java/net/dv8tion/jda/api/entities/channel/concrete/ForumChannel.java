@@ -213,6 +213,14 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
 //    SortOrder getDefaultSortOrder();
 
     /**
+     * The default layout used to show threads.
+     *
+     * @return The default layout used to show threads.
+     */
+    @Nonnull
+    Layout getDefaultLayout();
+
+    /**
      * Creates a new forum post (thread) in this forum.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -242,6 +250,67 @@ public interface ForumChannel extends StandardGuildChannel, IThreadContainer, IW
     @Incubating
     @CheckReturnValue
     ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message);
+
+    /**
+     * The layout used to sort forum posts.
+     */
+    enum Layout
+    {
+        /**
+         * Displayed as default (not set).
+         */
+        DEFAULT_VIEW(0),
+        /**
+         * Displayed as a chronological list.
+         */
+        LIST_VIEW(1),
+        /**
+         * Displayed as a collection of tiles.
+         */
+        GALLERY_VIEW(2),
+
+        /**
+         * Placeholder for future layout types.
+         */
+        UNKNOWN(-1);
+
+        private final int key;
+
+        Layout(int key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The underlying value as used by Discord.
+         *
+         * @return The raw order key
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * The {@link Layout} for the provided key.
+         *
+         * @param  key
+         *         The key to get the {@link Layout} for
+         *
+         * @return The {@link Layout} for the provided key, or {@link #UNKNOWN} if the key is not known
+         */
+        @Nonnull
+        public static Layout fromKey(int key)
+        {
+            for (Layout layout : values())
+            {
+                if (layout.key == key)
+                    return layout;
+            }
+
+            return UNKNOWN;
+        }
+    }
 
 //    /**
 //     * The order used to sort forum posts.

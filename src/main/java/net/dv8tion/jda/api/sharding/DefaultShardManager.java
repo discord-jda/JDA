@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.RestConfig;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -31,7 +33,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -146,6 +147,8 @@ public class DefaultShardManager implements ShardManager
      */
     protected final ChunkingFilter chunkingFilter;
 
+    protected final IntFunction<? extends RestConfig> restConfigProvider;
+
     public DefaultShardManager(@Nonnull String token)
     {
         this(token, null);
@@ -153,14 +156,14 @@ public class DefaultShardManager implements ShardManager
 
     public DefaultShardManager(@Nonnull String token, @Nullable Collection<Integer> shardIds)
     {
-        this(token, shardIds, null, null, null, null, null, null, null);
+        this(token, shardIds, null, null, null, null, null, null, null, null);
     }
 
     public DefaultShardManager(
         @Nonnull String token, @Nullable Collection<Integer> shardIds,
         @Nullable ShardingConfig shardingConfig, @Nullable EventConfig eventConfig,
         @Nullable PresenceProviderConfig presenceConfig, @Nullable ThreadingProviderConfig threadingConfig,
-        @Nullable ShardingSessionConfig sessionConfig, @Nullable ShardingMetaConfig metaConfig,
+        @Nullable ShardingSessionConfig sessionConfig, @Nullable ShardingMetaConfig metaConfig, @Nullable IntFunction<? extends RestConfig> restConfigProvider,
         @Nullable ChunkingFilter chunkingFilter)
     {
         this.token = token;
@@ -171,6 +174,7 @@ public class DefaultShardManager implements ShardManager
         this.presenceConfig = presenceConfig == null ? PresenceProviderConfig.getDefault() : presenceConfig;
         this.metaConfig = metaConfig == null ? ShardingMetaConfig.getDefault() : metaConfig;
         this.chunkingFilter = chunkingFilter == null ? ChunkingFilter.ALL : chunkingFilter;
+        this.restConfigProvider = restConfigProvider == null ? (i) -> new RestConfig() : restConfigProvider;
         this.executor = createExecutor(this.threadingConfig.getThreadFactory());
         this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
 
@@ -512,7 +516,10 @@ public class DefaultShardManager implements ShardManager
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         MetaConfig metaConfig = new MetaConfig(this.metaConfig.getMaxBufferSize(), this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
-        final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        RestConfig restConfig = this.restConfigProvider.apply(shardId);
+        if (restConfig == null)
+            restConfig = new RestConfig();
+        final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
         jda.setMemberCachePolicy(shardingConfig.getMemberCachePolicy());
         threadingConfig.init(jda::getIdentifierString);
         // We can only do member chunking with the GUILD_MEMBERS intent

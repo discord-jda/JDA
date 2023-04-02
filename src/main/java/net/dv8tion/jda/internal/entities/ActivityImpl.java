@@ -47,7 +47,7 @@ public class ActivityImpl implements Activity
         this(name, url, type, null, null);
     }
 
-    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps, EmojiUnion emoji)
+    protected ActivityImpl(String name, String url, ActivityType type, Activity.Timestamps timestamps, EmojiUnion emoji)
     {
         this.name = name;
         this.url = url;
@@ -89,7 +89,7 @@ public class ActivityImpl implements Activity
     }
 
     @Nullable
-    public RichPresence.Timestamps getTimestamps()
+    public Activity.Timestamps getTimestamps()
     {
         return timestamps;
     }

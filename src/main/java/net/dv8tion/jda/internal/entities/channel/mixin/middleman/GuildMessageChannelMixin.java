@@ -23,14 +23,13 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -70,15 +69,13 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
 
-        final String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
-
         String targetUser;
         if (user.equals(getJDA().getSelfUser()))
             targetUser = "@me";
         else
             targetUser = user.getId();
 
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, targetUser);
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), targetUser);
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -103,8 +100,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
         checkPermission(Permission.MESSAGE_MANAGE);
 
-        String code = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
-        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getId(), messageId, code);
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getId(), messageId, emoji.getAsReactionCode());
         return new RestActionImpl<>(getJDA(), route);
     }
 

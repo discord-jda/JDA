@@ -89,6 +89,8 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     long REQUIRE_TAG           = 1 << 18;
     /** Used to reset the default reaction emoji field */
     long DEFAULT_REACTION      = 1 << 19;
+    /** Used to reset the default layout field */
+    long DEFAULT_LAYOUT        = 1 << 20;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -117,6 +119,7 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #PINNED}</li>
      *     <li>{@link #REQUIRE_TAG}</li>
      *     <li>{@link #DEFAULT_REACTION}</li>
+     *     <li>{@link #DEFAULT_LAYOUT}</li>
      * </ul>
      *
      * @param  fields
@@ -153,6 +156,7 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #PINNED}</li>
      *     <li>{@link #REQUIRE_TAG}</li>
      *     <li>{@link #DEFAULT_REACTION}</li>
+     *     <li>{@link #DEFAULT_LAYOUT}</li>
      * </ul>
      *
      * @param  fields

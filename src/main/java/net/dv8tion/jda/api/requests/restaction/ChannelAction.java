@@ -27,8 +27,11 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -209,6 +212,20 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji);
+
+    /**
+     * Sets the <b><u>default layout</u></b> of the new {@link ForumChannel}.
+     *
+     * @param  layout
+     *         The new default layout.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    ForumChannel#getDefaultLayout()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setDefaultLayout(@Nonnull ForumChannel.Layout layout);
 
     /**
      * Sets the <b><u>available tags</u></b> of the new {@link ForumChannel}.
@@ -571,15 +588,20 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     ChannelAction<T> setBitrate(@Nullable Integer bitrate);
 
     /**
-     * Sets the userlimit for the new VoiceChannel
+     * Sets the userlimit for the new {@link AudioChannel}.
+     * <br>The limit maximum varies by type.
+     * <ul>
+     *     <li>{@link ChannelType#VOICE} - {@value VoiceChannel#MAX_USERLIMIT}</li>
+     *     <li>{@link ChannelType#STAGE} - {@value StageChannel#MAX_USERLIMIT}</li>
+     * </ul>
      *
      * @param  userlimit
-     *         The userlimit for the new VoiceChannel or {@code null}/{@code 0} to use no limit,
+     *         The userlimit for the new AudioChannel or {@code null}/{@code 0} to use no limit
      *
      * @throws UnsupportedOperationException
-     *         If this ChannelAction is not for a VoiceChannel
+     *         If this ChannelAction is not for a AudioChannel
      * @throws IllegalArgumentException
-     *         If the provided userlimit is negative or above {@code 99}
+     *         If the provided userlimit is negative or above the permitted limit
      *
      * @return The current ChannelAction, for chaining convenience
      */

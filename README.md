@@ -364,7 +364,7 @@ An **Entity** is the term used to describe types such as **GuildChannel**/**Mess
 Instances of these entities are created and deleted by JDA when Discord instructs it. This means the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
 This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
 When Discord instructs JDA to delete entities, they are simply removed from the JDA cache and lose their references.
-Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become useless.
+Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become outdated.
 Discord may instruct to delete these entities randomly for cache synchronization with the API.
 
 **It is not recommended to store _any_ of these entities for a longer period of time!**
@@ -383,23 +383,27 @@ or removing the requested roles. If the cache has not yet been updated by an eve
 
 ### Entity Deletion
 
-Discord may request that a client (the JDA session) invalidates its entire cache. When this happens, JDA will
-remove all of its current entities and reconnect the session. This is signaled through the `ReconnectEvent`.
-When entities are removed from the JDA cache, they lose access to the encapsulating entities. For instance,
-a channel loses access to its guild. Once that happens, they are unable to make any API requests through RestAction
-and instead throw an `IllegalStateException`. It is **highly recommended** to only keep references to entities
-by storing their **id** and using the respective `get...ById(id)` method when needed.
+Discord may request that a client (the JDA session) invalidates its entire cache. When this happens, JDA will remove all of its current entities and reconnect the session. This is signaled through the `SessionRecreateEvent`. When entities are removed from the JDA cache, your instance will keep stale entities in memory. This results in memory duplication, potential memory leaks, and outdated state. It is **highly recommended** to only keep references to entities by storing their **id** and using the respective `get...ById(id)` method when needed. Alternatively, keep the entity stored and make sure to replace it as soon as possible when the cache is replaced.
 
 #### Example
 
 ```java
 public class UserLogger extends ListenerAdapter 
 {
-    private final long userId;
+    private final User user;
     
     public UserLogger(User user)
     {
-        this.userId = user.getIdLong();
+        this.user = user;
+    }
+    
+    private User getUser(JDA api)
+    {
+        // Acquire a reference to the User instance through the id
+        User newUser = api.getUserById(this.user.getIdLong());
+        if (newUser != null)
+            this.user = newUser;
+        return this.user;
     }
     
     @Override
@@ -407,8 +411,10 @@ public class UserLogger extends ListenerAdapter
     {
         User author = event.getAuthor();
         Message message = event.getMessage();
-        if (author.getIdLong() == userId)
+        if (author.getIdLong() == this.user.getIdLong())
         {
+            // Update user from message instance (likely more up-to-date)
+            this.user = author;
             // Print the message of the user
             System.out.println(author.getAsTag() + ": " + message.getContentDisplay());
         }
@@ -418,7 +424,7 @@ public class UserLogger extends ListenerAdapter
     public void onGuildJoin(GuildJoinEvent event)
     {
         JDA api = event.getJDA();
-        User user = api.getUserById(userId); // Acquire a reference to the User instance through the id
+        User user = getUser(); // use getter to refresh user automatically on access
         user.openPrivateChannel().queue((channel) ->
         {
             // Send a private message to the user

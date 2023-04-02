@@ -23,9 +23,10 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.RestRateLimiter;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
@@ -33,21 +34,20 @@ import javax.annotation.Nonnull;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class SessionControllerAdapter implements SessionController
 {
     protected static final Logger log = JDALogger.getLog(SessionControllerAdapter.class);
     protected final Object lock = new Object();
     protected Queue<SessionConnectNode> connectQueue;
-    protected AtomicLong globalRatelimit;
+    protected RestRateLimiter.GlobalRateLimit globalRatelimit;
     protected Thread workerHandle;
     protected long lastConnect = 0;
 
     public SessionControllerAdapter()
     {
         connectQueue = new ConcurrentLinkedQueue<>();
-        globalRatelimit = new AtomicLong(Long.MIN_VALUE);
+        globalRatelimit = RestRateLimiter.GlobalRateLimit.create();
     }
 
     @Override
@@ -64,16 +64,11 @@ public class SessionControllerAdapter implements SessionController
         connectQueue.remove(node);
     }
 
+    @Nonnull
     @Override
-    public long getGlobalRatelimit()
+    public RestRateLimiter.GlobalRateLimit getRateLimitHandle()
     {
-        return globalRatelimit.get();
-    }
-
-    @Override
-    public void setGlobalRatelimit(long ratelimit)
-    {
-        globalRatelimit.set(ratelimit);
+        return globalRatelimit;
     }
 
     @Nonnull

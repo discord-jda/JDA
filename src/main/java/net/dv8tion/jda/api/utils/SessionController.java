@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.RestRateLimiter;
 
 import javax.annotation.Nonnull;
 
@@ -126,21 +129,46 @@ public interface SessionController
      * Provides the cross-session global REST ratelimit it received through {@link #setGlobalRatelimit(long)}.
      *
      * @return The current global REST ratelimit or -1 if unset
+     *
+     * @deprecated Use {@link #getRateLimitHandle()} instead
      */
-    long getGlobalRatelimit();
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("getRateLimitHandle().getClassic()")
+    default long getGlobalRatelimit()
+    {
+        return -1;
+    }
 
     /**
      * Called by the RateLimiter if the global rest ratelimit has changed.
      *
      * @param ratelimit
      *        The new global ratelimit
+     *
+     * @deprecated Use {@link #getRateLimitHandle()} instead
      */
-    void setGlobalRatelimit(long ratelimit);
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("getRateLimitHandle().getClassic()")
+    default void setGlobalRatelimit(long ratelimit) {}
+
+    /**
+     * The store for global rate-limits of all types.
+     * <br>This can be used to share the global rate-limit information between shards on the same IP.
+     *
+     * @return The global rate-limiter
+     */
+    @Nonnull
+    default RestRateLimiter.GlobalRateLimit getRateLimitHandle()
+    {
+        return new GlobalRateLimitAdapter(this);
+    }
 
     /**
      * Discord's gateway URL, which is used to receive events.
      *
-     * Called by JDA when starting a new gateway session (Connecting, Reconnecting).
+     * <p>Called by JDA when starting a new gateway session (Connecting, Reconnecting).
      *
      * @return The gateway endpoint
      */
@@ -273,5 +301,69 @@ public interface SessionController
          *         If the calling thread is interrupted
          */
         void run(boolean isLast) throws InterruptedException;
+    }
+
+    /**
+     * Wrapper for {@link #getGlobalRatelimit()} and {@link #setGlobalRatelimit(long)}.
+     */
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("getRateLimitHandle()")
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    class GlobalRateLimitAdapter implements RestRateLimiter.GlobalRateLimit
+    {
+        private final SessionController controller;
+
+        public GlobalRateLimitAdapter(@Nonnull SessionController controller)
+        {
+            SessionControllerAdapter.log.warn("Using outdated implementation of global rate-limit handling. It is recommended to use GlobalRateLimit interface instead!");
+            this.controller = controller;
+        }
+
+        /**
+         * Forwarding to {@link SessionController#getGlobalRatelimit()}
+         *
+         * @return The current global ratelimit
+         */
+        @Override
+        public long getClassic()
+        {
+            return controller.getGlobalRatelimit();
+        }
+
+        /**
+         * Forwarding to {@link SessionController#setGlobalRatelimit(long)}
+         *
+         * @param ratelimit
+         *        The new global ratelimit
+         */
+        @Override
+        public void setClassic(long ratelimit)
+        {
+            controller.setGlobalRatelimit(ratelimit);
+        }
+
+        /**
+         * Forwarding to {@link SessionController#getGlobalRatelimit()}
+         *
+         * @return The current global ratelimit
+         */
+        @Override
+        public long getCloudflare()
+        {
+            return getClassic();
+        }
+
+        /**
+         * Forwarding to {@link SessionController#setGlobalRatelimit(long)}
+         *
+         * @param timestamp
+         *        The new global ratelimit
+         */
+        @Override
+        public void setCloudflare(long timestamp)
+        {
+            setClassic(timestamp);
+        }
     }
 }

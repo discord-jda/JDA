@@ -30,12 +30,11 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
@@ -340,7 +339,7 @@ public class MessageReaction
                 throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
         }
 
-        String code = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        String code = emoji.getAsReactionCode();
         String target = self ? "@me" : user.getId();
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);

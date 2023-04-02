@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests.ratelimit;
+package net.dv8tion.jda.api.requests;
 
-import net.dv8tion.jda.api.requests.Request;
-
-import java.util.Queue;
-
-public interface IBucket
+/**
+ * Enum used to specify the HTTP method to use for a request.
+ */
+public enum Method
 {
-    Queue<Request> getRequests();
+    DELETE,
+    GET,
+    HEAD,
+    OPTIONS,
+    POST,
+    PUT,
+    PATCH
 }
