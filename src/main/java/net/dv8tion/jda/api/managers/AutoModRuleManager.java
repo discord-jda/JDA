@@ -155,7 +155,10 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
      *         The responses to configure
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         <ul>
+     *             <li>If {@code null} or {@link AutoModResponse.Type#UNKNOWN} is provided</li>
+     *             <li>If the collection is empty</li>
+     *         </ul>
      *
      * @return AutoModRuleManager for chaining convenience
      */
@@ -173,7 +176,10 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
      *         The responses to configure
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         <ul>
+     *             <li>If {@code null} or {@link AutoModResponse.Type#UNKNOWN} is provided</li>
+     *             <li>If the collection is empty</li>
+     *         </ul>
      *
      * @return AutoModRuleManager for chaining convenience
      */

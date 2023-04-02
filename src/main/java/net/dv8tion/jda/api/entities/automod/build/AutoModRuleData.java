@@ -38,6 +38,8 @@ import java.util.EnumSet;
 /**
  * Data class used to create new {@link AutoModRule AutoModRules}.
  *
+ * <p>Every rule must configure at least one {@link #putResponses(AutoModResponse...) response}.
+ *
  * <p><b>Example</b><br>
  *
  * <pre>{@code
@@ -140,7 +142,7 @@ public class AutoModRuleData implements SerializableData
      *         The responses to configure
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or any of the responses has an {@link AutoModResponse.Type#UNKNOWN unknown type}
      *
      * @return The same {@link AutoModRuleData} instance
      */
@@ -149,7 +151,11 @@ public class AutoModRuleData implements SerializableData
     {
         Checks.noneNull(responses, "Responses");
         for (AutoModResponse response : responses)
-            actions.put(response.getType(), response);
+        {
+            AutoModResponse.Type type = response.getType();
+            Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
+            actions.put(type, response);
+        }
         return this;
     }
 
@@ -164,7 +170,7 @@ public class AutoModRuleData implements SerializableData
      *         The responses to configure
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or any of the responses has an {@link AutoModResponse.Type#UNKNOWN unknown type}
      *
      * @return The same {@link AutoModRuleData} instance
      */
@@ -173,7 +179,11 @@ public class AutoModRuleData implements SerializableData
     {
         Checks.noneNull(responses, "Responses");
         for (AutoModResponse response : responses)
-            actions.put(response.getType(), response);
+        {
+            AutoModResponse.Type type = response.getType();
+            Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
+            actions.put(type, response);
+        }
         return this;
     }
 
@@ -188,7 +198,7 @@ public class AutoModRuleData implements SerializableData
      *         The responses to configure
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or any of the responses has an {@link AutoModResponse.Type#UNKNOWN unknown type}
      *
      * @return The same {@link AutoModRuleData} instance
      */
@@ -198,7 +208,11 @@ public class AutoModRuleData implements SerializableData
         Checks.noneNull(responses, "Responses");
         actions.clear();
         for (AutoModResponse response : responses)
-            actions.put(response.getType(), response);
+        {
+            AutoModResponse.Type type = response.getType();
+            Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
+            actions.put(type, response);
+        }
         return this;
     }
 
@@ -388,6 +402,9 @@ public class AutoModRuleData implements SerializableData
             if (!response.getType().isSupportedTrigger(triggerType))
                 throw new IllegalStateException("Cannot create a rule of trigger type " + triggerType + " with response type " + response.getType());
         }
+
+        if (actions.isEmpty())
+            throw new IllegalStateException("Cannot create a rule with no responses. Add at least one response with putResponses(...)");
 
         DataObject data = DataObject.empty()
                 .put("name", name)

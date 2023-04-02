@@ -78,6 +78,7 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
     public AutoModRuleManager setResponses(@Nonnull Collection<? extends AutoModResponse> responses)
     {
         Checks.noneNull(responses, "Responses");
+        Checks.notEmpty(responses, "Responses");
         this.responses = new EnumMap<>(AutoModResponse.Type.class);
         for (AutoModResponse response : responses)
         {
