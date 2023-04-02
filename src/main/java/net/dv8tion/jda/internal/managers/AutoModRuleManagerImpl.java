@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.managers;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.automod.AutoModResponse;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.entities.automod.build.TriggerConfig;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 
 public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> implements AutoModRuleManager
 {
+    protected final Guild guild;
     protected String name;
     protected boolean enabled;
     protected EnumMap<AutoModResponse.Type, AutoModResponse> responses;
@@ -48,12 +50,15 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
     public AutoModRuleManagerImpl(Guild guild, String ruleId)
     {
         super(guild.getJDA(), Route.AutoModeration.UPDATE_RULE.compile(guild.getId(), ruleId));
+        this.guild = guild;
     }
 
     @Nonnull
     @Override
     public AutoModRuleManager setName(@Nonnull String name)
     {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, AutoModRule.MAX_RULE_NAME_LENGTH, "Name");
         this.name = name;
         set |= NAME;
         return this;
@@ -72,7 +77,14 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
     @Override
     public AutoModRuleManager setResponses(@Nonnull Collection<? extends AutoModResponse> responses)
     {
+        Checks.noneNull(responses, "Responses");
         this.responses = new EnumMap<>(AutoModResponse.Type.class);
+        for (AutoModResponse response : responses)
+        {
+            AutoModResponse.Type type = response.getType();
+            Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot add response with unknown response type!");
+            this.responses.put(type, response);
+        }
         set |= RESPONSE;
         return this;
     }
@@ -81,6 +93,10 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
     @Override
     public AutoModRuleManager setExemptRoles(@Nonnull Collection<Role> roles)
     {
+        Checks.noneNull(roles, "Roles");
+        Checks.check(roles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot have more than %d exempt roles!", AutoModRule.MAX_EXEMPT_ROLES);
+        for (Role role : roles)
+            Checks.check(role.getGuild().equals(guild), "Role %s is not from the same guild as this rule!", role);
         this.exemptRoles = new ArrayList<>(roles);
         set |= EXEMPT_ROLES;
         return this;
@@ -90,6 +106,10 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
     @Override
     public AutoModRuleManager setExemptChannels(@Nonnull Collection<? extends GuildChannel> channels)
     {
+        Checks.noneNull(channels, "Channels");
+        Checks.check(channels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot have more than %d exempt channels!", AutoModRule.MAX_EXEMPT_CHANNELS);
+        for (GuildChannel channel : channels)
+            Checks.check(channel.getGuild().equals(guild), "Channel %s is not from the same guild as this rule!", channel);
         this.exemptChannels = new ArrayList<>(channels);
         set |= EXEMPT_CHANNELS;
         return this;
