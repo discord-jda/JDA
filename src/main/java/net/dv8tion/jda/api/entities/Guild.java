@@ -4057,7 +4057,6 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <ul>
      *             <li>If the specified Member is {@code null} or not from the same Guild</li>
      *             <li>If the specified Member already is the Guild owner</li>
-     *             <li>If the specified Member is a bot account ({@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT})</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}

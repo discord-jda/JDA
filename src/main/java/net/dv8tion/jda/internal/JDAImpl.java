@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.set.TLongSet;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -36,7 +35,6 @@ import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
-import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -946,13 +944,6 @@ public class JDAImpl implements JDA
         return eventManager.getSubject();
     }
 
-    @Nonnull
-    @Override
-    public AccountType getAccountType()
-    {
-        return authConfig.getAccountType();
-    }
-
     @Override
     public void setEventManager(IEventManager eventManager)
     {
@@ -1126,7 +1117,6 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<ApplicationInfo> retrieveApplicationInfo()
     {
-        AccountTypeException.check(getAccountType(), AccountType.BOT);
         Route.CompiledRoute route = Route.Applications.GET_BOT_APPLICATION.compile();
         return new RestActionImpl<>(this, route, (response, request) ->
         {

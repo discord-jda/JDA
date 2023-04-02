@@ -17,9 +17,7 @@
 package net.dv8tion.jda.api.utils;
 
 import com.neovisionaries.ws.client.OpeningHandshakeException;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -75,7 +73,6 @@ public class SessionControllerAdapter implements SessionController
     @Override
     public ShardedGateway getShardedGateway(@Nonnull JDA api)
     {
-        AccountTypeException.check(api.getAccountType(), AccountType.BOT);
         return new RestActionImpl<ShardedGateway>(api, Route.Misc.GATEWAY_BOT.compile())
         {
             @Override

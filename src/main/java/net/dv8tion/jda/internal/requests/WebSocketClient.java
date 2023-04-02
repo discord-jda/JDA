@@ -19,7 +19,10 @@ package net.dv8tion.jda.internal.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.*;
+import net.dv8tion.jda.api.GatewayEncoding;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDAInfo;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
@@ -817,9 +820,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected String getToken()
     {
-        if (api.getAccountType() == AccountType.BOT)
-            return api.getToken().substring("Bot ".length());
-        return api.getToken();
+        // all bot tokens are prefixed with "Bot "
+        return api.getToken().substring("Bot ".length());
     }
 
     protected List<DataObject> convertPresencesReplace(long responseTotal, DataArray array)

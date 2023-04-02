@@ -828,7 +828,7 @@ public class JDABuilder
      * Sets the token that will be used by the {@link net.dv8tion.jda.api.JDA} instance to log in when
      * {@link net.dv8tion.jda.api.JDABuilder#build() build()} is called.
      *
-     * <p><b>For {@link net.dv8tion.jda.api.AccountType#BOT}</b><br>
+     * <p>To get a bot token:<br>
      * <ol>
      *     <li>Go to your <a href="https://discord.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
