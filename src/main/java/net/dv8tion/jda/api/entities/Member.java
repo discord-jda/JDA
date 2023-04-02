@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -870,17 +871,18 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> modifyFlags(@Nonnull EnumSet<MemberFlag> newFlags)
+    default AuditableRestAction<Void> modifyFlags(@Nonnull Collection<MemberFlag> newFlags)
     {
         Checks.noneNull(newFlags, "Flags");
         if (!getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS))
             throw new InsufficientPermissionException(getGuild(), Permission.MODERATE_MEMBERS);
         int flags = getFlagsRaw();
+        EnumSet<MemberFlag> updated = Helpers.copyEnumSet(MemberFlag.class, newFlags);
         for (MemberFlag flag : MemberFlag.values())
         {
             if (flag.modifiable)
             {
-                if (newFlags.contains(flag))
+                if (updated.contains(flag))
                     flags |= flag.raw;
                 else
                     flags &= ~flag.raw;
