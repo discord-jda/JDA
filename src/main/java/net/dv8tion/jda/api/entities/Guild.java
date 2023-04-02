@@ -423,10 +423,30 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @CheckReturnValue
     AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData data);
 
+    /**
+     * Returns an {@link AutoModRuleManager}, which can be used to modify the rule for the provided id.
+     * <p>The manager allows modifying multiple fields in a single request.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * @return The manager instance
+     */
     @Nonnull
     @CheckReturnValue
     AutoModRuleManager modifyAutoModRuleById(@Nonnull String id);
 
+    /**
+     * Returns an {@link AutoModRuleManager}, which can be used to modify the rule for the provided id.
+     * <p>The manager allows modifying multiple fields in a single request.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * @return The manager instance
+     */
     @Nonnull
     @CheckReturnValue
     default AutoModRuleManager modifyAutoModRuleById(long id)
