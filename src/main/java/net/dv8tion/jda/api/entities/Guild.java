@@ -1870,7 +1870,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Retrieves an immutable list of Custom Emojis together with their respective creators.
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * @return {@link RestAction RestAction} - Type: List of {@link RichCustomEmoji}
      */
@@ -1883,7 +1883,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br><b>This does not include unicode emoji.</b>
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -1908,7 +1908,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Retrieves a Custom Emoji together with its respective creator.
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -1933,7 +1933,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Retrieves a custom emoji together with its respective creator.
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -1961,7 +1961,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
             if (emoji instanceof RichCustomEmoji)
             {
                 RichCustomEmoji richEmoji = (RichCustomEmoji) emoji;
-                if (richEmoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                if (richEmoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
                     return richEmoji;
             }
             return null;
@@ -2014,7 +2014,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
      *
      * @return {@link GuildStickerManager}
      */
@@ -4533,7 +4533,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Creates a new {@link RichCustomEmoji} in this Guild.
      * <br>If one or more Roles are specified the new emoji will only be available to Members with any of the specified Roles (see {@link Member#canInteract(RichCustomEmoji)})
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} Permission.
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link RichCustomEmoji}!</u></b>
      *
@@ -4558,7 +4558,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <br>If no roles are provided the emoji will be available to all Members of this Guild
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} Permission
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} Permission
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link RichCustomEmoji}
      */
@@ -4587,7 +4587,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         The tags to use for auto-suggestions (Up to 200 characters in total)
      *
      * @throws InsufficientPermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} permission
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} permission
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
@@ -4625,7 +4625,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         Additional tags to use for suggestions
      *
      * @throws InsufficientPermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} permission
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} permission
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
@@ -4658,7 +4658,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalStateException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
      *
      * @return {@link AuditableRestAction}
      */

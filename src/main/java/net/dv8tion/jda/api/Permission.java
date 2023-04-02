@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -29,16 +31,21 @@ import java.util.stream.Collectors;
 public enum Permission
 {
     // General Server / Channel Permissions
-    MANAGE_CHANNEL(             4, true,  true,  "Manage Channels"),
-    MANAGE_SERVER(              5, true,  false, "Manage Server"),
-    VIEW_AUDIT_LOGS(            7, true,  false, "View Audit Logs"),
-    VIEW_CHANNEL(              10, true,  true,  "View Channel(s)"),
-    VIEW_GUILD_INSIGHTS(       19, true,  false, "View Server Insights"),
-    MANAGE_ROLES(              28, true,  false, "Manage Roles"),
-    MANAGE_PERMISSIONS(        28, false, true,  "Manage Permissions"),
-    MANAGE_WEBHOOKS(           29, true,  true,  "Manage Webhooks"),
-    MANAGE_EMOJIS_AND_STICKERS(30, true,  false, "Manage Emojis and Stickers"),
-    MANAGE_EVENTS(             33, true,  true,  "Manage Events"),
+    MANAGE_CHANNEL(                      4, true,  true,  "Manage Channels"),
+    MANAGE_SERVER(                       5, true,  false, "Manage Server"),
+    VIEW_AUDIT_LOGS(                     7, true,  false, "View Audit Logs"),
+    VIEW_CHANNEL(                       10, true,  true,  "View Channel(s)"),
+    VIEW_GUILD_INSIGHTS(                19, true,  false, "View Server Insights"),
+    MANAGE_ROLES(                       28, true,  false, "Manage Roles"),
+    MANAGE_PERMISSIONS(                 28, false, true,  "Manage Permissions"),
+    MANAGE_WEBHOOKS(                    29, true,  true,  "Manage Webhooks"),
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("MANAGE_GUILD_EXPRESSIONS")
+    MANAGE_EMOJIS_AND_STICKERS(         30, true,  false, "Manage Emojis and Stickers"),
+    MANAGE_GUILD_EXPRESSIONS(           30, true,  false, "Manage Emojis, Stickers, and Soundboards"),
+    MANAGE_EVENTS(                      33, true,  true,  "Manage Events"),
+    VIEW_CREATOR_MONETIZATION_ANALYTICS(41, true,  false, "View Creator Analytics"),
 
     // Membership Permissions
     CREATE_INSTANT_INVITE(0, true, true,  "Create Instant Invite"),
@@ -77,6 +84,7 @@ public enum Permission
     VOICE_MOVE_OTHERS(     24, true, true, "Move Members"),
     VOICE_USE_VAD(         25, true, true, "Use Voice Activity"),
     VOICE_START_ACTIVITIES(39, true, true, "Launch Activities in Voice Channels"),
+    VOICE_USE_SOUNDBOARD(  42, true, true, "Use Soundboard in Voice and Stage Channels"),
 
     // Stage Channel Permissions
     REQUEST_TO_SPEAK(      32, true, true, "Request to Speak"),
