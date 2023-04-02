@@ -75,16 +75,17 @@ public enum Permission
     MESSAGE_SEND_IN_THREADS( 38, true, true, "Send Messages in Threads"),
 
     // Voice Permissions
-    PRIORITY_SPEAKER(       8, true, true, "Priority Speaker"),
-    VOICE_STREAM(           9, true, true, "Video"),
-    VOICE_CONNECT(         20, true, true, "Connect"),
-    VOICE_SPEAK(           21, true, true, "Speak"),
-    VOICE_MUTE_OTHERS(     22, true, true, "Mute Members"),
-    VOICE_DEAF_OTHERS(     23, true, true, "Deafen Members"),
-    VOICE_MOVE_OTHERS(     24, true, true, "Move Members"),
-    VOICE_USE_VAD(         25, true, true, "Use Voice Activity"),
-    VOICE_START_ACTIVITIES(39, true, true, "Launch Activities in Voice Channels"),
-    VOICE_USE_SOUNDBOARD(  42, true, true, "Use Soundboard in Voice and Stage Channels"),
+    PRIORITY_SPEAKER(          8, true, true, "Priority Speaker"),
+    VOICE_STREAM(              9, true, true, "Video"),
+    VOICE_CONNECT(            20, true, true, "Connect"),
+    VOICE_SPEAK(              21, true, true, "Speak"),
+    VOICE_MUTE_OTHERS(        22, true, true, "Mute Members"),
+    VOICE_DEAF_OTHERS(        23, true, true, "Deafen Members"),
+    VOICE_MOVE_OTHERS(        24, true, true, "Move Members"),
+    VOICE_USE_VAD(            25, true, true, "Use Voice Activity"),
+    VOICE_START_ACTIVITIES(   39, true, true, "Launch Activities in Voice Channels"),
+    VOICE_USE_SOUNDBOARD(     42, true, true, "Use Soundboard in Voice and Stage Channels"),
+    VOICE_USE_EXTERNAL_SOUNDS(45, true, true, "Use Soundboards from other Servers"),
 
     // Stage Channel Permissions
     REQUEST_TO_SPEAK(      32, true, true, "Request to Speak"),
