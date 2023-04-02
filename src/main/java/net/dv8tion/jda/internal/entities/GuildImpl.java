@@ -359,6 +359,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<List<AutoModRule>> retrieveAutoModRules()
     {
+        checkPermission(Permission.MANAGE_SERVER);
         Route.CompiledRoute route = Route.AutoModeration.LIST_RULES.compile(getId());
         return new RestActionImpl<>(api, route, (response, request) ->
         {
@@ -385,6 +386,7 @@ public class GuildImpl implements Guild
     public RestAction<AutoModRule> retrieveAutoModRuleById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
+        checkPermission(Permission.MANAGE_SERVER);
         Route.CompiledRoute route = Route.AutoModeration.GET_RULE.compile(getId(), id);
         return new RestActionImpl<>(api, route, (response, request) -> AutoModRuleImpl.fromData(this, response.getObject()));
     }
