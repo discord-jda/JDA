@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -58,17 +59,22 @@ public class InteractionImpl implements Interaction
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
+
+        DataObject channelJson = data.getObject("channel");
         if (guild != null)
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
             jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
             user = member.getUser();
-            channel = guild.getGuildChannelById(data.getUnsignedLong("channel_id"));
+            channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
         }
         else
         {
             member = null;
-            long channelId = data.getUnsignedLong("channel_id");
+            long channelId = channelJson.getUnsignedLong("id");
+            ChannelType type = ChannelType.fromId(channelJson.getInt("type"));
+            if (type != ChannelType.PRIVATE)
+                throw new IllegalArgumentException("Received interaction in unexpected channel type! Type " + type + " is not supported yet!");
             PrivateChannel channel = jda.getPrivateChannelById(channelId);
             if (channel == null)
             {
