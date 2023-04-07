@@ -55,6 +55,8 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         COMMAND_AUTOCOMPLETE_CHOICES(8),
         /** Respond with a modal */
         MODAL(9),
+        /** Respond with the default premium required message */
+        PREMIUM_REQUIRED(10),
         ;
         private final int raw;
 
