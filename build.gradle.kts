@@ -399,18 +399,21 @@ val SoftwareComponentContainer.java
     get() = components.getByName("java") as AdhocComponentWithVariants
 
 publishing {
+    repositories {
+        maven {
+            // change to point to your repo, e.g. http://my.org/repo
+            url = uri("https://maven.pkg.github.com/bot-astro/JDA")
+            credentials {
+                username = property("ghpMavenUser").toString()
+                password = property("ghpMavenPat").toString()
+            }
+        }
+    }
     publications {
-        register("Release", MavenPublication::class) {
+        register("mavenJava", MavenPublication::class) {
             from(components["java"])
-
-            artifactId = project.name
-            groupId = project.group as String
-            version = project.version as String
-
             artifact(sourcesJar)
-            artifact(javadocJar)
-
-            generatePom(pom)
+            artifactId = "jda"
         }
     }
 }
@@ -487,9 +490,10 @@ tasks.create("release") {
     }
 }
 
-tasks.withType<PublishToMavenRepository> {
-    enabled = shouldPublish
-}
+// Always publish when using the publish task
+//tasks.withType<PublishToMavenRepository> {
+//    enabled = shouldPublish
+//}
 
 // Gradle stop complaining please
 tasks.withType<Copy> {
