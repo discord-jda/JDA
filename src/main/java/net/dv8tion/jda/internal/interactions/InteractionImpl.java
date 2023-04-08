@@ -113,7 +113,7 @@ public class InteractionImpl implements Interaction
         }
 
         // Sku Ids
-        DataArray entitlementSkuIdsArray = data.getArray("entitlements");
+        DataArray entitlementSkuIdsArray = data.getArray("entitlement_sku_ids");
         entitlementSkuIds = new ArrayList<>();
 
         for (int i=0; i<entitlementSkuIdsArray.length(); i++) {
