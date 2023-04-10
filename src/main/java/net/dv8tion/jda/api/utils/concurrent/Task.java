@@ -77,7 +77,7 @@ public interface Task<T>
      * <br>This may be ignored for certain operations.
      *
      * <p>The provided timeout is relative to the start time of the task.
-     * If the time has already passed this will immediately cancel the task.
+     * If the time has already passed, this will immediately cancel the task.
      *
      * @param  timeout
      *         The new timeout duration
@@ -95,7 +95,7 @@ public interface Task<T>
      * <br>This may be ignored for certain operations.
      *
      * <p>The provided timeout is relative to the start time of the task.
-     * If the time has already passed this will immediately cancel the task.
+     * If the time has already passed, this will immediately cancel the task.
      *
      * @param  timeout
      *         The new timeout duration

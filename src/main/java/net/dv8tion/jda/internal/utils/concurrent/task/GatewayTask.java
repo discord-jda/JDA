@@ -103,7 +103,7 @@ public class GatewayTask<T> implements Task<T>
     {
         Checks.notNull(timeout, "Timeout");
         long millis = timeout.toMillis();
-        Checks.check(millis > 0, "Timeout must be positive! Provided: %d", millis);
+        Checks.positive(millis, "Timeout");
         if (this.setTimeout != null)
             this.setTimeout.accept(millis);
         return this;
