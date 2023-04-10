@@ -519,9 +519,12 @@ public class DefaultShardManager implements ShardManager
         RestConfig restConfig = this.restConfigProvider.apply(shardId);
         if (restConfig == null)
             restConfig = new RestConfig();
-        final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
+
+        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, restConfig);
         jda.setMemberCachePolicy(shardingConfig.getMemberCachePolicy());
         threadingConfig.init(jda::getIdentifierString);
+        jda.initRequester();
+
         // We can only do member chunking with the GUILD_MEMBERS intent
         if ((shardingConfig.getIntents() & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0)
             jda.setChunkingFilter(ChunkingFilter.NONE);

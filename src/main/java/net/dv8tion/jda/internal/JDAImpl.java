@@ -273,6 +273,20 @@ public class JDAImpl implements JDA
         }
     }
 
+    public void initRequester()
+    {
+        if (this.requester != null)
+            return;
+        RestRateLimiter rateLimiter = this.restConfig.getRateLimiterFactory().apply(
+                new RestRateLimiter.RateLimitConfig(
+                        this.threadConfig.getRateLimitPool(),
+                        getSessionController().getRateLimitHandle(),
+                        this.sessionConfig.isRelativeRateLimit() && this.restConfig.isRelativeRateLimit()
+                ));
+        this.requester = new Requester(this, this.authConfig, this.restConfig, rateLimiter);
+        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
+    }
+
     public int login()
     {
         return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
@@ -290,14 +304,7 @@ public class JDAImpl implements JDA
         // Delayed init for thread-pools so they can set the shard info as their name
         this.threadConfig.init(this::getIdentifierString);
         // Setup rest-module and rate-limiter subsystem
-        RestRateLimiter rateLimiter = this.restConfig.getRateLimiterFactory().apply(
-                new RestRateLimiter.RateLimitConfig(
-                        this.threadConfig.getRateLimitPool(),
-                        getSessionController().getRateLimitHandle(),
-                        this.sessionConfig.isRelativeRateLimit() && this.restConfig.isRelativeRateLimit()
-                ));
-        this.requester = new Requester(this, this.authConfig, this.restConfig, rateLimiter);
-        this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
+        initRequester();
 
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
