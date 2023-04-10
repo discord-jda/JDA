@@ -275,6 +275,8 @@ public class JDAImpl implements JDA
 
     public void initRequester()
     {
+        if (this.requester != null)
+            return;
         RestRateLimiter rateLimiter = this.restConfig.getRateLimiterFactory().apply(
                 new RestRateLimiter.RateLimitConfig(
                         this.threadConfig.getRateLimitPool(),
