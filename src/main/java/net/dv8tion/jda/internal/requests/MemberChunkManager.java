@@ -70,7 +70,7 @@ public class MemberChunkManager
             timeoutHandle.cancel(false);
     }
 
-    public CompletableFuture<Void> chunkGuild(GuildImpl guild, boolean presence, BiConsumer<Boolean, List<Member>> handler)
+    public ChunkRequest chunkGuild(GuildImpl guild, boolean presence, BiConsumer<Boolean, List<Member>> handler)
     {
         init();
         DataObject request = DataObject.empty()
@@ -84,7 +84,7 @@ public class MemberChunkManager
         return chunkRequest;
     }
 
-    public CompletableFuture<Void> chunkGuild(GuildImpl guild, String query, int limit, BiConsumer<Boolean, List<Member>> handler)
+    public ChunkRequest chunkGuild(GuildImpl guild, String query, int limit, BiConsumer<Boolean, List<Member>> handler)
     {
         init();
         DataObject request = DataObject.empty()
@@ -97,7 +97,7 @@ public class MemberChunkManager
         return chunkRequest;
     }
 
-    public CompletableFuture<Void> chunkGuild(GuildImpl guild, boolean presence, long[] userIds, BiConsumer<Boolean, List<Member>> handler)
+    public ChunkRequest chunkGuild(GuildImpl guild, boolean presence, long[] userIds, BiConsumer<Boolean, List<Member>> handler)
     {
         init();
         DataObject request = DataObject.empty()
@@ -152,13 +152,14 @@ public class MemberChunkManager
         client.sendChunkRequest(request);
     }
 
-    private class ChunkRequest extends CompletableFuture<Void>
+    public class ChunkRequest extends CompletableFuture<Void>
     {
         private final BiConsumer<Boolean, List<Member>> handler;
         private final GuildImpl guild;
         private final DataObject request;
         private final long nonce;
         private long startTime;
+        private long timeout = MAX_CHUNK_AGE;
 
         public ChunkRequest(BiConsumer<Boolean, List<Member>> handler, GuildImpl guild, DataObject request)
         {
@@ -166,6 +167,12 @@ public class MemberChunkManager
             this.guild = guild;
             this.nonce = ThreadLocalRandom.current().nextLong() & ~1;
             this.request = request.put("nonce", getNonce());
+        }
+
+        public ChunkRequest setTimeout(long timeout)
+        {
+            this.timeout = timeout;
+            return this;
         }
 
         public boolean isNonce(String nonce)
@@ -181,6 +188,11 @@ public class MemberChunkManager
         public long getAge()
         {
             return startTime <= 0 ? 0 : System.currentTimeMillis() - startTime;
+        }
+
+        public boolean isExpired()
+        {
+            return getAge() > timeout;
         }
 
         public DataObject getRequest()
@@ -241,7 +253,7 @@ public class MemberChunkManager
             MiscUtil.locked(lock, () ->
             {
                 requests.forEachValue(request -> {
-                    if (request.getAge() > MAX_CHUNK_AGE)
+                    if (request.isExpired())
                         request.completeExceptionally(new TimeoutException());
                     return true;
                 });

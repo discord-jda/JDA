@@ -2508,7 +2508,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
             if (filter.test(member))
                 list.add(member);
         });
-        GatewayTask<List<Member>> task = new GatewayTask<>(future, reference::cancel);
+        GatewayTask<List<Member>> task = new GatewayTask<>(future, reference::cancel)
+                .onSetTimeout(timeout -> reference.setTimeout(Duration.ofMillis(timeout)));
         reference.onSuccess(it -> future.complete(list))
                  .onError(future::completeExceptionally);
         return task;

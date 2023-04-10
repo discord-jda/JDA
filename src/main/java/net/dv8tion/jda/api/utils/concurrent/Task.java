@@ -16,7 +16,11 @@
 
 package net.dv8tion.jda.api.utils.concurrent;
 
+import net.dv8tion.jda.internal.utils.Checks;
+
 import javax.annotation.Nonnull;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -67,6 +71,48 @@ public interface Task<T>
      */
     @Nonnull
     Task<T> onSuccess(@Nonnull Consumer<? super T> callback);
+
+    /**
+     * Change the timeout duration for this task.
+     * <br>This may be ignored for certain operations.
+     *
+     * <p>The provided timeout is relative to the start time of the task.
+     * If the time has already passed, this will immediately cancel the task.
+     *
+     * @param  timeout
+     *         The new timeout duration
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the timeout is not positive
+     *
+     * @return The current Task instance for chaining
+     */
+    @Nonnull
+    Task<T> setTimeout(@Nonnull Duration timeout);
+
+    /**
+     * Change the timeout duration for this task.
+     * <br>This may be ignored for certain operations.
+     *
+     * <p>The provided timeout is relative to the start time of the task.
+     * If the time has already passed, this will immediately cancel the task.
+     *
+     * @param  timeout
+     *         The new timeout duration
+     * @param  unit
+     *         The time unit of the timeout
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the timeout is not positive
+     *
+     * @return The current Task instance for chaining
+     */
+    @Nonnull
+    default Task<T> setTimeout(long timeout, TimeUnit unit)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        return setTimeout(Duration.ofMillis(unit.toMillis(timeout)));
+    }
 
     /**
      * Blocks the current thread until the result is ready.
