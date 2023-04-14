@@ -63,6 +63,8 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -74,6 +76,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Represents a Text message received from Discord.
@@ -2162,7 +2165,11 @@ public interface Message extends ISnowflake, Formattable
          * Indicates, that this message will not trigger push and desktop notifications
          * @see Message#isSuppressedNotifications
          */
-        NOTIFICATIONS_SUPPRESSED(12);
+        NOTIFICATIONS_SUPPRESSED(12),
+        /**
+         * The Message is a voice message, containing an audio attachment
+         */
+        IS_VOICE_MESSAGE(13);
 
         private final int value;
 
@@ -2237,10 +2244,11 @@ public interface Message extends ISnowflake, Formattable
         private final int height;
         private final int width;
         private final boolean ephemeral;
+        private final byte[] waveform;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, byte[] waveform, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -2252,6 +2260,7 @@ public interface Message extends ISnowflake, Formattable
             this.height = height;
             this.width = width;
             this.ephemeral = ephemeral;
+            this.waveform = waveform;
             this.jda = jda;
         }
 
@@ -2655,6 +2664,26 @@ public interface Message extends ISnowflake, Formattable
         public boolean isEphemeral()
         {
             return ephemeral;
+        }
+
+        /**
+         * Gets the waveform data encoded in this message. This is currently only present on
+         * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
+         *
+         * @return A possibly-{@code null} unmodifiable list of integers representing the volume
+         *         of the audio at the given point. Volume is sampled at a rate of 10 times per
+         *         second. All values lie between {@code 0} and {@code 255}.
+         */
+        public @Nullable List<@NotNull @Range(from = 0, to = 0xFF) Integer> getWaveform()
+        {
+            if (waveform == null) return null;
+
+            List<Integer> values = IntStream.range(0, waveform.length)
+                .map(i -> Byte.toUnsignedInt(waveform[i]))
+                .boxed()
+                .collect(Collectors.toList());
+
+            return Collections.unmodifiableList(values);
         }
 
         /**

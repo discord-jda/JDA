@@ -1849,7 +1849,9 @@ public class EntityBuilder
         final String contentType = jsonObject.getString("content_type", null);
         final String description = jsonObject.getString("description", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, getJDA());
+        final String waveformString = jsonObject.getString("waveform", null);
+        final byte[] waveform = waveformString == null ? null : Base64.getDecoder().decode(waveformString);
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, waveform, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)
