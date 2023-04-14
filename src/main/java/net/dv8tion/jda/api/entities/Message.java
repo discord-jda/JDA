@@ -140,11 +140,11 @@ public interface Message extends ISnowflake, Formattable
     String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
 
     /**
-     * The maximum sendable file size (8 MiB)
+     * The maximum sendable file size (25 MiB)
      *
      *  @see MessageRequest#setFiles(Collection)
      */
-    int MAX_FILE_SIZE = 8 << 20;
+    int MAX_FILE_SIZE = 25 << 20;
 
     /**
      * The maximum sendable file size for nitro (50 MiB)
