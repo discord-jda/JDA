@@ -2241,11 +2241,11 @@ public interface Message extends ISnowflake, Formattable
         private final int height;
         private final int width;
         private final boolean ephemeral;
-        private final byte[] waveform;
+        private final String waveform;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, byte[] waveform, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, String waveform, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -2674,7 +2674,7 @@ public interface Message extends ISnowflake, Formattable
         @Nullable
         public byte[] getWaveform()
         {
-            return Arrays.copyOf(waveform, waveform.length);
+            return Base64.getDecoder().decode(waveform);
         }
 
         /**
