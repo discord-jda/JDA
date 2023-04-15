@@ -1850,7 +1850,8 @@ public class EntityBuilder
         final String description = jsonObject.getString("description", null);
         final long id = jsonObject.getLong("id");
         final String waveform = jsonObject.getString("waveform", null);
-        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, waveform, getJDA());
+        final double duration = jsonObject.getDouble("duration_secs", 0);
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, waveform, duration, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)

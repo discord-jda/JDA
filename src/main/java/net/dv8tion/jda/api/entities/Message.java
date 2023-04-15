@@ -2242,10 +2242,11 @@ public interface Message extends ISnowflake, Formattable
         private final int width;
         private final boolean ephemeral;
         private final String waveform;
+        private final double duration;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, String waveform, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, String waveform, double duration, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -2258,6 +2259,7 @@ public interface Message extends ISnowflake, Formattable
             this.width = width;
             this.ephemeral = ephemeral;
             this.waveform = waveform;
+            this.duration = duration;
             this.jda = jda;
         }
 
@@ -2674,7 +2676,21 @@ public interface Message extends ISnowflake, Formattable
         @Nullable
         public byte[] getWaveform()
         {
+            if (waveform == null)
+                return null;
             return Base64.getDecoder().decode(waveform);
+        }
+
+        /**
+         * Gets the duration of this attachment. This is currently only nonzero on
+         * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
+         *
+         * @return The duration of this attachment's audio in seconds, or {@code 0}
+         *         if not it is not a voice message.
+         */
+        public double getDuration()
+        {
+            return duration;
         }
 
         /**
