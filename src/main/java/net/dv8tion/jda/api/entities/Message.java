@@ -2667,23 +2667,17 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Gets the waveform data encoded in this message. This is currently only present on
+         * Gets the waveform data encoded in this attachment. This is currently only present on
          * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
          *
-         * @return A possibly-{@code null} unmodifiable list of integers representing the amplitude
-         *         of the audio at the given point. Amplitude is sampled at a rate of 10 hertz, and
-         *         all values lie between {@code 0} and {@code 255}.
+         * @return A possibly-{@code null} array of integers representing the amplitude of the
+         *         audio over time. Amplitude is sampled at a rate of 10Hz. The values in this
+         *         array are <b>unsigned</b>.
          */
-        public @Nullable List<@NotNull @Range(from = 0, to = 0xFF) Integer> getWaveform()
+        @Nullable
+        public byte[] getWaveform()
         {
-            if (waveform == null) return null;
-
-            List<Integer> values = IntStream.range(0, waveform.length)
-                .map(i -> Byte.toUnsignedInt(waveform[i]))
-                .boxed()
-                .collect(Collectors.toList());
-
-            return Collections.unmodifiableList(values);
+            return Arrays.copyOf(waveform, waveform.length);
         }
 
         /**
