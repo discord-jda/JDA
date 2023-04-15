@@ -67,6 +67,7 @@ public enum Permission
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
     USE_APPLICATION_COMMANDS(31, true, true, "Use Application Commands"),
     MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
+    VOICE_MESSAGE_SEND(      46, true, true, "Send Voice Messages"),
 
     // Thread Permissions
     MANAGE_THREADS(          34, true, true, "Manage Threads"),
@@ -126,7 +127,7 @@ public enum Permission
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS, MESSAGE_MANAGE,
                                 MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_EMOJI, MESSAGE_EXT_STICKER,
                                 MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
-                                MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS, MESSAGE_SEND_IN_THREADS);
+                                MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS, MESSAGE_SEND_IN_THREADS, VOICE_MESSAGE_SEND);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
@@ -134,7 +135,8 @@ public enum Permission
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
                                 VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD,
-                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, VOICE_START_ACTIVITIES);
+                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, VOICE_START_ACTIVITIES,
+                                VOICE_USE_SOUNDBOARD, VOICE_USE_EXTERNAL_SOUNDS);
 
     private final int offset;
     private final long raw;
