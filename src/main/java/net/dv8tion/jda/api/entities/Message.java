@@ -2670,9 +2670,9 @@ public interface Message extends ISnowflake, Formattable
          * Gets the waveform data encoded in this message. This is currently only present on
          * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
          *
-         * @return A possibly-{@code null} unmodifiable list of integers representing the volume
-         *         of the audio at the given point. Volume is sampled at a rate of 10 times per
-         *         second. All values lie between {@code 0} and {@code 255}.
+         * @return A possibly-{@code null} unmodifiable list of integers representing the amplitude
+         *         of the audio at the given point. Amplitude is sampled at a rate of 10 hertz, and
+         *         all values lie between {@code 0} and {@code 255}.
          */
         public @Nullable List<@NotNull @Range(from = 0, to = 0xFF) Integer> getWaveform()
         {
