@@ -1,3 +1,5 @@
+# Original Action made by freya022 (https://github.com/freya022)
+
 name: Jitpack preview comment
 on:
   pull_request:
