@@ -7,6 +7,7 @@ on:
       - opened
       - reopened
       - synchronize
+      - close
     paths:
       - 'build.gradle.kts'
       - 'src/main/**.java'
@@ -18,8 +19,16 @@ permissions:
   pull-requests: write
 
 jobs:
+  hide-comment:
+    if: ${{ github.event.pull_request.state == 'closed' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: jitpack-preview-comment
+          hide: true
   update-comment:
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.state == 'open' }}
     runs-on: ubuntu-latest
     env:
       REPO_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
@@ -33,6 +42,7 @@ jobs:
         
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
+         header: jitpack-preview-comment
          message: |-
            ## How to use a preview of this feature
 
