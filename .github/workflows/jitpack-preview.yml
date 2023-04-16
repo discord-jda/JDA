@@ -2,7 +2,7 @@
 
 name: Jitpack preview comment
 on:
-  pull_request:
+  pull_request_target: # target is required to run on PRs with merge conflicts, see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
     types:
       - opened
       - reopened
