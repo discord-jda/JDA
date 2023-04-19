@@ -2670,8 +2670,9 @@ public interface Message extends ISnowflake, Formattable
          * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
          *
          * @return A possibly-{@code null} array of integers representing the amplitude of the
-         *         audio over time. Amplitude is sampled at a rate of 10Hz. The values in this
-         *         array are <b>unsigned</b>.
+         *         audio over time. Amplitude is sampled at 10Hz, but the client will decrease
+         *         this to keep the waveform under 256 bytes. The values in this array are
+         *         <b>unsigned</b>.
          */
         @Nullable
         public byte[] getWaveform()
