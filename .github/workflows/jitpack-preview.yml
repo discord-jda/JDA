@@ -101,5 +101,7 @@ jobs:
            ```
 
            </details>
+           
+           Commit hash: ${{ steps.get-hash.outputs.result }}
 
            See also: https://jda.wiki/using-jda/using-new-features/
