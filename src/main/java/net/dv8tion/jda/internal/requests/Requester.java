@@ -212,9 +212,7 @@ public class Requester
             if (shouldRetry(code))
             {
                 //Epic failure from other end. Attempted 4 times.
-                Response response = new Response(lastResponse, -1, rays);
-                apiRequest.handleResponse(response);
-                task.done = true;
+                task.handleResponse(lastResponse, -1, rays);
                 return null;
             }
 
@@ -224,8 +222,7 @@ public class Requester
             if (handleOnRatelimit && code == 429)
             {
                 long retryAfter = parseRetry(lastResponse);
-                task.done = true;
-                apiRequest.handleResponse(new Response(lastResponse, retryAfter, rays));
+                task.handleResponse(lastResponse, retryAfter, rays);
             }
             else if (code != 429)
             {
@@ -237,7 +234,7 @@ public class Requester
         catch (UnknownHostException e)
         {
             LOG.error("DNS resolution failed: {}", e.getMessage());
-            apiRequest.handleResponse(new Response(e, rays));
+            task.handleResponse(e, rays);
             return null;
         }
         catch (IOException e)
@@ -245,13 +242,13 @@ public class Requester
             if (retryOnTimeout && !retried && isRetry(e))
                 return execute(task, true, handleOnRatelimit);
             LOG.error("There was an I/O error while executing a REST request: {}", e.getMessage());
-            apiRequest.handleResponse(new Response(e, rays));
+            task.handleResponse(e, rays);
             return null;
         }
         catch (Exception e)
         {
             LOG.error("There was an unexpected error while executing a REST request", e);
-            apiRequest.handleResponse(new Response(e, rays));
+            task.handleResponse(e, rays);
             return null;
         }
         finally
@@ -388,6 +385,18 @@ public class Requester
         {
             done = true;
             request.handleResponse(new Response(response, -1, rays));
+        }
+
+        private void handleResponse(Exception error, Set<String> rays)
+        {
+            done = true;
+            request.handleResponse(new Response(error, rays));
+        }
+
+        private void handleResponse(okhttp3.Response response, long retryAfter, Set<String> cfRays)
+        {
+            done = true;
+            request.handleResponse(new Response(response, retryAfter, cfRays));
         }
     }
 }
