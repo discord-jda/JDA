@@ -18,7 +18,9 @@ package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.*;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import okhttp3.Call;
@@ -33,6 +35,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -230,6 +233,23 @@ public class Requester
             else if (code != 429)
             {
                 task.handleResponse(lastResponse, rays);
+            }
+            else
+            {
+                // On 429, replace the retry-after header if its wrong (discord moment)
+                // We just pick whichever is bigger between body and header
+                try (InputStream body = IOUtil.getBody(lastResponse))
+                {
+                    long retryAfterBody = (long) Math.ceil(DataObject.fromJson(body).getDouble("retry_after", 0));
+                    long retryAfterHeader = Long.parseLong(lastResponse.header(RestRateLimiter.RETRY_AFTER_HEADER));
+                    lastResponse = lastResponse.newBuilder()
+                            .header("retry-after", Long.toString(Math.max(retryAfterHeader, retryAfterBody)))
+                            .build();
+                }
+                catch (Exception e)
+                {
+                    LOG.warn("Failed to parse retry-after response body", e);
+                }
             }
 
             return lastResponse;
