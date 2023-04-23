@@ -2687,7 +2687,7 @@ public interface Message extends ISnowflake, Formattable
          * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
          *
          * @return The duration of this attachment's audio in seconds, or {@code 0}
-         *         if not it is not a voice message.
+         *         if this is not a voice message.
          */
         public double getDuration()
         {
