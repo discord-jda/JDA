@@ -2671,8 +2671,8 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return A possibly-{@code null} array of integers representing the amplitude of the
          *         audio over time. Amplitude is sampled at 10Hz, but the client will decrease
-         *         this to keep the waveform under 256 bytes. The values in this array are
-         *         <b>unsigned</b>.
+         *         this to keep the waveform to at most 256 bytes.
+         *         The values in this array are <b>unsigned</b>.
          */
         @Nullable
         public byte[] getWaveform()
