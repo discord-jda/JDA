@@ -150,7 +150,10 @@ public interface Message extends ISnowflake, Formattable
      * The maximum sendable file size for nitro (50 MiB)
      *
      * @see MessageRequest#setFiles(Collection)
+     *
+     * @deprecated Self-bots are not supported anymore and the value is outdated.
      */
+    @Deprecated
     int MAX_FILE_SIZE_NITRO = 50 << 20;
 
     /**
