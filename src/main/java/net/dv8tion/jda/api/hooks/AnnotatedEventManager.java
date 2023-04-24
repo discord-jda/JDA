@@ -59,7 +59,7 @@ public class AnnotatedEventManager implements IEventManager
     {
         if (listeners.add(listener))
         {
-            updateMethods();
+            registerListenerMethods(listener);
         }
     }
 
@@ -114,31 +114,36 @@ public class AnnotatedEventManager implements IEventManager
         methods.clear();
         for (Object listener : listeners)
         {
-            boolean isClass = listener instanceof Class;
-            Class<?> c = isClass ? (Class) listener : listener.getClass();
-            Method[] allMethods = c.getDeclaredMethods();
-            for (Method m : allMethods)
+            registerListenerMethods(listener);
+        }
+    }
+
+    private void registerListenerMethods(Object listener)
+    {
+        boolean isClass = listener instanceof Class;
+        Class<?> c = isClass ? (Class<?>) listener : listener.getClass();
+        Method[] allMethods = c.getDeclaredMethods();
+        for (Method m : allMethods)
+        {
+            if (!m.isAnnotationPresent(SubscribeEvent.class) || (isClass && !Modifier.isStatic(m.getModifiers())))
             {
-                if (!m.isAnnotationPresent(SubscribeEvent.class) || (isClass && !Modifier.isStatic(m.getModifiers())))
+                continue;
+            }
+            Class<?>[] pType  = m.getParameterTypes();
+            if (pType.length == 1 && GenericEvent.class.isAssignableFrom(pType[0]))
+            {
+                Class<?> eventClass = pType[0];
+                if (!methods.containsKey(eventClass))
                 {
-                    continue;
+                    methods.put(eventClass, new ConcurrentHashMap<>());
                 }
-                Class<?>[] pType  = m.getParameterTypes();
-                if (pType.length == 1 && GenericEvent.class.isAssignableFrom(pType[0]))
+
+                if (!methods.get(eventClass).containsKey(listener))
                 {
-                    Class<?> eventClass = pType[0];
-                    if (!methods.containsKey(eventClass))
-                    {
-                        methods.put(eventClass, new ConcurrentHashMap<>());
-                    }
-
-                    if (!methods.get(eventClass).containsKey(listener))
-                    {
-                        methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
-                    }
-
-                    methods.get(eventClass).get(listener).add(m);
+                    methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
                 }
+
+                methods.get(eventClass).get(listener).add(m);
             }
         }
     }
