@@ -125,26 +125,28 @@ public class AnnotatedEventManager implements IEventManager
         Method[] allMethods = c.getDeclaredMethods();
         for (Method m : allMethods)
         {
-            if (!m.isAnnotationPresent(SubscribeEvent.class) || (isClass && !Modifier.isStatic(m.getModifiers())))
-            {
+            if (!m.isAnnotationPresent(SubscribeEvent.class))
                 continue;
-            }
-            Class<?>[] pType  = m.getParameterTypes();
-            if (pType.length == 1 && GenericEvent.class.isAssignableFrom(pType[0]))
+            //Skip member methods if listener is a Class
+            if (isClass && !Modifier.isStatic(m.getModifiers()))
+                continue;
+
+            final Class<?>[] parameterTypes = m.getParameterTypes();
+            if (parameterTypes.length != 1 || !GenericEvent.class.isAssignableFrom(parameterTypes[0]))
+                throw new IllegalArgumentException("Method '" + m + "' must have at most 1 parameter, which implements GenericEvent");
+
+            Class<?> eventClass = parameterTypes[0];
+            if (!methods.containsKey(eventClass))
             {
-                Class<?> eventClass = pType[0];
-                if (!methods.containsKey(eventClass))
-                {
-                    methods.put(eventClass, new ConcurrentHashMap<>());
-                }
-
-                if (!methods.get(eventClass).containsKey(listener))
-                {
-                    methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
-                }
-
-                methods.get(eventClass).get(listener).add(m);
+                methods.put(eventClass, new ConcurrentHashMap<>());
             }
+
+            if (!methods.get(eventClass).containsKey(listener))
+            {
+                methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
+            }
+
+            methods.get(eventClass).get(listener).add(m);
         }
     }
 }
