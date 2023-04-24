@@ -136,17 +136,9 @@ public class AnnotatedEventManager implements IEventManager
                 throw new IllegalArgumentException("Method '" + m + "' must have at most 1 parameter, which implements GenericEvent");
 
             Class<?> eventClass = parameterTypes[0];
-            if (!methods.containsKey(eventClass))
-            {
-                methods.put(eventClass, new ConcurrentHashMap<>());
-            }
-
-            if (!methods.get(eventClass).containsKey(listener))
-            {
-                methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
-            }
-
-            methods.get(eventClass).get(listener).add(m);
+            methods.computeIfAbsent(eventClass, k -> new ConcurrentHashMap<>())
+                    .computeIfAbsent(listener, k -> new CopyOnWriteArrayList<>())
+                    .add(m);
         }
     }
 }
