@@ -244,7 +244,7 @@ public class Requester
                     long retryAfterBody = (long) Math.ceil(DataObject.fromJson(body).getDouble("retry_after", 0));
                     long retryAfterHeader = Long.parseLong(lastResponse.header(RestRateLimiter.RETRY_AFTER_HEADER));
                     lastResponse = lastResponse.newBuilder()
-                            .header("retry-after", Long.toString(Math.max(retryAfterHeader, retryAfterBody)))
+                            .header(RestRateLimiter.RETRY_AFTER_HEADER, Long.toString(Math.max(retryAfterHeader, retryAfterBody)))
                             .build();
                 }
                 catch (Exception e)
