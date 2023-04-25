@@ -18,7 +18,9 @@ package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.*;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import okhttp3.Call;
@@ -33,10 +35,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -228,6 +232,23 @@ public class Requester
             {
                 task.handleResponse(lastResponse, rays);
             }
+            else if (getContentType(lastResponse).startsWith("application/json")) // potentially not json when cloudflare does 429
+            {
+                // On 429, replace the retry-after header if its wrong (discord moment)
+                // We just pick whichever is bigger between body and header
+                try (InputStream body = IOUtil.getBody(lastResponse))
+                {
+                    long retryAfterBody = (long) Math.ceil(DataObject.fromJson(body).getDouble("retry_after", 0));
+                    long retryAfterHeader = Long.parseLong(lastResponse.header(RestRateLimiter.RETRY_AFTER_HEADER));
+                    lastResponse = lastResponse.newBuilder()
+                            .header(RestRateLimiter.RETRY_AFTER_HEADER, Long.toString(Math.max(retryAfterHeader, retryAfterBody)))
+                            .build();
+                }
+                catch (Exception e)
+                {
+                    LOG.warn("Failed to parse retry-after response body", e);
+                }
+            }
 
             return lastResponse;
         }
@@ -318,6 +339,12 @@ public class Requester
     {
         String retryAfter = response.header(RestRateLimiter.RETRY_AFTER_HEADER, "0");
         return (long) (Double.parseDouble(retryAfter) * 1000);
+    }
+
+    private static String getContentType(okhttp3.Response response)
+    {
+        String type = response.header("content-type");
+        return type == null ? "" : type.toLowerCase(Locale.ROOT);
     }
 
     private class WorkTask implements RestRateLimiter.Work
