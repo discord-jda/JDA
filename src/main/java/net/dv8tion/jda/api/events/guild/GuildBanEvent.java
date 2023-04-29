@@ -25,14 +25,14 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} was banned from a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
  * <p>Can be used to retrieve the user who was banned (if available) and the triggering guild.
- * <br><b>Note</b>: This does not directly indicate that a Member is removed from the Guild!
+ * <br><b>Note:</b> This does not directly indicate that a Member is removed from the Guild!</p>
  *
- * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent
- *
- * <p><b>Requirements</b><br>
+ * <p><b>Requirements:</b></p>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MODERATION GUILD_MODERATION} intent to be enabled.
- */
+
+ * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
+*/
 public class GuildBanEvent extends GenericGuildEvent
 {
     private final User user;
