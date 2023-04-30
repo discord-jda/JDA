@@ -30,9 +30,9 @@ import javax.annotation.Nonnull;
  * <p><b>Requirements:</b></p>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MODERATION GUILD_MODERATION} intent to be enabled.
-
+ *
  * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
-*/
+ */
 public class GuildBanEvent extends GenericGuildEvent
 {
     private final User user;
