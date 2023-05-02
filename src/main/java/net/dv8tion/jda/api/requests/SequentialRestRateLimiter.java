@@ -113,18 +113,13 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 shutdownHandle.thenRun(callback);
                 if (!doShutdown)
                 {
-                    int size = buckets.size();
-                    int average = (int) Math.ceil(
-                            buckets.values().stream()
-                                    .map(Bucket::getRequests)
-                                    .mapToInt(Collection::size)
-                                    .average().orElse(0)
-                    );
+                    int count = buckets.values().stream()
+                            .mapToInt(bucket -> bucket.getRequests().size())
+                            .sum();
 
-                    if (size > 0 && average > 0)
-                        log.info("Waiting for {} bucket(s) to finish. Average queue size of {} requests", size, average);
-                    else if (size == 0)
-                        doShutdown = true;
+                    if (count > 0)
+                        log.info("Waiting for {} requests to finish.", count);
+                    doShutdown = count == 0;
                 }
             }
             if (doShutdown && !isShutdown)
@@ -184,19 +179,26 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 bucket.requests.removeIf(Work::isSkipped); // Remove cancelled requests
 
                 // Check if the bucket is empty
-                if (bucket.isUninit() && bucket.requests.isEmpty())
-                    entries.remove(); // remove uninit if requests are empty
-                // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
-                else if (bucket.requests.isEmpty() && bucket.reset <= getNow())
-                    entries.remove();
-                // Remove empty buckets when the rate limiter is stopped
-                else if (bucket.requests.isEmpty() && isStopped)
-                    entries.remove();
+                if (bucket.requests.isEmpty())
+                {
+                    // remove uninit if requests are empty
+                    if (bucket.isUninit())
+                        entries.remove();
+                    // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
+                    else if (bucket.reset <= getNow())
+                        entries.remove();
+                    // Remove empty buckets when the rate limiter is stopped
+                    else if (isStopped)
+                        entries.remove();
+                }
             }
+
             // Log how many buckets were removed
             size -= buckets.size();
             if (size > 0)
                 log.debug("Removed {} expired buckets", size);
+            else if (isStopped && !isShutdown)
+                shutdown();
         });
     }
 

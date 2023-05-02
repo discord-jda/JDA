@@ -20,7 +20,10 @@ import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.function.Supplier;
 
 public class ThreadingConfig
@@ -97,19 +100,6 @@ public class ThreadingConfig
             eventPool.shutdown();
         if (shutdownAudioPool && audioPool != null)
             audioPool.shutdown();
-        if (shutdownRateLimitPool)
-        {
-            if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
-            {
-                ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) rateLimitPool;
-                executor.setKeepAliveTime(5L, TimeUnit.SECONDS);
-                executor.allowCoreThreadTimeOut(true);
-            }
-            else
-            {
-                rateLimitPool.shutdown();
-            }
-        }
     }
 
     public void shutdownRequester()
