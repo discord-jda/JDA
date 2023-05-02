@@ -48,7 +48,7 @@ import java.util.EnumSet;
  *
  *   EntitySelectMenu menu = EntitySelectMenu.create("menu:class", SelectTarget.ROLE)
  *     .setPlaceholder("Choose your class") // shows the placeholder indicating what this menu is for
- *     .setRequireRange(1, 1) // must select exactly one
+ *     .setRequiredRange(1, 1) // must select exactly one
  *     .build();
  *
  *   event.reply("Please pick your class below")
