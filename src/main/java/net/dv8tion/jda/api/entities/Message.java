@@ -2162,7 +2162,11 @@ public interface Message extends ISnowflake, Formattable
          * Indicates, that this message will not trigger push and desktop notifications
          * @see Message#isSuppressedNotifications
          */
-        NOTIFICATIONS_SUPPRESSED(12);
+        NOTIFICATIONS_SUPPRESSED(12),
+        /**
+         * The Message is a voice message, containing an audio attachment
+         */
+        IS_VOICE_MESSAGE(13);
 
         private final int value;
 
@@ -2237,10 +2241,12 @@ public interface Message extends ISnowflake, Formattable
         private final int height;
         private final int width;
         private final boolean ephemeral;
+        private final String waveform;
+        private final double duration;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, String waveform, double duration, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -2252,6 +2258,8 @@ public interface Message extends ISnowflake, Formattable
             this.height = height;
             this.width = width;
             this.ephemeral = ephemeral;
+            this.waveform = waveform;
+            this.duration = duration;
             this.jda = jda;
         }
 
@@ -2655,6 +2663,35 @@ public interface Message extends ISnowflake, Formattable
         public boolean isEphemeral()
         {
             return ephemeral;
+        }
+
+        /**
+         * Gets the waveform data encoded in this attachment. This is currently only present on
+         * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
+         *
+         * @return A possibly-{@code null} array of integers representing the amplitude of the
+         *         audio over time. Amplitude is sampled at 10Hz, but the client will decrease
+         *         this to keep the waveform to at most 256 bytes.
+         *         The values in this array are <b>unsigned</b>.
+         */
+        @Nullable
+        public byte[] getWaveform()
+        {
+            if (waveform == null)
+                return null;
+            return Base64.getDecoder().decode(waveform);
+        }
+
+        /**
+         * Gets the duration of this attachment. This is currently only nonzero on
+         * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
+         *
+         * @return The duration of this attachment's audio in seconds, or {@code 0}
+         *         if this is not a voice message.
+         */
+        public double getDuration()
+        {
+            return duration;
         }
 
         /**
