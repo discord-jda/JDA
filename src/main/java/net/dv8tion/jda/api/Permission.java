@@ -56,18 +56,18 @@ public enum Permission
     MODERATE_MEMBERS(    40, true, false, "Timeout Members"),
 
     // Text Permissions
-    MESSAGE_ADD_REACTION(     6, true, true, "Add Reactions"),
-    MESSAGE_SEND(            11, true, true, "Send Messages"),
-    MESSAGE_TTS(             12, true, true, "Send TTS Messages"),
-    MESSAGE_MANAGE(          13, true, true, "Manage Messages"),
-    MESSAGE_EMBED_LINKS(     14, true, true, "Embed Links"),
-    MESSAGE_ATTACH_FILES(    15, true, true, "Attach Files"),
-    MESSAGE_HISTORY(         16, true, true, "Read History"),
-    MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
-    MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
-    USE_APPLICATION_COMMANDS(31, true, true, "Use Application Commands"),
-    MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
-    VOICE_MESSAGE_SEND(      46, true, true, "Send Voice Messages"),
+    MESSAGE_ADD_REACTION(         6, true, true, "Add Reactions"),
+    MESSAGE_SEND(                11, true, true, "Send Messages"),
+    MESSAGE_TTS(                 12, true, true, "Send TTS Messages"),
+    MESSAGE_MANAGE(              13, true, true, "Manage Messages"),
+    MESSAGE_EMBED_LINKS(         14, true, true, "Embed Links"),
+    MESSAGE_ATTACH_FILES(        15, true, true, "Attach Files"),
+    MESSAGE_HISTORY(             16, true, true, "Read History"),
+    MESSAGE_MENTION_EVERYONE(    17, true, true, "Mention Everyone"),
+    MESSAGE_EXT_EMOJI(           18, true, true, "Use External Emojis"),
+    USE_APPLICATION_COMMANDS(    31, true, true, "Use Application Commands"),
+    MESSAGE_EXT_STICKER(         37, true, true, "Use External Stickers"),
+    MESSAGE_ATTACH_VOICE_MESSAGE(46, true, true, "Send Voice Messages"),
 
     // Thread Permissions
     MANAGE_THREADS(          34, true, true, "Manage Threads"),
@@ -127,7 +127,7 @@ public enum Permission
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS, MESSAGE_MANAGE,
                                 MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_EMOJI, MESSAGE_EXT_STICKER,
                                 MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
-                                MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS, MESSAGE_SEND_IN_THREADS, VOICE_MESSAGE_SEND);
+                                MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS, MESSAGE_SEND_IN_THREADS, MESSAGE_ATTACH_VOICE_MESSAGE);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
