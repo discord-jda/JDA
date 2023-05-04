@@ -58,6 +58,14 @@ public class ThreadingProviderConfig
         return threadFactory;
     }
 
+    public void init(int shardTotal)
+    {
+        if (rateLimitSchedulerProvider instanceof ThreadPoolProvider.LazySharedProvider)
+            ((ThreadPoolProvider.LazySharedProvider<?>) rateLimitSchedulerProvider).init(shardTotal);
+        if (rateLimitElasticProvider instanceof ThreadPoolProvider.LazySharedProvider)
+            ((ThreadPoolProvider.LazySharedProvider<?>) rateLimitElasticProvider).init(shardTotal);
+    }
+
     @Nullable
     public ThreadPoolProvider<? extends ScheduledExecutorService> getRateLimitSchedulerProvider()
     {

@@ -84,10 +84,10 @@ public class  DefaultShardManagerBuilder
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
     protected IntFunction<? extends IEventManager> eventManagerProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitSchedulerProvider = ThreadPoolProvider.lazy(
-        (ignored) -> Executors.newScheduledThreadPool(Math.max(2, 2 * (int) Math.log(shardsTotal)), new CountingThreadFactory(() -> "JDA", "RateLimit-Scheduler", true))
+        (total) -> Executors.newScheduledThreadPool(Math.max(2, 2 * (int) Math.log(total)), new CountingThreadFactory(() -> "JDA", "RateLimit-Scheduler", true))
     );
     protected ThreadPoolProvider<? extends ExecutorService> rateLimitElasticProvider = ThreadPoolProvider.lazy(
-        (ignored) -> {
+        (total) -> {
             ExecutorService pool = Executors.newCachedThreadPool(new CountingThreadFactory(() -> "JDA", "RateLimit-Elastic", true));
             if (pool instanceof ThreadPoolExecutor)
             {
@@ -98,7 +98,7 @@ public class  DefaultShardManagerBuilder
         }
     );
     protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider = ThreadPoolProvider.lazy(
-        (ignored) -> Executors.newScheduledThreadPool(Math.max(1, (int) Math.log(shardsTotal)), new CountingThreadFactory(() -> "JDA", "Gateway"))
+        (total) -> Executors.newScheduledThreadPool(Math.max(1, (int) Math.log(total)), new CountingThreadFactory(() -> "JDA", "Gateway"))
     );
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> eventPoolProvider = null;

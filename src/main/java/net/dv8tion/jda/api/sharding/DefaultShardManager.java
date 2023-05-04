@@ -486,6 +486,9 @@ public class DefaultShardManager implements ShardManager
             httpClient = sessionConfig.getHttpBuilder().build();
         }
 
+        if (getShardsTotal() != -1)
+            threadingConfig.init(getShardsTotal());
+
         // imagine if we had macros or closures or destructuring :)
         ExecutorPair<ScheduledExecutorService> rateLimitSchedulerPair = resolveExecutor(threadingConfig.getRateLimitSchedulerProvider(), shardId);
         ScheduledExecutorService rateLimitScheduler = rateLimitSchedulerPair.executor;
@@ -562,7 +565,7 @@ public class DefaultShardManager implements ShardManager
             this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
             this.gatewayURL = gateway.getUrl();
             if (this.gatewayURL == null)
-                LOG.error("Acquired null gateway url from SessionController");
+                throw new IllegalStateException("Acquired null gateway url from SessionController");
             else
                 LOG.info("Login Successful!");
 
@@ -576,6 +579,10 @@ public class DefaultShardManager implements ShardManager
                     for (int i = 0; i < getShardsTotal(); i++)
                         queue.add(i);
                 }
+
+                // Rebuild instance with new shard total, to allow proper thread scaling
+                jda.shutdownNow();
+                return buildInstance(shardId);
             }
         }
 
@@ -596,9 +603,7 @@ public class DefaultShardManager implements ShardManager
         jda.setSelfUser(selfUser);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents(), this.metaConfig.getEncoding());
-        if (getShardsTotal() == -1)
-            shardingConfig.setShardsTotal(shardTotal);
+        jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents(), this.metaConfig.getEncoding());
 
         return jda;
     }

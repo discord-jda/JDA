@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.sharding;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ExecutorService;
+import java.util.function.IntFunction;
 
 /**
  * Called by {@link DefaultShardManager} when building a JDA instance.
@@ -55,27 +56,46 @@ public interface ThreadPoolProvider<T extends ExecutorService>
     }
 
     @Nonnull
-    static <T extends ExecutorService> ThreadPoolProvider<T> lazy(@Nonnull ThreadPoolProvider<T> init)
+    static <T extends ExecutorService> LazySharedProvider<T> lazy(@Nonnull IntFunction<T> init)
     {
-        return new ThreadPoolProvider<T>()
+        return new LazySharedProvider<>(init);
+    }
+
+    final class LazySharedProvider<T extends ExecutorService> implements ThreadPoolProvider<T>
+    {
+        private final IntFunction<T> initializer;
+        private volatile T temporaryPool;
+        private volatile T pool;
+
+        public LazySharedProvider(IntFunction<T> initializer)
         {
-            private volatile T pool;
+            this.initializer = initializer;
+        }
 
-            @Nullable
-            @Override
-            public T provide(int shardId)
+        public synchronized void init(int shardTotal)
+        {
+            if (pool == null)
+                pool = initializer.apply(shardTotal);
+
+            if (temporaryPool != null)
             {
-                if (pool == null)
-                {
-                    synchronized (init)
-                    {
-                        if (pool == null)
-                            pool = init.provide(shardId);
-                    }
-                }
-
-                return pool;
+                temporaryPool.shutdownNow();
+                temporaryPool = null;
             }
-        };
+        }
+
+        @Nullable
+        @Override
+        public synchronized T provide(int shardId)
+        {
+            if (pool == null)
+            {
+                if (temporaryPool == null)
+                    temporaryPool = initializer.apply(1);
+                return temporaryPool;
+            }
+
+            return pool;
+        }
     }
 }
