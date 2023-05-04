@@ -139,6 +139,30 @@ public interface User extends UserSnowflake
     String getName();
 
     /**
+     * The global display name of the user.
+     * <br>This name is not unique and allows more characters.
+     *
+     * <p>This name is usually displayed in the UI.
+     *
+     * @return The global display name or null if unset.
+     */
+    @Nullable
+    String getGlobalName();
+
+    /**
+     * The name visible in the UI.
+     * <br>If the {@link #getGlobalName() global name} is {@code null}, this returns the {@link #getName() username} instead.
+     *
+     * @return The effective display name
+     */
+    @Nonnull
+    default String getEffectiveName()
+    {
+        String globalName = getGlobalName();
+        return globalName != null ? globalName : getName();
+    }
+
+    /**
      * <br>The discriminator of the {@link net.dv8tion.jda.api.entities.User User}. Used to differentiate between users with the same usernames.
      * <br>This only contains the 4 digits after the username and the #.
      *

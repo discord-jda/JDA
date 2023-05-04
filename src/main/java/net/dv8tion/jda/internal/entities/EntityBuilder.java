@@ -48,10 +48,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.*;
-import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.events.user.update.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -146,6 +143,7 @@ public class EntityBuilder
         selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
+                .setGlobalName(self.getString("global_name", null))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
                 .setBot(self.getBoolean("bot"))
@@ -454,6 +452,7 @@ public class EntityBuilder
         {
             // Initial creation
             userObj.setName(user.getString("username"))
+                   .setGlobalName(user.getString("global_name", null))
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
@@ -474,6 +473,8 @@ public class EntityBuilder
     {
         String oldName = userObj.getName();
         String newName = user.getString("username");
+        String oldGlobalName = userObj.getName();
+        String newGlobalName = user.getString("global_name", null);
         String oldDiscriminator = userObj.getDiscriminator();
         String newDiscriminator = user.get("discriminator").toString();
         String oldAvatar = userObj.getAvatarId();
@@ -490,6 +491,15 @@ public class EntityBuilder
                 new UserUpdateNameEvent(
                     jda, responseNumber,
                     userObj, oldName));
+        }
+
+        if (!Objects.equals(oldGlobalName, newGlobalName))
+        {
+            userObj.setGlobalName(newGlobalName);
+            jda.handleEvent(
+                new UserUpdateGlobalNameEvent(
+                    jda, responseNumber,
+                    userObj, oldGlobalName));
         }
 
         if (!oldDiscriminator.equals(newDiscriminator))
