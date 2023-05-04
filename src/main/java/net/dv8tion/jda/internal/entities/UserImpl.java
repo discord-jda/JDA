@@ -104,7 +104,8 @@ public class UserImpl extends UserSnowflakeImpl implements User
     @Override
     public String getDefaultAvatarId()
     {
-        return String.valueOf(discriminator % 5);
+        // Backwards compatibility with old discriminator system
+        return discriminator != 0 ? String.valueOf(discriminator % 5) : super.getDefaultAvatarId();
     }
 
     @Nonnull
