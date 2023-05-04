@@ -252,7 +252,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     /**
      * Retrieves the Name displayed in the official Discord Client.
      *
-     * @return The Nickname of this Member or the Username if no Nickname is present.
+     * @return The guild nickname of this Member or the {@link User#getEffectiveName() effective user name} if no guild nickname is present.
      */
     @Nonnull
     String getEffectiveName();
