@@ -1079,7 +1079,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @deprecated This will become obsolete in the future.
      *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames & Display Names</a>.
+     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
     @Deprecated
@@ -1119,7 +1119,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *
      * @deprecated This will become obsolete in the future.
      *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames & Display Names</a>.
+     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
     @Deprecated
