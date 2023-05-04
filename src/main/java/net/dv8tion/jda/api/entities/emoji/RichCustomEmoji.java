@@ -106,7 +106,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * <p>This is only available for manually retrieved emojis from {@link Guild#retrieveEmojis()}
      * and {@link Guild#retrieveEmojiById(long)}.
-     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * @throws IllegalStateException
      *         If this emoji does not have user information
@@ -124,7 +124,7 @@ public interface RichCustomEmoji extends CustomEmoji
      * The user information might be outdated, you can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}
      *         in this guild
      *
      * @return {@link RestAction} - Type: {@link User}
@@ -153,7 +153,7 @@ public interface RichCustomEmoji extends CustomEmoji
      * @throws java.lang.UnsupportedOperationException
      *         If this emoji is managed by discord ({@link #isManaged()})
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the Permission {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} is not given
+     *         if the Permission {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} is not given
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this emoji.
@@ -168,7 +168,7 @@ public interface RichCustomEmoji extends CustomEmoji
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}
      *
      * @return The CustomEmojiManager for this emoji
      */

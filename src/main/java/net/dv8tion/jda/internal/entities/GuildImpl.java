@@ -813,7 +813,7 @@ public class GuildImpl implements Guild
             RichCustomEmoji emoji = getEmojiById(id);
             if (emoji != null)
             {
-                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
                     return emoji;
             }
             return null;
@@ -1747,7 +1747,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
-        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, 32, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
@@ -1771,7 +1771,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
     {
-        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");

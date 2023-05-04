@@ -110,8 +110,8 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     public CacheRestAction<User> retrieveOwner()
     {
         Guild g = getGuild();
-        if (g != null && !g.getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
-            throw new InsufficientPermissionException(g, Permission.MANAGE_EMOJIS_AND_STICKERS);
+        if (g != null && !g.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+            throw new InsufficientPermissionException(g, Permission.MANAGE_GUILD_EXPRESSIONS);
         return new DeferredRestAction<>(jda, User.class, this::getOwner,
             () -> {
                 Route.CompiledRoute route = Route.Stickers.GET_GUILD_STICKER.compile(getGuildId(), getId());
