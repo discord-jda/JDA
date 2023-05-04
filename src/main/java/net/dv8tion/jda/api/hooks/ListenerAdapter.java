@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.hooks;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
@@ -152,6 +153,8 @@ public abstract class ListenerAdapter implements EventListener
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
+    @Deprecated
+    @ForRemoval
     public void onUserUpdateDiscriminator(@Nonnull UserUpdateDiscriminatorEvent event) {}
     public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
