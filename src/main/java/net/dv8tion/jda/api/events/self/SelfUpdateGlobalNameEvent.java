@@ -17,9 +17,17 @@
 package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that the {@link User#getGlobalName() global name} of the current user changed.
+ *
+ * <p>Can be used to retrieve the old global name.
+ *
+ * <p>Identifier: {@code global_name}
+ */
 public class SelfUpdateGlobalNameEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "global_name";
