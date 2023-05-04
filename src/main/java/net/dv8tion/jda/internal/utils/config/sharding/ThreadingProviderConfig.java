@@ -58,12 +58,36 @@ public class ThreadingProviderConfig
         return threadFactory;
     }
 
+    private void init(ThreadPoolProvider<?> provider, int shardTotal)
+    {
+        if (provider instanceof ThreadPoolProvider.LazySharedProvider)
+            ((ThreadPoolProvider.LazySharedProvider<?>) provider).init(shardTotal);
+    }
+
+    private void shutdown(ThreadPoolProvider<?> provider)
+    {
+        if (provider instanceof ThreadPoolProvider.LazySharedProvider)
+            ((ThreadPoolProvider.LazySharedProvider<?>) provider).shutdown();
+    }
+
     public void init(int shardTotal)
     {
-        if (rateLimitSchedulerProvider instanceof ThreadPoolProvider.LazySharedProvider)
-            ((ThreadPoolProvider.LazySharedProvider<?>) rateLimitSchedulerProvider).init(shardTotal);
-        if (rateLimitElasticProvider instanceof ThreadPoolProvider.LazySharedProvider)
-            ((ThreadPoolProvider.LazySharedProvider<?>) rateLimitElasticProvider).init(shardTotal);
+        init(rateLimitSchedulerProvider, shardTotal);
+        init(rateLimitElasticProvider, shardTotal);
+        init(gatewayPoolProvider, shardTotal);
+        init(callbackPoolProvider, shardTotal);
+        init(eventPoolProvider, shardTotal);
+        init(audioPoolProvider, shardTotal);
+    }
+
+    public void shutdown()
+    {
+        shutdown(rateLimitSchedulerProvider);
+        shutdown(rateLimitElasticProvider);
+        shutdown(gatewayPoolProvider);
+        shutdown(callbackPoolProvider);
+        shutdown(eventPoolProvider);
+        shutdown(audioPoolProvider);
     }
 
     @Nullable

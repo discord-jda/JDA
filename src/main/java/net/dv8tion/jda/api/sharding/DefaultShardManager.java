@@ -366,6 +366,9 @@ public class DefaultShardManager implements ShardManager
         {
             this.executor.shutdown();
         }
+
+        // Shutdown shared pools
+        this.threadingConfig.shutdown();
     }
 
     @Override

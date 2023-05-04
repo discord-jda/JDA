@@ -84,6 +84,21 @@ public interface ThreadPoolProvider<T extends ExecutorService>
             }
         }
 
+        public synchronized void shutdown()
+        {
+            if (pool != null)
+            {
+                pool.shutdown();
+                pool = null;
+            }
+
+            if (temporaryPool != null)
+            {
+                temporaryPool.shutdown();
+                temporaryPool = null;
+            }
+        }
+
         @Nullable
         @Override
         public synchronized T provide(int shardId)
