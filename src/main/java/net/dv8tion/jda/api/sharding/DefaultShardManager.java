@@ -487,9 +487,13 @@ public class DefaultShardManager implements ShardManager
         }
 
         // imagine if we had macros or closures or destructuring :)
-        ExecutorPair<ScheduledExecutorService> rateLimitPair = resolveExecutor(threadingConfig.getRateLimitPoolProvider(), shardId);
-        ScheduledExecutorService rateLimitPool = rateLimitPair.executor;
-        boolean shutdownRateLimitPool = rateLimitPair.automaticShutdown;
+        ExecutorPair<ScheduledExecutorService> rateLimitSchedulerPair = resolveExecutor(threadingConfig.getRateLimitSchedulerProvider(), shardId);
+        ScheduledExecutorService rateLimitScheduler = rateLimitSchedulerPair.executor;
+        boolean shutdownRateLimitScheduler = rateLimitSchedulerPair.automaticShutdown;
+
+        ExecutorPair<ExecutorService> rateLimitElasticPair = resolveExecutor(threadingConfig.getRateLimitElasticProvider(), shardId);
+        ExecutorService rateLimitElastic = rateLimitElasticPair.executor;
+        boolean shutdownRateLimitElastic = rateLimitElasticPair.automaticShutdown;
 
         ExecutorPair<ScheduledExecutorService> gatewayPair = resolveExecutor(threadingConfig.getGatewayPoolProvider(), shardId);
         ScheduledExecutorService gatewayPool = gatewayPair.executor;
@@ -510,7 +514,8 @@ public class DefaultShardManager implements ShardManager
         AuthorizationConfig authConfig = new AuthorizationConfig(token);
         SessionConfig sessionConfig = this.sessionConfig.toSessionConfig(httpClient);
         ThreadingConfig threadingConfig = new ThreadingConfig();
-        threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
+        threadingConfig.setRateLimitScheduler(rateLimitScheduler, shutdownRateLimitScheduler);
+        threadingConfig.setRateLimitElastic(rateLimitElastic, shutdownRateLimitElastic);
         threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setEventPool(eventPool, shutdownEventPool);

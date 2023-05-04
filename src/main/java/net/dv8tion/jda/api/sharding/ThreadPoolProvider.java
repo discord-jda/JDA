@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.sharding;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ExecutorService;
 
@@ -51,5 +52,30 @@ public interface ThreadPoolProvider<T extends ExecutorService>
     default boolean shouldShutdownAutomatically(int shardId)
     {
         return false;
+    }
+
+    @Nonnull
+    static <T extends ExecutorService> ThreadPoolProvider<T> lazy(@Nonnull ThreadPoolProvider<T> init)
+    {
+        return new ThreadPoolProvider<T>()
+        {
+            private volatile T pool;
+
+            @Nullable
+            @Override
+            public T provide(int shardId)
+            {
+                if (pool == null)
+                {
+                    synchronized (init)
+                    {
+                        if (pool == null)
+                            pool = init.provide(shardId);
+                    }
+                }
+
+                return pool;
+            }
+        };
     }
 }

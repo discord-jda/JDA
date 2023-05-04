@@ -279,7 +279,8 @@ public class JDAImpl implements JDA
             return;
         RestRateLimiter rateLimiter = this.restConfig.getRateLimiterFactory().apply(
                 new RestRateLimiter.RateLimitConfig(
-                        this.threadConfig.getRateLimitPool(),
+                        this.threadConfig.getRateLimitScheduler(),
+                        this.threadConfig.getRateLimitElastic(),
                         getSessionController().getRateLimitHandle(),
                         this.sessionConfig.isRelativeRateLimit() && this.restConfig.isRelativeRateLimit()
                 ));
@@ -568,7 +569,7 @@ public class JDAImpl implements JDA
     @Override
     public ScheduledExecutorService getRateLimitPool()
     {
-        return threadConfig.getRateLimitPool();
+        return threadConfig.getRateLimitScheduler();
     }
 
     @Nonnull
