@@ -207,6 +207,14 @@ public interface AutoModRule extends ISnowflake
     int getMentionLimit();
 
     /**
+     * Whether this rule is using the raid protection feature.
+     * <p>Only applies to {@link AutoModTriggerType#MENTION_SPAM}.
+     *
+     * @return True, if mention raid protection is enabled
+     */
+    boolean isMentionRaidProtectionEnabled();
+
+    /**
      * Returns an {@link AutoModRuleManager}, which can be used to modify this rule.
      * <p>The manager allows modifying multiple fields in a single request.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.

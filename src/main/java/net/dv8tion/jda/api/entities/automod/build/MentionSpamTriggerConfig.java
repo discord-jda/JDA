@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamTriggerConfig> implements TriggerConfig
 {
     private int mentionLimit;
+    private boolean isMentionRaidProtectionEnabled;
 
     public MentionSpamTriggerConfig(int mentionLimit)
     {
@@ -56,12 +57,28 @@ public class MentionSpamTriggerConfig extends AbstractTriggerConfig<MentionSpamT
         return this;
     }
 
+    /**
+     * Whether to enable mention raid protection.
+     *
+     * @param  enabled
+     *         True, if mention raid protection should be enabled
+     *
+     * @return The current config for chaining convenience
+     */
+    @Nonnull
+    public MentionSpamTriggerConfig setMentionRaidProtectionEnabled(boolean enabled)
+    {
+        this.isMentionRaidProtectionEnabled = enabled;
+        return this;
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
     {
         DataObject data = super.toData();
         data.put("mention_total_limit", mentionLimit);
+        data.put("mention_raid_protection_enabled", isMentionRaidProtectionEnabled);
         return data;
     }
 }

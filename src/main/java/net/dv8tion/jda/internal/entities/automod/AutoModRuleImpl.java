@@ -54,6 +54,7 @@ public class AutoModRuleImpl implements AutoModRule
     private EnumSet<KeywordPreset> filteredPresets = EnumSet.noneOf(KeywordPreset.class);
     private List<String> allowlist = Collections.emptyList();
     private int mentionLimit = -1;
+    private boolean isMentionRaidProtectionEnabled = false;
 
     public AutoModRuleImpl(Guild guild, long id)
     {
@@ -181,6 +182,12 @@ public class AutoModRuleImpl implements AutoModRule
         return mentionLimit;
     }
 
+    @Override
+    public boolean isMentionRaidProtectionEnabled()
+    {
+        return isMentionRaidProtectionEnabled;
+    }
+
     public AutoModRuleImpl setName(String name)
     {
         this.name = name;
@@ -259,6 +266,12 @@ public class AutoModRuleImpl implements AutoModRule
         return this;
     }
 
+    public AutoModRuleImpl setMentionRaidProtectionEnabled(boolean mentionRaidProtectionEnabled)
+    {
+        isMentionRaidProtectionEnabled = mentionRaidProtectionEnabled;
+        return this;
+    }
+
     @Override
     public int hashCode()
     {
@@ -329,6 +342,7 @@ public class AutoModRuleImpl implements AutoModRule
             );
             // Only for MENTION type
             rule.setMentionLimit(metadata.getInt("mention_total_limit", 0));
+            rule.setMentionRaidProtectionEnabled(metadata.getBoolean("mention_raid_protection_enabled"));
         });
 
         return rule;
