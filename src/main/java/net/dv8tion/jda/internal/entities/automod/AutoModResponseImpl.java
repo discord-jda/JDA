@@ -32,6 +32,14 @@ public class AutoModResponseImpl implements AutoModResponse
     private final String customMessage;
     private final long timeoutDuration;
 
+    public AutoModResponseImpl(Type type)
+    {
+        this.type = type;
+        this.channel = null;
+        this.customMessage = null;
+        this.timeoutDuration = 0;
+    }
+
     public AutoModResponseImpl(Type type, GuildMessageChannel channel)
     {
         this.type = type;

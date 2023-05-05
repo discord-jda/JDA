@@ -35,6 +35,11 @@ public enum AutoModEventType
     MESSAGE_SEND(1),
 
     /**
+     * The rule is triggered when a member updates their profile.
+     */
+    MEMBER_UPDATE(2),
+
+    /**
      * Placeholder for unknown types which haven't been added yet.
      */
     UNKNOWN(-1);

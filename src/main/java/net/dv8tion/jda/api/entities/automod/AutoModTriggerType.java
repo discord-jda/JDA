@@ -24,21 +24,25 @@ import javax.annotation.Nonnull;
 public enum AutoModTriggerType
 {
     /**
-     * The rule is triggered by user content containing specific keywords or phrases.
+     * The rule is triggered by user message content containing specific keywords or phrases.
      */
     KEYWORD(1, 6),
     /**
-     * The rule is triggered by user content containing classified spam content.
+     * The rule is triggered by user message content containing classified spam content.
      */
     SPAM(3, 1),
     /**
-     * The rule is triggered by user content containing keywords from a predefined list (such as {@link AutoModRule.KeywordPreset#SLURS slurs}).
+     * The rule is triggered by user message content containing keywords from a predefined list (such as {@link AutoModRule.KeywordPreset#SLURS slurs}).
      */
     KEYWORD_PRESET(4, 1),
     /**
-     * The rule is triggered by user content containing more than the allowed number of mentions.
+     * The rule is triggered by user message content containing more than the allowed number of mentions.
      */
     MENTION_SPAM(5, 1),
+    /**
+     * The rule is triggered by a member profile containing specific keywords or phrases.
+     */
+    MEMBER_PROFILE_KEYWORD(6, 1),
     /**
      * Placeholder for unknown trigger types that haven't been added yet.
      */

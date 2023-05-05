@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,8 +72,8 @@ public class AutoModRuleData implements SerializableData
     protected AutoModRuleData(AutoModEventType eventType, String name, TriggerConfig triggerMetadata)
     {
         this.eventType = eventType;
-        this.name = name;
-        this.triggerMetadata = triggerMetadata;
+        this.setName(name);
+        this.setTriggerConfig(triggerMetadata);
     }
 
     /**
@@ -94,6 +93,30 @@ public class AutoModRuleData implements SerializableData
     public static AutoModRuleData onMessage(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
     {
         return new AutoModRuleData(AutoModEventType.MESSAGE_SEND, name, triggerConfig);
+    }
+
+
+    /**
+     * Create a new {@link AutoModRule} which triggers on a member profile being updated.
+     *
+     * @param  name
+     *         The name of the rule (1-{@value AutoModRule#MAX_RULE_NAME_LENGTH} characters)
+     * @param  triggerConfig
+     *         The trigger configuration for this rule
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is not between 1 and {@value AutoModRule#MAX_RULE_NAME_LENGTH} characters
+     *
+     * @return The new {@link AutoModRuleData} instance
+     */
+    @Nonnull
+    public static AutoModRuleData onMemberProfile(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
+    {
+        AutoModTriggerType type = triggerConfig.getType();
+        if (type != AutoModTriggerType.KEYWORD && type != AutoModTriggerType.MEMBER_PROFILE_KEYWORD)
+            throw new IllegalArgumentException("Invalid trigger type for member profile: " + type);
+        return new AutoModRuleData(AutoModEventType.MEMBER_UPDATE, name, triggerConfig)
+                .putResponses(AutoModResponse.blockMemberInteraction());
     }
 
     /**
@@ -207,6 +230,8 @@ public class AutoModRuleData implements SerializableData
     {
         Checks.noneNull(responses, "Responses");
         actions.clear();
+        if (eventType == AutoModEventType.MEMBER_UPDATE)
+            actions.put(AutoModResponse.Type.BLOCK_MEMBER_INTERACTION, AutoModResponse.blockMemberInteraction());
         for (AutoModResponse response : responses)
         {
             AutoModResponse.Type type = response.getType();
@@ -368,7 +393,6 @@ public class AutoModRuleData implements SerializableData
      * @return The same {@link AutoModRuleData} instance
      */
     @Nonnull
-    @CheckReturnValue
     public AutoModRuleData setTriggerConfig(@Nonnull TriggerConfig config)
     {
         Checks.notNull(config, "TriggerConfig");
@@ -397,6 +421,14 @@ public class AutoModRuleData implements SerializableData
     public DataObject toData()
     {
         AutoModTriggerType triggerType = triggerMetadata.getType();
+        if (eventType == AutoModEventType.MEMBER_UPDATE)
+        {
+            if (triggerType == AutoModTriggerType.KEYWORD)
+                triggerType = AutoModTriggerType.MEMBER_PROFILE_KEYWORD;
+            else
+                throw new IllegalStateException("Cannot create rule of trigger type " + triggerType + " with event type " + eventType);
+        }
+
         for (AutoModResponse response : actions.values())
         {
             if (!response.getType().isSupportedTrigger(triggerType))

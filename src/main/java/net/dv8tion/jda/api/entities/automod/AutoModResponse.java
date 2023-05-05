@@ -139,6 +139,17 @@ public interface AutoModResponse extends SerializableData
     }
 
     /**
+     * Create a response that will prevent the member from interacting with anything in the guild until the offending content is removed.
+     *
+     * @return The response instance
+     */
+    @Nonnull
+    static AutoModResponse blockMemberInteraction()
+    {
+        return new AutoModResponseImpl(Type.BLOCK_MEMBER_INTERACTION);
+    }
+
+    /**
      * The type of response.
      */
     enum Type
@@ -146,11 +157,11 @@ public interface AutoModResponse extends SerializableData
         /**
          * Blocks the message from being sent.
          */
-        BLOCK_MESSAGE(1),
+        BLOCK_MESSAGE(1, EnumSet.of(AutoModTriggerType.KEYWORD, AutoModTriggerType.KEYWORD_PRESET, AutoModTriggerType.SPAM, AutoModTriggerType.MENTION_SPAM)),
         /**
          * Sends an alert message to the specified channel.
          */
-        SEND_ALERT_MESSAGE(2),
+        SEND_ALERT_MESSAGE(2, EnumSet.of(AutoModTriggerType.KEYWORD, AutoModTriggerType.KEYWORD_PRESET, AutoModTriggerType.SPAM, AutoModTriggerType.MENTION_SPAM)),
         /**
          * Times out the user for the specified duration.
          *
@@ -158,9 +169,13 @@ public interface AutoModResponse extends SerializableData
          */
         TIMEOUT(3, EnumSet.of(AutoModTriggerType.KEYWORD, AutoModTriggerType.MENTION_SPAM)),
         /**
+         * Blocks the member from interacting with the guild until they update the offending content.
+         */
+        BLOCK_MEMBER_INTERACTION(4, EnumSet.of(AutoModTriggerType.MEMBER_PROFILE_KEYWORD)),
+        /**
          * Placeholder for unknown types.
          */
-        UNKNOWN(-1)
+        UNKNOWN(-1, EnumSet.noneOf(AutoModTriggerType.class))
         ;
 
         private final int key;
