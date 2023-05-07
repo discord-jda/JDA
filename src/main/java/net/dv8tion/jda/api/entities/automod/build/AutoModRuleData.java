@@ -95,7 +95,6 @@ public class AutoModRuleData implements SerializableData
         return new AutoModRuleData(AutoModEventType.MESSAGE_SEND, name, triggerConfig);
     }
 
-
     /**
      * Create a new {@link AutoModRule} which triggers on a member profile being updated.
      *
@@ -112,12 +111,10 @@ public class AutoModRuleData implements SerializableData
     @Nonnull
     public static AutoModRuleData onMemberProfile(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
     {
-        AutoModTriggerType type = triggerConfig.getType();
-        if (type != AutoModTriggerType.KEYWORD && type != AutoModTriggerType.MEMBER_PROFILE_KEYWORD)
-            throw new IllegalArgumentException("Invalid trigger type for member profile: " + type);
         return new AutoModRuleData(AutoModEventType.MEMBER_UPDATE, name, triggerConfig)
                 .putResponses(AutoModResponse.blockMemberInteraction());
     }
+
 
     /**
      * Change the name of the rule.
@@ -396,6 +393,7 @@ public class AutoModRuleData implements SerializableData
     public AutoModRuleData setTriggerConfig(@Nonnull TriggerConfig config)
     {
         Checks.notNull(config, "TriggerConfig");
+        Checks.check(config.getType().isEventTypeSupported(eventType), "Cannot use trigger type %s with event type %s", config.getType(), eventType);
         this.triggerMetadata = config;
         return this;
     }
