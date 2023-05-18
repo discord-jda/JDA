@@ -87,6 +87,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     public AccountManagerImpl setName(@Nonnull String name)
     {
@@ -130,8 +131,8 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Override
     protected void handleSuccess(Response response, Request<Void> request)
     {
-        String newToken = response.getObject().getString("token").replace("Bot ", "");
-        api.setToken(newToken);
+//        String newToken = response.getObject().getString("token").replace("Bot ", "");
+//        api.setToken(newToken);
         request.onSuccess(null);
     }
 }
