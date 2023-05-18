@@ -473,7 +473,7 @@ public class EntityBuilder
     {
         String oldName = userObj.getName();
         String newName = user.getString("username");
-        String oldGlobalName = userObj.getName();
+        String oldGlobalName = userObj.getGlobalName();
         String newGlobalName = user.getString("global_name", null);
         String oldDiscriminator = userObj.getDiscriminator();
         String newDiscriminator = user.getString("discriminator", "0");
