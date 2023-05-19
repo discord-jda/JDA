@@ -194,7 +194,7 @@ public class MemberImpl implements Member
     @Override
     public String getEffectiveName()
     {
-        return nickname != null ? nickname : getUser().getName();
+        return nickname != null ? nickname : getUser().getEffectiveName();
     }
 
     @Nonnull
@@ -377,6 +377,30 @@ public class MemberImpl implements Member
         return user.getIdLong();
     }
 
+    @Nonnull
+    @Override
+    public String getAsMention()
+    {
+        return "<@" + user.getId() + '>';
+    }
+
+    @Nullable
+    @Override
+    public DefaultGuildChannelUnion getDefaultChannel()
+    {
+        return (DefaultGuildChannelUnion) Stream.concat(getGuild().getTextChannelCache().stream(), getGuild().getNewsChannelCache().stream())
+                .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
+                .min(Comparator.naturalOrder())
+                .orElse(null);
+    }
+
+    @Nonnull
+    @Override
+    public String getDefaultAvatarId()
+    {
+        return user.getDefaultAvatarId();
+    }
+
     public MemberImpl setNickname(String nickname)
     {
         this.nickname = nickname;
@@ -461,22 +485,5 @@ public class MemberImpl implements Member
                 .addMetadata("user", getUser())
                 .addMetadata("guild", getGuild())
                 .toString();
-    }
-
-    @Nonnull
-    @Override
-    public String getAsMention()
-    {
-        return "<@" + user.getId() + '>';
-    }
-
-    @Nullable
-    @Override
-    public DefaultGuildChannelUnion getDefaultChannel()
-    {
-        return (DefaultGuildChannelUnion) Stream.concat(getGuild().getTextChannelCache().stream(), getGuild().getNewsChannelCache().stream())
-                .filter(c -> hasPermission(c, Permission.VIEW_CHANNEL))
-                .min(Comparator.naturalOrder())
-                .orElse(null);
     }
 }

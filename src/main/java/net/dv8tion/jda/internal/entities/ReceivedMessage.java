@@ -728,10 +728,11 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public String toString()
     {
         return new EntityString(this)
-                .addMetadata("author", author.getAsTag())
+                .addMetadata("author", author.getDiscriminator().equals("0000") ? author.getName() : author.getAsTag())
                 .addMetadata("content", String.format("%.20s ...", this))
                 .toString();
     }

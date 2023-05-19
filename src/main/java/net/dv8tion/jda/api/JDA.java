@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
@@ -1028,8 +1030,14 @@ public interface JDA extends IGuildChannelContainer
      *         If the provided tag is null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     *
+     * @deprecated This will become obsolete in the future.
+     *             Discriminators are being phased out and replaced by globally unique usernames.
+     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     default User getUserByTag(@Nonnull String tag)
     {
         Checks.notNull(tag, "Tag");
@@ -1061,8 +1069,14 @@ public interface JDA extends IGuildChannelContainer
      *         If the provided arguments are null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     *
+     * @deprecated This will become obsolete in the future.
+     *             Discriminators are being phased out and replaced by globally unique usernames.
+     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     default User getUserByTag(@Nonnull String username, @Nonnull String discriminator)
     {
         Checks.notNull(username, "Username");
@@ -1092,8 +1106,11 @@ public interface JDA extends IGuildChannelContainer
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.User#getName()}.
      *
      * @return Possibly-empty immutable list of {@link net.dv8tion.jda.api.entities.User Users} that all have the same name as the provided name.
+     *
+     * @incubating This will be replaced in the future when the rollout of globally unique usernames has been completed.
      */
     @Nonnull
+    @Incubating
     default List<User> getUsersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getUserCache().getElementsByName(name, ignoreCase);

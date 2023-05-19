@@ -43,6 +43,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
 
     protected short discriminator;
     protected String name;
+    protected String globalName;
     protected String avatarId;
     protected Profile profile;
     protected long privateChannelId = 0L;
@@ -62,6 +63,13 @@ public class UserImpl extends UserSnowflakeImpl implements User
     public String getName()
     {
         return name;
+    }
+
+    @Nullable
+    @Override
+    public String getGlobalName()
+    {
+        return globalName;
     }
 
     @Nonnull
@@ -104,7 +112,8 @@ public class UserImpl extends UserSnowflakeImpl implements User
     @Override
     public String getDefaultAvatarId()
     {
-        return String.valueOf(discriminator % 5);
+        // Backwards compatibility with old discriminator system
+        return discriminator != 0 ? String.valueOf(discriminator % 5) : super.getDefaultAvatarId();
     }
 
     @Nonnull
@@ -196,6 +205,12 @@ public class UserImpl extends UserSnowflakeImpl implements User
     public UserImpl setName(String name)
     {
         this.name = name;
+        return this;
+    }
+
+    public UserImpl setGlobalName(String globalName)
+    {
+        this.globalName = globalName;
         return this;
     }
 

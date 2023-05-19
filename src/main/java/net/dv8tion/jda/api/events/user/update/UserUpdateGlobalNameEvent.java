@@ -16,18 +16,17 @@
 
 package net.dv8tion.jda.api.events.user.update;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
- * Indicates that the discriminator of a {@link net.dv8tion.jda.api.entities.User User} changed.
+ * Indicates that the {@link User#getGlobalName() global name} of a {@link User} changed. (Not Nickname)
  *
- * <p>Can be used to retrieve the User who changed their discriminator and their previous discriminator.
+ * <p>Can be used to retrieve the User who changed their global name and their previous global name.
  *
- * <p>Identifier: {@code discriminator}
+ * <p>Identifier: {@code global_name}
  *
  * <p><b>Requirements</b><br>
  *
@@ -39,55 +38,41 @@ import javax.annotation.Nonnull;
  * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
- *
- * @deprecated This will become obsolete in the future.
- *             Discriminators are being phased out and replaced by globally unique usernames.
- *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
  */
-@Deprecated
-@ForRemoval
-public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
+public class UserUpdateGlobalNameEvent extends GenericUserUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "discriminator";
+    public static final String IDENTIFIER = "global_name";
 
-    public UserUpdateDiscriminatorEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull String oldDiscriminator)
+    public UserUpdateGlobalNameEvent(JDA api, long responseNumber, User user, String oldName)
     {
-        super(api, responseNumber, user, oldDiscriminator, user.getDiscriminator(), IDENTIFIER);
+        super(api, responseNumber, user, oldName, user.getGlobalName(), IDENTIFIER);
     }
 
     /**
-     * The old discriminator
+     * The old global name
      *
-     * @return The old discriminator
+     * @return The old global name
      */
-    @Nonnull
-    public String getOldDiscriminator()
+    @Nullable
+    public String getOldGlobalName()
     {
         return getOldValue();
     }
 
     /**
-     * The new discriminator
+     * The new global name
      *
-     * @return The new discriminator
+     * @return The new global name
      */
-    @Nonnull
-    public String getNewDiscriminator()
+    @Nullable
+    public String getNewGlobalName()
     {
         return getNewValue();
     }
 
-    @Nonnull
     @Override
-    public String getOldValue()
+    public String toString()
     {
-        return super.getOldValue();
-    }
-
-    @Nonnull
-    @Override
-    public String getNewValue()
-    {
-        return super.getNewValue();
+        return "UserUpdateGlobalName(" + getOldValue() + "->" + getNewValue() + ')';
     }
 }
