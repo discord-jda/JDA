@@ -211,7 +211,7 @@ public class ReceivedMessage implements Message
     @Override
     public RestAction<Void> pin()
     {
-        checkSystem("edit");
+        checkSystem("pin");
         if (isEphemeral())
             throw new IllegalStateException("Cannot pin ephemeral messages.");
 
@@ -226,7 +226,7 @@ public class ReceivedMessage implements Message
     @Override
     public RestAction<Void> unpin()
     {
-        checkSystem("edit");
+        checkSystem("unpin");
         if (isEphemeral())
             throw new IllegalStateException("Cannot unpin ephemeral messages.");
 
