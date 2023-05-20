@@ -139,16 +139,6 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveOriginal()
-    {
-        Route.CompiledRoute route = Route.Interactions.GET_ORIGINAL.compile(api.getSelfUser().getApplicationId(), interaction.getToken());
-        TriggerRestAction<Message> action = new TriggerRestAction<>(api, route, (response, request) -> builder().apply(response.getObject()));
-        action.setCheck(this::checkExpired);
-        return onReady(action);
-    }
-
-    @Nonnull
-    @Override
     public WebhookMessageCreateActionImpl<Message> sendRequest()
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), interaction.getToken());
@@ -180,6 +170,18 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         TriggerRestAction<Void> action = new TriggerRestAction<>(api, route);
+        action.setCheck(this::checkExpired);
+        return onReady(action);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
+    {
+        if (!"@original".equals(messageId))
+            Checks.isSnowflake(messageId);
+        Route.CompiledRoute route = Route.Interactions.GET_MESSAGE.compile(api.getSelfUser().getApplicationId(), interaction.getToken(), messageId);
+        TriggerRestAction<Message> action = new TriggerRestAction<>(api, route, (response, request) -> builder().apply(response.getObject()));
         action.setCheck(this::checkExpired);
         return onReady(action);
     }

@@ -64,6 +64,13 @@ public enum ChannelType
     FORUM(15, 0, true),
 
     /**
+     * Pseudo-type used to represent the target channel of a webhook message.
+     * <br>This channel type does not actually exist,
+     * it is only an indicator that we do not know what type of channel the webhook is linked to.
+     */
+    WEBHOOK(100, -1, false),
+
+    /**
      * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
      * channel type and JDA had yet to implement support for it.
      */

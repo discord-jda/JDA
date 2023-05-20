@@ -64,6 +64,7 @@ import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
 import net.dv8tion.jda.internal.entities.sticker.*;
 import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.requests.IncomingWebhookClient;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -1607,6 +1608,9 @@ public class EntityBuilder
         // Try to resolve private channel recipient if needed
         if (channel instanceof PrivateChannel)
             return createMessageWithLookup(json, null, modifyCache);
+        // Try to build a message with no known channel, coming from a webhook
+        if (channel instanceof IncomingWebhookClient.WebhookChannel)
+            return createMessage0(json, channel, null, false);
         throw new IllegalArgumentException(MISSING_CHANNEL);
     }
 
@@ -1721,7 +1725,7 @@ public class EntityBuilder
                     throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
             }
         }
-        else
+        else if (channel instanceof PrivateChannel)
         {
             //Assume private channel
             if (authorId == getJDA().getSelfUser().getIdLong())
@@ -1736,6 +1740,10 @@ public class EntityBuilder
                 // the channel properly (or fill-in the missing user info of an existing partial channel)
                 user = ((PrivateChannel) channel).getUser();
             }
+        }
+        else
+        {
+            user = createUser(author);
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive

@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
  *
  * @since  3.0
  */
-public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
+public class WebhookImpl extends AbstractWebhookClient<Message> implements Webhook
 {
     private final IWebhookContainer channel;
     private final WebhookType type;
@@ -250,27 +250,20 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
                 .toString();
     }
 
-    // TODO: Implement WebhookMessage
-
     @Override
-    public WebhookMessageCreateActionImpl<Void> sendRequest()
+    public WebhookMessageCreateActionImpl<Message> sendRequest()
     {
         checkToken();
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-        WebhookMessageCreateActionImpl<Void> action = new WebhookMessageCreateActionImpl<>(api, route, (json) -> null);
-        action.run();
-        return action;
+        AbstractWebhookClient<Message> client = (AbstractWebhookClient<Message>) WebhookClient.createClient(api, getId(), token);
+        return client.sendRequest();
     }
 
     @Override
-    public WebhookMessageEditActionImpl<Void> editRequest(String messageId)
+    public WebhookMessageEditActionImpl<Message> editRequest(String messageId)
     {
         checkToken();
-        Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
-        WebhookMessageEditActionImpl<Void> action = new WebhookMessageEditActionImpl<>(api, route, (json) -> null);
-        action.run();
-        return action;
+        AbstractWebhookClient<Message> client = (AbstractWebhookClient<Message>) WebhookClient.createClient(api, getId(), token);
+        return client.editRequest(messageId);
     }
 
     @Nonnull
@@ -278,7 +271,15 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     public RestAction<Void> deleteMessageById(@Nonnull String messageId)
     {
         checkToken();
-        return super.deleteMessageById(messageId);
+        return WebhookClient.createClient(api, getId(), token).deleteMessageById(messageId);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
+    {
+        checkToken();
+        return WebhookClient.createClient(api, getId(), token).retrieveMessageById(messageId);
     }
 
     private void checkToken()

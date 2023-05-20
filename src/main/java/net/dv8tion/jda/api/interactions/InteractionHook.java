@@ -133,7 +133,10 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Message> retrieveOriginal();
+    default RestAction<Message> retrieveOriginal()
+    {
+        return retrieveMessageById("@original");
+    }
 
     /**
      * Edit the source message sent by this interaction.

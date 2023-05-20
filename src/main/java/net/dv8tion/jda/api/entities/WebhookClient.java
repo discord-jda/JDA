@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -25,8 +26,10 @@ import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.internal.requests.IncomingWebhookClient;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -34,6 +37,7 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
+import java.util.regex.Matcher;
 
 /**
  * Interface which allows sending messages through the webhooks API.
@@ -963,45 +967,79 @@ public interface WebhookClient<T>
         return deleteMessageById(Long.toUnsignedString(messageId));
     }
 
-//    @Nonnull
-//    static WebhookClient<WebhookMessageAction> createClient(@Nonnull JDA api, @Nonnull String url)
-//    {
-//        Checks.notNull(url, "URL");
-//        Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
-//        if (!matcher.matches())
-//            throw new IllegalArgumentException("Provided invalid webhook URL");
-//        String id = matcher.group(1);
-//        String token = matcher.group(2);
-//        return createClient(api, id, token);
-//    }
-//
-//    @Nonnull
-//    static WebhookClient<WebhookMessageAction> createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
-//    {
-//        Checks.notNull(api, "JDA");
-//        Checks.notBlank(webhookToken, "Token");
-//        return new AbstractWebhookClient<WebhookMessageAction>(MiscUtil.parseSnowflake(webhookId), webhookToken, api)
-//        {
-//            @Override
-//            public WebhookMessageAction sendRequest()
-//            {
-//                Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(webhookId, webhookToken);
-//                route = route.withQueryParams("wait", "true");
-//                WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
-//                action.run();
-//                return action;
-//            }
-//
-//            @Override
-//            public WebhookMessageAction editRequest(String messageId)
-//            {
-//                Checks.isSnowflake(messageId);
-//                Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhookId, webhookToken, messageId);
-//                route = route.withQueryParams("wait", "true");
-//                WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
-//                action.run();
-//                return action;
-//            }
-//        };
-//    }
+
+    /**
+     * Retrieves the message with the provided id.
+     * <br>This only works for messages sent by this webhook. All other messages are unknown.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message is inaccessible to this webhook or does not exist.</li>
+     * </ul>
+     *
+     * @return {@link RestAction} - Type: {@link Message}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Message> retrieveMessageById(@Nonnull String messageId);
+
+    /**
+     * Creates an instance of {@link WebhookClient} capable of executing webhook requests.
+     * <p>Messages created by this client may not have a fully accessible channel or guild available.
+     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#WEBHOOK WEBHOOK},
+     * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
+     *
+     * @param  api
+     *         The JDA instance, used to handle rate-limits
+     * @param  url
+     *         The webhook url, must include a webhook token
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the provided url is not a valid webhook url
+     *
+     * @return The {@link WebhookClient} instance
+     */
+    @Nonnull
+    static WebhookClient<Message> createClient(@Nonnull JDA api, @Nonnull String url)
+    {
+        Checks.notNull(url, "URL");
+        Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
+        if (!matcher.matches())
+            throw new IllegalArgumentException("Provided invalid webhook URL");
+        String id = matcher.group(1);
+        String token = matcher.group(2);
+        return createClient(api, id, token);
+    }
+
+    /**
+     * Creates an instance of {@link WebhookClient} capable of executing webhook requests.
+     * <p>Messages created by this client may not have a fully accessible channel or guild available.
+     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#WEBHOOK WEBHOOK},
+     * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
+     *
+     * @param  api
+     *         The JDA instance, used to handle rate-limits
+     * @param  webhookId
+     *         The id of the webhook, for interactions this is the application id
+     * @param  webhookToken
+     *         The token of the webhook, for interactions this is the interaction token
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the provided webhook id is not a valid snowflake or the token is blank
+     *
+     * @return The {@link WebhookClient} instance
+     */
+    @Nonnull
+    static WebhookClient<Message> createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
+    {
+        Checks.notNull(api, "JDA");
+        Checks.notBlank(webhookToken, "Token");
+        return new IncomingWebhookClient(MiscUtil.parseSnowflake(webhookId), webhookToken, api);
+    }
 }
