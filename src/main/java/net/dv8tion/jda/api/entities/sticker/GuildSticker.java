@@ -98,11 +98,11 @@ public interface GuildSticker extends RichSticker
      * <p>Possible {@link ErrorResponse ErrorResponses} include:
      * <ul>
      *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The request was attempted after the account lost {@link Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS} in the guild</li>
+     *     <br>The request was attempted after the account lost {@link Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS} in the guild</li>
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS} in the guild.
      *
      * @return {@link CacheRestAction} - Type: {@link User}
      */
@@ -114,7 +114,7 @@ public interface GuildSticker extends RichSticker
      * Deletes this sticker from the guild.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
      *
      * @return {@link AuditableRestAction}
      */
@@ -127,7 +127,7 @@ public interface GuildSticker extends RichSticker
      * <br>You can update multiple fields at once, by calling the respective setters before executing the request.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
      *
      * @return {@link GuildStickerManager}
      */

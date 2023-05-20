@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
@@ -32,7 +33,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -110,8 +110,8 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     public CacheRestAction<User> retrieveOwner()
     {
         Guild g = getGuild();
-        if (g != null && !g.getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
-            throw new InsufficientPermissionException(g, Permission.MANAGE_EMOJIS_AND_STICKERS);
+        if (g != null && !g.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+            throw new InsufficientPermissionException(g, Permission.MANAGE_GUILD_EXPRESSIONS);
         return new DeferredRestAction<>(jda, User.class, this::getOwner,
             () -> {
                 Route.CompiledRoute route = Route.Stickers.GET_GUILD_STICKER.compile(getGuildId(), getId());

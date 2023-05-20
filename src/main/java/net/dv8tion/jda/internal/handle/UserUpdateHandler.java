@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.events.self.SelfUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.self.SelfUpdateMFAEvent;
-import net.dv8tion.jda.api.events.self.SelfUpdateNameEvent;
-import net.dv8tion.jda.api.events.self.SelfUpdateVerifiedEvent;
+import net.dv8tion.jda.api.events.self.*;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
@@ -39,18 +36,12 @@ public class UserUpdateHandler extends SocketHandler
         SelfUserImpl self = (SelfUserImpl) getJDA().getSelfUser();
 
         String name = content.getString("username");
-        String discriminator = content.getString("discriminator");
+        String globalName = content.getString("global_name", null);
         String avatarId = content.getString("avatar", null);
         Boolean verified = content.hasKey("verified") ? content.getBoolean("verified") : null;
         Boolean mfaEnabled = content.hasKey("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
-        //Client only
-        String email = content.getString("email", null);
-        Boolean mobile = content.hasKey("mobile") ? content.getBoolean("mobile") : null; // mobile device
-        Boolean nitro = content.hasKey("premium") ? content.getBoolean("premium") : null; // nitro
-        String phoneNumber = content.getString("phone", null); // verified phone number (verification level !)
-
-        if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
+        if (!Objects.equals(name, self.getName()))
         {
             String oldName = self.getName();
             self.setName(name);
@@ -58,6 +49,16 @@ public class UserUpdateHandler extends SocketHandler
                 new SelfUpdateNameEvent(
                     getJDA(), responseNumber,
                     oldName));
+        }
+
+        if (!Objects.equals(globalName, self.getGlobalName()))
+        {
+            String oldGlobalName = self.getGlobalName();
+            self.setGlobalName(globalName);
+            getJDA().handleEvent(
+                    new SelfUpdateGlobalNameEvent(
+                            getJDA(), responseNumber,
+                            oldGlobalName));
         }
 
         if (!Objects.equals(avatarId, self.getAvatarId()))

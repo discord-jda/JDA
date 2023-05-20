@@ -47,10 +47,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.*;
-import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.events.user.update.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -145,7 +142,8 @@ public class EntityBuilder
         selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
-                .setDiscriminator(self.getString("discriminator"))
+                .setGlobalName(self.getString("global_name", null))
+                .setDiscriminator(self.getString("discriminator", "0"))
                 .setAvatarId(self.getString("avatar", null))
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
@@ -200,16 +198,22 @@ public class EntityBuilder
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.SCHEDULED_EVENTS))
             return;
-        SnowflakeCacheViewImpl<ScheduledEvent> eventView = guildObj.getScheduledEventsView();
         for (int i = 0; i < array.length(); i++)
         {
             DataObject object = array.getObject(i);
-            if (object.isNull("id"))
+            try
             {
-                LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
-                continue;
+                if (object.isNull("id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a scheduled event with a null ID. JSON: {}", object);
+                    continue;
+                }
+                createScheduledEvent(guildObj, object);
             }
-            createScheduledEvent(guildObj, object);
+            catch (ParsingException exception)
+            {
+                LOG.error("Received GUILD_CREATE with a scheduled event that failed to parse. JSON: {}", object, exception);
+            }
         }
     }
 
@@ -447,7 +451,8 @@ public class EntityBuilder
         {
             // Initial creation
             userObj.setName(user.getString("username"))
-                   .setDiscriminator(user.get("discriminator").toString())
+                   .setGlobalName(user.getString("global_name", null))
+                   .setDiscriminator(user.getString("discriminator", "0"))
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
@@ -467,8 +472,10 @@ public class EntityBuilder
     {
         String oldName = userObj.getName();
         String newName = user.getString("username");
+        String oldGlobalName = userObj.getGlobalName();
+        String newGlobalName = user.getString("global_name", null);
         String oldDiscriminator = userObj.getDiscriminator();
-        String newDiscriminator = user.get("discriminator").toString();
+        String newDiscriminator = user.getString("discriminator", "0");
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
         int oldFlags = userObj.getFlagsRaw();
@@ -483,6 +490,15 @@ public class EntityBuilder
                 new UserUpdateNameEvent(
                     jda, responseNumber,
                     userObj, oldName));
+        }
+
+        if (!Objects.equals(oldGlobalName, newGlobalName))
+        {
+            userObj.setGlobalName(newGlobalName);
+            jda.handleEvent(
+                new UserUpdateGlobalNameEvent(
+                    jda, responseNumber,
+                    userObj, oldGlobalName));
         }
 
         if (!oldDiscriminator.equals(newDiscriminator))
@@ -593,6 +609,8 @@ public class EntityBuilder
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
             member.setAvatarId(memberJson.getString("avatar", null));
+            if (!memberJson.isNull("flags"))
+                member.setFlags(memberJson.getInt("flags"));
 
             long boostTimestamp = memberJson.isNull("premium_since")
                 ? 0
@@ -761,6 +779,20 @@ public class EntityBuilder
             }
         }
 
+        if (!content.isNull("flags"))
+        {
+            int flags = content.getInt("flags");
+            int oldFlags = member.getFlagsRaw();
+            if (flags != oldFlags)
+            {
+                member.setFlags(flags);
+                getJDA().handleEvent(
+                    new GuildMemberUpdateFlagsEvent(
+                        getJDA(), responseNumber,
+                        member, Member.MemberFlag.fromRaw(oldFlags)));
+            }
+        }
+
         updateUser((UserImpl) member.getUser(), content.getObject("user"));
     }
 
@@ -882,14 +914,14 @@ public class EntityBuilder
             type = Activity.ActivityType.PLAYING;
         }
 
-        RichPresence.Timestamps timestamps = null;
+        Activity.Timestamps timestamps = null;
         if (!gameJson.isNull("timestamps"))
         {
             DataObject obj = gameJson.getObject("timestamps");
             long start, end;
             start = obj.getLong("start", 0L);
             end = obj.getLong("end", 0L);
-            timestamps = new RichPresence.Timestamps(start, end);
+            timestamps = new Activity.Timestamps(start, end);
         }
 
         EmojiUnion emoji = null;
@@ -1022,7 +1054,12 @@ public class EntityBuilder
             scheduledEvent.setLocation(json.getString("channel_id"));
             break;
         case EXTERNAL:
-            String externalLocation = json.getObject("entity_metadata").getString("location");
+            String externalLocation;
+            if (json.isNull("entity_metadata") || json.getObject("entity_metadata").isNull("location"))
+                externalLocation = "";
+            else
+                externalLocation = json.getObject("entity_metadata").getString("location");
+
             scheduledEvent.setLocation(externalLocation);
         }
         return scheduledEvent;
@@ -1187,7 +1224,9 @@ public class EntityBuilder
             .setUserLimit(json.getInt("user_limit"))
             .setNSFW(json.getBoolean("nsfw"))
             .setBitrate(json.getInt("bitrate"))
-            .setRegion(json.getString("rtc_region", null));
+            .setRegion(json.getString("rtc_region", null))
+//            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
+            .setSlowmode(json.getInt("rate_limit_per_user", 0));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
@@ -1224,10 +1263,15 @@ public class EntityBuilder
 
         channel
             .setParentCategory(json.getLong("parent_id", 0))
+            .setLatestMessageIdLong(json.getLong("last_message_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setBitrate(json.getInt("bitrate"))
-            .setRegion(json.getString("rtc_region", null));
+            .setUserLimit(json.getInt("user_limit", 0))
+            .setNSFW(json.getBoolean("nsfw"))
+            .setRegion(json.getString("rtc_region", null))
+//            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
+            .setSlowmode(json.getInt("rate_limit_per_user", 0));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
@@ -1368,6 +1412,7 @@ public class EntityBuilder
                 .setFlags(json.getInt("flags", 0))
                 .setDefaultReaction(json.optObject("default_reaction_emoji").orElse(null))
 //                .setDefaultSortOrder(json.getInt("default_sort_order", -1))
+                .setDefaultLayout(json.getInt("default_forum_layout", -1))
                 .setName(json.getString("name"))
                 .setTopic(json.getString("topic", null))
                 .setPosition(json.getInt("position"))
@@ -1754,15 +1799,17 @@ public class EntityBuilder
         if (guild != null && !jsonObject.isNull("thread"))
             startedThread = createThreadChannel(guild, jsonObject.getObject("thread"), guild.getIdLong());
 
+        int position = jsonObject.getInt("position", -1);
+
         if (!type.isSystem())
         {
             return new ReceivedMessage(id, channelId, api, guild, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread, position);
         }
         else
         {
             return new SystemMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread);
+                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread, position);
         }
     }
 
@@ -1815,7 +1862,9 @@ public class EntityBuilder
         final String contentType = jsonObject.getString("content_type", null);
         final String description = jsonObject.getString("description", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, getJDA());
+        final String waveform = jsonObject.getString("waveform", null);
+        final double duration = jsonObject.getDouble("duration_secs", 0);
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, waveform, duration, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)

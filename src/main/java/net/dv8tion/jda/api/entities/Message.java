@@ -42,6 +42,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
@@ -57,7 +58,6 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
-import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
@@ -140,17 +140,20 @@ public interface Message extends ISnowflake, Formattable
     String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
 
     /**
-     * The maximum sendable file size (8 MiB)
+     * The maximum sendable file size (25 MiB)
      *
      *  @see MessageRequest#setFiles(Collection)
      */
-    int MAX_FILE_SIZE = 8 << 20;
+    int MAX_FILE_SIZE = 25 << 20;
 
     /**
      * The maximum sendable file size for nitro (50 MiB)
      *
      * @see MessageRequest#setFiles(Collection)
+     *
+     * @deprecated Self-bots are not supported anymore and the value is outdated.
      */
+    @Deprecated
     int MAX_FILE_SIZE_NITRO = 50 << 20;
 
     /**
@@ -359,6 +362,25 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nullable
     Member getMember();
+
+    /**
+     * Returns the approximate position of this message in a {@link ThreadChannel}.
+     * <br>This can be used to estimate the relative position of a message in a thread, by comparing against {@link ThreadChannel#getTotalMessageCount()}.
+     *
+     * <p><b>Notes:</b>
+     * <ul>
+     *     <li>The position might contain gaps or duplicates.</li>
+     *     <li>The position is not set on messages sent earlier than July 19th, 2022, and will return -1.</li>
+     * </ul>
+     *
+     * @throws IllegalStateException
+     *         If this message was not sent in a {@link ThreadChannel}.
+     *
+     * @return The approximate position of this message, or {@code -1} if this message is too old.
+     *
+     * @see    <a href="https://discord.com/developers/docs/resources/channel#message-object" target="_blank">Discord docs: <code>position</code> property on the message object</a>
+     */
+    int getApproximatePosition();
 
     /**
      * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
@@ -1984,6 +2006,15 @@ public interface Message extends ISnowflake, Formattable
     boolean isEphemeral();
 
     /**
+     * Whether this message is silent.
+     * <br>The message being silent means it will not trigger push and desktop notifications
+     * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#NOTIFICATIONS_SUPPRESSED}
+     *
+     * @return Whether the message is silent
+     */
+    boolean isSuppressedNotifications();
+
+    /**
      * Returns a possibly {@code null} {@link ThreadChannel ThreadChannel} that was started from this message.
      * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
      *
@@ -2165,7 +2196,16 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Indicates, that this Message is an interaction response and the bot is "thinking"
          */
-        LOADING(7);
+        LOADING(7),
+        /**
+         * Indicates, that this message will not trigger push and desktop notifications
+         * @see Message#isSuppressedNotifications
+         */
+        NOTIFICATIONS_SUPPRESSED(12),
+        /**
+         * The Message is a voice message, containing an audio attachment
+         */
+        IS_VOICE_MESSAGE(13);
 
         private final int value;
 
@@ -2240,10 +2280,12 @@ public interface Message extends ISnowflake, Formattable
         private final int height;
         private final int width;
         private final boolean ephemeral;
+        private final String waveform;
+        private final double duration;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, String description, int size, int height, int width, boolean ephemeral, String waveform, double duration, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
@@ -2255,6 +2297,8 @@ public interface Message extends ISnowflake, Formattable
             this.height = height;
             this.width = width;
             this.ephemeral = ephemeral;
+            this.waveform = waveform;
+            this.duration = duration;
             this.jda = jda;
         }
 
@@ -2611,7 +2655,7 @@ public interface Message extends ISnowflake, Formattable
         {
             return new Request.Builder()
                 .url(getUrl())
-                .addHeader("user-agent", Requester.USER_AGENT)
+                .addHeader("user-agent", RestConfig.USER_AGENT)
                 .addHeader("accept-encoding", "gzip, deflate")
                 .build();
         }
@@ -2658,6 +2702,35 @@ public interface Message extends ISnowflake, Formattable
         public boolean isEphemeral()
         {
             return ephemeral;
+        }
+
+        /**
+         * Gets the waveform data encoded in this attachment. This is currently only present on
+         * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
+         *
+         * @return A possibly-{@code null} array of integers representing the amplitude of the
+         *         audio over time. Amplitude is sampled at 10Hz, but the client will decrease
+         *         this to keep the waveform to at most 256 bytes.
+         *         The values in this array are <b>unsigned</b>.
+         */
+        @Nullable
+        public byte[] getWaveform()
+        {
+            if (waveform == null)
+                return null;
+            return Base64.getDecoder().decode(waveform);
+        }
+
+        /**
+         * Gets the duration of this attachment. This is currently only nonzero on
+         * {@link MessageFlag#IS_VOICE_MESSAGE voice messages}.
+         *
+         * @return The duration of this attachment's audio in seconds, or {@code 0}
+         *         if this is not a voice message.
+         */
+        public double getDuration()
+        {
+            return duration;
         }
 
         /**

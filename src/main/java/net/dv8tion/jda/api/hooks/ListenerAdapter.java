@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.hooks;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
@@ -152,6 +153,9 @@ public abstract class ListenerAdapter implements EventListener
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
+    public void onUserUpdateGlobalName(@Nonnull UserUpdateGlobalNameEvent event) {}
+    @Deprecated
+    @ForRemoval
     public void onUserUpdateDiscriminator(@Nonnull UserUpdateDiscriminatorEvent event) {}
     public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
@@ -166,6 +170,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onSelfUpdateAvatar(@Nonnull SelfUpdateAvatarEvent event) {}
     public void onSelfUpdateMFA(@Nonnull SelfUpdateMFAEvent event) {}
     public void onSelfUpdateName(@Nonnull SelfUpdateNameEvent event) {}
+    public void onSelfUpdateGlobalName(@Nonnull SelfUpdateGlobalNameEvent event) {}
     public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
 
     //Message Events
@@ -206,6 +211,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateDefaultThreadSlowmode(@Nonnull ChannelUpdateDefaultThreadSlowmodeEvent event) {}
     public void onChannelUpdateDefaultReaction(@Nonnull ChannelUpdateDefaultReactionEvent event) {}
 //    public void onChannelUpdateDefaultSortOrder(@Nonnull ChannelUpdateDefaultSortOrderEvent event) {}
+    public void onChannelUpdateDefaultLayout(@Nonnull ChannelUpdateDefaultLayoutEvent event) {}
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
     public void onChannelUpdateUserLimit(@Nonnull ChannelUpdateUserLimitEvent event) {}
@@ -298,6 +304,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberUpdateAvatar(@Nonnull GuildMemberUpdateAvatarEvent event) {}
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
     public void onGuildMemberUpdatePending(@Nonnull GuildMemberUpdatePendingEvent event) {}
+    public void onGuildMemberUpdateFlags(@Nonnull GuildMemberUpdateFlagsEvent event) {}
     public void onGuildMemberUpdateTimeOut(@Nonnull GuildMemberUpdateTimeOutEvent event) {}
 
     //Guild Voice Events

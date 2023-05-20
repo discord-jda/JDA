@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
+package net.dv8tion.jda.api.exceptions;
+
+import net.dv8tion.jda.api.interactions.InteractionHook;
+
 /**
- * Implementations of {@link net.dv8tion.jda.internal.requests.RateLimiter RateLimiter}
- * that handle the rate limit responses for the {@link net.dv8tion.jda.internal.requests.Requester Requester}!
+ * Indicates that an interaction has expired and can no longer be responded to.
+ * <br>This is used for follow-up requests sent via {@link InteractionHook}, which expire after 15 minutes.
  */
-package net.dv8tion.jda.internal.requests.ratelimit;
+public class InteractionExpiredException extends RuntimeException
+{
+    public InteractionExpiredException()
+    {
+        super("The interaction has expired and can no longer be responded to!");
+    }
+}

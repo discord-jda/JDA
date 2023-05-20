@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
- * Extension of RestAction to allow setting a reason, only available to accounts of {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
+ * Extension of RestAction to allow setting a reason.
  *
  * <p>This will automatically use the {@link net.dv8tion.jda.api.audit.ThreadLocalReason ThreadLocalReason} if no
  * reason was specified via {@link #reason(String)}.

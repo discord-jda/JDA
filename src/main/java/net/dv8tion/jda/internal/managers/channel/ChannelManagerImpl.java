@@ -27,9 +27,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -40,12 +38,12 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.managers.ManagerBase;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -74,6 +72,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected List<BaseForumTag> availableTags;
     protected List<String> appliedTags;
     protected Emoji defaultReactionEmoji;
+    protected int defaultLayout;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -490,10 +489,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setUserLimit(int userLimit)
     {
-        if (type != ChannelType.VOICE)
-            throw new IllegalStateException("Can only set userlimit on voice channels");
         Checks.notNegative(userLimit, "Userlimit");
-        Checks.check(userLimit <= 99, "Userlimit may not be greater than 99");
+        if (type == ChannelType.VOICE)
+            Checks.check(userLimit <= VoiceChannel.MAX_USERLIMIT, "Userlimit may not be greater than %d for voice channels", VoiceChannel.MAX_USERLIMIT);
+        else if (type == ChannelType.STAGE)
+            Checks.check(userLimit <= StageChannel.MAX_USERLIMIT, "Userlimit may not be greater than %d for stage channels", StageChannel.MAX_USERLIMIT);
+        else
+            throw new IllegalStateException("Can only set userlimit on audio channels");
         this.userlimit = userLimit;
         set |= USERLIMIT;
         return (M) this;
@@ -630,6 +632,18 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setDefaultLayout(ForumChannel.Layout layout)
+    {
+        if (type != ChannelType.FORUM)
+            throw new IllegalStateException("Can only set default layout on forum channels.");
+        Checks.notNull(layout, "layout");
+        if (layout == ForumChannel.Layout.UNKNOWN)
+            throw new IllegalStateException("Layout type cannot be UNKNOWN.");
+        this.defaultLayout = layout.getKey();
+        set |= DEFAULT_LAYOUT;
+        return (M) this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -637,7 +651,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (shouldUpdate(NAME))
             frame.put("name", name);
         if (shouldUpdate(TYPE))
-            frame.put("type", type);
+            frame.put("type", type.getId());
         if (shouldUpdate(POSITION))
             frame.put("position", position);
         if (shouldUpdate(TOPIC))
@@ -677,6 +691,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             else
                 frame.put("default_reaction_emoji", null);
         }
+        if (shouldUpdate(DEFAULT_LAYOUT))
+            frame.put("default_forum_layout", defaultLayout);
 
         withLock(lock, (lock) ->
         {

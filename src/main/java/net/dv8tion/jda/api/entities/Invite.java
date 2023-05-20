@@ -724,6 +724,12 @@ public interface Invite
         EMBEDDED_APPLICATION(2),
 
         /**
+         * The invite points to a role subscription listing in a guild.
+         * <br>These cannot be created by bots.
+         */
+        ROLE_SUBSCRIPTIONS_PURCHASE(3),
+
+        /**
          * Unknown Discord invite target type. Should never happen and would only possibly happen if Discord implemented a new
          * target type and JDA had yet to implement support for it.
          */

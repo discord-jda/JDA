@@ -16,12 +16,16 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -106,9 +110,28 @@ public interface Modal extends SerializableData
      * A List of {@link net.dv8tion.jda.api.interactions.components.ActionRow ActionRows} that this modal contains.
      *
      * @return List of ActionRows
+     *
+     * @deprecated Use {@link #getComponents()} instead
      */
     @Nonnull
-    List<ActionRow> getActionRows();
+    @ForRemoval
+    @Deprecated
+    @ReplaceWith("getComponents()")
+    default List<ActionRow> getActionRows()
+    {
+        return getComponents().stream()
+                .filter(ActionRow.class::isInstance)
+                .map(ActionRow.class::cast)
+                .collect(Helpers.toUnmodifiableList());
+    }
+
+    /**
+     * A List of {@link LayoutComponent LayoutComponents} that this modal contains.
+     *
+     * @return List of LayoutComponents
+     */
+    @Nonnull
+    List<LayoutComponent> getComponents();
 
     /**
      * Creates a new preconfigured {@link Modal.Builder} with the same settings used for this modal.
@@ -120,7 +143,7 @@ public interface Modal extends SerializableData
     default Modal.Builder createCopy()
     {
         return new Builder(getId(), getTitle())
-                .addActionRows(getActionRows());
+                .addComponents(getComponents());
     }
 
     /**
@@ -152,7 +175,7 @@ public interface Modal extends SerializableData
      */
     class Builder
     {
-        private final List<ActionRow> components = new ArrayList<>(5);
+        private final List<LayoutComponent> components = new ArrayList<>(MAX_COMPONENTS);
         private String id;
         private String title;
 
@@ -205,7 +228,7 @@ public interface Modal extends SerializableData
         /**
          * Adds ActionRows to this modal
          *
-         * @param  actionRows 
+         * @param  actionRows
          *         ActionRows to add to the modal, up to 5
          *
          * @throws IllegalArgumentException
@@ -219,16 +242,18 @@ public interface Modal extends SerializableData
          * @see    ActionRow#isModalCompatible()
          */
         @Nonnull
+        @ForRemoval
+        @Deprecated
+        @ReplaceWith("addComponents(actionRows)")
         public Builder addActionRows(@Nonnull ActionRow... actionRows)
         {
-            Checks.noneNull(actionRows, "Action Rows");
-            return addActionRows(Arrays.asList(actionRows));
+            return addComponents(actionRows);
         }
 
         /**
          * Adds ActionRows to this modal
          *
-         * @param  actionRows 
+         * @param  actionRows
          *         ActionRows to add to the modal, up to 5
          *
          * @throws IllegalArgumentException
@@ -242,15 +267,63 @@ public interface Modal extends SerializableData
          * @see    ActionRow#isModalCompatible()
          */
         @Nonnull
+        @ForRemoval
+        @Deprecated
+        @ReplaceWith("addComponents(actionRows)")
         public Builder addActionRows(@Nonnull Collection<? extends ActionRow> actionRows)
         {
-            Checks.noneNull(actionRows, "Components");
+            return addComponents(actionRows);
+        }
+
+        /**
+         * Adds {@link LayoutComponent LayoutComponents} to this modal
+         *
+         * @param  components
+         *         {@link LayoutComponent LayoutComponents} to add to the modal, up to {@value MAX_COMPONENTS} total
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If any of the provided layouts are null</li>
+         *             <li>If any of the provided components are not compatible with Modals</li>
+         *         </ul>
+         *
+         * @return The same builder instance for chaining
+         *
+         * @see    LayoutComponent#isModalCompatible()
+         */
+        @Nonnull
+        public Builder addComponents(@Nonnull LayoutComponent... components)
+        {
+            Checks.noneNull(components, "Action Rows");
+            return addComponents(Arrays.asList(components));
+        }
+
+        /**
+         * Adds {@link LayoutComponent LayoutComponents} to this modal
+         *
+         * @param  components
+         *         {@link LayoutComponent LayoutComponents} to add to the modal, up to {@value MAX_COMPONENTS} total
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If any of the provided layouts are null</li>
+         *             <li>If any of the provided components are not compatible with Modals</li>
+         *         </ul>
+         *
+         * @return The same builder instance for chaining
+         *
+         * @see    LayoutComponent#isModalCompatible()
+         */
+        @Nonnull
+        public Builder addComponents(@Nonnull Collection<? extends LayoutComponent> components)
+        {
+            Checks.noneNull(components, "Components");
 
             Checks.checkComponents("Some components are incompatible with Modals",
-                actionRows,
-                component -> component.getType().isModalCompatible());
+                    components,
+                    component -> component.getType().isModalCompatible());
 
-            this.components.addAll(actionRows);
+            this.components.addAll(components);
             return this;
         }
 
@@ -273,7 +346,7 @@ public interface Modal extends SerializableData
         @Nonnull
         public Builder addActionRow(@Nonnull Collection<? extends ItemComponent> components)
         {
-            return addActionRows(ActionRow.of(components));
+            return addComponents(ActionRow.of(components));
         }
 
         /**
@@ -295,7 +368,24 @@ public interface Modal extends SerializableData
         @Nonnull
         public Builder addActionRow(@Nonnull ItemComponent... components)
         {
-            return addActionRows(ActionRow.of(components));
+            return addComponents(ActionRow.of(components));
+        }
+
+        /**
+         * Returns an immutable list of all ActionRow components
+         *
+         * @return An immutable list of all ActionRow components
+         */
+        @Nonnull
+        @ForRemoval
+        @Deprecated
+        @ReplaceWith("getComponents()")
+        public List<ActionRow> getActionRows()
+        {
+            return components.stream()
+                    .filter(ActionRow.class::isInstance)
+                    .map(ActionRow.class::cast)
+                    .collect(Helpers.toUnmodifiableList());
         }
 
         /**
@@ -304,7 +394,7 @@ public interface Modal extends SerializableData
          * @return A modifiable list of all components
          */
         @Nonnull
-        public List<ActionRow> getActionRows()
+        public List<LayoutComponent> getComponents()
         {
             return components;
         }
@@ -336,8 +426,8 @@ public interface Modal extends SerializableData
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If the components are empty</li>
-         *             <li>If there are more than 5 components</li>
+         *             <li>If no components are added</li>
+         *             <li>If more than {@value MAX_COMPONENTS} component layouts are added</li>
          *         </ul>
          *
          * @return A Modal

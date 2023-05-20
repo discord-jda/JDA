@@ -63,6 +63,16 @@ public interface AudioChannel extends StandardGuildChannel
     int getBitrate();
 
     /**
+     * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that be in an audio connection within this channel concurrently.
+     * <br>Returns 0 if there is no limit.
+     *
+     * <p>Moderators with the {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS VOICE_MOVE_OTHERS} permission can bypass this limit.
+     *
+     * @return The maximum connections allowed in this channel concurrently
+     */
+    int getUserLimit();
+
+    /**
      * The {@link Region} of this channel.
      * <br>This will return {@link Region#AUTOMATIC} if the region of this channel is set to Automatic.
      *

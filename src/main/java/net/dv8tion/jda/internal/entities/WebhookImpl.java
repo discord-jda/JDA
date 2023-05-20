@@ -24,10 +24,10 @@ import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.RestConfig;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
-import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
@@ -139,7 +139,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     @Override
     public String getUrl()
     {
-        return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
+        return RestConfig.DEFAULT_BASE_URL + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
     }
 
     @Override

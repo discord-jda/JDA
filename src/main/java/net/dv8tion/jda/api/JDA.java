@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
@@ -33,6 +35,7 @@ import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -42,7 +45,6 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -55,12 +57,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -376,6 +376,109 @@ public interface JDA extends IGuildChannelContainer
     default JDA awaitReady() throws InterruptedException
     {
         return awaitStatus(Status.CONNECTED);
+    }
+
+    /**
+     * Blocks the current thread until {@link #getStatus()} returns {@link Status#SHUTDOWN}.
+     * <br>This can be useful in certain situations like disabling class loading.
+     *
+     * <p>Note that shutdown time depends on the length of the rate-limit queue.
+     * You can use {@link #shutdownNow()} to cancel all pending requests and immediately shutdown.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * jda.shutdown();
+     * // Allow at most 10 seconds for remaining requests to finish
+     * if (!jda.awaitShutdown(10, TimeUnit.SECONDS)) {
+     *     jda.shutdownNow(); // Cancel all remaining requests
+     *     jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
+     * }
+     * }</pre>
+     *
+     * <p><b>This will not implicitly call {@code shutdown()}, you are responsible to ensure that the shutdown process has started.</b>
+     *
+     * @param  duration
+     *         The maximum time to wait, or 0 to wait indefinitely
+     * @param  unit
+     *         The time unit for the duration
+     *
+     * @throws IllegalArgumentException
+     *         If the provided unit is null
+     * @throws InterruptedException
+     *         If the current thread is interrupted while waiting
+     *
+     * @return False, if the timeout has elapsed before the shutdown has completed, true otherwise.
+     */
+    @CheckReturnValue
+    boolean awaitShutdown(long duration, @Nonnull TimeUnit unit) throws InterruptedException;
+
+    /**
+     * Blocks the current thread until {@link #getStatus()} returns {@link Status#SHUTDOWN}.
+     * <br>This can be useful in certain situations like disabling class loading.
+     *
+     * <p>Note that shutdown time depends on the length of the rate-limit queue.
+     * You can use {@link #shutdownNow()} to cancel all pending requests and immediately shutdown.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * jda.shutdown();
+     * // Allow at most 10 seconds for remaining requests to finish
+     * if (!jda.awaitShutdown(Duration.ofSeconds(10))) {
+     *     jda.shutdownNow(); // Cancel all remaining requests
+     *     jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
+     * }
+     * }</pre>
+     *
+     * <p><b>This will not implicitly call {@code shutdown()}, you are responsible to ensure that the shutdown process has started.</b>
+     *
+     * @param  timeout
+     *         The maximum time to wait, or {@link Duration#ZERO} to wait indefinitely
+     *
+     * @throws IllegalArgumentException
+     *         If the provided timeout is null
+     * @throws InterruptedException
+     *         If the current thread is interrupted while waiting
+     *
+     * @return False, if the timeout has elapsed before the shutdown has completed, true otherwise.
+     */
+    @CheckReturnValue
+    default boolean awaitShutdown(@Nonnull Duration timeout) throws InterruptedException
+    {
+        Checks.notNull(timeout, "Timeout");
+        return awaitShutdown(timeout.toMillis(), TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Blocks the current thread until {@link #getStatus()} returns {@link Status#SHUTDOWN}.
+     * <br>This can be useful in certain situations like disabling class loading.
+     *
+     * <p>This will wait indefinitely by default. Use {@link #awaitShutdown(Duration)} to set a timeout.
+     *
+     * <p>Note that shutdown time depends on the length of the rate-limit queue.
+     * You can use {@link #shutdownNow()} to cancel all pending requests and immediately shutdown.
+     *
+     * <p><b>Example</b>
+     * <pre>{@code
+     * jda.shutdown();
+     * // Allow at most 10 seconds for remaining requests to finish
+     * if (!jda.awaitShutdown(Duration.ofSeconds(10))) {
+     *     jda.shutdownNow(); // Cancel all remaining requests
+     *     jda.awaitShutdown(); // Wait until shutdown is complete (indefinitely)
+     * }
+     * }</pre>
+     *
+     * <p><b>This will not implicitly call {@code shutdown()}, you are responsible to ensure that the shutdown process has started.</b>
+     *
+     * @throws IllegalArgumentException
+     *         If the provided timeout is null
+     * @throws InterruptedException
+     *         If the current thread is interrupted while waiting
+     *
+     * @return Always true
+     */
+    default boolean awaitShutdown() throws InterruptedException
+    {
+        return awaitShutdown(0, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -728,6 +831,36 @@ public interface JDA extends IGuildChannelContainer
     }
 
     /**
+     * Retrieves the currently configured {@link RoleConnectionMetadata} records for this application.
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link RoleConnectionMetadata}
+     *
+     * @see <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<RoleConnectionMetadata>> retrieveRoleConnectionMetadata();
+
+    /**
+     * Updates the currently configured {@link RoleConnectionMetadata} records for this application.
+     *
+     * <p>Returns the updated connection metadata records on success.
+     *
+     * @param  records
+     *         The new records to set
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than {@value RoleConnectionMetadata#MAX_RECORDS} records are configured.
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link RoleConnectionMetadata}
+     *
+     * @see <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<RoleConnectionMetadata>> updateRoleConnectionMetadata(@Nonnull Collection<? extends RoleConnectionMetadata> records);
+
+    /**
      * Constructs a new {@link Guild Guild} with the specified name
      * <br>Use the returned {@link GuildAction GuildAction} to provide
      * further details and settings for the resulting Guild!
@@ -897,8 +1030,14 @@ public interface JDA extends IGuildChannelContainer
      *         If the provided tag is null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     *
+     * @deprecated This will become obsolete in the future.
+     *             Discriminators are being phased out and replaced by globally unique usernames.
+     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     default User getUserByTag(@Nonnull String tag)
     {
         Checks.notNull(tag, "Tag");
@@ -930,8 +1069,14 @@ public interface JDA extends IGuildChannelContainer
      *         If the provided arguments are null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
+     *
+     * @deprecated This will become obsolete in the future.
+     *             Discriminators are being phased out and replaced by globally unique usernames.
+     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     default User getUserByTag(@Nonnull String username, @Nonnull String discriminator)
     {
         Checks.notNull(username, "Username");
@@ -961,8 +1106,11 @@ public interface JDA extends IGuildChannelContainer
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.User#getName()}.
      *
      * @return Possibly-empty immutable list of {@link net.dv8tion.jda.api.entities.User Users} that all have the same name as the provided name.
+     *
+     * @incubating This will be replaced in the future when the rollout of globally unique usernames has been completed.
      */
     @Nonnull
+    @Incubating
     default List<User> getUsersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getUserCache().getElementsByName(name, ignoreCase);
@@ -1732,21 +1880,9 @@ public interface JDA extends IGuildChannelContainer
     //AuditableRestAction<Void> installAuxiliaryCable(int port);
 
     /**
-     * The {@link net.dv8tion.jda.api.AccountType} of the currently logged in account.
-     * <br>Used when determining functions that are restricted based on the type of account.
-     *
-     * @return The current AccountType.
-     */
-    @Nonnull
-    AccountType getAccountType();
-
-    /**
      * Retrieves the {@link ApplicationInfo ApplicationInfo} for
      * the application that owns the logged in Bot-Account.
      * <br>This contains information about the owner of the currently logged in bot account!
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link ApplicationInfo ApplicationInfo}
      *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
@@ -1800,9 +1936,6 @@ public interface JDA extends IGuildChannelContainer
      *         The permissions to use in your invite, these can be changed by the link user.
      *         <br>If no permissions are provided the {@code permissions} parameter is omitted
      *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
-     *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */
     @Nonnull
@@ -1818,9 +1951,6 @@ public interface JDA extends IGuildChannelContainer
      * @param  permissions
      *         The permissions to use in your invite, these can be changed by the link user.
      *         <br>If no permissions are provided the {@code permissions} parameter is omitted
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
      *
      * @return A valid OAuth2 invite url for the currently logged in Bot-Account
      */

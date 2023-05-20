@@ -64,6 +64,7 @@ public interface Mentions
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>This can be used to retrieve the amount of times a user was mentioned. This only
      * counts direct mentions of the user and not mentions through roles or everyone mentions.
+     * The count may be {@code 1}, if the user was mentioned through a message reply.
      *
      * <p>This might also contain users which are not present in {@link #getMembers()}.
      *
@@ -300,6 +301,7 @@ public interface Mentions
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned {@link net.dv8tion.jda.api.entities.Member Members}.
      * <br>This can be used to retrieve the amount of times a user was mentioned. This only
      * counts direct mentions of the member and not mentions through roles or everyone mentions.
+     * The count may be {@code 1}, if the user was mentioned through a message reply.
      *
      * <p><b>Example</b><br>
      * <pre>{@code

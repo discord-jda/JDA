@@ -20,8 +20,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.exceptions.InteractionExpiredException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -149,6 +151,8 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         MessageChannel finalChannel = channel;
 
         Route.CompiledRoute route = Route.Interactions.GET_ORIGINAL.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
+        TriggerRestAction<Message> action = new TriggerRestAction<>(jda, route, (response, request) -> createMessage(jda, response.getObject()));
+        action.setCheck(this::checkExpired);
         return onReady(new TriggerRestAction<>(jda, route, (response, request) ->
         {
             ReceivedMessage message;
@@ -176,6 +180,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
+        Function<DataObject, Message> transform = (json) -> createMessage((JDAImpl) api, json);
+        WebhookMessageCreateActionImpl<Message> action = new WebhookMessageCreateActionImpl<>(getJDA(), route, transform).setEphemeral(ephemeral);
+        action.setCheck(this::checkExpired);
         return onReady(new WebhookMessageCreateActionImpl<>(getJDA(), route, transform)).setEphemeral(ephemeral);
     }
 
@@ -198,6 +205,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(jda.getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
+        Function<DataObject, Message> transform = (json) -> createMessage((JDAImpl) api, json);
+        WebhookMessageEditActionImpl<Message> action = new WebhookMessageEditActionImpl<>(getJDA(), route, transform);
+        action.setCheck(this::checkExpired);
         return onReady(new WebhookMessageEditActionImpl<>(getJDA(), route, transform));
     }
 
@@ -208,7 +218,21 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
-        return onReady(new TriggerRestAction<>(getJDA(), route));
+        TriggerRestAction<Void> action = new TriggerRestAction<>(getJDA(), route);
+        action.setCheck(this::checkExpired);
+        return onReady(action);
+    }
+
+    private ReceivedMessage createMessage(JDAImpl jda, DataObject json)
+    {
+        return jda.getEntityBuilder().createMessageWithChannel(json, getInteraction().getMessageChannel(), false);
+    }
+
+    private boolean checkExpired()
+    {
+        if (isExpired())
+            throw new InteractionExpiredException();
+        return true;
     }
 
     @Nonnull

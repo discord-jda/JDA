@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
@@ -94,6 +95,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final int flags;
     protected final Message.Interaction interaction;
     protected final ThreadChannel startedThread;
+    protected final int position;
 
     protected InteractionHook interactionHook;
 
@@ -109,7 +111,7 @@ public class ReceivedMessage extends AbstractMessage
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
             List<StickerItem> stickers, List<ActionRow> components,
-            int flags, Message.Interaction interaction, ThreadChannel startedThread)
+            int flags, Message.Interaction interaction, ThreadChannel startedThread, int position)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -135,6 +137,7 @@ public class ReceivedMessage extends AbstractMessage
         this.flags = flags;
         this.interaction = interaction;
         this.startedThread = startedThread;
+        this.position = position;
     }
 
     private void checkIntent()
@@ -386,6 +389,15 @@ public class ReceivedMessage extends AbstractMessage
     public Member getMember()
     {
         return member;
+    }
+
+    @Override
+    public int getApproximatePosition()
+    {
+        if (!getChannelType().isThread())
+            throw new IllegalStateException("This message was not sent in a thread.");
+
+        return position;
     }
 
     @Nonnull
@@ -870,6 +882,12 @@ public class ReceivedMessage extends AbstractMessage
         return (this.flags & MessageFlag.EPHEMERAL.getValue()) != 0;
     }
 
+    @Override
+    public boolean isSuppressedNotifications()
+    {
+        return (this.flags & MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
+    }
+
     @Nullable
     @Override
     public ThreadChannel getStartedThread()
@@ -901,10 +919,11 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public String toString()
     {
         return new EntityString(this)
-                .addMetadata("author", author.getAsTag())
+                .addMetadata("author", author.getDiscriminator().equals("0000") ? author.getName() : author.getAsTag())
                 .addMetadata("content", String.format("%.20s ...", this))
                 .toString();
     }

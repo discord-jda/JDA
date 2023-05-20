@@ -27,6 +27,8 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
@@ -36,11 +38,11 @@ import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
@@ -88,6 +90,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     // --audio only--
     protected Integer bitrate = null;
     protected Region region = null;
+
+    // --forum only--
+    protected Integer defaultLayout = null;
 
     public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
     {
@@ -227,6 +232,18 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     @Nonnull
     @Override
+    public ChannelAction<T> setDefaultLayout(@Nonnull ForumChannel.Layout layout)
+    {
+        Checks.checkSupportedChannelTypes(EnumSet.of(ChannelType.FORUM), type, "Default Layout");
+        Checks.notNull(layout, "layout");
+        if (layout == ForumChannel.Layout.UNKNOWN)
+            throw new IllegalStateException("Layout type cannot be UNKNOWN.");
+        this.defaultLayout = layout.getKey();
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public ChannelAction<T> setAvailableTags(@Nonnull List<? extends BaseForumTag> tags)
     {
         if (type != ChannelType.FORUM)
@@ -355,10 +372,16 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setUserlimit(Integer userlimit)
     {
-        if (type != ChannelType.VOICE)
-            throw new UnsupportedOperationException("Can only set the userlimit for a VoiceChannel!");
-        if (userlimit != null && (userlimit < 0 || userlimit > 99))
-            throw new IllegalArgumentException("Userlimit must be between 0-99!");
+        if (userlimit != null)
+        {
+            Checks.notNegative(userlimit, "Userlimit");
+            if (type == ChannelType.VOICE)
+                Checks.check(userlimit <= VoiceChannel.MAX_USERLIMIT, "Userlimit may not be greater than %d for voice channels", VoiceChannel.MAX_USERLIMIT);
+            else if (type == ChannelType.STAGE)
+                Checks.check(userlimit <= StageChannel.MAX_USERLIMIT, "Userlimit may not be greater than %d for stage channels", StageChannel.MAX_USERLIMIT);
+            else
+                throw new IllegalStateException("Can only set userlimit on audio channels");
+        }
         this.userlimit = userlimit;
         return this;
     }
@@ -405,6 +428,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
         if (availableTags != null)
             object.put("available_tags", DataArray.fromCollection(availableTags));
+        if (defaultLayout != null)
+            object.put("default_forum_layout", defaultLayout);
 
         //Voice only
         if (userlimit != null)

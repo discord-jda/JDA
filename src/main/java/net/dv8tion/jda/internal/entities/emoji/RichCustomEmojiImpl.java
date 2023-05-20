@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.CustomEmojiManager;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -35,7 +36,6 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.managers.CustomEmojiManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 
@@ -151,8 +151,8 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion
     public CacheRestAction<User> retrieveOwner()
     {
         GuildImpl guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
-            throw new InsufficientPermissionException(guild, Permission.MANAGE_EMOJIS_AND_STICKERS);
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
         return new DeferredRestAction<>(api, User.class, this::getOwner, () -> {
             Route.CompiledRoute route = Route.Emojis.GET_EMOJI.compile(guild.getId(), getId());
             return new RestActionImpl<>(api, route, (response, request) -> {
@@ -184,8 +184,8 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion
     {
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emoji!");
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
-            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOJIS_AND_STICKERS);
+        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
 
         Route.CompiledRoute route = Route.Emojis.DELETE_EMOJI.compile(getGuild().getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);

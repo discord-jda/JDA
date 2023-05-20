@@ -16,6 +16,8 @@
 package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
@@ -26,6 +28,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -84,6 +87,7 @@ public class  DefaultShardManagerBuilder
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> eventPoolProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider = null;
+    protected IntFunction<? extends RestConfig> restConfigProvider = null;
     protected Collection<Integer> shards = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
@@ -559,9 +563,51 @@ public class  DefaultShardManagerBuilder
      * @since  4.1.0
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
+    @ReplaceWith("setRestConfig(new RestConfig().setRelativeRateLimit(enable))")
     public DefaultShardManagerBuilder setRelativeRateLimit(boolean enable)
     {
         return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
+    }
+
+    /**
+     * Custom {@link RestConfig} to use.
+     * <br>This can be used to customize how rate-limits are handled and configure a custom http proxy.
+     *
+     * @param  provider
+     *         The {@link RestConfig} provider to use
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setRestConfigProvider(@Nonnull IntFunction<? extends RestConfig> provider)
+    {
+        Checks.notNull(provider, "RestConfig Provider");
+        this.restConfigProvider = provider;
+        return this;
+    }
+
+    /**
+     * Custom {@link RestConfig} to use.
+     * <br>This can be used to customize how rate-limits are handled and configure a custom http proxy.
+     *
+     * @param  config
+     *         The {@link RestConfig} to use
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setRestConfig(@Nonnull RestConfig config)
+    {
+        Checks.notNull(config, "RestConfig");
+        return setRestConfigProvider(ignored -> config);
     }
 
     /**
@@ -2196,7 +2242,7 @@ public class  DefaultShardManagerBuilder
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, audioPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
-        final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
+        final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, restConfigProvider, chunkingFilter);
 
         if (login)
              manager.login();
