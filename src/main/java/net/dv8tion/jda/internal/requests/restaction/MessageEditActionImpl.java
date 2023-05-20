@@ -19,9 +19,9 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -45,7 +45,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     private final Guild guild;
     private final MessageChannel channel;
     private final MessageEditBuilder builder = new MessageEditBuilder();
-    private InteractionHook interactionHook;
+    private WebhookClient<Message> webhook;
 
     public MessageEditActionImpl(@Nonnull JDA jda, @Nonnull Guild guild, @Nonnull String channelId, @Nonnull String messageId)
     {
@@ -63,9 +63,9 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
         this.messageId = messageId;
     }
 
-    public MessageEditActionImpl withHook(InteractionHook hook)
+    public MessageEditActionImpl withHook(WebhookClient<Message> hook)
     {
-        this.interactionHook = hook;
+        this.webhook = hook;
         return this;
     }
 
@@ -78,10 +78,11 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     @Override
     protected Route.CompiledRoute finalizeRoute()
     {
-        if (interactionHook != null && !interactionHook.isExpired())
+        if (webhook != null)
         {
-            Interaction interaction = interactionHook.getInteraction();
-            return Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
+            if (webhook instanceof InteractionHook && ((InteractionHook) webhook).isExpired())
+                return super.finalizeRoute();
+            return Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), webhook.getToken(), messageId);
         }
 
         return super.finalizeRoute();
@@ -106,7 +107,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
             message = entityBuilder.createMessageWithGuild(json, guild);
         else
             message = entityBuilder.createMessageWithChannel(json, channel, false);
-        request.onSuccess(message.withHook(interactionHook));
+        request.onSuccess(message.withHook(webhook));
     }
 
     @Nonnull

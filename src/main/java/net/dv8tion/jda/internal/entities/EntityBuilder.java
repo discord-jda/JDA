@@ -64,7 +64,6 @@ import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
 import net.dv8tion.jda.internal.entities.sticker.*;
 import net.dv8tion.jda.internal.handle.EventCache;
-import net.dv8tion.jda.internal.requests.IncomingWebhookClient;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -1609,7 +1608,7 @@ public class EntityBuilder
         if (channel instanceof PrivateChannel)
             return createMessageWithLookup(json, null, modifyCache);
         // Try to build a message with no known channel, coming from a webhook
-        if (channel instanceof IncomingWebhookClient.WebhookChannel)
+        if (channel instanceof WebhookChannel)
             return createMessage0(json, channel, null, false);
         throw new IllegalArgumentException(MISSING_CHANNEL);
     }

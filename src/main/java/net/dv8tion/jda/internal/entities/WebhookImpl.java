@@ -129,12 +129,6 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
         return user.getName();
     }
 
-    @Override
-    public String getToken()
-    {
-        return token;
-    }
-
     @Nonnull
     @Override
     public String getUrl()
@@ -184,10 +178,44 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
         return new WebhookManagerImpl(this);
     }
 
+    // Webhook execution
+
     @Override
-    public long getIdLong()
+    public WebhookMessageCreateActionImpl<Message> sendRequest()
     {
-        return id;
+        checkToken();
+        AbstractWebhookClient<Message> client = (AbstractWebhookClient<Message>) WebhookClient.createClient(api, getId(), token);
+        return client.sendRequest();
+    }
+
+    @Override
+    public WebhookMessageEditActionImpl<Message> editRequest(String messageId)
+    {
+        checkToken();
+        AbstractWebhookClient<Message> client = (AbstractWebhookClient<Message>) WebhookClient.createClient(api, getId(), token);
+        return client.editRequest(messageId);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
+    {
+        checkToken();
+        return WebhookClient.createClient(api, getId(), token).deleteMessageById(messageId);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
+    {
+        checkToken();
+        return WebhookClient.createClient(api, getId(), token).retrieveMessageById(messageId);
+    }
+
+    private void checkToken()
+    {
+        if (token == null)
+            throw new UnsupportedOperationException("Cannot execute webhook without a token!");
     }
 
     /* -- Impl Setters -- */
@@ -248,43 +276,5 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
         return new EntityString(this)
                 .setName(getName())
                 .toString();
-    }
-
-    @Override
-    public WebhookMessageCreateActionImpl<Message> sendRequest()
-    {
-        checkToken();
-        AbstractWebhookClient<Message> client = (AbstractWebhookClient<Message>) WebhookClient.createClient(api, getId(), token);
-        return client.sendRequest();
-    }
-
-    @Override
-    public WebhookMessageEditActionImpl<Message> editRequest(String messageId)
-    {
-        checkToken();
-        AbstractWebhookClient<Message> client = (AbstractWebhookClient<Message>) WebhookClient.createClient(api, getId(), token);
-        return client.editRequest(messageId);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
-    {
-        checkToken();
-        return WebhookClient.createClient(api, getId(), token).deleteMessageById(messageId);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
-    {
-        checkToken();
-        return WebhookClient.createClient(api, getId(), token).retrieveMessageById(messageId);
-    }
-
-    private void checkToken()
-    {
-        if (token == null)
-            throw new UnsupportedOperationException("Cannot execute webhook without a token!");
     }
 }

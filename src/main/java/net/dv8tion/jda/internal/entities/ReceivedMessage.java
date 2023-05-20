@@ -35,7 +35,6 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -101,7 +100,7 @@ public class ReceivedMessage implements Message
     protected final List<StickerItem> stickers;
     protected final List<LayoutComponent> components;
 
-    protected InteractionHook interactionHook;
+    protected WebhookClient<Message> webhook;
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -181,9 +180,9 @@ public class ReceivedMessage implements Message
         }
     }
 
-    public ReceivedMessage withHook(InteractionHook hook)
+    public ReceivedMessage withHook(WebhookClient<Message> hook)
     {
-        this.interactionHook = hook;
+        this.webhook = hook;
         return this;
     }
 
@@ -649,7 +648,7 @@ public class ReceivedMessage implements Message
         MessageEditActionImpl action;
         if (hasChannel())
         {
-            if (interactionHook == null) // only perform perm checks if its not an interaction
+            if (webhook == null) // only perform perm checks if its not an interaction
                 action = (MessageEditActionImpl) getChannel().editMessageById(getId(), newContent);
             else
                 action = new MessageEditActionImpl(getChannel(), getId());
@@ -659,7 +658,7 @@ public class ReceivedMessage implements Message
             action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
         }
 
-        return action.withHook(this.interactionHook).setContent(newContent.toString());
+        return action.withHook(this.webhook).setContent(newContent.toString());
     }
 
     @Nonnull
@@ -672,7 +671,7 @@ public class ReceivedMessage implements Message
         MessageEditActionImpl action;
         if (hasChannel())
         {
-            if (interactionHook == null) // only perform perm checks if its not an interaction
+            if (webhook == null) // only perform perm checks if its not an interaction
                 action = (MessageEditActionImpl) getChannel().editMessageEmbedsById(getId(), embeds);
             else
                 action = new MessageEditActionImpl(getChannel(), getId());
@@ -682,7 +681,7 @@ public class ReceivedMessage implements Message
             action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
         }
 
-        return action.withHook(this.interactionHook).setEmbeds(embeds);
+        return action.withHook(this.webhook).setEmbeds(embeds);
     }
 
     @Nonnull
@@ -695,7 +694,7 @@ public class ReceivedMessage implements Message
         MessageEditActionImpl action;
         if (hasChannel())
         {
-            if (interactionHook == null) // only perform perm checks if its not an interaction
+            if (webhook == null) // only perform perm checks if its not an interaction
                 action = (MessageEditActionImpl) getChannel().editMessageComponentsById(getId(), components);
             else
                 action = new MessageEditActionImpl(getChannel(), getId());
@@ -705,7 +704,7 @@ public class ReceivedMessage implements Message
             action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
         }
 
-        return action.withHook(this.interactionHook).setComponents(components);
+        return action.withHook(this.webhook).setComponents(components);
     }
 
     @Nonnull
@@ -718,7 +717,7 @@ public class ReceivedMessage implements Message
         MessageEditActionImpl action;
         if (hasChannel())
         {
-            if (interactionHook == null) // only perform perm checks if its not an interaction
+            if (webhook == null) // only perform perm checks if its not an interaction
                 action = (MessageEditActionImpl) getChannel().editMessageFormatById(getId(), format, args);
             else
                 action = new MessageEditActionImpl(getChannel(), getId());
@@ -728,7 +727,7 @@ public class ReceivedMessage implements Message
             action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
         }
 
-        return action.withHook(this.interactionHook).setContent(String.format(format, args));
+        return action.withHook(this.webhook).setContent(String.format(format, args));
     }
 
     @Nonnull
@@ -741,7 +740,7 @@ public class ReceivedMessage implements Message
         MessageEditActionImpl action;
         if (hasChannel())
         {
-            if (interactionHook == null) // only perform perm checks if its not an interaction
+            if (webhook == null) // only perform perm checks if its not an interaction
                 action = (MessageEditActionImpl) getChannel().editMessageAttachmentsById(getId(), attachments);
             else
                 action = new MessageEditActionImpl(getChannel(), getId());
@@ -751,7 +750,7 @@ public class ReceivedMessage implements Message
             action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
         }
 
-        return action.withHook(this.interactionHook).setAttachments(attachments);
+        return action.withHook(this.webhook).setAttachments(attachments);
     }
 
     @Nonnull
@@ -764,7 +763,7 @@ public class ReceivedMessage implements Message
         MessageEditActionImpl action;
         if (hasChannel())
         {
-            if (interactionHook == null) // only perform perm checks if its not an interaction
+            if (webhook == null) // only perform perm checks if its not an interaction
                 action = (MessageEditActionImpl) getChannel().editMessageById(getId(), newContent);
             else
                 action = new MessageEditActionImpl(getChannel(), getId());
@@ -774,7 +773,7 @@ public class ReceivedMessage implements Message
             action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
         }
 
-        return action.withHook(this.interactionHook).applyData(newContent);
+        return action.withHook(this.webhook).applyData(newContent);
     }
 
     @Nonnull
@@ -790,9 +789,9 @@ public class ReceivedMessage implements Message
         if (!isSelfAuthored && !isFromGuild())
             throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
 
-        if (interactionHook != null)
+        if (webhook != null)
         {
-            Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(self.getApplicationId(), interactionHook.getInteraction().getToken(), getId());
+            Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(self.getApplicationId(), webhook.getToken(), getId());
             return new AuditableRestActionImpl<>(getJDA(), route);
         }
 
@@ -822,9 +821,9 @@ public class ReceivedMessage implements Message
         SelfUser self = api.getSelfUser();
 
         Route.CompiledRoute route;
-        if (interactionHook != null)
+        if (webhook != null)
         {
-            route = Route.Interactions.EDIT_FOLLOWUP.compile(self.getApplicationId(), interactionHook.getInteraction().getToken(), getId());
+            route = Route.Interactions.EDIT_FOLLOWUP.compile(self.getApplicationId(), webhook.getToken(), getId());
         }
         else
         {

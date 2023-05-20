@@ -34,6 +34,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
@@ -46,8 +47,24 @@ import java.util.regex.Matcher;
  * @see Webhook
  * @see net.dv8tion.jda.api.interactions.InteractionHook
  */
-public interface WebhookClient<T>
+public interface WebhookClient<T> extends ISnowflake
 {
+    /**
+     * The token of this webhook.
+     *
+     * @return The token, or null if this webhook does not have a token available
+     */
+    @Nullable
+    String getToken();
+
+    /**
+     * The associated {@link JDA} instance.
+     *
+     * @return The JDA instance
+     */
+    @Nonnull
+    JDA getJDA();
+
     /**
      * Send a message to this webhook.
      *

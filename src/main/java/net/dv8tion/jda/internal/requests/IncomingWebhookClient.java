@@ -18,16 +18,14 @@ package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
-import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
+import net.dv8tion.jda.internal.entities.channel.concrete.WebhookChannel;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -53,8 +51,10 @@ public class IncomingWebhookClient extends AbstractWebhookClient<Message>
     }
 
     @Override
-    public WebhookMessageEditActionImpl<Message> editRequest(String messageId)
+    public WebhookMessageEditActionImpl<Message> editRequest(@Nonnull String messageId)
     {
+        if (!"@original".equals(messageId))
+            Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(Long.toUnsignedString(id), token, messageId);
         route = route.withQueryParams("wait", "true");
         WebhookMessageEditActionImpl<Message> action = new WebhookMessageEditActionImpl<>(api, route, builder());
@@ -66,7 +66,8 @@ public class IncomingWebhookClient extends AbstractWebhookClient<Message>
     @Override
     public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
     {
-        Checks.isSnowflake(messageId);
+        if (!"@original".equals(messageId))
+            Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.GET_MESSAGE.compile(Long.toUnsignedString(id), token, messageId);
         return new RestActionImpl<>(api, route, (response, request) -> builder().apply(response.getObject()));
     }
@@ -78,121 +79,11 @@ public class IncomingWebhookClient extends AbstractWebhookClient<Message>
             long channelId = data.getUnsignedLong("channel_id");
             MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
             if (channel == null)
-                channel = new WebhookChannel(channelId);
-            return jda.getEntityBuilder().createMessageWithChannel(data, channel, false);
+                channel = new WebhookChannel(this, channelId);
+            ReceivedMessage message = jda.getEntityBuilder().createMessageWithChannel(data, channel, false);
+            message.withHook(this);
+            return message;
         };
     }
 
-    public class WebhookChannel extends AbstractChannelImpl<WebhookChannel> implements MessageChannelMixin<WebhookChannel>
-    {
-        WebhookChannel(long id)
-        {
-            super(id, IncomingWebhookClient.this.api);
-            this.name = "";
-        }
-
-        @Override
-        public long getIdLong()
-        {
-            return id;
-        }
-
-        @Nonnull
-        @Override
-        public ChannelType getType()
-        {
-            return ChannelType.WEBHOOK;
-        }
-
-        @Nonnull
-        @Override
-        public RestAction<Void> delete()
-        {
-            Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(Long.toUnsignedString(IncomingWebhookClient.this.id), token);
-            return new RestActionImpl<>(api, route);
-        }
-
-        @Nonnull
-        @Override
-        public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
-        {
-            return IncomingWebhookClient.this.retrieveMessageById(messageId);
-        }
-
-        @Nonnull
-        @Override
-        public AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId)
-        {
-            return (AuditableRestAction<Void>) IncomingWebhookClient.this.deleteMessageById(messageId);
-        }
-
-        @Override
-        public long getLatestMessageIdLong()
-        {
-            return 0;
-        }
-
-        @Override
-        public boolean canTalk()
-        {
-            return true;
-        }
-
-        @Override
-        public WebhookChannel setLatestMessageIdLong(long latestMessageId)
-        {
-            return null;
-        }
-
-        @Override
-        public void checkCanAccessChannel()
-        {
-            throw new IllegalStateException("Cannot access webhook target channel.");
-        }
-
-        @Override
-        public void checkCanViewHistory() {} // Kind of? Only specific message ids though.
-
-        @Override
-        public void checkCanSendMessage()
-        {
-            checkCanAccessChannel();
-        }
-
-        @Override
-        public void checkCanSendMessageEmbeds()
-        {
-            checkCanAccessChannel();
-        }
-
-        @Override
-        public void checkCanSendFiles()
-        {
-            checkCanAccessChannel();
-        }
-
-        @Override
-        public void checkCanAddReactions()
-        {
-            checkCanAccessChannel();
-        }
-
-        @Override
-        public void checkCanRemoveReactions()
-        {
-            checkCanAccessChannel();
-        }
-
-        @Override
-        public void checkCanControlMessagePins()
-        {
-            checkCanAccessChannel();
-        }
-
-        @Override
-        public boolean canDeleteOtherUsersMessages()
-        {
-            return false;
-        }
-    }
 }

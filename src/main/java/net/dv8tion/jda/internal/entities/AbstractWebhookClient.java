@@ -53,6 +53,25 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
         this.api = api;
     }
 
+    @Override
+    public long getIdLong()
+    {
+        return id;
+    }
+
+    @Override
+    public String getToken()
+    {
+        return token;
+    }
+
+    @Nonnull
+    @Override
+    public JDA getJDA()
+    {
+        return api;
+    }
+
     public abstract WebhookMessageCreateActionImpl<T> sendRequest();
     public abstract WebhookMessageEditActionImpl<T> editRequest(String messageId);
 
@@ -134,7 +153,8 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
     @Override
     public RestAction<Void> deleteMessageById(@Nonnull String messageId)
     {
-        Checks.isSnowflake(messageId);
+        if (!"@original".equals(messageId))
+            Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(Long.toUnsignedString(id), token, messageId);
         return new AuditableRestActionImpl<>(api, route);
     }
