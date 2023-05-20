@@ -17,6 +17,10 @@ package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.events.*;
+import net.dv8tion.jda.api.events.automod.AutoModExecutionEvent;
+import net.dv8tion.jda.api.events.automod.AutoModRuleCreateEvent;
+import net.dv8tion.jda.api.events.automod.AutoModRuleDeleteEvent;
+import net.dv8tion.jda.api.events.automod.AutoModRuleUpdateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
@@ -319,6 +323,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildVoiceStream(@Nonnull GuildVoiceStreamEvent event) {}
     public void onGuildVoiceVideo(@Nonnull GuildVoiceVideoEvent event) {}
     public void onGuildVoiceRequestToSpeak(@Nonnull GuildVoiceRequestToSpeakEvent event) {}
+
+    //Guild AutoMod Events
+    public void onAutoModExecution(@Nonnull AutoModExecutionEvent event) {}
+    public void onAutoModRuleCreate(@Nonnull AutoModRuleCreateEvent event) {}
+    public void onAutoModRuleUpdate(@Nonnull AutoModRuleUpdateEvent event) {}
+    public void onAutoModRuleDelete(@Nonnull AutoModRuleDeleteEvent event) {}
 
     //Role events
     public void onRoleCreate(@Nonnull RoleCreateEvent event) {}

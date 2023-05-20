@@ -181,6 +181,9 @@ public enum ErrorResponse
     MAX_LOTTIE_ANIMATION_DIMENSION(           170005, "Lottie animation maximum dimensions exceeded"),
     STICKER_FPS_TOO_SMALL_OR_TOO_LARGE(       170006, "Sticker frame rate is either too small or too large"),
     MAX_STICKER_ANIMATION_DURATION(           170007, "Sticker animation duration exceeds maximum of 5 seconds"),
+    MESSAGE_BLOCKED_BY_AUTOMOD(               200000, "Message was blocked by automatic moderation"),
+    TITLE_BLOCKED_BY_AUTOMOD(                 200001, "Title was blocked by automatic moderation"),
+    MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER(   240000, "Message blocked by harmful links filter"),
 
     SERVER_ERROR(                                 0, "Discord encountered an internal server error! Not good!");
 

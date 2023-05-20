@@ -20,6 +20,8 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
@@ -311,6 +313,13 @@ public enum AuditLogKey
      * <p>Expected type: <b>List{@literal <Map<String, Object>>}</b>
      */
     CHANNEL_AVAILABLE_TAGS("available_tags"),
+
+    /**
+     * The relevant channel for the audit log entry.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    CHANNEL_ID("channel_id"),
 
 //    /**
 //     * The {@link ForumChannel#getDefaultSortOrder()} value.
@@ -657,7 +666,25 @@ public enum AuditLogKey
      *
      * <p>Expected type: <b>int</b>
      */
-    INVITE_MAX_USES("max_uses");
+    INVITE_MAX_USES("max_uses"),
+
+    // AUTO MODERATION
+    /**
+     * Change of the {@link AutoModRule#getName()} for the target {@link AutoModRule}
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    AUTO_MODERATION_RULE_NAME("auto_moderation_rule_name"),
+
+    /**
+     * The {@link AutoModRule#getTriggerType()} for an {@link AutoModRule} trigger
+     *
+     * <p>Use with {@link AutoModTriggerType#fromKey(int)}
+     *
+     * <p>Expected type: <b>int</b>
+     */
+    AUTO_MODERATION_RULE_TRIGGER_TYPE("auto_moderation_rule_trigger_type"),
+    ;
 
 
     private final String key;
