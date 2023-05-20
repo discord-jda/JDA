@@ -185,7 +185,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
     List<ForumTag> getAppliedTags();
 
     /**
-     * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} from Discord's servers that this thread was started from.
+     * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} that this thread was started from.
      * <br>The parent message was posted in the {@link #getParentChannel() parent channel} and a thread was started on it.
      *
      * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
@@ -226,7 +226,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
     RestAction<Message> retrieveParentMessage();
 
     /**
-     * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} that was posted when the thread is created.
+     * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} that was posted when this thread was created.
      * <br>Unlike {@link #retrieveParentMessage()}, the message was posted only inside the thread channel.
      * This is common for {@link ForumChannel} posts.
      *
