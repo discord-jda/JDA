@@ -1286,6 +1286,11 @@ public class EntityBuilder
 
     public ThreadChannel createThreadChannel(GuildImpl guild, DataObject json, long guildId)
     {
+        return createThreadChannel(guild, json, guildId, true);
+    }
+
+    public ThreadChannel createThreadChannel(GuildImpl guild, DataObject json, long guildId, boolean modifyCache)
+    {
         boolean playbackCache = false;
         final long id = json.getUnsignedLong("id");
         final long parentId = json.getUnsignedLong("parent_id");
@@ -1299,7 +1304,7 @@ public class EntityBuilder
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
         ThreadChannelImpl channel = ((ThreadChannelImpl) getJDA().getThreadChannelsView().get(id));
-        if (channel == null)
+        if (channel == null && modifyCache)
         {
             SnowflakeCacheViewImpl<ThreadChannel>
                     guildThreadView = guild.getThreadChannelsView(),

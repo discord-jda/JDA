@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -68,7 +69,11 @@ public class InteractionImpl implements Interaction
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
             jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
             user = member.getUser();
-            channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
+
+            GuildChannel channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
+            if (channel == null && ChannelType.fromId(channelJson.getInt("type")).isThread())
+                channel = api.getEntityBuilder().createThreadChannel((GuildImpl) guild, channelJson, guild.getIdLong(), false); 
+            this.channel = channel;
         }
         else
         {
