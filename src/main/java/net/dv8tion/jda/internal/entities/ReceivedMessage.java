@@ -61,12 +61,14 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReceivedMessage extends AbstractMessage
+public class ReceivedMessage implements Message
 {
     public static boolean didContentIntentWarning = false;
     private final Object mutex = new Object();
@@ -75,26 +77,29 @@ public class ReceivedMessage extends AbstractMessage
     protected final long id;
     protected final long channelId;
     protected final long applicationId;
+    protected final int flags;
+    protected final int position;
+    protected final boolean fromWebhook;
+    protected final boolean pinned;
+    protected final boolean isTTS;
     protected final MessageType type;
     protected final MessageChannel channel;
     protected final Guild guild;
     protected final MessageReference messageReference;
-    protected final boolean fromWebhook;
-    protected final boolean pinned;
     protected final User author;
     protected final Member member;
+    protected final String content;
+    protected final String nonce;
     protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
     protected final Mentions mentions;
+    protected final Message.Interaction interaction;
+    protected final ThreadChannel startedThread;
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<StickerItem> stickers;
     protected final List<LayoutComponent> components;
-    protected final int flags;
-    protected final Message.Interaction interaction;
-    protected final ThreadChannel startedThread;
-    protected final int position;
 
     protected InteractionHook interactionHook;
 
@@ -112,7 +117,6 @@ public class ReceivedMessage extends AbstractMessage
             List<StickerItem> stickers, List<ActionRow> components,
             int flags, Message.Interaction interaction, ThreadChannel startedThread, int position)
     {
-        super(content, nonce, tts);
         this.id = id;
         this.channelId = channelId;
         this.channel = channel;
@@ -123,6 +127,9 @@ public class ReceivedMessage extends AbstractMessage
         this.fromWebhook = fromWebhook;
         this.applicationId = applicationId;
         this.pinned = pinned;
+        this.content = content;
+        this.nonce = nonce;
+        this.isTTS = tts;
         this.author = author;
         this.member = member;
         this.activity = activity;
@@ -138,6 +145,19 @@ public class ReceivedMessage extends AbstractMessage
         this.startedThread = startedThread;
         this.position = position;
     }
+
+    private void checkSystem(String comment)
+    {
+        if (type.isSystem())
+            throw new IllegalStateException("Cannot " + comment + " a system message!");
+    }
+
+    private void checkUser()
+    {
+        if (!getJDA().getSelfUser().equals(getAuthor()))
+            throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
+    }
+
 
     private void checkIntent()
     {
@@ -191,6 +211,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> pin()
     {
+        checkSystem("edit");
         if (isEphemeral())
             throw new IllegalStateException("Cannot pin ephemeral messages.");
 
@@ -205,6 +226,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> unpin()
     {
+        checkSystem("edit");
         if (isEphemeral())
             throw new IllegalStateException("Cannot unpin ephemeral messages.");
 
@@ -621,6 +643,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageEditAction editMessage(@Nonnull CharSequence newContent)
     {
+        checkSystem("edit");
         checkUser();
 
         MessageEditActionImpl action;
@@ -643,6 +666,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
+        checkSystem("edit");
         checkUser();
 
         MessageEditActionImpl action;
@@ -665,6 +689,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
+        checkSystem("edit");
         checkUser();
 
         MessageEditActionImpl action;
@@ -687,6 +712,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
+        checkSystem("edit");
         checkUser();
 
         MessageEditActionImpl action;
@@ -709,6 +735,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
+        checkSystem("edit");
         checkUser();
 
         MessageEditActionImpl action;
@@ -731,6 +758,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageEditAction editMessage(@Nonnull MessageEditData newContent)
     {
+        checkSystem("edit");
         checkUser();
 
         MessageEditActionImpl action;
@@ -747,12 +775,6 @@ public class ReceivedMessage extends AbstractMessage
         }
 
         return action.withHook(this.interactionHook).applyData(newContent);
-    }
-
-    private void checkUser()
-    {
-        if (!getJDA().getSelfUser().equals(getAuthor()))
-            throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
     }
 
     @Nonnull
@@ -928,12 +950,6 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    protected void unsupported()
-    {
-        throw new UnsupportedOperationException("This operation is not supported on received messages!");
-    }
-
-    @Override
     public void formatTo(Formatter formatter, int flags, int width, int precision)
     {
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
@@ -945,6 +961,23 @@ public class ReceivedMessage extends AbstractMessage
         if (upper)
             out = out.toUpperCase(formatter.locale());
 
-        appendFormat(formatter, width, precision, leftJustified, out);
+        try
+        {
+            Appendable appendable = formatter.out();
+            if (precision > -1 && out.length() > precision)
+            {
+                appendable.append(Helpers.truncate(out, precision - 3)).append("...");
+                return;
+            }
+
+            if (leftJustified)
+                appendable.append(Helpers.rightPad(out, width));
+            else
+                appendable.append(Helpers.leftPad(out, width));
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
     }
 }

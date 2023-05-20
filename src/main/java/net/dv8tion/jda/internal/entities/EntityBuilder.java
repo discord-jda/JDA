@@ -1801,16 +1801,9 @@ public class EntityBuilder
 
         int position = jsonObject.getInt("position", -1);
 
-        if (!type.isSystem())
-        {
-            return new ReceivedMessage(id, channelId, api, guild, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread, position);
-        }
-        else
-        {
-            return new SystemMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread, position);
-        }
+        return new ReceivedMessage(id, channelId, api, guild, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
+                content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags,
+                messageInteraction, startedThread, position);
     }
 
     private static MessageActivity createMessageActivity(DataObject jsonObject)
