@@ -463,5 +463,6 @@ class EscapeMarkdownAllTest
         Assertions.assertEquals("\\>\\>\\> Hello World", MarkdownSanitizer.escape("\\>\\>\\> Hello World", true));
         Assertions.assertEquals("Hello > World", MarkdownSanitizer.escape("Hello > World"));
         Assertions.assertEquals("Hello\n \\> World", MarkdownSanitizer.escape("Hello\n > World"));
+        Assertions.assertEquals("Hello\n\\> World", MarkdownSanitizer.escape("Hello\n> World"));
     }
 }
