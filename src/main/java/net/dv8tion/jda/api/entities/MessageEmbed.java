@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.ImageProxy;
@@ -92,7 +93,6 @@ public class MessageEmbed implements SerializableData
 
     /**
      * The maximum amount of total visible characters an embed can have
-     * <br>This limit depends on the current {@link net.dv8tion.jda.api.AccountType AccountType} and applies to BOT
      *
      * @see net.dv8tion.jda.api.EmbedBuilder#setDescription(CharSequence)
      * @see net.dv8tion.jda.api.EmbedBuilder#setTitle(String)
@@ -103,13 +103,16 @@ public class MessageEmbed implements SerializableData
 
     /**
      * The maximum amount of total visible characters an embed can have
-     * <br>This limit depends on the current {@link net.dv8tion.jda.api.AccountType AccountType} and applies to CLIENT
      *
      * @see net.dv8tion.jda.api.EmbedBuilder#setDescription(CharSequence)
      * @see net.dv8tion.jda.api.EmbedBuilder#setTitle(String)
      * @see net.dv8tion.jda.api.EmbedBuilder#setFooter(String, String)
      * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean)
+     *
+     * @deprecated This will be removed in the future.
      */
+    @Deprecated
+    @ForRemoval
     public static final int EMBED_MAX_LENGTH_CLIENT = 2000;
 
     protected final Object mutex = new Object();

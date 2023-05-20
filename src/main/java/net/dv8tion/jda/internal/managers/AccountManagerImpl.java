@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
@@ -87,6 +87,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     public AccountManagerImpl setName(@Nonnull String name)
     {
@@ -130,8 +131,8 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Override
     protected void handleSuccess(Response response, Request<Void> request)
     {
-        String newToken = response.getObject().getString("token").replace("Bot ", "");
-        api.setToken(newToken);
+//        String newToken = response.getObject().getString("token").replace("Bot ", "");
+//        api.setToken(newToken);
         request.onSuccess(null);
     }
 }

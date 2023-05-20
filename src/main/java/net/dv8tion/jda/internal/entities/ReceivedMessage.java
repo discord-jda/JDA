@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
@@ -49,7 +50,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -728,10 +728,11 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public String toString()
     {
         return new EntityString(this)
-                .addMetadata("author", author.getAsTag())
+                .addMetadata("author", author.getDiscriminator().equals("0000") ? author.getName() : author.getAsTag())
                 .addMetadata("content", String.format("%.20s ...", this))
                 .toString();
     }

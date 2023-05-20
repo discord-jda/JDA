@@ -48,10 +48,7 @@ import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.*;
-import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.events.user.update.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -146,7 +143,8 @@ public class EntityBuilder
         selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
-                .setDiscriminator(self.getString("discriminator"))
+                .setGlobalName(self.getString("global_name", null))
+                .setDiscriminator(self.getString("discriminator", "0"))
                 .setAvatarId(self.getString("avatar", null))
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
@@ -454,7 +452,8 @@ public class EntityBuilder
         {
             // Initial creation
             userObj.setName(user.getString("username"))
-                   .setDiscriminator(user.get("discriminator").toString())
+                   .setGlobalName(user.getString("global_name", null))
+                   .setDiscriminator(user.getString("discriminator", "0"))
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
@@ -474,8 +473,10 @@ public class EntityBuilder
     {
         String oldName = userObj.getName();
         String newName = user.getString("username");
+        String oldGlobalName = userObj.getGlobalName();
+        String newGlobalName = user.getString("global_name", null);
         String oldDiscriminator = userObj.getDiscriminator();
-        String newDiscriminator = user.get("discriminator").toString();
+        String newDiscriminator = user.getString("discriminator", "0");
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
         int oldFlags = userObj.getFlagsRaw();
@@ -490,6 +491,15 @@ public class EntityBuilder
                 new UserUpdateNameEvent(
                     jda, responseNumber,
                     userObj, oldName));
+        }
+
+        if (!Objects.equals(oldGlobalName, newGlobalName))
+        {
+            userObj.setGlobalName(newGlobalName);
+            jda.handleEvent(
+                new UserUpdateGlobalNameEvent(
+                    jda, responseNumber,
+                    userObj, oldGlobalName));
         }
 
         if (!oldDiscriminator.equals(newDiscriminator))
@@ -600,6 +610,8 @@ public class EntityBuilder
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
             member.setAvatarId(memberJson.getString("avatar", null));
+            if (!memberJson.isNull("flags"))
+                member.setFlags(memberJson.getInt("flags"));
 
             long boostTimestamp = memberJson.isNull("premium_since")
                 ? 0
@@ -765,6 +777,20 @@ public class EntityBuilder
                     new GuildMemberUpdatePendingEvent(
                         getJDA(), responseNumber,
                         member, oldPending));
+            }
+        }
+
+        if (!content.isNull("flags"))
+        {
+            int flags = content.getInt("flags");
+            int oldFlags = member.getFlagsRaw();
+            if (flags != oldFlags)
+            {
+                member.setFlags(flags);
+                getJDA().handleEvent(
+                    new GuildMemberUpdateFlagsEvent(
+                        getJDA(), responseNumber,
+                        member, Member.MemberFlag.fromRaw(oldFlags)));
             }
         }
 
@@ -1833,7 +1859,9 @@ public class EntityBuilder
         final String contentType = jsonObject.getString("content_type", null);
         final String description = jsonObject.getString("description", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, getJDA());
+        final String waveform = jsonObject.getString("waveform", null);
+        final double duration = jsonObject.getDouble("duration_secs", 0);
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, description, size, height, width, ephemeral, waveform, duration, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)

@@ -261,6 +261,7 @@ public class EmbedBuilder
     /**
      * Sets the Title of the embed.
      * <br>You can provide {@code null} as url if no url should be used.
+     * <br>If you want to set a URL without a title, use {@link #setUrl(String)} instead.
      *
      * <p><b><a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/04-setTitle.png">Example</a></b>
      *
@@ -300,6 +301,34 @@ public class EmbedBuilder
             this.title = title;
             this.url = url;
         }
+        return this;
+    }
+
+    /**
+     * Sets the URL of the embed.
+     * <br>The Discord client mostly only uses this property in combination with the {@link #setTitle(String) title} for a clickable Hyperlink.
+     *
+     * <p>If multiple embeds in a message use the same URL, the Discord client will merge them into a single embed and aggregate images into a gallery view.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the character limit for {@code url}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
+     *         </ul>
+     *
+     * @return the builder after the URL has been set
+     *
+     * @see    #setTitle(String, String)
+     */
+    @Nonnull
+    public EmbedBuilder setUrl(@Nullable String url)
+    {
+        if (Helpers.isBlank(url))
+            url = null;
+        urlCheck(url);
+        this.url = url;
+
         return this;
     }
 

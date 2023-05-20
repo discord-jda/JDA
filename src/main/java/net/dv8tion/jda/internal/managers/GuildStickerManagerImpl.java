@@ -5,8 +5,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildStickerManager;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
@@ -128,8 +128,8 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
     @Override
     protected boolean checkPermissions()
     {
-        if (guild != null && !guild.getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
-            throw new InsufficientPermissionException(guild, Permission.MANAGE_EMOJIS_AND_STICKERS);
+        if (guild != null && !guild.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
         return super.checkPermissions();
     }
 }

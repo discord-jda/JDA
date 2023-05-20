@@ -49,6 +49,7 @@ import net.dv8tion.jda.api.managers.GuildStickerManager;
 import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
@@ -812,7 +813,7 @@ public class GuildImpl implements Guild
             RichCustomEmoji emoji = getEmojiById(id);
             if (emoji != null)
             {
-                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
                     return emoji;
             }
             return null;
@@ -1117,12 +1118,12 @@ public class GuildImpl implements Guild
 
         MemberChunkManager chunkManager = getJDA().getClient().getChunkManager();
         boolean includePresences = getJDA().isIntent(GatewayIntent.GUILD_PRESENCES);
-        CompletableFuture<Void> handler = chunkManager.chunkGuild(this, includePresences, (last, list) -> list.forEach(callback));
+        MemberChunkManager.ChunkRequest handler = chunkManager.chunkGuild(this, includePresences, (last, list) -> list.forEach(callback));
         handler.exceptionally(ex -> {
             WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
             return null;
         });
-        return new GatewayTask<>(handler, () -> handler.cancel(false));
+        return new GatewayTask<>(handler, () -> handler.cancel(false)).onSetTimeout(handler::setTimeout);
     }
 
     @Nonnull
@@ -1158,7 +1159,7 @@ public class GuildImpl implements Guild
         MemberChunkManager chunkManager = api.getClient().getChunkManager();
         List<Member> collect = new ArrayList<>(ids.length);
         CompletableFuture<List<Member>> result = new CompletableFuture<>();
-        CompletableFuture<Void> handle = chunkManager.chunkGuild(this, includePresence, ids, (last, list) -> {
+        MemberChunkManager.ChunkRequest handle = chunkManager.chunkGuild(this, includePresence, ids, (last, list) -> {
             collect.addAll(list);
             if (last)
                 result.complete(collect);
@@ -1170,7 +1171,7 @@ public class GuildImpl implements Guild
             return null;
         });
 
-        return new GatewayTask<>(result, () -> handle.cancel(false));
+        return new GatewayTask<>(result, () -> handle.cancel(false)).onSetTimeout(handle::setTimeout);
     }
 
     @Nonnull
@@ -1185,7 +1186,7 @@ public class GuildImpl implements Guild
 
         List<Member> collect = new ArrayList<>(limit);
         CompletableFuture<List<Member>> result = new CompletableFuture<>();
-        CompletableFuture<Void> handle = chunkManager.chunkGuild(this, prefix, limit, (last, list) -> {
+        MemberChunkManager.ChunkRequest handle = chunkManager.chunkGuild(this, prefix, limit, (last, list) -> {
             collect.addAll(list);
             if (last)
                 result.complete(collect);
@@ -1197,7 +1198,7 @@ public class GuildImpl implements Guild
             return null;
         });
 
-        return new GatewayTask<>(result, () -> handle.cancel(false));
+        return new GatewayTask<>(result, () -> handle.cancel(false)).onSetTimeout(handle::setTimeout);
     }
 
     @Nonnull
@@ -1746,7 +1747,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
-        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, 32, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
@@ -1770,7 +1771,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
     {
-        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");

@@ -22,10 +22,17 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -144,8 +151,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
 
     /**
      * Whether this Member is in time out.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
+     * <br>While a Member is in time out, all permissions except {@link Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * @return True, if this Member is in time out
      */
@@ -245,7 +252,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     /**
      * Retrieves the Name displayed in the official Discord Client.
      *
-     * @return The Nickname of this Member or the Username if no Nickname is present.
+     * @return The guild nickname of this Member or the {@link User#getEffectiveName() effective user name} if no guild nickname is present.
      */
     @Nonnull
     String getEffectiveName();
@@ -357,6 +364,25 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     int getColorRaw();
 
     /**
+     * The raw {@link MemberFlag flags} bitset for this member.
+     *
+     * @return The raw flag bitset
+     */
+    int getFlagsRaw();
+
+    /**
+     * The {@link MemberFlag flags} for this member as an {@link EnumSet}.
+     * <br>Modifying this set will not update the member, it is a copy of existing flags.
+     *
+     * @return The flags
+     */
+    @Nonnull
+    default EnumSet<MemberFlag> getFlags()
+    {
+        return MemberFlag.fromRaw(getFlagsRaw());
+    }
+
+    /**
      * Whether this Member can interact with the provided Member
      * (kick/ban/etc.)
      *
@@ -431,7 +457,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
      * after joining the guild.
      * <br>The default channel is the channel with the highest position in which the member has
-     * {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permissions. If this requirement doesn't apply for
+     * {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permissions. If this requirement doesn't apply for
      * any channel in the guild, this method returns {@code null}.
      *
      * @return The {@link DefaultGuildChannelUnion channel} representing the default channel for this member
@@ -467,7 +493,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         Timeframe unit as a {@link TimeUnit} (for example {@code member.ban(7, TimeUnit.DAYS)}).
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
+     *         If the logged in account does not have the {@link Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -507,7 +533,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
+     *         If the logged in account does not have the {@link Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -544,7 +570,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         The reason for this action or {@code null} if there is no specified reason
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
+     *         If the logged in account does not have the {@link Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
@@ -570,8 +596,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
 
     /**
      * Puts this Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
+     * <br>While a Member is in time out, all permissions except {@link Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -589,7 +615,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         The {@link TimeUnit Unit} type of {@code amount}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link Permission#MODERATE_MEMBERS} permission.
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
@@ -609,8 +635,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
 
     /**
      * Puts this Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} for a specific amount of time.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
+     * <br>While a Member is in time out, all permissions except {@link Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -626,7 +652,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         The duration to put this Member in time out for
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link Permission#MODERATE_MEMBERS} permission.
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
@@ -646,8 +672,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
 
     /**
      * Puts this Member in time out in this {@link net.dv8tion.jda.api.entities.Guild Guild} until the specified date.
-     * <br>While a Member is in time out, all permissions except {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} and
-     * {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
+     * <br>While a Member is in time out, all permissions except {@link Permission#VIEW_CHANNEL VIEW_CHANNEL} and
+     * {@link Permission#MESSAGE_HISTORY MESSAGE_HISTORY} are removed from them.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -663,7 +689,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         The time this Member will be released from time out
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link Permission#MODERATE_MEMBERS} permission.
      * @throws IllegalArgumentException
      *         If any of the following checks are true
      *         <ul>
@@ -695,7 +721,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MODERATE_MEMBERS} permission.
+     *         If the logged in account does not have the {@link Permission#MODERATE_MEMBERS} permission.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -730,7 +756,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
+     *         If the logged in account does not have the {@link Permission#VOICE_DEAF_OTHERS} permission.
      * @throws java.lang.IllegalStateException
      *         If the member is not currently connected to a voice channel.
      *
@@ -768,7 +794,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
+     *         If the logged in account does not have the {@link Permission#VOICE_DEAF_OTHERS} permission.
      * @throws java.lang.IllegalStateException
      *         If the member is not currently connected to a voice channel.
      *
@@ -788,9 +814,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * The nickname is visible to all members of this guild.
      *
      * <p>To change the nickname for the currently logged in account
-     * only the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE NICKNAME_CHANGE} is required.
+     * only the Permission {@link Permission#NICKNAME_CHANGE NICKNAME_CHANGE} is required.
      * <br>To change the nickname of <b>any</b> {@link net.dv8tion.jda.api.entities.Member Member} for this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     * the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} is required.
+     * the Permission {@link Permission#NICKNAME_MANAGE NICKNAME_MANAGE} is required.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -808,9 +834,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         <ul>
-     *             <li>If attempting to set nickname for self and the logged in account has neither {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE}
-     *                 or {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE}</li>
-     *             <li>If attempting to set nickname for another member and the logged in account does not have {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE}</li>
+     *             <li>If attempting to set nickname for self and the logged in account has neither {@link Permission#NICKNAME_CHANGE}
+     *                 or {@link Permission#NICKNAME_MANAGE}</li>
+     *             <li>If attempting to set nickname for another member and the logged in account does not have {@link Permission#NICKNAME_MANAGE}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
@@ -825,5 +851,139 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     default AuditableRestAction<Void> modifyNickname(@Nullable String nickname)
     {
         return getGuild().modifyNickname(this, nickname);
+    }
+
+    /**
+     * Updates the flags to the new flag set.
+     * <br>If any of the flags is not {@link MemberFlag#isModifiable() modifiable}, it is not updated.
+     *
+     * <p>Any flags not provided by the set will be disabled, all contained flags will be enabled.
+     *
+     * @param  newFlags
+     *         The new flags for the member.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the bot does not have {@link Permission#MODERATE_MEMBERS} in the guild
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return {@link AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> modifyFlags(@Nonnull Collection<MemberFlag> newFlags)
+    {
+        Checks.noneNull(newFlags, "Flags");
+        if (!getGuild().getSelfMember().hasPermission(Permission.MODERATE_MEMBERS))
+            throw new InsufficientPermissionException(getGuild(), Permission.MODERATE_MEMBERS);
+        int flags = getFlagsRaw();
+        EnumSet<MemberFlag> updated = Helpers.copyEnumSet(MemberFlag.class, newFlags);
+        for (MemberFlag flag : MemberFlag.values())
+        {
+            if (flag.modifiable)
+            {
+                if (updated.contains(flag))
+                    flags |= flag.raw;
+                else
+                    flags &= ~flag.raw;
+            }
+        }
+
+        DataObject body = DataObject.empty().put("flags", flags);
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getGuild().getId(), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route, body);
+    }
+
+    /**
+     * Member flags indicating information about the membership state.
+     */
+    enum MemberFlag
+    {
+        /**
+         * The Member has left and rejoined the guild
+         */
+        DID_REJOIN(1, false),
+        /**
+         * The Member has completed the onboarding process
+         */
+        COMPLETED_ONBOARDING(1 << 1, false),
+        /**
+         * The Member bypasses guild verification requirements
+         */
+        BYPASSES_VERIFICATION(1 << 2, true),
+        /**
+         * The Member has started the onboarding process
+         */
+        STARTED_ONBOARDING(1 << 3, false),
+        ;
+
+        private final int raw;
+        private final boolean modifiable;
+
+
+        MemberFlag(int raw, boolean modifiable)
+        {
+            this.raw = raw;
+            this.modifiable = modifiable;
+        }
+
+        /**
+         * The raw value used by Discord for this flag
+         *
+         * @return The raw value
+         */
+        public int getRaw()
+        {
+            return raw;
+        }
+
+        /**
+         * Whether this flag can be modified by the client
+         *
+         * @return True, if this flag can be modified
+         */
+        public boolean isModifiable()
+        {
+            return modifiable;
+        }
+
+        /**
+         * The {@link MemberFlag Flags} represented by the provided raw value.
+         * <br>If the provided raw value is {@code 0} this will return an empty {@link java.util.EnumSet EnumSet}.
+         *
+         * @param  raw
+         *         The raw value
+         *
+         * @return EnumSet containing the flags represented by the provided raw value
+         */
+        @Nonnull
+        public static EnumSet<MemberFlag> fromRaw(int raw)
+        {
+            EnumSet<MemberFlag> flags = EnumSet.noneOf(MemberFlag.class);
+            for (MemberFlag flag : values())
+            {
+                if ((raw & flag.raw) == flag.raw)
+                    flags.add(flag);
+            }
+            return flags;
+        }
+
+        /**
+         * The raw value of the provided {@link MemberFlag Flags}.
+         * <br>If the provided set is empty this will return {@code 0}.
+         *
+         * @param  flags
+         *         The flags
+         *
+         * @return The raw value of the provided flags
+         */
+        public static int toRaw(@Nonnull Collection<MemberFlag> flags)
+        {
+            Checks.noneNull(flags, "Flags");
+            int raw = 0;
+            for (MemberFlag flag : flags)
+                raw |= flag.raw;
+            return raw;
+        }
     }
 }

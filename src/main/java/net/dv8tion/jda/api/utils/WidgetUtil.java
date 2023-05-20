@@ -15,26 +15,25 @@
  */
 package net.dv8tion.jda.api.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.net.HttpURLConnection;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Widget;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.WidgetImpl;
-import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.net.HttpURLConnection;
 
 /**
  * The WidgetUtil is a class for interacting with various facets of Discord's
@@ -45,8 +44,8 @@ import okhttp3.Response;
  */
 public class WidgetUtil 
 {
-    public static final String WIDGET_PNG = Requester.DISCORD_API_PREFIX + "guilds/%s/widget.png?style=%s";
-    public static final String WIDGET_URL = Requester.DISCORD_API_PREFIX + "guilds/%s/widget.json";
+    public static final String WIDGET_PNG = RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.png?style=%s";
+    public static final String WIDGET_URL = RestConfig.DEFAULT_BASE_URL + "guilds/%s/widget.json";
     public static final String WIDGET_HTML = "<iframe src=\"https://discord.com/widget?id=%s&theme=%s\" width=\"%d\" height=\"%d\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";
     
     /**
@@ -205,7 +204,7 @@ public class WidgetUtil
         Request request = new Request.Builder()
                     .url(String.format(WIDGET_URL, guildId))
                     .method("GET", null)
-                    .header("user-agent", Requester.USER_AGENT)
+                    .header("user-agent", RestConfig.USER_AGENT)
                     .header("accept-encoding", "gzip")
                     .build();
 

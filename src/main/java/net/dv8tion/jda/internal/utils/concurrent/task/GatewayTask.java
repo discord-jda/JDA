@@ -24,19 +24,28 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 
 public class GatewayTask<T> implements Task<T>
 {
     private static final Logger log = JDALogger.getLog(Task.class);
     private final Runnable onCancel;
     private final CompletableFuture<T> future;
+    private LongConsumer setTimeout;
 
     public GatewayTask(CompletableFuture<T> future, Runnable onCancel)
     {
         this.future = future;
         this.onCancel = onCancel;
+    }
+
+    public GatewayTask<T> onSetTimeout(LongConsumer setTimeout)
+    {
+        this.setTimeout = setTimeout;
+        return this;
     }
 
     @Override
@@ -85,6 +94,18 @@ public class GatewayTask<T> implements Task<T>
                     throw error;
             }
         });
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public Task<T> setTimeout(@Nonnull Duration timeout)
+    {
+        Checks.notNull(timeout, "Timeout");
+        long millis = timeout.toMillis();
+        Checks.positive(millis, "Timeout");
+        if (this.setTimeout != null)
+            this.setTimeout.accept(millis);
         return this;
     }
 

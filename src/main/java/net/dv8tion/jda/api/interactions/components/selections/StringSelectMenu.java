@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  *
  *   StringSelectMenu menu = StringSelectMenu.create("menu:class")
  *     .setPlaceholder("Choose your class") // shows the placeholder indicating what this menu is for
- *     .setRequireRange(1, 1) // exactly one must be selected
+ *     .setRequiredRange(1, 1) // exactly one must be selected
  *     .addOption("Arcane Mage", "mage-arcane")
  *     .addOption("Fire Mage", "mage-fire")
  *     .addOption("Frost Mage", "mage-frost")

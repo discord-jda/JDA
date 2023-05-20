@@ -43,6 +43,13 @@ public class UserSnowflakeImpl implements UserSnowflake
         return "<@" + getId() + ">";
     }
 
+    @Nonnull
+    @Override
+    public String getDefaultAvatarId()
+    {
+        return String.valueOf((id >> 22) % 5);
+    }
+
     @Override
     public int hashCode()
     {
