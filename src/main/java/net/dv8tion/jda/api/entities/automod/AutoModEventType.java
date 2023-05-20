@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.automod;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.automod.build.TriggerConfig;
 
@@ -36,7 +37,10 @@ public enum AutoModEventType
 
     /**
      * The rule is triggered when a member updates their profile.
+     *
+     * @incubating This has not been officially released yet
      */
+    @Incubating
     MEMBER_UPDATE(2),
 
     /**

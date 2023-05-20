@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.automod;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -44,7 +45,10 @@ public enum AutoModTriggerType
     MENTION_SPAM(5, 1, AutoModEventType.MESSAGE_SEND),
     /**
      * The rule is triggered by a member profile containing specific keywords or phrases.
+     *
+     * @incubating This has not been officially released yet
      */
+    @Incubating
     MEMBER_PROFILE_KEYWORD(6, 1, AutoModEventType.MEMBER_UPDATE),
     /**
      * Placeholder for unknown trigger types that haven't been added yet.

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.automod;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.automod.AutoModResponseImpl;
@@ -142,8 +143,11 @@ public interface AutoModResponse extends SerializableData
      * Create a response that will prevent the member from interacting with anything in the guild until the offending content is removed.
      *
      * @return The response instance
+     *
+     * @incubating This has not been officially released yet
      */
     @Nonnull
+    @Incubating
     static AutoModResponse blockMemberInteraction()
     {
         return new AutoModResponseImpl(Type.BLOCK_MEMBER_INTERACTION);
@@ -170,7 +174,10 @@ public interface AutoModResponse extends SerializableData
         TIMEOUT(3, EnumSet.of(AutoModTriggerType.KEYWORD, AutoModTriggerType.MENTION_SPAM)),
         /**
          * Blocks the member from interacting with the guild until they update the offending content.
+         *
+         * @incubating This has not been officially released yet
          */
+        @Incubating
         BLOCK_MEMBER_INTERACTION(4, EnumSet.of(AutoModTriggerType.MEMBER_PROFILE_KEYWORD)),
         /**
          * Placeholder for unknown types.
