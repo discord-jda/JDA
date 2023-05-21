@@ -61,8 +61,11 @@ public class AnnotatedEventManager implements IEventManager
     public void register(@Nonnull Object listener)
     {
         if (listener.getClass().isArray())
-            throw new IllegalArgumentException("Tried to register an array (" + listener.getClass().getCanonicalName() + ") as an annotated event listener." +
-                    "You might want to cast the array into Object[]");
+        {
+            for (Object o : ((Object[]) listener))
+                register(o);
+            return;
+        }
 
         if (listeners.add(listener))
         {
