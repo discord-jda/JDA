@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.hooks;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.ClassWalker;
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
@@ -51,6 +53,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class AnnotatedEventManager implements IEventManager
 {
+    private static final Logger LOGGER = JDALogger.getLog(AnnotatedEventManager.class);
     private final Set<Object> listeners = ConcurrentHashMap.newKeySet();
     private final Map<Class<?>, Map<Object, List<Method>>> methods = new ConcurrentHashMap<>();
 
@@ -137,7 +140,10 @@ public class AnnotatedEventManager implements IEventManager
 
             final Class<?>[] parameterTypes = m.getParameterTypes();
             if (parameterTypes.length != 1 || !GenericEvent.class.isAssignableFrom(parameterTypes[0]))
-                throw new IllegalArgumentException("Method '" + m + "' must have at most 1 parameter, which implements GenericEvent");
+            {
+                LOGGER.warn("Method '{}' annotated with @{} must have at most 1 parameter, which implements GenericEvent", m, SubscribeEvent.class.getSimpleName());
+                continue;
+            }
 
             Class<?> eventClass = parameterTypes[0];
             methods.computeIfAbsent(eventClass, k -> new ConcurrentHashMap<>())
