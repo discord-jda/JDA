@@ -32,6 +32,17 @@ public enum EmbedType
     UNKNOWN("");
 
     private final String key;
+
+    /**
+     * The key used by Discord for this type
+     *
+     * @return The key used by Discord for this type
+     */
+    public String getKey()
+    {
+        return key;
+    }
+
     EmbedType(String key)
     {
         this.key = key;
