@@ -31,6 +31,15 @@ public enum EmbedType
     UNKNOWN("");
 
     private final String key;
+
+    /**
+     * The key used to identify this {@link net.dv8tion.jda.api.entities.EmbedType EmbedType}.
+     */
+    public String getKey()
+    {
+        return key;
+    }
+
     EmbedType(String key)
     {
         this.key = key;
