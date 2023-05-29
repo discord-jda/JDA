@@ -439,6 +439,8 @@ public class MessageEmbed implements SerializableData
             if (json != null)
                 return json;
             DataObject obj = DataObject.empty();
+            if (type != null)
+                obj.put("type", type.getKey());
             if (url != null)
                 obj.put("url", url);
             if (title != null)
