@@ -18,6 +18,8 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -27,6 +29,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -45,7 +48,7 @@ public class EmbedBuilder
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
 
-    private final List<MessageEmbed.Field> fields = new LinkedList<>();
+    private final List<MessageEmbed.Field> fields = new ArrayList<>();
     private final StringBuilder description = new StringBuilder();
     private int color = Role.DEFAULT_COLOR_RAW;
     private String url, title;
@@ -82,6 +85,74 @@ public class EmbedBuilder
     public EmbedBuilder(@Nullable MessageEmbed embed)
     {
         copyFrom(embed);
+    }
+
+    /**
+     * Creates an instance of this builder from the provided {@link DataObject}.
+     *
+     * <p>This is the inverse of {@link MessageEmbed#toData()}.
+     *
+     * @param  data
+     *         The serialized embed object
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided data is malformed
+     *
+     * @return The new builder instance
+     */
+    @Nonnull
+    public static EmbedBuilder fromData(@Nonnull DataObject data)
+    {
+        Checks.notNull(data, "DataObject");
+        EmbedBuilder builder = new EmbedBuilder();
+
+        builder.url = data.getString("url", null);
+        builder.title = data.getString("title", null);
+        builder.setDescription(data.getString("description", ""));
+        builder.timestamp = data.isNull("timestamp") ? null : OffsetDateTime.parse(data.getString("timestamp"));
+        builder.color = data.getInt("color", Role.DEFAULT_COLOR_RAW);
+
+        data.optObject("thumbnail").ifPresent(thumbnail ->
+            builder.thumbnail = new MessageEmbed.Thumbnail(thumbnail.getString("url"), null, 0, 0)
+        );
+
+        data.optObject("author").ifPresent(author ->
+            builder.author = new MessageEmbed.AuthorInfo(
+                author.getString("name", ""),
+                author.getString("url", null),
+                author.getString("icon_url", null),
+                null
+            )
+        );
+
+        data.optObject("footer").ifPresent(footer ->
+            builder.footer = new MessageEmbed.Footer(
+                footer.getString("text", ""),
+                footer.getString("icon_url", null),
+                null
+            )
+        );
+
+        data.optObject("image").ifPresent(image ->
+            builder.image = new MessageEmbed.ImageInfo(
+                image.getString("url"),
+                null, 0, 0
+            )
+        );
+
+        data.optArray("fields").ifPresent(arr ->
+            arr.stream(DataArray::getObject).forEach(field ->
+                builder.fields.add(new MessageEmbed.Field(
+                        field.getString("name", ""),
+                        field.getString("value", ""),
+                        field.getBoolean("inline", false)
+                ))
+            )
+        );
+
+        return builder;
     }
 
     /**
