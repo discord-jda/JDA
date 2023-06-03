@@ -76,6 +76,13 @@ public class AnnotatedEventManager implements IEventManager
     @Override
     public void unregister(@Nonnull Object listener)
     {
+        if (listener.getClass().isArray())
+        {
+            for (Object o : ((Object[]) listener))
+                unregister(o);
+            return;
+        }
+
         if (listeners.remove(listener))
         {
             updateMethods();
