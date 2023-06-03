@@ -185,7 +185,8 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
     List<ForumTag> getAppliedTags();
 
     /**
-     * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} from Discord's servers that started this thread.
+     * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} that this thread was started from.
+     * <br>The parent message was posted in the {@link #getParentChannel() parent channel} and a thread was started on it.
      *
      * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
      * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
@@ -221,7 +222,49 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *         <br>The Message that started this thread
      */
     @Nonnull
+    @CheckReturnValue
     RestAction<Message> retrieveParentMessage();
+
+    /**
+     * Attempts to get the {@link net.dv8tion.jda.api.entities.Message Message} that was posted when this thread was created.
+     * <br>Unlike {@link #retrieveParentMessage()}, the message was posted only inside the thread channel.
+     * This is common for {@link ForumChannel} posts.
+     *
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
+     *
+     * <p>This is equivalent to {@code channel.retrieveMessageById(channel.getId())}.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *         in the {@link GuildMessageChannel GuildMessageChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message has already been deleted or there was no starting message.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the parent channel was deleted.</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Message> retrieveStartMessage();
 
     /**
      * Gets the self member, as a member of this thread.
