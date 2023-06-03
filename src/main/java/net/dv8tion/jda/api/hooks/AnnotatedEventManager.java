@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.hooks;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.ClassWalker;
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
@@ -51,21 +53,36 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class AnnotatedEventManager implements IEventManager
 {
+    private static final Logger LOGGER = JDALogger.getLog(AnnotatedEventManager.class);
     private final Set<Object> listeners = ConcurrentHashMap.newKeySet();
     private final Map<Class<?>, Map<Object, List<Method>>> methods = new ConcurrentHashMap<>();
 
     @Override
     public void register(@Nonnull Object listener)
     {
+        if (listener.getClass().isArray())
+        {
+            for (Object o : ((Object[]) listener))
+                register(o);
+            return;
+        }
+
         if (listeners.add(listener))
         {
-            updateMethods();
+            registerListenerMethods(listener);
         }
     }
 
     @Override
     public void unregister(@Nonnull Object listener)
     {
+        if (listener.getClass().isArray())
+        {
+            for (Object o : ((Object[]) listener))
+                unregister(o);
+            return;
+        }
+
         if (listeners.remove(listener))
         {
             updateMethods();
@@ -114,32 +131,34 @@ public class AnnotatedEventManager implements IEventManager
         methods.clear();
         for (Object listener : listeners)
         {
-            boolean isClass = listener instanceof Class;
-            Class<?> c = isClass ? (Class) listener : listener.getClass();
-            Method[] allMethods = c.getDeclaredMethods();
-            for (Method m : allMethods)
+            registerListenerMethods(listener);
+        }
+    }
+
+    private void registerListenerMethods(Object listener)
+    {
+        boolean isClass = listener instanceof Class;
+        Class<?> c = isClass ? (Class<?>) listener : listener.getClass();
+        Method[] allMethods = c.getDeclaredMethods();
+        for (Method m : allMethods)
+        {
+            if (!m.isAnnotationPresent(SubscribeEvent.class))
+                continue;
+            //Skip member methods if listener is a Class
+            if (isClass && !Modifier.isStatic(m.getModifiers()))
+                continue;
+
+            final Class<?>[] parameterTypes = m.getParameterTypes();
+            if (parameterTypes.length != 1 || !GenericEvent.class.isAssignableFrom(parameterTypes[0]))
             {
-                if (!m.isAnnotationPresent(SubscribeEvent.class) || (isClass && !Modifier.isStatic(m.getModifiers())))
-                {
-                    continue;
-                }
-                Class<?>[] pType  = m.getParameterTypes();
-                if (pType.length == 1 && GenericEvent.class.isAssignableFrom(pType[0]))
-                {
-                    Class<?> eventClass = pType[0];
-                    if (!methods.containsKey(eventClass))
-                    {
-                        methods.put(eventClass, new ConcurrentHashMap<>());
-                    }
-
-                    if (!methods.get(eventClass).containsKey(listener))
-                    {
-                        methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
-                    }
-
-                    methods.get(eventClass).get(listener).add(m);
-                }
+                LOGGER.warn("Method '{}' annotated with @{} must have at most 1 parameter, which implements GenericEvent", m, SubscribeEvent.class.getSimpleName());
+                continue;
             }
+
+            Class<?> eventClass = parameterTypes[0];
+            methods.computeIfAbsent(eventClass, k -> new ConcurrentHashMap<>())
+                    .computeIfAbsent(listener, k -> new CopyOnWriteArrayList<>())
+                    .add(m);
         }
     }
 }
