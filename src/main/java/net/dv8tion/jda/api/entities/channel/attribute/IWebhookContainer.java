@@ -33,7 +33,7 @@ import java.util.List;
  */
 public interface IWebhookContainer extends GuildChannel
 {
-     /**
+    /**
      * Retrieves the {@link net.dv8tion.jda.api.entities.Webhook Webhooks} attached to this channel.
      *
      * <p>Possible ErrorResponses include:
@@ -44,6 +44,10 @@ public interface IWebhookContainer extends GuildChannel
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>if we were removed from the guild</li>
      * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Webhook Webhook}{@literal >}
      *         <br>Retrieved an immutable list of Webhooks attached to this channel
