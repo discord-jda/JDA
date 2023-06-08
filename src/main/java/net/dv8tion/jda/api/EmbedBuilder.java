@@ -96,7 +96,7 @@ public class EmbedBuilder
      *         The serialized embed object
      *
      * @throws IllegalArgumentException
-     *         If the provided data is {@code null}
+     *         If the provided data is {@code null} or invalid
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the provided data is malformed
      *
@@ -108,47 +108,42 @@ public class EmbedBuilder
         Checks.notNull(data, "DataObject");
         EmbedBuilder builder = new EmbedBuilder();
 
-        builder.url = data.getString("url", null);
-        builder.title = data.getString("title", null);
+        builder.setTitle(data.getString("title", null));
+        builder.setUrl(data.getString("url", null));
         builder.setDescription(data.getString("description", ""));
-        builder.timestamp = data.isNull("timestamp") ? null : OffsetDateTime.parse(data.getString("timestamp"));
-        builder.color = data.getInt("color", Role.DEFAULT_COLOR_RAW);
+        builder.setTimestamp(data.isNull("timestamp") ? null : OffsetDateTime.parse(data.getString("timestamp")));
+        builder.setColor(data.getInt("color", Role.DEFAULT_COLOR_RAW));
 
         data.optObject("thumbnail").ifPresent(thumbnail ->
-            builder.thumbnail = new MessageEmbed.Thumbnail(thumbnail.getString("url"), null, 0, 0)
+            builder.setThumbnail(thumbnail.getString("url"))
         );
 
         data.optObject("author").ifPresent(author ->
-            builder.author = new MessageEmbed.AuthorInfo(
+            builder.setAuthor(
                 author.getString("name", ""),
                 author.getString("url", null),
-                author.getString("icon_url", null),
-                null
+                author.getString("icon_url", null)
             )
         );
 
         data.optObject("footer").ifPresent(footer ->
-            builder.footer = new MessageEmbed.Footer(
+            builder.setFooter(
                 footer.getString("text", ""),
-                footer.getString("icon_url", null),
-                null
+                footer.getString("icon_url", null)
             )
         );
 
         data.optObject("image").ifPresent(image ->
-            builder.image = new MessageEmbed.ImageInfo(
-                image.getString("url"),
-                null, 0, 0
-            )
+            builder.setImage(image.getString("url"))
         );
 
         data.optArray("fields").ifPresent(arr ->
             arr.stream(DataArray::getObject).forEach(field ->
-                builder.fields.add(new MessageEmbed.Field(
-                        field.getString("name", ""),
-                        field.getString("value", ""),
-                        field.getBoolean("inline", false)
-                ))
+                builder.addField(
+                    field.getString("name", ZERO_WIDTH_SPACE),
+                    field.getString("value", ZERO_WIDTH_SPACE),
+                    field.getBoolean("inline", false)
+                )
             )
         );
 
@@ -725,7 +720,7 @@ public class EmbedBuilder
         }
         else
         {
-            Checks.check(name.length() <= MessageEmbed.AUTHOR_MAX_LENGTH, "Name cannot be longer than %d characters.", MessageEmbed.AUTHOR_MAX_LENGTH);
+            Checks.notLonger(name, MessageEmbed.AUTHOR_MAX_LENGTH, "Name");
             urlCheck(url);
             urlCheck(iconUrl);
             this.author = new MessageEmbed.AuthorInfo(name, url, iconUrl, null);
@@ -800,7 +795,7 @@ public class EmbedBuilder
         }
         else
         {
-            Checks.check(text.length() <= MessageEmbed.TEXT_MAX_LENGTH, "Text cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
+            Checks.notLonger(text, MessageEmbed.TEXT_MAX_LENGTH, "Text");
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
         }
@@ -909,7 +904,7 @@ public class EmbedBuilder
     {
         if (url != null)
         {
-            Checks.check(url.length() <= MessageEmbed.URL_MAX_LENGTH, "URL cannot be longer than %d characters.", MessageEmbed.URL_MAX_LENGTH);
+            Checks.notLonger(url, MessageEmbed.URL_MAX_LENGTH, "URL");
             Checks.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http(s) or attachment url.");
         }
     }
