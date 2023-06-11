@@ -1304,7 +1304,7 @@ public class EntityBuilder
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
         ThreadChannelImpl channel = ((ThreadChannelImpl) getJDA().getThreadChannelsView().get(id));
-        if (channel == null && modifyCache)
+        if (channel == null)
         {
             SnowflakeCacheViewImpl<ThreadChannel>
                     guildThreadView = guild.getThreadChannelsView(),
@@ -1314,8 +1314,11 @@ public class EntityBuilder
                     UnlockHook jlock = threadView.writeLock())
             {
                 channel = new ThreadChannelImpl(id, guild, type);
-                guildThreadView.getMap().put(id, channel);
-                playbackCache = threadView.getMap().put(id, channel) == null;
+                if (modifyCache)
+                {
+                    guildThreadView.getMap().put(id, channel);
+                    playbackCache = threadView.getMap().put(id, channel) == null;
+                }
             }
         }
 
