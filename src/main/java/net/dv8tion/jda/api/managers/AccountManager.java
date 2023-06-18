@@ -29,11 +29,8 @@ import javax.annotation.Nullable;
  *
  * <p><b>Example</b>
  * <pre>{@code
- * manager.setName("Minn")
- *        .setAvatar(null)
- *        .queue();
- * manager.reset(AccountManager.NAME | AccountManager.AVATAR)
- *        .setName("DV8FromTheWorld")
+ * manager.setAvatar(null).queue();
+ * manager.reset(AccountManager.AVATAR)
  *        .setAvatar(icon)
  *        .queue();
  * }</pre>

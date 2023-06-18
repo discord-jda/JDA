@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -67,7 +66,7 @@ public class MessageLoggerExample extends ListenerAdapter
         // When an intent is enabled, you will receive events and cache updates related to that intent.
         // For more information:
         //
-        // - The documentation for GatewayIntent: https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/GatewayIntent.html
+        // - The documentation for GatewayIntent: https://docs.jda.wiki/net/dv8tion/jda/api/requests/GatewayIntent.html
         // - The wiki page for intents and caching: https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/
 
         EnumSet<GatewayIntent> intents = EnumSet.of(

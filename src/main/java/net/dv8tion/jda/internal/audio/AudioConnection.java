@@ -284,7 +284,7 @@ public class AudioConnection
             {
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
-                LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
+                LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform devs.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
                       channel.getId(), ssrc, previousId, userId);
             }
         }
