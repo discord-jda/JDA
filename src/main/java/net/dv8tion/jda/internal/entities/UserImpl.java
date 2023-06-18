@@ -214,9 +214,9 @@ public class UserImpl extends UserSnowflakeImpl implements User
         return this;
     }
 
-    public UserImpl setDiscriminator(String discriminator)
+    public UserImpl setDiscriminator(short discriminator)
     {
-        this.discriminator = Short.parseShort(discriminator);
+        this.discriminator = discriminator;
         return this;
     }
 
@@ -261,6 +261,11 @@ public class UserImpl extends UserSnowflakeImpl implements User
     {
         this.flags = flags;
         return this;
+    }
+
+    public short getDiscriminatorInt()
+    {
+        return discriminator;
     }
 
     @Override
