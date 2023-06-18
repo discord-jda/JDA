@@ -215,11 +215,9 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     {
         if (shouldUpdate(LOCATION))
         {
-            Checks.check(getScheduledEvent().getStatus() == ScheduledEvent.Status.SCHEDULED, "Cannot update location of non-scheduled event.");
+            Checks.check(getScheduledEvent().getStatus() == ScheduledEvent.Status.SCHEDULED || (entityType == ScheduledEvent.Type.EXTERNAL && getScheduledEvent().getType() == ScheduledEvent.Type.EXTERNAL), "Cannot update location type or location channel of non-scheduled event.");
             if (entityType == ScheduledEvent.Type.EXTERNAL && endTime == null && getScheduledEvent().getEndTime() == null)
                 throw new IllegalStateException("Missing required parameter: End Time");
-            if (entityType == ScheduledEvent.Type.EXTERNAL)
-                Checks.check((endTime != null ? endTime : getScheduledEvent().getEndTime()).isAfter(startTime), "Cannot schedule event to end before starting!");
         }
 
         if (shouldUpdate(START_TIME))
