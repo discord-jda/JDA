@@ -144,7 +144,7 @@ public class EntityBuilder
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
                 .setGlobalName(self.getString("global_name", null))
-                .setDiscriminator(self.getString("discriminator", "0"))
+                .setDiscriminator(Short.parseShort(self.getString("discriminator", "0")))
                 .setAvatarId(self.getString("avatar", null))
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
@@ -453,7 +453,7 @@ public class EntityBuilder
             // Initial creation
             userObj.setName(user.getString("username"))
                    .setGlobalName(user.getString("global_name", null))
-                   .setDiscriminator(user.getString("discriminator", "0"))
+                   .setDiscriminator(Short.parseShort(user.getString("discriminator", "0")))
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
@@ -475,8 +475,8 @@ public class EntityBuilder
         String newName = user.getString("username");
         String oldGlobalName = userObj.getGlobalName();
         String newGlobalName = user.getString("global_name", null);
-        String oldDiscriminator = userObj.getDiscriminator();
-        String newDiscriminator = user.getString("discriminator", "0");
+        short oldDiscriminator = userObj.getDiscriminatorInt();
+        short newDiscriminator = Short.parseShort(user.getString("discriminator", "0"));
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
         int oldFlags = userObj.getFlagsRaw();
@@ -502,13 +502,14 @@ public class EntityBuilder
                     userObj, oldGlobalName));
         }
 
-        if (!oldDiscriminator.equals(newDiscriminator))
+        if (oldDiscriminator != newDiscriminator)
         {
+            String oldDiscrimString = userObj.getDiscriminator();
             userObj.setDiscriminator(newDiscriminator);
             jda.handleEvent(
                 new UserUpdateDiscriminatorEvent(
                     jda, responseNumber,
-                    userObj, oldDiscriminator));
+                    userObj, oldDiscrimString));
         }
 
         if (!Objects.equals(oldAvatar, newAvatar))
@@ -548,7 +549,6 @@ public class EntityBuilder
             if (user.getMutualGuilds().isEmpty())
             {
                 // we no longer share any guilds/channels with this user so remove it from cache
-                user.setFake(true);
                 getJDA().getUsersView().remove(user.getIdLong());
             }
 
