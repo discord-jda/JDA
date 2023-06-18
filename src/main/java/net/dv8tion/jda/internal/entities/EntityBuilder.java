@@ -549,7 +549,6 @@ public class EntityBuilder
             if (user.getMutualGuilds().isEmpty())
             {
                 // we no longer share any guilds/channels with this user so remove it from cache
-                user.setFake(true);
                 getJDA().getUsersView().remove(user.getIdLong());
             }
 
