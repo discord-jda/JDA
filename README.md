@@ -4,25 +4,28 @@
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://jda.wiki/introduction/migration-v3-v4/
 [jenkins]: https://ci.dv8tion.net/job/JDA5
-[license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
+[license]: https://github.com/discord-jda/JDA/tree/master/LICENSE
 [faq]: https://jda.wiki/introduction/faq/
+[docs]: https://docs.jda.wiki/index.html
 [troubleshooting]: https://jda.wiki/using-jda/troubleshooting/
 [discord-shield]: https://discord.com/api/guilds/125227483518861312/widget.png
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
+[docs-shield]: https://img.shields.io/badge/Wiki-Docs-blue.svg
 [troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-darkgreen.svg
 [jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-purple.svg
 [license-shield]: https://img.shields.io/badge/License-Apache%202.0-white.svg
 [migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-darkgreen.svg
 
-<img align="right" src="https://github.com/DV8FromTheWorld/JDA/blob/assets/assets/readme/logo.png?raw=true" height="200" width="200">
+<img align="right" src="https://github.com/discord-jda/JDA/blob/assets/assets/readme/logo.png?raw=true" height="200" width="200">
 
 [ ![maven-central][] ][download]
-[ ![jitpack][] ](https://jitpack.io/#DV8FromtheWorld/JDA)
+[ ![jitpack][] ](https://jitpack.io/#discord-jda/JDA)
 [ ![jenkins-shield][] ][jenkins]
 [ ![license-shield][] ][license]
 
 [ ![discord-shield][] ][discord-invite]
 [ ![faq-shield] ][faq]
+[ ![docs-shield] ][docs]
 [ ![troubleshooting-shield] ][troubleshooting]
 [ ![migration-shield][] ][migration]
 
@@ -95,8 +98,8 @@ public static void main(String[] args) {
 }
 ```
 
-> See [JDABuilder](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/JDABuilder.html)
-  and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
+> See [JDABuilder](https://docs.jda.wiki/net/dv8tion/jda/api/JDABuilder.html)
+  and [DefaultShardManagerBuilder](https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
 You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
 Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter`, disabling **intents**, or changing the **member cache policy**.
@@ -272,22 +275,22 @@ public class Bot extends ListenerAdapter
 
 ### RestAction
 
-Through [RestAction](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
+Through [RestAction](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
  
- - [callbacks](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
- - [promises](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
- - and [sync](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
+ - [callbacks](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
+ - [promises](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
+ - and [sync](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
 
 and it is up to the user to decide which pattern to utilize.
 It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
 
 The RestAction interface also supports a number of operators to avoid callback hell:
 
-- [`map`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)
+- [`map`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)
     Convert the result of the `RestAction` to a different value
-- [`flatMap`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)
+- [`flatMap`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)
     Chain another `RestAction` on the result
-- [`delay`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)
+- [`delay`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)
     Delay the element of the previous step
 
 **Example**:
@@ -304,7 +307,7 @@ public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
 
 ### More Examples
 
-We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
+We provide a small set of Examples in the [Example Directory](https://github.com/discord-jda/JDA/tree/master/src/examples/java).
 
 <!--
 TODO: Find good examples
@@ -324,7 +327,7 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-The [`SessionController`](https://ci.dv8tion.net/job/JDA5/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
+The [`SessionController`](https://docs.jda.wiki/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
 of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
@@ -437,11 +440,11 @@ public class UserLogger extends ListenerAdapter
 ## Download
 
 [ ![maven-central][] ](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
-[ ![jitpack][] ](https://jitpack.io/#DV8FromtheWorld/JDA)
+[ ![jitpack][] ](https://jitpack.io/#discord-jda/JDA)
 
-Latest Release: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest) <br>
+Latest Release: [GitHub Release](https://github.com/discord-jda/JDA/releases/latest) <br>
 
-Be sure to replace the **VERSION** key below with the one of the versions shown above! For snapshots, please use the instructions provided by [JitPack](https://jitpack.io/#DV8FromTheWorld/JDA).
+Be sure to replace the **VERSION** key below with the one of the versions shown above! For snapshots, please use the instructions provided by [JitPack](https://jitpack.io/#discord-jda/JDA).
 
 **Maven**
 ```xml
@@ -520,7 +523,7 @@ There is a guide for logback-classic available in our wiki: [Logging Setup](http
 
 ## Documentation
 
-Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA5/javadoc/)
+Docs can be found on the [Jenkins][jenkins] or directly [here](https://docs.jda.wiki/)
 <br>A simple Wiki can also be found at [jda.wiki](https://jda.wiki/)
 
 ### Annotations
@@ -528,16 +531,16 @@ Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tio
 We use a number of annotations to indicate future plans for implemented functionality such as new features of
 the Discord API.
 
-- [Incubating](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/Incubating.java)
+- [Incubating](https://github.com/discord-jda/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/Incubating.java)
     <br>This annotation is used to indicate that functionality may change in the future. Often used when a new feature is added.
-- [ReplaceWith](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ReplaceWith.java)
+- [ReplaceWith](https://github.com/discord-jda/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ReplaceWith.java)
     <br>Paired with `@Deprecated` this is used to inform you how the new code-fragment is supposed to look once the hereby annotated functionality is removed.
-- [ForRemoval](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
+- [ForRemoval](https://github.com/discord-jda/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
     <br>Paired with `@Deprecated` this indicates that we plan to entirely remove the hereby annotated functionality in the future.
-- [DeprecatedSince](https://github.com/DV8FromTheWorld/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/DeprecatedSince.java)
+- [DeprecatedSince](https://github.com/discord-jda/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/DeprecatedSince.java)
     <br>Paired with `@Deprecated` this specifies when a feature was marked as deprecated.
 
-[Sources](https://github.com/DV8FromTheWorld/JDA/tree/master/src/main/java/net/dv8tion/jda/annotations)
+[Sources](https://github.com/discord-jda/JDA/tree/master/src/main/java/net/dv8tion/jda/annotations)
 
 ## Getting Help
 
@@ -624,7 +627,7 @@ If you want to contribute to JDA, make sure to base your branch off of our **dev
 and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 It is very possible that your change might already be in development or you missed something.
 
-More information can be found at the wiki page [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
+More information can be found at the wiki page [Contributing](https://github.com/discord-jda/JDA/wiki/5\)-Contributing)
 
 ### Deprecation Policy
 
@@ -643,7 +646,7 @@ For instance, when updating from version 3.3.0 to version 3.5.1 you should do th
 - Update to `3.5.1` and check for deprecation, replace
 
 The `RR` in version `3.4.RR` should be replaced by the latest version that was published for `3.4`, you can find out which the latest
-version was by looking at the [release page](https://github.com/DV8FromTheWorld/JDA/releases)
+version was by looking at the [release page](https://github.com/discord-jda/JDA/releases)
 
 ## Dependencies:
 

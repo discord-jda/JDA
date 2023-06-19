@@ -360,11 +360,11 @@ fun generatePom(pom: Pom) {
     pom.packaging = "jar"
     pom.name.set(project.name)
     pom.description.set("Java wrapper for the popular chat & VOIP service: Discord https://discord.com")
-    pom.url.set("https://github.com/DV8FromTheWorld/JDA")
+    pom.url.set("https://github.com/discord-jda/JDA")
     pom.scm {
-        url.set("https://github.com/DV8FromTheWorld/JDA")
-        connection.set("scm:git:git://github.com/DV8FromTheWorld/JDA")
-        developerConnection.set("scm:git:ssh:git@github.com:DV8FromTheWorld/JDA")
+        url.set("https://github.com/discord-jda/JDA")
+        connection.set("scm:git:git://github.com/discord-jda/JDA")
+        developerConnection.set("scm:git:ssh:git@github.com:discord-jda/JDA")
     }
     pom.licenses {
         license {
