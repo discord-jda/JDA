@@ -45,12 +45,12 @@ val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
-        || System.getProperty("GITHUB_ACTIONS") != null // Github Actions
-        || System.getenv("GITHUB_ACTIONS") != null
+        || System.getProperty("GITHUB_ACTION") != null // Github Actions
+        || System.getenv("GITHUB_ACTION") != null
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
-    val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT")
+    val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT") ?: System.getenv("GITHUB_SHA")
     // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
     if (isCI && commit != null)
         commit.substring(0, 7)
