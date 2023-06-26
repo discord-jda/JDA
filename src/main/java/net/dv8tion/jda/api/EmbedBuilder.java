@@ -824,7 +824,7 @@ public class EmbedBuilder
      * with {@link net.dv8tion.jda.api.EmbedBuilder#ZERO_WIDTH_SPACE}.
      *
      * <p><b><a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/07-addField.png">Example of Inline</a></b>
-     * <p><b><a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/08-addField.png">Example if Non-inline</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/08-addField.png">Example of Non-inline</a></b>
      *
      * @param  name
      *         the name of the Field, displayed in bold above the {@code value}.
@@ -857,7 +857,7 @@ public class EmbedBuilder
      * Adds a blank (empty) Field to the embed.
      *
      * <p><b><a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/07-addField.png">Example of Inline</a></b>
-     * <p><b><a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/08-addField.png">Example if Non-inline</a></b>
+     * <p><b><a href="https://raw.githubusercontent.com/discord-jda/JDA/assets/assets/docs/embeds/08-addField.png">Example of Non-inline</a></b>
      *
      * @param  inline
      *         whether or not this field should display inline
