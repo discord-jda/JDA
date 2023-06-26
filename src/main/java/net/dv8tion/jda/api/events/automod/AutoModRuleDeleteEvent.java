@@ -22,11 +22,12 @@ import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link AutoModRule} was deleted.
+ * Indicates that an {@link AutoModRule} was deleted.
  *
  * <p><b>Requirements</b><br>
  *
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#AUTO_MODERATION_CONFIGURATION AUTO_MODERATION_CONFIGURATION} intent to be enabled.
+ * <br>This event will only fire for guilds where the bot has the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
  */
 public class AutoModRuleDeleteEvent extends GenericAutoModRuleEvent
 {
