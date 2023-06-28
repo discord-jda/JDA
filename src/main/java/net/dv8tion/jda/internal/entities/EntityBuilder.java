@@ -1619,10 +1619,9 @@ public class EntityBuilder
     {
         final long channelId = message.getLong("channel_id");
         final DataObject author = message.getObject("author");
-        final long authorId = author.getLong("id");
 
         PrivateChannelImpl channel = (PrivateChannelImpl) getJDA().getPrivateChannelById(channelId);
-        boolean isAuthorSelfUser = authorId == getJDA().getSelfUser().getIdLong();
+        boolean isRecipient = !author.getBoolean("bot"); // bots cannot dm other bots
         if (channel == null)
         {
             DataObject channelData = DataObject.empty()
@@ -1630,13 +1629,13 @@ public class EntityBuilder
 
             //if we see an author that isn't us, we can assume that is the other side of this private channel
             //if the author is us, we learn no information about the user at the other end
-            if (!isAuthorSelfUser)
+            if (isRecipient)
                 channelData.put("recipient", author);
 
             //even without knowing the user at the other end, we can still construct a minimal channel
             channel = (PrivateChannelImpl) createPrivateChannel(channelData);
         }
-        else if (channel.getUser() == null && !isAuthorSelfUser)
+        else if (channel.getUser() == null && isRecipient)
         {
             //In this situation, we already know the channel
             // but the message provided us with the recipient
