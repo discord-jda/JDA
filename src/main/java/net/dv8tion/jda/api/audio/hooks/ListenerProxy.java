@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
+/**
+ * Internal implementation of {@link ConnectionListener}, to handle possible exceptions thrown by user code.
+ */
 public class ListenerProxy implements ConnectionListener
 {
     private static final Logger log = LoggerFactory.getLogger(ListenerProxy.class);
