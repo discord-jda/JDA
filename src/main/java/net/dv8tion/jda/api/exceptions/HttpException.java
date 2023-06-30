@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.exceptions;
 
+/**
+ * Indicates an unsuccessful HTTP request.
+ */
 public class HttpException extends RuntimeException
 {
     public HttpException(String message)
