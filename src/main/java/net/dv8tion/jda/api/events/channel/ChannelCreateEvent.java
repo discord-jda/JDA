@@ -21,7 +21,9 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 
 import javax.annotation.Nonnull;
 
-//TODO-v5: Docs
+/**
+ * Indicates that a {@link Channel} was created.
+ */
 public class ChannelCreateEvent extends GenericChannelEvent
 {
     public ChannelCreateEvent(@Nonnull JDA api, long responseNumber, Channel channel)
