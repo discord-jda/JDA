@@ -25,7 +25,24 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-//todo-v5: Docs
+/**
+ * Manager providing functionality common for all {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannels}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setBitrate(48000)
+ *        .setRegion(Region.AUTOMATIC)
+ *        .queue();
+ * manager.reset(ChannelManager.REGION | ChannelManager.BITRATE)
+ *        .setRegion(Region.BRAZIL)
+ *        .queue();
+ * }</pre>
+ *
+ * @param <T> The channel type
+ * @param <M> The manager type
+ *
+ * @see net.dv8tion.jda.api.entities.channel.middleman.AudioChannel#getManager()
+ */
 public interface AudioChannelManager<T extends AudioChannel, M extends AudioChannelManager<T, M>> extends StandardGuildChannelManager<T, M>
 {
     /**
@@ -108,5 +125,5 @@ public interface AudioChannelManager<T extends AudioChannel, M extends AudioChan
      */
     @Nonnull
     @CheckReturnValue
-    M setRegion(Region region);
+    M setRegion(@Nonnull Region region);
 }
