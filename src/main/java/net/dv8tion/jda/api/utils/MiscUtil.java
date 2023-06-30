@@ -30,6 +30,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
+/**
+ * Utility methods for various aspects of the API.
+ */
 public class MiscUtil
 {
     /**

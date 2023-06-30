@@ -18,6 +18,12 @@ package net.dv8tion.jda.api.utils;
 
 import java.io.IOException;
 
+/**
+ * Consumer accepting two arguments and throwing {@link IOException}.
+ *
+ * @param <T> The type of the first argument
+ * @param <R> The type of the second argument
+ */
 @FunctionalInterface
 public interface IOBiConsumer<T, R>
 {
