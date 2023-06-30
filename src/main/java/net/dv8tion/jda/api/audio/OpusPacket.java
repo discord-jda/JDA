@@ -136,7 +136,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      * <br>This method is idempotent and will provide the same result on multiple calls
      * without decoding again.
      *
-     * For most use-cases {@link #getAudioData(double)} should be used instead.
+     * <p>For most use-cases {@link #getAudioData(double)} should be used instead.
      *
      * @throws java.lang.IllegalStateException
      *         If {@link #canDecode()} is false

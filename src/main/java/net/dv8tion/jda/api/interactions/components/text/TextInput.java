@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 /**
  * Represents a Discord Text input component
  *
- * Must be used in {@link Modal Modals}!
+ * <p>Must be used in {@link Modal Modals}!
  */
 public interface TextInput extends ActionComponent
 {
@@ -80,7 +80,7 @@ public interface TextInput extends ActionComponent
     /**
      * The minimum amount of characters that must be written to submit the Modal.
      *
-     * <b>This is -1 if no length has been set!</b>
+     * <p><b>This is -1 if no length has been set!</b>
      *
      * @return The minimum length of this TextInput component or -1
      */
@@ -89,7 +89,7 @@ public interface TextInput extends ActionComponent
     /**
      * The maximum amount of characters that can be written to submit the Modal.
      *
-     * <b>This is -1 if no length has been set!</b>
+     * <p><b>This is -1 if no length has been set!</b>
      *
      * @return The maximum length of this TextInput component or -1
      */
@@ -106,7 +106,7 @@ public interface TextInput extends ActionComponent
      * The pre-defined value of this TextInput component.
      * <br>If this is not null, sending a Modal with this component will pre-populate the field with this String.
      *
-     * <b>This is null if no pre-defined value has been set!</b>
+     * <p><b>This is null if no pre-defined value has been set!</b>
      *
      * @return The value of this TextInput component or null.
      */
@@ -117,7 +117,7 @@ public interface TextInput extends ActionComponent
      * The placeholder of this TextInput component.
      * <br>This is a short hint that describes the expected value of the TextInput field.
      *
-     * <b>This is null if no placeholder has been set!</b>
+     * <p><b>This is null if no placeholder has been set!</b>
      *
      * @return The placeholder of this TextInput component or null.
      */
@@ -281,7 +281,7 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the minimum length of this input field. Default is -1 (No minimum length).
          *
-         * <b>This has to be between 0 and {@value #MAX_VALUE_LENGTH}</b>
+         * <p><b>This has to be between 0 and {@value #MAX_VALUE_LENGTH}</b>
          *
          * @param  minLength
          *         The minimum amount of characters that need to be written

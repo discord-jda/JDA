@@ -1187,7 +1187,7 @@ public class JDABuilder
      * Sets whether or not JDA should try to reconnect if a connection-error is encountered.
      * <br>This will use an incremental reconnect (timeouts are increased each time an attempt fails).
      *
-     * Default: <b>true (enabled)</b>
+     * <p>Default: <b>true (enabled)</b>
      *
      * @param  autoReconnect
      *         If true - enables autoReconnect

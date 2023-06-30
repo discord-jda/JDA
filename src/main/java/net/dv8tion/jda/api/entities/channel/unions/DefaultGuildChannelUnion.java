@@ -50,7 +50,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * TextChannel channel = union.asTextChannel();
@@ -72,7 +72,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * Casts this union to a {@link NewsChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * NewsChannel channel = union.asNewsChannel();
@@ -96,7 +96,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * IThreadContainer channel = union.asThreadContainer();
@@ -116,7 +116,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      * Casts this union to a {@link StandardGuildMessageChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StandardGuildMessageChannel channel = union.asStandardGuildMessageChannel();

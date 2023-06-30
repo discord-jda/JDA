@@ -49,7 +49,6 @@ public interface ISlowmodeChannelManager<T extends ISlowmodeChannel, M extends I
      * {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels} use this to limit how many posts a user can create.
      * The client refers to this as the post slowmode.
      *
-     *
      * @param  slowmode
      *         The new slowmode
      *

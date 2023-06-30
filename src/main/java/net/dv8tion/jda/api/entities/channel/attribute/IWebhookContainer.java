@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Represents a {@link GuildChannel} that is capable of utilizing <a href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks" target="_blank">webhooks</a>.
  *
- * Webhooks can be used to integrate third-party systems into Discord by way of sending information via messages.
+ * <p>Webhooks can be used to integrate third-party systems into Discord by way of sending information via messages.
  */
 public interface IWebhookContainer extends GuildChannel
 {

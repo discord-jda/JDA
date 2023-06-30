@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Represents a {@link GuildChannel GuildChannel} that can be the target of a Guild's invite.
  *
- * Invites have to be targeted at exactly one {@link IInviteContainer}, which will open when the invite is used (unless restricted by permissions).
+ * <p>Invites have to be targeted at exactly one {@link IInviteContainer}, which will open when the invite is used (unless restricted by permissions).
  */
 public interface IInviteContainer extends GuildChannel
 {

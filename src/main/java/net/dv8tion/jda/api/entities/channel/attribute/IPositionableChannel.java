@@ -24,9 +24,9 @@ import javax.annotation.Nonnull;
 /**
  * Represents a {@link GuildChannel GuildChannel} that has a position.
  *
- * These channels can be re-ordered using a position value.
+ * <p>These channels can be re-ordered using a position value.
  *
- * In the case of identical position values, the natural order of the channel snowflakes is used.
+ * <p>In the case of identical position values, the natural order of the channel snowflakes is used.
  */
 public interface IPositionableChannel extends GuildChannel
 {

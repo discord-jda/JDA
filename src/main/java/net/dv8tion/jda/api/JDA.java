@@ -574,7 +574,7 @@ public interface JDA extends IGuildChannelContainer
      * This uses the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventListener} by default.
      * To switch to the {@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager}, use {@link #setEventManager(IEventManager)}.
      *
-     * Note: when using the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventListener} (default),
+     * <p>Note: when using the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventListener} (default),
      * given listener <b>must</b> be instance of {@link net.dv8tion.jda.api.hooks.EventListener EventListener}!
      *
      * @param  listeners

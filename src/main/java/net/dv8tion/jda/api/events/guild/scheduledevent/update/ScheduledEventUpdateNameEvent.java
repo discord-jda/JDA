@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
- * Discord does not specifically tell us about the updates, but merely tells us the
+ * <p>Discord does not specifically tell us about the updates, but merely tells us the
  * {@link ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link ScheduledEvent ScheduledEvent} object.
  * In order to fire a specific event like this we need to have the old {@link ScheduledEvent ScheduledEvent} cached to compare against.
  */

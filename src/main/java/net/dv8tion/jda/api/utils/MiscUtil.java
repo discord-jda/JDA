@@ -35,7 +35,7 @@ public class MiscUtil
     /**
      * Returns the shard id the given guild will be loaded on for the given amount of shards.
      *
-     * Discord determines which guilds a shard is connect to using the following format:
+     * <p>Discord determines which guilds a shard is connect to using the following format:
      * {@code shardId == (guildId >>> 22) % totalShards}
      * <br>Source for formula: <a href="https://discord.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
@@ -54,7 +54,7 @@ public class MiscUtil
     /**
      * Returns the shard id the given guild will be loaded on for the given amount of shards.
      *
-     * Discord determines which guilds a shard is connect to using the following format:
+     * <p>Discord determines which guilds a shard is connect to using the following format:
      * {@code shardId == (guildId >>> 22) % totalShards}
      * <br>Source for formula: <a href="https://discord.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
@@ -73,7 +73,7 @@ public class MiscUtil
     /**
      * Returns the shard id the given {@link net.dv8tion.jda.api.entities.Guild Guild} will be loaded on for the given amount of shards.
      *
-     * Discord determines which guilds a shard is connect to using the following format:
+     * <p>Discord determines which guilds a shard is connect to using the following format:
      * {@code shardId == (guildId >>> 22) % totalShards}
      * <br>Source for formula: <a href="https://discord.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *

@@ -787,7 +787,6 @@ public interface RestAction<T>
      *         The consuming function to apply to the action result, failures are propagated
      *         into the resulting action
      *
-     *
      * @throws IllegalArgumentException
      *         If the consumer is null
      *

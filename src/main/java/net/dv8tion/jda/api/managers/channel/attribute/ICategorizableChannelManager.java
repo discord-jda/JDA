@@ -37,7 +37,6 @@ public interface ICategorizableChannelManager<T extends ICategorizableChannel, M
      * Sets the <b><u>{@link Category Parent Category}</u></b>
      * of the selected {@link GuildChannel GuildChannel}.
      *
-     *
      * @param  category
      *         The new parent for the selected {@link GuildChannel GuildChannel}
      *

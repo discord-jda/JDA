@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Indicates that the privileges of an integration or its commands changed.
  *
- * Can be used to get affected {@link Guild} and the new {@link IntegrationPrivilege IntegrationPrivileges}
+ * <p>Can be used to get affected {@link Guild} and the new {@link IntegrationPrivilege IntegrationPrivileges}
  */
 public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
 {
@@ -49,7 +49,7 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
     /**
      * The target {@link PrivilegeTargetType Type}.
      *
-     * This can either be:
+     * <p>This can either be:
      * <ul>
      *     <li>{@link PrivilegeTargetType#INTEGRATION INTEGRATION} - If the privileges have been changed on the integration-level.</li>
      *     <li>{@link PrivilegeTargetType#COMMAND COMMAND} - If the privileges have been changed on a command.</li>
@@ -63,7 +63,7 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
     /**
      * The target-id.
      *
-     * This can either be the id of an integration, or of a command.
+     * <p>This can either be the id of an integration, or of a command.
      *
      * @return The target-id.
      *
@@ -77,7 +77,7 @@ public abstract class GenericPrivilegeUpdateEvent extends GenericGuildEvent
     /**
      * The target-id.
      *
-     * This can either be the id of an integration, or of a command.
+     * <p>This can either be the id of an integration, or of a command.
      *
      * @return The target-id.
      *
