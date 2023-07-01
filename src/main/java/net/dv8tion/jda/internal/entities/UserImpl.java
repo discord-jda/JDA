@@ -271,6 +271,10 @@ public class UserImpl extends UserSnowflakeImpl implements User
         String out;
         if (!alt)
             out = getAsMention();
+        else if (discriminator == 0 && upper)
+            out = getName().toUpperCase();
+        else if (discriminator == 0)
+            out = getName();
         else if (upper)
             out = getAsTag().toUpperCase();
         else
