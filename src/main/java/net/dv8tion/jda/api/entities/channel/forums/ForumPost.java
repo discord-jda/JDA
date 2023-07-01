@@ -25,6 +25,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Result of creating a post in a {@link ForumChannel}.
+ * <br>This is a utility class for {@link ForumChannel#createForumPost(String, MessageCreateData)},
+ * the actual post itself is only the {@link #getThreadChannel() thread channel}.
  *
  * @see ForumChannel#createForumPost(String, MessageCreateData)
  * @see #getThreadChannel()
@@ -54,7 +56,7 @@ public class ForumPost
     }
 
     /**
-     * The {@link ThreadChannel} of the post.
+     * The {@link ThreadChannel} representing the post.
      * <br>This will use the name provided to {@link ForumChannel#createForumPost(String, MessageCreateData)}.
      *
      * @return The forum post thread channel

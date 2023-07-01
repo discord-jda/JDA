@@ -52,6 +52,8 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
     /**
      * Finds all {@link ThreadChannel ThreadChannels} whose parent is this channel.
      *
+     * <p>These threads can also represent posts in {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
+     *
      * @return Immutable list of all ThreadChannel children.
      */
     default List<ThreadChannel> getThreadChannels()
@@ -259,6 +261,8 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * <br>This will iterate over all previously opened public threads, that have been archived.
      *
      * <p>You can use {@link #retrieveArchivedPrivateThreadChannels()}, to get all <em>private</em> archived threads.
+     *
+     * <p>These threads can also represent posts in {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
      *
      * @throws InsufficientPermissionException
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in this channel

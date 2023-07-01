@@ -44,6 +44,8 @@ import java.util.List;
 
 /**
  * Represents Discord Message Threads of all kinds.
+ * <br>These are also referred to as "posts" in the context of {@link ForumChannel Forum Channels}.
+ *
  * <p>This includes all thread channel types, namely:
  * <ul>
  *     <li>{@link ChannelType#GUILD_PUBLIC_THREAD}</li>
