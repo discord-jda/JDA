@@ -73,7 +73,7 @@ public class ThreadUpdateHandler extends SocketHandler
                 if (EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage()))
                 {
                     long parentId = content.getUnsignedLong("parent_id", 0L);
-                    EventCache.LOG.debug("Received THREAD_UPDATE for a thread with uncached parent. Parent ID: {} JSON: {}", parentId, content);
+                    EventCache.LOG.debug("Caching THREAD_UPDATE for a thread with uncached parent. Parent ID: {} JSON: {}", parentId, content);
                     api.getEventCache().cache(EventCache.Type.CHANNEL, parentId, responseNumber, allContent, this::handle);
                     return null;
                 }
