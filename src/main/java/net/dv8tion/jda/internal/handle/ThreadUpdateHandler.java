@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -59,11 +60,26 @@ public class ThreadUpdateHandler extends SocketHandler
             //Technically, when the ThreadChannel is unarchived the archive_timestamp (getTimeArchiveInfoLastModified) changes
             // as well, but we don't have the original value because we didn't have the thread in memory, so we can't
             // provide an entirely accurate ChannelUpdateArchiveTimestampEvent. Not sure how much that'll matter.
-            thread = (ThreadChannelImpl) api.getEntityBuilder().createThreadChannel(content, guildId);
-            api.handleEvent(
-                new ChannelUpdateArchivedEvent(
-                    api, responseNumber,
-                    thread, true, false));
+            try
+            {
+                thread = (ThreadChannelImpl) api.getEntityBuilder().createThreadChannel(content, guildId);
+                api.handleEvent(
+                    new ChannelUpdateArchivedEvent(
+                        api, responseNumber,
+                        thread, true, false));
+            }
+            catch (IllegalArgumentException ex)
+            {
+                if (EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage()))
+                {
+                    long parentId = content.getUnsignedLong("parent_id", 0L);
+                    EventCache.LOG.debug("Caching THREAD_UPDATE for a thread with uncached parent. Parent ID: {} JSON: {}", parentId, content);
+                    api.getEventCache().cache(EventCache.Type.CHANNEL, parentId, responseNumber, allContent, this::handle);
+                    return null;
+                }
+
+                throw ex;
+            }
 
             return null;
         }
@@ -88,7 +104,6 @@ public class ThreadUpdateHandler extends SocketHandler
         final int oldFlags = thread.getRawFlags();
 
 
-        //TODO should these be Thread specific events?
         if (!Objects.equals(oldName, name))
         {
             thread.setName(name);
