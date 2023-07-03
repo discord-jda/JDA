@@ -25,7 +25,7 @@
  *
  * <p>Additionally, these events require the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
  * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
- * member was updated and gives us the updated member object. In order to fire a specific event like this we
+ * member was updated and gives us the updated member object. In order to fire specific events we
  * need to have the old member cached to compare against.
  */
 package net.dv8tion.jda.api.events.guild.member.update;

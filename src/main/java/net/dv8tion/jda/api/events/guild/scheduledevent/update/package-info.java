@@ -25,6 +25,6 @@
  *
  * <p>Discord does not specifically tell us about the updates, but merely tells us the
  * {@link net.dv8tion.jda.api.entities.ScheduledEvent ScheduledEvent} was updated and gives us the updated {@link net.dv8tion.jda.api.entities.ScheduledEvent ScheduledEvent} object.
- * In order to fire a specific event like this we need to have the old {@link net.dv8tion.jda.api.entities.ScheduledEvent ScheduledEvent} cached to compare against.
+ * In order to fire specific events we need to have the old {@link net.dv8tion.jda.api.entities.ScheduledEvent ScheduledEvent} cached to compare against.
  */
 package net.dv8tion.jda.api.events.guild.scheduledevent.update;
