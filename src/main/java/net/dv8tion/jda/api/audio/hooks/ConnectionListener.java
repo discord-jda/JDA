@@ -46,6 +46,8 @@ public interface ConnectionListener
      */
     void onStatusChange(@Nonnull ConnectionStatus status);
 
+    // TODO: Deprecate and replace these onUserSpeaking methods.
+
     /**
      * This method is an easy way to detect if a user is talking. Discord sends us an event when a user starts or stops
      * talking and it is parallel to the audio socket, so this event could come milliseconds before or after audio begins

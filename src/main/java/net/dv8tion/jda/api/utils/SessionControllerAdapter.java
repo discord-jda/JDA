@@ -33,6 +33,11 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Simple implementation of {@link SessionController} without supporting concurrency.
+ *
+ * @see ConcurrentSessionController
+ */
 public class SessionControllerAdapter implements SessionController
 {
     protected static final Logger log = JDALogger.getLog(SessionControllerAdapter.class);

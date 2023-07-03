@@ -282,6 +282,8 @@ javadoc.apply {
         } else {
             opt.addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
         }
+
+        opt.overview = "$projectDir/overview.html"
     }
 
     dependsOn(sourcesJar)

@@ -30,13 +30,18 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Manager abstraction to set the {@link Category Parent Category} of a {@link ICategorizableChannel categorizable channel}.
+ *
+ * @param <T> The channel type
+ * @param <M> The manager type
+ */
 public interface ICategorizableChannelManager<T extends ICategorizableChannel, M extends ICategorizableChannelManager<T, M>>
         extends ChannelManager<T, M>, IPermissionContainerManager<T, M>
 {
     /**
      * Sets the <b><u>{@link Category Parent Category}</u></b>
      * of the selected {@link GuildChannel GuildChannel}.
-     *
      *
      * @param  category
      *         The new parent for the selected {@link GuildChannel GuildChannel}

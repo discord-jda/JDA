@@ -139,7 +139,7 @@ public interface ShardManager extends IGuildChannelContainer
      * Remove a listener provider. This will stop further created / restarted shards from getting a listener added by
      * that provider.
      *
-     * Default is a no-op for backwards compatibility, see implementations like
+     * <p>Default is a no-op for backwards compatibility, see implementations like
      * {@link DefaultShardManager#removeEventListenerProvider(IntFunction)} for actual code
      *
      * @param  eventListenerProvider
@@ -284,7 +284,6 @@ public interface ShardManager extends IGuildChannelContainer
     /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link RichCustomEmoji RichCustomEmojis} visible to this ShardManager instance.
-     *
      *
      * @return Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */

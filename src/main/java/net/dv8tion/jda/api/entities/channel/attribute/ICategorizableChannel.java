@@ -41,7 +41,7 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
     /**
      * Get the snowflake of the {@link Category} that contains this channel.
      *
-     * This will return {@code 0} if this channel doesn't have a parent category.
+     * <p>This will return {@code 0} if this channel doesn't have a parent category.
      *
      * @return The Discord ID snowflake of the parent channel as a long.
      */
@@ -50,7 +50,7 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
     /**
      * Get the snowflake of the {@link Category Category} that contains this channel.
      *
-     * This will return {@code null} if this channel doesn't have a parent category.
+     * <p>This will return {@code null} if this channel doesn't have a parent category.
      *
      * @return Possibly-null String representation of the Discord ID snowflake of the parent channel.
      */

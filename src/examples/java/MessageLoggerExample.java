@@ -145,7 +145,7 @@ public class MessageLoggerExample extends ListenerAdapter
             System.out.printf("[%s] [%#s] %#s: %s\n",
                 event.getGuild().getName(), // The name of the server the user sent the message in, this is generally referred to as "guild" in the API
                 channel, // The %#s makes use of the channel name and displays as something like #general
-                author,  // The %#s makes use of User#getAsTag which results in something like Minn#6688
+                author,  // The %#s makes use of User#getAsTag which results in something like minn or Minn#1337
                 message.getContentDisplay() // This removes any unwanted mention syntax and converts it to a readable string
             );
         }

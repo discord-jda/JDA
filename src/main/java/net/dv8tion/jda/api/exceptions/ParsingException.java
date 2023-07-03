@@ -16,6 +16,12 @@
 
 package net.dv8tion.jda.api.exceptions;
 
+/**
+ * Indicates a failure in parsing or deserializing data.
+ *
+ * @see net.dv8tion.jda.api.utils.data.DataObject
+ * @see net.dv8tion.jda.api.utils.data.DataArray
+ */
 public class ParsingException extends IllegalStateException
 {
     public ParsingException(String message, Exception cause)

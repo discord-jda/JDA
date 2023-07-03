@@ -26,6 +26,9 @@ import java.util.Collection;
 /**
  * Indicates that a {@link ForumTag} was removed from a {@link ForumChannel}.
  *
+ * <p>Use {@link net.dv8tion.jda.api.events.channel.update.ChannelUpdateAppliedTagsEvent ChannelUpdateAppliedTagsEvent}
+ * to detect when a tag is removed from a forum post instead.
+ *
  * <p><b>Requirements</b><br>
  * This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#FORUM_TAGS CacheFlag.FORUM_TAGS} to be enabled.
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String, Collection) JDABuilder.createLight(...)} disables this by default.

@@ -37,6 +37,11 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+/**
+ * Internal class used for representing HTTP requests.
+ *
+ * @param <T> The expected type of the response
+ */
 public class Request<T>
 {
     private final JDAImpl api;

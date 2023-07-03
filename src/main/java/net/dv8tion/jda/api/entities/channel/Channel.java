@@ -74,7 +74,6 @@ public interface Channel extends IMentionable
     JDA getJDA();
 
     /**
-     * TODO-v5: Revisit these docs
      * Deletes this Channel.
      *
      * <p>Possible ErrorResponses include:

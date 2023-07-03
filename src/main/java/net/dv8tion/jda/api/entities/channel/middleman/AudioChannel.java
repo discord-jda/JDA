@@ -48,7 +48,6 @@ import javax.annotation.Nullable;
  */
 public interface AudioChannel extends StandardGuildChannel
 {
-    //TODO-v5: Docs
     @Override
     @Nonnull
     AudioChannelManager<?, ?> getManager();

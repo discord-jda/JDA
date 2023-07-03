@@ -24,6 +24,11 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
+/**
+ * Implementation of {@link CompletableFuture} used for {@link RestAction#submit()}.
+ *
+ * @param <T> The result type
+ */
 public class RestFuture<T> extends CompletableFuture<T>
 {
     final Request<T> request;

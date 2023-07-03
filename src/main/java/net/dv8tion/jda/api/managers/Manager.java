@@ -24,6 +24,11 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
+/**
+ * Top-level abstraction for managers.
+ *
+ * @param <M> The manager type
+ */
 public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
 {
     /**

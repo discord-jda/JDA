@@ -46,7 +46,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * TextChannel channel = union.asTextChannel();
@@ -68,7 +68,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * Casts this union to a {@link NewsChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * NewsChannel channel = union.asNewsChannel();
@@ -90,7 +90,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * Casts this union to a {@link ThreadChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * ThreadChannel channel = union.asThreadChannel();
@@ -112,7 +112,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * Casts this union to a {@link VoiceChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * VoiceChannel channel = union.asVoiceChannel();
@@ -134,7 +134,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * Casts this union to a {@link StageChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StageChannel channel = union.asStageChannel();
@@ -156,7 +156,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * IThreadContainer channel = union.asThreadContainer();
@@ -176,7 +176,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
     /**
      * Casts this union to a {@link StandardGuildChannel}.you can call this method
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StandardGuildChannel channel = union.asStandardGuildChannel();
@@ -195,7 +195,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * Casts this union to a {@link StandardGuildMessageChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StandardGuildMessageChannel channel = union.asStandardGuildMessageChannel();
@@ -214,7 +214,7 @@ public interface GuildMessageChannelUnion extends GuildMessageChannel
      * Casts this union to a {@link AudioChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * AudioChannel channel = union.asAudioChannel();
