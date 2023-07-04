@@ -673,4 +673,10 @@ public class DefaultShardManager implements ShardManager
             this.automaticShutdown = automaticShutdown;
         }
     }
+
+    @Override
+    public boolean isShutdown()
+    {
+        return this.shutdown.get();
+    }
 }

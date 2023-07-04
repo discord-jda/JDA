@@ -1171,4 +1171,11 @@ public interface ShardManager extends IGuildChannelContainer
      */
     void login();
 
+    /**
+     * Returns {@code true} if the ShardManager has been shut down.
+     *
+     * @return {@code true} if the ShardManager has been shut down, {@code false} otherwise.
+     */
+    boolean isShutdown();
+
 }
