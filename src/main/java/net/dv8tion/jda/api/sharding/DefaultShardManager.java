@@ -677,6 +677,6 @@ public class DefaultShardManager implements ShardManager
     @Override
     public boolean isShutdown()
     {
-        return this.shutdown.get();
+        return this.executor.isTerminated();
     }
 }
