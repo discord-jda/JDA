@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.user.update;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 
@@ -38,7 +39,13 @@ import javax.annotation.Nonnull;
  * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
+ *
+ * @deprecated This will become obsolete in the future.
+ *             Discriminators are being phased out and replaced by globally unique usernames.
+ *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
  */
+@Deprecated
+@ForRemoval
 public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";

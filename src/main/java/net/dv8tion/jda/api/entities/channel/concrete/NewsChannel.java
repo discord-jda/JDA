@@ -34,12 +34,12 @@ import javax.annotation.Nonnull;
 /**
  * Represents {@link net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel} that are News Channels.
  *
- * The Discord client may refer to these as Announcement Channels.
+ * <p>The Discord client may refer to these as Announcement Channels.
  *
- * Members can subscribe channels in their own guilds to receive messages crossposted from this channel.
+ * <p>Members can subscribe channels in their own guilds to receive messages crossposted from this channel.
  * This is referred to as following this channel.
  *
- * Messages sent in this channel can be crossposted, at which point they will be sent (via webhook) to all subscribed channels.
+ * <p>Messages sent in this channel can be crossposted, at which point they will be sent (via webhook) to all subscribed channels.
  *
  * @see Message#getFlags()
  * @see net.dv8tion.jda.api.entities.Message.MessageFlag#CROSSPOSTED

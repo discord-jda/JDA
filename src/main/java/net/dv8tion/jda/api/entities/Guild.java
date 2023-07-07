@@ -17,10 +17,15 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.automod.AutoModResponse;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
+import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
@@ -41,10 +46,7 @@ import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
-import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.managers.GuildManager;
-import net.dv8tion.jda.api.managers.GuildStickerManager;
-import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
+import net.dv8tion.jda.api.managers.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -404,6 +406,142 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
+
+    /**
+     * Retrieves all current {@link AutoModRule AutoModRules} for this guild.
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link AutoModRule}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<AutoModRule>> retrieveAutoModRules();
+
+    /**
+     * Retrieves the {@link AutoModRule} for the provided id.
+     *
+     * @param  id
+     *         The id of the rule
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link RestAction} - Type: {@link AutoModRule}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<AutoModRule> retrieveAutoModRuleById(@Nonnull String id);
+
+    /**
+     * Retrieves the {@link AutoModRule} for the provided id.
+     *
+     * @param  id
+     *         The id of the rule
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link RestAction} - Type: {@link AutoModRule}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<AutoModRule> retrieveAutoModRuleById(long id)
+    {
+        return retrieveAutoModRuleById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Creates a new {@link AutoModRule} for this guild.
+     *
+     * <p>You can only create a certain number of rules for each {@link AutoModTriggerType AutoModTriggerType}.
+     * The maximum is provided by {@link AutoModTriggerType#getMaxPerGuild()}.
+     *
+     * @param  data
+     *         The data for the new rule
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link AutoModRuleData#getRequiredPermissions() required permissions}
+     * @throws IllegalStateException
+     *         <ul>
+     *             <li>If the provided data does not have any {@link AutoModResponse} configured</li>
+     *             <li>If any of the configured {@link AutoModResponse AutoModResponses} is not supported by the {@link AutoModTriggerType}</li>
+     *         </ul>
+     *
+     * @return {@link AuditableRestAction} - Type: {@link AutoModRule}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData data);
+
+    /**
+     * Returns an {@link AutoModRuleManager}, which can be used to modify the rule for the provided id.
+     * <p>The manager allows modifying multiple fields in a single request.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * @return The manager instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    AutoModRuleManager modifyAutoModRuleById(@Nonnull String id);
+
+    /**
+     * Returns an {@link AutoModRuleManager}, which can be used to modify the rule for the provided id.
+     * <p>The manager allows modifying multiple fields in a single request.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * @return The manager instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AutoModRuleManager modifyAutoModRuleById(long id)
+    {
+        return modifyAutoModRuleById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Deletes the {@link AutoModRule} for the provided id.
+     *
+     * @param  id
+     *         The id of the rule
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Void}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> deleteAutoModRuleById(@Nonnull String id);
+
+    /**
+     * Deletes the {@link AutoModRule} for the provided id.
+     *
+     * @param  id
+     *         The id of the rule
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Void}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> deleteAutoModRuleById(long id)
+    {
+        return deleteAutoModRuleById(Long.toUnsignedString(id));
+    }
 
     /**
      * Adds the user to this guild as a member.
@@ -1075,8 +1213,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
      *
      * @see    net.dv8tion.jda.api.JDA#getUserByTag(String)
+     *
+     * @deprecated This will become obsolete in the future.
+     *             Discriminators are being phased out and replaced by globally unique usernames.
+     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     default Member getMemberByTag(@Nonnull String tag)
     {
         User user = getJDA().getUserByTag(tag);
@@ -1109,8 +1253,14 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
      *
      * @see    #getMemberByTag(String)
+     *
+     * @deprecated This will become obsolete in the future.
+     *             Discriminators are being phased out and replaced by globally unique usernames.
+     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     default Member getMemberByTag(@Nonnull String username, @Nonnull String discriminator)
     {
         User user = getJDA().getUserByTag(username, discriminator);
@@ -1158,8 +1308,11 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
      *
      * @see    #retrieveMembersByPrefix(String, int)
+     *
+     * @incubating This will be replaced in the future when the rollout of globally unique usernames has been completed.
      */
     @Nonnull
+    @Incubating
     default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getMemberCache().getElementsByUsername(name, ignoreCase);
@@ -1870,7 +2023,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Retrieves an immutable list of Custom Emojis together with their respective creators.
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * @return {@link RestAction RestAction} - Type: List of {@link RichCustomEmoji}
      */
@@ -1883,7 +2036,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * <br><b>This does not include unicode emoji.</b>
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -1908,7 +2061,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Retrieves a Custom Emoji together with its respective creator.
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -1933,7 +2086,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * Retrieves a custom emoji together with its respective creator.
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS Permission.MANAGE_EMOJIS_AND_STICKERS}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -1961,7 +2114,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
             if (emoji instanceof RichCustomEmoji)
             {
                 RichCustomEmoji richEmoji = (RichCustomEmoji) emoji;
-                if (richEmoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                if (richEmoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
                     return richEmoji;
             }
             return null;
@@ -2014,7 +2167,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
      *
      * @return {@link GuildStickerManager}
      */
@@ -4533,7 +4686,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     /**
      * Creates a new {@link RichCustomEmoji} in this Guild.
      * <br>If one or more Roles are specified the new emoji will only be available to Members with any of the specified Roles (see {@link Member#canInteract(RichCustomEmoji)})
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} Permission.
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link RichCustomEmoji}!</u></b>
      *
@@ -4558,7 +4711,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         <br>If no roles are provided the emoji will be available to all Members of this Guild
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} Permission
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} Permission
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link RichCustomEmoji}
      */
@@ -4587,7 +4740,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         The tags to use for auto-suggestions (Up to 200 characters in total)
      *
      * @throws InsufficientPermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} permission
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} permission
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
@@ -4625,7 +4778,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         Additional tags to use for suggestions
      *
      * @throws InsufficientPermissionException
-     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} permission
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} permission
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the name is not between 2 and 30 characters long</li>
@@ -4658,7 +4811,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @throws IllegalStateException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have {@link Permission#MANAGE_EMOJIS_AND_STICKERS MANAGE_EMOJIS_AND_STICKERS} in the guild.
+     *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
      *
      * @return {@link AuditableRestAction}
      */

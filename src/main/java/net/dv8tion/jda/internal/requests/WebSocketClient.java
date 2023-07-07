@@ -69,6 +69,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -102,6 +103,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final ScheduledExecutorService executor;
     protected WebSocketSendingThread ratelimitThread;
     protected volatile Future<?> keepAliveThread;
+
+    protected final ReentrantLock reconnectLock = new ReentrantLock();
+    protected final Condition reconnectCondvar = reconnectLock.newCondition();
 
     protected boolean initiating;
 
@@ -331,18 +335,34 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             socket.sendClose(code, reason);
     }
 
-    public synchronized void shutdown()
+    public void shutdown()
     {
-        shutdown = true;
-        shouldReconnect = false;
-        if (connectNode != null)
-            api.getSessionController().removeSession(connectNode);
-        close(1000, "Shutting down");
+        boolean callOnShutdown = MiscUtil.locked(reconnectLock, () -> {
+            if (shutdown)
+                return false;
+            shutdown = true;
+            shouldReconnect = false;
+            if (connectNode != null)
+                api.getSessionController().removeSession(connectNode);
+            boolean wasConnected = connected;
+            close(1000, "Shutting down");
+            reconnectCondvar.signalAll(); // signal reconnect attempts to stop
+            return !wasConnected;
+        });
+
+        if (callOnShutdown)
+            onShutdown(1000);
     }
+
 
     /*
         ### Start Internal methods ###
      */
+
+    protected void onShutdown(int rawCloseCode)
+    {
+        api.shutdownInternals(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
+    }
 
     protected synchronized void connect()
     {
@@ -525,7 +545,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (decompressor != null)
                 decompressor.shutdown();
 
-            api.shutdownInternals(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
+            onShutdown(rawCloseCode);
         }
         else
         {
@@ -628,46 +648,55 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                           .collect(Collectors.toSet());
             }
         }
-        if (shutdown)
-        {
-            api.setStatus(JDA.Status.SHUTDOWN);
-            api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
-            return;
-        }
+
         String message = "";
         if (callFromQueue)
             message = String.format("Queue is attempting to reconnect a shard...%s ", shardInfo != null ? " Shard: " + shardInfo.getShardString() : "");
         if (sessionId != null)
             reconnectTimeoutS = 0;
         LOG.debug("{}Attempting to reconnect in {}s", message, reconnectTimeoutS);
-        while (shouldReconnect)
+        boolean isShutdown = MiscUtil.locked(reconnectLock, () -> {
+            while (shouldReconnect)
+            {
+                api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
+
+                int delay = reconnectTimeoutS;
+                // Exponential backoff, reset on session creation (ready/resume)
+                reconnectTimeoutS = reconnectTimeoutS == 0 ? 2 : Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
+
+                try
+                {
+                    // On shutdown, this condvar is notified and we stop reconnecting
+                    reconnectCondvar.await(delay, TimeUnit.SECONDS);
+                    if (!shouldReconnect)
+                        break;
+
+                    handleIdentifyRateLimit = false;
+                    api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
+                    LOG.debug("Attempting to reconnect!");
+                    connect();
+                    break;
+                }
+                catch (RejectedExecutionException | InterruptedException ex)
+                {
+                    // JDA has already been shutdown so we can stop here
+                    return true;
+                }
+                catch (RuntimeException ex)
+                {
+                    LOG.debug("Reconnect failed with exception", ex);
+                    LOG.warn("Reconnect failed! Next attempt in {}s", reconnectTimeoutS);
+                }
+            }
+            return !shouldReconnect;
+        });
+
+        if (isShutdown)
         {
-            api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
-            int delay = reconnectTimeoutS;
-            // Exponential backoff, reset on session creation (ready/resume)
-            reconnectTimeoutS = reconnectTimeoutS == 0 ? 2 : Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
-            Thread.sleep(delay * 1000);
-            handleIdentifyRateLimit = false;
-            api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
-            LOG.debug("Attempting to reconnect!");
-            try
-            {
-                connect();
-                break;
-            }
-            catch (RejectedExecutionException ex)
-            {
-                // JDA has already been shutdown so we can stop here
-                api.setStatus(JDA.Status.SHUTDOWN);
-                api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
-                return;
-            }
-            catch (RuntimeException ex)
-            {
-                // reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
-                LOG.warn("Reconnect failed! Next attempt in {}s", reconnectTimeoutS);
-            }
+            LOG.debug("Reconnect cancelled due to shutdown.");
+            shutdown();
         }
+
         if (contextEntries != null)
             contextEntries.forEach(MDC.MDCCloseable::close);
         if (previousContext != null)
@@ -1333,6 +1362,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         final SocketHandler.NOPHandler nopHandler =            new SocketHandler.NOPHandler(api);
         handlers.put("APPLICATION_COMMAND_PERMISSIONS_UPDATE", new ApplicationCommandPermissionsUpdateHandler(api));
+        handlers.put("AUTO_MODERATION_RULE_CREATE",            new AutoModRuleHandler(api, "CREATE"));
+        handlers.put("AUTO_MODERATION_RULE_UPDATE",            new AutoModRuleHandler(api, "UPDATE"));
+        handlers.put("AUTO_MODERATION_RULE_DELETE",            new AutoModRuleHandler(api, "DELETE"));
+        handlers.put("AUTO_MODERATION_ACTION_EXECUTION",       new AutoModExecutionHandler(api));
         handlers.put("CHANNEL_CREATE",                         new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                         new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                         new ChannelUpdateHandler(api));

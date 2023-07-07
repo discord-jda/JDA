@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
@@ -43,10 +45,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
-import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.managers.GuildManager;
-import net.dv8tion.jda.api.managers.GuildStickerManager;
-import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
+import net.dv8tion.jda.api.managers.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
@@ -61,13 +60,11 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.automod.AutoModRuleImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
-import net.dv8tion.jda.internal.managers.AudioManagerImpl;
-import net.dv8tion.jda.internal.managers.GuildManagerImpl;
-import net.dv8tion.jda.internal.managers.GuildStickerManagerImpl;
-import net.dv8tion.jda.internal.managers.GuildWelcomeScreenManagerImpl;
+import net.dv8tion.jda.internal.managers.*;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
@@ -356,6 +353,71 @@ public class GuildImpl implements Guild
             }
             return set;
         });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<AutoModRule>> retrieveAutoModRules()
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Route.CompiledRoute route = Route.AutoModeration.LIST_RULES.compile(getId());
+        return new RestActionImpl<>(api, route, (response, request) ->
+        {
+            DataArray array = response.getArray();
+            List<AutoModRule> rules = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+            {
+                try
+                {
+                    DataObject obj = array.getObject(i);
+                    rules.add(AutoModRuleImpl.fromData(this, obj));
+                }
+                catch (ParsingException exception)
+                {
+                    EntityBuilder.LOG.error("Failed to parse AutoModRule", exception);
+                }
+            }
+            return Collections.unmodifiableList(rules);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<AutoModRule> retrieveAutoModRuleById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        checkPermission(Permission.MANAGE_SERVER);
+        Route.CompiledRoute route = Route.AutoModeration.GET_RULE.compile(getId(), id);
+        return new RestActionImpl<>(api, route, (response, request) -> AutoModRuleImpl.fromData(this, response.getObject()));
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData rule)
+    {
+        Checks.notNull(rule, "AutoMod Rule");
+        rule.getRequiredPermissions().forEach(this::checkPermission);
+        Route.CompiledRoute route = Route.AutoModeration.CREATE_RULE.compile(getId());
+        return new AuditableRestActionImpl<>(api, route, rule.toData(), (response, request) -> AutoModRuleImpl.fromData(this, response.getObject()));
+    }
+
+    @Nonnull
+    @Override
+    public AutoModRuleManager modifyAutoModRuleById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        checkPermission(Permission.MANAGE_SERVER);
+        return new AutoModRuleManagerImpl(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> deleteAutoModRuleById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        checkPermission(Permission.MANAGE_SERVER);
+        Route.CompiledRoute route = Route.AutoModeration.DELETE_RULE.compile(getId(), id);
+        return new AuditableRestActionImpl<>(api, route);
     }
 
     @Nonnull
@@ -813,7 +875,7 @@ public class GuildImpl implements Guild
             RichCustomEmoji emoji = getEmojiById(id);
             if (emoji != null)
             {
-                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_EMOJIS_AND_STICKERS))
+                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
                     return emoji;
             }
             return null;
@@ -1747,7 +1809,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
-        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, 32, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
@@ -1771,7 +1833,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<GuildSticker> createSticker(@Nonnull String name, @Nonnull String description, @Nonnull FileUpload file, @Nonnull Collection<String> tags)
     {
-        checkPermission(Permission.MANAGE_EMOJIS_AND_STICKERS);
+        checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
         Checks.inRange(name, 2, 30, "Name");
         Checks.notNull(file, "File");
         Checks.notNull(description, "Description");

@@ -40,17 +40,17 @@ plugins {
 }
 
 val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "beta.8")
+val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "beta.12")
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
-        || System.getProperty("GITHUB_ACTIONS") != null // Github Actions
-        || System.getenv("GITHUB_ACTIONS") != null
+        || System.getProperty("GITHUB_ACTION") != null // Github Actions
+        || System.getenv("GITHUB_ACTION") != null
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
-    val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT")
+    val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT") ?: System.getenv("GITHUB_SHA")
     // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
     if (isCI && commit != null)
         commit.substring(0, 7)
@@ -282,6 +282,8 @@ javadoc.apply {
         } else {
             opt.addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
         }
+
+        opt.overview = "$projectDir/overview.html"
     }
 
     dependsOn(sourcesJar)
@@ -360,11 +362,11 @@ fun generatePom(pom: Pom) {
     pom.packaging = "jar"
     pom.name.set(project.name)
     pom.description.set("Java wrapper for the popular chat & VOIP service: Discord https://discord.com")
-    pom.url.set("https://github.com/DV8FromTheWorld/JDA")
+    pom.url.set("https://github.com/discord-jda/JDA")
     pom.scm {
-        url.set("https://github.com/DV8FromTheWorld/JDA")
-        connection.set("scm:git:git://github.com/DV8FromTheWorld/JDA")
-        developerConnection.set("scm:git:ssh:git@github.com:DV8FromTheWorld/JDA")
+        url.set("https://github.com/discord-jda/JDA")
+        connection.set("scm:git:git://github.com/discord-jda/JDA")
+        developerConnection.set("scm:git:ssh:git@github.com:discord-jda/JDA")
     }
     pom.licenses {
         license {

@@ -404,6 +404,8 @@ public interface IGuildChannelContainer
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of {@link ThreadChannel}.
      *
+     * <p>These threads can also represent posts in {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
+     *
      * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
      * For {@link Guild}, {@link JDA}, or {@link ShardManager},
      * this returns the relevant channel with respect to the cache within each of those objects.
@@ -420,6 +422,8 @@ public interface IGuildChannelContainer
      * Gets a list of all {@link ThreadChannel ThreadChannels}
      * in this Guild that have the same name as the one provided.
      * <br>If there are no channels with the provided name, then this returns an empty list.
+     *
+     * <p>These threads can also represent posts in {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
      *
      * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
      * For {@link Guild}, {@link JDA}, or {@link ShardManager},
@@ -444,6 +448,8 @@ public interface IGuildChannelContainer
     /**
      * Gets a {@link ThreadChannel ThreadChannel} that has the same id as the one provided.
      * <br>If there is no channel with an id that matches the provided one, then this returns {@code null}.
+     *
+     * <p>These threads can also represent posts in {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
      *
      * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
      * For {@link Guild}, {@link JDA}, or {@link ShardManager},
@@ -470,6 +476,8 @@ public interface IGuildChannelContainer
      * Gets a {@link ThreadChannel ThreadChannel} that has the same id as the one provided.
      * <br>If there is no channel with an id that matches the provided one, then this returns {@code null}.
      *
+     * <p>These threads can also represent posts in {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
+     *
      * <p>This getter exists on any instance of {@link IGuildChannelContainer} and only checks the caches with the relevant scoping.
      * For {@link Guild}, {@link JDA}, or {@link ShardManager},
      * this returns the relevant channel with respect to the cache within each of those objects.
@@ -490,6 +498,8 @@ public interface IGuildChannelContainer
 
     /**
      * Gets all {@link ThreadChannel ThreadChannel} in the cache.
+     *
+     * <p>These threads can also represent posts in {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into

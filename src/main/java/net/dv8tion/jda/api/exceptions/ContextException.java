@@ -54,6 +54,9 @@ public class ContextException extends Exception
         return new ContextConsumer(new ContextException(), acceptor);
     }
 
+    /**
+     * Wrapper for a failure {@link Consumer} that carries a {@link ContextException} as cause.
+     */
     public static class ContextConsumer implements Consumer<Throwable>
     {
         private final ContextException context;

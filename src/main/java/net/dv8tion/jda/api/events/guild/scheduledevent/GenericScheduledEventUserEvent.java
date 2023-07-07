@@ -30,14 +30,14 @@ import javax.annotation.Nullable;
 /**
  * Indicates that a {@link User User} has subscribed or unsubscribed to a {@link ScheduledEvent ScheduledEvent}.
  *
+ * <p>Can be used to detect when someone has indicated that they have subscribed or unsubscribed to an event and also retrieve their
+ * {@link User User} object as well as the {@link ScheduledEvent}.
+ *
  * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent and {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
- *
- * Can be used to detect when someone has indicated that they have subscribed or unsubscribed to an event and also retrieve their
- * {@link User User} object as well as the {@link ScheduledEvent}.
  */
 public abstract class GenericScheduledEventUserEvent extends GenericScheduledEventGatewayEvent
 {

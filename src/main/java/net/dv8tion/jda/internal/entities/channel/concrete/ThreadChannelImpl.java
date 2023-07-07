@@ -175,6 +175,13 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
 
     @Nonnull
     @Override
+    public RestAction<Message> retrieveStartMessage()
+    {
+        return retrieveMessageById(getId());
+    }
+
+    @Nonnull
+    @Override
     public IPermissionContainer getPermissionContainer()
     {
         return getParentChannel();

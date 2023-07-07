@@ -229,6 +229,15 @@ public class Route
         public static final Route CREATE_INSTANCE = new Route(POST,   "stage-instances");
     }
 
+    public static class AutoModeration
+    {
+        public static final Route LIST_RULES =  new Route(GET,    "guilds/{guild_id}/auto-moderation/rules");
+        public static final Route GET_RULE =    new Route(GET,    "guilds/{guild_id}/auto-moderation/rules/{rule_id}");
+        public static final Route CREATE_RULE = new Route(POST,   "guilds/{guild_id}/auto-moderation/rules");
+        public static final Route UPDATE_RULE = new Route(PATCH,  "guilds/{guild_id}/auto-moderation/rules/{rule_id}");
+        public static final Route DELETE_RULE = new Route(DELETE, "guilds/{guild_id}/auto-moderation/rules/{rule_id}");
+    }
+
     public static class Messages
     {
         public static final Route EDIT_MESSAGE =          new Route(PATCH,  "channels/{channel_id}/messages/{message_id}"); // requires special handling, same bucket but different endpoints

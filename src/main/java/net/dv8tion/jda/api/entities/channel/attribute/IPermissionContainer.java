@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a {@link GuildChannel} that uses {@link net.dv8tion.jda.api.entities.PermissionOverride Permission Overrides}.
  *
- * Channels that implement this interface can override permissions for specific users or roles.
+ * <p>Channels that implement this interface can override permissions for specific users or roles.
  *
  * @see net.dv8tion.jda.api.entities.PermissionOverride
  */

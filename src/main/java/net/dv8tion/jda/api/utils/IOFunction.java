@@ -18,6 +18,12 @@ package net.dv8tion.jda.api.utils;
 
 import java.io.IOException;
 
+/**
+ * Function accepting one argument and throwing {@link IOException}.
+ *
+ * @param <T> The type of the argument
+ * @param <R> The type of the return value
+ */
 @FunctionalInterface
 public interface IOFunction<T, R>
 {

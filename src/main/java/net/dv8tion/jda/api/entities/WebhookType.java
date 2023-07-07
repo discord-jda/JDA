@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.entities;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Types of webhooks.
+ */
 public enum WebhookType
 {
     /** Placeholder for unsupported types */

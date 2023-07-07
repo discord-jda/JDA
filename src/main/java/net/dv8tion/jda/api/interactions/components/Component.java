@@ -32,7 +32,6 @@ import javax.annotation.Nonnull;
  * <br><p>Not every component can be used in {@link net.dv8tion.jda.api.entities.Message Messages} or {@link Modal Modals}.
  * Use {@link Type#isMessageCompatible()} and {@link Type#isModalCompatible()} to check whether a component can be used.
  *
- *
  * @see ActionRow
  *
  * @see Button

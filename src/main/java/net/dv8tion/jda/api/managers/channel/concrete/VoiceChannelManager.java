@@ -22,7 +22,16 @@ import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 
-//TODO-v5: Docs
+/**
+ * Manager providing methods to modify a {@link VoiceChannel}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("Music")
+ *        .setBitrate(96000)
+ *        .queue();
+ * }</pre>
+ */
 public interface VoiceChannelManager extends
         AudioChannelManager<VoiceChannel, VoiceChannelManager>,
         StandardGuildChannelManager<VoiceChannel, VoiceChannelManager>,

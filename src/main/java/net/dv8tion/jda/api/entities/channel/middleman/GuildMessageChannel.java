@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Represents all message channels present in guilds.
  *
- * This includes channels that are not included in {@link StandardGuildMessageChannel}, such as {@link ThreadChannel}.
+ * <p>This includes channels that are not included in {@link StandardGuildMessageChannel}, such as {@link ThreadChannel}.
  *
  * @see StandardGuildMessageChannel
  */

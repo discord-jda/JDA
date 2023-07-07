@@ -45,7 +45,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * TextChannel channel = union.asTextChannel();
@@ -67,7 +67,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link NewsChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * NewsChannel channel = union.asNewsChannel();
@@ -89,7 +89,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link ThreadChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * ThreadChannel channel = union.asThreadChannel();
@@ -111,7 +111,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link VoiceChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * VoiceChannel channel = union.asVoiceChannel();
@@ -133,7 +133,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link StageChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StageChannel channel = union.asStageChannel();
@@ -155,7 +155,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link Category}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * Category channel = union.asCategory();
@@ -177,7 +177,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link ForumChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * ForumChannel channel = union.asForumChannel();
@@ -199,7 +199,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link GuildMessageChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * GuildMessageChannel channel = union.asGuildMessageChannel();
@@ -222,7 +222,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link AudioChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * AudioChannel channel = union.asAudioChannel();
@@ -244,7 +244,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * IThreadContainer channel = union.asThreadContainer();
@@ -264,7 +264,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link StandardGuildChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StandardGuildChannel channel = union.asStandardGuildChannel();
@@ -283,7 +283,7 @@ public interface GuildChannelUnion extends GuildChannel
      * Casts this union to a {@link StandardGuildMessageChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StandardGuildMessageChannel channel = union.asStandardGuildMessageChannel();

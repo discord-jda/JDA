@@ -1,0 +1,33 @@
+name: Upload Artifacts
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/main/**'
+      - 'build.gradle.kts'
+      - '.github/workflows/artifacts.yml'
+
+jobs:
+  build:
+    name: Build and Upload Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: temurin
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build Artifacts
+        uses: gradle/gradle-build-action@v2.4.2
+        with:
+          arguments: build
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Artifacts
+          path: build/libs/*.jar

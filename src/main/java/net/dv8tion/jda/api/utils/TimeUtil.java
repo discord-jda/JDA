@@ -25,6 +25,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+/**
+ * Utility for various time related features of the API.
+ */
 public class TimeUtil
 {
     public static final long DISCORD_EPOCH = 1420070400000L;

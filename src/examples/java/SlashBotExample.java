@@ -167,13 +167,13 @@ public class SlashBotExample extends ListenerAdapter
 
         // optional ban reason with a lazy evaluated fallback (supplier)
         String reason = event.getOption("reason",
-                () -> "Banned by " + event.getUser().getAsTag(), // used if getOption("reason") is null (not provided)
+                () -> "Banned by " + event.getUser().getName(), // used if getOption("reason") is null (not provided)
                 OptionMapping::getAsString); // used if getOption("reason") is not null (provided)
 
         // Ban the user and send a success response
         event.getGuild().ban(user, delDays, TimeUnit.DAYS)
             .reason(reason) // audit-log ban reason (sets X-AuditLog-Reason header)
-            .flatMap(v -> hook.sendMessage("Banned user " + user.getAsTag())) // chain a followup message after the ban is executed
+            .flatMap(v -> hook.sendMessage("Banned user " + user.getName())) // chain a followup message after the ban is executed
             .queue(); // execute the entire call chain
     }
 

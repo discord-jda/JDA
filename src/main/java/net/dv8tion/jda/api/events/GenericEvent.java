@@ -22,6 +22,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Interface for events supported by {@link net.dv8tion.jda.api.hooks.IEventManager EventManagers}.
+ *
+ * @see net.dv8tion.jda.api.hooks.EventListener#onEvent(GenericEvent)
+ */
 public interface GenericEvent
 {
     /**

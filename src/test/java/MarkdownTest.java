@@ -150,6 +150,7 @@ class MarkdownTest
         Assertions.assertEquals("Hello\nWorld", markdown.compute(">>> Hello\nWorld"));
         Assertions.assertEquals("Hello\nWorld", markdown.compute(">>>\nHello\nWorld"));
         Assertions.assertEquals("Hello > World", markdown.compute(">>>\nHello > World"));
+        Assertions.assertEquals("Hello\n World", markdown.compute("Hello\n > World"));
     }
 }
 
@@ -261,6 +262,7 @@ class IgnoreMarkdownTest
         Assertions.assertEquals(">>> Hello\nWorld", markdown.compute(">>> Hello\nWorld"));
         Assertions.assertEquals(">>>\nHello\nWorld", markdown.compute(">>>\nHello\nWorld"));
         Assertions.assertEquals(">>>\nHello > World", markdown.compute(">>>\nHello > World"));
+        Assertions.assertEquals("Hello\n > World", markdown.compute("Hello\n > World"));
     }
 }
 
@@ -389,6 +391,7 @@ class EscapeMarkdownTest
         Assertions.assertEquals("\\>>>\nHello\nWorld", markdown.compute(">>>\nHello\nWorld"));
         Assertions.assertEquals("\\>>>\nHello > World", markdown.compute(">>>\nHello > World"));
         Assertions.assertEquals("\\> \\_Hello \n\\> World\\_", markdown.compute("> _Hello \n> World_"));
+        Assertions.assertEquals("Hello\n \\> World", markdown.compute("Hello\n > World"));
     }
 }
 
@@ -459,5 +462,7 @@ class EscapeMarkdownAllTest
         Assertions.assertEquals("\\> Hello World", MarkdownSanitizer.escape("\\> Hello World", true));
         Assertions.assertEquals("\\>\\>\\> Hello World", MarkdownSanitizer.escape("\\>\\>\\> Hello World", true));
         Assertions.assertEquals("Hello > World", MarkdownSanitizer.escape("Hello > World"));
+        Assertions.assertEquals("Hello\n \\> World", MarkdownSanitizer.escape("Hello\n > World"));
+        Assertions.assertEquals("Hello\n\\> World", MarkdownSanitizer.escape("Hello\n> World"));
     }
 }

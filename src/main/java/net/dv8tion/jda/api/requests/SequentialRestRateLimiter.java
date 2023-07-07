@@ -416,20 +416,16 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             long now = getNow();
 
             long global = getGlobalRateLimit(now);
-            // Global rate limit is more important to handle
-            if (global > 0)
-                return global;
 
             // Check if the bucket reset time has expired
             if (reset <= now)
             {
                 // Update the remaining uses to the limit (we don't know better)
                 remaining = 1;
-                return 0L;
             }
 
             // If there are remaining requests we don't need to do anything, otherwise return backoff in milliseconds
-            return remaining < 1 ? reset - now : 0L;
+            return Math.max(global, remaining < 1 ? reset - now : 0L);
         }
 
         protected boolean isGlobalRateLimit()
@@ -530,6 +526,22 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         public String toString()
         {
             return bucketId;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return bucketId.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof Bucket))
+                return false;
+            return this.bucketId.equals(((Bucket) obj).bucketId);
         }
     }
 

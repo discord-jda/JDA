@@ -59,7 +59,12 @@ import javax.annotation.Nonnull;
  */
 public interface ThreadChannelPaginationAction extends PaginationAction<ThreadChannel, ThreadChannelPaginationAction>
 {
-    //TODO-v5: Docs
+    /**
+     * The {@link IThreadContainerUnion} for this action
+     * <br>This can also be used for casting down to more concrete types.
+     *
+     * @return {@link IThreadContainerUnion}
+     */
     @Nonnull
     IThreadContainerUnion getChannel();
 

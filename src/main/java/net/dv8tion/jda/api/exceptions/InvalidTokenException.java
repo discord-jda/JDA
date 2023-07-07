@@ -18,13 +18,11 @@ package net.dv8tion.jda.api.exceptions;
 
 /**
  * Indicates that an invalid token was given when trying to login the Discord API
- *
- * */
+ */
 public class InvalidTokenException extends RuntimeException
 {
-
     /**
-     * Constructs an <code>InvalidTokenException</code> with no detail message.
+     * Constructs an {@code InvalidTokenException} with no detail message.
      */
     public InvalidTokenException()
     {
@@ -32,8 +30,7 @@ public class InvalidTokenException extends RuntimeException
     }
 
     /**
-     * Constructs an <code>InvalidTokenException</code> with the
-     * specified detail message.
+     * Constructs an {@code InvalidTokenException} with the specified detail message.
      *
      * @param  message   
      *         The detail message.
