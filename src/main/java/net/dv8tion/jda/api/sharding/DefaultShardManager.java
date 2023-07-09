@@ -566,7 +566,7 @@ public class DefaultShardManager implements ShardManager
         if (presenceConfig.getStatusProvider() != null)
             presence.setCacheStatus(presenceConfig.getStatusProvider().apply(shardId));
 
-        if (this.gatewayURL == null)
+        if (this.gatewayURL == null || getShardsTotal() == -1)
         {
             SessionController.ShardedGateway gateway = jda.getShardedGateway();
             this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
