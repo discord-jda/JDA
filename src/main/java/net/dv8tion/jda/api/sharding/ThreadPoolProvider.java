@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.sharding;
 
+import net.dv8tion.jda.internal.utils.Checks;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.ExecutorService;
@@ -55,9 +57,28 @@ public interface ThreadPoolProvider<T extends ExecutorService>
         return false;
     }
 
+    /**
+     * Provider that initializes with a {@link DefaultShardManagerBuilder#setShardsTotal(int) shard_total}
+     * and provides the same pool to share between shards.
+     *
+     * <p><b>Function Contract</b><br>
+     *
+     * <p>The provided function should always return a new pool instance.
+     * To determine the recommended shard total from the API, a temporary pool is created with a total of 1 shard.
+     * Once the actual shard total is known, the pool is re-initialized with the correct total and the temporary pool is shutdown.
+     *
+     * @param  init
+     *         Function to initialize the shared pool, called with the shard total
+     *
+     * @param  <T>
+     *         The type of executor
+     *
+     * @return The lazy pool provider
+     */
     @Nonnull
     static <T extends ExecutorService> LazySharedProvider<T> lazy(@Nonnull IntFunction<T> init)
     {
+        Checks.notNull(init, "Initializer");
         return new LazySharedProvider<>(init);
     }
 
@@ -67,23 +88,32 @@ public interface ThreadPoolProvider<T extends ExecutorService>
         private volatile T temporaryPool;
         private volatile T pool;
 
-        public LazySharedProvider(IntFunction<T> initializer)
+        LazySharedProvider(@Nonnull IntFunction<T> initializer)
         {
             this.initializer = initializer;
         }
 
+        /**
+         * Called with the shard total to initialize the shared pool.
+         *
+         * <p>This also destroys the temporary pool created for fetching the recommended shard total.
+         *
+         * @param shardTotal
+         *        The shard total
+         */
         public synchronized void init(int shardTotal)
         {
             if (pool == null)
                 pool = initializer.apply(shardTotal);
 
-            if (temporaryPool != null)
-            {
+            if (temporaryPool != null && temporaryPool != pool)
                 temporaryPool.shutdownNow();
-                temporaryPool = null;
-            }
+            temporaryPool = null;
         }
 
+        /**
+         * Shuts down the shared pool and the temporary pool.
+         */
         public synchronized void shutdown()
         {
             if (pool != null)
@@ -92,13 +122,19 @@ public interface ThreadPoolProvider<T extends ExecutorService>
                 pool = null;
             }
 
-            if (temporaryPool != null)
-            {
+            if (temporaryPool != null && temporaryPool != pool)
                 temporaryPool.shutdown();
-                temporaryPool = null;
-            }
+            temporaryPool = null;
         }
 
+        /**
+         * Provides the initialized pool or the temporary pool if not initialized yet.
+         *
+         * @param  shardId
+         *         The current shard id
+         *
+         * @return The thread pool instance
+         */
         @Nullable
         @Override
         public synchronized T provide(int shardId)

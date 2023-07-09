@@ -91,7 +91,7 @@ public class  DefaultShardManagerBuilder
             ExecutorService pool = Executors.newCachedThreadPool(new CountingThreadFactory(() -> "JDA", "RateLimit-Elastic", true));
             if (pool instanceof ThreadPoolExecutor)
             {
-                ((ThreadPoolExecutor) pool).setCorePoolSize(1);
+                ((ThreadPoolExecutor) pool).setCorePoolSize(Math.max(1, (int) Math.log(total)));
                 ((ThreadPoolExecutor) pool).setKeepAliveTime(2, TimeUnit.MINUTES);
             }
             return pool;
@@ -1325,7 +1325,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -1353,7 +1353,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -1382,7 +1382,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
      *
      * @param  provider
      *         The thread-pool provider to use for rate-limit handling
@@ -1413,7 +1413,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -1436,7 +1436,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -1460,7 +1460,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
      *
      * @param  provider
      *         The thread-pool provider to use for rate-limit handling
@@ -1562,7 +1562,7 @@ public class  DefaultShardManagerBuilder
      * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
      * have to be sent.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code log}({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  pool
      *         The thread-pool to use for main WebSocket workers
@@ -1592,7 +1592,7 @@ public class  DefaultShardManagerBuilder
      * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
      * have to be sent.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code log}({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  pool
      *         The thread-pool to use for main WebSocket workers
@@ -1623,7 +1623,7 @@ public class  DefaultShardManagerBuilder
      * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
      * have to be sent.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code log}({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  provider
      *         The thread-pool provider to use for main WebSocket workers
@@ -1715,6 +1715,8 @@ public class  DefaultShardManagerBuilder
      * <p>The executor will not be shutdown automatically when the shard is shutdown.
      * To shut it down automatically use {@link #setEventPool(ExecutorService, boolean)}.
      *
+     * <p>Default: Disabled
+     *
      * @param  executor
      *         The executor for the event proxy, or null to use calling thread
      *
@@ -1731,6 +1733,8 @@ public class  DefaultShardManagerBuilder
     /**
      * Sets the {@link ExecutorService ExecutorService} that should be used by the
      * event proxy to schedule events. This will be done on the calling thread by default.
+     *
+     * <p>Default: Disabled
      *
      * @param  executor
      *         The executor for the event proxy, or null to use calling thread
@@ -1756,7 +1760,7 @@ public class  DefaultShardManagerBuilder
      * <p>This is used to handle callbacks of {@link RestAction#queue()}, similarly it is used to
      * finish {@link RestAction#submit()} and {@link RestAction#complete()} tasks which build on queue.
      *
-     * <p>Default: {@link ForkJoinPool#commonPool()}
+     * <p>Default: Disabled
      *
      * @param  provider
      *         The thread-pool provider to use for callback handling

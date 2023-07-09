@@ -489,6 +489,10 @@ public class DefaultShardManager implements ShardManager
             httpClient = sessionConfig.getHttpBuilder().build();
         }
 
+        // We first initialize the thread-pool here with the known shard total
+        // If the shard total is not known yet, a rest-only shard is spun up to determine the recommended shard total from the API
+        // This uses a temporary pool with a single thread to avoid blocking the main thread-pool
+
         if (getShardsTotal() != -1)
             threadingConfig.init(getShardsTotal());
 
