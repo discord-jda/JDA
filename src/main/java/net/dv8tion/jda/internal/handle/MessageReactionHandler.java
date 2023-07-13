@@ -176,7 +176,7 @@ public class MessageReactionHandler extends SocketHandler
             api.handleEvent(
                 new MessageReactionAddEvent(
                     api, responseNumber,
-                    user, member, reaction, userId));
+                    user, member, reaction, userId, content.getUnsignedLong("message_author_id", 0L)));
         }
         else
         {
