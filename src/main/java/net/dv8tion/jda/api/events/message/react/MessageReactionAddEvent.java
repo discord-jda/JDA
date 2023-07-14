@@ -51,6 +51,7 @@ public class MessageReactionAddEvent extends GenericMessageReactionEvent
 
     /**
      * The user id of the original message author.
+     * <br>This might be 0 for webhook messages.
      *
      * @return The user id of the original message author.
      */
@@ -63,6 +64,7 @@ public class MessageReactionAddEvent extends GenericMessageReactionEvent
 
     /**
      * The user id of the original message author.
+     * <br>This might be 0 for webhook messages.
      *
      * @return The user id of the original message author.
      */
