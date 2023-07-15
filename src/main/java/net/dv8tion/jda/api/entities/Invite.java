@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -111,27 +112,13 @@ public interface Invite
     AuditableRestAction<Void> delete();
 
     /**
-     * Tries to retrieve a new expanded {@link Invite Invite} with more info.
-     * <br>As bots can't be in groups this is only available for guild invites and will throw an {@link java.lang.IllegalStateException IllegalStateException}
-     * for other types.
-     * <br>Requires either {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild or
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
-     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the account neither has {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild nor
-     *         {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel
-     * @throws java.lang.IllegalStateException
-     *         If this is a group invite
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Invite Invite}
-     *         <br>The expanded Invite object
-     *
-     * @see    #getType()
-     * @see    #isExpanded()
+     * @deprecated All properties are now available without expanding
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval
     RestAction<Invite> expand();
 
     /**
@@ -241,10 +228,14 @@ public interface Invite
     int getMaxAge();
 
     /**
-    * The max uses of this invite. If there is no limit thus will return {@code 0}.
-    *
-    * @return The max uses of this invite or {@code 0} if there is no limit
-    */
+     * The max uses of this invite. If there is no limit thus will return {@code 0}.
+     *
+     * <p>This works only for guild invites and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
+     *
+     * @throws java.lang.IllegalStateException
+     *         if this is not a guild invite
+     * @return The max uses of this invite or {@code 0} if there is no limit
+     */
     int getMaxUses();
 
     /**
@@ -258,15 +249,12 @@ public interface Invite
     /**
      * How often this invite has been used.
      *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     * <p>This works only for guild invites and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
      *
-     * @throws IllegalStateException
-     *         if this invite is not expanded
+     * @throws java.lang.IllegalStateException
+     *         if this is not a guild invite
      *
      * @return The uses of this invite
-     *
-     * @see    #expand()
-     * @see    #isExpanded()
      */
     int getUses();
 
@@ -282,11 +270,17 @@ public interface Invite
      * @return Whether this invite is expanded or not
      *
      * @see    #expand()
+     * @deprecated All properties for guild invites are now available without expanding
      */
     boolean isExpanded();
 
     /**
      * Whether this Invite grants only temporary access or not.
+     *
+     * <p>This works only for guild invites and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
+     *
+     * @throws java.lang.IllegalStateException
+     *         if this is not a guild invite
      *
      * @return Whether this invite is temporary or not
      */

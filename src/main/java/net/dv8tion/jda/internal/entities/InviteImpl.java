@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
@@ -46,7 +47,6 @@ public class InviteImpl implements Invite
     private final JDAImpl api;
     private final Channel channel;
     private final String code;
-    private final boolean expanded;
     private final Guild guild;
     private final Group group;
     private final InviteTarget target;
@@ -58,13 +58,12 @@ public class InviteImpl implements Invite
     private final int uses;
     private final Invite.InviteType type;
 
-    public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
+    public InviteImpl(final JDAImpl api, final String code, final User inviter,
             final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated, final int uses,
             final Channel channel, final Guild guild, final Group group, final InviteTarget target, final Invite.InviteType type)
     {
         this.api = api;
         this.code = code;
-        this.expanded = expanded;
         this.inviter = inviter;
         this.maxAge = maxAge;
         this.maxUses = maxUses;
@@ -104,54 +103,11 @@ public class InviteImpl implements Invite
 
     @Nonnull
     @Override
+    @Deprecated
+    @ForRemoval
     public RestAction<Invite> expand()
     {
-        if (this.expanded)
-            return new CompletedRestAction<>(getJDA(), this);
-
-        if (this.type != Invite.InviteType.GUILD)
-            throw new IllegalStateException("Only guild invites can be expanded");
-
-        final net.dv8tion.jda.api.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
-
-        if (guild == null)
-            throw new UnsupportedOperationException("You're not in the guild this invite points to");
-
-        final Member member = guild.getSelfMember();
-
-        Route.CompiledRoute route;
-
-        final GuildChannel channel = guild.getChannelById(GuildChannel.class, this.channel.getIdLong());
-        if (channel == null)
-            throw new UnsupportedOperationException("Cannot expand invite without known channel. Channel ID: " + this.channel.getId());
-
-        if (member.hasPermission(channel, Permission.MANAGE_CHANNEL))
-        {
-            route = Route.Invites.GET_CHANNEL_INVITES.compile(channel.getId());
-        }
-        else if (member.hasPermission(Permission.MANAGE_SERVER))
-        {
-            route = Route.Invites.GET_GUILD_INVITES.compile(guild.getId());
-        }
-        else
-        {
-            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL, "You don't have the permission to view the full invite info");
-        }
-
-        return new RestActionImpl<>(this.api, route, (response, request) ->
-        {
-            final EntityBuilder entityBuilder = this.api.getEntityBuilder();
-            final DataArray array = response.getArray();
-            for (int i = 0; i < array.length(); i++)
-            {
-                final DataObject object = array.getObject(i);
-                if (InviteImpl.this.code.equals(object.getString("code")))
-                {
-                    return entityBuilder.createInvite(object);
-                }
-            }
-            throw new IllegalStateException("Missing the invite in the channel/guild invite list");
-        });
+       return new CompletedRestAction<>(getJDA(), this);
     }
 
     @Nonnull
@@ -216,16 +172,16 @@ public class InviteImpl implements Invite
     @Override
     public int getMaxAge()
     {
-        if (!this.expanded)
-            throw new IllegalStateException("Only valid for expanded invites");
+        if (this.type != Invite.InviteType.GUILD)
+            throw new IllegalStateException("Only valid for guild invites");
         return this.maxAge;
     }
 
     @Override
     public int getMaxUses()
     {
-        if (!this.expanded)
-            throw new IllegalStateException("Only valid for expanded invites");
+        if (this.type != Invite.InviteType.GUILD)
+            throw new IllegalStateException("Only valid for guild invites");
         return this.maxUses;
     }
 
@@ -233,30 +189,30 @@ public class InviteImpl implements Invite
     @Override
     public OffsetDateTime getTimeCreated()
     {
-        if (!this.expanded)
-            throw new IllegalStateException("Only valid for expanded invites");
         return this.timeCreated;
     }
 
     @Override
     public int getUses()
     {
-        if (!this.expanded)
-            throw new IllegalStateException("Only valid for expanded invites");
+        if (this.type != Invite.InviteType.GUILD)
+            throw new IllegalStateException("Only valid for guild invites");
         return this.uses;
     }
 
     @Override
+    @Deprecated
+    @ForRemoval
     public boolean isExpanded()
     {
-        return this.expanded;
+        return this.type == InviteType.GUILD;
     }
 
     @Override
     public boolean isTemporary()
     {
-        if (!this.expanded)
-            throw new IllegalStateException("Only valid for expanded invites");
+        if (this.type != Invite.InviteType.GUILD)
+            throw new IllegalStateException("Only valid for guild invites");
         return this.temporary;
     }
 

@@ -2259,25 +2259,25 @@ public class EntityBuilder
         final boolean temporary;
         final OffsetDateTime timeCreated;
         final int uses;
-        final boolean expanded;
 
-        if (object.hasKey("uses"))
+        if (type == Invite.InviteType.GUILD)
         {
-            expanded = true;
-            uses = object.getInt("uses");
+            maxAge = object.getInt("max_age");
+            maxUses = object.getInt("max_uses");
+            temporary = object.getBoolean("temporary");
+            uses = object.getInt("uses", 0);
         }
         else
         {
-            expanded = false;
+            maxAge = -1;
+            maxUses = -1;
+            temporary = false;
             uses = -1;
         }
 
-        maxAge = object.getInt("max_age");
-        maxUses = object.getInt("max_uses");
-        temporary = object.getBoolean("temporary");
         timeCreated = OffsetDateTime.parse(object.getString("created_at"));
 
-        return new InviteImpl(getJDA(), code, expanded, inviter,
+        return new InviteImpl(getJDA(), code, inviter,
                               maxAge, maxUses, temporary, timeCreated,
                               uses, channel, guild, group, target, type);
     }
