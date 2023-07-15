@@ -247,6 +247,14 @@ public interface Invite
     OffsetDateTime getTimeCreated();
 
     /**
+     * Returns the expiration date of this invite, if it expires
+     *
+     * @return The expiration date of this invite, or null if it doesn't expire
+     */
+    @Nullable
+    OffsetDateTime getTimeExpires();
+
+    /**
      * How often this invite has been used.
      *
      * <p>This works only for guild invites and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
