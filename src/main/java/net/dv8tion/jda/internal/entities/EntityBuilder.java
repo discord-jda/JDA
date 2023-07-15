@@ -2261,7 +2261,7 @@ public class EntityBuilder
         final int uses;
         final boolean expanded;
 
-        if (object.hasKey("max_uses"))
+        if (object.hasKey("uses"))
         {
             expanded = true;
             maxAge = object.getInt("max_age");
