@@ -2257,8 +2257,6 @@ public class EntityBuilder
         final int maxAge;
         final int maxUses;
         final boolean temporary;
-        final OffsetDateTime timeCreated;
-        final OffsetDateTime timeExpires;
         final int uses;
 
         if (type == Invite.InviteType.GUILD)
@@ -2276,15 +2274,10 @@ public class EntityBuilder
             uses = -1;
         }
 
-        timeCreated = OffsetDateTime.parse(object.getString("created_at"));
+        final OffsetDateTime timeCreated = OffsetDateTime.parse(object.getString("created_at"));
+
         final String expiresAt = object.getString("expires_at", null);
-        if (expiresAt != null)
-        {
-            timeExpires = OffsetDateTime.parse(expiresAt);
-        }
-        else {
-            timeExpires = null;
-        }
+        final OffsetDateTime timeExpires = expiresAt != null ? OffsetDateTime.parse(expiresAt) : null;
 
         return new InviteImpl(getJDA(), code, inviter, maxAge,
                               maxUses, temporary, timeCreated, timeExpires,
