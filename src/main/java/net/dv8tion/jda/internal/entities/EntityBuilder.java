@@ -2264,21 +2264,18 @@ public class EntityBuilder
         if (object.hasKey("uses"))
         {
             expanded = true;
-            maxAge = object.getInt("max_age");
-            maxUses = object.getInt("max_uses");
             uses = object.getInt("uses");
-            temporary = object.getBoolean("temporary");
-            timeCreated = OffsetDateTime.parse(object.getString("created_at"));
         }
         else
         {
             expanded = false;
-            maxAge = -1;
-            maxUses = -1;
             uses = -1;
-            temporary = false;
-            timeCreated = null;
         }
+
+        maxAge = object.getInt("max_age");
+        maxUses = object.getInt("max_uses");
+        temporary = object.getBoolean("temporary");
+        timeCreated = OffsetDateTime.parse(object.getString("created_at"));
 
         return new InviteImpl(getJDA(), code, expanded, inviter,
                               maxAge, maxUses, temporary, timeCreated,

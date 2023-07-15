@@ -236,45 +236,21 @@ public interface Invite
     /**
      * The max age of this invite in seconds.
      *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-     *
-     * @throws IllegalStateException
-     *         if this invite is not expanded
-     *
      * @return The max age of this invite in seconds
-     *
-     * @see    #expand()
-     * @see    #isExpanded()
      */
     int getMaxAge();
 
     /**
     * The max uses of this invite. If there is no limit thus will return {@code 0}.
     *
-    * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-    *
-    * @throws IllegalStateException
-     *        if this invite is not expanded
-    *
     * @return The max uses of this invite or {@code 0} if there is no limit
-    *
-    * @see    #expand()
-    * @see    #isExpanded()
     */
     int getMaxUses();
 
     /**
      * Returns creation date of this invite.
      *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-     *
-     * @throws IllegalStateException
-     *         if this invite is not expanded
-     *
      * @return The creation date of this invite
-     *
-     * @see    #expand()
-     * @see    #isExpanded()
      */
     @Nonnull
     OffsetDateTime getTimeCreated();
@@ -312,15 +288,7 @@ public interface Invite
     /**
      * Whether this Invite grants only temporary access or not.
      *
-     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
-     *
-     * @throws IllegalStateException
-     *         if this invite is not expanded
-     *
      * @return Whether this invite is temporary or not
-     *
-     * @see    #expand()
-     * @see    #isExpanded()
      */
     boolean isTemporary();
 
