@@ -174,16 +174,14 @@ public class InviteImpl implements Invite
     @Override
     public int getMaxAge()
     {
-        if (this.type != Invite.InviteType.GUILD)
-            throw new IllegalStateException("Only valid for guild invites");
         return this.maxAge;
     }
 
     @Override
     public int getMaxUses()
     {
-        if (this.type != Invite.InviteType.GUILD)
-            throw new IllegalStateException("Only valid for guild invites");
+        if (this.maxUses == -1)
+            throw new IllegalStateException("Only valid for guild and friend invites");
         return this.maxUses;
     }
 
@@ -204,8 +202,8 @@ public class InviteImpl implements Invite
     @Override
     public int getUses()
     {
-        if (this.type != Invite.InviteType.GUILD)
-            throw new IllegalStateException("Only valid for guild invites");
+        if (this.uses == -1)
+            throw new IllegalStateException("Only valid for guild and friend invites");
         return this.uses;
     }
 
@@ -214,13 +212,13 @@ public class InviteImpl implements Invite
     @ForRemoval
     public boolean isExpanded()
     {
-        return this.type == InviteType.GUILD;
+        return true;
     }
 
     @Override
     public boolean isTemporary()
     {
-        if (this.type != Invite.InviteType.GUILD)
+        if (this.type != InviteType.GUILD)
             throw new IllegalStateException("Only valid for guild invites");
         return this.temporary;
     }

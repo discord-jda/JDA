@@ -2162,22 +2162,22 @@ public class EntityBuilder
         final String code = object.getString("code");
         final User inviter = object.hasKey("inviter") ? createUser(object.getObject("inviter")) : null;
 
-        final DataObject channelObject = object.getObject("channel");
-        final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
+        final DataObject channelObject = object.optObject("channel").orElse(null);
+        final ChannelType channelType = channelObject != null ? ChannelType.fromId(channelObject.getInt("type")) : null;
         final Invite.TargetType targetType = Invite.TargetType.fromId(object.getInt("target_type", 0));
 
-        final Invite.InviteType type;
+        final Invite.InviteType type = Invite.InviteType.fromId(object.getInt("type"));
         final Invite.Guild guild;
         final Invite.Channel channel;
         final Invite.Group group;
         final Invite.InviteTarget target;
 
-        if (channelType == ChannelType.GROUP)
+        if (type == Invite.InviteType.GROUP)
         {
-            type = Invite.InviteType.GROUP;
             guild = null;
             channel = null;
 
+            assert channelObject != null;
             final String groupName = channelObject.getString("name", "");
             final long groupId = channelObject.getLong("id");
             final String groupIconId = channelObject.getString("icon", null);
@@ -2190,10 +2190,8 @@ public class EntityBuilder
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }
-        else if (channelType.isGuild())
+        else if (type == Invite.InviteType.GUILD)
         {
-            type = Invite.InviteType.GUILD;
-
             final DataObject guildObject = object.getObject("guild");
 
             final String guildIconId = guildObject.getString("icon", null);
@@ -2225,8 +2223,6 @@ public class EntityBuilder
         else
         {
             // Unknown channel type for invites
-
-            type = Invite.InviteType.UNKNOWN;
             guild = null;
             channel = null;
             group = null;
@@ -2254,23 +2250,21 @@ public class EntityBuilder
             target = new InviteImpl.InviteTargetImpl(targetType, null, null);
         }
 
-        final int maxAge;
+        final int maxAge = object.getInt("max_age", -1);
         final int maxUses;
-        final boolean temporary;
+        final boolean temporary = object.getBoolean("temporary", false);
         final int uses;
 
-        if (type == Invite.InviteType.GUILD)
+        if (object.hasKey("max_uses"))
         {
-            maxAge = object.getInt("max_age");
-            maxUses = object.getInt("max_uses");
-            temporary = object.getBoolean("temporary");
+            // this information is available on both guild and friend invites, but not group invites
+            maxUses = object.getInt("max_uses", -1);
+            // this field is only present on guilds when uses > 0, so default it to 0
             uses = object.getInt("uses", 0);
         }
         else
         {
-            maxAge = -1;
             maxUses = -1;
-            temporary = false;
             uses = -1;
         }
 
