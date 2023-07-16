@@ -270,6 +270,22 @@ class EscapeMarkdownTest
 {
     private MarkdownSanitizer markdown;
 
+    @Test
+    public void testUrl()
+    {
+        //Tests Markdown sanitizer's reaction to URLs symbols
+        Assertions.assertEquals("https://www.google.com/", markdown.compute("https://www.google.com/"));
+        Assertions.assertEquals("https://www.google.com/search?q=_test_", markdown.compute("https://www.google.com/search?q=_test_"));
+        Assertions.assertEquals("https://www.google.com/search?q=__test__", markdown.compute("https://www.google.com/search?q=__test__"));
+        Assertions.assertEquals("https://www.google.com/search?q=*test*", markdown.compute("https://www.google.com/search?q=*test*"));
+        Assertions.assertEquals("https://www.google.com/search?q=**test**", markdown.compute("https://www.google.com/search?q=**test**"));
+        Assertions.assertEquals("https://www.google.com/search?q=***test***", markdown.compute("https://www.google.com/search?q=***test***"));
+        Assertions.assertEquals("https://www.google.com/search?q=~test~", markdown.compute("https://www.google.com/search?q=~test~"));
+        Assertions.assertEquals("\\*\\*Hello\\*\\* \\_\\_Hello\\_\\_ https://www.google.com/search?q=__test__", markdown.compute("**Hello** __Hello__ https://www.google.com/search?q=__test__"));
+        Assertions.assertEquals("\\*\\*Hello\\*\\* https://github.com/__discord-jda__/JDA/**issues**/2378_ Quick brown fox https://www.google.com/search?q=__test__ \\*Test\\* \\_\\_Test\\_\\_ https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork", markdown.compute("**Hello** https://github.com/__discord-jda__/JDA/**issues**/2378_ Quick brown fox https://www.google.com/search?q=__test__ *Test* __Test__ https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork"));
+        Assertions.assertEquals("URL-10000000 \\*\\*Hello\\*\\* https://www.google.com/search?q=**test**", markdown.compute("URL-10000000 **Hello** https://www.google.com/search?q=**test**"));
+    }
+
     @BeforeEach
     public void setup()
     {
