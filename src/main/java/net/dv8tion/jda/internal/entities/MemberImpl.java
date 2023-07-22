@@ -105,9 +105,7 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getTimeJoined()
     {
-        if (hasTimeJoined())
-            return Helpers.toOffset(joinDate);
-        return getGuild().getTimeCreated();
+        return hasTimeJoined() ? Helpers.toOffset(joinDate) : getGuild().getTimeCreated();
     }
 
     @Override
@@ -192,7 +190,7 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public String getEffectiveName()
+    public String getEffectiveNickname()
     {
         return nickname != null ? nickname : getUser().getEffectiveName();
     }

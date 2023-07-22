@@ -250,12 +250,25 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     String getNickname();
 
     /**
+     * The name visible in the UI.
+     * <br>If the {@link User#getGlobalName() global name} is {@code null}, this returns the {@link User#getName() username} instead.
+     *
+     * @see User#getEffectiveName()
+     * @return The effective display name
+     */
+    @Nonnull
+    default String getEffectiveName()
+    {
+        return getUser().getEffectiveName();
+    }
+
+    /**
      * Retrieves the Name displayed in the official Discord Client.
      *
      * @return The guild nickname of this Member or the {@link User#getEffectiveName() effective user name} if no guild nickname is present.
      */
     @Nonnull
-    String getEffectiveName();
+    String getEffectiveNickname();
 
     /**
      * The Discord Id for this member's per guild avatar image.
