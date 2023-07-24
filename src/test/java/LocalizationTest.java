@@ -119,10 +119,12 @@ public class LocalizationTest
     {
         DataObject o = data;
         for (String name : names)
+        {
             o = o.getArray("options").stream(DataArray::getObject)
                     .filter(s -> s.getString("name").equals(name))
                     .findAny()
                     .orElseThrow(() -> new IllegalArgumentException("Could not find an option with path: " + Arrays.toString(names)));
+        }
         return o;
     }
 
