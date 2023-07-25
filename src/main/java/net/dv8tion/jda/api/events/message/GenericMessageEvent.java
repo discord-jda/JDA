@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -144,7 +143,7 @@ public abstract class GenericMessageEvent extends Event
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} the Message was received in.
-     * <br>If this Message was not received in a {@link TextChannel TextChannel},
+     * <br>If this Message was not received in a {@link net.dv8tion.jda.api.entities.Guild Guild},
      * this will throw an {@link java.lang.IllegalStateException}.
      *
      * @throws java.lang.IllegalStateException
