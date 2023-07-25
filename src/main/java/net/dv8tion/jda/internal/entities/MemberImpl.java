@@ -474,7 +474,7 @@ public class MemberImpl implements Member
     @Override
     public int hashCode()
     {
-        return (guild.getIdLong() + user.getId()).hashCode();
+        return Objects.hash(guild.getIdLong(), user.getIdLong());
     }
 
     @Override
