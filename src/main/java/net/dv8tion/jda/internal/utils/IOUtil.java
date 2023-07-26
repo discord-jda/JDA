@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.utils;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.internal.utils.requestbody.BufferedRequestBody;
 import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.MediaType;
