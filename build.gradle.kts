@@ -145,7 +145,7 @@ val clean: Task by tasks
 val test: Test by tasks
 val check: Task by tasks
 
-shadowJar.archiveClassifier.set("withDependencies")
+shadowJar.archiveClassifier = "withDependencies"
 
 fun nullable(string: String?): String {
     return if (string == null) "null"
@@ -184,7 +184,7 @@ val generateJavaSources = task<SourceTask>("generateJavaSources") {
 
 val noOpusJar = task<ShadowJar>("noOpusJar") {
     dependsOn(shadowJar)
-    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
+    archiveClassifier = shadowJar.archiveClassifier.map { "$it-no-opus" }
 
     configurations = shadowJar.configurations
     from(sourceSets["main"].output)
@@ -199,7 +199,7 @@ val noOpusJar = task<ShadowJar>("noOpusJar") {
 val minimalJar = task<ShadowJar>("minimalJar") {
     dependsOn(shadowJar)
     minimize()
-    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-min")
+    archiveClassifier = shadowJar.archiveClassifier.map { "$it-min" }
 
     configurations = shadowJar.configurations
     from(sourceSets["main"].output)
@@ -211,7 +211,7 @@ val minimalJar = task<ShadowJar>("minimalJar") {
 }
 
 val sourcesJar = task<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
+    archiveClassifier = "sources"
     from("src/main/java") {
         exclude("**/JDAInfo.java")
     }
@@ -222,7 +222,7 @@ val sourcesJar = task<Jar>("sourcesJar") {
 
 val javadocJar = task<Jar>("javadocJar") {
     dependsOn(javadoc)
-    archiveClassifier.set("javadoc")
+    archiveClassifier = "javadoc"
     from(javadoc.destinationDir)
 }
 
@@ -249,7 +249,7 @@ compileJava.apply {
 }
 
 jar.apply {
-    archiveBaseName.set(project.name)
+    archiveBaseName = project.name
     manifest.attributes(mapOf(
             "Implementation-Version" to project.version,
             "Automatic-Module-Name" to "net.dv8tion.jda"))
@@ -360,31 +360,31 @@ class Version(
 
 fun generatePom(pom: Pom) {
     pom.packaging = "jar"
-    pom.name.set(project.name)
-    pom.description.set("Java wrapper for the popular chat & VOIP service: Discord https://discord.com")
-    pom.url.set("https://github.com/discord-jda/JDA")
+    pom.name = project.name
+    pom.description = "Java wrapper for the popular chat & VOIP service: Discord https://discord.com"
+    pom.url = "https://github.com/discord-jda/JDA"
     pom.scm {
-        url.set("https://github.com/discord-jda/JDA")
-        connection.set("scm:git:git://github.com/discord-jda/JDA")
-        developerConnection.set("scm:git:ssh:git@github.com:discord-jda/JDA")
+        url = "https://github.com/discord-jda/JDA"
+        connection = "scm:git:git://github.com/discord-jda/JDA"
+        developerConnection = "scm:git:ssh:git@github.com:discord-jda/JDA"
     }
     pom.licenses {
         license {
-            name.set("The Apache Software License, Version 2.0")
-            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            distribution.set("repo")
+            name = "The Apache Software License, Version 2.0"
+            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution = "repo"
         }
     }
     pom.developers {
         developer {
-            id.set("Minn")
-            name.set("Florian Spieß")
-            email.set("business@minn.dev")
+            id = "Minn"
+            name = "Florian Spieß"
+            email = "business@minn.dev"
         }
         developer {
-            id.set("DV8FromTheWorld")
-            name.set("Austin Keener")
-            email.set("keeneraustin@yahoo.com")
+            id ="DV8FromTheWorld"
+            name ="Austin Keener"
+            email ="keeneraustin@yahoo.com"
         }
     }
 }
@@ -434,13 +434,13 @@ configure<NexusStagingExtension> {
 configure<NexusPublishExtension> {
     nexusPublishing {
         repositories.sonatype {
-            username.set(getProjectProperty("ossrhUser") ?: "")
-            password.set(getProjectProperty("ossrhPassword") ?: "")
-            stagingProfileId.set(getProjectProperty("stagingProfileId") ?: "")
+            username = getProjectProperty("ossrhUser") ?: ""
+            password = getProjectProperty("ossrhPassword") ?: ""
+            stagingProfileId = getProjectProperty("stagingProfileId") ?: ""
         }
         // Sonatype is very slow :)
-        connectTimeout.set(Duration.ofMinutes(1))
-        clientTimeout.set(Duration.ofMinutes(10))
+        connectTimeout = Duration.ofMinutes(1)
+        clientTimeout = Duration.ofMinutes(10)
     }
 }
 
@@ -494,3 +494,4 @@ tasks.withType<PublishToMavenRepository> {
 tasks.withType<Copy> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
+
