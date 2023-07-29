@@ -22,6 +22,12 @@ import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+/**
+ * Manager abstraction to set whether a channel is NSFW or Age-Restricted.
+ *
+ * @param <T> The channel type
+ * @param <M> The manager type
+ */
 public interface IAgeRestrictedChannelManager<T extends IAgeRestrictedChannel, M extends IAgeRestrictedChannelManager<T, M>>
         extends ChannelManager<T, M>
 {

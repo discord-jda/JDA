@@ -55,7 +55,7 @@ public class ThreadCreateHandler extends SocketHandler
             if (!EntityBuilder.MISSING_CHANNEL.equals(ex.getMessage()))
                 throw ex;
 
-            long parentId = content.getUnsignedLong("parent_id");
+            long parentId = content.getUnsignedLong("parent_id", 0L);
             EventCache.LOG.debug("Caching THREAD_CREATE_EVENT for channel with uncached parent. Parent ID: {}", parentId);
             api.getEventCache().cache(EventCache.Type.CHANNEL, parentId, responseNumber, allContent, this::handle);
         }

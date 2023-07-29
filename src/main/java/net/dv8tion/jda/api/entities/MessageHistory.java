@@ -253,7 +253,6 @@ public class MessageHistory
      * @throws java.lang.IllegalStateException
      *         If no messages have been retrieved by this MessageHistory.
      *
-     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} -
      *         Type: {@link java.util.List List}{@literal <}{@link net.dv8tion.jda.api.entities.Message Message}{@literal >}
      *         <br>Retrieved Messages are placed in a List and provided in order of most recent to oldest with most recent

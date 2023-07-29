@@ -22,6 +22,10 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.automod.AutoModResponse;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
+import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
@@ -42,10 +46,7 @@ import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
-import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.managers.GuildManager;
-import net.dv8tion.jda.api.managers.GuildStickerManager;
-import net.dv8tion.jda.api.managers.GuildWelcomeScreenManager;
+import net.dv8tion.jda.api.managers.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.*;
@@ -405,6 +406,142 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated);
+
+    /**
+     * Retrieves all current {@link AutoModRule AutoModRules} for this guild.
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link AutoModRule}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<AutoModRule>> retrieveAutoModRules();
+
+    /**
+     * Retrieves the {@link AutoModRule} for the provided id.
+     *
+     * @param  id
+     *         The id of the rule
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link RestAction} - Type: {@link AutoModRule}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<AutoModRule> retrieveAutoModRuleById(@Nonnull String id);
+
+    /**
+     * Retrieves the {@link AutoModRule} for the provided id.
+     *
+     * @param  id
+     *         The id of the rule
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link RestAction} - Type: {@link AutoModRule}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<AutoModRule> retrieveAutoModRuleById(long id)
+    {
+        return retrieveAutoModRuleById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Creates a new {@link AutoModRule} for this guild.
+     *
+     * <p>You can only create a certain number of rules for each {@link AutoModTriggerType AutoModTriggerType}.
+     * The maximum is provided by {@link AutoModTriggerType#getMaxPerGuild()}.
+     *
+     * @param  data
+     *         The data for the new rule
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link AutoModRuleData#getRequiredPermissions() required permissions}
+     * @throws IllegalStateException
+     *         <ul>
+     *             <li>If the provided data does not have any {@link AutoModResponse} configured</li>
+     *             <li>If any of the configured {@link AutoModResponse AutoModResponses} is not supported by the {@link AutoModTriggerType}</li>
+     *         </ul>
+     *
+     * @return {@link AuditableRestAction} - Type: {@link AutoModRule}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<AutoModRule> createAutoModRule(@Nonnull AutoModRuleData data);
+
+    /**
+     * Returns an {@link AutoModRuleManager}, which can be used to modify the rule for the provided id.
+     * <p>The manager allows modifying multiple fields in a single request.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * @return The manager instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    AutoModRuleManager modifyAutoModRuleById(@Nonnull String id);
+
+    /**
+     * Returns an {@link AutoModRuleManager}, which can be used to modify the rule for the provided id.
+     * <p>The manager allows modifying multiple fields in a single request.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * @return The manager instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AutoModRuleManager modifyAutoModRuleById(long id)
+    {
+        return modifyAutoModRuleById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Deletes the {@link AutoModRule} for the provided id.
+     *
+     * @param  id
+     *         The id of the rule
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Void}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> deleteAutoModRuleById(@Nonnull String id);
+
+    /**
+     * Deletes the {@link AutoModRule} for the provided id.
+     *
+     * @param  id
+     *         The id of the rule
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Void}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> deleteAutoModRuleById(long id)
+    {
+        return deleteAutoModRuleById(Long.toUnsignedString(id));
+    }
 
     /**
      * Adds the user to this guild as a member.

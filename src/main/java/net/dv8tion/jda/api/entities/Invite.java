@@ -696,7 +696,7 @@ public interface Invite
      * A TargetType indicates additional action to be taken by the client on accepting the invite,
      * typically connecting external services or launching external applications depending on the specific TargetType.
      *
-     * Some actions might not be available or show up on certain devices.
+     * <p>Some actions might not be available or show up on certain devices.
      *
      * @see InviteTarget#getType()
      */

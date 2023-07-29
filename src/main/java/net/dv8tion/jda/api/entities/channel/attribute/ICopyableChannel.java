@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 /**
  * Represents a GuildChannel that is capable of being copied.
  *
- * Please see {@link ICopyableChannel#createCopy()} for information on what is copied.
+ * <p>Please see {@link ICopyableChannel#createCopy()} for information on what is copied.
  */
 public interface ICopyableChannel extends GuildChannel
 {

@@ -1187,7 +1187,7 @@ public class JDABuilder
      * Sets whether or not JDA should try to reconnect if a connection-error is encountered.
      * <br>This will use an incremental reconnect (timeouts are increased each time an attempt fails).
      *
-     * Default: <b>true (enabled)</b>
+     * <p>Default: <b>true (enabled)</b>
      *
      * @param  autoReconnect
      *         If true - enables autoReconnect
@@ -1817,7 +1817,7 @@ public class JDABuilder
         if (audioSendFactory != null)
             jda.setAudioSendFactory(audioSendFactory);
 
-        listeners.forEach(jda::addEventListener);
+        jda.addEventListener(listeners.toArray());
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY

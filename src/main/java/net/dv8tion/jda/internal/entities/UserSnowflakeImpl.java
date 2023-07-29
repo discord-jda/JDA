@@ -47,7 +47,7 @@ public class UserSnowflakeImpl implements UserSnowflake
     @Override
     public String getDefaultAvatarId()
     {
-        return String.valueOf((id >> 22) % 5);
+        return String.valueOf((id >> 22) % 6);
     }
 
     @Override

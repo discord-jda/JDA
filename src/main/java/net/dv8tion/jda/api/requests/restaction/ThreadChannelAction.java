@@ -35,7 +35,15 @@ import javax.annotation.Nonnull;
  */
 public interface ThreadChannelAction extends AbstractThreadCreateAction<ThreadChannel, ThreadChannelAction>, FluentAuditableRestAction<ThreadChannel, ThreadChannelAction>
 {
-    //TODO-v5: Docs
+    /**
+     * Sets whether this channel allows all members to add new members.
+     * <br>When set to false, only moderators and the thread owner can add new members.
+     *
+     * @param  isInvitable
+     *         True, if all members should be allowed to add new members
+     *
+     * @return The current ThreadChannelAction for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     ThreadChannelAction setInvitable(boolean isInvitable);

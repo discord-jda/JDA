@@ -24,6 +24,12 @@ import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+/**
+ * Manager abstraction to modify the position of a {@link IPositionableChannel positionable channel}.
+ *
+ * @param <T> The channel type
+ * @param <M> The manager type
+ */
 public interface IPositionableChannelManager<T extends IPositionableChannel, M extends IPositionableChannelManager<T, M>> extends ChannelManager<T, M>
 {
     /**

@@ -45,7 +45,7 @@ public interface IThreadContainerUnion extends IThreadContainer
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * TextChannel channel = union.asTextChannel();
@@ -67,7 +67,7 @@ public interface IThreadContainerUnion extends IThreadContainer
      * Casts this union to a {@link NewsChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * NewsChannel channel = union.asNewsChannel();
@@ -89,7 +89,7 @@ public interface IThreadContainerUnion extends IThreadContainer
      * Casts this union to a {@link ForumChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * ForumChannel channel = union.asForumChannel();
@@ -115,7 +115,7 @@ public interface IThreadContainerUnion extends IThreadContainer
      *     <li>{@link NewsChannel}</li>
      * </ul>
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * GuildMessageChannel channel = union.asGuildMessageChannel();
@@ -141,7 +141,7 @@ public interface IThreadContainerUnion extends IThreadContainer
      *     <li>{@link NewsChannel}</li>
      * </ul>
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StandardGuildChannel channel = union.asStandardGuildChannel();
@@ -164,7 +164,7 @@ public interface IThreadContainerUnion extends IThreadContainer
      *     <li>{@link NewsChannel}</li>
      * </ul>
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StandardGuildMessageChannel channel = union.asStandardGuildMessageChannel();

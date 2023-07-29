@@ -28,7 +28,7 @@ import java.util.*;
  * This implementation supports Java's {@link ResourceBundle} to be used as a localization source
  *
  * <p>
- * You can look at a complete localization example <a href="https://github.com/DV8FromTheWorld/JDA/blob/master/src/examples/java/LocalizationExample.java" target="_blank">here</a>
+ * You can look at a complete localization example <a href="https://github.com/discord-jda/JDA/blob/master/src/examples/java/LocalizationExample.java" target="_blank">here</a>
  */
 public class ResourceBundleLocalizationFunction implements LocalizationFunction
 {

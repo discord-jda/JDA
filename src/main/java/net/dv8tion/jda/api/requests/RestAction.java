@@ -144,7 +144,7 @@ import java.util.stream.Collectors;
  * which can be avoided by using callbacks over blocking operations:
  * <br>{@link #queue(Consumer)} {@literal >} {@link #complete()}
  *
- * <p>There is a dedicated <a href="https://github.com/DV8FromTheWorld/JDA/wiki/7)-Using-RestAction" target="_blank">wiki page</a>
+ * <p>There is a dedicated <a href="https://github.com/discord-jda/JDA/wiki/7)-Using-RestAction" target="_blank">wiki page</a>
  * for RestActions that can be useful for learning.
  *
  * @param <T>
@@ -786,7 +786,6 @@ public interface RestAction<T>
      * @param  consumer
      *         The consuming function to apply to the action result, failures are propagated
      *         into the resulting action
-     *
      *
      * @throws IllegalArgumentException
      *         If the consumer is null

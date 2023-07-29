@@ -19,6 +19,9 @@ package net.dv8tion.jda.api.utils;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Utility class to escape markdown characters.
+ */
 public final class MarkdownUtil
 {
     private MarkdownUtil() {}

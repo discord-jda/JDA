@@ -27,9 +27,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
+/**
+ * Manager abstraction to modify {@link PermissionOverride PermissionOverrides} of a {@link IPermissionContainer permission containing channel}.
+ *
+ * @param <T> The channel type
+ * @param <M> The manager type
+ */
 public interface IPermissionContainerManager<T extends IPermissionContainer, M extends IPermissionContainerManager<T, M>> extends ChannelManager<T, M>
 {
-
     /**
      * Clears the overrides added via {@link #putPermissionOverride(IPermissionHolder, Collection, Collection)}.
      *

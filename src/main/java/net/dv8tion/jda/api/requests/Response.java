@@ -30,6 +30,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Internal class used to represent HTTP responses or request failures.
+ */
 public class Response implements Closeable
 {
     public static final int ERROR_CODE = -1;

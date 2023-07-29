@@ -316,4 +316,9 @@ public final class Helpers
     {
         return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
+
+    public static <T> Collector<T, ?, DataArray> toDataArray()
+    {
+        return Collector.of(DataArray::empty, DataArray::add, DataArray::addAll);
+    }
 }

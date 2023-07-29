@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.api.audio.hooks;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -67,8 +70,16 @@ public interface ConnectionListener
      *         Never-null {@link net.dv8tion.jda.api.entities.User User} who's talking status has changed.
      * @param  speaking
      *         If true, the user has begun transmitting audio.
+     *
+     * @deprecated This method no longer represents the actual speaking state of the user.
+     *             Discord does not send updates when a user starts and stops speaking anymore.
+     *             You can use {@link #onUserSpeakingModeUpdate(UserSnowflake, EnumSet)} to see when a user changes their speaking mode,
+     *             or use an {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler} to check when a user is speaking.
      */
-    void onUserSpeaking(@Nonnull User user, boolean speaking);
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("onUserSpeakingModeUpdate(User, EnumSet<SpeakingMode>)")
+    default void onUserSpeaking(@Nonnull User user, boolean speaking) {}
 
     /**
      * This method is an easy way to detect if a user is talking. Discord sends us an event when a user starts or stops
@@ -95,7 +106,15 @@ public interface ConnectionListener
      *
      * @see    java.util.EnumSet EnumSet
      * @see    net.dv8tion.jda.api.audio.SpeakingMode SpeakingMode
+     *
+     * @deprecated This method no longer represents the actual speaking state of the user.
+     *             Discord does not send updates when a user starts and stops speaking anymore.
+     *             You can use {@link #onUserSpeakingModeUpdate(UserSnowflake, EnumSet)} to see when a user changes their speaking mode,
+     *             or use an {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler} to check when a user is speaking.
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("onUserSpeakingModeUpdate(User, EnumSet<SpeakingMode>)")
     default void onUserSpeaking(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes) {}
 
 
@@ -122,6 +141,46 @@ public interface ConnectionListener
      *         If true, the user has begun transmitting audio.
      * @param  soundshare
      *         If true, the user is using soundshare
+     *
+     * @deprecated This method no longer represents the actual speaking state of the user.
+     *             Discord does not send updates when a user starts and stops speaking anymore.
+     *             You can use {@link #onUserSpeakingModeUpdate(UserSnowflake, EnumSet)} to see when a user changes their speaking mode,
+     *             or use an {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler} to check when a user is speaking.
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("onUserSpeakingModeUpdate(User, EnumSet<SpeakingMode>)")
     default void onUserSpeaking(@Nonnull User user, boolean speaking, boolean soundshare) {}
+
+    /**
+     * This method is used to listen for users changing their speaking mode.
+     * <p>Whenever a user joins a voice channel, this is fired once to define the initial speaking modes.
+     *
+     * <p>To detect when a user is speaking, a {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler} should be used instead.
+     *
+     * <p><b>Note:</b> This requires the user to be currently in the cache.
+     * You can use {@link net.dv8tion.jda.api.utils.MemberCachePolicy#VOICE MemberCachePolicy.VOICE} to cache currently connected users.
+     * Alternatively, use {@link #onUserSpeakingModeUpdate(UserSnowflake, EnumSet)} to avoid cache.
+     *
+     * @param user
+     *        The user who changed their speaking mode
+     * @param modes
+     *        The new speaking modes of the user
+     */
+    default void onUserSpeakingModeUpdate(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes) {}
+
+    /**
+     * This method is used to listen for users changing their speaking mode.
+     * <p>Whenever a user joins a voice channel, this is fired once to define the initial speaking modes.
+     *
+     * <p>To detect when a user is speaking, a {@link net.dv8tion.jda.api.audio.AudioReceiveHandler AudioReceiveHandler} should be used instead.
+     *
+     * <p>This method works independently of the user cache. The provided user might not be cached.
+     *
+     * @param user
+     *        The user who changed their speaking mode
+     * @param modes
+     *        The new speaking modes of the user
+     */
+    default void onUserSpeakingModeUpdate(@Nonnull UserSnowflake user, @Nonnull EnumSet<SpeakingMode> modes) {}
 }

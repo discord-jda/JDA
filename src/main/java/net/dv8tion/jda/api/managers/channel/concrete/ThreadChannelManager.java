@@ -51,7 +51,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
     /**
      * Sets the inactive time before autoarchiving of this ThreadChannel.
      *
-     * This is limited to the choices offered in {@link ThreadChannel.AutoArchiveDuration}
+     * <p>This is limited to the choices offered in {@link ThreadChannel.AutoArchiveDuration}
      *
      * @param  autoArchiveDuration
      *         The new duration before an inactive channel will be autoarchived.
@@ -85,7 +85,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
     /**
      * Sets the locked state of this ThreadChannel.
      *
-     * This is the equivalent of archiving as a moderator.
+     * <p>This is the equivalent of archiving as a moderator.
      *
      * @param  locked
      *         The new locked state for the selected {@link ThreadChannel}
@@ -104,7 +104,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
     /**
      * Sets the invitable state of this ThreadChannel.
      *
-     * <br>This property can only be set on private ThreadChannels.
+     * <p>This property can only be set on private ThreadChannels.
      *
      * @param  invitable
      *         The new invitable state for the selected {@link ThreadChannel}
@@ -127,7 +127,7 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
     /**
      * Sets the pinned state of this ThreadChannel.
      *
-     * <br>This property can only be set on forum post threads.
+     * <p>This property can only be set on forum post threads.
      *
      * @param  pinned
      *         The new pinned state for the selected {@link ThreadChannel}

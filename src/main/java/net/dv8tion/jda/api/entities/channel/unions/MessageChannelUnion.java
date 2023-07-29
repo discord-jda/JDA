@@ -46,7 +46,7 @@ public interface MessageChannelUnion extends MessageChannel
      * Casts this union to a {@link PrivateChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * PrivateChannel channel = union.asPrivateChannel();
@@ -68,7 +68,7 @@ public interface MessageChannelUnion extends MessageChannel
      * Casts this union to a {@link TextChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * TextChannel channel = union.asTextChannel();
@@ -90,7 +90,7 @@ public interface MessageChannelUnion extends MessageChannel
      * Casts this union to a {@link NewsChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * NewsChannel channel = union.asNewsChannel();
@@ -112,7 +112,7 @@ public interface MessageChannelUnion extends MessageChannel
      * Casts this union to a {@link ThreadChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * ThreadChannel channel = union.asThreadChannel();
@@ -134,7 +134,7 @@ public interface MessageChannelUnion extends MessageChannel
      * Casts this union to a {@link VoiceChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * VoiceChannel channel = union.asVoiceChannel();
@@ -156,7 +156,7 @@ public interface MessageChannelUnion extends MessageChannel
      * Casts this union to a {@link StageChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * StageChannel channel = union.asStageChannel();
@@ -178,7 +178,7 @@ public interface MessageChannelUnion extends MessageChannel
      * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * IThreadContainer channel = union.asThreadContainer();
@@ -204,7 +204,7 @@ public interface MessageChannelUnion extends MessageChannel
      *     <li>{@link ThreadChannel}</li>
      * </ul>
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * GuildMessageChannel channel = union.asGuildMessageChannel();
@@ -226,7 +226,7 @@ public interface MessageChannelUnion extends MessageChannel
      * Casts this union to a {@link AudioChannel}.
      * This method exists for developer discoverability.
      *
-     * Note: This is effectively equivalent to using the cast operator:
+     * <p>Note: This is effectively equivalent to using the cast operator:
      * <pre><code>
      * //These are the same!
      * AudioChannel channel = union.asAudioChannel();

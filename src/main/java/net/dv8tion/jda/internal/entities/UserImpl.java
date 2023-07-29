@@ -49,7 +49,6 @@ public class UserImpl extends UserSnowflakeImpl implements User
     protected long privateChannelId = 0L;
     protected boolean bot;
     protected boolean system;
-    protected boolean fake = false;
     protected int flags;
 
     public UserImpl(long id, JDAImpl api)
@@ -214,9 +213,9 @@ public class UserImpl extends UserSnowflakeImpl implements User
         return this;
     }
 
-    public UserImpl setDiscriminator(String discriminator)
+    public UserImpl setDiscriminator(short discriminator)
     {
-        this.discriminator = Short.parseShort(discriminator);
+        this.discriminator = discriminator;
         return this;
     }
 
@@ -251,16 +250,15 @@ public class UserImpl extends UserSnowflakeImpl implements User
         return this;
     }
 
-    public UserImpl setFake(boolean fake)
-    {
-        this.fake = fake;
-        return this;
-    }
-    
     public UserImpl setFlags(int flags)
     {
         this.flags = flags;
         return this;
+    }
+
+    public short getDiscriminatorInt()
+    {
+        return discriminator;
     }
 
     @Override
@@ -273,6 +271,10 @@ public class UserImpl extends UserSnowflakeImpl implements User
         String out;
         if (!alt)
             out = getAsMention();
+        else if (discriminator == 0 && upper)
+            out = getName().toUpperCase();
+        else if (discriminator == 0)
+            out = getName();
         else if (upper)
             out = getAsTag().toUpperCase();
         else

@@ -90,7 +90,13 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
-    //TODO-v5: Docs
+    /**
+     * The channel containing the permissions relevant to this channel.
+     *
+     * <p>This is usually the same channel, but for threads the parent channel is used instead.
+     *
+     * @return The permission container
+     */
     @Nonnull
     IPermissionContainer getPermissionContainer();
 
