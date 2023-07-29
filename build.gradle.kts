@@ -32,6 +32,7 @@ plugins {
     signing
     `java-library`
     `maven-publish`
+    `jvm-test-suite`
 
     id("io.codearte.nexus-staging") version "0.30.0"
     id("de.marcphilipp.nexus-publish") version "0.4.0"
@@ -311,11 +312,13 @@ build.apply {
     shadowJar.mustRunAfter(sourcesJar)
 }
 
-test.apply {
-    useJUnitPlatform()
-    failFast = true
+testing {
+    suites {
+        named<JvmTestSuite>("test") {
+            useJUnitJupiter()
+        }
+    }
 }
-
 
 fun getProjectProperty(name: String) = project.properties[name] as? String
 
