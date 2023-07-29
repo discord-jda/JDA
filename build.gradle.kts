@@ -153,7 +153,7 @@ fun nullable(string: String?): String {
            else "\"$string\""
 }
 
-val sourcesForRelease = task<Copy>("sourcesForRelease") {
+val sourcesForRelease by tasks.creating(Copy::class) {
     from("src/main/java") {
         include("**/JDAInfo.java")
         val tokens = mapOf(
@@ -174,7 +174,7 @@ val sourcesForRelease = task<Copy>("sourcesForRelease") {
     includeEmptyDirs = false
 }
 
-val generateJavaSources = task<SourceTask>("generateJavaSources") {
+val generateJavaSources by tasks.creating(SourceTask::class) {
     val javaSources = sourceSets["main"].allJava.filter {
         it.name != "JDAInfo.java"
     }.asFileTree
@@ -183,7 +183,7 @@ val generateJavaSources = task<SourceTask>("generateJavaSources") {
     dependsOn(sourcesForRelease)
 }
 
-val noOpusJar = task<ShadowJar>("noOpusJar") {
+val noOpusJar by tasks.creating(ShadowJar::class) {
     dependsOn(shadowJar)
     archiveClassifier = shadowJar.archiveClassifier.map { "$it-no-opus" }
 
@@ -197,7 +197,7 @@ val noOpusJar = task<ShadowJar>("noOpusJar") {
     manifest.inheritFrom(jar.manifest)
 }
 
-val minimalJar = task<ShadowJar>("minimalJar") {
+val minimalJar by tasks.creating(ShadowJar::class) {
     dependsOn(shadowJar)
     minimize()
     archiveClassifier = shadowJar.archiveClassifier.map { "$it-min" }
@@ -211,7 +211,7 @@ val minimalJar = task<ShadowJar>("minimalJar") {
     manifest.inheritFrom(jar.manifest)
 }
 
-val sourcesJar = task<Jar>("sourcesJar") {
+val sourcesJar by tasks.creating(Jar::class) {
     archiveClassifier = "sources"
     from("src/main/java") {
         exclude("**/JDAInfo.java")
@@ -221,7 +221,7 @@ val sourcesJar = task<Jar>("sourcesJar") {
     dependsOn(sourcesForRelease)
 }
 
-val javadocJar = task<Jar>("javadocJar") {
+val javadocJar by tasks.creating(ShadowJar::class){
     dependsOn(javadoc)
     archiveClassifier = "javadoc"
     from(javadoc.destinationDir)
