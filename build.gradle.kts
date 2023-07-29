@@ -471,8 +471,7 @@ tasks.create("release") {
     dependsOn(tasks.withType<PublishToMavenRepository>())
 
     // Closes the sonatype repository and publishes to maven central
-    val closeAndReleaseRepository: Task by tasks
-    dependsOn(closeAndReleaseRepository)
+    dependsOn(tasks.closeAndReleaseRepository)
 
     // Builds all jars for publications
     dependsOn(build)
