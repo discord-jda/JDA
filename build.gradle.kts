@@ -394,7 +394,7 @@ fun generatePom(pom: Pom) {
 // Skip fat jar publication (See https://github.com/johnrengelman/shadow/issues/586)
 components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) { skip() }
 val SoftwareComponentContainer.java
-    get() = components.getByName("java") as AdhocComponentWithVariants
+    get() = getByName<AdhocComponentWithVariants>("java")
 
 publishing {
     publications {
