@@ -52,7 +52,7 @@ val commitHash: String by lazy {
     val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT") ?: System.getenv("GITHUB_SHA")
     // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
     if (isCI && commit != null)
-        commit.substring(0, 7)
+        commit.take(7)
     else
         "DEV"
 }
