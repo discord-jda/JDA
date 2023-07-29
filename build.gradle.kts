@@ -71,7 +71,9 @@ project.version = "$versionObj" + if (isNewVersion) "" else "_$commitHash"
 
 project.group = "net.dv8tion"
 
-val archivesBaseName = "JDA"
+base {
+    archivesName = "JDA"
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -248,7 +250,6 @@ compileJava.apply {
 }
 
 jar.apply {
-    archiveBaseName = project.name
     manifest.attributes(mapOf(
             "Implementation-Version" to project.version,
             "Automatic-Module-Name" to "net.dv8tion.jda"))
