@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -45,7 +46,7 @@ import java.util.regex.Matcher;
  * <br>Interactions can use these through {@link IDeferrableCallback#getHook()}.
  *
  * @see Webhook
- * @see net.dv8tion.jda.api.interactions.InteractionHook
+ * @see InteractionHook
  */
 public interface WebhookClient<T> extends ISnowflake
 {
@@ -68,7 +69,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -97,7 +98,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -128,7 +129,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -163,7 +164,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -210,7 +211,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -267,7 +268,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -296,7 +297,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -335,7 +336,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
@@ -392,7 +393,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Send a message to this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
@@ -454,7 +455,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -481,7 +482,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -511,7 +512,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -540,7 +541,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -572,7 +573,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -605,7 +606,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -637,7 +638,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -664,7 +665,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -694,7 +695,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -725,7 +726,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -755,7 +756,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -786,7 +787,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -820,7 +821,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -855,7 +856,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -890,7 +891,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
@@ -917,7 +918,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
@@ -948,7 +949,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
@@ -978,7 +979,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Edit an existing message sent by this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
@@ -1009,7 +1010,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Delete a message from this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -1034,7 +1035,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Delete a message from this webhook.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -1061,7 +1062,7 @@ public interface WebhookClient<T> extends ISnowflake
      * Retrieves the message with the provided id.
      * <br>This only works for messages sent by this webhook. All other messages are unknown.
      *
-     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
@@ -1093,6 +1094,8 @@ public interface WebhookClient<T> extends ISnowflake
      *         If null is provided or the provided url is not a valid webhook url
      *
      * @return The {@link WebhookClient} instance
+     *
+     * @see    InteractionHook#from(JDA, String)
      */
     @Nonnull
     static WebhookClient<Message> createClient(@Nonnull JDA api, @Nonnull String url)
@@ -1123,6 +1126,8 @@ public interface WebhookClient<T> extends ISnowflake
      *         If null is provided or the provided webhook id is not a valid snowflake or the token is blank
      *
      * @return The {@link WebhookClient} instance
+     *
+     * @see    InteractionHook#from(JDA, String)
      */
     @Nonnull
     static WebhookClient<Message> createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
