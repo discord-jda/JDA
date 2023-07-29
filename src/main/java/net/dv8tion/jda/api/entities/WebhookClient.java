@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
-import net.dv8tion.jda.internal.requests.IncomingWebhookClient;
+import net.dv8tion.jda.internal.requests.IncomingWebhookClientImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -1080,7 +1080,7 @@ public interface WebhookClient<T> extends ISnowflake
     RestAction<Message> retrieveMessageById(@Nonnull String messageId);
 
     /**
-     * Creates an instance of {@link WebhookClient} capable of executing webhook requests.
+     * Creates an instance of {@link IncomingWebhookClient} capable of executing webhook requests.
      * <p>Messages created by this client may not have a fully accessible channel or guild available.
      * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#WEBHOOK WEBHOOK},
      * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
@@ -1093,12 +1093,12 @@ public interface WebhookClient<T> extends ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided or the provided url is not a valid webhook url
      *
-     * @return The {@link WebhookClient} instance
+     * @return The {@link IncomingWebhookClient} instance
      *
      * @see    InteractionHook#from(JDA, String)
      */
     @Nonnull
-    static WebhookClient<Message> createClient(@Nonnull JDA api, @Nonnull String url)
+    static IncomingWebhookClient createClient(@Nonnull JDA api, @Nonnull String url)
     {
         Checks.notNull(url, "URL");
         Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
@@ -1110,7 +1110,7 @@ public interface WebhookClient<T> extends ISnowflake
     }
 
     /**
-     * Creates an instance of {@link WebhookClient} capable of executing webhook requests.
+     * Creates an instance of {@link IncomingWebhookClient} capable of executing webhook requests.
      * <p>Messages created by this client may not have a fully accessible channel or guild available.
      * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#WEBHOOK WEBHOOK},
      * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
@@ -1125,15 +1125,15 @@ public interface WebhookClient<T> extends ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided or the provided webhook id is not a valid snowflake or the token is blank
      *
-     * @return The {@link WebhookClient} instance
+     * @return The {@link IncomingWebhookClient} instance
      *
      * @see    InteractionHook#from(JDA, String)
      */
     @Nonnull
-    static WebhookClient<Message> createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
+    static IncomingWebhookClient createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
     {
         Checks.notNull(api, "JDA");
         Checks.notBlank(webhookToken, "Token");
-        return new IncomingWebhookClient(MiscUtil.parseSnowflake(webhookId), webhookToken, api);
+        return new IncomingWebhookClientImpl(MiscUtil.parseSnowflake(webhookId), webhookToken, api);
     }
 }

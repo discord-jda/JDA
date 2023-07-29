@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.IncomingWebhookClient;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -33,9 +34,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.function.Function;
 
-public class IncomingWebhookClient extends AbstractWebhookClient<Message>
+public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> implements IncomingWebhookClient
 {
-    public IncomingWebhookClient(long webhookId, String webhookToken, JDA api)
+    public IncomingWebhookClientImpl(long webhookId, String webhookToken, JDA api)
     {
         super(webhookId, webhookToken, api);
     }
@@ -47,6 +48,7 @@ public class IncomingWebhookClient extends AbstractWebhookClient<Message>
         route = route.withQueryParams("wait", "true");
         WebhookMessageCreateActionImpl<Message> action = new WebhookMessageCreateActionImpl<>(api, route, builder());
         action.run();
+        action.setInteraction(false);
         return action;
     }
 
