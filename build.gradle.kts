@@ -17,7 +17,6 @@
 //to build everything:             "gradlew build"
 //to build and upload everything:  "gradlew release"
 
-import Build_gradle.Pom
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.marcphilipp.gradle.nexus.InitializeNexusStagingRepository
 import de.marcphilipp.gradle.nexus.NexusPublishExtension
