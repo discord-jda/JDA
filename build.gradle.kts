@@ -399,7 +399,7 @@ val SoftwareComponentContainer.java
 
 publishing {
     publications {
-        register("Release", MavenPublication::class) {
+        register<MavenPublication>("Release") {
             from(components["java"])
 
             artifactId = project.name
