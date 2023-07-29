@@ -167,7 +167,7 @@ val sourcesForRelease = task<Copy>("sourcesForRelease") {
         // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
         filter { it.replace(Regex("\"!@|@!\""), "@") }
         // Then we can replace the @...@ with the respective values here
-        filter<ReplaceTokens>(mapOf("tokens" to tokens))
+        filter<ReplaceTokens>("tokens" to tokens)
     }
     into("build/filteredSrc")
 
@@ -250,9 +250,9 @@ compileJava.apply {
 }
 
 jar.apply {
-    manifest.attributes(mapOf(
+    manifest.attributes(
             "Implementation-Version" to project.version,
-            "Automatic-Module-Name" to "net.dv8tion.jda"))
+            "Automatic-Module-Name" to "net.dv8tion.jda")
 }
 
 javadoc.apply {
