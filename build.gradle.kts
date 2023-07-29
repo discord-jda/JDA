@@ -478,7 +478,7 @@ tasks.create("release") {
     enabled = shouldPublish
 
     doLast { // Only runs when shouldPublish = true
-        println("Saving version $versionObj to .version")
+        logger.lifecycle("Saving version $versionObj to .version")
         val file = File(".version")
         file.createNewFile()
         file.writeText(versionObj.toString())
