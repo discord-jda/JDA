@@ -458,8 +458,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Category getCategory()
     {
-        GuildMessageChannel chan = getGuildChannel();
-        return chan instanceof ICategorizableChannel
+        MessageChannel chan = channel;
+        return isFromGuild() && chan instanceof ICategorizableChannel
             ? ((ICategorizableChannel) chan).getParentCategory()
             : null;
     }
