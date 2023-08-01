@@ -43,7 +43,7 @@ public class WebhookChannel extends AbstractChannelImpl<WebhookChannel> implemen
     @Override
     public ChannelType getType()
     {
-        return ChannelType.WEBHOOK;
+        return ChannelType.UNKNOWN_WEBHOOK_TARGET;
     }
 
     @Nonnull

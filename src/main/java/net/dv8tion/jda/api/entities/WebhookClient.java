@@ -1082,7 +1082,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Creates an instance of {@link IncomingWebhookClient} capable of executing webhook requests.
      * <p>Messages created by this client may not have a fully accessible channel or guild available.
-     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#WEBHOOK WEBHOOK},
+     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#UNKNOWN_WEBHOOK_TARGET UNKNOWN_WEBHOOK_TARGET},
      * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
      *
      * @param  api
@@ -1112,7 +1112,7 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Creates an instance of {@link IncomingWebhookClient} capable of executing webhook requests.
      * <p>Messages created by this client may not have a fully accessible channel or guild available.
-     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#WEBHOOK WEBHOOK},
+     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#UNKNOWN_WEBHOOK_TARGET UNKNOWN_WEBHOOK_TARGET},
      * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
      *
      * @param  api

@@ -68,7 +68,7 @@ public enum ChannelType
      * <br>This channel type does not actually exist,
      * it is only an indicator that we do not know the type of channel the webhook is linked to.
      */
-    WEBHOOK(-2, -1, false),
+    UNKNOWN_WEBHOOK_TARGET(-2, -1, false),
 
     /**
      * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
