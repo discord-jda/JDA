@@ -45,7 +45,11 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.ForumTagImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.ForumChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.NewsChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.TextChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
@@ -132,6 +136,9 @@ public class ChannelUpdateHandler extends SocketHandler
         if (channel instanceof AudioChannelMixin<?>)
             handleAudioChannel((AudioChannelMixin<?>) channel, content);
 
+        if (channel instanceof IPostContainerMixin<?>)
+            handlePostContainer((IPostContainerMixin<?>) channel, content);
+
         //Handle concrete type specific properties
 
         switch (type)
@@ -139,38 +146,9 @@ public class ChannelUpdateHandler extends SocketHandler
             case FORUM:
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
 
-                int flags = content.getInt("flags", 0);
-//                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
                 int layout = content.getInt("default_forum_layout", ((ForumChannelImpl) channel).getRawLayout());
-                EmojiUnion defaultReaction =  content.optObject("default_reaction_emoji")
-                        .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
-                        .orElse(null);
-
-                int oldFlags = forumChannel.getRawFlags();
-//                int oldSortOrder = forumChannel.getRawSortOrder();
                 int oldLayout = forumChannel.getRawLayout();
-                EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
 
-                content.optArray("available_tags").ifPresent(
-                    array -> handleTagsUpdate(forumChannel, array)
-                );
-
-                if (oldFlags != flags)
-                {
-                    forumChannel.setFlags(flags);
-                    getJDA().handleEvent(
-                            new ChannelUpdateFlagsEvent(
-                                    getJDA(), responseNumber,
-                                    forumChannel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
-                }
-//                if (oldSortOrder != sortOrder)
-//                {
-//                    forumChannel.setDefaultSortOrder(sortOrder);
-//                    getJDA().handleEvent(
-//                            new ChannelUpdateDefaultSortOrderEvent(
-//                                    getJDA(), responseNumber,
-//                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
-//                }
                 if (oldLayout != layout)
                 {
                     forumChannel.setDefaultLayout(layout);
@@ -178,14 +156,6 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateDefaultLayoutEvent(
                                     getJDA(), responseNumber,
                                     forumChannel, ForumChannel.Layout.fromKey(oldLayout), ForumChannel.Layout.fromKey(layout)));
-                }
-                if (!Objects.equals(oldDefaultReaction, defaultReaction))
-                {
-                    forumChannel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
-                    getJDA().handleEvent(
-                            new ChannelUpdateDefaultReactionEvent(
-                                    getJDA(), responseNumber,
-                                    forumChannel, oldDefaultReaction, defaultReaction));
                 }
                 break;
             case VOICE:
@@ -388,7 +358,7 @@ public class ChannelUpdateHandler extends SocketHandler
         }
     }
 
-    private void handleTagsUpdate(ForumChannelImpl channel, DataArray tags)
+    private void handleTagsUpdate(IPostContainerMixin<?> channel, DataArray tags)
     {
         if (!api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
             return;
@@ -570,6 +540,53 @@ public class ChannelUpdateHandler extends SocketHandler
                 new ChannelUpdateRegionEvent(
                     api, responseNumber,
                     channel, Region.fromKey(oldRegion), Region.fromKey(regionRaw)));
+        }
+    }
+
+    private void handlePostContainer(IPostContainerMixin<?> channel, DataObject content)
+    {
+        content.optArray("available_tags").ifPresent(
+            array -> handleTagsUpdate(channel, array)
+        );
+
+        EmojiUnion defaultReaction =  content.optObject("default_reaction_emoji")
+            .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
+            .orElse(null);
+        EmojiUnion oldDefaultReaction = channel.getDefaultReaction();
+
+        if (!Objects.equals(oldDefaultReaction, defaultReaction))
+        {
+            channel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
+            getJDA().handleEvent(
+                    new ChannelUpdateDefaultReactionEvent(
+                            getJDA(), responseNumber,
+                            channel, oldDefaultReaction, defaultReaction));
+        }
+
+
+        int sortOrder = content.getInt("default_sort_order", channel.getRawSortOrder());
+        int oldSortOrder = channel.getRawSortOrder();
+
+        if (oldSortOrder != sortOrder)
+        {
+            // TODO: Add this event
+            channel.setDefaultSortOrder(sortOrder);
+//            getJDA().handleEvent(
+//                    new ChannelUpdateDefaultSortOrderEvent(
+//                            getJDA(), responseNumber,
+//                            channel, IPostContainer.SortOrder.fromKey(oldSortOrder), IPostContainer.SortOrder.fromKey(sortOrder)));
+        }
+
+        int newFlags = content.getInt("flags", 0);
+        int oldFlags = channel.getRawFlags();
+
+        if (oldFlags != newFlags)
+        {
+            channel.setFlags(newFlags);
+            getJDA().handleEvent(
+                new ChannelUpdateFlagsEvent(
+                    getJDA(), responseNumber,
+                    channel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(newFlags)));
         }
     }
 }

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.events.channel.forum;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.events.Event;
@@ -34,10 +34,10 @@ import java.util.Collection;
  */
 public abstract class GenericForumTagEvent extends Event
 {
-    protected final ForumChannel channel;
+    protected final IPostContainer channel;
     protected final ForumTag tag;
 
-    public GenericForumTagEvent(@Nonnull JDA api, long responseNumber, @Nonnull ForumChannel channel, @Nonnull ForumTag tag)
+    public GenericForumTagEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag)
     {
         super(api, responseNumber);
         this.channel = channel;
@@ -45,12 +45,12 @@ public abstract class GenericForumTagEvent extends Event
     }
 
     /**
-     * The {@link ForumChannel} which has been updated.
+     * The {@link IPostContainer} which has been updated.
      *
-     * @return The {@link ForumChannel}
+     * @return The {@link IPostContainer}
      */
     @Nonnull
-    public ForumChannel getChannel()
+    public IPostContainer getChannel()
     {
         return channel;
     }

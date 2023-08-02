@@ -83,6 +83,7 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -110,6 +111,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ForumChannel> forumChannelCache = new SortedSnowflakeCacheViewImpl<>(ForumChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<MediaChannel> mediaChannelCache = new SortedSnowflakeCacheViewImpl<>(MediaChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<RichCustomEmoji> emojicache = new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
@@ -163,6 +165,7 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
         SnowflakeCacheViewImpl<ForumChannel> forumView = getJDA().getForumChannelsView();
+        SnowflakeCacheViewImpl<MediaChannel> mediaView = getJDA().getMediaChannelsView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
         SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
 
@@ -191,7 +194,12 @@ public class GuildImpl implements Guild
         try (UnlockHook hook = forumView.writeLock())
         {
             getForumChannelCache()
-                .forEachUnordered(chan -> forumView.getMap().remove(chan.getIdLong()));
+                    .forEachUnordered(chan -> forumView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = mediaView.writeLock())
+        {
+            getMediaChannelsView()
+                    .forEachUnordered(chan -> mediaView.getMap().remove(chan.getIdLong()));
         }
         try (UnlockHook hook = voiceView.writeLock())
         {
@@ -1780,6 +1788,13 @@ public class GuildImpl implements Guild
         return createChannel(ChannelType.FORUM, ForumChannel.class, name, parent);
     }
 
+    @NotNull
+    @Override
+    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name, @Nullable Category parent)
+    {
+        return createChannel(ChannelType.MEDIA, MediaChannel.class, name, parent);
+    }
+
     @Nonnull
     @Override
     public ChannelAction<Category> createCategory(@Nonnull String name)
@@ -2251,6 +2266,11 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
     {
         return forumChannelCache;
+    }
+
+    public SortedSnowflakeCacheViewImpl<MediaChannel> getMediaChannelsView()
+    {
+        return mediaChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.entities;
+package net.dv8tion.jda.internal.entities.channel.concrete;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
@@ -31,22 +31,14 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.managers.channel.concrete.ForumChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
-import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IAgeRestrictedChannelMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContainerMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IThreadContainerMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ITopicChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildChannelMixin;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.managers.channel.concrete.ForumChannelManagerImpl;
-import net.dv8tion.jda.internal.requests.restaction.ForumPostActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
@@ -64,7 +56,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
                    IAgeRestrictedChannelMixin<ForumChannelImpl>,
                    ISlowmodeChannelMixin<ForumChannelImpl>,
                    IWebhookContainerMixin<ForumChannelImpl>,
-                   IThreadContainerMixin<ForumChannelImpl>,
+                   IPostContainerMixin<ForumChannelImpl>,
                    ITopicChannelMixin<ForumChannelImpl>
 {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
@@ -77,7 +69,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     private int position;
     private int flags;
     private int slowmode;
-//    private int defaultSortOrder;
+    private int defaultSortOrder;
     private int defaultLayout;
     protected int defaultThreadSlowmode;
 
@@ -108,6 +100,7 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     public ChannelAction<ForumChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
+        // TODO: Add sort order flag here
         ChannelAction<ForumChannel> action = guild.createForumChannel(name)
                 .setNSFW(nsfw)
                 .setTopic(topic)
@@ -195,12 +188,12 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         return defaultThreadSlowmode;
     }
 
-//    @Nonnull
-//    @Override
-//    public SortOrder getDefaultSortOrder()
-//    {
-//        return SortOrder.fromKey(defaultSortOrder);
-//    }
+    @Nonnull
+    @Override
+    public SortOrder getDefaultSortOrder()
+    {
+        return SortOrder.fromKey(defaultSortOrder);
+    }
 
     @Nonnull
     @Override
@@ -209,37 +202,15 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         return Layout.fromKey(defaultLayout);
     }
 
-    @Nonnull
-    @Override
-    public ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message)
-    {
-        checkPermission(Permission.MESSAGE_SEND);
-        return new ForumPostActionImpl(this, name, new MessageCreateBuilder().applyData(message));
-    }
-
-    @Nonnull
-    @Override
-    public ThreadChannelAction createThreadChannel(@Nonnull String name)
-    {
-        throw new UnsupportedOperationException("You cannot create threads without a message payload in forum channels! Use createForumPost(...) instead.");
-    }
-
-    @Nonnull
-    @Override
-    public ThreadChannelAction createThreadChannel(@Nonnull String name, @Nonnull String messageId)
-    {
-        throw new UnsupportedOperationException("You cannot create threads without a message payload in forum channels! Use createForumPost(...) instead.");
-    }
-
     public int getRawFlags()
     {
         return flags;
     }
 
-//    public int getRawSortOrder()
-//    {
-//        return defaultSortOrder;
-//    }
+    public int getRawSortOrder()
+    {
+        return defaultSortOrder;
+    }
 
     public int getRawLayout()
     {
@@ -287,12 +258,14 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         return this;
     }
 
+    @Override
     public ForumChannelImpl setFlags(int flags)
     {
         this.flags = flags;
         return this;
     }
 
+    @Override
     public ForumChannelImpl setDefaultReaction(DataObject emoji)
     {
         if (emoji != null && !emoji.isNull("emoji_id"))
@@ -304,11 +277,12 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         return this;
     }
 
-//    public ForumChannelImpl setDefaultSortOrder(int defaultSortOrder)
-//    {
-//        this.defaultSortOrder = defaultSortOrder;
-//        return this;
-//    }
+    @Override
+    public ForumChannelImpl setDefaultSortOrder(int defaultSortOrder)
+    {
+        this.defaultSortOrder = defaultSortOrder;
+        return this;
+    }
 
     public ForumChannelImpl setDefaultLayout(int layout)
     {
