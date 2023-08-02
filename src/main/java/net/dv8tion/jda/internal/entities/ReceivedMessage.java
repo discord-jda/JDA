@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -458,9 +459,12 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Category getCategory()
     {
-        GuildMessageChannel chan = getGuildChannel();
-        return chan instanceof ICategorizableChannel
-            ? ((ICategorizableChannel) chan).getParentCategory()
+        Channel channel = this.channel;
+        if (channel instanceof ThreadChannel)
+            channel = ((ThreadChannel) channel).getParentChannel();
+
+        return channel instanceof ICategorizableChannel
+            ? ((ICategorizableChannel) channel).getParentCategory()
             : null;
     }
 
