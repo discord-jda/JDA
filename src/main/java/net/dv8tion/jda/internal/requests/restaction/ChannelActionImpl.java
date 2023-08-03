@@ -58,10 +58,10 @@ import java.util.function.BooleanSupplier;
 
 public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
 {
-    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM,
+    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA,
                                                                               ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
-    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
-    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
 
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
@@ -190,7 +190,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "Topic");
         if (topic != null)
         {
-            if (type == ChannelType.FORUM)
+            if (type == ChannelType.FORUM || type == ChannelType.MEDIA)
                 Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
             else
                 Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
@@ -224,8 +224,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji)
     {
-        if (type != ChannelType.FORUM)
-            throw new UnsupportedOperationException("Can only set default reaction emoji on a ForumChannel!");
+        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
+            throw new UnsupportedOperationException("Can only set default reaction emoji on a ForumChannel or MediaChannel!");
         this.defaultReactionEmoji = emoji;
         return this;
     }
@@ -246,8 +246,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setAvailableTags(@Nonnull List<? extends BaseForumTag> tags)
     {
-        if (type != ChannelType.FORUM)
-            throw new UnsupportedOperationException("Can only set available tags on a ForumChannel!");
+        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
+            throw new UnsupportedOperationException("Can only set available tags on a ForumChannel or MediaChannel!");
         Checks.noneNull(tags, "Tags");
         this.availableTags = new ArrayList<>(tags);
         return this;
@@ -421,13 +421,15 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (nsfw != null)
             object.put("nsfw", nsfw);
 
-        //Forum only
+        //Forum/Media only
         if (defaultReactionEmoji instanceof CustomEmoji)
             object.put("default_reaction_emoji", DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
         else if (defaultReactionEmoji instanceof UnicodeEmoji)
             object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
         if (availableTags != null)
             object.put("available_tags", DataArray.fromCollection(availableTags));
+
+        //Forum only
         if (defaultLayout != null)
             object.put("default_forum_layout", defaultLayout);
 
@@ -468,6 +470,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                 break;
             case FORUM:
                 channel = builder.createForumChannel(response.getObject(), guild.getIdLong());
+                break;
+            case MEDIA:
+                channel = builder.createMediaChannel(response.getObject(), guild.getIdLong());
                 break;
             default:
                 request.onFailure(new IllegalStateException("Created channel of unknown type!"));
