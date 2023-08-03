@@ -106,6 +106,14 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> impleme
 
     @Nonnull
     @Override
+    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name)
+    {
+        ChannelAction<MediaChannel> action = getGuild().createMediaChannel(name, this);
+        return trySync(action);
+    }
+
+    @Nonnull
+    @Override
     public CategoryOrderAction modifyTextChannelPositions()
     {
         return getGuild().modifyTextChannelPositions(this);

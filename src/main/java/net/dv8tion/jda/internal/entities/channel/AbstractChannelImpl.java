@@ -120,6 +120,13 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Nonnull
+    @Override
+    public MediaChannel asMediaChannel()
+    {
+        return Helpers.safeChannelCast(this, MediaChannel.class);
+    }
+
+    @Nonnull
     public MessageChannel asMessageChannel()
     {
         return Helpers.safeChannelCast(this, MessageChannel.class);
