@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.managers.channel.attribute.IPostContainerManager;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -42,6 +43,10 @@ public interface IPostContainer extends IThreadContainer
      * The maximum number of {@link ForumPostAction#setTags(Collection) tags} that can be applied to a forum post. ({@value #MAX_POST_TAGS})
      */
     int MAX_POST_TAGS = 5;
+
+    @Nonnull
+    @Override
+    IPostContainerManager<?, ?> getManager();
 
     /**
      * The available {@link ForumTag ForumTags} for this forum channel.

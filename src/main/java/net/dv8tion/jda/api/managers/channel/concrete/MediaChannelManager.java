@@ -18,12 +18,30 @@ package net.dv8tion.jda.api.managers.channel.concrete;
 
 import net.dv8tion.jda.api.entities.channel.concrete.MediaChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
+import net.dv8tion.jda.api.managers.channel.attribute.IPostContainerManager;
 import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
 import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManager;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
 public interface MediaChannelManager extends
         StandardGuildChannelManager<MediaChannel, MediaChannelManager>,
+        IPostContainerManager<MediaChannel, MediaChannelManager>,
         IAgeRestrictedChannelManager<MediaChannel, MediaChannelManager>,
         ISlowmodeChannelManager<MediaChannel, MediaChannelManager>
 {
+    /**
+     * Sets whether to hide the download media option on this channel.
+     *
+     * @param  hideOption
+     *         Whether to hide the download option
+     *
+     * @return ChannelManager for chaining convenience.
+     *
+     * @see    MediaChannel#isMediaDownloadHidden()
+     */
+    @Nonnull
+    @CheckReturnValue
+    MediaChannelManager setHideMediaDownloadOption(boolean hideOption);
 }

@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
@@ -60,10 +61,10 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
 {
-    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM,
+    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA,
                                                                               ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
-    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
-    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
 
     protected T channel;
 
@@ -159,6 +160,14 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
                 this.flags.add(ChannelFlag.REQUIRE_TAG);
             else
                 this.flags.remove(ChannelFlag.REQUIRE_TAG);
+        }
+
+        if ((fields & HIDE_MEDIA_DOWNLOAD_OPTIONS) == HIDE_MEDIA_DOWNLOAD_OPTIONS)
+        {
+            if (channel.getFlags().contains(HIDE_MEDIA_DOWNLOAD_OPTIONS))
+                this.flags.add(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
+            else
+                this.flags.remove(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
         }
 
         return (M) this;
@@ -454,8 +463,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "topic");
         if (topic != null)
         {
-            if (type == ChannelType.FORUM)
-                Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
+            if (type == ChannelType.FORUM ||type == ChannelType.MEDIA)
+                Checks.notLonger(topic, IPostContainer.MAX_POST_CONTAINER_TOPIC_LENGTH, "Topic");
             else
                 Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
         }
@@ -596,10 +605,20 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setHideMediaDownloadOption(boolean hideOption)
+    {
+        if (hideOption)
+            flags.add(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
+        else
+            flags.remove(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
+        set |= HIDE_MEDIA_DOWNLOAD_OPTIONS;
+        return (M) this;
+    }
+
     public M setAvailableTags(List<? extends BaseForumTag> tags)
     {
-        if (type != ChannelType.FORUM)
-            throw new IllegalStateException("Can only set available tags on forum channels.");
+        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
+            throw new IllegalStateException("Can only set available tags on forum/media channels.");
         Checks.noneNull(tags, "Available Tags");
         this.availableTags = new ArrayList<>(tags);
         set |= AVAILABLE_TAGS;
@@ -625,8 +644,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setDefaultReaction(Emoji emoji)
     {
-        if (type != ChannelType.FORUM)
-            throw new IllegalStateException("Can only set default reaction on forum channels.");
+        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
+            throw new IllegalStateException("Can only set default reaction on forum/media channels.");
         this.defaultReactionEmoji = emoji;
         set |= DEFAULT_REACTION;
         return (M) this;
@@ -680,7 +699,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("available_tags", DataArray.fromCollection(availableTags));
         if (shouldUpdate(APPLIED_TAGS))
             frame.put("applied_tags", DataArray.fromCollection(appliedTags));
-        if (shouldUpdate(PINNED | REQUIRE_TAG))
+        if (shouldUpdate(PINNED | REQUIRE_TAG | HIDE_MEDIA_DOWNLOAD_OPTIONS))
             frame.put("flags", ChannelFlag.getRaw(flags));
         if (shouldUpdate(DEFAULT_REACTION))
         {

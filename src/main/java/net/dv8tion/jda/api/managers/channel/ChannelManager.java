@@ -91,6 +91,8 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     long DEFAULT_REACTION      = 1 << 19;
     /** Used to reset the default layout field */
     long DEFAULT_LAYOUT        = 1 << 20;
+    /** Used to reset the hide media download option flag */
+    long HIDE_MEDIA_DOWNLOAD_OPTIONS = 1 << 21;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.

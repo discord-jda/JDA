@@ -46,11 +46,11 @@ public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWeb
     /**
      * The maximum length of a forum topic ({@value #MAX_FORUM_TOPIC_LENGTH})
      */
-    int MAX_FORUM_TOPIC_LENGTH = 4096;
+    int MAX_FORUM_TOPIC_LENGTH = IPostContainer.MAX_POST_CONTAINER_TOPIC_LENGTH;
     /**
      * The maximum number of {@link ForumPostAction#setTags(Collection) tags} that can be applied to a forum post. ({@value #MAX_POST_TAGS})
      */
-    int MAX_POST_TAGS = 5;
+    int MAX_POST_TAGS = IPostContainer.MAX_POST_TAGS;
 
     @Nonnull
     @Override
