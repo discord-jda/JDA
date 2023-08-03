@@ -782,6 +782,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<MediaChannel> getMediaChannelCache()
+    {
+        return mediaChannelCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<StageChannel> getStageChannelCache()
     {
         return stageChannelCache;
@@ -828,14 +835,16 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<TextChannel> text = getTextChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> news = getNewsChannelView();
         SnowflakeCacheViewImpl<ForumChannel> forum = getForumChannelsView();
+        SnowflakeCacheViewImpl<MediaChannel> media = getMediaChannelsView();
 
-        List<GuildChannel> channels = new ArrayList<>((int) (categories.size() + voice.size() + stage.size() + text.size() + news.size() + forum.size()));
+        List<GuildChannel> channels = new ArrayList<>((int) (categories.size() + voice.size() + stage.size() + text.size() + news.size() + forum.size() + media.size()));
 
         voice.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
         stage.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
         text.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
         news.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
         forum.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        media.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
 
         categories.forEach(category ->
         {

@@ -778,6 +778,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<MediaChannel> getMediaChannelCache()
+    {
+        return mediaChannelsCache;
+    }
+
+    @Nonnull
+    @Override
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return privateChannelCache;
