@@ -72,6 +72,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
         channels.addAll(getStageChannels());
         channels.addAll(getNewsChannels());
         channels.addAll(getForumChannels());
+        channels.addAll(getMediaChannels());
         Collections.sort(channels);
 
         return Collections.unmodifiableList(channels);
@@ -121,6 +122,21 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
             stream.filter(channel -> equals(channel.getParentCategory()))
                   .sorted()
                   .collect(Collectors.toList())
+        ));
+    }
+
+    /**
+     * All {@link net.dv8tion.jda.api.entities.channel.concrete.MediaChannel MediaChannels} listed for this Category
+     *
+     * @return Immutable list of all child ForumChannels
+     */
+    @Nonnull
+    default List<MediaChannel> getMediaChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getMediaChannelCache().applyStream(stream ->
+                stream.filter(channel -> equals(channel.getParentCategory()))
+                        .sorted()
+                        .collect(Collectors.toList())
         ));
     }
 
