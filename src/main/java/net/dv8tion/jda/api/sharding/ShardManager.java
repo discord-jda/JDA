@@ -812,6 +812,8 @@ public interface ShardManager extends IGuildChannelContainer
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getForumChannelCache));
     }
 
+    @Nonnull
+    @Override
     default SnowflakeCacheView<MediaChannel> getMediaChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getMediaChannelCache));
