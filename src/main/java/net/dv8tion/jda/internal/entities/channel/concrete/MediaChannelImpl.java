@@ -99,12 +99,13 @@ public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
     public ChannelAction<MediaChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        // TODO: Add channel flags
         ChannelAction<MediaChannel> action = guild.createMediaChannel(name)
                 .setNSFW(nsfw)
                 .setTopic(topic)
                 .setSlowmode(slowmode)
                 .setAvailableTags(getAvailableTags());
+        if (defaultSortOrder != -1)
+            action.setDefaultSortOrder(SortOrder.fromKey(defaultSortOrder));
         if (defaultReaction instanceof UnicodeEmoji)
             action.setDefaultReaction(defaultReaction);
         if (guild.equals(getGuild()))

@@ -83,7 +83,6 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1797,7 +1796,7 @@ public class GuildImpl implements Guild
         return createChannel(ChannelType.FORUM, ForumChannel.class, name, parent);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name, @Nullable Category parent)
     {

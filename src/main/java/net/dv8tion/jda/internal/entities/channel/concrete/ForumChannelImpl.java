@@ -100,13 +100,14 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     public ChannelAction<ForumChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        // TODO: Add sort order flag here
         ChannelAction<ForumChannel> action = guild.createForumChannel(name)
                 .setNSFW(nsfw)
                 .setTopic(topic)
                 .setSlowmode(slowmode)
                 .setAvailableTags(getAvailableTags())
                 .setDefaultLayout(Layout.fromKey(defaultLayout));
+        if (defaultSortOrder != -1)
+            action.setDefaultSortOrder(SortOrder.fromKey(defaultSortOrder));
         if (defaultReaction instanceof UnicodeEmoji)
             action.setDefaultReaction(defaultReaction);
         if (guild.equals(getGuild()))
