@@ -18,14 +18,13 @@ package net.dv8tion.jda.api.events.channel.forum;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
- * Indicates that a new {@link ForumTag} was added to a {@link ForumChannel}.
+ * Indicates that a new {@link ForumTag} was added to a {@link IPostContainer}.
  *
  * <p>Use {@link net.dv8tion.jda.api.events.channel.update.ChannelUpdateAppliedTagsEvent ChannelUpdateAppliedTagsEvent}
  * to detect when a tag is added to a forum post instead.
