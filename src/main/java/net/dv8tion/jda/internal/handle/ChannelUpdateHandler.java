@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
@@ -51,6 +52,7 @@ import net.dv8tion.jda.internal.entities.ForumTagImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.ForumChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.MediaChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.NewsChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.TextChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
@@ -102,6 +104,8 @@ public class ChannelUpdateHandler extends SocketHandler
 
         //Detect if we changed the channel type at all and reconstruct the channel entity if needed
         channel = handleChannelTypeChange(channel, content, type);
+        if (channel == null)
+            return null;
 
         //Handle shared properties
 
@@ -187,7 +191,7 @@ public class ChannelUpdateHandler extends SocketHandler
         EntityBuilder builder = getJDA().getEntityBuilder();
         GuildImpl guild = channel.getGuild();
 
-        if (newChannelType == ChannelType.TEXT)
+        if (newChannelType == ChannelType.TEXT && channel.getType() == ChannelType.NEWS)
         {
             //This assumes that if we're moving to a TextChannel that we're transitioning from a NewsChannel
             NewsChannel newsChannel = (NewsChannel) channel;
@@ -206,8 +210,7 @@ public class ChannelUpdateHandler extends SocketHandler
 
             return textChannel;
         }
-
-        if (newChannelType == ChannelType.NEWS)
+        else if (newChannelType == ChannelType.NEWS && channel.getType() == ChannelType.TEXT)
         {
             //This assumes that if we're moving to a NewsChannel that we're transitioning from a TextChannel
             TextChannel textChannel = (TextChannel) channel;
@@ -225,6 +228,44 @@ public class ChannelUpdateHandler extends SocketHandler
                     newsChannel, ChannelType.TEXT, ChannelType.NEWS));
 
             return newsChannel;
+        }
+        else if (newChannelType == ChannelType.MEDIA && channel.getType() == ChannelType.FORUM)
+        {
+            ForumChannel forumChannel = (ForumChannel) channel;
+            getJDA().getForumChannelsView().remove(forumChannel.getIdLong());
+            guild.getForumChannelsView().remove(forumChannel.getIdLong());
+
+            MediaChannelImpl mediaChannel = (MediaChannelImpl) builder.createMediaChannel(guild, content, guild.getIdLong());
+
+            getJDA().handleEvent(
+                new ChannelUpdateTypeEvent(
+                    getJDA(), responseNumber,
+                    mediaChannel, ChannelType.FORUM, ChannelType.MEDIA));
+        }
+        else
+        {
+            WebSocketClient.LOG.warn("Received unexpected channel type change {}->{}", channel.getType(), newChannelType);
+
+            // Attempt to split into delete/create events
+            WebSocketClient client = getJDA().getClient();
+
+            DataObject syntheticDelete = DataObject.empty()
+                .put("t", "CHANNEL_DELETE")
+                .put("s", responseNumber)
+                .put("op", 0)
+                .put("d", DataObject.empty()
+                    .put("type", channel.getType().getId())
+                    .put("guild_id", guild.getId())
+                    .put("id", channel.getIdLong()));
+            client.getHandler("CHANNEL_DELETE").handle(responseNumber, syntheticDelete);
+
+            DataObject syntheticCreate = allContent.put("t", "CHANNEL_CREATE");
+            // This event does not provide last_message_id so attempt to copy it over manually
+            if (channel instanceof MessageChannel)
+                syntheticCreate.getObject("d").put("last_message_id", ((MessageChannel) channel).getLatestMessageIdLong());
+            client.getHandler("CHANNEL_CREATE").handle(responseNumber, syntheticCreate);
+
+            return null;
         }
 
         return channel;
