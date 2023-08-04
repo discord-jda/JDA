@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
@@ -569,12 +570,11 @@ public class ChannelUpdateHandler extends SocketHandler
 
         if (oldSortOrder != sortOrder)
         {
-            // TODO: Add this event
             channel.setDefaultSortOrder(sortOrder);
-//            getJDA().handleEvent(
-//                    new ChannelUpdateDefaultSortOrderEvent(
-//                            getJDA(), responseNumber,
-//                            channel, IPostContainer.SortOrder.fromKey(oldSortOrder), IPostContainer.SortOrder.fromKey(sortOrder)));
+            getJDA().handleEvent(
+                new ChannelUpdateDefaultSortOrderEvent(
+                    getJDA(), responseNumber,
+                    channel, IPostContainer.SortOrder.fromKey(oldSortOrder)));
         }
 
         int newFlags = content.getInt("flags", 0);
