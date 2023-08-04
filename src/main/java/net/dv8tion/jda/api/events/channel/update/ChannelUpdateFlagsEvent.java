@@ -33,7 +33,6 @@ import java.util.EnumSet;
  */
 public class ChannelUpdateFlagsEvent extends GenericChannelUpdateEvent<EnumSet<ChannelFlag>>
 {
-
     public static final ChannelField FIELD = ChannelField.FLAGS;
     public static final String IDENTIFIER = FIELD.getFieldName();
 

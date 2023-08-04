@@ -32,7 +32,6 @@ import javax.annotation.Nonnull;
  */
 public class ChannelUpdateDefaultThreadSlowmodeEvent extends GenericChannelUpdateEvent<Integer>
 {
-
     public static final ChannelField FIELD = ChannelField.DEFAULT_THREAD_SLOWMODE;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
