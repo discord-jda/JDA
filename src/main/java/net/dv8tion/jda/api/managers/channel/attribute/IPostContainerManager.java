@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.managers.channel.attribute;
 
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer.SortOrder;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -27,6 +29,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * Manager abstraction to configure settings related to forum post containers, such as {@link ForumChannel}.
+ *
+ * @param <T> The channel type
+ * @param <M> The manager type
+ */
 public interface IPostContainerManager<T extends IPostContainer, M extends IPostContainerManager<T, M>> extends ChannelManager<T, M>, IPermissionContainerManager<T, M>
 {
     /**
@@ -88,4 +96,21 @@ public interface IPostContainerManager<T extends IPostContainer, M extends IPost
     @Nonnull
     @CheckReturnValue
     M setDefaultReaction(@Nullable Emoji emoji);
+
+    /**
+     * Sets the <b><u>default sort order</u></b> of the selected {@link IPostContainer}.
+     *
+     * @param  sortOrder
+     *         The new {@link SortOrder}
+     *
+     * @throws IllegalArgumentException
+     *         If null or {@link SortOrder#UNKNOWN} is provided
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    IPostContainer#getDefaultSortOrder()
+     */
+    @Nonnull
+    @CheckReturnValue
+    M setDefaultSortOrder(@Nonnull SortOrder sortOrder);
 }

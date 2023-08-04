@@ -91,8 +91,10 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     long DEFAULT_REACTION      = 1 << 19;
     /** Used to reset the default layout field */
     long DEFAULT_LAYOUT        = 1 << 20;
+    /** Used to reset the default sort order field */
+    long DEFAULT_SORT_ORDER = 1 << 21;
     /** Used to reset the hide media download option flag */
-    long HIDE_MEDIA_DOWNLOAD_OPTIONS = 1 << 21;
+    long HIDE_MEDIA_DOWNLOAD_OPTIONS = 1 << 22;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -122,6 +124,8 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #REQUIRE_TAG}</li>
      *     <li>{@link #DEFAULT_REACTION}</li>
      *     <li>{@link #DEFAULT_LAYOUT}</li>
+     *     <li>{@link #DEFAULT_SORT_ORDER}</li>
+     *     <li>{@link #HIDE_MEDIA_DOWNLOAD_OPTIONS}</li>
      * </ul>
      *
      * @param  fields
@@ -159,6 +163,8 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #REQUIRE_TAG}</li>
      *     <li>{@link #DEFAULT_REACTION}</li>
      *     <li>{@link #DEFAULT_LAYOUT}</li>
+     *     <li>{@link #DEFAULT_SORT_ORDER}</li>
+     *     <li>{@link #HIDE_MEDIA_DOWNLOAD_OPTIONS}</li>
      * </ul>
      *
      * @param  fields

@@ -26,9 +26,20 @@ import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.MediaChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import javax.annotation.Nonnull;
 
+/**
+ * A Media Channel which contains {@link #createForumPost(String, MessageCreateData) Forum Posts}.
+ * <br>Forum posts are simply {@link ThreadChannel ThreadChannels} of type {@link ChannelType#GUILD_PUBLIC_THREAD}.
+ *
+ * <p>The {@code CREATE POSTS} permission that is shown in the official Discord Client, is an alias for {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
+ * {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS} is ignored for creating forum posts.
+ *
+ * @see Guild#createMediaChannel(String, Category)
+ * @see #createForumPost(String, MessageCreateData)
+ */
 public interface MediaChannel extends StandardGuildChannel, IPostContainer, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
 {
     @Nonnull
@@ -53,6 +64,11 @@ public interface MediaChannel extends StandardGuildChannel, IPostContainer, IWeb
         return ChannelType.MEDIA;
     }
 
+    /**
+     * Whether this media channel hides the download option for embeds.
+     *
+     * @return True, if download option is hidden
+     */
     default boolean isMediaDownloadHidden()
     {
         return getFlags().contains(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);

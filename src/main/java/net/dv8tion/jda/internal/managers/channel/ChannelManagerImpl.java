@@ -74,6 +74,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected List<String> appliedTags;
     protected Emoji defaultReactionEmoji;
     protected int defaultLayout;
+    protected int defaultSortOrder;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -663,6 +664,18 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setDefaultSortOrder(IPostContainer.SortOrder sortOrder)
+    {
+        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
+            throw new IllegalStateException("Can only set default layout on forum/media channels.");
+        Checks.notNull(sortOrder, "SortOrder");
+        if (sortOrder == IPostContainer.SortOrder.UNKNOWN)
+            throw new IllegalStateException("SortOrder type cannot be UNKNOWN.");
+        this.defaultSortOrder = sortOrder.getKey();
+        set |= DEFAULT_SORT_ORDER;
+        return (M) this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -712,6 +725,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         }
         if (shouldUpdate(DEFAULT_LAYOUT))
             frame.put("default_forum_layout", defaultLayout);
+        if (shouldUpdate(DEFAULT_SORT_ORDER))
+            frame.put("default_sort_order", defaultSortOrder);
 
         withLock(lock, (lock) ->
         {

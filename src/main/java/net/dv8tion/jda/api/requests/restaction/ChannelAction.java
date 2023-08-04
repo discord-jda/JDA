@@ -220,6 +220,9 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      * @param  layout
      *         The new default layout.
      *
+     * @throws IllegalArgumentException
+     *         If null or {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel.Layout#UNKNOWN UNKNOWN} is provided
+     *
      * @return The current ChannelAction, for chaining convenience
      *
      * @see    ForumChannel#getDefaultLayout()
@@ -227,6 +230,23 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setDefaultLayout(@Nonnull ForumChannel.Layout layout);
+
+    /**
+     * Sets the <b><u>default sort order</u></b> of the channel.
+     *
+     * @param  sortOrder
+     *         The new default sort order.
+     *
+     * @throws IllegalArgumentException
+     *         If null or {@link net.dv8tion.jda.api.entities.channel.attribute.IPostContainer.SortOrder#UNKNOWN UNKNOWN} is provided
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    IPostContainer#getDefaultSortOrder()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setDefaultSortOrder(@Nonnull IPostContainer.SortOrder sortOrder);
 
     /**
      * Sets the <b><u>available tags</u></b> of the channel.

@@ -20,6 +20,10 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.MediaChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.managers.channel.attribute.IPostContainerManager;
@@ -33,6 +37,17 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A channel which contains {@link #createForumPost(String, MessageCreateData) Forum Posts}.
+ * <br>Forum posts are simply {@link ThreadChannel ThreadChannels} of type {@link ChannelType#GUILD_PUBLIC_THREAD}.
+ *
+ * <p>The {@code CREATE POSTS} permission that is shown in the official Discord Client, is an alias for {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
+ * {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS} is ignored for creating forum posts.
+ *
+ * @see ForumChannel
+ * @see MediaChannel
+ * @see #createForumPost(String, MessageCreateData)
+ */
 public interface IPostContainer extends IThreadContainer
 {
     /**
@@ -60,7 +75,7 @@ public interface IPostContainer extends IThreadContainer
     SortedSnowflakeCacheView<ForumTag> getAvailableTagCache();
 
     /**
-     * The available {@link ForumTag ForumTags} for this forum channel.
+     * The available {@link ForumTag ForumTags} for this channel.
      * <br>Tags are sorted by their {@link ForumTag#getPosition() position} ascending.
      *
      * <p>This is a shortcut for {@link #getAvailableTagCache() getAvailableTagCache().asList()}.
@@ -77,7 +92,7 @@ public interface IPostContainer extends IThreadContainer
     }
 
     /**
-     * The available {@link ForumTag ForumTags} for this forum channel.
+     * The available {@link ForumTag ForumTags} for this channel.
      * <br>Tags are sorted by their {@link ForumTag#getPosition() position} ascending.
      *
      * <p>This is a shortcut for {@link #getAvailableTagCache() getAvailableTagCache().getElementsByName(name, ignoreCase)}.

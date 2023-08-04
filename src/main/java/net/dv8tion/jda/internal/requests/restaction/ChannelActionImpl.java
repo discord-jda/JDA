@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
@@ -62,6 +63,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                                                                               ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
     private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
     private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
+    private static final EnumSet<ChannelType> POST_CONTAINERS = EnumSet.of(ChannelType.FORUM, ChannelType.MEDIA);
 
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
@@ -93,6 +95,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     // --forum only--
     protected Integer defaultLayout = null;
+    protected Integer defaultSortOrder = null;
 
     public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
     {
@@ -224,8 +227,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji)
     {
-        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
-            throw new UnsupportedOperationException("Can only set default reaction emoji on a ForumChannel or MediaChannel!");
+        Checks.checkSupportedChannelTypes(POST_CONTAINERS, type, "Default Reaction");
         this.defaultReactionEmoji = emoji;
         return this;
     }
@@ -236,9 +238,19 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     {
         Checks.checkSupportedChannelTypes(EnumSet.of(ChannelType.FORUM), type, "Default Layout");
         Checks.notNull(layout, "layout");
-        if (layout == ForumChannel.Layout.UNKNOWN)
-            throw new IllegalStateException("Layout type cannot be UNKNOWN.");
+        Checks.check(layout != ForumChannel.Layout.UNKNOWN, "Layout type cannot be UNKNOWN.");
         this.defaultLayout = layout.getKey();
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> setDefaultSortOrder(@Nonnull IPostContainer.SortOrder sortOrder)
+    {
+        Checks.checkSupportedChannelTypes(POST_CONTAINERS, type, "Default Sort Order");
+        Checks.notNull(sortOrder, "SortOrder");
+        Checks.check(sortOrder != IPostContainer.SortOrder.UNKNOWN, "Sort Order cannot be UNKNOWN.");
+        this.defaultSortOrder = sortOrder.getKey();
         return this;
     }
 
@@ -246,8 +258,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setAvailableTags(@Nonnull List<? extends BaseForumTag> tags)
     {
-        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
-            throw new UnsupportedOperationException("Can only set available tags on a ForumChannel or MediaChannel!");
+        Checks.checkSupportedChannelTypes(POST_CONTAINERS, type, "Available Tags");
         Checks.noneNull(tags, "Tags");
         this.availableTags = new ArrayList<>(tags);
         return this;
@@ -428,6 +439,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
         if (availableTags != null)
             object.put("available_tags", DataArray.fromCollection(availableTags));
+        if (defaultSortOrder != null)
+            object.put("default_sort_order", defaultSortOrder);
 
         //Forum only
         if (defaultLayout != null)

@@ -25,6 +25,21 @@ import net.dv8tion.jda.api.managers.channel.middleman.StandardGuildChannelManage
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+/**
+ * Manager providing functionality to modify a {@link MediaChannel}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("Art Showcase")
+ *  .setSlowmode(10)
+ *  .setTopic("Showcase your art creations here.")
+ *  .queue();
+ * manager.reset(ChannelManager.NSFW | ChannelManager.NAME)
+ *  .setName("NSFW Art Showcase")
+ *  .setNSFW(true)
+ *  .queue();
+ * }</pre>
+ */
 public interface MediaChannelManager extends
         StandardGuildChannelManager<MediaChannel, MediaChannelManager>,
         IPostContainerManager<MediaChannel, MediaChannelManager>,
