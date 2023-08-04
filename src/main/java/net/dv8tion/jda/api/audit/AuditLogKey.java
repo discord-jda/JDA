@@ -321,13 +321,13 @@ public enum AuditLogKey
      */
     CHANNEL_ID("channel_id"),
 
-//    /**
-//     * The {@link ForumChannel#getDefaultSortOrder()} value.
-//     * <br>Only for {@link ChannelType#FORUM}.
-//     *
-//     * <p>Expected type: <b>Integer</b>
-//     */
-//    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
+    /**
+     * The {@link ForumChannel#getDefaultSortOrder()} value.
+     * <br>Only for {@link ChannelType#FORUM} and {@link ChannelType#MEDIA}.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    CHANNEL_DEFAULT_SORT_ORDER("default_sort_order"),
 
     /**
      * The {@link ForumChannel#getDefaultLayout()} value.
