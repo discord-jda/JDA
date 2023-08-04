@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils;
+package net.dv8tion.jda.internal.utils.requestbody;
 
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import okio.BufferedSink;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Source;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 
-public class BufferedRequestBody extends RequestBody
+public class BufferedRequestBody extends TypedBody<BufferedRequestBody>
 {
     private final Source source;
-    private final MediaType type;
     private byte[] data;
 
     public BufferedRequestBody(Source source, MediaType type)
     {
+        super(type);
         this.source = source;
-        this.type = type;
     }
 
     @Nonnull
@@ -50,13 +48,6 @@ public class BufferedRequestBody extends RequestBody
             copy.data = data;
             return copy;
         }
-    }
-
-    @Nullable
-    @Override
-    public MediaType contentType()
-    {
-        return type;
     }
 
     @Override
