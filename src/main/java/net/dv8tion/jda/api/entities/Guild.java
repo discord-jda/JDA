@@ -4540,7 +4540,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     ChannelAction<ForumChannel> createForumChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
-     * Creates a new {@link ForumChannel} in this Guild.
+     * Creates a new {@link MediaChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4554,7 +4554,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *         The name of the MediaChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
@@ -4562,7 +4562,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      *
      * @return A specific {@link ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new ForumChannel before creating it
+     *         <br>This action allows to set fields for the new MediaChannel before creating it
      */
     @Nonnull
     @CheckReturnValue
@@ -4572,7 +4572,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     }
 
     /**
-     * Creates a new {@link ForumChannel} in this Guild.
+     * Creates a new {@link MediaChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4586,7 +4586,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * </ul>
      *
      * @param  name
-     *         The name of the ForumChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *         The name of the MediaChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
      * @param  parent
      *         The optional parent category for this channel, or null
      *
@@ -4597,7 +4597,7 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      *         or the provided parent is not in the same guild.
      *
      * @return A specific {@link ChannelAction ChannelAction}
-     *         <br>This action allows to set fields for the new ForumChannel before creating it
+     *         <br>This action allows to set fields for the new MediaChannel before creating it
      */
     @Nonnull
     @CheckReturnValue
