@@ -149,6 +149,9 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     @Override
     public IThreadContainerUnion getParentChannel()
     {
+        IThreadContainer realChannel = getGuild().getChannelById(IThreadContainer.class, parentChannel.getIdLong());
+        if (realChannel != null)
+            parentChannel = (IThreadContainerUnion) realChannel;
         return parentChannel;
     }
 

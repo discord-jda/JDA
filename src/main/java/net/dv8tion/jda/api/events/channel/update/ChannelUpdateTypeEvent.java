@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
  * <ul>
  *     <li>of type {@link ChannelType#TEXT} is converted to type {@link ChannelType#NEWS}</li>
  *     <li>of type {@link ChannelType#NEWS} is converted to type {@link ChannelType#TEXT}</li>
+ *     <li>of type {@link ChannelType#FORUM} is converted to type {@link ChannelType#MEDIA}</li>
  * </ul>
  *
  * @see Channel#getType()

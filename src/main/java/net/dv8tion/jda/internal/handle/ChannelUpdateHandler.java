@@ -25,11 +25,14 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -52,12 +55,10 @@ import net.dv8tion.jda.internal.entities.ForumTagImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.ForumChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.concrete.MediaChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.concrete.NewsChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.concrete.TextChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -191,82 +192,91 @@ public class ChannelUpdateHandler extends SocketHandler
         EntityBuilder builder = getJDA().getEntityBuilder();
         GuildImpl guild = channel.getGuild();
 
-        if (newChannelType == ChannelType.TEXT && channel.getType() == ChannelType.NEWS)
+        ChannelType oldType = channel.getType();
+
+        long id = channel.getIdLong();
+        switch (oldType)
         {
-            //This assumes that if we're moving to a TextChannel that we're transitioning from a NewsChannel
-            NewsChannel newsChannel = (NewsChannel) channel;
-            getJDA().getNewsChannelView().remove(newsChannel.getIdLong());
-            guild.getNewsChannelView().remove(newsChannel.getIdLong());
-
-            TextChannelImpl textChannel = (TextChannelImpl) builder.createTextChannel(guild, content, guild.getIdLong());
-
-            //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
-            textChannel.setLatestMessageIdLong(newsChannel.getLatestMessageIdLong());
-
-            getJDA().handleEvent(
-                new ChannelUpdateTypeEvent(
-                    getJDA(), responseNumber,
-                    textChannel, ChannelType.NEWS, ChannelType.TEXT));
-
-            return textChannel;
-        }
-        else if (newChannelType == ChannelType.NEWS && channel.getType() == ChannelType.TEXT)
-        {
-            //This assumes that if we're moving to a NewsChannel that we're transitioning from a TextChannel
-            TextChannel textChannel = (TextChannel) channel;
-            getJDA().getTextChannelsView().remove(textChannel.getIdLong());
-            guild.getTextChannelsView().remove(textChannel.getIdLong());
-
-            NewsChannelImpl newsChannel = (NewsChannelImpl) builder.createNewsChannel(guild, content, guild.getIdLong());
-
-            //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
-            newsChannel.setLatestMessageIdLong(textChannel.getLatestMessageIdLong());
-
-            getJDA().handleEvent(
-                new ChannelUpdateTypeEvent(
-                    getJDA(), responseNumber,
-                    newsChannel, ChannelType.TEXT, ChannelType.NEWS));
-
-            return newsChannel;
-        }
-        else if (newChannelType == ChannelType.MEDIA && channel.getType() == ChannelType.FORUM)
-        {
-            ForumChannel forumChannel = (ForumChannel) channel;
-            getJDA().getForumChannelsView().remove(forumChannel.getIdLong());
-            guild.getForumChannelsView().remove(forumChannel.getIdLong());
-
-            MediaChannelImpl mediaChannel = (MediaChannelImpl) builder.createMediaChannel(guild, content, guild.getIdLong());
-
-            getJDA().handleEvent(
-                new ChannelUpdateTypeEvent(
-                    getJDA(), responseNumber,
-                    mediaChannel, ChannelType.FORUM, ChannelType.MEDIA));
-        }
-        else
-        {
-            WebSocketClient.LOG.warn("Received unexpected channel type change {}->{}", channel.getType(), newChannelType);
-
-            // Attempt to split into delete/create events
-            WebSocketClient client = getJDA().getClient();
-
-            DataObject syntheticDelete = DataObject.empty()
-                .put("t", "CHANNEL_DELETE")
-                .put("s", responseNumber)
-                .put("op", 0)
-                .put("d", DataObject.empty()
-                    .put("type", channel.getType().getId())
-                    .put("guild_id", guild.getId())
-                    .put("id", channel.getIdLong()));
-            client.getHandler("CHANNEL_DELETE").handle(responseNumber, syntheticDelete);
-
-            DataObject syntheticCreate = allContent.put("t", "CHANNEL_CREATE");
-            // This event does not provide last_message_id so attempt to copy it over manually
-            if (channel instanceof MessageChannel)
-                syntheticCreate.getObject("d").put("last_message_id", ((MessageChannel) channel).getLatestMessageIdLong());
-            client.getHandler("CHANNEL_CREATE").handle(responseNumber, syntheticCreate);
-
+        case TEXT:
+            getJDA().getTextChannelsView().remove(id);
+            guild.getTextChannelsView().remove(id);
+            break;
+        case NEWS:
+            getJDA().getNewsChannelView().remove(id);
+            guild.getNewsChannelView().remove(id);
+            break;
+        case MEDIA:
+            getJDA().getMediaChannelsView().remove(id);
+            guild.getMediaChannelsView().remove(id);
+            break;
+        case FORUM:
+            getJDA().getForumChannelsView().remove(id);
+            guild.getForumChannelsView().remove(id);
+            break;
+        case VOICE:
+            getJDA().getVoiceChannelsView().remove(id);
+            guild.getVoiceChannelsView().remove(id);
+            break;
+        case STAGE:
+            getJDA().getStageChannelView().remove(id);
+            guild.getStageChannelsView().remove(id);
+            break;
+        case CATEGORY:
+            getJDA().getCategoriesView().remove(id);
+            guild.getCategoriesView().remove(id);
+            break;
+        default:
+            WebSocketClient.LOG.warn("Unexpected channel type change {}->{}, discarding from cache.", channel.getType().getId(), content.getInt("type"));
+            guild.uncacheChannel(channel);
             return null;
         }
+
+        Channel newChannel;
+        switch (newChannelType)
+        {
+        case TEXT:
+            newChannel = builder.createTextChannel(guild, content, guild.getIdLong());
+            break;
+        case NEWS:
+            newChannel = builder.createNewsChannel(guild, content, guild.getIdLong());
+            break;
+        case MEDIA:
+            newChannel = builder.createMediaChannel(guild, content, guild.getIdLong());
+            break;
+        case FORUM:
+            newChannel = builder.createForumChannel(guild, content, guild.getIdLong());
+            break;
+        case VOICE:
+            newChannel = builder.createVoiceChannel(guild, content, guild.getIdLong());
+            break;
+        case STAGE:
+            newChannel = builder.createStageChannel(guild, content, guild.getIdLong());
+            break;
+        case CATEGORY:
+            newChannel = builder.createCategory(guild, content, guild.getIdLong());
+            break;
+        default:
+            WebSocketClient.LOG.warn("Unexpected channel type change {}->{}, discarding from cache.", channel.getType().getId(), content.getInt("type"));
+            guild.uncacheChannel(channel);
+            return null;
+        }
+
+        // Potentially introduces dangling thread channels (with no parent)
+        if (channel instanceof IThreadContainer && !(newChannel instanceof IThreadContainer))
+        {
+            WebSocketClient.LOG.error("ThreadContainer channel transitioned into type that is not ThreadContainer? {} -> {}", channel.getType(), newChannel.getType());
+        }
+
+        if (newChannel instanceof MessageChannelMixin<?> && channel instanceof MessageChannel)
+        {
+            long latestMessageIdLong = ((MessageChannel) channel).getLatestMessageIdLong();
+            ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(latestMessageIdLong);
+        }
+
+        getJDA().handleEvent(
+            new ChannelUpdateTypeEvent(
+                getJDA(), responseNumber,
+                newChannel, oldType, newChannelType));
 
         return channel;
     }

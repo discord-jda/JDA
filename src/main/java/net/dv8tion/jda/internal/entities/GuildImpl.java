@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -239,6 +240,76 @@ public class GuildImpl implements Guild
                 return true;
             });
         }
+    }
+
+    public void uncacheChannel(GuildChannel channel)
+    {
+        long id = channel.getIdLong();
+        switch (channel.getType())
+        {
+        case TEXT:
+            api.getTextChannelsView().remove(id);
+            this.getTextChannelsView().remove(id);
+            break;
+        case NEWS:
+            api.getNewsChannelView().remove(id);
+            this.getNewsChannelView().remove(id);
+            break;
+        case MEDIA:
+            api.getMediaChannelsView().remove(id);
+            this.getMediaChannelsView().remove(id);
+            break;
+        case FORUM:
+            api.getForumChannelsView().remove(id);
+            this.getForumChannelsView().remove(id);
+            break;
+        case VOICE:
+            api.getVoiceChannelsView().remove(id);
+            this.getVoiceChannelsView().remove(id);
+            break;
+        case STAGE:
+            api.getStageChannelView().remove(id);
+            this.getStageChannelsView().remove(id);
+            break;
+        case CATEGORY:
+            api.getCategoriesView().remove(id);
+            this.getCategoriesView().remove(id);
+            break;
+        case GUILD_NEWS_THREAD:
+        case GUILD_PUBLIC_THREAD:
+        case GUILD_PRIVATE_THREAD:
+            api.getThreadChannelsView().remove(id);
+            this.getThreadChannelsView().remove(id);
+            break;
+        }
+
+        // Remove dangling threads
+        if (channel instanceof IThreadContainer)
+        {
+            SortedSnowflakeCacheViewImpl<ThreadChannel> localView = this.getThreadChannelsView();
+            SnowflakeCacheViewImpl<ThreadChannel> globalView = api.getThreadChannelsView();
+            Predicate<ThreadChannel> predicate = thread -> channel.equals(thread.getParentChannel());
+
+            try (UnlockHook hook1 = localView.writeLock(); UnlockHook hook2 = globalView.writeLock())
+            {
+                localView.getMap().valueCollection().removeIf(predicate);
+                globalView.getMap().valueCollection().removeIf(predicate);
+            }
+        }
+
+        // This might be too presumptuous, Channel#getParent still returns null regardless if the category is uncached
+//        if (channel instanceof Category)
+//        {
+//            for (Channel chan : guild.getChannels())
+//            {
+//                if (!(chan instanceof ICategorizableChannelMixin<?>))
+//                    continue;
+//
+//                ICategorizableChannelMixin<?> categoizable = (ICategorizableChannelMixin<?>) chan;
+//                if (categoizable.getParentCategoryIdLong() == id)
+//                    categoizable.setParentCategory(0L);
+//            }
+//        }
     }
 
     @Nonnull
