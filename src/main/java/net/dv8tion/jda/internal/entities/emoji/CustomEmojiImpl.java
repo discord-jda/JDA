@@ -101,7 +101,7 @@ public class CustomEmojiImpl implements CustomEmoji, EmojiUnion
         if (!(obj instanceof CustomEmoji))
             return false;
         CustomEmoji other = (CustomEmoji) obj;
-        return other.getIdLong() == id;
+        return this.id == other.getIdLong() && getName().equals(other.getName());
     }
 
     @Override
