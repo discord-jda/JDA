@@ -90,7 +90,7 @@ public class CustomEmojiImpl implements CustomEmoji, EmojiUnion
     @Override
     public int hashCode()
     {
-        return Objects.hash(name, id, animated);
+        return Long.hashCode(id);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class CustomEmojiImpl implements CustomEmoji, EmojiUnion
         if (!(obj instanceof CustomEmoji))
             return false;
         CustomEmoji other = (CustomEmoji) obj;
-        return this.id == other.getIdLong() && getName().equals(other.getName());
+        return this.id == other.getIdLong();
     }
 
     @Override
