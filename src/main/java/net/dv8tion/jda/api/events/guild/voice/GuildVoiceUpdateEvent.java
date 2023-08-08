@@ -29,6 +29,22 @@ import javax.annotation.Nullable;
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined or left an {@link AudioChannel}.
  * <p>Can be used to detect when a Member leaves/joins an AudioChannel.
  *
+ * <p><b>Example</b><br>
+ * <pre>{@code
+ * AudioChannelUnion joinedChannel = event.getChannelJoined();
+ * AudioChannelUnion leftChannel = event.getChannelLeft();
+ *
+ * if (joinedChannel != null) {
+ *   // call methods that need to know on any join
+ * }
+ * if (leftChannel != null) {
+ *   // call methods that need to know on any leave
+ * }
+ * if (joinedChannel != null && leftChannel != null) {
+ *   // call methods that need to know on any move
+ * }
+ * }</pre>
+ *
  * <p><b>Requirements</b><br>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE VOICE_STATE} CacheFlag to be enabled, which requires
