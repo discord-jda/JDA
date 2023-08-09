@@ -230,6 +230,20 @@ public interface Activity
         return EntityBuilder.createActivity(name, null, ActivityType.COMPETING);
     }
 
+    /**
+     * Creates a new Activity instance with the specified name.
+     * <br>This will display without a prefix in the official client
+     *
+     * @param  name
+     *         The not-null name of the newly created status
+     *
+     * @throws IllegalArgumentException
+     *         If the specified name is null, empty, blank or longer than 128 characters
+     *
+     * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#CUSTOM_STATUS}
+     *
+     * @since  5.0.0
+     */
     @Nonnull
     static Activity customStatus(@Nonnull String name)
     {
