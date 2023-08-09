@@ -230,6 +230,15 @@ public interface Activity
         return EntityBuilder.createActivity(name, null, ActivityType.COMPETING);
     }
 
+    @Nonnull
+    static Activity customStatus(@Nonnull String name)
+    {
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.notLonger(name, 128, "Name");
+        return EntityBuilder.createActivity(name, null, ActivityType.CUSTOM_STATUS);
+    }
+
     /**
      * Creates a new Activity instance with the specified name.
      *
