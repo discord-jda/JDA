@@ -237,8 +237,6 @@ public interface Activity
      *         If the specified name is null, empty, blank or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#CUSTOM_STATUS}
-     *
-     * @since  5.0.0
      */
     @Nonnull
     static Activity customStatus(@Nonnull String name)
