@@ -189,7 +189,9 @@ public class PresenceImpl implements Presence
         {
             gameObj.put("name", "Custom Status");
             gameObj.put("state", activity.getName());
-        } else {
+        }
+        else
+        {
             gameObj.put("name", activity.getName());
         }
 
