@@ -931,7 +931,7 @@ public class EntityBuilder
 
         if (type == Activity.ActivityType.CUSTOM_STATUS)
         {
-            if (gameJson.hasKey("state") && name.equalsIgnoreCase("Custom Status"))
+            if (gameJson.hasKey("state"))
             {
                 name = gameJson.getString("state", "");
                 gameJson = gameJson.remove("state");

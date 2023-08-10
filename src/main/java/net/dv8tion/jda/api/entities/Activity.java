@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -194,11 +193,8 @@ public interface Activity
      *         if the specified name is null, empty, blank or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#WATCHING}
-     *
-     * @incubating This feature is not yet confirmed for the official bot API
      */
     @Nonnull
-    @Incubating
     static Activity watching(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
@@ -228,6 +224,27 @@ public interface Activity
         name = name.trim();
         Checks.notLonger(name, 128, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.COMPETING);
+    }
+
+    /**
+     * Creates a new Activity instance with the specified name.
+     * <br>This will display without a prefix in the official client
+     *
+     * @param  name
+     *         The not-null name of the newly created status
+     *
+     * @throws IllegalArgumentException
+     *         If the specified name is null, empty, blank or longer than 128 characters
+     *
+     * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#CUSTOM_STATUS}
+     */
+    @Nonnull
+    static Activity customStatus(@Nonnull String name)
+    {
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.notLonger(name, 128, "Name");
+        return EntityBuilder.createActivity(name, null, ActivityType.CUSTOM_STATUS);
     }
 
     /**
@@ -331,18 +348,12 @@ public interface Activity
         /**
          * Used to indicate that the {@link Activity Activity} should display
          * as {@code Watching...} in the official client.
-         *
-         * @incubating This feature is not yet confirmed for the official bot API
          */
-        @Incubating
         WATCHING(3),
         /**
          * Used to indicate that the {@link Activity Activity} should display as a custom status
          * in the official client.
-         *
-         * @incubating This Activity type is <b>read-only</b> for bots
          */
-        @Incubating
         CUSTOM_STATUS(4),
 
         /**
