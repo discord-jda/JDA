@@ -32,7 +32,6 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
 
     protected final Party party;
     protected final String details;
-    protected final String state;
     protected final Image largeImage;
     protected final Image smallImage;
     protected final String sessionId;
@@ -44,11 +43,10 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
             EmojiUnion emoji, Party party, String details, String state, Timestamps timestamps, String syncId, String sessionId,
             int flags, String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
     {
-        super(name, url, type, timestamps, emoji);
+        super(name, state, url, type, timestamps, emoji);
         this.applicationId = applicationId;
         this.party = party;
         this.details = details;
-        this.state = state;
         this.sessionId = sessionId;
         this.syncId = syncId;
         this.flags = flags;
@@ -105,13 +103,6 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     public EnumSet<ActivityFlag> getFlagSet()
     {
         return ActivityFlag.getFlags(getFlags());
-    }
-
-    @Nullable
-    @Override
-    public String getState()
-    {
-        return state;
     }
 
     @Nullable

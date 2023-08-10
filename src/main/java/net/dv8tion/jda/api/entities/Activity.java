@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,6 +50,12 @@ public interface Activity
     /** The Pattern used for {@link #isValidStreamingUrl(String)} */
     Pattern STREAMING_URL = Pattern.compile("https?://(www\\.)?(twitch\\.tv/|youtube\\.com/watch\\?v=).+", Pattern.CASE_INSENSITIVE);
 
+    /** Maximum length for an activity name */
+    int MAX_ACTIVITY_NAME_LENGTH = 128;
+
+    /** Maximum length for an activity state */
+    int MAX_ACTIVITY_STATE_LENGTH = 128;
+
     /**
      * Whether this is a <a href="https://discord.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>
      * <br>If {@code false} the result of {@link #asRichPresence()} is {@code null}
@@ -74,6 +81,29 @@ public interface Activity
      */
     @Nonnull
     String getName();
+
+    /**
+     * The user's activity state
+     * <br>Example: "Looking to Play", "Playing Solo", "In a Group"
+     *
+     * <p>This shows below the normal activity information in the profile.
+     *
+     * <p><b>Example</b><br>
+     * Code:
+     * <pre>{@code
+     * Activity.playing("Trivia")
+     *     .withState("Question 20")
+     * }</pre>
+     * Display:
+     * <pre>
+     * Playing Trivia
+     * Question 20
+     * </pre>
+     *
+     * @return The user's current party status
+     */
+    @Nullable
+    String getState();
 
     /**
      * The URL of the {@link Activity Activity} if the game is actually a Stream.
@@ -109,6 +139,22 @@ public interface Activity
     EmojiUnion getEmoji();
 
     /**
+     * Adds the provided state to the activity.
+     * <br>The state is shown below the activity, unless it is a {@link #customStatus(String) custom status}.
+     *
+     * @param  state
+     *         The activity state, or null to unset
+     *
+     * @throws IllegalArgumentException
+     *         If the state is longer than {@value #MAX_ACTIVITY_STATE_LENGTH} characters
+     *
+     * @return New activity instance with the provided state
+     */
+    @Nonnull
+    @Contract("_->new")
+    Activity withState(@Nullable String state);
+
+    /**
      * Creates a new Activity instance with the specified name.
      * <br>In order to appear as "streaming" in the official client you must
      * provide a valid (see documentation of method) streaming URL in {@link #streaming(String, String) Activity.streaming(String, String)}.
@@ -117,7 +163,7 @@ public interface Activity
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         if the specified name is null, empty, blank or longer than 128 characters
+     *         if the specified name is null, empty, blank or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#PLAYING}
      */
@@ -126,7 +172,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notLonger(name, 128, "Name");
+        Checks.notLonger(name, MAX_ACTIVITY_NAME_LENGTH, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.PLAYING);
     }
 
@@ -141,7 +187,7 @@ public interface Activity
      *         The streaming url to use, required to display as "streaming"
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null, empty or longer than 128 characters
+     *         If the specified name is null, empty or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters
      *
      * @return A valid Activity instance with the provided name and url
      *
@@ -152,7 +198,7 @@ public interface Activity
     {
         Checks.notEmpty(name, "Provided game name");
         name = Helpers.isBlank(name) ? name : name.trim();
-        Checks.notLonger(name, 128, "Name");
+        Checks.notLonger(name, MAX_ACTIVITY_NAME_LENGTH, "Name");
         ActivityType type;
         if (isValidStreamingUrl(url))
             type = ActivityType.STREAMING;
@@ -169,7 +215,7 @@ public interface Activity
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         if the specified name is null, empty, blank or longer than 128 characters
+     *         if the specified name is null, empty, blank or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#LISTENING}
      */
@@ -178,7 +224,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notLonger(name, 128, "Name");
+        Checks.notLonger(name, MAX_ACTIVITY_NAME_LENGTH, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.LISTENING);
     }
 
@@ -190,7 +236,7 @@ public interface Activity
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         if the specified name is null, empty, blank or longer than 128 characters
+     *         if the specified name is null, empty, blank or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#WATCHING}
      */
@@ -199,7 +245,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notLonger(name, 128, "Name");
+        Checks.notLonger(name, MAX_ACTIVITY_NAME_LENGTH, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.WATCHING);
     }
 
@@ -211,7 +257,7 @@ public interface Activity
      *         The not-null name of the newly created game
      * 
      * @throws IllegalArgumentException
-     *         If the specified name is null, empty, blank or longer than 128 characters
+     *         If the specified name is null, empty, blank or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters
      * 
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#COMPETING}
      *
@@ -222,7 +268,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notLonger(name, 128, "Name");
+        Checks.notLonger(name, MAX_ACTIVITY_NAME_LENGTH, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.COMPETING);
     }
 
@@ -234,7 +280,7 @@ public interface Activity
      *         The not-null name of the newly created status
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null, empty, blank or longer than 128 characters
+     *         If the specified name is null, empty, blank or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#CUSTOM_STATUS}
      */
@@ -243,7 +289,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notLonger(name, 128, "Name");
+        Checks.notLonger(name, MAX_ACTIVITY_NAME_LENGTH, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.CUSTOM_STATUS);
     }
 
@@ -258,7 +304,7 @@ public interface Activity
      * @throws IllegalArgumentException
      *         <ul>
      *           <li>If the specified ActivityType is null or unsupported</li>
-     *           <li>If the specified name is null, empty or longer than 128 characters</li>
+     *           <li>If the specified name is null, empty or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters</li>
      *         </ul>
      *
      * @return A valid Activity instance with the provided name
@@ -284,7 +330,7 @@ public interface Activity
      * @throws IllegalArgumentException
      *         <ul>
      *           <li>If the specified ActivityType is null or unsupported</li>
-     *           <li>If the specified name is null, empty or longer than 128 characters</li>
+     *           <li>If the specified name is null, empty or longer than {@value #MAX_ACTIVITY_NAME_LENGTH} characters</li>
      *         </ul>
      *
      * @return A valid Activity instance with the provided name and url

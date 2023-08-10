@@ -193,6 +193,9 @@ public class PresenceImpl implements Presence
         else
         {
             gameObj.put("name", activity.getName());
+            String state = activity.getState();
+            if (state != null)
+                gameObj.put("state", state);
         }
 
         gameObj.put("type", activity.getType().getKey());
