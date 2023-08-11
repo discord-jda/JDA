@@ -179,7 +179,7 @@ public class PresenceImpl implements Presence
               .put("status", getStatus().getKey());
     }
 
-    private DataObject getGameJson(Activity activity)
+    public static DataObject getGameJson(Activity activity)
     {
         if (activity == null || activity.getName() == null || activity.getType() == null)
             return null;
