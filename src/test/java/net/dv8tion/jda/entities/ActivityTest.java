@@ -27,8 +27,7 @@ public class ActivityTest
     private static DataObject formatActivity(int type, String name, String state)
     {
         DataObject json = DataObject.empty()
-                .put("type", type)
-                .put("name", name);
+                .put("type", type);
 
         if (state != null)
             json.put("state", state);
