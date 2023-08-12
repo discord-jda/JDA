@@ -277,7 +277,7 @@ public interface Activity
      * @param  type
      *         The {@link net.dv8tion.jda.api.entities.Activity.ActivityType ActivityType} to use
      * @param  name
-     *         The not-null name of the newly created game
+     *         The not-null name of the newly created game or custom status text
      * @param  url
      *         The streaming url to use, required to display as "streaming".
      *
@@ -307,6 +307,8 @@ public interface Activity
                 return watching(name);
             case COMPETING:
                 return competing(name);
+            case CUSTOM_STATUS:
+                return customStatus(name);
             default:
                 throw new IllegalArgumentException("ActivityType " + type + " is not supported!");
         }
