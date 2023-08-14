@@ -87,15 +87,6 @@ public interface RichPresence extends Activity
     EnumSet<ActivityFlag> getFlagSet();
 
     /**
-     * The user's current party status
-     * <br>Example: "Looking to Play", "Playing Solo", "In a Group"
-     *
-     * @return The user's current party status
-     */
-    @Nullable
-    String getState();
-
-    /**
      * What the player is currently doing
      * <br>Example: "Competitive - Captain's Mode", "In Queue", "Unranked PvP"
      *

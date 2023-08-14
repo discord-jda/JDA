@@ -179,7 +179,7 @@ public class PresenceImpl implements Presence
               .put("status", getStatus().getKey());
     }
 
-    private DataObject getGameJson(Activity activity)
+    public static DataObject getGameJson(Activity activity)
     {
         if (activity == null || activity.getName() == null || activity.getType() == null)
             return null;
@@ -193,6 +193,9 @@ public class PresenceImpl implements Presence
         else
         {
             gameObj.put("name", activity.getName());
+            String state = activity.getState();
+            if (state != null)
+                gameObj.put("state", state);
         }
 
         gameObj.put("type", activity.getType().getKey());
