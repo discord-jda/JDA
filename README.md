@@ -84,7 +84,8 @@ Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of config
 **Example**:
 
 ```java
-public static void main(String[] args) {
+public static void main(String[] args)
+{
     JDABuilder builder = JDABuilder.createDefault(args[0]);
     
     // Disable parts of the cache
@@ -105,7 +106,8 @@ You can configure the memory usage by changing enabled `CacheFlags` on the `JDAB
 Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter`, disabling **intents**, or changing the **member cache policy**.
 
 ```java
-public void configureMemoryUsage(JDABuilder builder) {
+public void configureMemoryUsage(JDABuilder builder)
+{
     // Disable cache for member activities (streaming/games/spotify)
     builder.disableCache(CacheFlag.ACTIVITY);
 
@@ -206,7 +208,8 @@ public class Bot extends ListenerAdapter
 {
     public static void main(String[] args)
     {
-        if (args.length < 1) {
+        if (args.length < 1) 
+        {
             System.out.println("You have to provide a token as first argument!");
             System.exit(1);
         }
@@ -232,7 +235,8 @@ public class Bot extends ListenerAdapter
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
         // make sure we handle the right command
-        switch (event.getName()) {
+        switch (event.getName()) 
+        {
             case "ping":
                 long time = System.currentTimeMillis();
                 event.reply("Pong!").setEphemeral(true) // reply or acknowledge
@@ -242,14 +246,16 @@ public class Bot extends ListenerAdapter
                 break;
             case "ban":
                 // double check permissions, don't trust discord on this!
-                if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
+                if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) 
+                {
                     event.reply("You cannot ban members! Nice try ;)").setEphemeral(true).queue();
                     break;
                 }
                 User target = event.getOption("user", OptionMapping::getUser);
                 // optionally check for member information
                 Member member = event.getOption("user", OptionMapping::getMember);
-                if (!event.getMember().canInteract(member)) {
+                if (!event.getMember().canInteract(member)) 
+                {
                     event.reply("You cannot ban this user.").setEphemeral(true).queue();
                     break;
                 }
@@ -296,7 +302,8 @@ The RestAction interface also supports a number of operators to avoid callback h
 **Example**:
 
 ```java
-public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+public RestAction<Void> selfDestruct(MessageChannel channel, String content) 
+{
     return channel.sendMessage("The following message will destroy itself in 1 minute!")
         .delay(10, SECONDS, scheduler) // edit 10 seconds later
         .flatMap((it) -> it.editMessage(content))
