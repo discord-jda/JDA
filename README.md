@@ -154,7 +154,7 @@ public class ReadyListener implements EventListener
             .addEventListeners(new ReadyListener())
             .build();
 
-        // optionally block until JDA is ready
+        // Optionally block until JDA is ready
         jda.awaitReady();
     }
 
@@ -175,9 +175,9 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
     {
         JDA jda = JDABuilder.createDefault("token")
-                .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
+                .enableIntents(GatewayIntent.MESSAGE_CONTENT) // Enables explicit access to message.getContentDisplay()
                 .build();
-        //You can also add event listeners to the already built JDA instance
+        // You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
         jda.addEventListener(new MessageListener());
@@ -234,7 +234,7 @@ public class Bot extends ListenerAdapter
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
-        // make sure we handle the right command
+        // Make sure we handle the right command
         switch (event.getName()) 
         {
             case "ping":
@@ -245,14 +245,14 @@ public class Bot extends ListenerAdapter
                      ).queue(); // Queue both reply and edit
                 break;
             case "ban":
-                // double check permissions, don't trust discord on this!
+                // Double check permissions, don't trust discord on this!
                 if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) 
                 {
                     event.reply("You cannot ban members! Nice try ;)").setEphemeral(true).queue();
                     break;
                 }
                 User target = event.getOption("user", OptionMapping::getUser);
-                // optionally check for member information
+                // Optionally check for member information
                 Member member = event.getOption("user", OptionMapping::getMember);
                 if (!event.getMember().canInteract(member)) 
                 {
@@ -305,9 +305,9 @@ The RestAction interface also supports a number of operators to avoid callback h
 public RestAction<Void> selfDestruct(MessageChannel channel, String content) 
 {
     return channel.sendMessage("The following message will destroy itself in 1 minute!")
-        .delay(10, SECONDS, scheduler) // edit 10 seconds later
+        .delay(10, SECONDS, scheduler) // Edit 10 seconds later
         .flatMap((it) -> it.editMessage(content))
-        .delay(1, MINUTES, scheduler) // delete 1 minute later
+        .delay(1, MINUTES, scheduler) // Delete 1 minute later
         .flatMap(Message::delete);
 }
 ```
@@ -346,7 +346,7 @@ Since version **3.4.0** JDA provides a `ShardManager` which automates this build
 public static void main(String[] args) throws Exception
 {
     JDABuilder shardBuilder = JDABuilder.createDefault(args[0]);
-    //register your listeners here using shardBuilder.addEventListeners(...)
+    // Register your listeners here using shardBuilder.addEventListeners(...)
     shardBuilder.addEventListeners(new MessageListener());
     for (int i = 0; i < 10; i++)
     {
@@ -434,7 +434,7 @@ public class UserLogger extends ListenerAdapter
     public void onGuildJoin(GuildJoinEvent event)
     {
         JDA api = event.getJDA();
-        User user = getUser(); // use getter to refresh user automatically on access
+        User user = getUser(); // Use getter to refresh user automatically on access
         user.openPrivateChannel().queue((channel) ->
         {
             // Send a private message to the user
@@ -614,7 +614,7 @@ fun main() {
     
     jda.onCommand("ping") { event ->
         val time = measureTime {
-            event.reply("Pong!").await() // suspending
+            event.reply("Pong!").await() // Suspending
         }.inWholeMilliseconds
 
         event.hook.editOriginal("Pong: $time ms").queue()
