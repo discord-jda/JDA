@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -133,7 +134,9 @@ public class MessageCreateHandler extends SocketHandler
             api.usedPrivateChannel(channel.getIdLong());
         }
 
-        jda.handleEvent(new MessageReceivedEvent( jda, responseNumber, message));
+        jda.handleEvent(new MessageCreateEvent(jda, responseNumber, message));
+        // TODO: Remove MessageReceivedEvent handling (in the future), because it deprecated
+        jda.handleEvent(new MessageReceivedEvent(jda, responseNumber, message));
         return null;
     }
 }

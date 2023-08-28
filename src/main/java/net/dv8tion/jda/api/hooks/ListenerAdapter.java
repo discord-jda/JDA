@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.automod.AutoModExecutionEvent;
 import net.dv8tion.jda.api.events.automod.AutoModRuleCreateEvent;
@@ -178,7 +179,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
 
     //Message Events
+    @Deprecated
+    @ReplaceWith("onMessageCreate(MessageCreateEvent event)")
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {}
+    public void onMessageCreate(@Nonnull MessageCreateEvent event) {}
     public void onMessageUpdate(@Nonnull MessageUpdateEvent event) {}
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {}
     public void onMessageBulkDelete(@Nonnull MessageBulkDeleteEvent event) {}

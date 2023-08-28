@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.events.message;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -30,7 +29,7 @@ import javax.annotation.Nullable;
 /**
  * Indicates that a Message was received in a {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel MessageChannel}.
  * <br>This includes {@link TextChannel TextChannel} and {@link PrivateChannel PrivateChannel}!
- * 
+ *
  * <p>Can be used to detect that a Message is received in either a guild- or private channel. Providing a MessageChannel and Message.
  *
  * <p><b>Requirements</b><br>
@@ -40,22 +39,15 @@ import javax.annotation.Nullable;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} to work in guild text channels</li>
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
- *
- * @deprecated This event has been renamed to match standard Discord event naming.
- *             Interaction with this event is "redirected" to {@link net.dv8tion.jda.api.events.message.MessageCreateEvent MessageCreateEvent}.
- *             In fact, it's now a container for MessageCreateEvent.
-
  */
-@Deprecated
-@ReplaceWith("MessageCreateEvent")
-public class MessageReceivedEvent extends GenericMessageEvent
+public class MessageCreateEvent extends GenericMessageEvent
 {
-    private final MessageCreateEvent event;
+    private final Message message;
 
-    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
+    public MessageCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
     {
         super(api, responseNumber, message.getIdLong(), message.getChannel());
-        this.event = new MessageCreateEvent(api, responseNumber, message);
+        this.message = message;
     }
 
     /**
@@ -66,7 +58,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
     @Nonnull
     public Message getMessage()
     {
-        return event.getMessage();
+        return message;
     }
 
     /**
@@ -81,7 +73,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
     @Nonnull
     public User getAuthor()
     {
-        return event.getAuthor();
+        return message.getAuthor();
     }
 
     /**
@@ -92,12 +84,12 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @return The Author of the Message as null-able Member object.
      *
-     * @see    #isWebhookMessage()
+     * @see #isWebhookMessage()
      */
     @Nullable
     public Member getMember()
     {
-        return event.getMember();
+        return message.getMember();
     }
 
     /**
@@ -108,6 +100,6 @@ public class MessageReceivedEvent extends GenericMessageEvent
      */
     public boolean isWebhookMessage()
     {
-        return event.isWebhookMessage();
+        return message.isWebhookMessage();
     }
 }
