@@ -43,18 +43,23 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     {
         for (ChannelType channelType : ChannelType.values())
         {
+            channelType = normalizeKey(channelType);
             Class<? extends Channel> clazz = channelType.getInterface();
             if (channelType != ChannelType.UNKNOWN && type.isAssignableFrom(clazz))
                 caches.put(channelType, new TLongObjectHashMap<>());
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <C extends T> TLongObjectMap<C> getMap(@Nonnull ChannelType type)
+    // Store all threads under the same channel type, makes it easier because the interface is shared
+    private ChannelType normalizeKey(ChannelType type)
     {
-        if (!lock.writeLock().isHeldByCurrentThread())
-            throw new IllegalStateException("Cannot access map directly without holding write lock!");
-        return (TLongObjectMap<C>) caches.get(type);
+        return type.isThread() ? ChannelType.GUILD_PUBLIC_THREAD : type;
+    }
+
+    @SuppressWarnings("unchecked")
+    private  <C extends T> TLongObjectMap<C> getMap(@Nonnull ChannelType type)
+    {
+        return (TLongObjectMap<C>) caches.get(normalizeKey(type));
     }
 
     @Nullable
@@ -63,7 +68,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     {
         try (UnlockHook hook = writeLock())
         {
-            return (C) caches.get(element.getType()).put(element.getIdLong(), element);
+            return (C) getMap(element.getType()).put(element.getIdLong(), element);
         }
     }
 
@@ -73,7 +78,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     {
         try (UnlockHook hook = writeLock())
         {
-            T removed = caches.get(type).remove(id);
+            T removed = getMap(type).remove(id);
             return (C) removed;
         }
     }
@@ -208,6 +213,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             ChannelType concrete = null;
             for (ChannelType channelType : ChannelType.values())
             {
+                channelType = normalizeKey(channelType);
                 if (channelType != ChannelType.UNKNOWN && type.equals(channelType.getInterface()))
                 {
                     concrete = channelType;
@@ -246,7 +252,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             try
             {
                 Iterator<? extends C> directIterator = concreteType != null
-                        ? (Iterator<? extends C>) caches.get(concreteType).valueCollection().iterator()
+                        ? (Iterator<? extends C>) getMap(concreteType).valueCollection().iterator()
                         : caches.entrySet()
                             .stream()
                             .filter((entry) -> type.isAssignableFrom(entry.getKey().getInterface()))
@@ -269,7 +275,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         {
             try (UnlockHook hook = readLock())
             {
-                return concreteType != null ? caches.get(concreteType).size() : applyStream(Stream::count);
+                return concreteType != null ? getMap(concreteType).size() : applyStream(Stream::count);
             }
         }
 
@@ -278,7 +284,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         {
             try (UnlockHook hook = readLock())
             {
-                return concreteType != null ? caches.get(concreteType).isEmpty() : applyStream(stream -> !stream.findAny().isPresent());
+                return concreteType != null ? getMap(concreteType).isEmpty() : applyStream(stream -> !stream.findAny().isPresent());
             }
         }
 
@@ -322,7 +328,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             try (UnlockHook hook = readLock())
             {
                 if (concreteType != null)
-                    return type.cast(caches.get(concreteType).get(id));
+                    return type.cast(getMap(concreteType).get(id));
 
                 T element = ChannelCacheViewImpl.this.getElementById(id);
                 if (type.isInstance(element))
