@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
@@ -53,6 +54,7 @@ import net.dv8tion.jda.internal.entities.channel.mixin.attribute.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
@@ -220,7 +222,7 @@ public class ChannelUpdateHandler extends SocketHandler
         {
             //This assumes that if we're moving to a TextChannel that we're transitioning from a NewsChannel
             NewsChannel newsChannel = (NewsChannel) channel;
-            getJDA().getNewsChannelView().remove(newsChannel.getIdLong());
+            getJDA().getChannelsView().remove(ChannelType.NEWS, newsChannel.getIdLong());
             guild.getNewsChannelView().remove(newsChannel.getIdLong());
 
             TextChannelImpl textChannel = (TextChannelImpl) builder.createTextChannel(guild, content, guild.getIdLong());
@@ -240,7 +242,7 @@ public class ChannelUpdateHandler extends SocketHandler
         {
             //This assumes that if we're moving to a NewsChannel that we're transitioning from a TextChannel
             TextChannel textChannel = (TextChannel) channel;
-            getJDA().getTextChannelsView().remove(textChannel.getIdLong());
+            getJDA().getChannelsView().remove(ChannelType.TEXT, textChannel.getIdLong());
             guild.getTextChannelsView().remove(textChannel.getIdLong());
 
             NewsChannelImpl newsChannel = (NewsChannelImpl) builder.createNewsChannel(guild, content, guild.getIdLong());
@@ -367,16 +369,15 @@ public class ChannelUpdateHandler extends SocketHandler
         for (ThreadChannel thread : threads)
         {
             GuildImpl guild = (GuildImpl) channel.getGuild();
-            SnowflakeCacheViewImpl<ThreadChannel>
-                    guildThreadView = guild.getThreadChannelsView(),
-                    threadView = getJDA().getThreadChannelsView();
+            SnowflakeCacheViewImpl<ThreadChannel> guildThreadView = guild.getThreadChannelsView();
+            ChannelCacheViewImpl<Channel> threadView = getJDA().getChannelsView();
             try (
                     UnlockHook vlock = guildThreadView.writeLock();
                     UnlockHook jlock = threadView.writeLock())
             {
                 //TODO-threads: When we figure out how member chunking is going to work for thread related members
                 // we may need to revisit this to ensure they kicked out of the cache if needed.
-                threadView.getMap().remove(thread.getIdLong());
+                threadView.remove(thread.getType(), thread.getIdLong());
                 guildThreadView.getMap().remove(thread.getIdLong());
             }
         }
