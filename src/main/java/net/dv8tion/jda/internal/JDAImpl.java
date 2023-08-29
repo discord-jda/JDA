@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
@@ -75,6 +76,7 @@ import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
+import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
@@ -101,15 +103,8 @@ public class JDAImpl implements JDA
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
-    protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Category.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<NewsChannel> newsChannelCache = new SnowflakeCacheViewImpl<>(NewsChannel.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<ThreadChannel> threadChannelsCache = new SnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<ForumChannel> forumChannelsCache = new SnowflakeCacheViewImpl<>(ForumChannel.class, Channel::getName);
-    protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, Channel::getName);
-    protected final LinkedList<Long> privateChannelLRU = new LinkedList<>();
+    protected final ChannelCacheViewImpl<Channel> channelCache = new ChannelCacheViewImpl<>(Channel.class);
+    protected final ArrayDeque<Long> privateChannelLRU = new ArrayDeque<>();
 
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
 
@@ -268,7 +263,7 @@ public class JDAImpl implements JDA
             if (privateChannelLRU.size() > 10) // This could probably be a config option
             {
                 long removed = privateChannelLRU.removeLast();
-                privateChannelCache.remove(removed);
+                channelCache.remove(ChannelType.PRIVATE, removed);
             }
         }
     }
@@ -730,56 +725,56 @@ public class JDAImpl implements JDA
     @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
-        return categories;
+        return channelCache.ofType(Category.class);
     }
 
     @Nonnull
     @Override
     public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
-        return textChannelCache;
+        return channelCache.ofType(TextChannel.class);
     }
 
     @Nonnull
     @Override
     public SnowflakeCacheView<NewsChannel> getNewsChannelCache()
     {
-        return newsChannelCache;
+        return channelCache.ofType(NewsChannel.class);
     }
 
     @Nonnull
     @Override
     public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
-        return voiceChannelCache;
+        return channelCache.ofType(VoiceChannel.class);
     }
 
     @Nonnull
     @Override
     public SnowflakeCacheView<StageChannel> getStageChannelCache()
     {
-        return stageChannelCache;
+        return channelCache.ofType(StageChannel.class);
     }
 
     @Nonnull
     @Override
     public SnowflakeCacheView<ThreadChannel> getThreadChannelCache()
     {
-        return threadChannelsCache;
+        return channelCache.ofType(ThreadChannel.class);
     }
 
     @Nonnull
     @Override
     public SnowflakeCacheView<ForumChannel> getForumChannelCache()
     {
-        return forumChannelsCache;
+        return channelCache.ofType(ForumChannel.class);
     }
 
     @Nonnull
     @Override
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
-        return privateChannelCache;
+        return channelCache.ofType(PrivateChannel.class);
     }
 
     @Override
@@ -1243,44 +1238,9 @@ public class JDAImpl implements JDA
         return guildCache;
     }
 
-    public SnowflakeCacheViewImpl<Category> getCategoriesView()
+    public ChannelCacheViewImpl<Channel> getChannelsView()
     {
-        return categories;
-    }
-
-    public SnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
-    {
-        return textChannelCache;
-    }
-
-    public SnowflakeCacheViewImpl<NewsChannel> getNewsChannelView()
-    {
-        return newsChannelCache;
-    }
-
-    public SnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
-    {
-        return voiceChannelCache;
-    }
-
-    public SnowflakeCacheViewImpl<StageChannel> getStageChannelView()
-    {
-        return stageChannelCache;
-    }
-
-    public SnowflakeCacheViewImpl<ThreadChannel> getThreadChannelsView()
-    {
-        return threadChannelsCache;
-    }
-
-    public SnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
-    {
-        return forumChannelsCache;
-    }
-
-    public SnowflakeCacheViewImpl<PrivateChannel> getPrivateChannelsView()
-    {
-        return privateChannelCache;
+        return this.channelCache;
     }
 
     public AbstractCacheView<AudioManager> getAudioManagersView()

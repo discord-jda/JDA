@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
@@ -24,7 +23,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
 public class ChannelDeleteHandler extends SocketHandler
 {
@@ -53,7 +51,7 @@ public class ChannelDeleteHandler extends SocketHandler
         {
             case TEXT:
             {
-                TextChannel channel = getJDA().getTextChannelsView().remove(channelId);
+                TextChannel channel = getJDA().getChannelsView().remove(ChannelType.TEXT, channelId);
                 if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a text channel that is not yet cached. JSON: {}", content);
@@ -69,7 +67,7 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case NEWS:
             {
-                NewsChannel channel = getJDA().getNewsChannelView().remove(channelId);
+                NewsChannel channel = getJDA().getChannelsView().remove(ChannelType.NEWS, channelId);
                 if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a news channel that is not yet cached. JSON: {}", content);
@@ -85,7 +83,7 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case VOICE:
             {
-                VoiceChannel channel = getJDA().getVoiceChannelsView().remove(channelId);
+                VoiceChannel channel = getJDA().getChannelsView().remove(ChannelType.VOICE, channelId);
                 if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a voice channel that is not yet cached. JSON: {}", content);
@@ -109,7 +107,7 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case STAGE:
             {
-                StageChannel channel = getJDA().getStageChannelView().remove(channelId);
+                StageChannel channel = getJDA().getChannelsView().remove(ChannelType.STAGE, channelId);
                 if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a stage channel that is not yet cached. JSON: {}", content);
@@ -126,7 +124,8 @@ public class ChannelDeleteHandler extends SocketHandler
 
             case CATEGORY:
             {
-                Category category = getJDA().getCategoriesView().remove(channelId);
+                Category category = getJDA().getChannelsView().remove(ChannelType.CATEGORY, channelId);
+//                Category category = getJDA().getCategoriesView().remove(channelId);
                 if (category == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a category channel that is not yet cached. JSON: {}", content);
@@ -142,7 +141,7 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case FORUM:
             {
-                ForumChannel channel = getJDA().getForumChannelsView().remove(channelId);
+                ForumChannel channel = getJDA().getChannelsView().remove(ChannelType.FORUM, channelId);
                 if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a forum channel that is not yet cached. JSON: {}", content);
@@ -158,8 +157,7 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case PRIVATE:
             {
-                SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
-                PrivateChannel channel = privateView.remove(channelId);
+                PrivateChannel channel = getJDA().getChannelsView().remove(ChannelType.PRIVATE, channelId);
 
                 if (channel == null)
                 {

@@ -76,10 +76,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
-import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
-import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.*;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -157,51 +154,11 @@ public class GuildImpl implements Guild
     {
         //Remove everything from global cache
         // this prevents some race-conditions for getting audio managers from guilds
-        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
-        SnowflakeCacheViewImpl<StageChannel> stageView = getJDA().getStageChannelView();
-        SnowflakeCacheViewImpl<TextChannel> textView = getJDA().getTextChannelsView();
-        SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
-        SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
-        SnowflakeCacheViewImpl<ForumChannel> forumView = getJDA().getForumChannelsView();
-        SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
-        SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
 
-        guildView.remove(id);
-
-        try (UnlockHook hook = stageView.writeLock())
+        ChannelCacheViewImpl<Channel> channelsView = getJDA().getChannelsView();
+        try (UnlockHook hook = channelsView.writeLock())
         {
-            getStageChannelCache()
-                .forEachUnordered(chan -> stageView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = textView.writeLock())
-        {
-            getTextChannelCache()
-                .forEachUnordered(chan -> textView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = threadView.writeLock())
-        {
-            getThreadChannelsView()
-                .forEachUnordered(chan -> threadView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = newsView.writeLock())
-        {
-            getNewsChannelCache()
-                .forEachUnordered(chan -> newsView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = forumView.writeLock())
-        {
-            getForumChannelCache()
-                .forEachUnordered(chan -> forumView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = voiceView.writeLock())
-        {
-            getVoiceChannelCache()
-                .forEachUnordered(chan -> voiceView.getMap().remove(chan.getIdLong()));
-        }
-        try (UnlockHook hook = categoryView.writeLock())
-        {
-            getCategoryCache()
-                .forEachUnordered(chan -> categoryView.getMap().remove(chan.getIdLong()));
+            getChannels().forEach(channel -> channelsView.remove(channel.getType(), channel.getIdLong()));
         }
 
         // Clear audio connection

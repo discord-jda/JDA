@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
@@ -68,6 +69,7 @@ import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
@@ -1076,21 +1078,20 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        CategoryImpl channel = (CategoryImpl) getJDA().getCategoriesView().get(id);
+        CategoryImpl channel = (CategoryImpl) getJDA().getChannelsView().getElementById(id);
         if (channel == null)
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<Category>
-                    guildCategoryView = guild.getCategoriesView(),
-                    categoryView = getJDA().getCategoriesView();
+            SnowflakeCacheViewImpl<Category> guildCategoryView = guild.getCategoriesView();
+            ChannelCacheViewImpl<Channel> categoryView = getJDA().getChannelsView();
             try (
                 UnlockHook glock = guildCategoryView.writeLock();
                 UnlockHook jlock = categoryView.writeLock())
             {
                 channel = new CategoryImpl(id, guild);
                 guildCategoryView.getMap().put(id, channel);
-                playbackCache = categoryView.getMap().put(id, channel) == null;
+                playbackCache = categoryView.put(channel) == null;
             }
         }
 
@@ -1114,21 +1115,20 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        TextChannelImpl channel = (TextChannelImpl) getJDA().getTextChannelsView().get(id);
+        TextChannelImpl channel = (TextChannelImpl) getJDA().getTextChannelById(id);
         if (channel == null)
         {
             if (guildObj == null)
                 guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<TextChannel>
-                    guildTextView = guildObj.getTextChannelsView(),
-                    textView = getJDA().getTextChannelsView();
+            SnowflakeCacheViewImpl<TextChannel> guildTextView = guildObj.getTextChannelsView();
+            ChannelCacheViewImpl<Channel> textView = getJDA().getChannelsView();
             try (
                 UnlockHook glock = guildTextView.writeLock();
                 UnlockHook jlock = textView.writeLock())
             {
                 channel = new TextChannelImpl(id, guildObj);
                 guildTextView.getMap().put(id, channel);
-                playbackCache = textView.getMap().put(id, channel) == null;
+                playbackCache = textView.put(channel) == null;
             }
         }
 
@@ -1158,21 +1158,20 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        NewsChannelImpl channel = (NewsChannelImpl) getJDA().getNewsChannelView().get(id);
+        NewsChannelImpl channel = (NewsChannelImpl) getJDA().getNewsChannelById(id);
         if (channel == null)
         {
             if (guildObj == null)
                 guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<NewsChannel>
-                    guildNewsView = guildObj.getNewsChannelView(),
-                    newsView = getJDA().getNewsChannelView();
+            SnowflakeCacheViewImpl<NewsChannel> guildNewsView = guildObj.getNewsChannelView();
+            ChannelCacheViewImpl<Channel> newsView = getJDA().getChannelsView();
             try (
                     UnlockHook glock = guildNewsView.writeLock();
                     UnlockHook jlock = newsView.writeLock())
             {
                 channel = new NewsChannelImpl(id, guildObj);
                 guildNewsView.getMap().put(id, channel);
-                playbackCache = newsView.getMap().put(id, channel) == null;
+                playbackCache = newsView.put(channel) == null;
             }
         }
 
@@ -1199,21 +1198,20 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        VoiceChannelImpl channel = ((VoiceChannelImpl) getJDA().getVoiceChannelsView().get(id));
+        VoiceChannelImpl channel = (VoiceChannelImpl) getJDA().getVoiceChannelById(id);
         if (channel == null)
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<VoiceChannel>
-                    guildVoiceView = guild.getVoiceChannelsView(),
-                    voiceView = getJDA().getVoiceChannelsView();
+            SnowflakeCacheViewImpl<VoiceChannel> guildVoiceView = guild.getVoiceChannelsView();
+            ChannelCacheViewImpl<Channel> voiceView = getJDA().getChannelsView();
             try (
                 UnlockHook vlock = guildVoiceView.writeLock();
                 UnlockHook jlock = voiceView.writeLock())
             {
                 channel = new VoiceChannelImpl(id, guild);
                 guildVoiceView.getMap().put(id, channel);
-                playbackCache = voiceView.getMap().put(id, channel) == null;
+                playbackCache = voiceView.put(channel) == null;
             }
         }
 
@@ -1244,21 +1242,20 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        StageChannelImpl channel = ((StageChannelImpl) getJDA().getStageChannelView().get(id));
+        StageChannelImpl channel = (StageChannelImpl) getJDA().getStageChannelById(id);
         if (channel == null)
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<StageChannel>
-                    guildStageView = guild.getStageChannelsView(),
-                    stageView = getJDA().getStageChannelView();
+            SnowflakeCacheViewImpl<StageChannel> guildStageView = guild.getStageChannelsView();
+            ChannelCacheViewImpl<Channel> stageView = getJDA().getChannelsView();
             try (
                     UnlockHook vlock = guildStageView.writeLock();
                     UnlockHook jlock = stageView.writeLock())
             {
                 channel = new StageChannelImpl(id, guild);
                 guildStageView.getMap().put(id, channel);
-                playbackCache = stageView.getMap().put(id, channel) == null;
+                playbackCache = stageView.put(channel) == null;
             }
         }
 
@@ -1299,19 +1296,18 @@ public class EntityBuilder
         if (parent == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
-        ThreadChannelImpl channel = ((ThreadChannelImpl) getJDA().getThreadChannelsView().get(id));
+        ThreadChannelImpl channel = ((ThreadChannelImpl) getJDA().getThreadChannelById(id));
         if (channel == null)
         {
-            SnowflakeCacheViewImpl<ThreadChannel>
-                    guildThreadView = guild.getThreadChannelsView(),
-                    threadView = getJDA().getThreadChannelsView();
+            SnowflakeCacheViewImpl<ThreadChannel> guildThreadView = guild.getThreadChannelsView();
+            ChannelCacheViewImpl<Channel> threadView = getJDA().getChannelsView();
             try (
                     UnlockHook vlock = guildThreadView.writeLock();
                     UnlockHook jlock = threadView.writeLock())
             {
                 channel = new ThreadChannelImpl(id, guild, type);
                 guildThreadView.getMap().put(id, channel);
-                playbackCache = threadView.getMap().put(id, channel) == null;
+                playbackCache = threadView.put(channel) == null;
             }
         }
 
@@ -1383,21 +1379,20 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        ForumChannelImpl channel = (ForumChannelImpl) getJDA().getForumChannelsView().get(id);
+        ForumChannelImpl channel = (ForumChannelImpl) getJDA().getForumChannelById(id);
         if (channel == null)
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<ForumChannel>
-                    guildView = guild.getForumChannelsView(),
-                    globalView = getJDA().getForumChannelsView();
+            SnowflakeCacheViewImpl<ForumChannel> guildView = guild.getForumChannelsView();
+            ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
                     UnlockHook vlock = guildView.writeLock();
                     UnlockHook jlock = globalView.writeLock())
             {
                 channel = new ForumChannelImpl(id, guild);
                 guildView.getMap().put(id, channel);
-                playbackCache = globalView.getMap().put(id, channel) == null;
+                playbackCache = globalView.put(channel) == null;
             }
         }
 
@@ -1497,11 +1492,8 @@ public class EntityBuilder
 
     private void cachePrivateChannel(PrivateChannelImpl priv)
     {
-        SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
-        try (UnlockHook hook = privateView.writeLock())
-        {
-            privateView.getMap().put(priv.getIdLong(), priv);
-        }
+        ChannelCacheViewImpl<Channel> privateView = getJDA().getChannelsView();
+        privateView.put(priv);
         api.usedPrivateChannel(priv.getIdLong());
         getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, priv.getIdLong());
     }
