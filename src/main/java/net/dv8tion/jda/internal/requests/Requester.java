@@ -306,7 +306,7 @@ public class Requester
         if (apiRequest.getHeaders() != null)
         {
             for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
-                builder.addHeader(header.getKey(), header.getValue());
+                builder.header(header.getKey(), header.getValue());
         }
     }
 
