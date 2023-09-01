@@ -36,6 +36,15 @@ import java.util.function.BooleanSupplier;
  */
 public interface InviteAction extends AuditableRestAction<Invite>
 {
+    /**
+     * The maximum age, 30 days, in seconds, for a restricted invite.
+     *
+     * <p>A restricted invite is an invite that is created in a non-community server</p>
+     *
+     * @see #isRestricted()
+     */
+    public static final int MAX_RESTRICTED_AGE = 2592000;
+
     @Nonnull
     @Override
     InviteAction setCheck(@Nullable BooleanSupplier checks);
@@ -49,16 +58,27 @@ public interface InviteAction extends AuditableRestAction<Invite>
     InviteAction deadline(long timestamp);
 
     /**
+     * Invites created in non-community servers are not allowed to be permanent,
+     * and are restricted to a maximum age of 30 days.
+     *
+     * @see #MAX_RESTRICTED_AGE
+     */
+    boolean isRestricted();
+
+    /**
      * Sets the max age in seconds for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
      * {@code null} will reset this to the default value.
+     *
+     * <p>Invites in non-community servers are not allowed to be permanent, with an allowed range of {@code 1} (1 second) to {@code 2592000} (30 days).</p>
      *
      * @param  maxAge
      *         The max age for this invite or {@code null} to use the default value.
      *
      * @throws IllegalArgumentException
-     *         If maxAge is negative.
+     *         If maxAge is negative, or if the guild is not a community guild and maxAge is not in the allowed range.
      *
      * @return The current InviteAction for chaining.
+     * @see #isRestricted()
      */
     @Nonnull
     @CheckReturnValue
@@ -68,15 +88,20 @@ public interface InviteAction extends AuditableRestAction<Invite>
      * Sets the max age for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
      * {@code null} will reset this to the default value.
      *
+     * <p>Invites in non-community servers are not allowed to be permanent, with an allowed range from 1 second to 30 days.</p>
+     *
      * @param  maxAge
      *         The max age for this invite or {@code null} to use the default value.
      * @param  timeUnit
      *         The {@link java.util.concurrent.TimeUnit TimeUnit} type of {@code maxAge}.
      *
      * @throws IllegalArgumentException
-     *         If maxAge is negative or maxAge is positive and timeUnit is null.
+     *         If maxAge is negative,
+     *         timeUnit is null,
+     *         or if the guild is not a community guild and maxAge is not in the allowed range.
      *
      * @return The current InviteAction for chaining.
+     * @see #isRestricted()
      */
     @Nonnull
     @CheckReturnValue
@@ -235,5 +260,4 @@ public interface InviteAction extends AuditableRestAction<Invite>
         Checks.notNull(member, "Member");
         return setTargetStream(member.getIdLong());
     }
-
 }

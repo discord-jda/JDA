@@ -43,7 +43,7 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>> exten
     {
         checkPermission(Permission.CREATE_INSTANT_INVITE);
 
-        return new InviteActionImpl(this.getJDA(), this.getId());
+        return new InviteActionImpl(this.getJDA(), this.getId(), !this.getGuild().getFeatures().contains("COMMUNITY"));
     }
 
     @Nonnull
