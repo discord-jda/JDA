@@ -911,4 +911,20 @@ public class DataObject implements SerializableData
         throw new ParsingException(Helpers.format("Cannot parse value for %s into type %s: %s instance of %s",
                                                       key, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof DataObject))
+            return false;
+        return ((DataObject) obj).toMap().equals(this.toMap());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return toMap().hashCode();
+    }
 }
