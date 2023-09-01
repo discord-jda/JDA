@@ -72,6 +72,7 @@ public class InviteCreateHandler extends SocketHandler
                 .orElse(null);
 
         Optional<DataObject> inviterJson = content.optObject("inviter");
+        boolean expanded = maxUses != -1;
 
         User inviter = inviterJson.map(json -> getJDA().getEntityBuilder().createUser(json)).orElse(null);
         InviteImpl.ChannelImpl channel = new InviteImpl.ChannelImpl(realChannel);
@@ -101,7 +102,7 @@ public class InviteCreateHandler extends SocketHandler
             target = new InviteImpl.InviteTargetImpl(targetType, null, null);
         }
 
-        Invite invite = new InviteImpl(getJDA(), code, inviter, maxAge,
+        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge,
                                        maxUses, temporary, creationTime, expirationTime,
                                  0, channel, guild, null, target, Invite.InviteType.GUILD);
         getJDA().handleEvent(

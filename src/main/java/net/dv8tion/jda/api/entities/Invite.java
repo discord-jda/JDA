@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -112,13 +111,27 @@ public interface Invite
     AuditableRestAction<Void> delete();
 
     /**
+     * Tries to retrieve a new expanded {@link Invite Invite} with more info.
+     * <br>As bots can't be in groups this is only available for guild invites and will throw an {@link java.lang.IllegalStateException IllegalStateException}
+     * for other types.
+     * <br>Requires either {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild or
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
+     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
-     * @deprecated All properties are now available without expanding
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         if the account neither has {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the invite's guild nor
+     *         {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel
+     * @throws java.lang.IllegalStateException
+     *         If this is a group invite
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Invite Invite}
+     *         <br>The expanded Invite object
+     *
+     * @see    #getType()
+     * @see    #isExpanded()
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval
     RestAction<Invite> expand();
 
     /**
@@ -205,7 +218,7 @@ public interface Invite
     Guild getGuild();
 
     /**
-     * The user who created this invite.
+     * The user who created this invite. For a non-expanded invite, this may be null.
      *
      * @return The user who created this invite. If this is a {@link Invite.InviteType#FRIEND Friend invite} this is the target.
      */
@@ -223,17 +236,26 @@ public interface Invite
     /**
      * The max age of this invite in seconds.
      *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     *
+     * @throws IllegalStateException
+     *         if this invite is not expanded
+     *
      * @return The max age of this invite in seconds
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     int getMaxAge();
 
     /**
-     * The max uses of this invite. If there is no limit thus will return {@code 0}.
+     * The max uses of this invite.
+     * If there is no limit this will return {@code 0}.
      *
-     * <p>This works only for guild and friend invites and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
+     * <p>This works only for expanded invites, and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
      *
      * @throws java.lang.IllegalStateException
-     *         if this is not a guild or friend invite
+     *         if this is not an expanded invite
      * @return The max uses of this invite or {@code 0} if there is no limit
      */
     int getMaxUses();
@@ -241,7 +263,15 @@ public interface Invite
     /**
      * Returns creation date of this invite.
      *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     *
+     * @throws IllegalStateException
+     *         if this invite is not expanded
+     *
      * @return The creation date of this invite
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     @Nonnull
     OffsetDateTime getTimeCreated();
@@ -257,34 +287,43 @@ public interface Invite
     /**
      * How often this invite has been used.
      *
-     * <p>This works only for guild and friend invites and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
      * @throws java.lang.IllegalStateException
-     *         if this is not a guild or friend invite
+     *         if this invite is not expanded
      *
      * @return The uses of this invite
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     int getUses();
 
     /**
-     * Every invite is considered expanded.
-     * Discord no longer has a distinction between expanded and unexpanded invites.
+     * Whether this Invite is expanded or not. Expanded invites contain more information, but they can only be
+     * obtained by {@link net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild#retrieveInvites()} (requires
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}) or
+     * {@link net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer#retrieveInvites() IInviteContainer#retrieveInvites()} (requires
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}).
      *
-     * @deprecated All properties for guild invites are now available without expanding
+     * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.
+     *
+     * @return Whether this invite is expanded or not
+     *
+     * @see    #expand()
      */
-    @Deprecated
-    @ForRemoval
     boolean isExpanded();
 
     /**
      * Whether this Invite grants only temporary access or not.
      *
-     * <p>This works only for guild invites and will throw a {@link java.lang.IllegalStateException} otherwise!</p>
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!</p>
      *
-     * @throws java.lang.IllegalStateException
-     *         if this is not a guild invite
+     * @throws IllegalStateException
+     *         if this invite is not expanded
      *
      * @return Whether this invite is temporary or not
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     boolean isTemporary();
 

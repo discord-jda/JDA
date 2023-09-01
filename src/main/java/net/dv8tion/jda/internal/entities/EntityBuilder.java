@@ -2254,12 +2254,11 @@ public class EntityBuilder
         final int maxUses;
         final boolean temporary = object.getBoolean("temporary", false);
         final int uses;
+        final boolean expanded = object.hasKey("max_uses");
 
-        if (object.hasKey("max_uses"))
+        if (expanded)
         {
-            // this information is available on both guild and friend invites, but not group invites
             maxUses = object.getInt("max_uses", -1);
-            // this field is only present on guilds when uses > 0, so default it to 0
             uses = object.getInt("uses", 0);
         }
         else
@@ -2273,7 +2272,7 @@ public class EntityBuilder
         final String expiresAt = object.getString("expires_at", null);
         final OffsetDateTime timeExpires = expiresAt != null ? OffsetDateTime.parse(expiresAt) : null;
 
-        return new InviteImpl(getJDA(), code, inviter, maxAge,
+        return new InviteImpl(getJDA(), code, expanded, inviter, maxAge,
                               maxUses, temporary, timeCreated, timeExpires,
                               uses, channel, guild, group, target, type);
     }
