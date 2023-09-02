@@ -196,6 +196,14 @@ public enum MessageType
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, true),
 
     /**
+     * Sent when a moderator activates a temporary security measure, such as pausing invites or direct messages.
+     * <br>The message content is an ISO 8601 timestamp, which indicates when the action expires and disables the security measures automatically.
+     *
+     * @see java.time.OffsetDateTime#parse(CharSequence)
+     */
+    GUILD_SECURITY_ACTION(36, true, false),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1, false, true);
