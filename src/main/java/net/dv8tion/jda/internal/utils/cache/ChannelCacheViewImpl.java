@@ -32,12 +32,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<Channel> implements ChannelCacheView<T>
+public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<T> implements ChannelCacheView<T>
 {
-    private final EnumMap<ChannelType, TLongObjectMap<T>> caches = new EnumMap<>(ChannelType.class);
+    protected final EnumMap<ChannelType, TLongObjectMap<T>> caches = new EnumMap<>(ChannelType.class);
 
     public ChannelCacheViewImpl(Class<T> type)
     {
@@ -51,13 +52,13 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     }
 
     // Store all threads under the same channel type, makes it easier because the interface is shared
-    private ChannelType normalizeKey(ChannelType type)
+    protected ChannelType normalizeKey(ChannelType type)
     {
         return type.isThread() ? ChannelType.GUILD_PUBLIC_THREAD : type;
     }
 
     @SuppressWarnings("unchecked")
-    private  <C extends T> TLongObjectMap<C> getMap(@Nonnull ChannelType type)
+    protected <C extends T> TLongObjectMap<C> getMap(@Nonnull ChannelType type)
     {
         return (TLongObjectMap<C>) caches.get(normalizeKey(type));
     }
@@ -98,22 +99,36 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         return new FilteredCacheView<>(type);
     }
 
+    @Override
+    public void forEach(Consumer<? super T> action)
+    {
+        try (UnlockHook hook = readLock())
+        {
+            for (TLongObjectMap<T> cache : caches.values())
+            {
+                cache.valueCollection().forEach(action);
+            }
+        }
+    }
+
     @Nonnull
     @Override
     public List<T> asList()
     {
-        return applyStream(stream -> stream.collect(Helpers.toUnmodifiableList()));
+        List<T> list = getCachedList();
+        if (list == null)
+            list = cache((List<T>) applyStream(stream -> stream.collect(Collectors.toList())));
+        return list;
     }
 
     @Nonnull
     @Override
     public Set<T> asSet()
     {
-        return applyStream(stream -> stream.collect(
-            Collectors.collectingAndThen(
-                Collectors.toSet(),
-                Collections::unmodifiableSet
-        )));
+        Set<T> set = getCachedSet();
+        if (set == null)
+            set = cache((Set<T>) applyStream(stream -> stream.collect(Collectors.toSet())));
+        return set;
     }
 
     @Nonnull
@@ -201,12 +216,12 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         return stream().iterator();
     }
 
-    private final class FilteredCacheView<C extends T> implements ChannelCacheView<C>
+    protected class FilteredCacheView<C extends T> implements ChannelCacheView<C>
     {
-        private final Class<C> type;
-        private final ChannelType concreteType;
+        protected final Class<C> type;
+        protected final ChannelType concreteType;
 
-        private FilteredCacheView(Class<C> type)
+        protected FilteredCacheView(Class<C> type)
         {
             Checks.notNull(type, "Channel Type");
             this.type = type;
