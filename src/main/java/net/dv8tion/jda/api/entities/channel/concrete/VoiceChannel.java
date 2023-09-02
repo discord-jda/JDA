@@ -68,4 +68,14 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
     @Nonnull
     @Override
     VoiceChannelManager getManager();
+
+    /**
+     * The current voice channel status.
+     * <br>This can be configured by users who are connected
+     * and have the {@link net.dv8tion.jda.api.Permission#VOICE_SET_STATUS set voice channel status} permission.
+     *
+     * @return The current voice channel status, or empty string if unset
+     */
+    @Nonnull
+    String getStatus();
 }

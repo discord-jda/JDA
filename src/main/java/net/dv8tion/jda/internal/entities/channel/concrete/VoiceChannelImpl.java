@@ -55,6 +55,7 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
 
     private String region;
+    private String status = "";
     private long latestMessageId;
     private int bitrate;
     private int userLimit;
@@ -162,6 +163,13 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
         return new VoiceChannelManagerImpl(this);
     }
 
+    @Nonnull
+    @Override
+    public String getStatus()
+    {
+        return status;
+    }
+
     @Override
     public TLongObjectMap<Member> getConnectedMembersMap()
     {
@@ -207,6 +215,12 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
     {
         this.latestMessageId = latestMessageId;
+        return this;
+    }
+
+    public VoiceChannelImpl setStatus(String status)
+    {
+        this.status = status;
         return this;
     }
 
