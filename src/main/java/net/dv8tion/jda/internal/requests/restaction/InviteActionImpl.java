@@ -82,7 +82,8 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     {
         if (maxAge != null)
             Checks.notNegative(maxAge, "maxAge");
-        if (restricted) {
+        if (restricted)
+        {
             Checks.check(maxAge != null && maxAge >= 1 && maxAge <= MAX_RESTRICTED_AGE,
                 "maxAge for invites in non-community guilds must be between 1 second and 30 days!");
         }

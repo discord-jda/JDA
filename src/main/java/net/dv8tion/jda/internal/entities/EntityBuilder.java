@@ -2177,7 +2177,6 @@ public class EntityBuilder
             guild = null;
             channel = null;
 
-            assert channelObject != null;
             final String groupName = channelObject.getString("name", "");
             final long groupId = channelObject.getLong("id");
             final String groupIconId = channelObject.getString("icon", null);
