@@ -242,7 +242,7 @@ public class GuildImpl implements Guild
         }
     }
 
-    public void uncacheChannel(GuildChannel channel)
+    public void uncacheChannel(GuildChannel channel, boolean keepThreads)
     {
         long id = channel.getIdLong();
         switch (channel.getType())
@@ -283,9 +283,9 @@ public class GuildImpl implements Guild
             break;
         }
 
-        // Remove dangling threads
-        if (channel instanceof IThreadContainer)
+        if (!keepThreads && channel instanceof IThreadContainer)
         {
+            // Remove dangling threads
             SortedSnowflakeCacheViewImpl<ThreadChannel> localView = this.getThreadChannelsView();
             SnowflakeCacheViewImpl<ThreadChannel> globalView = api.getThreadChannelsView();
             Predicate<ThreadChannel> predicate = thread -> channel.equals(thread.getParentChannel());

@@ -65,6 +65,7 @@ import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -194,42 +195,23 @@ public class ChannelUpdateHandler extends SocketHandler
 
         ChannelType oldType = channel.getType();
 
-        long id = channel.getIdLong();
-        switch (oldType)
+        EnumSet<ChannelType> expectedTypes = EnumSet.complementOf(EnumSet.of(
+            ChannelType.PRIVATE,
+            ChannelType.GROUP,
+            ChannelType.GUILD_NEWS_THREAD,
+            ChannelType.GUILD_PRIVATE_THREAD,
+            ChannelType.GUILD_PUBLIC_THREAD,
+            ChannelType.UNKNOWN
+        ));
+
+        if (!expectedTypes.contains(oldType))
         {
-        case TEXT:
-            getJDA().getTextChannelsView().remove(id);
-            guild.getTextChannelsView().remove(id);
-            break;
-        case NEWS:
-            getJDA().getNewsChannelView().remove(id);
-            guild.getNewsChannelView().remove(id);
-            break;
-        case MEDIA:
-            getJDA().getMediaChannelsView().remove(id);
-            guild.getMediaChannelsView().remove(id);
-            break;
-        case FORUM:
-            getJDA().getForumChannelsView().remove(id);
-            guild.getForumChannelsView().remove(id);
-            break;
-        case VOICE:
-            getJDA().getVoiceChannelsView().remove(id);
-            guild.getVoiceChannelsView().remove(id);
-            break;
-        case STAGE:
-            getJDA().getStageChannelView().remove(id);
-            guild.getStageChannelsView().remove(id);
-            break;
-        case CATEGORY:
-            getJDA().getCategoriesView().remove(id);
-            guild.getCategoriesView().remove(id);
-            break;
-        default:
             WebSocketClient.LOG.warn("Unexpected channel type change {}->{}, discarding from cache.", channel.getType().getId(), content.getInt("type"));
-            guild.uncacheChannel(channel);
+            guild.uncacheChannel(channel, false);
             return null;
         }
+
+        guild.uncacheChannel(channel, true);
 
         Channel newChannel;
         switch (newChannelType)
@@ -257,7 +239,7 @@ public class ChannelUpdateHandler extends SocketHandler
             break;
         default:
             WebSocketClient.LOG.warn("Unexpected channel type change {}->{}, discarding from cache.", channel.getType().getId(), content.getInt("type"));
-            guild.uncacheChannel(channel);
+            guild.uncacheChannel(channel, false);
             return null;
         }
 
