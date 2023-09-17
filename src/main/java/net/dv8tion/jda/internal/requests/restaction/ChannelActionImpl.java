@@ -64,6 +64,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
     private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
     private static final EnumSet<ChannelType> POST_CONTAINERS = EnumSet.of(ChannelType.FORUM, ChannelType.MEDIA);
+    private static final EnumSet<ChannelType> THREAD_CONTAINERS = EnumSet.of(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.MEDIA);
 
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
@@ -81,6 +82,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     // --text/forum/voice only--
     protected Integer slowmode = null;
+    protected Integer defaultThreadSlowmode = null;
 
     // --text/forum/voice/news--
     protected String topic = null;
@@ -220,6 +222,16 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "Slowmode");
         Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> setDefaultThreadSlowmode(int slowmode)
+    {
+        Checks.checkSupportedChannelTypes(THREAD_CONTAINERS, type, "Default Thread Slowmode");
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
+        this.defaultThreadSlowmode = slowmode;
         return this;
     }
 
@@ -425,6 +437,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         //Text and Forum
         if (slowmode != null)
             object.put("rate_limit_per_user", slowmode);
+        if (defaultThreadSlowmode != null)
+            object.put("default_thread_rate_limit_per_user", defaultThreadSlowmode);
 
         //Text, Forum, and News
         if (topic != null && !topic.isEmpty())

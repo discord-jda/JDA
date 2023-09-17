@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
@@ -86,6 +87,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected boolean invitable;
     protected int position;
     protected int slowmode;
+    protected int defaultThreadSlowmode;
     protected int userlimit;
     protected int bitrate;
 
@@ -497,6 +499,17 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     @Nonnull
     @CheckReturnValue
+    public M setDefaultThreadSlowmode(int slowmode)
+    {
+        Checks.check(channel instanceof IThreadContainer, "Cannot set default thread slowmode on channels of type %s!", channel.getType());
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
+        this.defaultThreadSlowmode = slowmode;
+        set |= DEFAULT_THREAD_SLOWMODE;
+        return (M) this;
+    }
+
+    @Nonnull
+    @CheckReturnValue
     public M setUserLimit(int userLimit)
     {
         Checks.notNegative(userLimit, "Userlimit");
@@ -692,6 +705,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("nsfw", nsfw);
         if (shouldUpdate(SLOWMODE))
             frame.put("rate_limit_per_user", slowmode);
+        if (shouldUpdate(DEFAULT_THREAD_SLOWMODE))
+            frame.put("default_thread_rate_limit_per_user", defaultThreadSlowmode);
         if (shouldUpdate(USERLIMIT))
             frame.put("user_limit", userlimit);
         if (shouldUpdate(BITRATE))

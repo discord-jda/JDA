@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
@@ -198,6 +199,30 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> setSlowmode(int slowmode);
+
+    /**
+     * Sets the slowmode value, which limits the amount of time that individual users must wait
+     * between sending messages in the new channel. This is measured in seconds.
+     * <br>This is applied to newly created threads by default.
+     *
+     * <p>Note: Bots are unaffected by this.
+     * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
+     * grants immunity to slowmode.
+     *
+     * @param  slowmode
+     *         The number of seconds required to wait between sending messages in the channel.
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a {@link IThreadContainer}
+     * @throws IllegalArgumentException
+     *         If the {@code slowmode} is greater than {@link ISlowmodeChannel#MAX_SLOWMODE ISlowmodeChannel.MAX_SLOWMODE}, or less than 0
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setDefaultThreadSlowmode(int slowmode);
 
     /**
      * Sets the <b><u>default reaction emoji</u></b> of the channel.

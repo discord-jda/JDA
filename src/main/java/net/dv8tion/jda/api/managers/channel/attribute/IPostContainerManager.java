@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagData;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.managers.channel.ChannelManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -35,7 +34,7 @@ import java.util.List;
  * @param <T> The channel type
  * @param <M> The manager type
  */
-public interface IPostContainerManager<T extends IPostContainer, M extends IPostContainerManager<T, M>> extends ChannelManager<T, M>, IPermissionContainerManager<T, M>
+public interface IPostContainerManager<T extends IPostContainer, M extends IPostContainerManager<T, M>> extends IThreadContainerManager<T, M>, IPermissionContainerManager<T, M>
 {
     /**
      * Sets the tag requirement state of this {@link IPostContainer}.
