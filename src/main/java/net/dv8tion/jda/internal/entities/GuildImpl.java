@@ -1503,9 +1503,7 @@ public class GuildImpl implements Guild
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
         checkOwner(user.getIdLong(), "kick");
-        Member member = resolveMember(user);
-        if (member != null) // If user is in guild. Check if we are able to ban.
-            checkPosition(member);
+        checkPosition(user);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -1521,10 +1519,7 @@ public class GuildImpl implements Guild
         Checks.check(unit.toDays(duration) <= 7, "Deletion timeframe must not be larger than 7 days");
         checkPermission(Permission.BAN_MEMBERS);
         checkOwner(user.getIdLong(), "ban");
-
-        Member member = resolveMember(user);
-        if (member != null) // If user is in guild. Check if we are able to ban.
-            checkPosition(member);
+        checkPosition(user);
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
@@ -1557,6 +1552,7 @@ public class GuildImpl implements Guild
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
         checkOwner(user.getIdLong(), "time out");
+        checkPosition(user);
 
         return timeoutUntilById0(user.getId(), date);
     }
@@ -1961,8 +1957,9 @@ public class GuildImpl implements Guild
             throw new InsufficientPermissionException(this, perm);
     }
 
-    protected void checkPosition(Member member)
+    protected void checkPosition(UserSnowflake user)
     {
+        Member member = resolveMember(user);
         if(!getSelfMember().canInteract(member))
             throw new HierarchyException("Can't modify a member with higher or equal highest role than yourself!");
     }
