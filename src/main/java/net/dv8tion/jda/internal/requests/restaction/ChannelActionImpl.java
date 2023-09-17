@@ -195,8 +195,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "Topic");
         if (topic != null)
         {
-            if (type == ChannelType.FORUM || type == ChannelType.MEDIA)
-                Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
+            if (POST_CONTAINERS.contains(type))
+                Checks.notLonger(topic, IPostContainer.MAX_POST_CONTAINER_TOPIC_LENGTH, "Topic");
             else
                 Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
         }

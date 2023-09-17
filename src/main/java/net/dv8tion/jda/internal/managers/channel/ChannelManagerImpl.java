@@ -466,7 +466,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "topic");
         if (topic != null)
         {
-            if (type == ChannelType.FORUM ||type == ChannelType.MEDIA)
+            if (channel instanceof IPostContainer)
                 Checks.notLonger(topic, IPostContainer.MAX_POST_CONTAINER_TOPIC_LENGTH, "Topic");
             else
                 Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
@@ -601,6 +601,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setPinned(boolean pinned)
     {
+        if (!type.isThread())
+            throw new IllegalStateException("Can only pin threads.");
         if (pinned)
             flags.add(ChannelFlag.PINNED);
         else
@@ -611,6 +613,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setTagRequired(boolean requireTag)
     {
+        if (!(channel instanceof IPostContainer))
+            throw new IllegalStateException("Can only set tag required flag on forum/media channels.");
         if (requireTag)
             flags.add(ChannelFlag.REQUIRE_TAG);
         else
@@ -621,6 +625,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setHideMediaDownloadOption(boolean hideOption)
     {
+        if (!(channel instanceof MediaChannel))
+            throw new IllegalStateException("Can only set hide media download flag on media channels.");
         if (hideOption)
             flags.add(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
         else
@@ -631,7 +637,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setAvailableTags(List<? extends BaseForumTag> tags)
     {
-        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
+        if (!(channel instanceof IPostContainer))
             throw new IllegalStateException("Can only set available tags on forum/media channels.");
         Checks.noneNull(tags, "Available Tags");
         this.availableTags = new ArrayList<>(tags);
@@ -644,13 +650,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (type != ChannelType.GUILD_PUBLIC_THREAD)
             throw new IllegalStateException("Can only set applied tags on forum post thread channels.");
         Checks.noneNull(tags, "Applied Tags");
-        Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Cannot apply more than %d tags to a post thread!", ForumChannel.MAX_POST_TAGS);
+        Checks.check(tags.size() <= IPostContainer.MAX_POST_TAGS, "Cannot apply more than %d tags to a post thread!", ForumChannel.MAX_POST_TAGS);
         ThreadChannel thread = (ThreadChannel) getChannel();
         IThreadContainerUnion parentChannel = thread.getParentChannel();
-        if (!(parentChannel instanceof ForumChannel))
-            throw new IllegalStateException("Cannot apply tags to threads outside of forum channels.");
+        if (!(parentChannel instanceof IPostContainer))
+            throw new IllegalStateException("Cannot apply tags to threads outside of forum/media channels.");
         if (tags.isEmpty() && parentChannel.asForumChannel().isTagRequired())
-            throw new IllegalArgumentException("Cannot remove all tags from a forum post which requires at least one tag! See ForumChannel#isRequireTag()");
+            throw new IllegalArgumentException("Cannot remove all tags from a forum post which requires at least one tag! See IPostContainer#isRequireTag()");
         this.appliedTags = tags.stream().map(ISnowflake::getId).collect(Collectors.toList());
         set |= APPLIED_TAGS;
         return (M) this;
@@ -658,7 +664,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setDefaultReaction(Emoji emoji)
     {
-        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
+        if (!(channel instanceof IPostContainer))
             throw new IllegalStateException("Can only set default reaction on forum/media channels.");
         this.defaultReactionEmoji = emoji;
         set |= DEFAULT_REACTION;
@@ -679,7 +685,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setDefaultSortOrder(IPostContainer.SortOrder sortOrder)
     {
-        if (type != ChannelType.FORUM && type != ChannelType.MEDIA)
+        if (!(channel instanceof IPostContainer))
             throw new IllegalStateException("Can only set default layout on forum/media channels.");
         Checks.notNull(sortOrder, "SortOrder");
         if (sortOrder == IPostContainer.SortOrder.UNKNOWN)
