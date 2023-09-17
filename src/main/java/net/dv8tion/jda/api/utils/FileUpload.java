@@ -18,13 +18,16 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.utils.BufferedRequestBody;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.requestbody.DataSupplierBody;
+import net.dv8tion.jda.internal.utils.requestbody.TypedBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okio.Okio;
+import okio.Source;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +35,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.function.Supplier;
 
 /**
  * Represents a file that is intended to be uploaded to Discord for arbitrary requests.
@@ -43,14 +47,78 @@ import java.nio.file.Path;
 public class FileUpload implements Closeable, AttachedFile
 {
     private final InputStream resource;
+    private final Supplier<? extends Source> resourceSupplier;
     private String name;
-    private BufferedRequestBody body;
+    private TypedBody<?> body;
     private String description;
 
     protected FileUpload(InputStream resource, String name)
     {
         this.resource = resource;
+        this.resourceSupplier = null;
         this.name = name;
+    }
+
+    protected FileUpload(Supplier<? extends Source> resourceSupplier, String name)
+    {
+        this.resourceSupplier = resourceSupplier;
+        this.resource = null;
+        this.name = name;
+    }
+
+    /**
+     * Creates a FileUpload that sources its data from the supplier.
+     * <br>The supplier <em>must</em> return a new stream on every call.
+     *
+     * <p>The streams are expected to always be at the beginning, when they are taken from the supplier.
+     * If the supplier returned the same stream instance, the reader would start at the wrong position when re-attempting a request.
+     *
+     * <p>When this supplier factory is used, {@link #getData()} will return a new instance on each call.
+     * It is the responsibility of the caller to close that stream.
+     *
+     * @param  name
+     *         The file name
+     * @param  supplier
+     *         The resource supplier, which returns a new stream on each call
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is blank
+     *
+     * @return {@link FileUpload}
+     */
+    @Nonnull
+    public static FileUpload fromStreamSupplier(@Nonnull String name, @Nonnull Supplier<? extends InputStream> supplier)
+    {
+        Checks.notNull(supplier, "Supplier");
+        return fromSourceSupplier(name, () -> Okio.source(supplier.get()));
+    }
+
+    /**
+     * Creates a FileUpload that sources its data from the supplier.
+     * <br>The supplier <em>must</em> return a new stream on every call.
+     *
+     * <p>The streams are expected to always be at the beginning, when they are taken from the supplier.
+     * If the supplier returned the same stream instance, the reader would start at the wrong position when re-attempting a request.
+     *
+     * <p>When this supplier factory is used, {@link #getData()} will return a new instance on each call.
+     * It is the responsibility of the caller to close that stream.
+     *
+     * @param  name
+     *         The file name
+     * @param  supplier
+     *         The resource supplier, which returns a new {@link Source} on each call
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is blank
+     *
+     * @return {@link FileUpload}
+     */
+    @Nonnull
+    public static FileUpload fromSourceSupplier(@Nonnull String name, @Nonnull Supplier<? extends Source> supplier)
+    {
+        Checks.notNull(supplier, "Supplier");
+        Checks.notBlank(name, "Name");
+        return new FileUpload(supplier, name);
     }
 
     /**
@@ -320,7 +388,10 @@ public class FileUpload implements Closeable, AttachedFile
     @Nonnull
     public InputStream getData()
     {
-        return resource;
+        if (resource != null)
+            return resource;
+        else
+            return Okio.buffer(resourceSupplier.get()).inputStream();
     }
 
     /**
@@ -343,7 +414,11 @@ public class FileUpload implements Closeable, AttachedFile
         Checks.notNull(type, "Type");
         if (body != null) // This allows FileUpload to be used more than once!
             return body.withType(type);
-        return body = IOUtil.createRequestBody(type, resource);
+
+        if (resource == null)
+            return body = new DataSupplierBody(type, resourceSupplier);
+        else
+            return body = IOUtil.createRequestBody(type, resource);
     }
 
     @Override
@@ -381,7 +456,7 @@ public class FileUpload implements Closeable, AttachedFile
     @SuppressWarnings("deprecation")
     protected void finalize()
     {
-        if (body == null) // Only close if the resource was never used
+        if (body == null && resource != null) // Only close if the resource was never used
             IOUtil.silentClose(resource);
     }
 

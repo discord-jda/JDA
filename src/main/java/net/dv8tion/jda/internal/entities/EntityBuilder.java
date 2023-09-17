@@ -105,7 +105,6 @@ public class EntityBuilder
         tmp.add("flags");
         tmp.add("party");
         tmp.add("session_id");
-        tmp.add("state");
         tmp.add("sync_id");
         richGameFields = Collections.unmodifiableSet(tmp);
     }
@@ -935,15 +934,17 @@ public class EntityBuilder
 
         if (type == Activity.ActivityType.CUSTOM_STATUS)
         {
-            if (gameJson.hasKey("state") && name.equalsIgnoreCase("Custom Status"))
+            if (gameJson.hasKey("state"))
             {
                 name = gameJson.getString("state", "");
                 gameJson = gameJson.remove("state");
             }
         }
 
+        String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
+
         if (!CollectionUtils.containsAny(gameJson.keys(), richGameFields))
-            return new ActivityImpl(name, url, type, timestamps, emoji);
+            return new ActivityImpl(name, state, url, type, timestamps, emoji);
 
         // data for spotify
         long id = gameJson.getLong("application_id", 0L);
@@ -951,7 +952,6 @@ public class EntityBuilder
         String syncId = gameJson.getString("sync_id", null);
         int flags = gameJson.getInt("flags", 0);
         String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
-        String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
 
         RichPresence.Party party = null;
         if (!gameJson.isNull("party"))

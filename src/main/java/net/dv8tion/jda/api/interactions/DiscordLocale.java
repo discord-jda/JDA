@@ -84,6 +84,24 @@ public enum DiscordLocale
     }
 
     /**
+     * Creates a {@link Locale} from this DiscordLocale.
+     * <br>This is a simple shortcut to {@link Locale#forLanguageTag(String) Locale.forLanguageTag(getLocale())}.
+     *
+     * <p><b>Note:</b> The returned {@link Locale} might not be the same locale
+     * as the one passed in {@link #from(Locale) DiscordLocale#from(Locale)}.
+     * See {@link Locale#forLanguageTag(String)} for more details.
+     *
+     * @return the {@link Locale} from this DiscordLocale
+     *
+     * @see    Locale#forLanguageTag(String)
+     */
+    @Nonnull
+    public Locale toLocale()
+    {
+        return Locale.forLanguageTag(getLocale());
+    }
+
+    /**
      * The language's human-readable name, in English.
      *
      * @return The English language name
