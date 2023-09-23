@@ -25,7 +25,9 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
 {
     protected final Component.Type type;
     protected final EnumSet<ChannelType> channelTypes;
+    protected final List<DefaultValue> defaultValues;
 
     public EntitySelectMenuImpl(DataObject data)
     {
@@ -41,13 +44,19 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         this.channelTypes = Helpers.copyEnumSet(ChannelType.class, data.optArray("channel_types").map(
             arr -> arr.stream(DataArray::getInt).map(ChannelType::fromId).collect(Collectors.toList())
         ).orElse(null));
+        this.defaultValues = data.optArray("default_values").map(array ->
+            array.stream(DataArray::getObject)
+                .map(DefaultValue::fromData)
+                .collect(Helpers.toUnmodifiableList())
+        ).orElse(Collections.emptyList());
     }
 
-    public EntitySelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, Type type, EnumSet<ChannelType> channelTypes)
+    public EntitySelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, Type type, EnumSet<ChannelType> channelTypes, List<DefaultValue> defaultValues)
     {
         super(id, placeholder, minValues, maxValues, disabled);
         this.type = type;
         this.channelTypes = channelTypes;
+        this.defaultValues = defaultValues;
     }
 
     @Nonnull
@@ -83,6 +92,13 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         return channelTypes;
     }
 
+    @Nonnull
+    @Override
+    public List<DefaultValue> getDefaultValues()
+    {
+        return defaultValues;
+    }
+
     @NotNull
     @Override
     public DataObject toData()
@@ -90,13 +106,15 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         DataObject json = super.toData().put("type", type.getKey());
         if (type == Type.CHANNEL_SELECT && !channelTypes.isEmpty())
             json.put("channel_types", DataArray.fromCollection(channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
+        if (!defaultValues.isEmpty())
+            json.put("default_values", DataArray.fromCollection(defaultValues));
         return json;
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, placeholder, minValues, maxValues, disabled, type, channelTypes);
+        return Objects.hash(id, placeholder, minValues, maxValues, disabled, type, channelTypes, defaultValues);
     }
 
     @Override
@@ -113,6 +131,7 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
                 && maxValues == other.getMaxValues()
                 && disabled == other.isDisabled()
                 && type == other.getType()
-                && channelTypes.equals(other.getChannelTypes());
+                && channelTypes.equals(other.getChannelTypes())
+                && defaultValues.equals(other.getDefaultValues());
     }
 }
