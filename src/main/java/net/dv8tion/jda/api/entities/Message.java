@@ -531,7 +531,6 @@ public interface Message extends ISnowflake, Formattable
      * Whether this message instance has an available {@link #getChannel()}.
      *
      * <p>This can be {@code false} for messages sent via webhooks, or in the context of interactions.
-     * <br>Some interactions do not provide the channel instance, because they are sent from private or archived {@link ThreadChannel ThreadChannels}.
      *
      * @return True, if {@link #getChannel()} is available
      */

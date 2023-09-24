@@ -39,6 +39,7 @@ import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
@@ -51,8 +52,10 @@ import java.util.Objects;
  */
 public class MessageReaction
 {
-    private final MessageChannel channel;
+    private final JDA jda;
     private final EmojiUnion emoji;
+    private final MessageChannel channel;
+    private final long channelId;
     private final long messageId;
     private final boolean self;
     private final int count;
@@ -64,6 +67,8 @@ public class MessageReaction
      *         The {@link MessageChannel} this Reaction was used in
      * @param  emoji
      *         The {@link Emoji} that was used
+     * @param  channelId
+     *         The channel id for this reaction
      * @param  messageId
      *         The message id this reaction is attached to
      * @param  self
@@ -71,10 +76,12 @@ public class MessageReaction
      * @param  count
      *         The amount of people that reacted with this Reaction
      */
-    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull EmojiUnion emoji, long messageId, boolean self, int count)
+    public MessageReaction(@Nonnull JDA jda, @Nullable MessageChannel channel, @Nonnull EmojiUnion emoji, long channelId, long messageId, boolean self, int count)
     {
-        this.channel = channel;
+        this.jda = jda;
         this.emoji = emoji;
+        this.channel = channel;
+        this.channelId = channelId;
         this.messageId = messageId;
         this.self = self;
         this.count = count;
@@ -88,7 +95,7 @@ public class MessageReaction
     @Nonnull
     public JDA getJDA()
     {
-        return channel.getJDA();
+        return jda;
     }
 
     /**
@@ -116,6 +123,18 @@ public class MessageReaction
     public boolean hasCount()
     {
         return count >= 0;
+    }
+
+    /**
+     * Whether this reaction instance has an available {@link #getChannel()}.
+     *
+     * <p>This can be {@code false} for messages sent via webhooks, or in the context of interactions.
+     *
+     * @return True, if {@link #getChannel()} is available
+     */
+    public boolean hasChannel()
+    {
+        return channel != null;
     }
 
     /**
@@ -147,7 +166,7 @@ public class MessageReaction
     @Nonnull
     public ChannelType getChannelType()
     {
-        return channel.getType();
+        return channel != null ? channel.getType() : ChannelType.UNKNOWN_WEBHOOK_TARGET;
     }
 
     /**
@@ -168,7 +187,7 @@ public class MessageReaction
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in.
      *
      * @throws IllegalStateException
-     *         If {@link #getChannel()} is not a guild channel
+     *         If {@link #getChannel()} is not a guild channel or the channel is not provided
      *
      * @return {@link net.dv8tion.jda.api.entities.Guild Guild} this Reaction was used in
      */
@@ -182,19 +201,24 @@ public class MessageReaction
      * The {@link MessageChannel MessageChannel}
      * this Reaction was used in.
      *
+     * @throws IllegalStateException
+     *         If no channel instance is provided, this might be missing for messages sent from webhooks.
+     *
      * @return The channel this Reaction was used in
      */
     @Nonnull
     public MessageChannelUnion getChannel()
     {
-        return (MessageChannelUnion) channel;
+        if (channel != null)
+            return (MessageChannelUnion) channel;
+        throw new IllegalStateException("Cannot provide channel instance for this reaction! Use getChannelId() instead.");
     }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel channel} this Reaction was used in.
      *
      * @throws IllegalStateException
-     *          If {@link #getChannel()} is not a guild channel
+     *         If {@link #getChannel()} is not a guild channel or the channel is not provided
      *
      * @return The guild channel this Reaction was used in
      */
@@ -202,6 +226,27 @@ public class MessageReaction
     public GuildMessageChannelUnion getGuildChannel()
     {
         return (GuildMessageChannelUnion) getChannel().asGuildMessageChannel();
+    }
+
+    /**
+     * The ID for the channel this reaction happened in.
+     *
+     * @return The channel id
+     */
+    public long getChannelIdLong()
+    {
+        return channelId;
+    }
+
+    /**
+     * The ID for the channel this reaction happened in.
+     *
+     * @return The channel id
+     */
+    @Nonnull
+    public String getChannelId()
+    {
+        return Long.toUnsignedString(channelId);
     }
 
     /**
@@ -329,7 +374,7 @@ public class MessageReaction
     {
         Checks.notNull(user, "User");
         boolean self = user.equals(getJDA().getSelfUser());
-        if (!self)
+        if (!self && channel != null)
         {
             if (!channel.getType().isGuild())
                 throw new PermissionException("Unable to remove Reaction of other user in non-guild channels!");
@@ -341,7 +386,7 @@ public class MessageReaction
 
         String code = emoji.getAsReactionCode();
         String target = self ? "@me" : user.getId();
-        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getChannelId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -376,6 +421,12 @@ public class MessageReaction
     @CheckReturnValue
     public RestAction<Void> clearReactions()
     {
+        if (channel == null)
+        {
+            Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getChannelId(), getMessageId(), emoji.getAsReactionCode());
+            return new RestActionImpl<>(jda, route);
+        }
+
         // Requires permission, only works in guilds
         if (!getChannelType().isGuild())
             throw new UnsupportedOperationException("Cannot clear reactions on a message sent from a private channel");
@@ -400,6 +451,7 @@ public class MessageReaction
     public String toString()
     {
         return new EntityString(this)
+                .addMetadata("channelId", channelId)
                 .addMetadata("messageId", messageId)
                 .addMetadata("emoji", emoji)
                 .toString();

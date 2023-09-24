@@ -1708,8 +1708,7 @@ public class EntityBuilder
         MessageChannel tmpChannel = channel; // because java
         final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
-        // TODO: Fix channel handling, does this even need a channel instance?
-        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
+        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, channelId, id, obj));
         final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
 
         // Message activity (for game invites/spotify)
@@ -1853,14 +1852,14 @@ public class EntityBuilder
         return new MessageActivity(activityType, partyId, application);
     }
 
-    public MessageReaction createMessageReaction(MessageChannel chan, long id, DataObject obj)
+    public MessageReaction createMessageReaction(MessageChannel chan, long channelId, long messageId, DataObject obj)
     {
         DataObject emoji = obj.getObject("emoji");
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
         EmojiUnion emojiObj = createEmoji(emoji);
 
-        return new MessageReaction(chan, emojiObj, id, me, count);
+        return new MessageReaction(api, chan, emojiObj, channelId, messageId, me, count);
     }
 
     public Message.Attachment createMessageAttachment(DataObject jsonObject)
