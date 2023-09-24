@@ -41,9 +41,9 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * <p>A restricted invite is an invite that is created in a non-community server</p>
      *
-     * @see #isRestricted()
+     * @see #hasCommunityRestrictions()
      */
-    public static final int MAX_RESTRICTED_AGE = 2592000;
+    int MAX_RESTRICTED_AGE = 2592000;
 
     @Nonnull
     @Override
@@ -63,7 +63,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *
      * @see #MAX_RESTRICTED_AGE
      */
-    boolean isRestricted();
+    boolean hasCommunityRestrictions();
 
     /**
      * Sets the max age in seconds for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
@@ -78,7 +78,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *         If maxAge is negative, or if the guild is not a community guild and maxAge is not in the allowed range.
      *
      * @return The current InviteAction for chaining.
-     * @see #isRestricted()
+     * @see #hasCommunityRestrictions()
      */
     @Nonnull
     @CheckReturnValue
@@ -101,7 +101,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      *         or if the guild is not a community guild and maxAge is not in the allowed range.
      *
      * @return The current InviteAction for chaining.
-     * @see #isRestricted()
+     * @see #hasCommunityRestrictions()
      */
     @Nonnull
     @CheckReturnValue
