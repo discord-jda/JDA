@@ -69,7 +69,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      * Sets the max age in seconds for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
      * {@code null} will reset this to the default value.
      *
-     * <p>Invites in non-community servers are not allowed to be permanent, with an allowed range of {@code 1} (1 second) to {@code 2592000} (30 days).</p>
+     * <p>Invites in non-community servers are not allowed to be permanent, with an allowed range of {@code 1} (1 second) to {@code 2592000} (30 days).
      *
      * @param  maxAge
      *         The max age for this invite or {@code null} to use the default value.
@@ -88,7 +88,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
      * Sets the max age for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
      * {@code null} will reset this to the default value.
      *
-     * <p>Invites in non-community servers are not allowed to be permanent, with an allowed range from 1 second to 30 days.</p>
+     * <p>Invites in non-community servers are not allowed to be permanent, with an allowed range from 1 second to 30 days.
      *
      * @param  maxAge
      *         The max age for this invite or {@code null} to use the default value.
