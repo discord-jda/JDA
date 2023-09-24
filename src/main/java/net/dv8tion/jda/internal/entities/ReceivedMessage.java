@@ -75,6 +75,7 @@ public class ReceivedMessage implements Message
     protected final JDAImpl api;
     protected final long id;
     protected final long channelId;
+    protected final long guildId;
     protected final long applicationId;
     protected final int flags;
     protected final int position;
@@ -109,7 +110,7 @@ public class ReceivedMessage implements Message
     protected List<String> invites = null;
 
     public ReceivedMessage(
-            long id, long channelId, JDA jda, Guild guild, MessageChannel channel, MessageType type, MessageReference messageReference,
+            long id, long channelId, long guildId, JDA jda, Guild guild, MessageChannel channel, MessageType type, MessageReference messageReference,
             boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
@@ -119,6 +120,7 @@ public class ReceivedMessage implements Message
         this.id = id;
         this.channelId = channelId;
         this.channel = channel;
+        this.guildId = guildId;
         this.guild = guild;
         this.messageReference = messageReference;
         this.type = type;
@@ -383,7 +385,7 @@ public class ReceivedMessage implements Message
     @Override
     public String getJumpUrl()
     {
-        return Helpers.format(Message.JUMP_URL, isFromGuild() ? getGuild().getId() : "@me", getChannelId(), getId());
+        return Helpers.format(Message.JUMP_URL, isFromGuild() ? getGuildId() : "@me", getChannelId(), getId());
     }
 
     @Override
@@ -449,7 +451,7 @@ public class ReceivedMessage implements Message
             for (User user : mentions.getUsers())
             {
                 String name;
-                if (isFromGuild() && getGuild().isMember(user))
+                if (hasGuild() && getGuild().isMember(user))
                     name = getGuild().getMember(user).getEffectiveName();
                 else
                     name = user.getName();
@@ -512,14 +514,14 @@ public class ReceivedMessage implements Message
     @Override
     public boolean isFromGuild()
     {
-        return guild != null;
+        return guildId != 0L;
     }
 
     @Nonnull
     @Override
     public ChannelType getChannelType()
     {
-        return getChannel().getType();
+        return channel == null ? ChannelType.UNKNOWN_WEBHOOK_TARGET : getChannel().getType();
     }
 
     @Nonnull
@@ -549,10 +551,30 @@ public class ReceivedMessage implements Message
             : null;
     }
 
+    @Override
+    public boolean hasGuild()
+    {
+        return guild != null;
+    }
+
+    @Override
+    public long getGuildIdLong()
+    {
+        return guildId;
+    }
+
     @Nonnull
     @Override
     public Guild getGuild()
     {
+        if (guild == null)
+        {
+            ChannelType channelType = getChannelType();
+            if (channelType == ChannelType.UNKNOWN_WEBHOOK_TARGET || channelType.isGuild())
+                throw new IllegalStateException("This message instance does not provide a guild instance! Use getGuildId() instead.");
+            else
+                throw new IllegalStateException("This message was not sent in a guild");
+        }
         return guild;
     }
 

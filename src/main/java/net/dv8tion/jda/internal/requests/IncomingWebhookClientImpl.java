@@ -25,8 +25,8 @@ import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
-import net.dv8tion.jda.internal.entities.channel.concrete.WebhookChannel;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -80,9 +80,10 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> im
             JDAImpl jda = (JDAImpl) api;
             long channelId = data.getUnsignedLong("channel_id");
             MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
-            if (channel == null)
-                channel = new WebhookChannel(this, channelId);
-            ReceivedMessage message = jda.getEntityBuilder().createMessageWithChannel(data, channel, false);
+            EntityBuilder entityBuilder = jda.getEntityBuilder();
+            ReceivedMessage message = channel == null
+                    ? entityBuilder.createMessageFromWebhook(data, null)
+                    : entityBuilder.createMessageWithChannel(data, channel, false);
             message.withHook(this);
             return message;
         };

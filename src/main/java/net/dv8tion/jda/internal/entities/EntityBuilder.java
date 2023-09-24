@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
@@ -1602,6 +1603,11 @@ public class EntityBuilder
         return createMessage0(json, null, (GuildImpl) guild, false);
     }
 
+    public ReceivedMessage createMessageFromWebhook(DataObject json, @Nullable Guild guild)
+    {
+        return createMessage0(json, null, (GuildImpl) guild, false);
+    }
+
     public ReceivedMessage createMessageWithChannel(DataObject json, @Nonnull MessageChannel channel, boolean modifyCache)
     {
         // Use channel directly if message is from a known guild channel
@@ -1610,9 +1616,6 @@ public class EntityBuilder
         // Try to resolve private channel recipient if needed
         if (channel instanceof PrivateChannel)
             return createMessageWithLookup(json, null, modifyCache);
-        // Try to build a message with no known channel, coming from a webhook
-        if (channel instanceof WebhookChannel)
-            return createMessage0(json, channel, null, false);
         throw new IllegalArgumentException(MISSING_CHANNEL);
     }
 
@@ -1673,6 +1676,9 @@ public class EntityBuilder
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
         final long channelId = jsonObject.getUnsignedLong("channel_id");
+        final long guildId = channel instanceof GuildChannel
+                ? ((GuildChannel) channel).getGuild().getIdLong()
+                : jsonObject.getUnsignedLong("guild_id", 0L);
         MemberImpl member = null;
 
         // Member details for author
@@ -1815,7 +1821,7 @@ public class EntityBuilder
 
         int position = jsonObject.getInt("position", -1);
 
-        return new ReceivedMessage(id, channelId, api, guild, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
+        return new ReceivedMessage(id, channelId, guildId, api, guild, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
                 content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags,
                 messageInteraction, startedThread, position);
     }

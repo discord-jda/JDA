@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
-import net.dv8tion.jda.internal.entities.channel.concrete.WebhookChannel;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
@@ -230,17 +229,15 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         long channelId = json.getUnsignedLong("channel_id");
         if (channel == null)
             channel = api.getChannelById(MessageChannel.class, channelId);
-        // Otherwise it is an unknown channel and we can't resolve it
-        // We use a pseudo implementation that reports an UNKNOWN_WEBHOOK_TARGET as the type
-        if (channel == null && guild == null)
-            channel = new WebhookChannel(this, channelId);
 
         // Then build the message with the information we have
         ReceivedMessage message;
         if (channel != null)
             message = jda.getEntityBuilder().createMessageWithChannel(json, channel, false);
-        else
+        else if (guild != null)
             message = jda.getEntityBuilder().createMessageWithGuild(json, guild);
+        else
+            message = jda.getEntityBuilder().createMessageFromWebhook(json, null);
         return message.withHook(this);
     }
 }
