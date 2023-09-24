@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Interaction with a slash command
@@ -30,9 +29,9 @@ public interface SlashCommandInteraction extends CommandInteraction
     /**
      * The respective {@link MessageChannelUnion} for this interaction.
      *
-     * @return The {@link MessageChannelUnion}, or {@code null} if the channel is uncached (hidden threads)
+     * @return The {@link MessageChannelUnion}
      */
-    @Nullable
+    @Nonnull
     @Override
     MessageChannelUnion getChannel();
 
