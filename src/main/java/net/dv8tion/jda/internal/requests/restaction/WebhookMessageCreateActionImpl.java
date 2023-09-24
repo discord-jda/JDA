@@ -36,11 +36,10 @@ import okhttp3.RequestBody;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 public class WebhookMessageCreateActionImpl<T>
-    extends TriggerRestAction<T>
+    extends AbstractWebhookMessageActionImpl<T, WebhookMessageCreateActionImpl<T>>
     implements WebhookMessageCreateAction<T>, MessageCreateBuilderMixin<WebhookMessageCreateAction<T>>
 {
     private final MessageCreateBuilder builder = new MessageCreateBuilder();
@@ -56,7 +55,6 @@ public class WebhookMessageCreateActionImpl<T>
     private String username;
     private String avatar;
     private ThreadCreateMetadata threadMetadata;
-    private String threadId;
 
     public WebhookMessageCreateActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
     {
@@ -126,19 +124,6 @@ public class WebhookMessageCreateActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> setThreadId(@Nullable String threadId)
-    {
-        if (isInteraction && threadId != null)
-            throw new IllegalStateException("Cannot set thread id on interaction messages.");
-
-        if (threadId != null)
-            Checks.isSnowflake(threadId, "Thread ID");
-        this.threadId = threadId;
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public WebhookMessageCreateAction<T> createThread(@Nonnull ThreadCreateMetadata threadMetadata)
     {
         if (isInteraction)
@@ -186,19 +171,5 @@ public class WebhookMessageCreateActionImpl<T>
     {
         T message = transformer.apply(response.getObject());
         request.onSuccess(message);
-    }
-
-    @Nonnull
-    @Override
-    public WebhookMessageCreateAction<T> setCheck(@Nullable BooleanSupplier checks)
-    {
-        return (WebhookMessageCreateAction<T>) super.setCheck(checks);
-    }
-
-    @Nonnull
-    @Override
-    public WebhookMessageCreateAction<T> deadline(long timestamp)
-    {
-        return (WebhookMessageCreateAction<T>) super.deadline(timestamp);
     }
 }

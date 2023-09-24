@@ -23,10 +23,11 @@ import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageRetrieveAction;
 import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
@@ -198,7 +199,7 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
+    public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId)
     {
         checkToken();
         return WebhookClient.createClient(api, getId(), token).deleteMessageById(messageId);
@@ -206,7 +207,7 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
+    public WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId)
     {
         checkToken();
         return WebhookClient.createClient(api, getId(), token).retrieveMessageById(messageId);

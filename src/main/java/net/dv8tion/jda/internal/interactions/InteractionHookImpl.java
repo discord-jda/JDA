@@ -22,16 +22,15 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.InteractionExpiredException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageRetrieveAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
-import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
@@ -178,24 +177,24 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
+    public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId)
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), token, messageId);
-        TriggerRestAction<Void> action = new TriggerRestAction<>(api, route);
+        WebhookMessageDeleteActionImpl action = new WebhookMessageDeleteActionImpl(api, route);
         action.setCheck(this::checkExpired);
         return onReady(action);
     }
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
+    public WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId)
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.GET_MESSAGE.compile(api.getSelfUser().getApplicationId(), token, messageId);
-        TriggerRestAction<Message> action = new TriggerRestAction<>(api, route, (response, request) -> buildMessage(response.getObject()));
+        WebhookMessageRetrieveActionImpl action = new WebhookMessageRetrieveActionImpl(api, route, (response, request) -> buildMessage(response.getObject()));
         action.setCheck(this::checkExpired);
         return onReady(action);
     }

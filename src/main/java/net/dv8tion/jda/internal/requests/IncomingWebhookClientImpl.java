@@ -20,16 +20,20 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IncomingWebhookClient;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageRetrieveAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageDeleteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageRetrieveActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.function.Function;
@@ -66,12 +70,23 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> im
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
+    public WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId)
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.GET_MESSAGE.compile(Long.toUnsignedString(id), token, messageId);
-        return new RestActionImpl<>(api, route, (response, request) -> builder().apply(response.getObject()));
+        WebhookMessageRetrieveActionImpl action = new WebhookMessageRetrieveActionImpl(api, route, (response, request) -> builder().apply(response.getObject()));
+        action.run();
+        return action;
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageDeleteAction deleteMessageById(@NotNull String messageId)
+    {
+        WebhookMessageDeleteActionImpl action = (WebhookMessageDeleteActionImpl) super.deleteMessageById(messageId);
+        action.run();
+        return action;
     }
 
     private Function<DataObject, Message> builder()

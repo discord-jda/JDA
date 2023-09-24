@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 
 import javax.annotation.CheckReturnValue;
@@ -38,7 +37,7 @@ import javax.annotation.Nullable;
  *
  * @see    net.dv8tion.jda.api.entities.WebhookClient#sendMessage(String)
  */
-public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<WebhookMessageCreateAction<T>>, FluentRestAction<T, WebhookMessageCreateAction<T>>
+public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<WebhookMessageCreateAction<T>>, AbstractWebhookMessageAction<T, WebhookMessageCreateAction<T>>
 {
     /**
      * Set whether this message should be visible to other users.
@@ -103,71 +102,6 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
     @Nonnull
     @CheckReturnValue
     WebhookMessageCreateAction<T> setAvatarUrl(@Nullable String iconUrl);
-
-    /**
-     * Set the target thread id for the webhook message.
-     * <br>This allows sending webhook messages in the target thread,
-     * however the webhook must be part of the thread parent channel.
-     *
-     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
-     *
-     * @param  threadId
-     *         The target thread id or null to unset
-     *
-     * @throws IllegalStateException
-     *         If this is an interaction webhook
-     * @throws IllegalArgumentException
-     *         If the provided ID is not a valid snowflake
-     *
-     * @return The same message action, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageCreateAction<T> setThreadId(@Nullable String threadId);
-
-    /**
-     * Set the target thread id for the webhook message.
-     * <br>This allows sending webhook messages in the target thread,
-     * however the webhook must be part of the thread parent channel.
-     *
-     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
-     *
-     * @param  threadId
-     *         The target thread id or 0 to unset
-     *
-     * @throws IllegalStateException
-     *         If this is an interaction webhook
-     *
-     * @return The same message action, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageCreateAction<T> setThreadId(long threadId)
-    {
-        return setThreadId(threadId == 0 ? null : Long.toUnsignedString(threadId));
-    }
-
-    /**
-     * Set the target thread for the webhook message.
-     * <br>This allows sending webhook messages in the target thread,
-     * however the webhook must be part of the thread parent channel.
-     *
-     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
-     *
-     * @param  channel
-     *         The target thread channel
-     *
-     * @throws IllegalStateException
-     *         If this is an interaction webhook
-     *
-     * @return The same message action, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageCreateAction<T> setThread(@Nullable ThreadChannel channel)
-    {
-        return setThreadId(channel == null ? null : channel.getId());
-    }
 
     /**
      * Create a new thread channel for this webhook message.

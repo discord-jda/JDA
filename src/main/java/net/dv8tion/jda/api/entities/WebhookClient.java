@@ -23,7 +23,9 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageRetrieveAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -1010,6 +1012,8 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Delete a message from this webhook.
      *
+     * <p>Use {@link WebhookMessageRetrieveAction#setThreadId(long) setThreadId(threadId)} to delete messages from threads.
+     *
      * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -1026,14 +1030,16 @@ public interface WebhookClient<T> extends ISnowflake
      * @throws IllegalArgumentException
      *         If the provided message id is null or not a valid snowflake
      *
-     * @return {@link RestAction}
+     * @return {@link WebhookMessageDeleteAction}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteMessageById(@Nonnull String messageId);
+    WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId);
 
     /**
      * Delete a message from this webhook.
+     *
+     * <p>Use {@link WebhookMessageRetrieveAction#setThreadId(long) setThreadId(threadId)} to delete messages from threads.
      *
      * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
@@ -1048,11 +1054,11 @@ public interface WebhookClient<T> extends ISnowflake
      * @param  messageId
      *         The id for the message to delete
      *
-     * @return {@link RestAction}
+     * @return {@link WebhookMessageDeleteAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteMessageById(long messageId)
+    default WebhookMessageDeleteAction deleteMessageById(long messageId)
     {
         return deleteMessageById(Long.toUnsignedString(messageId));
     }
@@ -1061,6 +1067,8 @@ public interface WebhookClient<T> extends ISnowflake
     /**
      * Retrieves the message with the provided id.
      * <br>This only works for messages sent by this webhook. All other messages are unknown.
+     *
+     * <p>Use {@link WebhookMessageRetrieveAction#setThreadId(long) setThreadId(threadId)} to retrieve messages from threads.
      *
      * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
@@ -1073,11 +1081,11 @@ public interface WebhookClient<T> extends ISnowflake
      *     <br>If the message is inaccessible to this webhook or does not exist.</li>
      * </ul>
      *
-     * @return {@link RestAction} - Type: {@link Message}
+     * @return {@link WebhookMessageRetrieveAction}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Message> retrieveMessageById(@Nonnull String messageId);
+    WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId);
 
     /**
      * Creates an instance of {@link IncomingWebhookClient} capable of executing webhook requests.
