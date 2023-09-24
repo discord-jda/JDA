@@ -2267,10 +2267,8 @@ public class EntityBuilder
             uses = -1;
         }
 
-        final OffsetDateTime timeCreated = OffsetDateTime.parse(object.getString("created_at"));
-
-        final String expiresAt = object.getString("expires_at", null);
-        final OffsetDateTime timeExpires = expiresAt != null ? OffsetDateTime.parse(expiresAt) : null;
+        final OffsetDateTime timeCreated = object.getOffsetDateTime("created_at", null);
+        final OffsetDateTime timeExpires = object.getOffsetDateTime("expires_at", null);
 
         return new InviteImpl(getJDA(), code, expanded, inviter, maxAge,
                               maxUses, temporary, timeCreated, timeExpires,

@@ -260,6 +260,7 @@ public class InviteImpl implements Invite
     {
         return this.expanded;
     }
+    
     @Override
     public boolean isTemporary()
     {
