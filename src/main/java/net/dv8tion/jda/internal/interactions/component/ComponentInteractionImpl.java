@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
@@ -50,17 +49,17 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
         messageId = messageJson.getUnsignedLong("id");
 
         if (messageJson.isNull("type"))
+        {
             message = null;
+        }
         else
         {
             Guild guild = getGuild();
             MessageChannel channel = getChannel();
             if (channel != null)
                 message = jda.getEntityBuilder().createMessageWithChannel(messageJson, channel, false);
-            else if (guild != null)
-                message = jda.getEntityBuilder().createMessageWithGuild(messageJson, guild);
             else
-                throw new IllegalArgumentException(EntityBuilder.MISSING_CHANNEL);
+                message = jda.getEntityBuilder().createMessageWithLookup(messageJson, guild, false);
         }
     }
 

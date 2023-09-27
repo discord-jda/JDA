@@ -23,6 +23,15 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Abstraction for requests related to webhook executions.
+ * <br>This adds the ability to change the context in which the webhook is used, by setting a {@link #setThread(ThreadChannel) thread id}.
+ *
+ * @param <T>
+ *        The result type
+ * @param <R>
+ *        The action type
+ */
 public interface AbstractWebhookMessageAction<T, R extends AbstractWebhookMessageAction<T, R>> extends FluentRestAction<T, R>
 {
     /**

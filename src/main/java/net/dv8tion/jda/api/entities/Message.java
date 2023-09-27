@@ -602,7 +602,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>This can be {@code false} for messages sent via webhooks, or in the context of interactions.
      *
-     * @return True, if {@link #getGuild()} is available
+     * @return True, if {@link #getGuild()} is provided
      */
     boolean hasGuild();
 
@@ -610,7 +610,7 @@ public interface Message extends ISnowflake, Formattable
      * The ID for the guild this message was sent in.
      * <br>This is useful when {@link #getGuild()} is not provided, for instance on webhook messages.
      *
-     * @return The guild id
+     * @return The guild id, or 0 if this message was not sent in a guild
      */
     long getGuildIdLong();
 

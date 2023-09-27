@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -34,16 +35,16 @@ import java.util.List;
 public class ThreadCreateMetadata
 {
     private final String name;
-    private final List<ForumTagSnowflake> appliedTags = new ArrayList<>();
+    private final List<ForumTagSnowflake> appliedTags = new ArrayList<>(ForumChannel.MAX_POST_TAGS);
 
     /**
      * Create a new thread metadata instance.
      *
-     * @param name
-     *        The title of the thread (1-80 characters)
+     * @param  name
+     *         The title of the thread (1-{@value ThreadChannel#MAX_NAME_LENGTH} characters)
      *
      * @throws IllegalArgumentException
-     *         If the provided name is null or not between 1 and 80 characters long
+     *         If the provided name is null or not between 1 and {@value ThreadChannel#MAX_NAME_LENGTH} characters long
      */
     public ThreadCreateMetadata(@Nonnull String name)
     {
@@ -60,7 +61,7 @@ public class ThreadCreateMetadata
      *         The tags to apply
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null or more than {@value ForumChannel#MAX_POST_TAGS} tags are provided
      *
      * @return The updated metadata instance
      */
@@ -68,6 +69,7 @@ public class ThreadCreateMetadata
     public ThreadCreateMetadata addTags(@Nonnull Collection<? extends ForumTagSnowflake> tags)
     {
         Checks.noneNull(tags, "Tags");
+        Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Cannot have more than %d post tags. Provided: %d", ForumChannel.MAX_POST_TAGS, tags.size());
         this.appliedTags.addAll(tags);
         return this;
     }
@@ -79,7 +81,7 @@ public class ThreadCreateMetadata
      *         The tags to apply
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null or more than {@value ForumChannel#MAX_POST_TAGS} tags are provided
      *
      * @return The updated metadata instance
      */
@@ -87,6 +89,7 @@ public class ThreadCreateMetadata
     public ThreadCreateMetadata addTags(@Nonnull ForumTagSnowflake... tags)
     {
         Checks.noneNull(tags, "Tags");
+        Checks.check(tags.length <= ForumChannel.MAX_POST_TAGS, "Cannot have more than %d post tags. Provided: %d", ForumChannel.MAX_POST_TAGS, tags.length);
         Collections.addAll(this.appliedTags, tags);
         return this;
     }

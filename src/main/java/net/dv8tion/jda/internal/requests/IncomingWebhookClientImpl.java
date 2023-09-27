@@ -96,9 +96,7 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> im
             long channelId = data.getUnsignedLong("channel_id");
             MessageChannel channel = api.getChannelById(MessageChannel.class, channelId);
             EntityBuilder entityBuilder = jda.getEntityBuilder();
-            ReceivedMessage message = channel == null
-                    ? entityBuilder.createMessageFromWebhook(data, null)
-                    : entityBuilder.createMessageWithChannel(data, channel, false);
+            ReceivedMessage message = entityBuilder.createMessageBestEffort(data, channel, null);
             message.withHook(this);
             return message;
         };

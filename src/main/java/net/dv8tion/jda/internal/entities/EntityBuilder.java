@@ -1598,9 +1598,12 @@ public class EntityBuilder
         return role;
     }
 
-    public ReceivedMessage createMessageWithGuild(DataObject json, @Nonnull Guild guild)
+    public ReceivedMessage createMessageBestEffort(DataObject json, MessageChannel channel, Guild guild)
     {
-        return createMessage0(json, null, (GuildImpl) guild, false);
+        if (channel != null)
+            return createMessageWithChannel(json, channel, false);
+        else
+            return createMessageFromWebhook(json, guild);
     }
 
     public ReceivedMessage createMessageFromWebhook(DataObject json, @Nullable Guild guild)

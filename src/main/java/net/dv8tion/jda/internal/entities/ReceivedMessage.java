@@ -677,7 +677,7 @@ public class ReceivedMessage implements Message
         }
         else
         {
-            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
+            action = new MessageEditActionImpl(getJDA(), hasGuild() ? getGuild() : null, getChannelId(), getId());
         }
 
         return action.withHook(this.webhook).setContent(newContent.toString());

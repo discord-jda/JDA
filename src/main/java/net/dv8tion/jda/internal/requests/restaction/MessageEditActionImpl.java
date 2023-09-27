@@ -37,6 +37,7 @@ import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 
 public class MessageEditActionImpl extends RestActionImpl<Message> implements MessageEditAction, MessageEditBuilderMixin<MessageEditAction>
@@ -47,7 +48,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     private final MessageEditBuilder builder = new MessageEditBuilder();
     private WebhookClient<Message> webhook;
 
-    public MessageEditActionImpl(@Nonnull JDA jda, @Nonnull Guild guild, @Nonnull String channelId, @Nonnull String messageId)
+    public MessageEditActionImpl(@Nonnull JDA jda, @Nullable Guild guild, @Nonnull String channelId, @Nonnull String messageId)
     {
         super(jda, Route.Messages.EDIT_MESSAGE.compile(channelId, messageId));
         this.channel = null;
@@ -100,13 +101,9 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     @Override
     protected void handleSuccess(Response response, Request<Message> request)
     {
-        ReceivedMessage message;
         EntityBuilder entityBuilder = api.getEntityBuilder();
         DataObject json = response.getObject();
-        if (channel == null)
-            message = entityBuilder.createMessageWithGuild(json, guild);
-        else
-            message = entityBuilder.createMessageWithChannel(json, channel, false);
+        ReceivedMessage message = entityBuilder.createMessageBestEffort(json, channel, guild);
         request.onSuccess(message.withHook(webhook));
     }
 

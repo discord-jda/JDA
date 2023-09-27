@@ -150,7 +150,7 @@ public interface Interaction extends ISnowflake
     /**
      * The channel this interaction happened in.
      *
-     * @return The channel or null if the channel is not cached (hidden threads)
+     * @return The channel or null if the channel is not provided
      */
     @Nullable
     Channel getChannel();

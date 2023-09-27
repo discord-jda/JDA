@@ -208,7 +208,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     // Creates a message with the resolved channel context from the interaction
     // Sometimes we can't resolve the channel and report an unknown type
-    // Currently known cases were channels can't be resolved:
+    // Currently known cases where channels can't be resolved:
     //  - InteractionHook created using id/token factory, has no interaction object to use as context
     private Message buildMessage(DataObject json)
     {
@@ -230,13 +230,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
             channel = api.getChannelById(MessageChannel.class, channelId);
 
         // Then build the message with the information we have
-        ReceivedMessage message;
-        if (channel != null)
-            message = jda.getEntityBuilder().createMessageWithChannel(json, channel, false);
-        else if (guild != null)
-            message = jda.getEntityBuilder().createMessageWithGuild(json, guild);
-        else
-            message = jda.getEntityBuilder().createMessageFromWebhook(json, null);
+        ReceivedMessage message = jda.getEntityBuilder().createMessageBestEffort(json, channel, guild);
         return message.withHook(this);
     }
 }
