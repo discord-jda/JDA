@@ -782,16 +782,13 @@ public class ReceivedMessage implements Message
         if (isEphemeral())
             throw new IllegalStateException("Cannot delete ephemeral messages.");
 
-        if (hasChannel())
+        if (channel instanceof GuildMessageChannel && !isSelfAuthored)
         {
-            if (!isSelfAuthored)
-            {
-                GuildMessageChannel gChan = getGuildChannel();
-                Member sMember = getGuild().getSelfMember();
-                Checks.checkAccess(sMember, gChan);
-                if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
-                    throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
-            }
+            GuildMessageChannel gChan = (GuildMessageChannel) channel;
+            Member sMember = getGuild().getSelfMember();
+            Checks.checkAccess(sMember, gChan);
+            if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
         }
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getChannelId(), getId());
