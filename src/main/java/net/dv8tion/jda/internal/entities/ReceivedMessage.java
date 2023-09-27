@@ -848,6 +848,13 @@ public class ReceivedMessage implements Message
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
 
+        if (!hasChannel())
+        {
+            Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getChannelId(), getId());
+            return new RestActionImpl<>(api, route, (response, request) ->
+                api.getEntityBuilder().createMessageFromWebhook(response.getObject(), guild));
+        }
+
         MessageChannelUnion channel = getChannel();
         if (!(channel instanceof NewsChannel))
             throw new IllegalStateException("This message was not sent in a news channel");
