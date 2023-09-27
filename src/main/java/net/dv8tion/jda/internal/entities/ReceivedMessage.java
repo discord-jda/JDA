@@ -54,6 +54,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageEditActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -347,8 +348,10 @@ public class ReceivedMessage implements Message
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
 
-        // TODO: Nullable channel for this class
-        return getChannel().retrieveReactionUsersById(id, emoji);
+        if (hasChannel())
+            return getChannel().retrieveReactionUsersById(id, emoji);
+
+        return new ReactionPaginationActionImpl(this, emoji.getAsReactionCode());
     }
 
     @Nullable
