@@ -74,7 +74,7 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> im
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Interactions.GET_MESSAGE.compile(Long.toUnsignedString(id), token, messageId);
+        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_FETCH.compile(Long.toUnsignedString(id), token, messageId);
         WebhookMessageRetrieveActionImpl action = new WebhookMessageRetrieveActionImpl(api, route, (response, request) -> builder().apply(response.getObject()));
         action.run();
         return action;

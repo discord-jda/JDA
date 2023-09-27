@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -664,138 +665,96 @@ public class ReceivedMessage implements Message
     @Override
     public MessageEditAction editMessage(@Nonnull CharSequence newContent)
     {
+        MessageEditActionImpl action = editRequest();
+        action.setContent(newContent.toString());
+
+        if (isWebhookRequest())
+            return action.withHook(webhook);
+
         checkSystem("edit");
         checkUser();
 
-        MessageEditActionImpl action;
-        if (hasChannel())
-        {
-            if (webhook == null) // only perform perm checks if its not an interaction
-                action = (MessageEditActionImpl) getChannel().editMessageById(getId(), newContent);
-            else
-                action = new MessageEditActionImpl(getChannel(), getId());
-        }
-        else
-        {
-            action = new MessageEditActionImpl(getJDA(), hasGuild() ? getGuild() : null, getChannelId(), getId());
-        }
-
-        return action.withHook(this.webhook).setContent(newContent.toString());
+        return action.setContent(newContent.toString());
     }
 
     @Nonnull
     @Override
     public MessageEditAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
+        MessageEditActionImpl action = editRequest();
+        action.setEmbeds(embeds);
+
+        if (isWebhookRequest())
+            return action.withHook(webhook);
+
         checkSystem("edit");
         checkUser();
 
-        MessageEditActionImpl action;
-        if (hasChannel())
-        {
-            if (webhook == null) // only perform perm checks if its not an interaction
-                action = (MessageEditActionImpl) getChannel().editMessageEmbedsById(getId(), embeds);
-            else
-                action = new MessageEditActionImpl(getChannel(), getId());
-        }
-        else
-        {
-            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
-        }
-
-        return action.withHook(this.webhook).setEmbeds(embeds);
+        return action;
     }
 
     @Nonnull
     @Override
     public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
+        MessageEditActionImpl action = editRequest();
+        action.setComponents(components);
+
+        if (isWebhookRequest())
+            return action.withHook(webhook);
+
         checkSystem("edit");
         checkUser();
 
-        MessageEditActionImpl action;
-        if (hasChannel())
-        {
-            if (webhook == null) // only perform perm checks if its not an interaction
-                action = (MessageEditActionImpl) getChannel().editMessageComponentsById(getId(), components);
-            else
-                action = new MessageEditActionImpl(getChannel(), getId());
-        }
-        else
-        {
-            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
-        }
-
-        return action.withHook(this.webhook).setComponents(components);
+        return action;
     }
 
     @Nonnull
     @Override
     public MessageEditAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
+        MessageEditActionImpl action = editRequest();
+        action.setContent(String.format(format, args));
+
+        if (isWebhookRequest())
+            return action.withHook(webhook);
+
         checkSystem("edit");
         checkUser();
 
-        MessageEditActionImpl action;
-        if (hasChannel())
-        {
-            if (webhook == null) // only perform perm checks if its not an interaction
-                action = (MessageEditActionImpl) getChannel().editMessageFormatById(getId(), format, args);
-            else
-                action = new MessageEditActionImpl(getChannel(), getId());
-        }
-        else
-        {
-            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
-        }
-
-        return action.withHook(this.webhook).setContent(String.format(format, args));
+        return action;
     }
 
     @Nonnull
     @Override
     public MessageEditAction editMessageAttachments(@Nonnull Collection<? extends AttachedFile> attachments)
     {
+        MessageEditActionImpl action = editRequest();
+        action.setAttachments(attachments);
+
+        if (isWebhookRequest())
+            return action.withHook(webhook);
+
         checkSystem("edit");
         checkUser();
 
-        MessageEditActionImpl action;
-        if (hasChannel())
-        {
-            if (webhook == null) // only perform perm checks if its not an interaction
-                action = (MessageEditActionImpl) getChannel().editMessageAttachmentsById(getId(), attachments);
-            else
-                action = new MessageEditActionImpl(getChannel(), getId());
-        }
-        else
-        {
-            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
-        }
-
-        return action.withHook(this.webhook).setAttachments(attachments);
+        return action;
     }
 
     @Nonnull
     @Override
     public MessageEditAction editMessage(@Nonnull MessageEditData newContent)
     {
+        MessageEditActionImpl action = editRequest();
+        action.applyData(newContent);
+
+        if (isWebhookRequest())
+            return action.withHook(webhook);
+
         checkSystem("edit");
         checkUser();
 
-        MessageEditActionImpl action;
-        if (hasChannel())
-        {
-            if (webhook == null) // only perform perm checks if its not an interaction
-                action = (MessageEditActionImpl) getChannel().editMessageById(getId(), newContent);
-            else
-                action = new MessageEditActionImpl(getChannel(), getId());
-        }
-        else
-        {
-            action = new MessageEditActionImpl(getJDA(), getGuild(), getChannelId(), getId());
-        }
-
-        return action.withHook(this.webhook).applyData(newContent);
+        return action;
     }
 
     @Nonnull
@@ -805,17 +764,17 @@ public class ReceivedMessage implements Message
         if (!type.canDelete())
             throw new IllegalStateException("Cannot delete messages of type " + type);
 
+        if (isWebhookRequest())
+        {
+            Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
+            return new AuditableRestActionImpl<>(getJDA(), route);
+        }
+
         SelfUser self = getJDA().getSelfUser();
         boolean isSelfAuthored = self.equals(getAuthor());
 
         if (!isSelfAuthored && !isFromGuild())
             throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
-
-        if (webhook != null)
-        {
-            Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(self.getApplicationId(), webhook.getToken(), getId());
-            return new AuditableRestActionImpl<>(getJDA(), route);
-        }
 
         if (isEphemeral())
             throw new IllegalStateException("Cannot delete ephemeral messages.");
@@ -843,9 +802,9 @@ public class ReceivedMessage implements Message
         SelfUser self = api.getSelfUser();
 
         Route.CompiledRoute route;
-        if (webhook != null)
+        if (isWebhookRequest())
         {
-            route = Route.Interactions.EDIT_FOLLOWUP.compile(self.getApplicationId(), webhook.getToken(), getId());
+            route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
         }
         else
         {
@@ -1000,5 +959,18 @@ public class ReceivedMessage implements Message
         {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private boolean isWebhookRequest()
+    {
+        return webhook != null && (!(webhook instanceof InteractionHook) || !((InteractionHook) webhook).isExpired());
+    }
+
+    @Nonnull
+    private MessageEditActionImpl editRequest()
+    {
+        return hasChannel()
+                ? new MessageEditActionImpl(getChannel(), getId())
+                : new MessageEditActionImpl(getJDA(), hasGuild() ? getGuild() : null, getChannelId(), getId());
     }
 }

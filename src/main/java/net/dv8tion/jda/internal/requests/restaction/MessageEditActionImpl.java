@@ -79,12 +79,8 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     @Override
     protected Route.CompiledRoute finalizeRoute()
     {
-        if (webhook != null)
-        {
-            if (webhook instanceof InteractionHook && ((InteractionHook) webhook).isExpired())
-                return super.finalizeRoute();
-            return Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), webhook.getToken(), messageId);
-        }
+        if (webhook != null && (!(webhook instanceof InteractionHook) || !((InteractionHook) webhook).isExpired()))
+            return Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), messageId);
 
         return super.finalizeRoute();
     }
