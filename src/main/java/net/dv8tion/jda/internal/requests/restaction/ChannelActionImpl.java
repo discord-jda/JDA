@@ -44,6 +44,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.ChannelUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -471,34 +472,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected void handleSuccess(Response response, Request<T> request)
     {
         EntityBuilder builder = api.getEntityBuilder();
-        GuildChannel channel;
-        switch (type)
-        {
-            case TEXT:
-                channel = builder.createTextChannel(response.getObject(), guild.getIdLong());
-                break;
-            case NEWS:
-                channel = builder.createNewsChannel(response.getObject(), guild.getIdLong());
-                break;
-            case VOICE:
-                channel = builder.createVoiceChannel(response.getObject(), guild.getIdLong());
-                break;
-            case STAGE:
-                channel = builder.createStageChannel(response.getObject(), guild.getIdLong());
-                break;
-            case CATEGORY:
-                channel = builder.createCategory(response.getObject(), guild.getIdLong());
-                break;
-            case FORUM:
-                channel = builder.createForumChannel(response.getObject(), guild.getIdLong());
-                break;
-            case MEDIA:
-                channel = builder.createMediaChannel(response.getObject(), guild.getIdLong());
-                break;
-            default:
-                request.onFailure(new IllegalStateException("Created channel of unknown type!"));
-                return;
-        }
-        request.onSuccess(clazz.cast(channel));
+        GuildChannel channel = builder.createGuildChannel((GuildImpl) guild, response.getObject());
+        if (channel == null)
+            request.onFailure(new IllegalStateException("Created channel of unknown type!"));
+        else
+            request.onSuccess(clazz.cast(channel));
     }
 }
