@@ -47,6 +47,7 @@ import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionCont
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.managers.ManagerBase;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
+import net.dv8tion.jda.internal.utils.ChannelUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
@@ -62,12 +63,6 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
 {
-    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA,
-                                                                              ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD,
-                                                                              ChannelType.STAGE, ChannelType.VOICE);
-    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS, ChannelType.STAGE);
-    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
-
     protected T channel;
 
     protected final EnumSet<ChannelFlag> flags;
@@ -464,7 +459,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setTopic(String topic)
     {
-        Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "topic");
+        Checks.checkSupportedChannelTypes(ChannelUtil.TOPIC_SUPPORTED, type, "topic");
         if (topic != null)
         {
             if (channel instanceof IPostContainer)
@@ -481,7 +476,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setNSFW(boolean nsfw)
     {
-        Checks.checkSupportedChannelTypes(NSFW_SUPPORTED, type, "NSFW (age-restriction)");
+        Checks.checkSupportedChannelTypes(ChannelUtil.NSFW_SUPPORTED, type, "NSFW (age-restriction)");
         this.nsfw = nsfw;
         set |= NSFW;
         return (M) this;
@@ -491,7 +486,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setSlowmode(int slowmode)
     {
-        Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "slowmode");
+        Checks.checkSupportedChannelTypes(ChannelUtil.SLOWMODE_SUPPORTED, type, "slowmode");
         Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;

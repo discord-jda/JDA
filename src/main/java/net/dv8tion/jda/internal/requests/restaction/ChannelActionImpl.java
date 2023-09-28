@@ -44,8 +44,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
+import net.dv8tion.jda.internal.utils.ChannelUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
@@ -61,14 +60,6 @@ import java.util.function.BooleanSupplier;
 
 public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
 {
-    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA,
-                                                                              ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD,
-                                                                              ChannelType.STAGE, ChannelType.VOICE);
-    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS, ChannelType.STAGE);
-    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.MEDIA, ChannelType.NEWS);
-    private static final EnumSet<ChannelType> POST_CONTAINERS = EnumSet.of(ChannelType.FORUM, ChannelType.MEDIA);
-    private static final EnumSet<ChannelType> THREAD_CONTAINERS = EnumSet.of(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.MEDIA);
-
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
     protected final Class<T> clazz;
@@ -195,10 +186,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setTopic(String topic)
     {
-        Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "Topic");
+        Checks.checkSupportedChannelTypes(ChannelUtil.TOPIC_SUPPORTED, type, "Topic");
         if (topic != null)
         {
-            if (POST_CONTAINERS.contains(type))
+            if (ChannelUtil.POST_CONTAINERS.contains(type))
                 Checks.notLonger(topic, IPostContainer.MAX_POST_CONTAINER_TOPIC_LENGTH, "Topic");
             else
                 Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
@@ -212,7 +203,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setNSFW(boolean nsfw)
     {
-        Checks.checkSupportedChannelTypes(NSFW_SUPPORTED, type, "NSFW (age-restricted)");
+        Checks.checkSupportedChannelTypes(ChannelUtil.NSFW_SUPPORTED, type, "NSFW (age-restricted)");
         this.nsfw = nsfw;
         return this;
     }
@@ -222,7 +213,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
-        Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "Slowmode");
+        Checks.checkSupportedChannelTypes(ChannelUtil.SLOWMODE_SUPPORTED, type, "Slowmode");
         Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         return this;
@@ -232,7 +223,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setDefaultThreadSlowmode(int slowmode)
     {
-        Checks.checkSupportedChannelTypes(THREAD_CONTAINERS, type, "Default Thread Slowmode");
+        Checks.checkSupportedChannelTypes(ChannelUtil.THREAD_CONTAINERS, type, "Default Thread Slowmode");
         Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.defaultThreadSlowmode = slowmode;
         return this;
@@ -242,7 +233,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setDefaultReaction(@Nullable Emoji emoji)
     {
-        Checks.checkSupportedChannelTypes(POST_CONTAINERS, type, "Default Reaction");
+        Checks.checkSupportedChannelTypes(ChannelUtil.POST_CONTAINERS, type, "Default Reaction");
         this.defaultReactionEmoji = emoji;
         return this;
     }
@@ -262,7 +253,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setDefaultSortOrder(@Nonnull IPostContainer.SortOrder sortOrder)
     {
-        Checks.checkSupportedChannelTypes(POST_CONTAINERS, type, "Default Sort Order");
+        Checks.checkSupportedChannelTypes(ChannelUtil.POST_CONTAINERS, type, "Default Sort Order");
         Checks.notNull(sortOrder, "SortOrder");
         Checks.check(sortOrder != IPostContainer.SortOrder.UNKNOWN, "Sort Order cannot be UNKNOWN.");
         this.defaultSortOrder = sortOrder.getKey();
@@ -273,7 +264,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     public ChannelAction<T> setAvailableTags(@Nonnull List<? extends BaseForumTag> tags)
     {
-        Checks.checkSupportedChannelTypes(POST_CONTAINERS, type, "Available Tags");
+        Checks.checkSupportedChannelTypes(ChannelUtil.POST_CONTAINERS, type, "Available Tags");
         Checks.noneNull(tags, "Tags");
         this.availableTags = new ArrayList<>(tags);
         return this;
