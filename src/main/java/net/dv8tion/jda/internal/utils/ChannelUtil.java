@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 
 import java.util.EnumSet;
@@ -35,4 +36,13 @@ public class ChannelUtil
     public static final EnumSet<ChannelType> POST_CONTAINERS = EnumSet.of(ChannelType.FORUM, ChannelType.MEDIA);
 
     public static final EnumSet<ChannelType> THREAD_CONTAINERS = EnumSet.of(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM, ChannelType.MEDIA);
+
+    public static <T extends Channel> T safeChannelCast(Object instance, Class<T> toObjectClass)
+    {
+        if (toObjectClass.isInstance(instance))
+            return toObjectClass.cast(instance);
+
+        String cleanedClassName = instance.getClass().getSimpleName().replace("Impl", "");
+        throw new IllegalStateException(Helpers.format("Cannot convert channel of type %s to %s!", cleanedClassName, toObjectClass.getSimpleName()));
+    }
 }
