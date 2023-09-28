@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -117,7 +118,7 @@ public interface EntitySelectMenu extends SelectMenu
     /**
      * Default selected values.
      * <br>These are shown until the user customizes the selected values,
-     * which then fires a {@link SelectMenuInteraction}.
+     * which then fires a {@link EntitySelectInteractionEvent}.
      *
      * @return Immutable list of {@link DefaultValue default values}
      */
