@@ -19,26 +19,38 @@ package net.dv8tion.jda.api.events.channel.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.ChannelField;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
-import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
- * Indicates that the {@link ForumChannel#getDefaultReaction() default reaction emoji} of a {@link IPostContainer} changed.
+ * Indicates that the {@link IPostContainer#getDefaultSortOrder() default sort order} of a {@link IPostContainer} changed.
  *
- * <p>Can be used to retrieve the old default reaction and the new one.
+ * <p>Can be used to retrieve the old default sort order and the new one.
  *
- * @see ChannelField#DEFAULT_REACTION_EMOJI
+ * @see ChannelField#DEFAULT_SORT_ORDER
  */
-public class ChannelUpdateDefaultReactionEvent extends GenericChannelUpdateEvent<EmojiUnion>
+@SuppressWarnings("ConstantConditions")
+public class ChannelUpdateDefaultSortOrderEvent extends GenericChannelUpdateEvent<IPostContainer.SortOrder>
 {
-    public static final ChannelField FIELD = ChannelField.DEFAULT_REACTION_EMOJI;
+    public static final ChannelField FIELD = ChannelField.DEFAULT_SORT_ORDER;
     public static final String IDENTIFIER = FIELD.getFieldName();
 
-    public ChannelUpdateDefaultReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nullable EmojiUnion oldValue, @Nullable EmojiUnion newValue)
+    public ChannelUpdateDefaultSortOrderEvent(@Nonnull JDA api, long responseNumber, IPostContainer channel, IPostContainer.SortOrder oldValue)
     {
-        super(api, responseNumber, channel, FIELD, oldValue, newValue);
+        super(api, responseNumber, channel, ChannelField.DEFAULT_SORT_ORDER, oldValue, channel.getDefaultSortOrder());
+    }
+
+    @Nonnull
+    @Override
+    public IPostContainer.SortOrder getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public IPostContainer.SortOrder getNewValue()
+    {
+        return super.getNewValue();
     }
 }

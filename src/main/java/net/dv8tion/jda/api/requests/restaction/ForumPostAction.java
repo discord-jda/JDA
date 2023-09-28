@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
@@ -35,17 +36,17 @@ import java.util.Collection;
  * <p>On success, this provides a {@link ForumPost} object with the {@link ForumPost#getMessage() starter message}
  * and the {@link ForumPost#getThreadChannel() thread channel} of the post.
  *
- * @see net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#createForumPost(String, MessageCreateData)
+ * @see IPostContainer#createForumPost(String, MessageCreateData)
  */
 public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, ForumPostAction>, MessageCreateRequest<ForumPostAction>, FluentRestAction<ForumPost, ForumPostAction>
 {
     /**
-     * The {@link ForumChannel} to create the post in
+     * The {@link IPostContainer} to create the post in
      *
-     * @return The {@link ForumChannel}
+     * @return The {@link IPostContainer}
      */
     @Nonnull
-    ForumChannel getChannel();
+    IPostContainer getChannel();
 
     /**
      * Configures that tags which should be applied to the new post.

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.managers.channel.concrete;
 
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.MediaChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
 import net.dv8tion.jda.api.managers.channel.attribute.IPostContainerManager;
 import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
@@ -26,37 +26,37 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * Manager providing functionality to modify a {@link ForumChannel ForumChannel}.
+ * Manager providing functionality to modify a {@link MediaChannel}.
  *
  * <p><b>Example</b>
  * <pre>{@code
- * manager.setName("gamer-forum")
+ * manager.setName("Art Showcase")
  *  .setSlowmode(10)
- *  .setTopic("Welcome to the gamer forum!")
+ *  .setTopic("Showcase your art creations here.")
  *  .queue();
  * manager.reset(ChannelManager.NSFW | ChannelManager.NAME)
- *  .setName("gamer-forum-nsfw")
+ *  .setName("NSFW Art Showcase")
  *  .setNSFW(true)
  *  .queue();
  * }</pre>
  */
-public interface ForumChannelManager extends
-        StandardGuildChannelManager<ForumChannel, ForumChannelManager>,
-        IPostContainerManager<ForumChannel, ForumChannelManager>,
-        IAgeRestrictedChannelManager<ForumChannel, ForumChannelManager>,
-        ISlowmodeChannelManager<ForumChannel, ForumChannelManager>
+public interface MediaChannelManager extends
+        StandardGuildChannelManager<MediaChannel, MediaChannelManager>,
+        IPostContainerManager<MediaChannel, MediaChannelManager>,
+        IAgeRestrictedChannelManager<MediaChannel, MediaChannelManager>,
+        ISlowmodeChannelManager<MediaChannel, MediaChannelManager>
 {
     /**
-     * Sets the <b><u>default layout</u></b> of the selected {@link ForumChannel}.
+     * Sets whether to hide the download media option on this channel.
      *
-     * @param  layout
-     *         The new default layout.
+     * @param  hideOption
+     *         Whether to hide the download option
      *
-     * @return ChannelManager for chaining convenience
+     * @return ChannelManager for chaining convenience.
      *
-     * @see    ForumChannel#getDefaultLayout()
+     * @see    MediaChannel#isMediaDownloadHidden()
      */
     @Nonnull
     @CheckReturnValue
-    ForumChannelManager setDefaultLayout(@Nonnull ForumChannel.Layout layout);
+    MediaChannelManager setHideMediaDownloadOption(boolean hideOption);
 }

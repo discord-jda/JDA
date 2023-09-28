@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.managers.channel.middleman;
 
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IAgeRestrictedChannelManager;
+import net.dv8tion.jda.api.managers.channel.attribute.IThreadContainerManager;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -40,7 +41,7 @@ import javax.annotation.Nullable;
  * @see StandardGuildMessageChannel#getManager()
  */
 public interface StandardGuildMessageChannelManager<T extends StandardGuildMessageChannel, M extends StandardGuildMessageChannelManager<T, M>>
-        extends StandardGuildChannelManager<T, M>, IAgeRestrictedChannelManager<T, M>
+        extends StandardGuildChannelManager<T, M>, IAgeRestrictedChannelManager<T, M>, IThreadContainerManager<T, M>
 {
      /**
      * Sets the <b><u>topic</u></b> of the selected {@link StandardGuildMessageChannel channel}.

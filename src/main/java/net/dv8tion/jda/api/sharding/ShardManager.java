@@ -812,6 +812,13 @@ public interface ShardManager extends IGuildChannelContainer
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getForumChannelCache));
     }
 
+    @Nonnull
+    @Override
+    default SnowflakeCacheView<MediaChannel> getMediaChannelCache()
+    {
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getMediaChannelCache));
+    }
+
     /**
      * This returns the {@link net.dv8tion.jda.api.JDA JDA} instance which has the same id as the one provided.
      * <br>If there is no shard with an id that matches the provided one, this will return {@code null}.

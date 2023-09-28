@@ -36,7 +36,12 @@ public enum ChannelFlag
     /**
      * This is a {@link ForumChannel} which requires all new post threads to have at least one applied tag.
      */
-    REQUIRE_TAG(1 << 4);
+    REQUIRE_TAG(1 << 4),
+
+    /**
+     * This is a {@link net.dv8tion.jda.api.entities.channel.concrete.MediaChannel MediaChannel} which hides the copy embed option.
+     */
+    HIDE_MEDIA_DOWNLOAD_OPTIONS(1 << 15);
 
     private final int value;
 

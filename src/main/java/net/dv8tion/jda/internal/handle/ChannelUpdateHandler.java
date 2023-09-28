@@ -25,11 +25,16 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
@@ -45,18 +50,22 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.*;
-import net.dv8tion.jda.internal.entities.channel.concrete.NewsChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.concrete.TextChannelImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.ForumTagImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.ForumChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -97,6 +106,8 @@ public class ChannelUpdateHandler extends SocketHandler
 
         //Detect if we changed the channel type at all and reconstruct the channel entity if needed
         channel = handleChannelTypeChange(channel, content, type);
+        if (channel == null)
+            return null;
 
         //Handle shared properties
 
@@ -132,6 +143,9 @@ public class ChannelUpdateHandler extends SocketHandler
         if (channel instanceof AudioChannelMixin<?>)
             handleAudioChannel((AudioChannelMixin<?>) channel, content);
 
+        if (channel instanceof IPostContainerMixin<?>)
+            handlePostContainer((IPostContainerMixin<?>) channel, content);
+
         //Handle concrete type specific properties
 
         switch (type)
@@ -139,38 +153,9 @@ public class ChannelUpdateHandler extends SocketHandler
             case FORUM:
                 ForumChannelImpl forumChannel = (ForumChannelImpl) channel;
 
-                int flags = content.getInt("flags", 0);
-//                int sortOrder = content.getInt("default_sort_order", ((ForumChannelImpl) channel).getRawSortOrder());
                 int layout = content.getInt("default_forum_layout", ((ForumChannelImpl) channel).getRawLayout());
-                EmojiUnion defaultReaction =  content.optObject("default_reaction_emoji")
-                        .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
-                        .orElse(null);
-
-                int oldFlags = forumChannel.getRawFlags();
-//                int oldSortOrder = forumChannel.getRawSortOrder();
                 int oldLayout = forumChannel.getRawLayout();
-                EmojiUnion oldDefaultReaction = forumChannel.getDefaultReaction();
 
-                content.optArray("available_tags").ifPresent(
-                    array -> handleTagsUpdate(forumChannel, array)
-                );
-
-                if (oldFlags != flags)
-                {
-                    forumChannel.setFlags(flags);
-                    getJDA().handleEvent(
-                            new ChannelUpdateFlagsEvent(
-                                    getJDA(), responseNumber,
-                                    forumChannel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(flags)));
-                }
-//                if (oldSortOrder != sortOrder)
-//                {
-//                    forumChannel.setDefaultSortOrder(sortOrder);
-//                    getJDA().handleEvent(
-//                            new ChannelUpdateDefaultSortOrderEvent(
-//                                    getJDA(), responseNumber,
-//                                    forumChannel, ForumChannel.SortOrder.fromKey(oldSortOrder), ForumChannel.SortOrder.fromKey(sortOrder)));
-//                }
                 if (oldLayout != layout)
                 {
                     forumChannel.setDefaultLayout(layout);
@@ -178,14 +163,6 @@ public class ChannelUpdateHandler extends SocketHandler
                             new ChannelUpdateDefaultLayoutEvent(
                                     getJDA(), responseNumber,
                                     forumChannel, ForumChannel.Layout.fromKey(oldLayout), ForumChannel.Layout.fromKey(layout)));
-                }
-                if (!Objects.equals(oldDefaultReaction, defaultReaction))
-                {
-                    forumChannel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
-                    getJDA().handleEvent(
-                            new ChannelUpdateDefaultReactionEvent(
-                                    getJDA(), responseNumber,
-                                    forumChannel, oldDefaultReaction, defaultReaction));
                 }
                 break;
             case VOICE:
@@ -216,45 +193,51 @@ public class ChannelUpdateHandler extends SocketHandler
         EntityBuilder builder = getJDA().getEntityBuilder();
         GuildImpl guild = channel.getGuild();
 
-        if (newChannelType == ChannelType.TEXT)
+        ChannelType oldType = channel.getType();
+
+        EnumSet<ChannelType> expectedTypes = EnumSet.complementOf(EnumSet.of(
+            ChannelType.PRIVATE,
+            ChannelType.GROUP,
+            ChannelType.GUILD_NEWS_THREAD,
+            ChannelType.GUILD_PRIVATE_THREAD,
+            ChannelType.GUILD_PUBLIC_THREAD,
+            ChannelType.UNKNOWN
+        ));
+
+        if (!expectedTypes.contains(oldType) || !expectedTypes.contains(newChannelType))
         {
-            //This assumes that if we're moving to a TextChannel that we're transitioning from a NewsChannel
-            NewsChannel newsChannel = (NewsChannel) channel;
-            getJDA().getNewsChannelView().remove(newsChannel.getIdLong());
-            guild.getNewsChannelView().remove(newsChannel.getIdLong());
-
-            TextChannelImpl textChannel = (TextChannelImpl) builder.createTextChannel(guild, content, guild.getIdLong());
-
-            //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
-            textChannel.setLatestMessageIdLong(newsChannel.getLatestMessageIdLong());
-
-            getJDA().handleEvent(
-                new ChannelUpdateTypeEvent(
-                    getJDA(), responseNumber,
-                    textChannel, ChannelType.NEWS, ChannelType.TEXT));
-
-            return textChannel;
+            WebSocketClient.LOG.warn("Unexpected channel type change {}->{}, discarding from cache.", channel.getType().getId(), content.getInt("type"));
+            guild.uncacheChannel(channel, false);
+            return null;
         }
 
-        if (newChannelType == ChannelType.NEWS)
+        guild.uncacheChannel(channel, true);
+        Channel newChannel = builder.createGuildChannel(guild, content);
+
+        if (channel instanceof IThreadContainer)
         {
-            //This assumes that if we're moving to a NewsChannel that we're transitioning from a TextChannel
-            TextChannel textChannel = (TextChannel) channel;
-            getJDA().getTextChannelsView().remove(textChannel.getIdLong());
-            guild.getTextChannelsView().remove(textChannel.getIdLong());
-
-            NewsChannelImpl newsChannel = (NewsChannelImpl) builder.createNewsChannel(guild, content, guild.getIdLong());
-
-            //CHANNEL_UPDATE doesn't track last_message_id, so make sure to copy it over.
-            newsChannel.setLatestMessageIdLong(textChannel.getLatestMessageIdLong());
-
-            getJDA().handleEvent(
-                new ChannelUpdateTypeEvent(
-                    getJDA(), responseNumber,
-                    newsChannel, ChannelType.TEXT, ChannelType.NEWS));
-
-            return newsChannel;
+            if (newChannel instanceof IThreadContainer)
+            {
+                // Refresh thread parents to avoid keeping strong references to parent channel
+                guild.getThreadChannelCache().forEachUnordered(ThreadChannel::getParentChannel);
+            }
+            else
+            {
+                // Change introduced dangling thread channels (with no parent)
+                WebSocketClient.LOG.error("ThreadContainer channel transitioned into type that is not ThreadContainer? {} -> {}", channel.getType(), newChannel.getType());
+            }
         }
+
+        if (newChannel instanceof MessageChannelMixin<?> && channel instanceof MessageChannel)
+        {
+            long latestMessageIdLong = ((MessageChannel) channel).getLatestMessageIdLong();
+            ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(latestMessageIdLong);
+        }
+
+        getJDA().handleEvent(
+            new ChannelUpdateTypeEvent(
+                getJDA(), responseNumber,
+                newChannel, oldType, newChannelType));
 
         return channel;
     }
@@ -388,7 +371,7 @@ public class ChannelUpdateHandler extends SocketHandler
         }
     }
 
-    private void handleTagsUpdate(ForumChannelImpl channel, DataArray tags)
+    private void handleTagsUpdate(IPostContainerMixin<?> channel, DataArray tags)
     {
         if (!api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
             return;
@@ -570,6 +553,52 @@ public class ChannelUpdateHandler extends SocketHandler
                 new ChannelUpdateRegionEvent(
                     api, responseNumber,
                     channel, Region.fromKey(oldRegion), Region.fromKey(regionRaw)));
+        }
+    }
+
+    private void handlePostContainer(IPostContainerMixin<?> channel, DataObject content)
+    {
+        content.optArray("available_tags").ifPresent(
+            array -> handleTagsUpdate(channel, array)
+        );
+
+        EmojiUnion defaultReaction =  content.optObject("default_reaction_emoji")
+            .map(json -> EntityBuilder.createEmoji(json, "emoji_name", "emoji_id"))
+            .orElse(null);
+        EmojiUnion oldDefaultReaction = channel.getDefaultReaction();
+
+        if (!Objects.equals(oldDefaultReaction, defaultReaction))
+        {
+            channel.setDefaultReaction(content.optObject("default_reaction_emoji").orElse(null));
+            getJDA().handleEvent(
+                    new ChannelUpdateDefaultReactionEvent(
+                            getJDA(), responseNumber,
+                            channel, oldDefaultReaction, defaultReaction));
+        }
+
+
+        int sortOrder = content.getInt("default_sort_order", channel.getRawSortOrder());
+        int oldSortOrder = channel.getRawSortOrder();
+
+        if (oldSortOrder != sortOrder)
+        {
+            channel.setDefaultSortOrder(sortOrder);
+            getJDA().handleEvent(
+                new ChannelUpdateDefaultSortOrderEvent(
+                    getJDA(), responseNumber,
+                    channel, IPostContainer.SortOrder.fromKey(oldSortOrder)));
+        }
+
+        int newFlags = content.getInt("flags", 0);
+        int oldFlags = channel.getRawFlags();
+
+        if (oldFlags != newFlags)
+        {
+            channel.setFlags(newFlags);
+            getJDA().handleEvent(
+                new ChannelUpdateFlagsEvent(
+                    getJDA(), responseNumber,
+                    channel, ChannelFlag.fromRaw(oldFlags), ChannelFlag.fromRaw(newFlags)));
         }
     }
 }
