@@ -204,7 +204,7 @@ public class ChannelUpdateHandler extends SocketHandler
             ChannelType.UNKNOWN
         ));
 
-        if (!expectedTypes.contains(oldType))
+        if (!expectedTypes.contains(oldType) || !expectedTypes.contains(newChannelType))
         {
             WebSocketClient.LOG.warn("Unexpected channel type change {}->{}, discarding from cache.", channel.getType().getId(), content.getInt("type"));
             guild.uncacheChannel(channel, false);
@@ -212,41 +212,20 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         guild.uncacheChannel(channel, true);
+        Channel newChannel = builder.createGuildChannel(guild, content);
 
-        Channel newChannel;
-        switch (newChannelType)
+        if (channel instanceof IThreadContainer)
         {
-        case TEXT:
-            newChannel = builder.createTextChannel(guild, content, guild.getIdLong());
-            break;
-        case NEWS:
-            newChannel = builder.createNewsChannel(guild, content, guild.getIdLong());
-            break;
-        case MEDIA:
-            newChannel = builder.createMediaChannel(guild, content, guild.getIdLong());
-            break;
-        case FORUM:
-            newChannel = builder.createForumChannel(guild, content, guild.getIdLong());
-            break;
-        case VOICE:
-            newChannel = builder.createVoiceChannel(guild, content, guild.getIdLong());
-            break;
-        case STAGE:
-            newChannel = builder.createStageChannel(guild, content, guild.getIdLong());
-            break;
-        case CATEGORY:
-            newChannel = builder.createCategory(guild, content, guild.getIdLong());
-            break;
-        default:
-            WebSocketClient.LOG.warn("Unexpected channel type change {}->{}, discarding from cache.", channel.getType().getId(), content.getInt("type"));
-            guild.uncacheChannel(channel, false);
-            return null;
-        }
-
-        // Potentially introduces dangling thread channels (with no parent)
-        if (channel instanceof IThreadContainer && !(newChannel instanceof IThreadContainer))
-        {
-            WebSocketClient.LOG.error("ThreadContainer channel transitioned into type that is not ThreadContainer? {} -> {}", channel.getType(), newChannel.getType());
+            if (newChannel instanceof IThreadContainer)
+            {
+                // Refresh thread parents to avoid keeping strong references to parent channel
+                guild.getThreadChannelCache().forEachUnordered(ThreadChannel::getParentChannel);
+            }
+            else
+            {
+                // Change introduced dangling thread channels (with no parent)
+                WebSocketClient.LOG.error("ThreadContainer channel transitioned into type that is not ThreadContainer? {} -> {}", channel.getType(), newChannel.getType());
+            }
         }
 
         if (newChannel instanceof MessageChannelMixin<?> && channel instanceof MessageChannel)

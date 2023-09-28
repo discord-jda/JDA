@@ -399,34 +399,28 @@ public class EntityBuilder
         return guildObj;
     }
 
-    private void createGuildChannel(GuildImpl guildObj, DataObject channelData)
+    public GuildChannel createGuildChannel(GuildImpl guildObj, DataObject channelData)
     {
         final ChannelType channelType = ChannelType.fromId(channelData.getInt("type"));
         switch (channelType)
         {
         case TEXT:
-            createTextChannel(guildObj, channelData, guildObj.getIdLong());
-            break;
+            return createTextChannel(guildObj, channelData, guildObj.getIdLong());
         case NEWS:
-            createNewsChannel(guildObj, channelData, guildObj.getIdLong());
-            break;
+            return createNewsChannel(guildObj, channelData, guildObj.getIdLong());
         case STAGE:
-            createStageChannel(guildObj, channelData, guildObj.getIdLong());
-            break;
+            return createStageChannel(guildObj, channelData, guildObj.getIdLong());
         case VOICE:
-            createVoiceChannel(guildObj, channelData, guildObj.getIdLong());
-            break;
+            return createVoiceChannel(guildObj, channelData, guildObj.getIdLong());
         case CATEGORY:
-            createCategory(guildObj, channelData, guildObj.getIdLong());
-            break;
+            return createCategory(guildObj, channelData, guildObj.getIdLong());
         case FORUM:
-            createForumChannel(guildObj, channelData, guildObj.getIdLong());
-            break;
+            return createForumChannel(guildObj, channelData, guildObj.getIdLong());
         case MEDIA:
-            createMediaChannel(guildObj, channelData, guildObj.getIdLong());
-            break;
+            return createMediaChannel(guildObj, channelData, guildObj.getIdLong());
         default:
             LOG.debug("Cannot create channel for type " + channelData.getInt("type"));
+            return null;
         }
     }
 
