@@ -48,8 +48,9 @@ public class ChannelConsistencyTest
         Set<String> guildMethods = getMethodNames(Guild.class);
 
         EnumSet<ChannelType> creatable = EnumSet.complementOf(EnumSet.of(
-                ChannelType.UNKNOWN, ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
-                ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD
+            ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
+            ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
+            ChannelType.UNKNOWN, ChannelType.UNKNOWN_WEBHOOK_TARGET
         ));
 
         for (ChannelType type : creatable)
@@ -76,8 +77,9 @@ public class ChannelConsistencyTest
         Set<String> categoryMethods = getMethodNames(Category.class);
 
         EnumSet<ChannelType> cacheable = EnumSet.complementOf(EnumSet.of(
-            ChannelType.UNKNOWN, ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
-            ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD
+            ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
+            ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
+            ChannelType.UNKNOWN, ChannelType.UNKNOWN_WEBHOOK_TARGET
         ));
 
         for (ChannelType type : cacheable)
@@ -103,8 +105,9 @@ public class ChannelConsistencyTest
     public void checkManagerExists()
     {
         EnumSet<ChannelType> editable = EnumSet.complementOf(EnumSet.of(
-                ChannelType.UNKNOWN, ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
-                ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD
+            ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
+            ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
+            ChannelType.UNKNOWN, ChannelType.UNKNOWN_WEBHOOK_TARGET
         ));
 
         for (ChannelType type : editable)
