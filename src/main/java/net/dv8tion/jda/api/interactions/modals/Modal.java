@@ -59,7 +59,7 @@ import java.util.List;
  *                 .build();
  *
  *         Modal modal = Modal.create("modmail", "Modmail")
- *                 .addActionRows(ActionRow.of(subject), ActionRow.of(body))
+ *                 .addComponents(ActionRow.of(subject), ActionRow.of(body))
  *                 .build();
  *
  *         event.replyModal(modal).queue();

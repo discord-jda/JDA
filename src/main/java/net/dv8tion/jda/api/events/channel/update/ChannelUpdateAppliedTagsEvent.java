@@ -39,7 +39,6 @@ import java.util.Objects;
  */
 public class ChannelUpdateAppliedTagsEvent extends GenericChannelUpdateEvent<List<Long>>
 {
-
     public static final ChannelField FIELD = ChannelField.APPLIED_TAGS;
     public static final String IDENTIFIER = FIELD.getFieldName();
 

@@ -348,6 +348,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
+                .setSuppressEmbeds(data.isSuppressEmbeds())
                 .setSuppressedNotifications(data.isSuppressedNotifications())
                 .setComponents(layoutComponents)
                 .setFiles(data.getFiles());

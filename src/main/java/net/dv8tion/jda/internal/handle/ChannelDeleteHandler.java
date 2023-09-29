@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
@@ -150,6 +149,22 @@ public class ChannelDeleteHandler extends SocketHandler
                 }
 
                 guild.getForumChannelsView().remove(channel.getIdLong());
+                getJDA().handleEvent(
+                    new ChannelDeleteEvent(
+                        getJDA(), responseNumber,
+                        channel));
+                break;
+            }
+            case MEDIA:
+            {
+                MediaChannel channel = getJDA().getMediaChannelsView().remove(channelId);
+                if (channel == null || guild == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a media channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getMediaChannelsView().remove(channel.getIdLong());
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,

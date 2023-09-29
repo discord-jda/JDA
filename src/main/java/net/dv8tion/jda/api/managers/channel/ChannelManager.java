@@ -42,7 +42,6 @@ import javax.annotation.Nonnull;
  *
  * @see GuildChannel#getManager()
  */
-//TODO-v5: Revisit all usages of IllegalStateException in the setX methods in this class to see if they should be UnsupportedOperationException like in ChannelAction
 public interface ChannelManager<T extends GuildChannel, M extends ChannelManager<T, M>> extends Manager<M>
 {
     /** Used to reset the name field */
@@ -79,18 +78,20 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     long AVAILABLE_TAGS        = 1 << 15;
     /** Used to reset the applied tags field */
     long APPLIED_TAGS          = 1 << 16;
-    /**
-     * Used to reset the pinned state field
-     */
+    /** Used to reset the pinned state field */
     long PINNED                = 1 << 17;
-    /**
-     * Used to reset the require tag state field
-     */
+    /** Used to reset the require tag state field */
     long REQUIRE_TAG           = 1 << 18;
     /** Used to reset the default reaction emoji field */
     long DEFAULT_REACTION      = 1 << 19;
     /** Used to reset the default layout field */
     long DEFAULT_LAYOUT        = 1 << 20;
+    /** Used to reset the default sort order field */
+    long DEFAULT_SORT_ORDER    = 1 << 21;
+    /** Used to reset the hide media download option flag */
+    long HIDE_MEDIA_DOWNLOAD_OPTIONS = 1 << 22;
+    /** Used to reset the default thread slowmode of a thread container */
+    long DEFAULT_THREAD_SLOWMODE = 1 << 23;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -120,6 +121,9 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #REQUIRE_TAG}</li>
      *     <li>{@link #DEFAULT_REACTION}</li>
      *     <li>{@link #DEFAULT_LAYOUT}</li>
+     *     <li>{@link #DEFAULT_SORT_ORDER}</li>
+     *     <li>{@link #HIDE_MEDIA_DOWNLOAD_OPTIONS}</li>
+     *     <li>{@link #DEFAULT_THREAD_SLOWMODE}</li>
      * </ul>
      *
      * @param  fields
@@ -157,6 +161,9 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      *     <li>{@link #REQUIRE_TAG}</li>
      *     <li>{@link #DEFAULT_REACTION}</li>
      *     <li>{@link #DEFAULT_LAYOUT}</li>
+     *     <li>{@link #DEFAULT_SORT_ORDER}</li>
+     *     <li>{@link #HIDE_MEDIA_DOWNLOAD_OPTIONS}</li>
+     *     <li>{@link #DEFAULT_THREAD_SLOWMODE}</li>
      * </ul>
      *
      * @param  fields

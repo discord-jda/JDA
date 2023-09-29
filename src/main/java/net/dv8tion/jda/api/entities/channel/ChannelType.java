@@ -64,6 +64,11 @@ public enum ChannelType
     FORUM(15, 0, true),
 
     /**
+     * A {@link MediaChannel}, Guild-Only.
+     */
+    MEDIA(16, 0, true),
+
+    /**
      * Pseudo-type used to represent the target channel of a webhook message.
      * <br>This channel type does not actually exist,
      * it is only an indicator that we do not know the type of channel the webhook is linked to.

@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalInteraction;
-import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.ChannelUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -188,7 +188,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default GuildChannel getGuildChannel()
     {
-       return Helpers.safeChannelCast(getChannel(), GuildChannel.class);
+       return ChannelUtil.safeChannelCast(getChannel(), GuildChannel.class);
     }
 
     /**
@@ -203,7 +203,7 @@ public interface Interaction extends ISnowflake
     @Nonnull
     default MessageChannel getMessageChannel()
     {
-        return Helpers.safeChannelCast(getChannel(), MessageChannel.class);
+        return ChannelUtil.safeChannelCast(getChannel(), MessageChannel.class);
     }
 
     /**

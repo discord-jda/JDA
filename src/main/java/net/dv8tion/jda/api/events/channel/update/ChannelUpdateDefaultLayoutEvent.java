@@ -33,6 +33,9 @@ import javax.annotation.Nonnull;
 @SuppressWarnings("ConstantConditions")
 public class ChannelUpdateDefaultLayoutEvent extends GenericChannelUpdateEvent<ForumChannel.Layout>
 {
+    public static final ChannelField FIELD = ChannelField.DEFAULT_FORUM_LAYOUT;
+    public static final String IDENTIFIER = FIELD.getFieldName();
+
     public ChannelUpdateDefaultLayoutEvent(@Nonnull JDA api, long responseNumber, @Nonnull Channel channel, @Nonnull ForumChannel.Layout oldValue, @Nonnull ForumChannel.Layout newValue)
     {
         super(api, responseNumber, channel, ChannelField.DEFAULT_FORUM_LAYOUT, oldValue, newValue);
