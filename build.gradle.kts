@@ -134,6 +134,7 @@ dependencies {
     }
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.reflections:reflections:0.10.2")
 }
 
 val compileJava: JavaCompile by tasks
