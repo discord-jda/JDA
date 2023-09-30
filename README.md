@@ -7,6 +7,7 @@
 [license]: https://github.com/discord-jda/JDA/tree/master/LICENSE
 [faq]: https://jda.wiki/introduction/faq/
 [docs]: https://docs.jda.wiki/index.html
+[wiki]: https://jda.wiki/introduction/jda/
 [troubleshooting]: https://jda.wiki/using-jda/troubleshooting/
 [discord-shield]: https://discord.com/api/guilds/125227483518861312/widget.png
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
@@ -32,15 +33,10 @@
 
 # JDA (Java Discord API)
 
-JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
-This library is a helpful tool that provides the functionality to create a discord bot in java.
+JDA strives to provide a clean and full wrapping of the Discord REST API and its WebSocket-Events for Java.
+This library is a helpful tool that provides the functionality to create a Discord bot in Java.
 
 ## Summary
-
-Due to official statements made by the Discord developers we will no longer support unofficial features. These features
-are undocumented API endpoints or protocols that are not available to bot-accounts.
-
-_Please see the [Discord docs](https://discord.com/developers/docs/reference) for more information about bot accounts._
 
 1. [Introduction](#creating-the-jda-object)
 2. [Sharding](#sharding-a-bot)
@@ -57,8 +53,6 @@ _Please see the [Discord docs](https://discord.com/developers/docs/reference) fo
 
 Discord is currently prohibiting creation and usage of automated client accounts (AccountType.CLIENT).
 We have officially dropped support for client login as of version **4.2.0**!
-Note that JDA is not a good tool to build a custom discord client as it loads all servers/guilds on startup unlike
-a client which does this via lazy loading instead.
 If you need a bot, use a bot account from the [Application Dashboard](https://discord.com/developers/applications).
 
 [Read More](https://support.discord.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
@@ -102,7 +96,8 @@ public static void main(String[] args) {
   and [DefaultShardManagerBuilder](https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
 You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
-Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter`, disabling **intents**, or changing the **member cache policy**.
+Additionally, you can change the handling of the member/user cache by disabling **intents** or changing the **member cache policy**.
+To learn more about intents and member loading/caching, read the [Gateway Intents Guide](https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/).
 
 ```java
 public void configureMemoryUsage(JDABuilder builder) {
@@ -124,16 +119,16 @@ public void configureMemoryUsage(JDABuilder builder) {
 }
 ```
 
-### Listening to Events
+### Listening for Events
 
 The event system in JDA is configured through a hierarchy of classes/interfaces.
 We offer two implementations for the `IEventManager`:
 
 - **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
-- **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation that can be applied to methods
+- **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation which can be applied to methods
 
-By default the **InterfacedEventManager** is used.
-Since you can create your own implementation of `IEventManager` this is a very versatile and configurable system.
+By default, the **InterfacedEventManager** is used.
+Since you can create your own implementation of `IEventManager`, this is a very versatile and configurable system.
 If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
 configure it on the `JDABuilder` with `setEventManager(...)`.
 
@@ -142,11 +137,8 @@ configure it on the `JDABuilder` with `setEventManager(...)`.
 **Using EventListener**:
 
 ```java
-public class ReadyListener implements EventListener
-{
-    public static void main(String[] args)
-            throws InterruptedException
-    {
+public class ReadyListener implements EventListener {
+    public static void main(String[] args) throws InterruptedException {
         // Note: It is important to register your ReadyListener before building
         JDA jda = JDABuilder.createDefault("token")
             .addEventListeners(new ReadyListener())
@@ -157,10 +149,10 @@ public class ReadyListener implements EventListener
     }
 
     @Override
-    public void onEvent(GenericEvent event)
-    {
-        if (event instanceof ReadyEvent)
+    public void onEvent(GenericEvent event) {
+        if (event instanceof ReadyEvent) {
             System.out.println("API is ready!");
+        }
     }
 }
 ```
@@ -168,10 +160,8 @@ public class ReadyListener implements EventListener
 **Using ListenerAdapter**:
 
 ```java
-public class MessageListener extends ListenerAdapter
-{
-    public static void main(String[] args)
-    {
+public class MessageListener extends ListenerAdapter {
+    public static void main(String[] args) {
         JDA jda = JDABuilder.createDefault("token")
                 .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
                 .build();
@@ -182,15 +172,11 @@ public class MessageListener extends ListenerAdapter
     }
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
-        if (event.isFromType(ChannelType.PRIVATE))
-        {
+    public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.isFromType(ChannelType.PRIVATE)) {
             System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(),
                                     event.getMessage().getContentDisplay());
-        }
-        else
-        {
+        } else {
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
                         event.getTextChannel().getName(), event.getMember().getEffectiveName(),
                         event.getMessage().getContentDisplay());
@@ -202,10 +188,8 @@ public class MessageListener extends ListenerAdapter
 **Slash-Commands**:
 
 ```java
-public class Bot extends ListenerAdapter
-{
-    public static void main(String[] args)
-    {
+public class Bot extends ListenerAdapter {
+    public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("You have to provide a token as first argument!");
             System.exit(1);
@@ -229,8 +213,7 @@ public class Bot extends ListenerAdapter
     }
     
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
-    {
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         // make sure we handle the right command
         switch (event.getName()) {
             case "ping":
@@ -241,7 +224,7 @@ public class Bot extends ListenerAdapter
                      ).queue(); // Queue both reply and edit
                 break;
             case "ban":
-                // double check permissions, don't trust discord on this!
+                // double check permissions, don't trust Discord on this!
                 if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
                     event.reply("You cannot ban members! Nice try ;)").setEphemeral(true).queue();
                     break;
@@ -268,6 +251,9 @@ public class Bot extends ListenerAdapter
                     event.getHook().editOriginal("Some error occurred, try again!").queue();
                     error.printStackTrace();
                 });
+                break;
+            default:
+                System.out.printf("Unknown command %s used by %#s%n", event.getName(), event.getUser());
         }
     }
 }
@@ -309,52 +295,27 @@ public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
 
 We provide a small set of Examples in the [Example Directory](https://github.com/discord-jda/JDA/tree/master/src/examples/java).
 
-<!--
-TODO: Find good examples
-- [JDA Butler](https://github.com/Almighty-Alpaca/JDA-Butler)
-
-[And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
--->
-
 ## Sharding a Bot
 
-Discord allows Bot-accounts to share load across sessions by limiting them to a fraction of the total connected Guilds/Servers of the bot.
-<br>This can be done using **sharding** which will limit JDA to only a certain amount of Guilds/Servers including events and entities.
-Sharding will limit the amount of Guilds/Channels/Users visible to the JDA session so it is recommended to have some kind of elevated management to
-access information of other shards.
+When your bot joins over 2500 guilds, it is required to perform **Sharding**.
+This means, your connection is split up into multiple **shards**, each only accessing a fraction of your total available guilds.
+A shard can at most contain 2500 guilds when starting up the bot.
 
-To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based which means the first shard
-has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
-`shardTotal - 1`.
+Each shard is assigned a **shard id** and **shard total** (usually shown as `id / total`), which uniquely identifies which guilds are accessible on that shard.
+For instance, the first of 2 shards would be `0 / 2` and the second would be `1 / 2`.
 
-The [`SessionController`](https://docs.jda.wiki/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
-that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
-of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
+If you want to use sharding with your bot, make use of the [DefaultShardManager](https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManager.html) as seen in the example below.
+This manager automatically assigns the right number of shards to your bot, so you do not need to do any math yourself.
 
-Since version **3.4.0** JDA provides a `ShardManager` which automates this building process.
+Internally, this shard manager also handles the proper scaling of threads for connections and handles the login rate-limit (Identify Rate-Limit) to properly startup without issues.
 
-### Example Sharding - Using JDABuilder
+If you do not want to use the shard manager, and instead manage sharding yourself, you can use [JDABuilder#useSharding](https://docs.jda.wiki/net/dv8tion/jda/api/JDABuilder.html#useSharding(int,int)) and [ConcurrentSessionController](https://docs.jda.wiki/net/dv8tion/jda/api/utils/ConcurrentSessionController.html).
 
-```java
-public static void main(String[] args) throws Exception
-{
-    JDABuilder shardBuilder = JDABuilder.createDefault(args[0]);
-    //register your listeners here using shardBuilder.addEventListeners(...)
-    shardBuilder.addEventListeners(new MessageListener());
-    for (int i = 0; i < 10; i++)
-    {
-        shardBuilder.useSharding(i, 10)
-                    .build();
-    }
-}
-```
-
-> When the `useSharding` method is invoked for the first time, the builder automatically sets a SessionController internally (if none is present)
 
 ### Example Sharding - Using DefaultShardManager
+
 ```java
-public static void main(String[] args) throws Exception
-{
+public static void main(String[] args) {
     DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(args[0]);
     builder.addEventListeners(new MessageListener());
     builder.build();
@@ -391,17 +352,14 @@ Discord may request that a client (the JDA session) invalidates its entire cache
 #### Example
 
 ```java
-public class UserLogger extends ListenerAdapter 
-{
+public class UserLogger extends ListenerAdapter {
     private final User user;
     
-    public UserLogger(User user)
-    {
+    public UserLogger(User user) {
         this.user = user;
     }
     
-    private User getUser(JDA api)
-    {
+    private User getUser(JDA api) {
         // Acquire a reference to the User instance through the id
         User newUser = api.getUserById(this.user.getIdLong());
         if (newUser != null)
@@ -410,12 +368,10 @@ public class UserLogger extends ListenerAdapter
     }
     
     @Override
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
+    public void onMessageReceived(MessageReceivedEvent event) {
         User author = event.getAuthor();
         Message message = event.getMessage();
-        if (author.getIdLong() == this.user.getIdLong())
-        {
+        if (author.getIdLong() == this.user.getIdLong()) {
             // Update user from message instance (likely more up-to-date)
             this.user = author;
             // Print the message of the user
@@ -424,12 +380,10 @@ public class UserLogger extends ListenerAdapter
     }
     
     @Override
-    public void onGuildJoin(GuildJoinEvent event)
-    {
+    public void onGuildJoin(GuildJoinEvent event) {
         JDA api = event.getJDA();
         User user = getUser(); // use getter to refresh user automatically on access
-        user.openPrivateChannel().queue((channel) ->
-        {
+        user.openPrivateChannel().queue((channel) -> {
             // Send a private message to the user
             channel.sendMessageFormat("I have joined a new guild: **%s**", event.getGuild().getName()).queue();
         });
@@ -499,7 +453,7 @@ If you do not need any opus de-/encoding done by JDA (voice receive/send with PC
 This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
 
 If you want to use a custom opus library you can provide the absolute path to `OpusLibrary.loadFrom(String)` before using
-the audio api of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
+the audio API of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
 <br>_For this setup you should only exclude `opus-java-natives` as `opus-java-api` is a requirement for en-/decoding._
 
 See [opus-java](https://github.com/discord-java/opus-java)
@@ -523,8 +477,8 @@ There is a guide for logback-classic available in our wiki: [Logging Setup](http
 
 ## Documentation
 
-Docs can be found on the [Jenkins][jenkins] or directly [here](https://docs.jda.wiki/)
-<br>A simple Wiki can also be found at [jda.wiki](https://jda.wiki/)
+Docs can be found on the [GitHub Pages][docs]
+<br>We also have a wiki filled with information and troubleshooting guides at [jda.wiki][wiki]
 
 ### Annotations
 
@@ -556,22 +510,22 @@ and [Setup](https://jda.wiki/setup/intellij/) Pages.
 
 ## Third Party Recommendations
 
-### [LavaPlayer](https://github.com/sedmelluq/lavaplayer)
+### [Lavaplayer](https://github.com/lavalink-devs/lavaplayer)
 
-Created and maintained by [sedmelluq](https://github.com/sedmelluq)
-<br>LavaPlayer is the most popular library used by Music Bots created in Java.
+Created by [sedmelluq](https://github.com/sedmelluq) and now maintained by the [lavalink community](https://github.com/lavalink-devs)
+<br>Lavaplayer is the most popular library used by Music Bots created in Java.
 It is highly compatible with JDA and Discord4J and allows to play audio from
-Youtube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/sedmelluq/lavaplayer#supported-formats).
+Youtube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/lavalink-devs/lavaplayer#supported-formats).
 <br>The library can easily be expanded to more services by implementing your own AudioSourceManager and registering it.
 
-It is recommended to read the [Usage](https://github.com/sedmelluq/lavaplayer#usage) section of LavaPlayer
+It is recommended to read the [Usage](https://github.com/lavalink-devs/lavaplayer#usage) section of Lavaplayer
 to understand a proper implementation.
 <br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
-https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
+https://github.com/lavalink-devs/lavaplayer/tree/master/demo-jda
 
-### [Lavalink](https://github.com/freyacodes/Lavalink)
+### [Lavalink](https://github.com/lavalink-devs/Lavalink)
 
-Maintained by [Freya Arbjerg](https://github.com/freyacodes).
+Created by [Freya Arbjerg](https://github.com/freyacodes) and now maintained by the [lavalink community](https://github.com/lavalink-devs).
 
 Lavalink is a popular standalone audio sending node based on Lavaplayer. Lavalink was built with scalability in mind,
 and allows streaming music via many servers. It supports most of Lavaplayer's features.
@@ -583,13 +537,13 @@ as it is easier.
 [Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
 
 
-### [jda-nas](https://github.com/sedmelluq/jda-nas)
+### [jda-nas](https://github.com/sedmelluq/jda-nas) and [udpqueue](https://github.com/MinnDevelopment/udpqueue.rs)
 
-Created and maintained by [sedmelluq](https://github.com/sedmelluq)
+Created and maintained by [sedmelluq](https://github.com/sedmelluq) and extended by [MinnDevelopment](https://github.com/MinnDevelopment)
 <br>Provides a native implementation for the JDA Audio Send-System to avoid GC pauses.
 
-Note that this send system creates an extra UDP-Client which causes audio receive to no longer function properly
-since discord identifies the sending UDP-Client as the receiver.
+Note that this send system creates an extra UDP-Client which causes audio receive to no longer function properly,
+since Discord identifies the sending UDP-Client as the receiver.
 
 ```java
 JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN)
@@ -623,36 +577,42 @@ More can be found in our github organization: [JDA-Applications](https://github.
 
 ## Contributing to JDA
 
-If you want to contribute to JDA, make sure to base your branch off of our **development** branch (or a feature-branch)
-and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
-It is very possible that your change might already be in development or you missed something.
+If you want to contribute to JDA, make sure to base your branch off of our **master** branch (or a feature-branch)
+and create your PR into that **same** branch.
 
-More information can be found at the wiki page [Contributing](https://github.com/discord-jda/JDA/wiki/5\)-Contributing)
+More information can be found at the wiki page [Contributing](https://jda.wiki/contributing/contributing/).
 
-### Deprecation Policy
+## Versioning and Deprecation Policy
 
-When a feature is introduced to replace or enhance existing functionality we might deprecate old functionality.
+Since the Discord API is in itself a moving standard, the stability is never guaranteed. For this reason, JDA does not follow the common semver versioning strategy.
 
-A deprecated method/class usually has a replacement mentioned in its documentation which should be switched to. Deprecated
-functionality might or might not exist in the next minor release. (Hint: The minor version is the `MM` of `XX.MM.RR` in our version format)
+The JDA version is structured with a looser definition, where the version change indicates the significance of changes.
+For instance, using `5.1.2` as a baseline:
 
-It is possible that some features are deprecated without replacement, in this case the functionality is no longer supported by either the JDA structure
-due to fundamental changes (for example automation of a feature) or due to Discord API changes that cause it to be removed.
+- A change to the major like `6.0.0` indicates that a lot of code has to be adjusted due to major changes to the interfaces. A change like this always comes with a full migration guide like [Migrating from 4.X to 5.X](https://jda.wiki/introduction/migration-v4-v5/).
+- A change to the minor like `5.2.0` indicates some code may need to be adjusted due to the removal or change of interfaces. You can usually find the necessary changes in the release documentation.
+- A change to the patch like `5.1.3` indicates bug fixes and new feature additions that are backwards compatible.
 
-We highly recommend discontinuing usage of deprecated functionality and update by going through each minor release instead of jumping.
-For instance, when updating from version 3.3.0 to version 3.5.1 you should do the following:
+If a feature is marked as deprecated, it usually also indicates an alternative. For instance:
 
-- Update to `3.4.RR` and check for deprecation, replace
-- Update to `3.5.1` and check for deprecation, replace
+```java
+@Deprecated
+@DeprecatedSince("5.1.2")
+@ForRemoval(deadline="5.2.0")
+@ReplaceWith("setFoo(foo)")
+public void changeFoo(Foo foo) { ... }
+```
 
-The `RR` in version `3.4.RR` should be replaced by the latest version that was published for `3.4`, you can find out which the latest
-version was by looking at the [release page](https://github.com/discord-jda/JDA/releases)
+The method `changeFoo` was deprecated in release `5.1.2` and is going to be removed in `5.2.0`. Your change should replace all usage of `changeFoo(foo)` with `setFoo(foo)`.
+
+Sometimes, a feature might be removed without a replacement. This will be clearly explained in the documentation.
+
 
 ## Dependencies:
 
 This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
- * NV Websocket Client
+ * NV WebSocket Client
    * Version: **2.14**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
  * OkHttp
