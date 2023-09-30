@@ -54,8 +54,8 @@ public class MessageReaction
     private final MessageChannel channel;
     private final EmojiUnion emoji;
     private final long messageId;
-    private final boolean self;
-    private final int count;
+    private final boolean[] self;
+    private final int[] counts;
 
     /**
      * Creates a new MessageReaction instance
@@ -67,17 +67,19 @@ public class MessageReaction
      * @param  messageId
      *         The message id this reaction is attached to
      * @param  self
-     *         Whether we already reacted with this Reaction
-     * @param  count
-     *         The amount of people that reacted with this Reaction
+     *         Whether we already reacted with this Reaction,
+     *         as an array of {@code [normal, super]}
+     * @param  counts
+     *         The amount of people that reacted with this Reaction,
+     *         as an array of {@code [total, normal, super]}
      */
-    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull EmojiUnion emoji, long messageId, boolean self, int count)
+    public MessageReaction(@Nonnull MessageChannel channel, @Nonnull EmojiUnion emoji, long messageId, boolean[] self, int[] counts)
     {
         this.channel = channel;
         this.emoji = emoji;
         this.messageId = messageId;
         this.self = self;
-        this.count = count;
+        this.counts = counts;
     }
 
     /**
@@ -92,16 +94,35 @@ public class MessageReaction
     }
 
     /**
-     * Whether the currently logged in account has reacted with this reaction
+     * Whether the currently logged in account has reacted with this reaction at all, including both super and normal.
      *
      * <p><b>This will always be false for events. Discord does not provide this information for reaction events.</b>
      * You can use {@link MessageChannel#retrieveMessageById(String)} to get this information on a complete message.
      *
      * @return True, if we reacted with this reaction
+     * 
+     * @see    #isSelf(ReactionType) 
      */
     public boolean isSelf()
     {
-        return self;
+        return self[0] || self[1];
+    }
+
+    /**
+     * Whether the currently logged in account has reacted with this reaction as specifically a super or normal reaction.
+     *
+     * <p><b>This will always be false for events. Discord does not provide this information for reaction events.</b>
+     * You can use {@link MessageChannel#retrieveMessageById(String)} to get this information on a complete message.
+     * 
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @return True, if we reacted with this reaction
+     */
+    public boolean isSelf(@Nonnull ReactionType type)
+    {
+        Checks.notNull(type, "Type");
+        return self[type == ReactionType.NORMAL ? 0 : 1];
     }
 
     /**
@@ -115,11 +136,11 @@ public class MessageReaction
      */
     public boolean hasCount()
     {
-        return count >= 0;
+        return counts != null;
     }
 
     /**
-     * The amount of users that already reacted with this Reaction
+     * The total amount of users that already reacted with this Reaction.
      * <br><b>This is not updated, it is a {@code final int} per Reaction instance</b>
      *
      * <p>This value is not available in events such as {@link net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent MessageReactionAddEvent}
@@ -130,12 +151,40 @@ public class MessageReaction
      *         If this MessageReaction is from an event which does not provide a count
      *
      * @return The amount of users that reacted with this Reaction
+     * 
+     * @see    #getCount(ReactionType)
      */
     public int getCount()
     {
         if (!hasCount())
             throw new IllegalStateException("Cannot retrieve count for this MessageReaction!");
-        return count;
+        return counts[0];
+    }
+
+    /**
+     * The specific amount of users that already reacted with this Reaction.
+     * <br><b>This is not updated, it is a {@code final int} per Reaction instance</b>
+     *
+     * <p>This value is not available in events such as {@link net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent MessageReactionAddEvent}
+     * and {@link net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent MessageReactionRemoveEvent} in which case an
+     * {@link java.lang.IllegalStateException IllegalStateException} is thrown!
+     *
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this MessageReaction is from an event which does not provide a count
+     *
+     * @return The amount of users that reacted with this Reaction
+     *
+     * @see    #getCount()
+     */
+    public int getCount(@Nonnull ReactionType type)
+    {
+        if (!hasCount())
+            throw new IllegalStateException("Cannot retrieve count for this MessageReaction!");
+        Checks.notNull(type, "Type");
+        return counts[type == ReactionType.NORMAL ? 1 : 2];
     }
 
     /**
@@ -392,7 +441,7 @@ public class MessageReaction
             return false;
         MessageReaction r = (MessageReaction) obj;
         return r.emoji.equals(emoji)
-            && r.self == self
+            && r.isSelf() == this.isSelf()
             && r.messageId == messageId;
     }
 
@@ -403,5 +452,13 @@ public class MessageReaction
                 .addMetadata("messageId", messageId)
                 .addMetadata("emoji", emoji)
                 .toString();
+    }
+
+    /**
+     * Type of reaction.
+     */
+    public enum ReactionType
+    {
+        NORMAL, SUPER
     }
 }

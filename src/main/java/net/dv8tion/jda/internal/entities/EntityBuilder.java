@@ -1889,8 +1889,15 @@ public class EntityBuilder
     public MessageReaction createMessageReaction(MessageChannel chan, long id, DataObject obj)
     {
         DataObject emoji = obj.getObject("emoji");
-        final int count = obj.getInt("count", -1);
-        final boolean me = obj.getBoolean("me");
+        final int[] count = new int[]{
+                obj.getInt("count", 0), // total
+                obj.getObject("count_details").getInt("normal"),
+                obj.getObject("count_details").getInt("burst"),
+        };
+        final boolean[] me = new boolean[] {
+                obj.getBoolean("me"), // normal
+                obj.getBoolean("me_burst") // super
+        };
         EmojiUnion emojiObj = createEmoji(emoji);
 
         return new MessageReaction(chan, emojiObj, id, me, count);
