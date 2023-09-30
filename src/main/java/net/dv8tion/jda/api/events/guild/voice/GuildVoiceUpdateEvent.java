@@ -35,13 +35,13 @@ import javax.annotation.Nullable;
  * AudioChannelUnion leftChannel = event.getChannelLeft();
  *
  * if (joinedChannel != null) {
- *   // call methods that need to know on any join
+ *   // the member joined an audio channel
  * }
  * if (leftChannel != null) {
- *   // call methods that need to know on any leave
+ *   // the member left an audio channel
  * }
  * if (joinedChannel != null && leftChannel != null) {
- *   // call methods that need to know on any move
+ *   // the member moved between two audio channels in the same guild
  * }
  * }</pre>
  *
