@@ -50,7 +50,7 @@ public class ChannelConsistencyTest
         EnumSet<ChannelType> creatable = EnumSet.complementOf(EnumSet.of(
             ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
             ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
-            ChannelType.UNKNOWN, ChannelType.UNKNOWN_WEBHOOK_TARGET
+            ChannelType.UNKNOWN
         ));
 
         for (ChannelType type : creatable)
@@ -79,7 +79,7 @@ public class ChannelConsistencyTest
         EnumSet<ChannelType> cacheable = EnumSet.complementOf(EnumSet.of(
             ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
             ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
-            ChannelType.UNKNOWN, ChannelType.UNKNOWN_WEBHOOK_TARGET
+            ChannelType.UNKNOWN
         ));
 
         for (ChannelType type : cacheable)
@@ -107,7 +107,7 @@ public class ChannelConsistencyTest
         EnumSet<ChannelType> editable = EnumSet.complementOf(EnumSet.of(
             ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
             ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD, ChannelType.GUILD_NEWS_THREAD,
-            ChannelType.UNKNOWN, ChannelType.UNKNOWN_WEBHOOK_TARGET
+            ChannelType.UNKNOWN
         ));
 
         for (ChannelType type : editable)

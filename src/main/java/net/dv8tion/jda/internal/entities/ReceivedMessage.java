@@ -526,7 +526,7 @@ public class ReceivedMessage implements Message
     @Override
     public ChannelType getChannelType()
     {
-        return channel == null ? ChannelType.UNKNOWN_WEBHOOK_TARGET : getChannel().getType();
+        return channel == null ? ChannelType.UNKNOWN : getChannel().getType();
     }
 
     @Nonnull
@@ -578,7 +578,7 @@ public class ReceivedMessage implements Message
         if (guild == null)
         {
             ChannelType channelType = getChannelType();
-            if (channelType == ChannelType.UNKNOWN_WEBHOOK_TARGET || channelType.isGuild())
+            if (channelType == ChannelType.UNKNOWN || channelType.isGuild())
                 throw new IllegalStateException("This message instance does not provide a guild instance! Use getGuildId() instead.");
             else
                 throw new IllegalStateException("This message was not sent in a guild");

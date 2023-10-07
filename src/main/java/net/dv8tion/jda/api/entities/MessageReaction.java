@@ -166,7 +166,7 @@ public class MessageReaction
     @Nonnull
     public ChannelType getChannelType()
     {
-        return channel != null ? channel.getType() : ChannelType.UNKNOWN_WEBHOOK_TARGET;
+        return channel != null ? channel.getType() : ChannelType.UNKNOWN;
     }
 
     /**
