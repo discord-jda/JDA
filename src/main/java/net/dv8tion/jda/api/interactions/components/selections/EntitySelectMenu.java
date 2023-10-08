@@ -143,6 +143,7 @@ public interface EntitySelectMenu extends SelectMenu
         builder.setRequiredRange(getMinValues(), getMaxValues());
         builder.setPlaceholder(getPlaceholder());
         builder.setDisabled(isDisabled());
+        builder.setDefaultValues(getDefaultValues());
         return builder;
     }
 
