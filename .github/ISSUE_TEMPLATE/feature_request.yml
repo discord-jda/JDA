@@ -7,7 +7,7 @@ body:
       Please join the [Discord Server](https://discord.gg/0hMr4ce0tIl3SLv5) for questions or ask them in [our Discussions](https://github.com/discord-jda/JDA/discussions).
       
       Keep in mind that this isn't the place to learn Java.  
-      Please head over to [StackOverflow](https://stackoverflow.com/questions/tagged/java) for your general programming questions.
+      Please head over to [Stack Overflow](https://stackoverflow.com/questions/tagged/java) for your general programming questions.
 - type: checkboxes
   attributes:
     label: General Troubleshooting
