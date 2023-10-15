@@ -1285,6 +1285,11 @@ public class EntityBuilder
 
     public ThreadChannel createThreadChannel(GuildImpl guild, DataObject json, long guildId)
     {
+        return createThreadChannel(guild, json, guildId, true);
+    }
+
+    public ThreadChannel createThreadChannel(GuildImpl guild, DataObject json, long guildId, boolean modifyCache)
+    {
         boolean playbackCache = false;
         final long id = json.getUnsignedLong("id");
         final long parentId = json.getUnsignedLong("parent_id");
@@ -1308,8 +1313,11 @@ public class EntityBuilder
                     UnlockHook jlock = threadView.writeLock())
             {
                 channel = new ThreadChannelImpl(id, guild, type);
-                guildThreadView.getMap().put(id, channel);
-                playbackCache = threadView.getMap().put(id, channel) == null;
+                if (modifyCache)
+                {
+                    guildThreadView.getMap().put(id, channel);
+                    playbackCache = threadView.getMap().put(id, channel) == null;
+                }
             }
         }
 
@@ -1640,11 +1648,24 @@ public class EntityBuilder
         return role;
     }
 
+    public ReceivedMessage createMessageBestEffort(DataObject json, MessageChannel channel, Guild guild)
+    {
+        if (channel != null)
+            return createMessageWithChannel(json, channel, false);
+        else
+            return createMessageFromWebhook(json, guild);
+    }
+
+    public ReceivedMessage createMessageFromWebhook(DataObject json, @Nullable Guild guild)
+    {
+        return createMessage0(json, null, (GuildImpl) guild, false);
+    }
+
     public ReceivedMessage createMessageWithChannel(DataObject json, @Nonnull MessageChannel channel, boolean modifyCache)
     {
         // Use channel directly if message is from a known guild channel
         if (channel instanceof GuildMessageChannel)
-            return createMessage0(json, channel, modifyCache);
+            return createMessage0(json, channel, (GuildImpl) ((GuildMessageChannel) channel).getGuild(), modifyCache);
         // Try to resolve private channel recipient if needed
         if (channel instanceof PrivateChannel)
             return createMessageWithLookup(json, null, modifyCache);
@@ -1656,12 +1677,12 @@ public class EntityBuilder
         //Private channels may be partial in our cache and missing recipient information
         // we can try and derive the user from the message here
         if (guild == null)
-            return createMessage0(json, createPrivateChannelByMessage(json), modifyCache);
+            return createMessage0(json, createPrivateChannelByMessage(json), null, modifyCache);
         //If we know that the message was sent in a guild, we can use the guild to resolve the channel directly
         MessageChannel channel = guild.getChannelById(MessageChannel.class, json.getUnsignedLong("channel_id"));
-        if (channel == null)
-            throw new IllegalArgumentException(MISSING_CHANNEL);
-        return createMessage0(json, channel, modifyCache);
+//        if (channel == null)
+//            throw new IllegalArgumentException(MISSING_CHANNEL);
+        return createMessage0(json, channel, (GuildImpl) guild, modifyCache);
     }
 
     // This tries to build a private channel instance through an arbitrary message object
@@ -1698,7 +1719,7 @@ public class EntityBuilder
         return channel;
     }
 
-    private ReceivedMessage createMessage0(DataObject jsonObject, @Nonnull MessageChannel channel, boolean modifyCache)
+    private ReceivedMessage createMessage0(DataObject jsonObject, @Nullable MessageChannel channel, @Nullable GuildImpl guild, boolean modifyCache)
     {
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         if (type == MessageType.UNKNOWN)
@@ -1707,13 +1728,14 @@ public class EntityBuilder
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
+        final long channelId = jsonObject.getUnsignedLong("channel_id");
+        final long guildId = channel instanceof GuildChannel
+                ? ((GuildChannel) channel).getGuild().getIdLong()
+                : jsonObject.getUnsignedLong("guild_id", 0L);
         MemberImpl member = null;
-        GuildImpl guild = null;
-        if (channel instanceof GuildChannel)
-            guild = (GuildImpl) ((GuildChannel) channel).getGuild();
 
         // Member details for author
-        if (channel.getType().isGuild() && !jsonObject.isNull("member"))
+        if (guild != null && !jsonObject.isNull("member"))
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
@@ -1739,7 +1761,7 @@ public class EntityBuilder
         MessageChannel tmpChannel = channel; // because java
         final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
-        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
+        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, channelId, id, obj));
         final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
 
         // Message activity (for game invites/spotify)
@@ -1762,7 +1784,7 @@ public class EntityBuilder
                     throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
             }
         }
-        else
+        else if (channel instanceof PrivateChannel)
         {
             //Assume private channel
             if (authorId == getJDA().getSelfUser().getIdLong())
@@ -1778,6 +1800,10 @@ public class EntityBuilder
                 user = ((PrivateChannel) channel).getUser();
             }
         }
+        else
+        {
+            user = createUser(author);
+        }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
             updateUser((UserImpl) user, author);
@@ -1789,7 +1815,7 @@ public class EntityBuilder
             DataObject referenceJson = jsonObject.getObject("referenced_message");
             try
             {
-                referencedMessage = createMessage0(referenceJson, channel, false);
+                referencedMessage = createMessage0(referenceJson, channel, guild, false);
             }
             catch (IllegalArgumentException ex)
             {
@@ -1847,16 +1873,9 @@ public class EntityBuilder
 
         int position = jsonObject.getInt("position", -1);
 
-        if (!type.isSystem())
-        {
-            return new ReceivedMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags, messageInteraction, startedThread, position);
-        }
-        else
-        {
-            return new SystemMessage(id, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
-                    content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, flags, startedThread, position);
-        }
+        return new ReceivedMessage(id, channelId, guildId, api, guild, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
+                content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags,
+                messageInteraction, startedThread, position);
     }
 
     private static MessageActivity createMessageActivity(DataObject jsonObject)
@@ -1886,14 +1905,14 @@ public class EntityBuilder
         return new MessageActivity(activityType, partyId, application);
     }
 
-    public MessageReaction createMessageReaction(MessageChannel chan, long id, DataObject obj)
+    public MessageReaction createMessageReaction(MessageChannel chan, long channelId, long messageId, DataObject obj)
     {
         DataObject emoji = obj.getObject("emoji");
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
         EmojiUnion emojiObj = createEmoji(emoji);
 
-        return new MessageReaction(chan, emojiObj, id, me, count);
+        return new MessageReaction(api, chan, emojiObj, channelId, messageId, me, count);
     }
 
     public Message.Attachment createMessageAttachment(DataObject jsonObject)

@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -35,6 +36,7 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -134,16 +136,18 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
             resolveJson.optObject("channels").ifPresent(channels ->
                 channels.keys().forEach(id -> {
                     ISnowflake channelObj = jda.getGuildChannelById(id);
+                    DataObject channelJson = channels.getObject(id);
                     if (channelObj != null)
                         resolved.put(channelObj.getIdLong(), channelObj);
+                    else if (ChannelType.fromId(channelJson.getInt("type")).isThread())
+                        resolved.put(Long.parseUnsignedLong(id), api.getEntityBuilder().createThreadChannel(guild, channelJson, guild.getIdLong(), false));
                 })
             );
         }
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    @SuppressWarnings("ConstantConditions")
     public MessageChannelUnion getChannel()
     {
         return (MessageChannelUnion) super.getChannel();
