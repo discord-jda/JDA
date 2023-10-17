@@ -240,4 +240,25 @@ public enum ChannelType
         }
         return types;
     }
+
+    /**
+     * An {@link java.util.EnumSet} populated with all channel types, excluding {@link #UNKNOWN},
+     * using the provided interface type.
+     *
+     * @param  clazz
+     *         The channel's interface type
+     *
+     * @return {@link java.util.EnumSet} for the interface type
+     */
+    @Nonnull
+    public static EnumSet<ChannelType> fromInterface(Class<? extends Channel> clazz)
+    {
+        EnumSet<ChannelType> types = EnumSet.noneOf(ChannelType.class);
+        for (ChannelType type : values())
+        {
+            if (type.getInterface() == clazz && type != UNKNOWN)
+                types.add(type);
+        }
+        return types;
+    }
 }
