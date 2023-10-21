@@ -71,6 +71,8 @@ public class MessageCreateHandler extends SocketHandler
         try
         {
             message = jda.getEntityBuilder().createMessageWithLookup(content, guild, true);
+            if (!message.hasChannel())
+                throw new IllegalArgumentException(EntityBuilder.MISSING_CHANNEL);
         }
         catch (IllegalArgumentException e)
         {

@@ -75,7 +75,7 @@ public class MessageReactionClearEmojiHandler extends SocketHandler
                 false
         };
 
-        MessageReaction reaction = new MessageReaction(channel, reactionEmoji, messageId, self, null);
+        MessageReaction reaction = new MessageReaction(api, channel, reactionEmoji, channelId, messageId, self, null);
 
         getJDA().handleEvent(new MessageReactionRemoveEmojiEvent(getJDA(), responseNumber, messageId, channel, reaction));
         return null;

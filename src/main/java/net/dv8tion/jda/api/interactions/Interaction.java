@@ -149,12 +149,32 @@ public interface Interaction extends ISnowflake
 
     /**
      * The channel this interaction happened in.
-     * <br>This is currently never null, but might be nullable in the future.
      *
-     * @return The channel or null if this interaction is not from a channel context
+     * @return The channel or null if the channel is not provided
      */
     @Nullable
     Channel getChannel();
+
+    /**
+     * The ID of the channel this interaction happened in.
+     * <br>This might be 0 if no channel context is provided in future interaction types.
+     *
+     * @return The channel ID, or 0 if no channel context is provided
+     */
+    long getChannelIdLong();
+
+    /**
+     * The ID of the channel this interaction happened in.
+     * <br>This might be null if no channel context is provided in future interaction types.
+     *
+     * @return The channel ID, or null if no channel context is provided
+     */
+    @Nullable
+    default String getChannelId()
+    {
+        long id = getChannelIdLong();
+        return id != 0 ? Long.toUnsignedString(getChannelIdLong()) : null;
+    }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel} this interaction happened in.

@@ -14,7 +14,7 @@ Based on the current `master` changes!
         - Follow the guides provided at [JDA Structure Guide](https://jda.wiki/contributing/structure-guide/)
         - Compare your code style to the one used all over JDA and ensure you
           do not break the consistency (if you find issues in the JDA style you can include and update it)
-    - Do not remove existing functionality, use deprecation instead (for reference [deprecation policy](https://github.com/DV8FromTheWorld/JDA#deprecation-policy))
+    - Do not remove existing functionality, use deprecation instead (for reference [deprecation policy](https://github.com/discord-jda/JDA?tab=readme-ov-file#versioning-and-deprecation-policy))
 
 2. Making a Commit
     - While having multiple commits can help the reader understand your changes, it might sometimes be
@@ -23,8 +23,8 @@ Based on the current `master` changes!
 
 3. Updating your Fork
     - Before you start committing make sure your fork is updated.
-      (See [Syncing a Fork](https://help.github.com/articles/syncing-a-fork/)
-      or [Keeping a Fork Updated](https://robots.thoughtbot.com/keeping-a-github-fork-updated))
+      (See [Syncing a Fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork)
+      or [Keeping a Fork Updated](https://thoughtbot.com/blog/keeping-a-github-fork-updated))
       
 4. Only open Pull Requests to master
     - Look at the [Repository Structure](https://jda.wiki/contributing/repository-structure/) for further details

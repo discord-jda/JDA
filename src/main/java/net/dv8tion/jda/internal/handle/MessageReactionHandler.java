@@ -164,7 +164,7 @@ public class MessageReactionHandler extends SocketHandler
             false
         };
 
-        MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, self, null);
+        MessageReaction reaction = new MessageReaction(api, channel, rEmoji, channelId, messageId, self, null);
 
         if (channel.getType() == ChannelType.PRIVATE)
         {

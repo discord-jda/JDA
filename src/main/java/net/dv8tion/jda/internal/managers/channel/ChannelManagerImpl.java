@@ -163,7 +163,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         if ((fields & HIDE_MEDIA_DOWNLOAD_OPTIONS) == HIDE_MEDIA_DOWNLOAD_OPTIONS)
         {
-            if (channel.getFlags().contains(HIDE_MEDIA_DOWNLOAD_OPTIONS))
+            if (channel.getFlags().contains(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS))
                 this.flags.add(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
             else
                 this.flags.remove(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
