@@ -1891,8 +1891,8 @@ public class EntityBuilder
         DataObject emoji = obj.getObject("emoji");
         final int[] count = new int[]{
                 obj.getInt("count", 0), // total
-                obj.getObject("count_details").getInt("normal"),
-                obj.getObject("count_details").getInt("burst"),
+                obj.optObject("count_details").map(o -> o.getInt("normal", 0)).orElse(0),
+                obj.optObject("count_details").map(o -> o.getInt("burst", 0)).orElse(0),
         };
         final boolean[] me = new boolean[] {
                 obj.getBoolean("me"), // normal
