@@ -72,7 +72,7 @@ public class Route
         public static final Route CREATE_FOLLOWUP = new Route(POST,   "webhooks/{application_id}/{interaction_token}", true);
         public static final Route EDIT_FOLLOWUP =   new Route(PATCH,  "webhooks/{application_id}/{interaction_token}/messages/{message_id}", true);
         public static final Route DELETE_FOLLOWUP = new Route(DELETE, "webhooks/{application_id}/{interaction_token}/messages/{message_id}", true);
-        public static final Route GET_ORIGINAL =    new Route(GET,    "webhooks/{application_id}/{interaction_token}/messages/@original", true);
+        public static final Route GET_MESSAGE =     new Route(GET,    "webhooks/{application_id}/{interaction_token}/messages/{message_id}", true);
     }
 
     public static class Self
@@ -177,6 +177,7 @@ public class Route
         public static final Route MODIFY_TOKEN_WEBHOOK = new Route(PATCH,  "webhooks/{webhook_id}/{token}");
 
         public static final Route EXECUTE_WEBHOOK        = new Route(POST,   "webhooks/{webhook_id}/{token}");
+        public static final Route EXECUTE_WEBHOOK_FETCH  = new Route(GET,    "webhooks/{webhook_id}/{token}/messages/{message_id}");
         public static final Route EXECUTE_WEBHOOK_EDIT   = new Route(PATCH,  "webhooks/{webhook_id}/{token}/messages/{message_id}");
         public static final Route EXECUTE_WEBHOOK_DELETE = new Route(DELETE, "webhooks/{webhook_id}/{token}/messages/{message_id}");
         public static final Route EXECUTE_WEBHOOK_SLACK  = new Route(POST,   "webhooks/{webhook_id}/{token}/slack");

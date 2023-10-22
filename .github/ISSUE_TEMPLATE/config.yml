@@ -3,18 +3,21 @@ contact_links:
   - name: Discord
     url: https://discord.gg/0hMr4ce0tIk3pSjp
     about: The JDA Discord is the best place to receive fast support for your questions.
+  - name: Questions
+    url: https://github.com/discord-jda/JDA/discussions
+    about: You can ask questions about JDA and find useful information in our Discussions.
   - name: Javadoc
-    url: https://ci.dv8tion.net/job/JDA/javadoc/
+    url: https://docs.jda.wiki/
     about: The Javadoc is the perfect place to retrieve information about various methods within JDA.
-  - name: Jenkins
-    url: https://ci.dv8tion.net/job/JDA/
-    about: You can find the latest Dev Builds on the Jenkins CI Server.
   - name: Wiki
-    url: https://jda.wiki
+    url: https://jda.wiki/
     about: You can find answers to common questions on our Wiki. Make sure to read the FAQ page!
   - name: Releases
-    url: https://github.com/DV8FromTheWorld/JDA/releases
+    url: https://github.com/discord-jda/JDA/releases
     about: You can find the latest releases here on GitHub and on Bintray.
-  - name: Questions
-    url: https://github.com/DV8FromTheWorld/JDA/discussions
-    about: You can ask questions about JDA and find useful information in our Discussions.
+  - name: Snapshots
+    url: https://jitpack.io/#discord-jda/JDA
+    about: You can find the latest dev builds on JitPack.
+  - name: Jenkins
+    url: https://ci.dv8tion.net/job/JDA5/
+    about: Dev builds also available on the Jenkins CI Server.

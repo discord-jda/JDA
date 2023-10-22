@@ -24,7 +24,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
@@ -142,7 +144,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     ChannelAction<T> setPosition(@Nullable Integer position);
 
     /**
-     * Sets the topic for the new TextChannel
+     * Sets the topic for the channel
      *
      * @param  topic
      *         The topic for the new GuildChannel
@@ -151,8 +153,8 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      *         If this ChannelAction is not for a TextChannel
      * @throws IllegalArgumentException
      *         If the provided topic is greater than {@value StandardGuildMessageChannel#MAX_TOPIC_LENGTH} in length.
-     *         For {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels},
-     *         this limit is {@value net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#MAX_FORUM_TOPIC_LENGTH} instead.
+     *         For {@link IPostContainer IPostContainers},
+     *         this limit is {@value IPostContainer#MAX_POST_CONTAINER_TOPIC_LENGTH} instead.
      *
      * @return The current ChannelAction, for chaining convenience
      */
@@ -161,7 +163,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     ChannelAction<T> setTopic(@Nullable String topic);
 
     /**
-     * Sets the NSFW flag for the new TextChannel
+     * Sets the NSFW flag for the channel
      *
      * @param  nsfw
      *         The NSFW flag for the new GuildChannel
@@ -199,7 +201,31 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     ChannelAction<T> setSlowmode(int slowmode);
 
     /**
-     * Sets the <b><u>default reaction emoji</u></b> of the new {@link ForumChannel}.
+     * Sets the slowmode value, which limits the amount of time that individual users must wait
+     * between sending messages in the new channel. This is measured in seconds.
+     * <br>This is applied to newly created threads by default.
+     *
+     * <p>Note: Bots are unaffected by this.
+     * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
+     * grants immunity to slowmode.
+     *
+     * @param  slowmode
+     *         The number of seconds required to wait between sending messages in the channel.
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a {@link IThreadContainer}
+     * @throws IllegalArgumentException
+     *         If the {@code slowmode} is greater than {@link ISlowmodeChannel#MAX_SLOWMODE ISlowmodeChannel.MAX_SLOWMODE}, or less than 0
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setDefaultThreadSlowmode(int slowmode);
+
+    /**
+     * Sets the <b><u>default reaction emoji</u></b> of the channel.
      * <br>This does not support custom emoji from other guilds.
      *
      * @param  emoji
@@ -207,7 +233,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      *
      * @return The current ChannelAction, for chaining convenience
      *
-     * @see    ForumChannel#getDefaultReaction()
+     * @see    IPostContainer#getDefaultReaction()
      */
     @Nonnull
     @CheckReturnValue
@@ -219,6 +245,9 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      * @param  layout
      *         The new default layout.
      *
+     * @throws IllegalArgumentException
+     *         If null or {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel.Layout#UNKNOWN UNKNOWN} is provided
+     *
      * @return The current ChannelAction, for chaining convenience
      *
      * @see    ForumChannel#getDefaultLayout()
@@ -228,7 +257,24 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
     ChannelAction<T> setDefaultLayout(@Nonnull ForumChannel.Layout layout);
 
     /**
-     * Sets the <b><u>available tags</u></b> of the new {@link ForumChannel}.
+     * Sets the <b><u>default sort order</u></b> of the channel.
+     *
+     * @param  sortOrder
+     *         The new default sort order.
+     *
+     * @throws IllegalArgumentException
+     *         If null or {@link net.dv8tion.jda.api.entities.channel.attribute.IPostContainer.SortOrder#UNKNOWN UNKNOWN} is provided
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    IPostContainer#getDefaultSortOrder()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setDefaultSortOrder(@Nonnull IPostContainer.SortOrder sortOrder);
+
+    /**
+     * Sets the <b><u>available tags</u></b> of the channel.
      * <br>Tags will be ordered based on the provided list order.
      *
      * <p>You can use {@link ForumTagData} to create new tags.
@@ -241,7 +287,7 @@ public interface ChannelAction<T extends GuildChannel> extends FluentAuditableRe
      *
      * @return The current ChannelAction, for chaining convenience
      *
-     * @see    ForumChannel#getAvailableTags()
+     * @see    IPostContainer#getAvailableTags()
      */
     @Nonnull
     @CheckReturnValue

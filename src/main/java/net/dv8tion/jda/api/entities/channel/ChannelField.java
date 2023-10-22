@@ -263,14 +263,14 @@ public enum ChannelField
      */
     DEFAULT_FORUM_LAYOUT("default_forum_layout", AuditLogKey.DEFAULT_FORUM_LAYOUT),
 
-//    /**
-//     * The default sort order of a forum channel.
-//     *
-//     * <p>Limited to {@link ForumChannel Forum Channels}.
-//     *
-//     * @see ForumChannel#getDefaultSortOrder()
-//     */
-//    DEFAULT_SORT_ORDER("default_sort_order", AuditLogKey.CHANNEL_DEFAULT_SORT_ORDER)
+    /**
+     * The default sort order of a forum channel.
+     *
+     * <p>Limited to {@link ForumChannel Forum Channels} and {@link MediaChannel Media Channels}.
+     *
+     * @see ForumChannel#getDefaultSortOrder()
+     */
+    DEFAULT_SORT_ORDER("default_sort_order", AuditLogKey.CHANNEL_DEFAULT_SORT_ORDER)
     ;
 
     private final String fieldName;

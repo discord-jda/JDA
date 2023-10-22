@@ -64,8 +64,14 @@ public enum ChannelType
     FORUM(15, 0, true),
 
     /**
-     * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
-     * channel type and JDA had yet to implement support for it.
+     * A {@link MediaChannel}, Guild-Only.
+     */
+    MEDIA(16, 0, true),
+
+    /**
+     * Unknown Discord channel type.
+     *
+     * <p>This might be used in the case when a channel is not available in cache, like when sending webhook messages.
      */
     UNKNOWN(-1, -2);
 

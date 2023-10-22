@@ -120,7 +120,7 @@ public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInte
         return interaction.replyChoices(choices);
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public MessageChannelUnion getChannel()
     {

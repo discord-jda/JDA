@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.interactions.callbacks.IAutoCompleteCallback;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Interaction for auto-complete options in slash-commands.
@@ -48,7 +47,12 @@ public interface CommandAutoCompleteInteraction extends IAutoCompleteCallback, C
     @Nonnull
     AutoCompleteQuery getFocusedOption();
 
-    @Nullable
+    /**
+     * The respective {@link MessageChannelUnion} for this interaction.
+     *
+     * @return The {@link MessageChannelUnion}
+     */
+    @Nonnull
     @Override
     MessageChannelUnion getChannel();
 

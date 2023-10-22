@@ -57,6 +57,10 @@ public class ThreadUpdateHandler extends SocketHandler
         //Refer to the documentation for more info: https://discord.com/developers/docs/topics/threads#unarchiving-a-thread
         if (thread == null)
         {
+            // This seems to never be true but its better to check
+            if (content.getObject("thread_metadata").getBoolean("archived"))
+                return null;
+
             //Technically, when the ThreadChannel is unarchived the archive_timestamp (getTimeArchiveInfoLastModified) changes
             // as well, but we don't have the original value because we didn't have the thread in memory, so we can't
             // provide an entirely accurate ChannelUpdateArchiveTimestampEvent. Not sure how much that'll matter.

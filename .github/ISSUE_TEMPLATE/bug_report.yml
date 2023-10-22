@@ -4,10 +4,10 @@ body:
 - type: markdown
   attributes:
     value: |-
-      Please join the [Discord Server](https://discord.gg/0hMr4ce0tIl3SLv5) for questions or ask them in [our Discussions](https://github.com/DV8FromTheWorld/JDA/discussions).
+      Please join the [Discord Server](https://discord.gg/0hMr4ce0tIl3SLv5) for questions or ask them in [our Discussions](https://github.com/discord-jda/JDA/discussions).
       
       Keep in mind that this isn't the place to learn Java.  
-      Please head over to [StackOverflow](https://stackoverflow.com/questions/tagged/java) for your general programming questions.
+      Please head over to [Stack Overflow](https://stackoverflow.com/questions/tagged/java) for your general programming questions.
 - type: checkboxes
   attributes:
     label: General Troubleshooting
@@ -15,10 +15,19 @@ body:
     options:
       - label: I have checked for similar issues on the Issue-tracker.
         required: true
-      - label: I have updated to the [latest JDA version](https://ci.dv8tion.net/job/JDA/lastSuccessfulBuild/)
+      - label: I have checked for PRs that might already address this issue.
         required: true
-      - label: I have checked the branches or the maintainers' PRs for upcoming bug fixes.
-        required: true
+- type: input
+  attributes:
+    label: "Version of JDA"
+    description: |
+      Please let us know, which specific version of JDA you used.
+      If your version is outdated, maybe try updating and see if that already fixes your problem.
+      You can see the latest version in the [Releases](https://github.com/discord-jda/JDA/releases).
+      To find out your version, you can add `System.out.println(JDAInfo.VERSION);` in your code.
+    placeholder: "For example 5.0.0-beta.7"
+  validations:
+    required: true
 - type: textarea
   attributes:
     label: "Expected Behaviour"

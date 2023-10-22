@@ -158,7 +158,13 @@ public class MessageReactionHandler extends SocketHandler
         // reaction remove has null name sometimes
         EmojiUnion rEmoji = EntityBuilder.createEmoji(emoji);
 
-        MessageReaction reaction = new MessageReaction(channel, rEmoji, messageId, userId == api.getSelfUser().getIdLong(), -1);
+        // We don't know if it is a normal or super reaction
+        boolean[] self = new boolean[] {
+            false,
+            false
+        };
+
+        MessageReaction reaction = new MessageReaction(api, channel, rEmoji, channelId, messageId, self, null);
 
         if (channel.getType() == ChannelType.PRIVATE)
         {

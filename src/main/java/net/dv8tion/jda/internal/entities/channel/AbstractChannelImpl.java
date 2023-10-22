@@ -22,8 +22,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.*;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.ChannelMixin;
+import net.dv8tion.jda.internal.utils.ChannelUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 
@@ -73,92 +73,99 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     @Nonnull
     public PrivateChannel asPrivateChannel()
     {
-        return Helpers.safeChannelCast(this, PrivateChannel.class);
+        return ChannelUtil.safeChannelCast(this, PrivateChannel.class);
     }
 
     @Nonnull
     public TextChannel asTextChannel()
     {
-        return Helpers.safeChannelCast(this, TextChannel.class);
+        return ChannelUtil.safeChannelCast(this, TextChannel.class);
     }
 
     @Nonnull
     public NewsChannel asNewsChannel()
     {
-        return Helpers.safeChannelCast(this, NewsChannel.class);
+        return ChannelUtil.safeChannelCast(this, NewsChannel.class);
     }
 
     @Nonnull
     public VoiceChannel asVoiceChannel()
     {
-        return Helpers.safeChannelCast(this, VoiceChannel.class);
+        return ChannelUtil.safeChannelCast(this, VoiceChannel.class);
     }
 
     @Nonnull
     public StageChannel asStageChannel()
     {
-        return Helpers.safeChannelCast(this, StageChannel.class);
+        return ChannelUtil.safeChannelCast(this, StageChannel.class);
     }
 
     @Nonnull
     public ThreadChannel asThreadChannel()
     {
-        return Helpers.safeChannelCast(this, ThreadChannel.class);
+        return ChannelUtil.safeChannelCast(this, ThreadChannel.class);
     }
 
     @Nonnull
     public Category asCategory()
     {
-        return Helpers.safeChannelCast(this, Category.class);
+        return ChannelUtil.safeChannelCast(this, Category.class);
     }
 
     @Nonnull
     @Override
     public ForumChannel asForumChannel()
     {
-        return Helpers.safeChannelCast(this, ForumChannel.class);
+        return ChannelUtil.safeChannelCast(this, ForumChannel.class);
+    }
+
+    @Nonnull
+    @Override
+    public MediaChannel asMediaChannel()
+    {
+        return ChannelUtil.safeChannelCast(this, MediaChannel.class);
     }
 
     @Nonnull
     public MessageChannel asMessageChannel()
     {
-        return Helpers.safeChannelCast(this, MessageChannel.class);
+        return ChannelUtil.safeChannelCast(this, MessageChannel.class);
     }
 
     @Nonnull
     public AudioChannel asAudioChannel()
     {
-        return Helpers.safeChannelCast(this, AudioChannel.class);
+        return ChannelUtil.safeChannelCast(this, AudioChannel.class);
     }
 
     @Nonnull
     public IThreadContainer asThreadContainer()
     {
-        return Helpers.safeChannelCast(this, IThreadContainer.class);
+        return ChannelUtil.safeChannelCast(this, IThreadContainer.class);
     }
 
     @Nonnull
     public GuildChannel asGuildChannel()
     {
-        return Helpers.safeChannelCast(this, GuildChannel.class);
+        return ChannelUtil.safeChannelCast(this, GuildChannel.class);
     }
 
     @Nonnull
     public GuildMessageChannel asGuildMessageChannel()
     {
-        return Helpers.safeChannelCast(this, GuildMessageChannel.class);
+        return ChannelUtil.safeChannelCast(this, GuildMessageChannel.class);
     }
 
     @Nonnull
     public StandardGuildChannel asStandardGuildChannel()
     {
-        return Helpers.safeChannelCast(this, StandardGuildChannel.class);
+        return ChannelUtil.safeChannelCast(this, StandardGuildChannel.class);
     }
 
     @Nonnull
     public StandardGuildMessageChannel asStandardGuildMessageChannel()
     {
-        return Helpers.safeChannelCast(this, StandardGuildMessageChannel.class);
+        return ChannelUtil.safeChannelCast(this, StandardGuildMessageChannel.class);
     }
 
     @Override

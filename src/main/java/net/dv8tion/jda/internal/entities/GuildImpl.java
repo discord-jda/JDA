@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -110,6 +111,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ThreadChannel> threadChannelCache = new SortedSnowflakeCacheViewImpl<>(ThreadChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<ForumChannel> forumChannelCache = new SortedSnowflakeCacheViewImpl<>(ForumChannel.class, Channel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<MediaChannel> mediaChannelCache = new SortedSnowflakeCacheViewImpl<>(MediaChannel.class, Channel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<RichCustomEmoji> emojicache = new SnowflakeCacheViewImpl<>(RichCustomEmoji.class, RichCustomEmoji::getName);
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
@@ -163,6 +165,7 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<ThreadChannel> threadView = getJDA().getThreadChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> newsView = getJDA().getNewsChannelView();
         SnowflakeCacheViewImpl<ForumChannel> forumView = getJDA().getForumChannelsView();
+        SnowflakeCacheViewImpl<MediaChannel> mediaView = getJDA().getMediaChannelsView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getJDA().getVoiceChannelsView();
         SnowflakeCacheViewImpl<Category> categoryView = getJDA().getCategoriesView();
 
@@ -191,7 +194,12 @@ public class GuildImpl implements Guild
         try (UnlockHook hook = forumView.writeLock())
         {
             getForumChannelCache()
-                .forEachUnordered(chan -> forumView.getMap().remove(chan.getIdLong()));
+                    .forEachUnordered(chan -> forumView.getMap().remove(chan.getIdLong()));
+        }
+        try (UnlockHook hook = mediaView.writeLock())
+        {
+            getMediaChannelsView()
+                    .forEachUnordered(chan -> mediaView.getMap().remove(chan.getIdLong()));
         }
         try (UnlockHook hook = voiceView.writeLock())
         {
@@ -232,6 +240,76 @@ public class GuildImpl implements Guild
                 return true;
             });
         }
+    }
+
+    public void uncacheChannel(GuildChannel channel, boolean keepThreads)
+    {
+        long id = channel.getIdLong();
+        switch (channel.getType())
+        {
+        case TEXT:
+            api.getTextChannelsView().remove(id);
+            this.getTextChannelsView().remove(id);
+            break;
+        case NEWS:
+            api.getNewsChannelView().remove(id);
+            this.getNewsChannelView().remove(id);
+            break;
+        case MEDIA:
+            api.getMediaChannelsView().remove(id);
+            this.getMediaChannelsView().remove(id);
+            break;
+        case FORUM:
+            api.getForumChannelsView().remove(id);
+            this.getForumChannelsView().remove(id);
+            break;
+        case VOICE:
+            api.getVoiceChannelsView().remove(id);
+            this.getVoiceChannelsView().remove(id);
+            break;
+        case STAGE:
+            api.getStageChannelView().remove(id);
+            this.getStageChannelsView().remove(id);
+            break;
+        case CATEGORY:
+            api.getCategoriesView().remove(id);
+            this.getCategoriesView().remove(id);
+            break;
+        case GUILD_NEWS_THREAD:
+        case GUILD_PUBLIC_THREAD:
+        case GUILD_PRIVATE_THREAD:
+            api.getThreadChannelsView().remove(id);
+            this.getThreadChannelsView().remove(id);
+            break;
+        }
+
+        if (!keepThreads && channel instanceof IThreadContainer)
+        {
+            // Remove dangling threads
+            SortedSnowflakeCacheViewImpl<ThreadChannel> localView = this.getThreadChannelsView();
+            SnowflakeCacheViewImpl<ThreadChannel> globalView = api.getThreadChannelsView();
+            Predicate<ThreadChannel> predicate = thread -> channel.equals(thread.getParentChannel());
+
+            try (UnlockHook hook1 = localView.writeLock(); UnlockHook hook2 = globalView.writeLock())
+            {
+                localView.getMap().valueCollection().removeIf(predicate);
+                globalView.getMap().valueCollection().removeIf(predicate);
+            }
+        }
+
+        // This might be too presumptuous, Channel#getParent still returns null regardless if the category is uncached
+//        if (channel instanceof Category)
+//        {
+//            for (Channel chan : guild.getChannels())
+//            {
+//                if (!(chan instanceof ICategorizableChannelMixin<?>))
+//                    continue;
+//
+//                ICategorizableChannelMixin<?> categoizable = (ICategorizableChannelMixin<?>) chan;
+//                if (categoizable.getParentCategoryIdLong() == id)
+//                    categoizable.setParentCategory(0L);
+//            }
+//        }
     }
 
     @Nonnull
@@ -774,6 +852,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<MediaChannel> getMediaChannelCache()
+    {
+        return mediaChannelCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<StageChannel> getStageChannelCache()
     {
         return stageChannelCache;
@@ -820,14 +905,16 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<TextChannel> text = getTextChannelsView();
         SnowflakeCacheViewImpl<NewsChannel> news = getNewsChannelView();
         SnowflakeCacheViewImpl<ForumChannel> forum = getForumChannelsView();
+        SnowflakeCacheViewImpl<MediaChannel> media = getMediaChannelsView();
 
-        List<GuildChannel> channels = new ArrayList<>((int) (categories.size() + voice.size() + stage.size() + text.size() + news.size() + forum.size()));
+        List<GuildChannel> channels = new ArrayList<>((int) (categories.size() + voice.size() + stage.size() + text.size() + news.size() + forum.size() + media.size()));
 
         voice.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
         stage.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
         text.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
         news.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
         forum.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
+        media.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
 
         categories.forEach(category ->
         {
@@ -1503,9 +1590,7 @@ public class GuildImpl implements Guild
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
         checkOwner(user.getIdLong(), "kick");
-        Member member = resolveMember(user);
-        if (member != null) // If user is in guild. Check if we are able to ban.
-            checkPosition(member);
+        checkPosition(user);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -1521,10 +1606,7 @@ public class GuildImpl implements Guild
         Checks.check(unit.toDays(duration) <= 7, "Deletion timeframe must not be larger than 7 days");
         checkPermission(Permission.BAN_MEMBERS);
         checkOwner(user.getIdLong(), "ban");
-
-        Member member = resolveMember(user);
-        if (member != null) // If user is in guild. Check if we are able to ban.
-            checkPosition(member);
+        checkPosition(user);
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
         DataObject params = DataObject.empty();
@@ -1557,6 +1639,7 @@ public class GuildImpl implements Guild
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
         checkOwner(user.getIdLong(), "time out");
+        checkPosition(user);
 
         return timeoutUntilById0(user.getId(), date);
     }
@@ -1782,6 +1865,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name, @Nullable Category parent)
+    {
+        return createChannel(ChannelType.MEDIA, MediaChannel.class, name, parent);
+    }
+
+    @Nonnull
+    @Override
     public ChannelAction<Category> createCategory(@Nonnull String name)
     {
         return createChannel(ChannelType.CATEGORY, Category.class, name, null);
@@ -1961,9 +2051,10 @@ public class GuildImpl implements Guild
             throw new InsufficientPermissionException(this, perm);
     }
 
-    protected void checkPosition(Member member)
+    protected void checkPosition(UserSnowflake user)
     {
-        if(!getSelfMember().canInteract(member))
+        Member member = resolveMember(user);
+        if(member != null && !getSelfMember().canInteract(member))
             throw new HierarchyException("Can't modify a member with higher or equal highest role than yourself!");
     }
 
@@ -2251,6 +2342,11 @@ public class GuildImpl implements Guild
     public SortedSnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
     {
         return forumChannelCache;
+    }
+
+    public SortedSnowflakeCacheViewImpl<MediaChannel> getMediaChannelsView()
+    {
+        return mediaChannelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()

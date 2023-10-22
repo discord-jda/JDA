@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -38,6 +39,7 @@ import javax.annotation.Nullable;
 public class InteractionImpl implements Interaction
 {
     protected final long id;
+    protected final long channelId;
     protected final int type;
     protected final String token;
     protected final Guild guild;
@@ -58,6 +60,7 @@ public class InteractionImpl implements Interaction
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
+        this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
 
         DataObject channelJson = data.getObject("channel");
@@ -66,7 +69,13 @@ public class InteractionImpl implements Interaction
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
             jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
             user = member.getUser();
-            channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
+
+            GuildChannel channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
+            if (channel == null && ChannelType.fromId(channelJson.getInt("type")).isThread())
+                channel = api.getEntityBuilder().createThreadChannel((GuildImpl) guild, channelJson, guild.getIdLong(), false);
+            if (channel == null)
+                throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: " + channelJson.getInt("type"));
+            this.channel = channel;
         }
         else
         {
@@ -146,6 +155,12 @@ public class InteractionImpl implements Interaction
     public Channel getChannel()
     {
         return channel;
+    }
+
+    @Override
+    public long getChannelIdLong()
+    {
+        return channelId;
     }
 
     @Nonnull

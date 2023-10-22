@@ -16,18 +16,25 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.component.EntitySelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
+import java.util.*;
 
 /**
  * Specialized {@link SelectMenu} for selecting Discord entities.
@@ -109,6 +116,16 @@ public interface EntitySelectMenu extends SelectMenu
     EnumSet<ChannelType> getChannelTypes();
 
     /**
+     * Default selected values.
+     * <br>These are shown until the user customizes the selected values,
+     * which then fires a {@link EntitySelectInteractionEvent}.
+     *
+     * @return Immutable list of {@link DefaultValue default values}
+     */
+    @Nonnull
+    List<DefaultValue> getDefaultValues();
+
+    /**
      * Creates a new preconfigured {@link Builder} with the same settings used for this select menu.
      * <br>This can be useful to create an updated version of this menu without needing to rebuild it from scratch.
      *
@@ -126,6 +143,7 @@ public interface EntitySelectMenu extends SelectMenu
         builder.setRequiredRange(getMinValues(), getMaxValues());
         builder.setPlaceholder(getPlaceholder());
         builder.setDisabled(isDisabled());
+        builder.setDefaultValues(getDefaultValues());
         return builder;
     }
 
@@ -194,12 +212,252 @@ public interface EntitySelectMenu extends SelectMenu
     }
 
     /**
+     * Represents the default values used in {@link #getDefaultValues()}.
+     * <br>The value is {@link #getType() typed} correspondingly to the menu {@link EntitySelectMenu#getEntityTypes() entity types}.
+     *
+     * <p>The value is represented by the {@link #getId() ID}, corresponding to the entity of that ID.
+     */
+    class DefaultValue implements ISnowflake, SerializableData
+    {
+        private final long id;
+        private final SelectTarget type;
+
+        protected DefaultValue(long id, @Nonnull SelectTarget type)
+        {
+            this.id = id;
+            this.type = type;
+        }
+
+        /**
+         * Parses the provided {@link DataObject} into the default value.
+         *
+         * @param  object
+         *         The serialized default value, with a valid type and id
+         *
+         * @throws IllegalArgumentException
+         *         If the provided object is invalid or missing required keys
+         *
+         * @return Parsed default value
+         */
+        @Nonnull
+        public static DefaultValue fromData(@Nonnull DataObject object)
+        {
+            Checks.notNull(object, "DataObject");
+            long id = object.getUnsignedLong("id");
+            switch (object.getString("type"))
+            {
+            case "role":
+                return role(id);
+            case "user":
+                return user(id);
+            case "channel":
+                return channel(id);
+            }
+            throw new IllegalArgumentException("Unknown value type '" + object.getString("type", null) + "'");
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#USER} for the provided user.
+         *
+         * @param  user
+         *         The corresponding user
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue from(@Nonnull UserSnowflake user)
+        {
+            Checks.notNull(user, "User");
+            return user(user.getIdLong());
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#ROLE} for the provided role.
+         *
+         * @param  role
+         *         The corresponding role
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue from(@Nonnull Role role)
+        {
+            Checks.notNull(role, "Role");
+            return role(role.getIdLong());
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#CHANNEL} for the provided channel.
+         *
+         * @param  channel
+         *         The corresponding channel
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue from(@Nonnull GuildChannel channel)
+        {
+            Checks.notNull(channel, "Channel");
+            return channel(channel.getIdLong());
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#ROLE} with the provided id.
+         *
+         * @param  id
+         *         The role id
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue role(long id)
+        {
+            return new DefaultValue(id, SelectTarget.ROLE);
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#ROLE} with the provided id.
+         *
+         * @param  id
+         *         The role id
+         *
+         * @throws IllegalArgumentException
+         *         If the provided id is not a valid snowflake
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue role(@Nonnull String id)
+        {
+            return new DefaultValue(MiscUtil.parseSnowflake(id), SelectTarget.ROLE);
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#USER} with the provided id.
+         *
+         * @param  id
+         *         The role id
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue user(long id)
+        {
+            return new DefaultValue(id, SelectTarget.USER);
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#USER} with the provided id.
+         *
+         * @param  id
+         *         The role id
+         *
+         * @throws IllegalArgumentException
+         *         If the provided id is not a valid snowflake
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue user(@Nonnull String id)
+        {
+            return new DefaultValue(MiscUtil.parseSnowflake(id), SelectTarget.USER);
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#CHANNEL} with the provided id.
+         *
+         * @param  id
+         *         The role id
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue channel(long id)
+        {
+            return new DefaultValue(id, SelectTarget.CHANNEL);
+        }
+
+        /**
+         * Creates a default value of type {@link SelectTarget#CHANNEL} with the provided id.
+         *
+         * @param  id
+         *         The role id
+         *
+         * @throws IllegalArgumentException
+         *         If the provided id is not a valid snowflake
+         *
+         * @return The default value
+         */
+        @Nonnull
+        public static DefaultValue channel(@Nonnull String id)
+        {
+            return new DefaultValue(MiscUtil.parseSnowflake(id), SelectTarget.CHANNEL);
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        @Nonnull
+        public SelectTarget getType()
+        {
+            return type;
+        }
+
+        @Nonnull
+        @Override
+        public DataObject toData()
+        {
+            return DataObject.empty()
+                    .put("type", type.name().toLowerCase(Locale.ROOT))
+                    .put("id", getId());
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(type, id);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof DefaultValue))
+                return false;
+            DefaultValue other = (DefaultValue) obj;
+            return id == other.id && type == other.type;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setType(type)
+                    .toString();
+        }
+    }
+
+    /**
      * A preconfigured builder for the creation of entity select menus.
      */
     class Builder extends SelectMenu.Builder<EntitySelectMenu, Builder>
     {
         protected Component.Type componentType;
         protected EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
+        protected List<DefaultValue> defaultValues = new ArrayList<>();
 
         protected Builder(@Nonnull String customId)
         {
@@ -310,6 +568,70 @@ public interface EntitySelectMenu extends SelectMenu
         }
 
         /**
+         * The {@link #getDefaultValues() default values} that will be shown to the user.
+         *
+         * @param  values
+         *         The default values (up to {@value #OPTIONS_MAX_AMOUNT})
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided, more than {@value #OPTIONS_MAX_AMOUNT} values are provided,
+         *         or any of the value types is incompatible with the configured {@link #setEntityTypes(Collection) entity types}.
+         *
+         * @return The current Builder instance
+         */
+        @Nonnull
+        public Builder setDefaultValues(@Nonnull DefaultValue... values)
+        {
+            Checks.noneNull(values, "Default Values");
+            return setDefaultValues(Arrays.asList(values));
+        }
+
+        /**
+         * The {@link #getDefaultValues() default values} that will be shown to the user.
+         *
+         * @param  values
+         *         The default values (up to {@value #OPTIONS_MAX_AMOUNT})
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided, more than {@value #OPTIONS_MAX_AMOUNT} values are provided,
+         *         or any of the value types is incompatible with the configured {@link #setEntityTypes(Collection) entity types}.
+         *
+         * @return The current Builder instance
+         */
+        @Nonnull
+        public Builder setDefaultValues(@Nonnull Collection<? extends DefaultValue> values)
+        {
+            Checks.noneNull(values, "Default Values");
+            Checks.check(values.size() <= SelectMenu.OPTIONS_MAX_AMOUNT, "Cannot add more than %d default values to a select menu!", SelectMenu.OPTIONS_MAX_AMOUNT);
+
+            for (DefaultValue value : values)
+            {
+                SelectTarget type = value.getType();
+                String error = "The select menu supports types %s, but provided default value has type SelectTarget.%s!";
+
+                switch (componentType)
+                {
+                case ROLE_SELECT:
+                    Checks.check(type == SelectTarget.ROLE, error, "SelectTarget.ROLE", type);
+                    break;
+                case USER_SELECT:
+                    Checks.check(type == SelectTarget.USER, error, "SelectTarget.USER", type);
+                    break;
+                case CHANNEL_SELECT:
+                    Checks.check(type == SelectTarget.CHANNEL, error, "SelectTarget.CHANNEL", type);
+                    break;
+                case MENTIONABLE_SELECT:
+                    Checks.check(type == SelectTarget.ROLE || type == SelectTarget.USER, error, "SelectTarget.ROLE and SelectTarget.USER", type);
+                    break;
+                }
+            }
+
+            this.defaultValues.clear();
+            this.defaultValues.addAll(values);
+            return this;
+        }
+
+        /**
          * Creates a new {@link EntitySelectMenu} instance if all requirements are satisfied.
          *
          * @throws IllegalArgumentException
@@ -323,7 +645,8 @@ public interface EntitySelectMenu extends SelectMenu
         {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
             EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
-            return new EntitySelectMenuImpl(customId, placeholder, minValues, maxValues, disabled, componentType, channelTypes);
+            List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);
+            return new EntitySelectMenuImpl(customId, placeholder, minValues, maxValues, disabled, componentType, channelTypes, defaultValues);
         }
     }
 }

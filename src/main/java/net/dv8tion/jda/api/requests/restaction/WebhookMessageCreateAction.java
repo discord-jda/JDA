@@ -16,13 +16,15 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Extension of a default {@link net.dv8tion.jda.api.requests.RestAction RestAction}
@@ -35,39 +37,8 @@ import javax.annotation.Nonnull;
  *
  * @see    net.dv8tion.jda.api.entities.WebhookClient#sendMessage(String)
  */
-// TODO: WebhookMessage type (no channel/guild attached)
-public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<WebhookMessageCreateAction<T>>, FluentRestAction<T, WebhookMessageCreateAction<T>>
+public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<WebhookMessageCreateAction<T>>, AbstractWebhookMessageAction<T, WebhookMessageCreateAction<T>>
 {
-//    /**
-//     * Set the apparent username for the message author.
-//     * <br>This changes the username that is shown for the message author.
-//     *
-//     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
-//     *
-//     * @param  name
-//     *         The username to use, or null to use the default
-//     *
-//     * @return The same message action, for chaining convenience
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    WebhookMessageAction<T> setUsername(@Nullable String name);
-//
-//    /**
-//     * Set the apparent avatar for the message author.
-//     * <br>This changes the avatar that is shown for the message author.
-//     *
-//     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
-//     *
-//     * @param  iconUrl
-//     *         The URL to the avatar, or null to use default
-//     *
-//     * @return The same message action, for chaining convenience
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    WebhookMessageAction<T> setAvatarUrl(@Nullable String iconUrl);
-
     /**
      * Set whether this message should be visible to other users.
      * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
@@ -87,9 +58,100 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
      * @param  ephemeral
      *         True, if this message should be invisible for other users
      *
+     * @throws IllegalStateException
+     *         If this is not an interaction webhook
+     *
      * @return The same message action, for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
     WebhookMessageCreateAction<T> setEphemeral(boolean ephemeral);
+
+    /**
+     * Set the apparent username for the message author.
+     * <br>This changes the username that is shown for the message author.
+     *
+     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
+     *
+     * @param  name
+     *         The username to use, or null to use the default
+     *
+     * @throws IllegalStateException
+     *         If this is an interaction webhook
+     *
+     * @return The same message action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageCreateAction<T> setUsername(@Nullable String name);
+
+    /**
+     * Set the apparent avatar for the message author.
+     * <br>This changes the avatar that is shown for the message author.
+     *
+     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
+     *
+     * @param  iconUrl
+     *         The URL to the avatar, or null to use default
+     *
+     * @throws IllegalStateException
+     *         If this is an interaction webhook
+     *
+     * @return The same message action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageCreateAction<T> setAvatarUrl(@Nullable String iconUrl);
+
+    /**
+     * Create a new thread channel for this webhook message.
+     * <br>This is currently limited to forum channels.
+     * <br>Does nothing if a {@link #setThread(ThreadChannel) target thread} is already configured.
+     *
+     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
+     *
+     * @param  threadMetadata
+     *         The metadata for the thread
+     *
+     * @throws IllegalStateException
+     *         If this is an interaction webhook
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The same message action, for chaining convenience
+     *
+     * @see    #createThread(String, ForumTagSnowflake...)
+     */
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageCreateAction<T> createThread(@Nonnull ThreadCreateMetadata threadMetadata);
+
+    /**
+     * Create a new thread channel for this webhook message.
+     * <br>This is currently limited to forum channels.
+     * <br>Does nothing if a {@link #setThread(ThreadChannel) target thread} is already configured.
+     *
+     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
+     *
+     * @param  threadName
+     *         The thread title
+     * @param  tags
+     *         The tags to apply to this forum post
+     *
+     * @throws IllegalStateException
+     *         If this is an interaction webhook
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is not between 1 and 80 characters long
+     *
+     * @return The same message action, for chaining convenience
+     *
+     * @see    #createThread(ThreadCreateMetadata)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageCreateAction<T> createThread(@Nonnull String threadName, @Nonnull ForumTagSnowflake... tags)
+    {
+        return createThread(new ThreadCreateMetadata(threadName).addTags(tags));
+    }
+
 }

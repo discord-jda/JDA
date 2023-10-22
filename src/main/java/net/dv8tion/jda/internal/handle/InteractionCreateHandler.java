@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -71,24 +70,11 @@ public class InteractionCreateHandler extends SocketHandler
 
         // Check channel type
         DataObject channelJson = content.getObject("channel");
-        if (guild != null)
+        ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
+        if (!channelType.isMessage() || channelType == ChannelType.GROUP)
         {
-            long channelId = channelJson.getUnsignedLong("id", 0);
-            GuildChannel channel = guild.getGuildChannelById(channelId);
-            if (channel == null || !channel.getType().isMessage())
-            {
-                WebSocketClient.LOG.debug("Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channel);
-                return null;
-            }
-        }
-        else
-        {
-            ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
-            if (!channelType.isMessage() || channelType == ChannelType.GROUP)
-            {
-                WebSocketClient.LOG.debug("Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channelJson);
-                return null;
-            }
+            WebSocketClient.LOG.debug("Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channelJson);
+            return null;
         }
 
         switch (InteractionType.fromKey(type))

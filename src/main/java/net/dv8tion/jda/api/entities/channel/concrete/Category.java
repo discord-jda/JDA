@@ -72,6 +72,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
         channels.addAll(getStageChannels());
         channels.addAll(getNewsChannels());
         channels.addAll(getForumChannels());
+        channels.addAll(getMediaChannels());
         Collections.sort(channels);
 
         return Collections.unmodifiableList(channels);
@@ -121,6 +122,21 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
             stream.filter(channel -> equals(channel.getParentCategory()))
                   .sorted()
                   .collect(Collectors.toList())
+        ));
+    }
+
+    /**
+     * All {@link net.dv8tion.jda.api.entities.channel.concrete.MediaChannel MediaChannels} listed for this Category
+     *
+     * @return Immutable list of all child ForumChannels
+     */
+    @Nonnull
+    default List<MediaChannel> getMediaChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getMediaChannelCache().applyStream(stream ->
+                stream.filter(channel -> equals(channel.getParentCategory()))
+                        .sorted()
+                        .collect(Collectors.toList())
         ));
     }
 
@@ -340,6 +356,43 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     @Nonnull
     @CheckReturnValue
     ChannelAction<ForumChannel> createForumChannel(@Nonnull String name);
+
+    /**
+     * Creates a new {@link MediaChannel} with this Category as parent.
+     * For this to be successful, the logged in account has to have the
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission in this Category.
+     *
+     * <p>This will copy all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} of this Category!
+     * Unless the bot is unable to sync it with this category due to permission escalation.
+     * See {@link IPermissionHolder#canSync(IPermissionContainer, IPermissionContainer)} for details.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the MediaChannel to create (up to {@value Channel#MAX_NAME_LENGTH} characters)
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new MediaChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name);
 
     /**
      * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels} and {@link #getNewsChannels() NewsChannels}.
