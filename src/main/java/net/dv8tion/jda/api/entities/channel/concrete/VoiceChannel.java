@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IVoiceStatusChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -47,7 +48,7 @@ import javax.annotation.Nonnull;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
+public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel, IVoiceStatusChannel
 {
     /**
      * The maximum limit you can set with {@link VoiceChannelManager#setUserLimit(int)}. ({@value})
@@ -68,14 +69,4 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
     @Nonnull
     @Override
     VoiceChannelManager getManager();
-
-    /**
-     * The current voice channel status.
-     * <br>This can be configured by users who are connected
-     * and have the {@link net.dv8tion.jda.api.Permission#VOICE_SET_STATUS set voice channel status} permission.
-     *
-     * @return The current voice channel status, or empty string if unset
-     */
-    @Nonnull
-    String getStatus();
 }
