@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities.channel.attribute;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
@@ -51,6 +52,13 @@ public interface IVoiceStatusChannel extends Channel
      *
      * @throws IllegalArgumentException
      *         If the status is null or longer than {@value #MAX_STATUS_LENGTH} characters
+     * @throws net.dv8tion.jda.api.exceptions.MissingAccessException
+     *         If the currently logged in account does not have {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         <ul>
+     *             <li>If the currently logged in account is <b>not connected</b> and does not have the {@link Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission.</li>
+     *             <li>If the currently logged in account is <b>connected</b> and does not have the {@link Permission#VOICE_SET_STATUS VOICE_SET_STATUS} permission.</li>
+     *         </ul>
      *
      * @return {@link AuditableRestAction}
      */
