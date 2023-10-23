@@ -167,7 +167,7 @@ public class WebhookMessageCreateActionImpl<T>
     {
         Route.CompiledRoute route = super.finalizeRoute();
         if (threadId != null)
-           route = route.withQueryParams("");
+           route = route.withQueryParams("thread_id", threadId);
 
         return route;
     }
