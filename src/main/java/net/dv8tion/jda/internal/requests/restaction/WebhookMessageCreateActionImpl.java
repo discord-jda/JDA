@@ -150,10 +150,6 @@ public class WebhookMessageCreateActionImpl<T>
             if (avatar != null)
                 json.put("avatar_url", avatar);
 
-            if (threadId != null)
-            {
-                json.put("thread_id", threadId);
-            }
             else if (threadMetadata != null)
             {
                 json.put("thread_name", threadMetadata.getName());
@@ -164,6 +160,16 @@ public class WebhookMessageCreateActionImpl<T>
 
             return getMultipartBody(files, json);
         }
+    }
+
+    @Override
+    protected Route.CompiledRoute finalizeRoute()
+    {
+        Route.CompiledRoute route = super.finalizeRoute();
+        if (threadId != null)
+           route = route.withQueryParams("");
+
+        return route;
     }
 
     @Override
