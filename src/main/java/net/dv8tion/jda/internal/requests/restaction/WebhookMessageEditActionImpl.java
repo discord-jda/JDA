@@ -54,10 +54,17 @@ public class WebhookMessageEditActionImpl<T>
         try (MessageEditData data = builder.build())
         {
             DataObject payload = data.toData();
-            if (threadId != null)
-                payload.put("thread_id", threadId);
             return getMultipartBody(data.getFiles(), payload);
         }
+    }
+
+    @Override
+    protected Route.CompiledRoute finalizeRoute()
+    {
+        Route.CompiledRoute route = super.finalizeRoute();
+        if (threadId != null)
+            route = route.withQueryParams("thread_id", threadId);
+        return route;
     }
 
     @Override
