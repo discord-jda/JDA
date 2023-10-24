@@ -150,7 +150,7 @@ public class WebhookMessageCreateActionImpl<T>
             if (avatar != null)
                 json.put("avatar_url", avatar);
 
-            else if (threadMetadata != null)
+            if (threadId == null && threadMetadata != null)
             {
                 json.put("thread_name", threadMetadata.getName());
                 List<ForumTagSnowflake> tags = threadMetadata.getAppliedTags();
