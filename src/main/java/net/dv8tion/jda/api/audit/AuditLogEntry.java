@@ -19,12 +19,16 @@ package net.dv8tion.jda.api.audit;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.guild.GuildAuditLogEntryCreateEvent;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
-import net.dv8tion.jda.internal.entities.WebhookImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
@@ -47,7 +51,7 @@ public class AuditLogEntry implements ISnowflake
     protected final long userId;
     protected final GuildImpl guild;
     protected final UserImpl user;
-    protected final WebhookImpl webhook;
+    protected final ISnowflake target;
     protected final String reason;
 
     protected final Map<String, AuditLogChange> changes;
@@ -55,7 +59,7 @@ public class AuditLogEntry implements ISnowflake
     protected final ActionType type;
     protected final int rawType;
 
-    public AuditLogEntry(ActionType type, int rawType, long id, long userId, long targetId, GuildImpl guild, UserImpl user, WebhookImpl webhook,
+    public AuditLogEntry(ActionType type, int rawType, long id, long userId, long targetId, GuildImpl guild, UserImpl user, ISnowflake target,
                          String reason, Map<String, AuditLogChange> changes, Map<String, Object> options)
     {
         this.type = type;
@@ -65,7 +69,7 @@ public class AuditLogEntry implements ISnowflake
         this.targetId = targetId;
         this.guild = guild;
         this.user = user;
-        this.webhook = webhook;
+        this.target = target;
         this.reason = reason;
         this.changes = changes != null && !changes.isEmpty()
                 ? Collections.unmodifiableMap(changes)
@@ -105,6 +109,61 @@ public class AuditLogEntry implements ISnowflake
     {
         return Long.toUnsignedString(targetId);
     }
+    
+    /**
+     * The {@link AutoModRule} that the target id of this audit-log entry refers to
+     *
+     * @return Possibly-null AutoModRule instance
+     */
+    @Nullable
+    public AutoModRule getAutoModRule()
+    {
+        return type.getTargetType() != TargetType.AUTO_MODERATION_RULE ? null : (AutoModRule) target;
+    }
+    
+    /**
+     * The {@link GuildChannel} that the target id of this audit-log entry refers to
+     *
+     * @return Possibly-null GuildChannel instance
+     */
+    @Nullable
+    public GuildChannel getGuildChannel()
+    {
+        return type.getTargetType() != TargetType.CHANNEL ? null : (GuildChannel) target;
+    }
+    
+    /**
+     * The {@link Member} that the target id of this audit-log entry refers to
+     *
+     * @return Possibly-null Member instance
+     */
+    @Nullable
+    public Member getMember()
+    {
+        return type.getTargetType() != TargetType.MEMBER ? null : (Member) target;
+    }
+    
+    /**
+     * The {@link ScheduledEvent} that the target id of this audit-log entry refers to
+     *
+     * @return Possibly-null ScheduledEvent instance
+     */
+    @Nullable
+    public ScheduledEvent getScheduledEvent()
+    {
+        return type.getTargetType() != TargetType.SCHEDULED_EVENT ? null : (ScheduledEvent) target;
+    }
+    
+    /**
+     * The {@link ThreadChannel} that the target id of this audit-log entry refers to
+     *
+     * @return Possibly-null ThreadChannel instance
+     */
+    @Nullable
+    public ThreadChannel getThread()
+    {
+        return type.getTargetType() != TargetType.THREAD ? null : (ThreadChannel) target;
+    }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Webhook Webhook} that the target id of this audit-log entry refers to
@@ -114,7 +173,7 @@ public class AuditLogEntry implements ISnowflake
     @Nullable
     public Webhook getWebhook()
     {
-        return webhook;
+        return type.getTargetType() != TargetType.WEBHOOK ? null : (Webhook) target;
     }
 
     /**

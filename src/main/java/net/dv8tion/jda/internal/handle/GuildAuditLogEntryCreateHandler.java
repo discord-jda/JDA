@@ -44,7 +44,7 @@ public class GuildAuditLogEntryCreateHandler extends SocketHandler
             return null;
         }
 
-        AuditLogEntry entry = api.getEntityBuilder().createAuditLogEntry(guild, content, null, null);
+        AuditLogEntry entry = api.getEntityBuilder().createAuditLogEntry(guild, content, null, null, null, null, null);
 
         api.handleEvent(
             new GuildAuditLogEntryCreateEvent(
