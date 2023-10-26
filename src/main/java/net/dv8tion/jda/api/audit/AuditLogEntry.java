@@ -111,7 +111,7 @@ public class AuditLogEntry implements ISnowflake
     }
     
     /**
-     * The {@link AutoModRule} that the target id of this audit-log entry refers to
+     * The {@link AutoModRule} that the target id of this audit-log entry refers to.
      *
      * @return Possibly-null AutoModRule instance
      */
@@ -122,7 +122,7 @@ public class AuditLogEntry implements ISnowflake
     }
     
     /**
-     * The {@link GuildChannel} that the target id of this audit-log entry refers to
+     * The {@link GuildChannel} that the target id of this audit-log entry refers to.
      *
      * @return Possibly-null GuildChannel instance
      */
@@ -133,7 +133,7 @@ public class AuditLogEntry implements ISnowflake
     }
     
     /**
-     * The {@link Member} that the target id of this audit-log entry refers to
+     * The {@link Member} that the target id of this audit-log entry refers to.
      *
      * @return Possibly-null Member instance
      */
@@ -144,7 +144,7 @@ public class AuditLogEntry implements ISnowflake
     }
     
     /**
-     * The {@link ScheduledEvent} that the target id of this audit-log entry refers to
+     * The {@link ScheduledEvent} that the target id of this audit-log entry refers to.
      *
      * @return Possibly-null ScheduledEvent instance
      */
@@ -155,7 +155,7 @@ public class AuditLogEntry implements ISnowflake
     }
     
     /**
-     * The {@link ThreadChannel} that the target id of this audit-log entry refers to
+     * The {@link ThreadChannel} that the target id of this audit-log entry refers to.
      *
      * @return Possibly-null ThreadChannel instance
      */
@@ -166,7 +166,7 @@ public class AuditLogEntry implements ISnowflake
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Webhook Webhook} that the target id of this audit-log entry refers to
+     * The {@link net.dv8tion.jda.api.entities.Webhook Webhook} that the target id of this audit-log entry refers to.
      *
      * @return Possibly-null Webhook instance
      */
