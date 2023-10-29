@@ -248,6 +248,14 @@ public class EntityBuilder
         }
     }
 
+    public SecurityIncidents createSecurityIncidents(DataObject data) {
+        SecurityIncidents enabled = SecurityIncidents.enabled(
+                data.getOffsetDateTime("invites_disabled_until", null),
+                data.getOffsetDateTime("dms_disabled_until", null)
+        );
+        return enabled.equals(SecurityIncidents.disabled()) ? null : enabled;
+    }
+
     public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members, int memberCount)
     {
         final GuildImpl guildObj = new GuildImpl(getJDA(), guildId);
@@ -258,6 +266,7 @@ public class EntityBuilder
         final String vanityCode = guildJson.getString("vanity_url_code", null);
         final String bannerId = guildJson.getString("banner", null);
         final String locale = guildJson.getString("preferred_locale", "en-US");
+        final SecurityIncidents securityIncidents = guildJson.optObject("incidents_data").map(this::createSecurityIncidents).orElse(null);
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
@@ -294,6 +303,7 @@ public class EntityBuilder
                 .setMaxPresences(maxPresences)
                 .setOwnerId(ownerId)
                 .setAfkTimeout(Guild.Timeout.fromKey(afkTimeout))
+                .setSecurityIncidents(securityIncidents)
                 .setVerificationLevel(VerificationLevel.fromKey(verificationLevel))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))

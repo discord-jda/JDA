@@ -134,6 +134,7 @@ public class GuildImpl implements Guild
     private TextChannel rulesChannel;
     private TextChannel communityUpdatesChannel;
     private Role publicRole;
+    private SecurityIncidents securityIncidents;
     private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
@@ -776,6 +777,13 @@ public class GuildImpl implements Guild
     public Timeout getAfkTimeout()
     {
         return afkTimeout;
+    }
+
+    @Nonnull
+    @Override
+    public SecurityIncidents getSecurityIncidents()
+    {
+        return securityIncidents;
     }
 
     @Override
@@ -1585,6 +1593,20 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidents incidents)
+    {
+        Checks.notNull(incidents, "SecurityIncidents");
+        checkPermission(Permission.MANAGE_SERVER);
+
+        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD_INCIDENTS.compile(getId());
+        DataObject body = DataObject.empty()
+                .put("invites_disabled_until", Objects.toString(incidents.getInvitesDisabledUntil(), null))
+                .put("dms_disabled_until", Objects.toString(incidents.getDirectMessagesDisabledUntil(), null));
+        return new AuditableRestActionImpl<>(api, route, body);
+    }
+
+    @Nonnull
+    @Override
     public AuditableRestAction<Void> kick(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
@@ -2227,6 +2249,12 @@ public class GuildImpl implements Guild
     public GuildImpl setPublicRole(Role publicRole)
     {
         this.publicRole = publicRole;
+        return this;
+    }
+
+    public GuildImpl setSecurityIncidents(SecurityIncidents incidents)
+    {
+        this.securityIncidents = incidents;
         return this;
     }
 

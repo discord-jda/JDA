@@ -1090,6 +1090,15 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     Timeout getAfkTimeout();
 
     /**
+     * The current guild {@link SecurityIncidents security incidents}.
+     * <br>Security incidents are used to temporarily disable features for the purpose of moderation.
+     *
+     * @return {@link SecurityIncidents}, or null if disabled
+     */
+    @Nullable
+    SecurityIncidents getSecurityIncidents();
+
+    /**
      * Used to determine if the provided {@link UserSnowflake} is a member of this Guild.
      *
      * <p>This will only check cached members! If the cache is not loaded (see {@link #isLoaded()}), this may return false despite the user being a member.
@@ -3500,6 +3509,34 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles);
+
+    /**
+     * Update the current guild {@link SecurityIncidents security incidents}.
+     * <br>Security incidents are used to temporarily disable features for the purpose of moderation.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY}
+     *     <br>If one of the provided timestamps is too far into the future</li>
+     * </ul>
+     *
+     * @param  incidents
+     *         The new security incidents
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws InsufficientPermissionException
+     *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} Permission.
+     *
+     * @return {@link AuditableRestAction}
+     *
+     * @see    SecurityIncidents#enabled(OffsetDateTime, OffsetDateTime)
+     * @see    SecurityIncidents#disabled()
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidents incidents);
 
     /**
      * Kicks the {@link UserSnowflake} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
