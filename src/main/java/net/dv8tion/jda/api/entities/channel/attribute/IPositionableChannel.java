@@ -30,7 +30,6 @@ import javax.annotation.Nonnull;
  */
 public interface IPositionableChannel extends GuildChannel
 {
-    //TODO-v5: Docs
     @Override
     @Nonnull
     IPositionableChannelManager<?, ?> getManager();

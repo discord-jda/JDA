@@ -1234,7 +1234,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         //This will only be used by GuildDeleteHandler to ensure that
         // no further voice state updates are sent for this Guild
-        //TODO: users may still queue new requests via the old AudioManager, how could we prevent this?
         return locked("There was an error cleaning up audio connections for deleted guild", () -> queuedAudioConnections.remove(guildId));
     }
 
