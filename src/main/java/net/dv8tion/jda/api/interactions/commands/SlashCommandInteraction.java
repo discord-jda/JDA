@@ -26,6 +26,11 @@ import javax.annotation.Nonnull;
  */
 public interface SlashCommandInteraction extends CommandInteraction
 {
+    /**
+     * The respective {@link MessageChannelUnion} for this interaction.
+     *
+     * @return The {@link MessageChannelUnion}
+     */
     @Nonnull
     @Override
     MessageChannelUnion getChannel();

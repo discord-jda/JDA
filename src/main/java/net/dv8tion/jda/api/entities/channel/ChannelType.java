@@ -28,61 +28,80 @@ public enum ChannelType
     /**
      * A {@link TextChannel TextChannel}, Guild-Only.
      */
-    TEXT(0, 0, true),
+    TEXT(TextChannel.class, 0, 0, true),
     /**
      * A {@link PrivateChannel PrivateChannel}.
      */
-    PRIVATE(1, -1),
+    PRIVATE(PrivateChannel.class, 1, -1),
     /**
      * A {@link VoiceChannel VoiceChannel}, Guild-Only.
      */
-    VOICE(2, 1, true),
+    VOICE(VoiceChannel.class, 2, 1, true),
     /**
      * A Group. (unused)
      */
-    GROUP(3, -1),
+    GROUP(GroupChannel.class, 3, -1),
     /**
      * A {@link Category Category}, Guild-Only.
      */
-    CATEGORY(4, 2, true),
+    CATEGORY(Category.class, 4, 2, true),
     /**
      * A {@link NewsChannel NewsChannel}, Guild-Only.
      */
-    NEWS(5, 0, true),
+    NEWS(NewsChannel.class, 5, 0, true),
     /**
      * A {@link StageChannel StageChannel}, Guild-Only.
      */
-    STAGE(13, 1, true),
+    STAGE(StageChannel.class, 13, 1, true),
 
-    GUILD_NEWS_THREAD(10, -1, true),
-    GUILD_PUBLIC_THREAD(11, -1, true),
-    GUILD_PRIVATE_THREAD(12, -1, true),
+    GUILD_NEWS_THREAD(ThreadChannel.class, 10, -1, true),
+    GUILD_PUBLIC_THREAD(ThreadChannel.class, 11, -1, true),
+    GUILD_PRIVATE_THREAD(ThreadChannel.class, 12, -1, true),
 
     /**
      * A {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannel}, Guild-Only.
      */
-    FORUM(15, 0, true),
+    FORUM(ForumChannel.class, 15, 0, true),
 
     /**
-     * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
-     * channel type and JDA had yet to implement support for it.
+     * A {@link MediaChannel}, Guild-Only.
      */
-    UNKNOWN(-1, -2);
+    MEDIA(MediaChannel.class, 16, 0, true),
+
+    /**
+     * Unknown Discord channel type.
+     *
+     * <p>This might be used in the case when a channel is not available in cache, like when sending webhook messages.
+     */
+    UNKNOWN(Channel.class, -1, -2);
 
     private final int sortBucket;
     private final int id;
     private final boolean isGuild;
+    private final Class<? extends Channel> clazz;
 
-    ChannelType(int id, int sortBucket)
+    ChannelType(Class<? extends Channel> clazz, int id, int sortBucket)
     {
-        this(id, sortBucket, false);
+        this(clazz, id, sortBucket, false);
     }
 
-    ChannelType(int id, int sortBucket, boolean isGuild)
+    ChannelType(Class<? extends Channel> clazz, int id, int sortBucket, boolean isGuild)
     {
+        this.clazz = clazz;
         this.id = id;
         this.sortBucket = sortBucket;
         this.isGuild = isGuild;
+    }
+
+    /**
+     * The interface this channel type corresponds to.
+     *
+     * @return This channel type's interface
+     */
+    @Nonnull
+    public Class<? extends Channel> getInterface()
+    {
+        return this.clazz;
     }
 
     /**

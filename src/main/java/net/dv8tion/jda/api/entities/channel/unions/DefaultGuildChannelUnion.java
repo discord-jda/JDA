@@ -110,6 +110,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      *
      * @return The channel as a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}
      */
+    @Nonnull
     IThreadContainer asThreadContainer();
 
     /**

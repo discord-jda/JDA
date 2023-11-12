@@ -237,11 +237,11 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof RichCustomEmojiImpl))
+        if (!(obj instanceof CustomEmoji))
             return false;
 
-        RichCustomEmojiImpl other = (RichCustomEmojiImpl) obj;
-        return this.id == other.id && getName().equals(other.getName());
+        CustomEmoji other = (CustomEmoji) obj;
+        return this.id == other.getIdLong();
     }
 
 

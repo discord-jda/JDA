@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.audio.hooks;
 
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +95,27 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
-    public void onUserSpeaking(@Nonnull User user, boolean speaking) {}
+    public void onUserSpeakingModeUpdate(@Nonnull UserSnowflake user, @Nonnull EnumSet<SpeakingMode> modes)
+    {
+        if (listener == null)
+            return;
+        ConnectionListener listener = this.listener;
+        try
+        {
+            if (listener != null)
+            {
+                listener.onUserSpeakingModeUpdate(user, modes);
+                if (user instanceof User)
+                    listener.onUserSpeakingModeUpdate((User) user, modes);
+            }
+        }
+        catch (Throwable t)
+        {
+            log.error("The ConnectionListener encountered and uncaught exception", t);
+            if (t instanceof Error)
+                throw (Error) t;
+        }
+    }
 
     public void setListener(ConnectionListener listener)
     {

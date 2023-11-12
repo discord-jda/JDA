@@ -712,8 +712,7 @@ public class EmbedBuilder
     @Nonnull
     public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url, @Nullable String iconUrl)
     {
-        //We only check if the name is null because its presence is what determines if the
-        // the author will appear in the embed.
+        // We only check if the name is null because its presence is what determines if the author will appear in the embed.
         if (name == null)
         {
             this.author = null;

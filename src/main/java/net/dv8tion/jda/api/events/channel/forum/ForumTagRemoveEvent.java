@@ -17,14 +17,14 @@
 package net.dv8tion.jda.api.events.channel.forum;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
- * Indicates that a {@link ForumTag} was removed from a {@link ForumChannel}.
+ * Indicates that a {@link ForumTag} was removed from a {@link IPostContainer}.
  *
  * <p>Use {@link net.dv8tion.jda.api.events.channel.update.ChannelUpdateAppliedTagsEvent ChannelUpdateAppliedTagsEvent}
  * to detect when a tag is removed from a forum post instead.
@@ -35,7 +35,7 @@ import java.util.Collection;
  */
 public class ForumTagRemoveEvent extends GenericForumTagEvent
 {
-    public ForumTagRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull ForumChannel channel, @Nonnull ForumTag tag)
+    public ForumTagRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag)
     {
         super(api, responseNumber, channel, tag);
     }

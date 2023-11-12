@@ -1584,6 +1584,9 @@ public interface JDA extends IGuildChannelContainer
      * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      * if the user does not exist.
      *
+     * <p>If the channel is cached, this will directly return the channel in a completed {@link RestAction} without making a request.
+     * You can use {@link CacheRestAction#useCache(boolean) action.useCache(false)} to force an update.
+     *
      * <p><b>Example</b><br>
      * <pre>{@code
      * public void sendMessage(JDA jda, String userId, String content) {
@@ -1607,7 +1610,7 @@ public interface JDA extends IGuildChannelContainer
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<PrivateChannel> openPrivateChannelById(@Nonnull String userId)
+    default CacheRestAction<PrivateChannel> openPrivateChannelById(@Nonnull String userId)
     {
         return openPrivateChannelById(MiscUtil.parseSnowflake(userId));
     }

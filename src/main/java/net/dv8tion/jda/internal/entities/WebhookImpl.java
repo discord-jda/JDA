@@ -23,10 +23,11 @@ import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.unions.IWebhookContainerUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageRetrieveAction;
 import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
@@ -41,7 +42,7 @@ import javax.annotation.Nonnull;
  *
  * @since  3.0
  */
-public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
+public class WebhookImpl extends AbstractWebhookClient<Message> implements Webhook
 {
     private final IWebhookContainer channel;
     private final WebhookType type;
@@ -129,12 +130,6 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
         return user.getName();
     }
 
-    @Override
-    public String getToken()
-    {
-        return token;
-    }
-
     @Nonnull
     @Override
     public String getUrl()
@@ -184,10 +179,44 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
         return new WebhookManagerImpl(this);
     }
 
+    // Webhook execution
+
     @Override
-    public long getIdLong()
+    public WebhookMessageCreateActionImpl<Message> sendRequest()
     {
-        return id;
+        checkToken();
+        AbstractWebhookClient<Message> client = (AbstractWebhookClient<Message>) WebhookClient.createClient(api, getId(), token);
+        return client.sendRequest();
+    }
+
+    @Override
+    public WebhookMessageEditActionImpl<Message> editRequest(String messageId)
+    {
+        checkToken();
+        AbstractWebhookClient<Message> client = (AbstractWebhookClient<Message>) WebhookClient.createClient(api, getId(), token);
+        return client.editRequest(messageId);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId)
+    {
+        checkToken();
+        return WebhookClient.createClient(api, getId(), token).deleteMessageById(messageId);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageRetrieveAction retrieveMessageById(@Nonnull String messageId)
+    {
+        checkToken();
+        return WebhookClient.createClient(api, getId(), token).retrieveMessageById(messageId);
+    }
+
+    private void checkToken()
+    {
+        if (token == null)
+            throw new UnsupportedOperationException("Cannot execute webhook without a token!");
     }
 
     /* -- Impl Setters -- */
@@ -248,42 +277,5 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
         return new EntityString(this)
                 .setName(getName())
                 .toString();
-    }
-
-    // TODO: Implement WebhookMessage
-
-    @Override
-    public WebhookMessageCreateActionImpl<Void> sendRequest()
-    {
-        checkToken();
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-        WebhookMessageCreateActionImpl<Void> action = new WebhookMessageCreateActionImpl<>(api, route, (json) -> null);
-        action.run();
-        return action;
-    }
-
-    @Override
-    public WebhookMessageEditActionImpl<Void> editRequest(String messageId)
-    {
-        checkToken();
-        Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
-        WebhookMessageEditActionImpl<Void> action = new WebhookMessageEditActionImpl<>(api, route, (json) -> null);
-        action.run();
-        return action;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
-    {
-        checkToken();
-        return super.deleteMessageById(messageId);
-    }
-
-    private void checkToken()
-    {
-        if (token == null)
-            throw new UnsupportedOperationException("Cannot execute webhook without a token!");
     }
 }

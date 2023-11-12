@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -501,15 +502,22 @@ class AudioWebSocket extends WebSocketAdapter
                 final long userId = content.getLong("user_id");
 
                 final User user = getUser(userId);
+
                 if (user == null)
                 {
                     //more relevant for audio connection
                     LOG.trace("Got an Audio USER_SPEAKING_UPDATE for a non-existent User. JSON: {}", contentAll);
-                    break;
+                    listener.onUserSpeakingModeUpdate(UserSnowflake.fromId(userId), speaking);
+                }
+                else
+                {
+                    //noinspection deprecation
+                    listener.onUserSpeaking(user, speaking);
+                    listener.onUserSpeakingModeUpdate((UserSnowflake) user, speaking);
                 }
 
                 audioConnection.updateUserSSRC(ssrc, userId);
-                listener.onUserSpeaking(user, speaking);
+
                 break;
             }
             case VoiceCode.USER_DISCONNECT:

@@ -40,9 +40,36 @@ import javax.annotation.Nullable;
  */
 public class MessageReactionAddEvent extends GenericMessageReactionEvent
 {
+    private final long messageAuthorId;
+
     public MessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nullable User user,
-                                   @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
+                                   @Nullable Member member, @Nonnull MessageReaction reaction, long userId, long messageAuthorId)
     {
         super(api, responseNumber, user, member, reaction, userId);
+        this.messageAuthorId = messageAuthorId;
+    }
+
+    /**
+     * The user id of the original message author.
+     * <br>This might be 0 for webhook messages.
+     *
+     * @return The user id of the original message author.
+     */
+    @Nonnull
+    public String getMessageAuthorId()
+    {
+        return Long.toUnsignedString(messageAuthorId);
+    }
+
+
+    /**
+     * The user id of the original message author.
+     * <br>This might be 0 for webhook messages.
+     *
+     * @return The user id of the original message author.
+     */
+    public long getMessageAuthorIdLong()
+    {
+        return messageAuthorId;
     }
 }
