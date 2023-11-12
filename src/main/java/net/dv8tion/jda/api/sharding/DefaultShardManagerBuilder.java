@@ -1413,7 +1413,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * } log({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -1436,7 +1436,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * } log({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -1460,7 +1460,7 @@ public class  DefaultShardManagerBuilder
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
      * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * } log({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  provider
      *         The thread-pool provider to use for rate-limit handling
@@ -2481,6 +2481,7 @@ public class  DefaultShardManagerBuilder
                 throw new IllegalArgumentException("Cannot use CacheFlag." + flag + " without GatewayIntent." + intent + "!");
         }
     }
+
     //Avoid having multiple anonymous classes
     private static class ThreadPoolProviderImpl<T extends ExecutorService> implements ThreadPoolProvider<T>
     {

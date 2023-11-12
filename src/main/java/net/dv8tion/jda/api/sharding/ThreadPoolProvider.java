@@ -61,12 +61,6 @@ public interface ThreadPoolProvider<T extends ExecutorService>
      * Provider that initializes with a {@link DefaultShardManagerBuilder#setShardsTotal(int) shard_total}
      * and provides the same pool to share between shards.
      *
-     * <p><b>Function Contract</b><br>
-     *
-     * <p>The provided function should always return a new pool instance.
-     * To determine the recommended shard total from the API, a temporary pool is created with a total of 1 shard.
-     * Once the actual shard total is known, the pool is re-initialized with the correct total and the temporary pool is shutdown.
-     *
      * @param  init
      *         Function to initialize the shared pool, called with the shard total
      *
@@ -85,8 +79,7 @@ public interface ThreadPoolProvider<T extends ExecutorService>
     final class LazySharedProvider<T extends ExecutorService> implements ThreadPoolProvider<T>
     {
         private final IntFunction<T> initializer;
-        private volatile T temporaryPool;
-        private volatile T pool;
+        private T pool;
 
         LazySharedProvider(@Nonnull IntFunction<T> initializer)
         {
@@ -105,10 +98,6 @@ public interface ThreadPoolProvider<T extends ExecutorService>
         {
             if (pool == null)
                 pool = initializer.apply(shardTotal);
-
-            if (temporaryPool != null && temporaryPool != pool)
-                temporaryPool.shutdownNow();
-            temporaryPool = null;
         }
 
         /**
@@ -121,10 +110,6 @@ public interface ThreadPoolProvider<T extends ExecutorService>
                 pool.shutdown();
                 pool = null;
             }
-
-            if (temporaryPool != null && temporaryPool != pool)
-                temporaryPool.shutdown();
-            temporaryPool = null;
         }
 
         /**
@@ -139,13 +124,6 @@ public interface ThreadPoolProvider<T extends ExecutorService>
         @Override
         public synchronized T provide(int shardId)
         {
-            if (pool == null)
-            {
-                if (temporaryPool == null)
-                    temporaryPool = initializer.apply(1);
-                return temporaryPool;
-            }
-
             return pool;
         }
     }
