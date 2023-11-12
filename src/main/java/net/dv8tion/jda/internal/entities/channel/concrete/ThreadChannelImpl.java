@@ -459,7 +459,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     {
         if (ownerId == api.getSelfUser().getIdLong()) return;
 
-        if (!isPublic() || !isInvitable())
+        if (!isPublic() && !isInvitable())
             checkPermission(Permission.MANAGE_THREADS);
     }
 }
