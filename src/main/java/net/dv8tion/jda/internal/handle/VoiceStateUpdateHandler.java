@@ -48,7 +48,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
-        // TODO: Handle these voice states properly
         if (content.isNull("member"))
         {
             WebSocketClient.LOG.debug("Discarding VOICE_STATE_UPDATE with missing member. JSON: {}", content);

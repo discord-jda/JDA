@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -84,14 +85,13 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     PermissionOverrideAction resetDeny();
 
-    //TODO-v5: Should probably be IPermissionContainer?
     /**
-     * The {@link GuildChannel} this will be created in
+     * The {@link IPermissionContainer} this will be created in
      *
      * @return The channel
      */
     @Nonnull
-    GuildChannel getChannel();
+    IPermissionContainer getChannel();
 
     /**
      * The {@link Role} for this override

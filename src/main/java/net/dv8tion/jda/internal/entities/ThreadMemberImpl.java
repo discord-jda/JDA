@@ -55,7 +55,6 @@ public class ThreadMemberImpl implements ThreadMember
     @Override
     public Guild getGuild()
     {
-        //TODO is this actually how we want to get the guild? could store it locally in the entity instead if wanted
         return thread.getGuild();
     }
     
