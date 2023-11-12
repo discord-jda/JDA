@@ -495,7 +495,7 @@ public class DefaultShardManager implements ShardManager
         }
 
         retrieveShardTotal(httpClient);
-        threadingConfig.init(getShardsTotal());
+        threadingConfig.init(queue.isEmpty() ? getShardsTotal() : queue.size());
 
         // imagine if we had macros or closures or destructuring :)
         ExecutorPair<ScheduledExecutorService> rateLimitSchedulerPair = resolveExecutor(threadingConfig.getRateLimitSchedulerProvider(), shardId);
