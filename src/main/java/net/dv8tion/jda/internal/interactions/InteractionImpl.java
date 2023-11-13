@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -26,15 +27,20 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntitlementImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InteractionImpl implements Interaction
 {
@@ -47,6 +53,7 @@ public class InteractionImpl implements Interaction
     protected final User user;
     protected final Channel channel;
     protected final DiscordLocale userLocale;
+    protected final List<Entitlement> entitlements;
     protected final JDAImpl api;
 
     //This is used to give a proper error when an interaction is ack'd twice
@@ -103,6 +110,14 @@ public class InteractionImpl implements Interaction
                 ((UserImpl) user).setPrivateChannel(channel);
             }
             this.user = user;
+        }
+
+        DataArray entitlementsArray = data.getArray("entitlements");
+        entitlements = new ArrayList<>();
+
+        for (int i=0; i<entitlementsArray.length(); i++)
+        {
+            entitlements.add(new EntitlementImpl(entitlementsArray.getObject(i)));
         }
     }
 
@@ -181,6 +196,14 @@ public class InteractionImpl implements Interaction
     public Member getMember()
     {
         return member;
+    }
+
+
+    @NotNull
+    @Override
+    public List<Entitlement> getEntitlements()
+    {
+        return entitlements;
     }
 
     @Nonnull
