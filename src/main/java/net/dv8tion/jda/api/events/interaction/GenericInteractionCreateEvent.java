@@ -21,12 +21,15 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.entitlement.Entitlement;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Indicates that an {@link Interaction} was created.
@@ -105,6 +108,20 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public DiscordLocale getGuildLocale()
     {
         return interaction.getGuildLocale();
+    }
+
+    @NotNull
+    @Override
+    public List<String> getEntitlementSkuIds()
+    {
+        return interaction.getEntitlementSkuIds();
+    }
+
+    @NotNull
+    @Override
+    public List<Entitlement> getEntitlements()
+    {
+        return interaction.getEntitlements();
     }
 
     @Nullable

@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.entitlement.Entitlement;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -33,6 +34,7 @@ import net.dv8tion.jda.internal.utils.ChannelUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Abstract representation for any kind of Discord interaction.
@@ -239,4 +241,9 @@ public interface Interaction extends ISnowflake
     @Nonnull
     JDA getJDA();
 
+    @Nonnull
+    List<String> getEntitlementSkuIds();
+
+    @Nonnull
+    List<Entitlement> getEntitlements();
 }
