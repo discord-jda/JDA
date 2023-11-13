@@ -45,20 +45,20 @@ public class EntitlementImpl implements Entitlement
         this.subscriptionId = subscriptionId;
     }
 
-    public EntitlementImpl(DataObject dataObject) {
-        this.id = dataObject.getString("id");
-        this.skuId = dataObject.getString("sku_id");
-        this.applicationId = dataObject.getString("application_id");
-        this.userId = dataObject.getString("user_id");
-        this.guildId = dataObject.getString("guild_id");
-        this.promotionId = dataObject.getString("promotion_id");
-        this.type = dataObject.getInt("type");
-        this.deleted = dataObject.getBoolean("deleted");
-        this.giftCodeFlags = dataObject.getLong("gift_code_flags");
-        this.consumed = dataObject.getBoolean("consumed");
-        this.startsAt = dataObject.getOffsetDateTime("starts_at");
-        this.endsAt = dataObject.getOffsetDateTime("ends_at");
-        this.subscriptionId = dataObject.getString("subscription_id");
+    public EntitlementImpl(DataObject data) {
+        this.id = data.getString("id");
+        this.skuId = data.getString("sku_id");
+        this.applicationId = data.getString("application_id");
+        this.userId = data.getString("user_id", null);
+        this.guildId = data.getString("guild_id", null);
+        this.promotionId = data.getString("promotion_id", null);
+        this.type = data.getInt("type");
+        this.deleted = data.getBoolean("deleted");
+        this.giftCodeFlags = data.getLong("gift_code_flags");
+        this.consumed = data.getBoolean("consumed");
+        this.startsAt = data.getOffsetDateTime("starts_at", null);
+        this.endsAt = data.getOffsetDateTime("ends_at", null);
+        this.subscriptionId = data.getString("subscription_id", null);
     }
 
     @Override
