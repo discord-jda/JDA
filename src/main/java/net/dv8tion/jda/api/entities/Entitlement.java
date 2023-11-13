@@ -34,6 +34,7 @@ public interface Entitlement
      *
      * @return The id of the user that purchased the entitlement
      */
+    @Nullable
     String getUserId();
 
     /**

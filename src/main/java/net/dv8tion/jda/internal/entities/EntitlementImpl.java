@@ -11,6 +11,7 @@ public class EntitlementImpl implements Entitlement
     private String id;
     private String skuId;
     private String applicationId;
+    @Nullable
     private String userId;
     @Nullable
     private String guildId;
@@ -27,7 +28,7 @@ public class EntitlementImpl implements Entitlement
     @Nullable
     private String subscriptionId;
 
-    public EntitlementImpl(String id, String skuId, String applicationId, String userId, @Nullable String guildId, @Nullable String promotionId, Integer type, Boolean deleted, Long giftCodeFlags, Boolean consumed, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt, @Nullable String subscriptionId)
+    public EntitlementImpl(String id, String skuId, String applicationId, @Nullable String userId, @Nullable String guildId, @Nullable String promotionId, Integer type, Boolean deleted, Long giftCodeFlags, Boolean consumed, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt, @Nullable String subscriptionId)
     {
         this.id = id;
         this.skuId = skuId;
@@ -79,12 +80,14 @@ public class EntitlementImpl implements Entitlement
     }
 
     @Override
+    @Nullable
     public String getUserId()
     {
         return userId;
     }
 
     @Override
+    @Nullable
     public String getGuildId()
     {
         return guildId;
