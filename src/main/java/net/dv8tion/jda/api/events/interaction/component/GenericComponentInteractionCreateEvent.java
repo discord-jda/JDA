@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackA
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.PremiumRequiredCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -127,7 +126,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
         return interaction.replyModal(modal);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public PremiumRequiredCallbackAction replyWithPremiumRequired()
     {

@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -124,7 +123,7 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
         return interaction.getUser();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<Entitlement> getEntitlements()
     {

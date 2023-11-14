@@ -30,17 +30,14 @@ import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EntitlementImpl;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class InteractionImpl implements Interaction
 {
@@ -112,13 +109,10 @@ public class InteractionImpl implements Interaction
             this.user = user;
         }
 
-        DataArray entitlementsArray = data.getArray("entitlements");
-        entitlements = new ArrayList<>();
-
-        for (int i=0; i<entitlementsArray.length(); i++)
-        {
-            entitlements.add(new EntitlementImpl(entitlementsArray.getObject(i)));
-        }
+        this.entitlements = data.getArray("entitlements")
+                .stream(DataArray::getObject)
+                .map(jda.getEntityBuilder()::createEntitlement)
+                .collect(Collectors.toList());
     }
 
     // Used to allow interaction hook to send messages after acknowledgements
@@ -199,7 +193,7 @@ public class InteractionImpl implements Interaction
     }
 
 
-    @NotNull
+    @Nonnull
     @Override
     public List<Entitlement> getEntitlements()
     {

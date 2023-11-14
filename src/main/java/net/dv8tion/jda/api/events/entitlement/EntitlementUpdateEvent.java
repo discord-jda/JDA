@@ -18,7 +18,8 @@ package net.dv8tion.jda.api.events.entitlement;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Entitlement;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates a user's subscription has renewed for the next billing period.
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EntitlementUpdateEvent extends GenericEntitlementEvent
 {
-    public EntitlementUpdateEvent(@NotNull JDA api, long responseNumber, @NotNull Entitlement entitlement)
+    public EntitlementUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement)
     {
         super(api, responseNumber, entitlement);
     }

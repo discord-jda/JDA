@@ -29,7 +29,6 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackAc
 import net.dv8tion.jda.internal.requests.restaction.interactions.PremiumRequiredCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -65,7 +64,7 @@ public class CommandInteractionImpl extends DeferrableInteractionImpl implements
     }
 
 
-    @NotNull
+    @Nonnull
     @Override
     public PremiumRequiredCallbackAction replyWithPremiumRequired()
     {

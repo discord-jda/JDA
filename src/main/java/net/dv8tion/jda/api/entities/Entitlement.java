@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
@@ -23,27 +24,57 @@ import java.time.OffsetDateTime;
  * Represents a Discord Entitlement for premium App subscriptions.
  * <br>This should contain all information provided from Discord about an {@link Entitlement Entitlement}.
  */
-public interface Entitlement
+public interface Entitlement extends ISnowflake
 {
     /**
+     * The id of the entitlement
      *
      * @return The id of the {@link Entitlement Entitlement}
      */
-    String getId();
+
+    @Override
+    long getIdLong();
 
     /**
+     * The id of the sku related to this {@link Entitlement Entitlement}
      *
      * @return The id of the SKU related to this {@link Entitlement Entitlement}
      */
+    long getSkuIdLong();
+
+    /**
+     * The id of the sku related to this {@link Entitlement Entitlement}
+     *
+     * @return The id of the SKU related to this {@link Entitlement Entitlement}
+     */
+    @Nonnull
     String getSkuId();
 
     /**
+     * The id of the parent application of this {@link Entitlement Entitlement}
      *
      * @return The id of the parent application of this {@link Entitlement Entitlement}
      */
+    long getApplicationIdLong();
+
+    /**
+     * The id of the parent application of this {@link Entitlement Entitlement}
+     *
+     * @return The id of the parent application of this {@link Entitlement Entitlement}
+     */
+    @Nonnull
     String getApplicationId();
 
     /**
+     * The id of the user that purchased the {@link Entitlement Entitlement}
+     *
+     * @return The id of the user that purchased the {@link Entitlement Entitlement}
+     */
+    @Nullable
+    Long getUserIdLong();
+
+    /**
+     * The id of the user that purchased the {@link Entitlement Entitlement}
      *
      * @return The id of the user that purchased the {@link Entitlement Entitlement}
      */
@@ -51,18 +82,22 @@ public interface Entitlement
     String getUserId();
 
     /**
+     * The guild id that is granted access to the {@link Entitlement Entitlement}'s sku
+     *
+     * @return The id of the guild that is granted access to the {@link Entitlement Entitlement}'s sku,
+     * or Null if this entitlement is related to a subscription of type "User Subscription"
+     */
+    @Nullable
+    Long getGuildIdLong();
+
+    /**
+     * The guild id that is granted access to the {@link Entitlement Entitlement}'s sku
      *
      * @return The id of the guild that is granted access to the {@link Entitlement Entitlement}'s sku,
      * or Null if this entitlement is related to a subscription of type "User Subscription"
      */
     @Nullable
     String getGuildId();
-
-    /*
-     Mentioned by Discord in the example but not included in the api specification
-    @Nullable
-    String getPromotionId();
-     */
 
     /**
      * The type of the Entitlement
@@ -71,26 +106,19 @@ public interface Entitlement
      *
      * @return the {@link Entitlement Entitlement} type, 8 is the only possible value
      */
-    Integer getType();
+    int getType();
 
     /**
+     * Whether the {@link Entitlement Entitlement} has been deleted or not.
+     *
      * @return True if the {@link Entitlement Entitlement} was deleted, False otherwise
      *
      * @see net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent
      */
-    Boolean getDeleted();
-
-    /*
-     Mentioned by Discord in the example but not included in the api specification
-    Long getGiftCodeFlags();
-     */
-
-    /*
-     Mentioned by Discord in the example but not included in the api specification
-    Boolean getConsumed();
-     */
+    boolean getDeleted();
 
     /**
+     * The start date at which the {@link Entitlement Entitlement} is valid.
      *
      * @return Start date at which the {@link Entitlement Entitlement} is valid. Not present when using test entitlements.
      */
@@ -98,15 +126,10 @@ public interface Entitlement
     OffsetDateTime getStartsAt();
 
     /**
+     * Date at which the {@link Entitlement Entitlement} is no longer valid.
      *
      * @return 	Date at which the {@link Entitlement Entitlement} is no longer valid. Not present when using test entitlements.
      */
     @Nullable
     OffsetDateTime getEndsAt();
-
-    /*
-     Mentioned by Discord in the example but not included in the api specification
-    @Nullable
-    String getSubscriptionId();
-     */
 }

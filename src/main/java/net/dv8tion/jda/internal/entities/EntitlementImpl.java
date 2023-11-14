@@ -17,28 +17,24 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.Entitlement;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 public class EntitlementImpl implements Entitlement
 {
-    private String id;
-    private String skuId;
-    private String applicationId;
-    @Nullable
-    private String userId;
-    @Nullable
-    private String guildId;
-    private Integer type;
-    private Boolean deleted;
-    @Nullable
+    private long id;
+    private long skuId;
+    private long applicationId;
+    private Long userId;
+    private Long guildId;
+    private int type;
+    private boolean deleted;
     private OffsetDateTime startsAt;
-    @Nullable
     private OffsetDateTime endsAt;
 
-    public EntitlementImpl(String id, String skuId, String applicationId, @Nullable String userId, @Nullable String guildId, Integer type, Boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
+    public EntitlementImpl(long id, long skuId, long applicationId, Long userId, Long guildId, int type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
     {
         this.id = id;
         this.skuId = skuId;
@@ -51,71 +47,97 @@ public class EntitlementImpl implements Entitlement
         this.endsAt = endsAt;
     }
 
-    public EntitlementImpl(DataObject data) {
-        this.id = data.getString("id");
-        this.skuId = data.getString("sku_id");
-        this.applicationId = data.getString("application_id");
-        this.userId = data.getString("user_id", null);
-        this.guildId = data.getString("guild_id", null);
-        this.type = data.getInt("type");
-        this.deleted = data.getBoolean("deleted");
-        this.startsAt = data.getOffsetDateTime("starts_at", null);
-        this.endsAt = data.getOffsetDateTime("ends_at", null);
-    }
-
     @Override
-    public String getId()
+    public long getIdLong()
     {
         return id;
     }
 
     @Override
-    public String getSkuId()
+    public long getSkuIdLong()
     {
         return skuId;
     }
 
+    @Nonnull
     @Override
-    public String getApplicationId()
+    public String getSkuId()
+    {
+        return Long.toUnsignedString(skuId);
+    }
+
+    @Override
+    public long getApplicationIdLong()
     {
         return applicationId;
     }
 
+    @Nonnull
     @Override
+    public String getApplicationId()
+    {
+        return Long.toUnsignedString(applicationId);
+    }
+
     @Nullable
-    public String getUserId()
+    @Override
+    public Long getUserIdLong()
     {
         return userId;
     }
 
+    @org.jetbrains.annotations.Nullable
     @Override
+    public String getUserId()
+    {
+        if (userId == null)
+        {
+            return null;
+        }
+
+        return Long.toUnsignedString(userId);
+    }
+
     @Nullable
-    public String getGuildId()
+    @Override
+    public Long getGuildIdLong()
     {
         return guildId;
     }
 
+    @Nullable
     @Override
-    public Integer getType()
+    public String getGuildId()
+    {
+        if (guildId == null)
+        {
+            return null;
+        }
+
+        return Long.toUnsignedString(guildId);
+    }
+
+    @Override
+    public int getType()
     {
         return type;
     }
 
     @Override
-    public Boolean getDeleted()
+    public boolean getDeleted()
     {
         return deleted;
     }
 
-    @Override
     @Nullable
+    @Override
     public OffsetDateTime getStartsAt()
     {
         return startsAt;
     }
 
-    @Override
     @Nullable
+    @Override
     public OffsetDateTime getEndsAt()
     {
         return endsAt;

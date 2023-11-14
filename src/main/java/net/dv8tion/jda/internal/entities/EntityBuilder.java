@@ -2558,6 +2558,21 @@ public class EntityBuilder
         return new AuditLogChange(oldValue, newValue, key);
     }
 
+    public Entitlement createEntitlement(DataObject object)
+    {
+        return new EntitlementImpl(
+                object.getLong("id"),
+                object.getLong("sku_id"),
+                object.getLong("application_id"),
+                object.isNull("user_id") ? null : object.getLong("user_id"),
+                object.isNull("guild_id") ? null : object.getLong("guild_id"),
+                object.getInt("type"),
+                object.getBoolean("deleted"),
+                object.getOffsetDateTime("starts_at", null),
+                object.getOffsetDateTime("ends_at", null)
+        );
+    }
+
     private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
     {
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
