@@ -1,6 +1,6 @@
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
+import net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.PremiumRequiredCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -13,7 +13,7 @@ import java.util.function.BooleanSupplier;
 public class PremiumRequiredCallbackActionImpl extends InteractionCallbackImpl<Void> implements PremiumRequiredCallbackAction
 {
 
-    public PremiumRequiredCallbackActionImpl(IModalCallback interaction)
+    public PremiumRequiredCallbackActionImpl(IPremiumRequiredReplyCallback interaction)
     {
         super((InteractionImpl) interaction);
     }

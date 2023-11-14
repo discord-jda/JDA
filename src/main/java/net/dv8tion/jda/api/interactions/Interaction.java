@@ -229,7 +229,12 @@ public interface Interaction extends ISnowflake
         return getGuild().getLocale();
     }
 
-    // TODO: Docs
+    /**
+     * Returns the list of {@link Entitlement entitlements} for the current guild and user.
+     * <br>If this interaction is not from a guild, it will only contain entitlements of the user.
+     *
+     * @return The {@link List List} of {@link Entitlement Entitlement}
+     */
     @Nonnull
     List<Entitlement> getEntitlements();
 

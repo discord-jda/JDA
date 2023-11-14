@@ -15,34 +15,24 @@ public class EntitlementImpl implements Entitlement
     private String userId;
     @Nullable
     private String guildId;
-    @Nullable
-    private String promotionId;
     private Integer type;
     private Boolean deleted;
-    private Long giftCodeFlags;
-    private Boolean consumed;
     @Nullable
     private OffsetDateTime startsAt;
     @Nullable
     private OffsetDateTime endsAt;
-    @Nullable
-    private String subscriptionId;
 
-    public EntitlementImpl(String id, String skuId, String applicationId, @Nullable String userId, @Nullable String guildId, @Nullable String promotionId, Integer type, Boolean deleted, Long giftCodeFlags, Boolean consumed, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt, @Nullable String subscriptionId)
+    public EntitlementImpl(String id, String skuId, String applicationId, @Nullable String userId, @Nullable String guildId, Integer type, Boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
     {
         this.id = id;
         this.skuId = skuId;
         this.applicationId = applicationId;
         this.userId = userId;
         this.guildId = guildId;
-        this.promotionId = promotionId;
         this.type = type;
         this.deleted = deleted;
-        this.giftCodeFlags = giftCodeFlags;
-        this.consumed = consumed;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
-        this.subscriptionId = subscriptionId;
     }
 
     public EntitlementImpl(DataObject data) {
@@ -51,14 +41,10 @@ public class EntitlementImpl implements Entitlement
         this.applicationId = data.getString("application_id");
         this.userId = data.getString("user_id", null);
         this.guildId = data.getString("guild_id", null);
-        this.promotionId = data.getString("promotion_id", null);
         this.type = data.getInt("type");
         this.deleted = data.getBoolean("deleted");
-        this.giftCodeFlags = data.getLong("gift_code_flags");
-        this.consumed = data.getBoolean("consumed");
         this.startsAt = data.getOffsetDateTime("starts_at", null);
         this.endsAt = data.getOffsetDateTime("ends_at", null);
-        this.subscriptionId = data.getString("subscription_id", null);
     }
 
     @Override
@@ -93,12 +79,6 @@ public class EntitlementImpl implements Entitlement
         return guildId;
     }
 
-    @Nullable
-    public String getPromotionId()
-    {
-        return promotionId;
-    }
-
     @Override
     public Integer getType()
     {
@@ -109,18 +89,6 @@ public class EntitlementImpl implements Entitlement
     public Boolean getDeleted()
     {
         return deleted;
-    }
-
-    @Override
-    public Long getGiftCodeFlags()
-    {
-        return giftCodeFlags;
-    }
-
-    @Override
-    public Boolean getConsumed()
-    {
-        return consumed;
     }
 
     @Override
@@ -135,12 +103,5 @@ public class EntitlementImpl implements Entitlement
     public OffsetDateTime getEndsAt()
     {
         return endsAt;
-    }
-
-    @Override
-    @Nullable
-    public String getSubscriptionId()
-    {
-        return subscriptionId;
     }
 }

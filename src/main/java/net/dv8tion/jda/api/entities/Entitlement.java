@@ -6,7 +6,7 @@ import java.time.OffsetDateTime;
 
 /**
  * Represents a Discord {@link Entitlement Entitlement} for premium App subscriptions.
- * <br>This should contain all information provided from Discord about an Entitlement.
+ * <br>This should contain all information provided from Discord about an {@link Entitlement Entitlement}.
  *
  * @author Giulio Pimenoff V.
  */
@@ -26,42 +26,74 @@ public interface Entitlement
 
     /**
      *
-     * @return The id of the parent application
+     * @return The id of the parent application of this {@link Entitlement Entitlement}
      */
     String getApplicationId();
 
     /**
      *
-     * @return The id of the user that purchased the entitlement
+     * @return The id of the user that purchased the {@link Entitlement Entitlement}
      */
     @Nullable
     String getUserId();
 
     /**
      *
-     * @return The id of the guild that is granted access to the entitlement's sku,
-     * or Null if this entitlement is related to a User Subscription type
+     * @return The id of the guild that is granted access to the {@link Entitlement Entitlement}'s sku,
+     * or Null if this entitlement is related to a subscription of type "User Subscription"
      */
     @Nullable
     String getGuildId();
 
+    /*
+     Mentioned by Discord in the example but not included in the api specification
     @Nullable
     String getPromotionId();
+     */
 
+    /**
+     * The type of the Entitlement
+     * <br>The only possible value of this property is 8 at the moment and indicates the "APPLICATION_SUBSCRIPTION" type
+     * <br>Discord doesn't currently support other types for entitlements.
+     *
+     * @return the {@link Entitlement Entitlement} type, 8 is the only possible value
+     */
     Integer getType();
 
+    /**
+     * @return True if the {@link Entitlement Entitlement} was deleted, False otherwise
+     *
+     * @see net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent
+     */
     Boolean getDeleted();
 
+    /*
+     Mentioned by Discord in the example but not included in the api specification
     Long getGiftCodeFlags();
+     */
 
+    /*
+     Mentioned by Discord in the example but not included in the api specification
     Boolean getConsumed();
+     */
 
+    /**
+     *
+     * @return Start date at which the {@link Entitlement Entitlement} is valid. Not present when using test entitlements.
+     */
     @Nullable
     OffsetDateTime getStartsAt();
 
+    /**
+     *
+     * @return 	Date at which the {@link Entitlement Entitlement} is no longer valid. Not present when using test entitlements.
+     */
     @Nullable
     OffsetDateTime getEndsAt();
 
+    /*
+     Mentioned by Discord in the example but not included in the api specification
     @Nullable
     String getSubscriptionId();
+     */
 }
