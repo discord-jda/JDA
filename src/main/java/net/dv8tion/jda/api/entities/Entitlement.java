@@ -127,7 +127,7 @@ public interface Entitlement extends ISnowflake
     /**
      * Date at which the {@link Entitlement Entitlement} is no longer valid.
      *
-     * @return 	Date at which the {@link Entitlement Entitlement} is no longer valid. Not present when using test entitlements.
+     * @return Date at which the {@link Entitlement Entitlement} is no longer valid. Not present when using test entitlements.
      */
     @Nullable
     OffsetDateTime getEndsAt();
