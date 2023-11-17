@@ -90,10 +90,10 @@ public interface Entitlement extends ISnowflake
     Long getGuildIdLong();
 
     /**
-     * The guild id that is granted access to the {@link Entitlement Entitlement}'s sku
+     * The guild id that is granted access to the {@link Entitlement Entitlement}'s SKU
      *
-     * @return The id of the guild that is granted access to the {@link Entitlement Entitlement}'s sku,
-     * or Null if this entitlement is related to a subscription of type "User Subscription"
+     * @return The id of the guild that is granted access to the {@link Entitlement Entitlement}'s SKU,
+     * or {@code null} if this entitlement is related to a subscription of type "User Subscription"
      */
     @Nullable
     String getGuildId();
