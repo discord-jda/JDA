@@ -35,7 +35,7 @@ public interface Entitlement extends ISnowflake
     long getIdLong();
 
     /**
-     * The id of the sku related to this {@link Entitlement Entitlement}
+     * The id of the SKU related to this {@link Entitlement Entitlement}
      *
      * @return The id of the SKU related to this {@link Entitlement Entitlement}
      */
