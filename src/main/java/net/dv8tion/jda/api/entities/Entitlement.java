@@ -31,7 +31,6 @@ public interface Entitlement extends ISnowflake
      *
      * @return The id of the {@link Entitlement Entitlement}
      */
-
     @Override
     long getIdLong();
 
