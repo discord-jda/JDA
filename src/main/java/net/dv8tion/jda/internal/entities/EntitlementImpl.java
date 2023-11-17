@@ -29,12 +29,12 @@ public class EntitlementImpl implements Entitlement
     private long applicationId;
     private Long userId;
     private Long guildId;
-    private int type;
+    private EntitlementType type;
     private boolean deleted;
     private OffsetDateTime startsAt;
     private OffsetDateTime endsAt;
 
-    public EntitlementImpl(long id, long skuId, long applicationId, Long userId, Long guildId, int type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
+    public EntitlementImpl(long id, long skuId, long applicationId, Long userId, Long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
     {
         this.id = id;
         this.skuId = skuId;
@@ -117,8 +117,9 @@ public class EntitlementImpl implements Entitlement
         return Long.toUnsignedString(guildId);
     }
 
+    @Nonnull
     @Override
-    public int getType()
+    public EntitlementType getType()
     {
         return type;
     }

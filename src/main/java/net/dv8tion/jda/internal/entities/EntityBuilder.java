@@ -2566,7 +2566,7 @@ public class EntityBuilder
                 object.getLong("application_id"),
                 object.isNull("user_id") ? null : object.getLong("user_id"),
                 object.isNull("guild_id") ? null : object.getLong("guild_id"),
-                object.getInt("type"),
+                Entitlement.EntitlementType.fromKey(object.getInt("type")),
                 object.getBoolean("deleted"),
                 object.getOffsetDateTime("starts_at", null),
                 object.getOffsetDateTime("ends_at", null)

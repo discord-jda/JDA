@@ -100,12 +100,13 @@ public interface Entitlement extends ISnowflake
 
     /**
      * The type of the Entitlement
-     * <br>The only possible value of this property is 8 at the moment and indicates the "APPLICATION_SUBSCRIPTION" type
+     * <br>The only possible type of Entitlement currently is {@link EntitlementType#APPLICATION_SUBSCRIPTION}
      * <br>Discord doesn't currently support other types for entitlements.
      *
-     * @return the {@link Entitlement Entitlement} type, 8 is the only possible value
+     * @return the {@link Entitlement Entitlement} type
      */
-    int getType();
+    @Nonnull
+    EntitlementType getType();
 
     /**
      * Whether the {@link Entitlement Entitlement} has been deleted or not.
@@ -131,4 +132,52 @@ public interface Entitlement extends ISnowflake
      */
     @Nullable
     OffsetDateTime getEndsAt();
+
+    /**
+     * Represents the type of this Entitlement
+     */
+    enum EntitlementType {
+        APPLICATION_SUBSCRIPTION(8),
+        /**
+         * Placeholder for unsupported types.
+         */
+        UNKNOWN(-1);
+
+        private final int key;
+
+        EntitlementType(int key)
+        {
+            this.key = key;
+        }
+
+        /**
+         * The Discord defined id key for this EntitlementType.
+         *
+         * @return the id key.
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * Gets the EntitlementType related to the provided key.
+         * <br>If an unknown key is provided, this returns {@link #UNKNOWN}
+         *
+         * @param  key
+         *         The Discord key referencing a EntitlementType.
+         *
+         * @return The EntitlementType that has the key provided, or {@link #UNKNOWN} for unknown key.
+         */
+        @Nonnull
+        public static EntitlementType fromKey(int key)
+        {
+            for (EntitlementType type : values())
+            {
+                if (type.getKey() == key)
+                    return type;
+            }
+            return UNKNOWN;
+        }
+    }
 }
