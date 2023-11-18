@@ -59,24 +59,10 @@ public class EntitlementImpl implements Entitlement
         return skuId;
     }
 
-    @Nonnull
-    @Override
-    public String getSkuId()
-    {
-        return Long.toUnsignedString(skuId);
-    }
-
     @Override
     public long getApplicationIdLong()
     {
         return applicationId;
-    }
-
-    @Nonnull
-    @Override
-    public String getApplicationId()
-    {
-        return Long.toUnsignedString(applicationId);
     }
 
     @Nullable
@@ -86,35 +72,11 @@ public class EntitlementImpl implements Entitlement
         return userId;
     }
 
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public String getUserId()
-    {
-        if (userId == null)
-        {
-            return null;
-        }
-
-        return Long.toUnsignedString(userId);
-    }
-
     @Nullable
     @Override
     public Long getGuildIdLong()
     {
         return guildId;
-    }
-
-    @Nullable
-    @Override
-    public String getGuildId()
-    {
-        if (guildId == null)
-        {
-            return null;
-        }
-
-        return Long.toUnsignedString(guildId);
     }
 
     @Nonnull
@@ -125,7 +87,7 @@ public class EntitlementImpl implements Entitlement
     }
 
     @Override
-    public boolean getDeleted()
+    public boolean isDeleted()
     {
         return deleted;
     }

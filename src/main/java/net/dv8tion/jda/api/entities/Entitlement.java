@@ -47,7 +47,10 @@ public interface Entitlement extends ISnowflake
      * @return The id of the SKU related to this {@link Entitlement Entitlement}
      */
     @Nonnull
-    String getSkuId();
+    default String getSkuId()
+    {
+        return Long.toUnsignedString(getSkuIdLong());
+    }
 
     /**
      * The id of the parent application of this {@link Entitlement Entitlement}
@@ -62,7 +65,10 @@ public interface Entitlement extends ISnowflake
      * @return The id of the parent application of this {@link Entitlement Entitlement}
      */
     @Nonnull
-    String getApplicationId();
+    default String getApplicationId()
+    {
+        return Long.toUnsignedString(getApplicationIdLong());
+    }
 
     /**
      * The id of the user that purchased the {@link Entitlement Entitlement}
@@ -78,7 +84,14 @@ public interface Entitlement extends ISnowflake
      * @return The id of the user that purchased the {@link Entitlement Entitlement}
      */
     @Nullable
-    String getUserId();
+    default String getUserId()
+    {
+        if (getUserIdLong() == null) {
+            return null;
+        }
+
+        return Long.toUnsignedString(getUserIdLong());
+    }
 
     /**
      * The guild id that is granted access to the {@link Entitlement Entitlement}'s SKU
@@ -96,7 +109,14 @@ public interface Entitlement extends ISnowflake
      * or {@code null} if this entitlement is related to a subscription of type "User Subscription"
      */
     @Nullable
-    String getGuildId();
+    default String getGuildId()
+    {
+        if (getGuildIdLong() == null) {
+            return null;
+        }
+
+        return Long.toUnsignedString(getGuildIdLong());
+    }
 
     /**
      * The type of the Entitlement
@@ -115,7 +135,7 @@ public interface Entitlement extends ISnowflake
      *
      * @see    net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent
      */
-    boolean getDeleted();
+    boolean isDeleted();
 
     /**
      * The start date at which the {@link Entitlement Entitlement} is valid.
