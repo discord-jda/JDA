@@ -179,7 +179,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 bucket.requests.removeIf(Work::isSkipped); // Remove cancelled requests
 
                 // Check if the bucket is empty
-                if (bucket.requests.isEmpty())
+                if (bucket.requests.isEmpty() && !rateLimitQueue.containsKey(bucket))
                 {
                     // remove uninit if requests are empty
                     if (bucket.isUninit())
@@ -231,8 +231,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return;
         // Schedule a new bucket worker if no worker is running
         MiscUtil.locked(lock, () ->
-                rateLimitQueue.computeIfAbsent(bucket,
-                        (k) -> config.getPool().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
+            rateLimitQueue.computeIfAbsent(bucket,
+                k -> config.getPool().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
     }
 
     private long parseLong(String input)
@@ -252,9 +252,9 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         return System.currentTimeMillis();
     }
 
-    private void updateBucket(Route.CompiledRoute route, Response response)
+    private Bucket updateBucket(Route.CompiledRoute route, Response response)
     {
-        MiscUtil.locked(lock, () ->
+        return MiscUtil.locked(lock, () ->
         {
             try
             {
@@ -302,7 +302,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                         boolean firstHit = hitRatelimit.add(baseRoute) && retryAfter < 60000;
                         // Update the bucket to the new information
                         bucket.remaining = 0;
-                        bucket.reset = getNow() + retryAfter;
+                        bucket.reset = now + retryAfter;
                         // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
                         // unless its a long retry-after delay (more than a minute)
                         if (firstHit)
@@ -310,6 +310,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                         else
                             log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms Scope: {}", baseRoute, bucket.bucketId, retryAfter, scope);
                     }
+
+                    log.trace("Updated bucket {} to retry after {}", bucket.bucketId, bucket.reset - now);
                     return bucket;
                 }
 
@@ -367,7 +369,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
 
         public void retry(Work request)
         {
-            requests.addFirst(request);
+            if (!moveRequest(request))
+                requests.addFirst(request);
         }
 
         public long getReset()
@@ -423,7 +426,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return requests;
         }
 
-        protected Boolean moveRequest(Work request)
+        protected boolean moveRequest(Work request)
         {
             return MiscUtil.locked(lock, () ->
             {
@@ -433,9 +436,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 {
                     bucket.enqueue(request);
                     runBucket(bucket);
-                    return true;
                 }
-                return false;
+                return bucket != this;
             });
         }
 
@@ -480,12 +482,8 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 if (request.isSkipped())
                     continue;
 
-                // Check if a bucket has been discovered and initialized for this route
-                if (isUninit())
-                {
-                    boolean shouldSkip = moveRequest(request);
-                    if (shouldSkip) continue;
-                }
+                if (isUninit() && moveRequest(request))
+                    continue;
 
                 if (execute(request)) break;
             }
