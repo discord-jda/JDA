@@ -53,8 +53,7 @@ public interface GenericEvent
      * <h3>Event extensions</h3>
      * Classes extending JDA events may not keep their passthrough data,
      * as the data is retrieved from a {@link ThreadLocal},
-     * the passthrough data will only be found in instances constructed in the same thread as where the event was originally created,
-     * or in newly created child threads.
+     * the passthrough data will only be found in instances constructed in the same thread as where the event was originally created.
      * <br>This means that existing threads (such as in thread pools) will <b>not</b> contain the passthrough data.
      *
      * <p>To fix this issue, you may override this method, and get the passthrough data from the original event.
