@@ -281,21 +281,25 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the minimum length of this input field. Default is -1 (No minimum length).
          *
-         * <p><b>This has to be between 0 and {@value #MAX_VALUE_LENGTH}</b>
+         * <p><b>This has to be between 0 and {@value #MAX_VALUE_LENGTH}, or -1 for no minimum length</b>
          *
          * @param  minLength
-         *         The minimum amount of characters that need to be written
+         *         The minimum amount of characters that need to be written, or -1
          *
          * @throws IllegalArgumentException
-         *         If minLength is negative or greater than {@value #MAX_VALUE_LENGTH}
+         *         If minLength is not -1 and is negative or greater than {@value #MAX_VALUE_LENGTH}
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setMinLength(int minLength)
         {
-            Checks.notNegative(minLength, "Minimum length");
-            Checks.check(minLength <= MAX_VALUE_LENGTH, "Minimum length cannot be longer than %d characters!", MAX_VALUE_LENGTH);
+            if (minLength != -1)
+            {
+                Checks.notNegative(minLength, "Minimum length");
+                Checks.check(minLength <= MAX_VALUE_LENGTH, "Minimum length cannot be longer than %d characters!", MAX_VALUE_LENGTH);
+            }
+
             this.minLength = minLength;
             return this;
         }
@@ -303,21 +307,24 @@ public interface TextInput extends ActionComponent
         /**
          * Sets the maximum length of this input field. Default is -1 (No maximum length).
          *
-         * <p><b>This has to be between 1 and {@value #MAX_VALUE_LENGTH}</b>
+         * <p><b>This has to be between 1 and {@value #MAX_VALUE_LENGTH}, or -1 for no maximum length</b>
          *
          * @param  maxLength 
-         *         The maximum amount of characters that need to be written
+         *         The maximum amount of characters that need to be written, or -1
          *
          * @throws IllegalArgumentException
-         *         If maxLength is smaller than 1 or greater than {@value #MAX_VALUE_LENGTH}
+         *         If maxLength is not -1 and is smaller than 1 or greater than {@value #MAX_VALUE_LENGTH}
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setMaxLength(int maxLength)
         {
-            Checks.check(maxLength >= 1, "Maximum length cannot be smaller than 1 character!");
-            Checks.check(maxLength <= MAX_VALUE_LENGTH, "Maximum length cannot be longer than " + MAX_VALUE_LENGTH + " characters!");
+            if (maxLength != -1)
+            {
+                Checks.check(maxLength >= 1, "Maximum length cannot be smaller than 1 character!");
+                Checks.check(maxLength <= MAX_VALUE_LENGTH, "Maximum length cannot be longer than %d characters!", MAX_VALUE_LENGTH);
+            }
 
             this.maxLength = maxLength;
             return this;
@@ -327,14 +334,14 @@ public interface TextInput extends ActionComponent
          * Sets the minimum and maximum required length on this TextInput component
          *
          * @param  min 
-         *         Minimum length of the text input
+         *         Minimum length of the text input, or -1 for none
          * @param  max 
-         *         Maximum length of the text input
+         *         Maximum length of the text input, or -1 for none
 
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If min is negative or greater than {@link #MAX_VALUE_LENGTH}</li>
-         *             <li>If max is smaller than 1, smaller than min or greater than {@link #MAX_VALUE_LENGTH}</li>
+         *             <li>If min is not -1 and is negative or greater than {@link #MAX_VALUE_LENGTH}</li>
+         *             <li>If max is not -1 and is smaller than 1, smaller than min or greater than {@link #MAX_VALUE_LENGTH}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining
@@ -342,7 +349,7 @@ public interface TextInput extends ActionComponent
         @Nonnull
         public Builder setRequiredRange(int min, int max)
         {
-            if (min > max)
+            if (min != -1 && max != -1 && min > max)
                 throw new IllegalArgumentException("minimum cannot be greater than maximum!");
 
             setMinLength(min);
