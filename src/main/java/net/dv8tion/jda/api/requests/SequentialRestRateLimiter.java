@@ -179,7 +179,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 bucket.requests.removeIf(Work::isSkipped); // Remove cancelled requests
 
                 // Check if the bucket is empty
-                if (bucket.requests.isEmpty())
+                if (bucket.requests.isEmpty() && !rateLimitQueue.containsKey(bucket))
                 {
                     // remove uninit if requests are empty
                     if (bucket.isUninit())
@@ -479,7 +479,10 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
                 }
 
                 Work request = requests.removeFirst();
-                if (request.isSkipped() || moveRequest(request))
+                if (request.isSkipped())
+                    continue;
+
+                if (isUninit() && moveRequest(request))
                     continue;
 
                 if (execute(request)) break;
