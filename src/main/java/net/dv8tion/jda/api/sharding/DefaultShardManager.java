@@ -58,6 +58,7 @@ import java.util.EnumSet;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 /**
@@ -753,22 +754,27 @@ public class DefaultShardManager implements ShardManager
         {
             try
             {
-                String url = restConfigProvider.apply(0).getBaseUrl() + getRoute().getCompiledRoute();
-                LOG.trace("Requesting shard total with url {}", url);
+                RestConfig config = restConfigProvider.apply(0);
+                String url = config.getBaseUrl() + getRoute().getCompiledRoute();
+                LOG.debug("Requesting shard total with url {}", url);
 
-                Call call = httpClient.newCall(new okhttp3.Request.Builder()
-                    .get()
-                    .url(url)
-                    .header("authorization", "Bot " + token)
-                    .header("accept-encoding", "gzip")
-                    .build()
-                );
+                okhttp3.Request.Builder builder = new okhttp3.Request.Builder()
+                        .get()
+                        .url(url)
+                        .header("authorization", "Bot " + token)
+                        .header("accept-encoding", "gzip")
+                        .header("user-agent", config.getUserAgent());
 
+                Consumer<? super okhttp3.Request.Builder> customBuilder = config.getCustomBuilder();
+                if (customBuilder != null)
+                    customBuilder.accept(builder);
+
+                Call call = httpClient.newCall(builder.build());
                 okhttp3.Response response = call.execute();
 
                 try
                 {
-                    LOG.trace("Received response with code {}", response.code());
+                    LOG.debug("Received response with code {}", response.code());
                     InputStream body = IOUtil.getBody(response);
 
                     if (response.isSuccessful())
