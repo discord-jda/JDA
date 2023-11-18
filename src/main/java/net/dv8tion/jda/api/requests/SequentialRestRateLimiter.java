@@ -224,6 +224,9 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
 
     private void scheduleElastic(Bucket bucket)
     {
+        if (isShutdown)
+            return;
+
         ExecutorService elastic = config.getElastic();
         ScheduledExecutorService scheduler = config.getScheduler();
 
@@ -238,10 +241,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         catch (RejectedExecutionException ex)
         {
             if (!isShutdown)
-            {
                 log.error("Failed to execute bucket worker", ex);
-                runBucket(bucket);
-            }
         }
         catch (Throwable t)
         {
