@@ -323,7 +323,7 @@ public interface TextInput extends ActionComponent
             if (maxLength != -1)
             {
                 Checks.check(maxLength >= 1, "Maximum length cannot be smaller than 1 character!");
-                Checks.check(maxLength <= MAX_VALUE_LENGTH, "Maximum length cannot be longer than " + MAX_VALUE_LENGTH + " characters!");
+                Checks.check(maxLength <= MAX_VALUE_LENGTH, "Maximum length cannot be longer than %d characters!", MAX_VALUE_LENGTH);
             }
 
             this.maxLength = maxLength;
