@@ -42,7 +42,7 @@ public class RestConfig
      * The default base url used by JDA for all REST-api requests.
      * This URL uses the API version defined by {@link JDAInfo#DISCORD_REST_VERSION} (v{@value JDAInfo#DISCORD_REST_VERSION}).
      */
-    public static final String DEFAULT_BASE_URL = "https://discord.com/api/v" + JDAInfo.DISCORD_REST_VERSION + "/";
+    public static final String DEFAULT_BASE_URL = "https://canary.discord.com/api/v" + JDAInfo.DISCORD_REST_VERSION + "/";
 
     private String userAgent = USER_AGENT;
     private String baseUrl = DEFAULT_BASE_URL;
