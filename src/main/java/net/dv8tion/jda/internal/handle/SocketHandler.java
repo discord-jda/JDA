@@ -20,7 +20,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 
 public abstract class SocketHandler
 {
-    public static final ThreadLocal<DataObject> CURRENT_EVENT = new ThreadLocal<>();
+    public static final InheritableThreadLocal<DataObject> CURRENT_EVENT = new InheritableThreadLocal<>();
 
     protected final JDAImpl api;
     protected long responseNumber;
