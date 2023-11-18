@@ -113,7 +113,7 @@ public interface Entitlement extends ISnowflake
      *
      * @return True if the {@link Entitlement Entitlement} was deleted, False otherwise
      *
-     * @see     net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent
+     * @see    net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent
      */
     boolean getDeleted();
 
