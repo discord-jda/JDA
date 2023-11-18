@@ -33,7 +33,6 @@ import javax.annotation.Nullable;
  */
 public interface ICategorizableChannel extends GuildChannel, IPermissionContainer
 {
-    //TODO-v5: Docs
     @Override
     @Nonnull
     ICategorizableChannelManager<?, ?> getManager();

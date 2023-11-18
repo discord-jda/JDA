@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
@@ -135,7 +136,7 @@ public class PermissionOverrideActionImpl
 
     @Nonnull
     @Override
-    public GuildChannel getChannel()
+    public IPermissionContainer getChannel()
     {
         return channel;
     }
