@@ -50,6 +50,15 @@ public interface GenericEvent
      * <br>This provides the full gateway message payload, including sequence, event name and dispatch type.
      * For details, read the official <a href="https://discord.dev/topics/gateway" target="_blank">Discord Documentation</a>.
      *
+     * <h3>Event extensions</h3>
+     * Classes extending JDA events may not keep their passthrough data,
+     * as the data is retrieved from an {@link InheritableThreadLocal},
+     * the passthrough data will only be found in instances constructed in the same thread as where the event was originally created,
+     * or in newly created child threads.
+     * <br>This means that existing threads (such as in thread pools) will <b>not</b> contain the passthrough data.
+     *
+     * <p>To fix this issue, you may override this method, and get the passthrough data from the original event.
+     *
      * @throws IllegalStateException
      *         If event passthrough was not enabled, see {@link net.dv8tion.jda.api.JDABuilder#setEventPassthrough(boolean) JDABuilder#setEventPassthrough(boolean)}
      *
