@@ -96,7 +96,7 @@ public class SessionControllerAdapter implements SessionController
                 else if (response.code == 401)
                 {
                     api.shutdownNow();
-                    request.onFailure(new InvalidTokenException("The provided token is invalid!"));
+                    request.onFailure(new InvalidTokenException());
                 }
                 else
                 {

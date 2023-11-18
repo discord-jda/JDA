@@ -413,7 +413,7 @@ public class JDAImpl implements JDA
                 return;
             }
 
-            throw new InvalidTokenException("The provided token is invalid!");
+            throw new InvalidTokenException();
         }
         catch (Throwable error)
         {

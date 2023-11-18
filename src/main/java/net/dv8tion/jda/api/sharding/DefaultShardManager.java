@@ -666,7 +666,14 @@ public class DefaultShardManager implements ShardManager
                 for (int i = 0; i < shardTotal; i++)
                     queue.add(i);
             }
-
+        }
+        catch (CompletionException ex)
+        {
+            if (ex.getCause() instanceof RuntimeException)
+                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof Error)
+                throw (Error) ex.getCause();
+            throw ex;
         }
         finally
         {
@@ -769,6 +776,10 @@ public class DefaultShardManager implements ShardManager
                         DataObject json = DataObject.fromJson(body);
                         int shardTotal = json.getInt("shards");
                         future.complete(shardTotal);
+                    }
+                    else if (response.code() == 401)
+                    {
+                        future.completeExceptionally(new InvalidTokenException());
                     }
                     else if (response.code() != 429 && response.code() < 500 || ++failedAttempts > 4)
                     {
