@@ -302,7 +302,6 @@ public class Requester
         builder.header("user-agent", userAgent)
                .header("accept-encoding", "gzip")
                .header("authorization", authConfig.getToken())
-               .header("x-super-properties", getSuperProperties())
                .header("x-ratelimit-precision", "millisecond"); // still sending this in case of regressions
 
         // Apply custom headers like X-Audit-Log-Reason
@@ -314,7 +313,7 @@ public class Requester
         }
     }
 
-    private String getSuperProperties()
+    public String getSuperProperties()
     {
         if (superProperties != null)
             return superProperties;
