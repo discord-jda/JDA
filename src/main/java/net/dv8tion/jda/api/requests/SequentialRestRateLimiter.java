@@ -24,10 +24,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -89,7 +86,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
     public SequentialRestRateLimiter(@Nonnull RateLimitConfig config)
     {
         this.config = config;
-        this.cleanupWorker = config.getPool().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
+        this.cleanupWorker = config.getScheduler().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
     }
 
     @Override
@@ -225,6 +222,35 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         });
     }
 
+    private void scheduleElastic(Bucket bucket)
+    {
+        if (isShutdown)
+            return;
+
+        ExecutorService elastic = config.getElastic();
+        ScheduledExecutorService scheduler = config.getScheduler();
+
+        try
+        {
+            // Avoid context switch if unnecessary
+            if (elastic == scheduler)
+                bucket.run();
+            else
+                elastic.execute(bucket);
+        }
+        catch (RejectedExecutionException ex)
+        {
+            if (!isShutdown)
+                log.error("Failed to execute bucket worker", ex);
+        }
+        catch (Throwable t)
+        {
+            log.error("Caught throwable in bucket worker", t);
+            if (t instanceof Error)
+                throw t;
+        }
+    }
+
     private void runBucket(Bucket bucket)
     {
         if (isShutdown)
@@ -232,7 +258,10 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         // Schedule a new bucket worker if no worker is running
         MiscUtil.locked(lock, () ->
             rateLimitQueue.computeIfAbsent(bucket,
-                k -> config.getPool().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
+                k -> config.getScheduler().schedule(
+                    () -> scheduleElastic(bucket),
+                    bucket.getRateLimit(), TimeUnit.MILLISECONDS))
+        );
     }
 
     private long parseLong(String input)
