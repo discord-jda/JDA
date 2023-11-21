@@ -191,8 +191,6 @@ public class InteractionImpl implements Interaction
     {
         return member;
     }
-
-
     @Nonnull
     @Override
     public List<Entitlement> getEntitlements()
