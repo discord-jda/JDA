@@ -110,9 +110,8 @@ public interface Entitlement extends ISnowflake
     @Nullable
     default String getGuildId()
     {
-        if (getGuildIdLong() == null) {
+        if (getGuildIdLong() == null)
             return null;
-        }
 
         return Long.toUnsignedString(getGuildIdLong());
     }
