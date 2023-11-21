@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Entitlement;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates a user's entitlement is deleted. Entitlement deletions are infrequent, and occur when:
+ * Indicates that a user's entitlement was deleted. Entitlement deletions are infrequent, and occur when:
  * <ul>
  *     <li>Discord issues a refund for a subscription</li>
  *     <li>Discord removes an entitlement from a user via internal tooling</li>
