@@ -86,9 +86,8 @@ public interface Entitlement extends ISnowflake
     @Nullable
     default String getUserId()
     {
-        if (getUserIdLong() == null) {
+        if (getUserIdLong() == null)
             return null;
-        }
 
         return Long.toUnsignedString(getUserIdLong());
     }
