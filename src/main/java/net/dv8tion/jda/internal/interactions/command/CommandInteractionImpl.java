@@ -62,8 +62,6 @@ public class CommandInteractionImpl extends DeferrableInteractionImpl implements
         Checks.notNull(modal, "Modal");
         return new ModalCallbackActionImpl(this, modal);
     }
-
-
     @Nonnull
     @Override
     public PremiumRequiredCallbackAction replyWithPremiumRequired()
