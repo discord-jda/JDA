@@ -209,12 +209,4 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
         this.latestMessageId = latestMessageId;
         return this;
     }
-
-    // -- Abstract Hooks --
-
-    @Override
-    protected void onPositionChange()
-    {
-        getGuild().getVoiceChannelsView().clearCachedLists();
-    }
 }

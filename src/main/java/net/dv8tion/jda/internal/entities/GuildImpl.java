@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
@@ -189,71 +190,22 @@ public class GuildImpl implements Guild
     public void uncacheChannel(GuildChannel channel, boolean keepThreads)
     {
         long id = channel.getIdLong();
-        switch (channel.getType())
-        {
-        case TEXT:
-            api.getTextChannelsView().remove(id);
-            this.getTextChannelsView().remove(id);
-            break;
-        case NEWS:
-            api.getNewsChannelView().remove(id);
-            this.getNewsChannelView().remove(id);
-            break;
-        case MEDIA:
-            api.getMediaChannelsView().remove(id);
-            this.getMediaChannelsView().remove(id);
-            break;
-        case FORUM:
-            api.getForumChannelsView().remove(id);
-            this.getForumChannelsView().remove(id);
-            break;
-        case VOICE:
-            api.getVoiceChannelsView().remove(id);
-            this.getVoiceChannelsView().remove(id);
-            break;
-        case STAGE:
-            api.getStageChannelView().remove(id);
-            this.getStageChannelsView().remove(id);
-            break;
-        case CATEGORY:
-            api.getCategoriesView().remove(id);
-            this.getCategoriesView().remove(id);
-            break;
-        case GUILD_NEWS_THREAD:
-        case GUILD_PUBLIC_THREAD:
-        case GUILD_PRIVATE_THREAD:
-            api.getThreadChannelsView().remove(id);
-            this.getThreadChannelsView().remove(id);
-            break;
-        }
+        if (channelCache.remove(channel.getType(), id) != null)
+            api.getChannelsView().remove(channel.getType(), id);
 
         if (!keepThreads && channel instanceof IThreadContainer)
         {
             // Remove dangling threads
-            SortedSnowflakeCacheViewImpl<ThreadChannel> localView = this.getThreadChannelsView();
-            SnowflakeCacheViewImpl<ThreadChannel> globalView = api.getThreadChannelsView();
+            SortedChannelCacheViewImpl<GuildChannel> localView = this.getChannelView();
+            ChannelCacheViewImpl<Channel> globalView = api.getChannelsView();
             Predicate<ThreadChannel> predicate = thread -> channel.equals(thread.getParentChannel());
 
             try (UnlockHook hook1 = localView.writeLock(); UnlockHook hook2 = globalView.writeLock())
             {
-                localView.getMap().valueCollection().removeIf(predicate);
-                globalView.getMap().valueCollection().removeIf(predicate);
+                localView.removeIf(ThreadChannel.class, predicate);
+                globalView.removeIf(ThreadChannel.class, predicate);
             }
         }
-
-        // This might be too presumptuous, Channel#getParent still returns null regardless if the category is uncached
-//        if (channel instanceof Category)
-//        {
-//            for (Channel chan : guild.getChannels())
-//            {
-//                if (!(chan instanceof ICategorizableChannelMixin<?>))
-//                    continue;
-//
-//                ICategorizableChannelMixin<?> categoizable = (ICategorizableChannelMixin<?>) chan;
-//                if (categoizable.getParentCategoryIdLong() == id)
-//                    categoizable.setParentCategory(0L);
-//            }
-//        }
     }
 
     @Nonnull
@@ -770,49 +722,49 @@ public class GuildImpl implements Guild
     @Override
     public SortedSnowflakeCacheView<TextChannel> getTextChannelCache()
     {
-        return textChannelCache;
+        return channelCache.ofType(TextChannel.class);
     }
 
     @Nonnull
     @Override
     public SortedSnowflakeCacheView<NewsChannel> getNewsChannelCache()
     {
-        return newsChannelCache;
+        return channelCache.ofType(NewsChannel.class);
     }
 
     @Nonnull
     @Override
     public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
-        return voiceChannelCache;
+        return channelCache.ofType(VoiceChannel.class);
     }
 
     @Nonnull
     @Override
     public SortedSnowflakeCacheView<ForumChannel> getForumChannelCache()
     {
-        return forumChannelCache;
+        return channelCache.ofType(ForumChannel.class);
     }
 
     @Nonnull
     @Override
     public SnowflakeCacheView<MediaChannel> getMediaChannelCache()
     {
-        return mediaChannelCache;
+        return channelCache.ofType(MediaChannel.class);
     }
 
     @Nonnull
     @Override
     public SortedSnowflakeCacheView<StageChannel> getStageChannelCache()
     {
-        return stageChannelCache;
+        return channelCache.ofType(StageChannel.class);
     }
 
     @Nonnull
     @Override
     public SortedSnowflakeCacheView<ThreadChannel> getThreadChannelCache()
     {
-        return threadChannelCache;
+        return channelCache.ofType(ThreadChannel.class);
     }
 
     @Nonnull
@@ -840,38 +792,35 @@ public class GuildImpl implements Guild
     @Override
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
+        if (includeHidden)
+            return channelCache.applyStream(stream -> stream.filter(it -> !it.getType().isThread()).sorted().collect(Helpers.toUnmodifiableList()));
+
         Member self = getSelfMember();
-        Predicate<GuildChannel> filterHidden = includeHidden ? (it) -> true : it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
 
-        SnowflakeCacheViewImpl<Category> categories = getCategoriesView();
-        SnowflakeCacheViewImpl<VoiceChannel> voice = getVoiceChannelsView();
-        SnowflakeCacheViewImpl<StageChannel> stage = getStageChannelsView();
-        SnowflakeCacheViewImpl<TextChannel> text = getTextChannelsView();
-        SnowflakeCacheViewImpl<NewsChannel> news = getNewsChannelView();
-        SnowflakeCacheViewImpl<ForumChannel> forum = getForumChannelsView();
-        SnowflakeCacheViewImpl<MediaChannel> media = getMediaChannelsView();
+        Map<Category, Set<GuildChannel>> grouped = new HashMap<>();
+        channelCache.forEachUnordered(channel -> {
+            if (channel.getType().isThread() || !self.hasPermission(channel, Permission.VIEW_CHANNEL)) return;
 
-        List<GuildChannel> channels = new ArrayList<>((int) (categories.size() + voice.size() + stage.size() + text.size() + news.size() + forum.size() + media.size()));
-
-        voice.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
-        stage.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
-        text.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
-        news.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
-        forum.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
-        media.acceptStream(stream -> stream.filter(filterHidden).forEach(channels::add));
-
-        categories.forEach(category ->
-        {
-            if (!includeHidden && category.getChannels().stream().noneMatch(filterHidden))
-                return;
-
-            channels.add(category);
+            if (channel instanceof ICategorizableChannel)
+            {
+                Category category = ((ICategorizableChannel) channel).getParentCategory();
+                grouped.computeIfAbsent(category, (k) -> new HashSet<>()).add(channel);
+                grouped.computeIfAbsent(null, (k) -> new HashSet<>()).add(category);
+            }
+            else
+            {
+                grouped.computeIfAbsent(null, (k) -> new HashSet<>()).add(channel);
+            }
         });
 
-        // See AbstractGuildChannelImpl#compareTo for details on how this achieves the canonical order of the client
-        Collections.sort(channels);
+        for (Map.Entry<Category, Set<GuildChannel>> entry : grouped.entrySet())
+        {
+            if (entry.getKey() == null) continue;
+            if (entry.getValue().isEmpty())
+                grouped.get(null).remove(entry.getKey());
+        }
 
-        return Collections.unmodifiableList(channels);
+        return grouped.values().stream().flatMap(Set::stream).sorted().collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -2253,44 +2202,9 @@ public class GuildImpl implements Guild
         return scheduledEventCache;
     }
 
-    public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
+    public SortedChannelCacheViewImpl<GuildChannel> getChannelView()
     {
-        return categoryCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<TextChannel> getTextChannelsView()
-    {
-        return textChannelCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<NewsChannel> getNewsChannelView()
-    {
-        return newsChannelCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<VoiceChannel> getVoiceChannelsView()
-    {
-        return voiceChannelCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<StageChannel> getStageChannelsView()
-    {
-        return stageChannelCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<ThreadChannel> getThreadChannelsView()
-    {
-        return threadChannelCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<ForumChannel> getForumChannelsView()
-    {
-        return forumChannelCache;
-    }
-
-    public SortedSnowflakeCacheViewImpl<MediaChannel> getMediaChannelsView()
-    {
-        return mediaChannelCache;
+        return channelCache;
     }
 
     public SortedSnowflakeCacheViewImpl<Role> getRolesView()

@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,6 +82,22 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         {
             T removed = getMap(type).remove(id);
             return (C) removed;
+        }
+    }
+
+    public <C extends T> C remove(C channel)
+    {
+        return remove(channel.getType(), channel.getIdLong());
+    }
+
+    public <C> void removeIf(Class<C> typeFilter, Predicate<? super C> predicate)
+    {
+        try (UnlockHook hook = writeLock())
+        {
+            for (TLongObjectMap<T> map : caches.values())
+            {
+                map.valueCollection().removeIf(c -> typeFilter.isInstance(c) && predicate.test(typeFilter.cast(c)));
+            }
         }
     }
 

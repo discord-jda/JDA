@@ -1081,15 +1081,15 @@ public class EntityBuilder
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<Category> guildCategoryView = guild.getCategoriesView();
-            ChannelCacheViewImpl<Channel> categoryView = getJDA().getChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
+            ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
-                UnlockHook glock = guildCategoryView.writeLock();
-                UnlockHook jlock = categoryView.writeLock())
+                UnlockHook glock = guildView.writeLock();
+                UnlockHook jlock = globalView.writeLock())
             {
                 channel = new CategoryImpl(id, guild);
-                guildCategoryView.getMap().put(id, channel);
-                playbackCache = categoryView.put(channel) == null;
+                guildView.put(channel);
+                playbackCache = globalView.put(channel) == null;
             }
         }
 
@@ -1118,15 +1118,15 @@ public class EntityBuilder
         {
             if (guildObj == null)
                 guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<TextChannel> guildTextView = guildObj.getTextChannelsView();
-            ChannelCacheViewImpl<Channel> textView = getJDA().getChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildView = guildObj.getChannelView();
+            ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
-                UnlockHook glock = guildTextView.writeLock();
-                UnlockHook jlock = textView.writeLock())
+                    UnlockHook glock = guildView.writeLock();
+                    UnlockHook jlock = globalView.writeLock())
             {
                 channel = new TextChannelImpl(id, guildObj);
-                guildTextView.getMap().put(id, channel);
-                playbackCache = textView.put(channel) == null;
+                guildView.put(channel);
+                playbackCache = globalView.put(channel) == null;
             }
         }
 
@@ -1161,15 +1161,15 @@ public class EntityBuilder
         {
             if (guildObj == null)
                 guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<NewsChannel> guildNewsView = guildObj.getNewsChannelView();
-            ChannelCacheViewImpl<Channel> newsView = getJDA().getChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildView = guildObj.getChannelView();
+            ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
-                    UnlockHook glock = guildNewsView.writeLock();
-                    UnlockHook jlock = newsView.writeLock())
+                    UnlockHook glock = guildView.writeLock();
+                    UnlockHook jlock = globalView.writeLock())
             {
                 channel = new NewsChannelImpl(id, guildObj);
-                guildNewsView.getMap().put(id, channel);
-                playbackCache = newsView.put(channel) == null;
+                guildView.put(channel);
+                playbackCache = globalView.put(channel) == null;
             }
         }
 
@@ -1201,15 +1201,15 @@ public class EntityBuilder
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<VoiceChannel> guildVoiceView = guild.getVoiceChannelsView();
-            ChannelCacheViewImpl<Channel> voiceView = getJDA().getChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
+            ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
-                UnlockHook vlock = guildVoiceView.writeLock();
-                UnlockHook jlock = voiceView.writeLock())
+                    UnlockHook glock = guildView.writeLock();
+                    UnlockHook jlock = globalView.writeLock())
             {
                 channel = new VoiceChannelImpl(id, guild);
-                guildVoiceView.getMap().put(id, channel);
-                playbackCache = voiceView.put(channel) == null;
+                guildView.put(channel);
+                playbackCache = globalView.put(channel) == null;
             }
         }
 
@@ -1245,15 +1245,15 @@ public class EntityBuilder
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<StageChannel> guildStageView = guild.getStageChannelsView();
-            ChannelCacheViewImpl<Channel> stageView = getJDA().getChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
+            ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
-                    UnlockHook vlock = guildStageView.writeLock();
-                    UnlockHook jlock = stageView.writeLock())
+                    UnlockHook glock = guildView.writeLock();
+                    UnlockHook jlock = globalView.writeLock())
             {
                 channel = new StageChannelImpl(id, guild);
-                guildStageView.getMap().put(id, channel);
-                playbackCache = stageView.put(channel) == null;
+                guildView.put(channel);
+                playbackCache = globalView.put(channel) == null;
             }
         }
 
@@ -1302,7 +1302,7 @@ public class EntityBuilder
         ThreadChannelImpl channel = ((ThreadChannelImpl) getJDA().getThreadChannelById(id));
         if (channel == null)
         {
-            SnowflakeCacheViewImpl<ThreadChannel> guildThreadView = guild.getThreadChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildThreadView = guild.getChannelView();
             ChannelCacheViewImpl<Channel> threadView = getJDA().getChannelsView();
             try (
                     UnlockHook vlock = guildThreadView.writeLock();
@@ -1311,7 +1311,7 @@ public class EntityBuilder
                 channel = new ThreadChannelImpl(id, guild, type);
                 if (modifyCache)
                 {
-                    guildThreadView.getMap().put(id, channel);
+                    guildThreadView.put(channel);
                     playbackCache = threadView.put(channel) == null;
                 }
             }
@@ -1390,14 +1390,14 @@ public class EntityBuilder
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<ForumChannel> guildView = guild.getForumChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
-                    UnlockHook vlock = guildView.writeLock();
+                    UnlockHook glock = guildView.writeLock();
                     UnlockHook jlock = globalView.writeLock())
             {
                 channel = new ForumChannelImpl(id, guild);
-                guildView.getMap().put(id, channel);
+                guildView.put(channel);
                 playbackCache = globalView.put(channel) == null;
             }
         }
@@ -1437,21 +1437,20 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        MediaChannelImpl channel = (MediaChannelImpl) getJDA().getMediaChannelsView().get(id);
+        MediaChannelImpl channel = (MediaChannelImpl) getJDA().getChannelsView().getElementById(id);
         if (channel == null)
         {
             if (guild == null)
                 guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-            SnowflakeCacheViewImpl<MediaChannel>
-                    guildView = guild.getMediaChannelsView(),
-                    globalView = getJDA().getMediaChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
+            ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
-                    UnlockHook vlock = guildView.writeLock();
+                    UnlockHook glock = guildView.writeLock();
                     UnlockHook jlock = globalView.writeLock())
             {
                 channel = new MediaChannelImpl(id, guild);
-                guildView.getMap().put(id, channel);
-                playbackCache = globalView.getMap().put(id, channel) == null;
+                guildView.put(channel);
+                playbackCache = globalView.put(channel) == null;
             }
         }
 

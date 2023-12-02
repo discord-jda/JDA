@@ -58,7 +58,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                guild.getTextChannelsView().remove(channel.getIdLong());
+                guild.getChannelView().remove(channel);
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
@@ -74,7 +74,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                guild.getNewsChannelView().remove(channel.getIdLong());
+                guild.getChannelView().remove(channel);
                 getJDA().handleEvent(
                         new ChannelDeleteEvent(
                                 getJDA(), responseNumber,
@@ -98,7 +98,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 //  {
                 //      manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
                 //  }
-                guild.getVoiceChannelsView().remove(channel.getIdLong());
+                guild.getChannelView().remove(channel);
                 getJDA().handleEvent(
                         new ChannelDeleteEvent(
                                 getJDA(), responseNumber,
@@ -114,7 +114,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                guild.getStageChannelsView().remove(channel.getIdLong());
+                guild.getChannelView().remove(channel);
                 getJDA().handleEvent(
                         new ChannelDeleteEvent(
                                 getJDA(), responseNumber,
@@ -132,7 +132,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                guild.getCategoriesView().remove(channelId);
+                guild.getChannelView().remove(category);
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
@@ -148,7 +148,7 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                guild.getForumChannelsView().remove(channel.getIdLong());
+                guild.getChannelView().remove(channel);
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,
@@ -157,14 +157,14 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case MEDIA:
             {
-                MediaChannel channel = getJDA().getMediaChannelsView().remove(channelId);
+                MediaChannel channel = getJDA().getChannelsView().remove(ChannelType.MEDIA, channelId);
                 if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a media channel that is not yet cached. JSON: {}", content);
                     return null;
                 }
 
-                guild.getMediaChannelsView().remove(channel.getIdLong());
+                guild.getChannelView().remove(channel);
                 getJDA().handleEvent(
                     new ChannelDeleteEvent(
                         getJDA(), responseNumber,

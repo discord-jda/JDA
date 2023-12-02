@@ -108,11 +108,4 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
     {
         return new NewsChannelManagerImpl(this);
     }
-
-    // -- Abstract hooks --
-    @Override
-    protected void onPositionChange()
-    {
-        getGuild().getNewsChannelView().clearCachedLists();
-    }
 }

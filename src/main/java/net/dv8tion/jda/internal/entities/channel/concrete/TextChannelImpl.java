@@ -105,11 +105,4 @@ public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<Tex
         this.slowmode = slowmode;
         return this;
     }
-
-    // -- Abstract hooks --
-    @Override
-    protected void onPositionChange()
-    {
-        getGuild().getTextChannelsView().clearCachedLists();
-    }
 }
