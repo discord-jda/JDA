@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.events.channel.forum.update;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 
 import javax.annotation.Nonnull;
@@ -37,7 +37,7 @@ public class ForumTagUpdateNameEvent extends GenericForumTagUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public ForumTagUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull ForumChannel channel, @Nonnull ForumTag tag, @Nonnull String previous)
+    public ForumTagUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull IPostContainer channel, @Nonnull ForumTag tag, @Nonnull String previous)
     {
         super(api, responseNumber, channel, tag, previous, tag.getName(), IDENTIFIER);
     }

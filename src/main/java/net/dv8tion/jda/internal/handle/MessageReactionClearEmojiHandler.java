@@ -69,7 +69,13 @@ public class MessageReactionClearEmojiHandler extends SocketHandler
         DataObject emoji = content.getObject("emoji");
         EmojiUnion reactionEmoji = EntityBuilder.createEmoji(emoji);
 
-        MessageReaction reaction = new MessageReaction(channel, reactionEmoji, messageId, false, 0);
+        // We don't know if it is a normal or super reaction
+        boolean[] self = new boolean[] {
+                false,
+                false
+        };
+
+        MessageReaction reaction = new MessageReaction(api, channel, reactionEmoji, channelId, messageId, self, null);
 
         getJDA().handleEvent(new MessageReactionRemoveEmojiEvent(getJDA(), responseNumber, messageId, channel, reaction));
         return null;

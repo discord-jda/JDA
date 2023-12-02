@@ -56,6 +56,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *
      * @return Immutable list of all ThreadChannel children.
      */
+    @Nonnull
     default List<ThreadChannel> getThreadChannels()
     {
         return Collections.unmodifiableList(

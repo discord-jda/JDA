@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.utils.cache;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
@@ -73,7 +73,7 @@ public enum CacheFlag
      */
     ROLE_TAGS,
     /**
-     * Enables cache for {@link ForumChannel#getAvailableTagCache()} and {@link ThreadChannel#getAppliedTags()}
+     * Enables cache for {@link IPostContainer#getAvailableTagCache()} and {@link ThreadChannel#getAppliedTags()}
      */
     FORUM_TAGS,
     /**

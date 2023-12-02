@@ -16,11 +16,9 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
-import net.dv8tion.jda.api.events.automod.AutoModExecutionEvent;
-import net.dv8tion.jda.api.events.automod.AutoModRuleCreateEvent;
-import net.dv8tion.jda.api.events.automod.AutoModRuleDeleteEvent;
-import net.dv8tion.jda.api.events.automod.AutoModRuleUpdateEvent;
+import net.dv8tion.jda.api.events.automod.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
@@ -48,10 +46,7 @@ import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventCreateEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventDeleteEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventUserAddEvent;
-import net.dv8tion.jda.api.events.guild.scheduledevent.ScheduledEventUserRemoveEvent;
+import net.dv8tion.jda.api.events.guild.scheduledevent.*;
 import net.dv8tion.jda.api.events.guild.scheduledevent.update.*;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
@@ -214,7 +209,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onChannelUpdateSlowmode(@Nonnull ChannelUpdateSlowmodeEvent event) {}
     public void onChannelUpdateDefaultThreadSlowmode(@Nonnull ChannelUpdateDefaultThreadSlowmodeEvent event) {}
     public void onChannelUpdateDefaultReaction(@Nonnull ChannelUpdateDefaultReactionEvent event) {}
-//    public void onChannelUpdateDefaultSortOrder(@Nonnull ChannelUpdateDefaultSortOrderEvent event) {}
+    public void onChannelUpdateDefaultSortOrder(@Nonnull ChannelUpdateDefaultSortOrderEvent event) {}
     public void onChannelUpdateDefaultLayout(@Nonnull ChannelUpdateDefaultLayoutEvent event) {}
     public void onChannelUpdateTopic(@Nonnull ChannelUpdateTopicEvent event) {}
     public void onChannelUpdateType(@Nonnull ChannelUpdateTypeEvent event) {}
@@ -287,6 +282,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onScheduledEventUpdateName(@Nonnull ScheduledEventUpdateNameEvent event) {}
     public void onScheduledEventUpdateStartTime(@Nonnull ScheduledEventUpdateStartTimeEvent event) {}
     public void onScheduledEventUpdateStatus(@Nonnull ScheduledEventUpdateStatusEvent event) {}
+    public void onScheduledEventUpdateImage(@Nonnull ScheduledEventUpdateImageEvent event) {}
 
     public void onScheduledEventCreate(@Nonnull ScheduledEventCreateEvent event) {}
     public void onScheduledEventDelete(@Nonnull ScheduledEventDeleteEvent event) {}
@@ -370,7 +366,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
+    @Deprecated
+    @ReplaceWith("onGenericSession(event)")
+    @ForRemoval(deadline = "5.0.0")
     public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {}
+    public void onGenericSession(@Nonnull GenericSessionEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
@@ -381,6 +381,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
     public void onGenericUserPresence(@Nonnull GenericUserPresenceEvent event) {}
+    public void onGenericUserUpdate(@Nonnull GenericUserUpdateEvent event) {}
     public void onGenericSelfUpdate(@Nonnull GenericSelfUpdateEvent event) {}
     public void onGenericStageInstance(@Nonnull GenericStageInstanceEvent event) {}
     public void onGenericStageInstanceUpdate(@Nonnull GenericStageInstanceUpdateEvent event) {}
@@ -394,6 +395,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildMember(@Nonnull GenericGuildMemberEvent event) {}
     public void onGenericGuildMemberUpdate(@Nonnull GenericGuildMemberUpdateEvent event) {}
     public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
+    public void onGenericAutoModRule(@Nonnull GenericAutoModRuleEvent event) {}
     public void onGenericRole(@Nonnull GenericRoleEvent event) {}
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
     public void onGenericEmoji(@Nonnull GenericEmojiEvent event) {}
@@ -402,6 +404,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
     public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent event) {}
+    public void onGenericScheduledEventGateway(@Nonnull GenericScheduledEventGatewayEvent event) {}
+    public void onGenericScheduledEventUser(@Nonnull GenericScheduledEventUserEvent event) {}
     public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
     public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent event) {}
 

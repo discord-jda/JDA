@@ -328,9 +328,16 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         if (isSet(ATTACHMENTS))
         {
             DataArray attachments = DataArray.empty();
+
+            int fileUploadCount = 0;
+            for (AttachedFile file : files)
+            {
+                attachments.add(file.toAttachmentData(fileUploadCount));
+                if (file instanceof FileUpload)
+                    fileUploadCount++;
+            }
+
             json.put("attachments", attachments);
-            for (int i = 0; i < files.size(); i++)
-                attachments.add(files.get(i).toAttachmentData(i));
         }
 
         return json;

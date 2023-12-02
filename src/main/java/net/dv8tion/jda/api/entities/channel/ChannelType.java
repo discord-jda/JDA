@@ -40,7 +40,7 @@ public enum ChannelType
     /**
      * A Group. (unused)
      */
-    GROUP(PrivateChannel.class, 3, -1),
+    GROUP(GroupChannel.class, 3, -1),
     /**
      * A {@link Category Category}, Guild-Only.
      */
@@ -64,8 +64,14 @@ public enum ChannelType
     FORUM(ForumChannel.class, 15, 0, true),
 
     /**
-     * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
-     * channel type and JDA had yet to implement support for it.
+     * A {@link MediaChannel}, Guild-Only.
+     */
+    MEDIA(MediaChannel.class, 16, 0, true),
+
+    /**
+     * Unknown Discord channel type.
+     *
+     * <p>This might be used in the case when a channel is not available in cache, like when sending webhook messages.
      */
     UNKNOWN(Channel.class, -1, -2);
 
@@ -87,6 +93,11 @@ public enum ChannelType
         this.isGuild = isGuild;
     }
 
+    /**
+     * The interface this channel type corresponds to.
+     *
+     * @return This channel type's interface
+     */
     @Nonnull
     public Class<? extends Channel> getInterface()
     {

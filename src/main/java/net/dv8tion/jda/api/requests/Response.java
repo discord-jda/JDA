@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.IOFunction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
@@ -214,6 +215,7 @@ public class Response implements Closeable
             reader.mark(1024);
             T t = parser.apply(reader);
             this.object = t;
+            RestActionImpl.LOG.trace("Parsed response body for response on url {}\n{}", rawResponse.request().url(), this.object);
             return Optional.ofNullable(t);
         }
         catch (final Exception e)

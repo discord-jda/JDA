@@ -47,14 +47,14 @@ public class ReactionPaginationActionImpl
      */
     public ReactionPaginationActionImpl(MessageReaction reaction)
     {
-        super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannel().getId(), reaction.getMessageId(), getCode(reaction)), 1, 100, 100);
+        super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannelId(), reaction.getMessageId(), getCode(reaction)), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = reaction;
     }
 
     public ReactionPaginationActionImpl(Message message, String code)
     {
-        super(message.getJDA(), Route.Messages.GET_REACTION_USERS.compile(message.getChannel().getId(), message.getId(), code), 1, 100, 100);
+        super(message.getJDA(), Route.Messages.GET_REACTION_USERS.compile(message.getChannelId(), message.getId(), code), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }

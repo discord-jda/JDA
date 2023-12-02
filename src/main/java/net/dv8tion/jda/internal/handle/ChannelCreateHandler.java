@@ -68,6 +68,7 @@ public class ChannelCreateHandler extends SocketHandler
             case STAGE: return builder.createStageChannel(content, guildId);
             case CATEGORY: return builder.createCategory(content, guildId);
             case FORUM: return builder.createForumChannel(content, guildId);
+            case MEDIA: return builder.createMediaChannel(content, guildId);
 
             default:
                 return null;

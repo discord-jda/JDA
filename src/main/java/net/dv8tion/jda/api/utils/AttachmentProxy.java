@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.utils;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -66,7 +67,7 @@ public class AttachmentProxy extends FileProxy
         Checks.positive(width, "Image width");
         Checks.positive(height, "Image height");
 
-        return getUrl() + "?width=" + width + "&height=" + height;
+        return IOUtil.addQuery(getUrl(), "width", width, "height", height);
     }
 
     /**

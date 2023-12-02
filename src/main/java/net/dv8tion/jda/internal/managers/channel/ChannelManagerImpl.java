@@ -26,7 +26,9 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.forums.BaseForumTag;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
@@ -45,6 +47,7 @@ import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionCont
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.managers.ManagerBase;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
+import net.dv8tion.jda.internal.utils.ChannelUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
@@ -60,11 +63,6 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked") //We do a lot of (M) and (T) casting that we know is correct but the compiler warns about.
 public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager<T, M>> extends ManagerBase<M> implements ChannelManager<T, M>
 {
-    private static final EnumSet<ChannelType> SLOWMODE_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM,
-                                                                              ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
-    private static final EnumSet<ChannelType> NSFW_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.VOICE, ChannelType.FORUM, ChannelType.NEWS);
-    private static final EnumSet<ChannelType> TOPIC_SUPPORTED = EnumSet.of(ChannelType.TEXT, ChannelType.FORUM, ChannelType.NEWS);
-
     protected T channel;
 
     protected final EnumSet<ChannelFlag> flags;
@@ -73,6 +71,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected List<String> appliedTags;
     protected Emoji defaultReactionEmoji;
     protected int defaultLayout;
+    protected int defaultSortOrder;
     protected ChannelType type;
     protected String name;
     protected String parent;
@@ -84,6 +83,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     protected boolean invitable;
     protected int position;
     protected int slowmode;
+    protected int defaultThreadSlowmode;
     protected int userlimit;
     protected int bitrate;
 
@@ -159,6 +159,14 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
                 this.flags.add(ChannelFlag.REQUIRE_TAG);
             else
                 this.flags.remove(ChannelFlag.REQUIRE_TAG);
+        }
+
+        if ((fields & HIDE_MEDIA_DOWNLOAD_OPTIONS) == HIDE_MEDIA_DOWNLOAD_OPTIONS)
+        {
+            if (channel.getFlags().contains(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS))
+                this.flags.add(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
+            else
+                this.flags.remove(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
         }
 
         return (M) this;
@@ -451,11 +459,11 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setTopic(String topic)
     {
-        Checks.checkSupportedChannelTypes(TOPIC_SUPPORTED, type, "topic");
+        Checks.checkSupportedChannelTypes(ChannelUtil.TOPIC_SUPPORTED, type, "topic");
         if (topic != null)
         {
-            if (type == ChannelType.FORUM)
-                Checks.notLonger(topic, ForumChannel.MAX_FORUM_TOPIC_LENGTH, "Topic");
+            if (channel instanceof IPostContainer)
+                Checks.notLonger(topic, IPostContainer.MAX_POST_CONTAINER_TOPIC_LENGTH, "Topic");
             else
                 Checks.notLonger(topic, StandardGuildMessageChannel.MAX_TOPIC_LENGTH, "Topic");
         }
@@ -468,7 +476,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setNSFW(boolean nsfw)
     {
-        Checks.checkSupportedChannelTypes(NSFW_SUPPORTED, type, "NSFW (age-restriction)");
+        Checks.checkSupportedChannelTypes(ChannelUtil.NSFW_SUPPORTED, type, "NSFW (age-restriction)");
         this.nsfw = nsfw;
         set |= NSFW;
         return (M) this;
@@ -478,10 +486,21 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setSlowmode(int slowmode)
     {
-        Checks.checkSupportedChannelTypes(SLOWMODE_SUPPORTED, type, "slowmode");
+        Checks.checkSupportedChannelTypes(ChannelUtil.SLOWMODE_SUPPORTED, type, "slowmode");
         Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;
+        return (M) this;
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public M setDefaultThreadSlowmode(int slowmode)
+    {
+        Checks.check(channel instanceof IThreadContainer, "Cannot set default thread slowmode on channels of type %s!", channel.getType());
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
+        this.defaultThreadSlowmode = slowmode;
+        set |= DEFAULT_THREAD_SLOWMODE;
         return (M) this;
     }
 
@@ -578,6 +597,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setPinned(boolean pinned)
     {
+        if (!type.isThread())
+            throw new IllegalStateException("Can only pin threads.");
         if (pinned)
             flags.add(ChannelFlag.PINNED);
         else
@@ -588,6 +609,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setTagRequired(boolean requireTag)
     {
+        if (!(channel instanceof IPostContainer))
+            throw new IllegalStateException("Can only set tag required flag on forum/media channels.");
         if (requireTag)
             flags.add(ChannelFlag.REQUIRE_TAG);
         else
@@ -596,10 +619,22 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         return (M) this;
     }
 
+    public M setHideMediaDownloadOption(boolean hideOption)
+    {
+        if (!(channel instanceof MediaChannel))
+            throw new IllegalStateException("Can only set hide media download flag on media channels.");
+        if (hideOption)
+            flags.add(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
+        else
+            flags.remove(ChannelFlag.HIDE_MEDIA_DOWNLOAD_OPTIONS);
+        set |= HIDE_MEDIA_DOWNLOAD_OPTIONS;
+        return (M) this;
+    }
+
     public M setAvailableTags(List<? extends BaseForumTag> tags)
     {
-        if (type != ChannelType.FORUM)
-            throw new IllegalStateException("Can only set available tags on forum channels.");
+        if (!(channel instanceof IPostContainer))
+            throw new IllegalStateException("Can only set available tags on forum/media channels.");
         Checks.noneNull(tags, "Available Tags");
         this.availableTags = new ArrayList<>(tags);
         set |= AVAILABLE_TAGS;
@@ -611,13 +646,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (type != ChannelType.GUILD_PUBLIC_THREAD)
             throw new IllegalStateException("Can only set applied tags on forum post thread channels.");
         Checks.noneNull(tags, "Applied Tags");
-        Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Cannot apply more than %d tags to a post thread!", ForumChannel.MAX_POST_TAGS);
+        Checks.check(tags.size() <= IPostContainer.MAX_POST_TAGS, "Cannot apply more than %d tags to a post thread!", ForumChannel.MAX_POST_TAGS);
         ThreadChannel thread = (ThreadChannel) getChannel();
         IThreadContainerUnion parentChannel = thread.getParentChannel();
-        if (!(parentChannel instanceof ForumChannel))
-            throw new IllegalStateException("Cannot apply tags to threads outside of forum channels.");
+        if (!(parentChannel instanceof IPostContainer))
+            throw new IllegalStateException("Cannot apply tags to threads outside of forum/media channels.");
         if (tags.isEmpty() && parentChannel.asForumChannel().isTagRequired())
-            throw new IllegalArgumentException("Cannot remove all tags from a forum post which requires at least one tag! See ForumChannel#isRequireTag()");
+            throw new IllegalArgumentException("Cannot remove all tags from a forum post which requires at least one tag! See IPostContainer#isRequireTag()");
         this.appliedTags = tags.stream().map(ISnowflake::getId).collect(Collectors.toList());
         set |= APPLIED_TAGS;
         return (M) this;
@@ -625,8 +660,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public M setDefaultReaction(Emoji emoji)
     {
-        if (type != ChannelType.FORUM)
-            throw new IllegalStateException("Can only set default reaction on forum channels.");
+        if (!(channel instanceof IPostContainer))
+            throw new IllegalStateException("Can only set default reaction on forum/media channels.");
         this.defaultReactionEmoji = emoji;
         set |= DEFAULT_REACTION;
         return (M) this;
@@ -641,6 +676,18 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             throw new IllegalStateException("Layout type cannot be UNKNOWN.");
         this.defaultLayout = layout.getKey();
         set |= DEFAULT_LAYOUT;
+        return (M) this;
+    }
+
+    public M setDefaultSortOrder(IPostContainer.SortOrder sortOrder)
+    {
+        if (!(channel instanceof IPostContainer))
+            throw new IllegalStateException("Can only set default layout on forum/media channels.");
+        Checks.notNull(sortOrder, "SortOrder");
+        if (sortOrder == IPostContainer.SortOrder.UNKNOWN)
+            throw new IllegalStateException("SortOrder type cannot be UNKNOWN.");
+        this.defaultSortOrder = sortOrder.getKey();
+        set |= DEFAULT_SORT_ORDER;
         return (M) this;
     }
 
@@ -660,6 +707,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("nsfw", nsfw);
         if (shouldUpdate(SLOWMODE))
             frame.put("rate_limit_per_user", slowmode);
+        if (shouldUpdate(DEFAULT_THREAD_SLOWMODE))
+            frame.put("default_thread_rate_limit_per_user", defaultThreadSlowmode);
         if (shouldUpdate(USERLIMIT))
             frame.put("user_limit", userlimit);
         if (shouldUpdate(BITRATE))
@@ -680,7 +729,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             frame.put("available_tags", DataArray.fromCollection(availableTags));
         if (shouldUpdate(APPLIED_TAGS))
             frame.put("applied_tags", DataArray.fromCollection(appliedTags));
-        if (shouldUpdate(PINNED | REQUIRE_TAG))
+        if (shouldUpdate(PINNED | REQUIRE_TAG | HIDE_MEDIA_DOWNLOAD_OPTIONS))
             frame.put("flags", ChannelFlag.getRaw(flags));
         if (shouldUpdate(DEFAULT_REACTION))
         {
@@ -693,6 +742,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         }
         if (shouldUpdate(DEFAULT_LAYOUT))
             frame.put("default_forum_layout", defaultLayout);
+        if (shouldUpdate(DEFAULT_SORT_ORDER))
+            frame.put("default_sort_order", defaultSortOrder);
 
         withLock(lock, (lock) ->
         {

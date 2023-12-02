@@ -568,8 +568,8 @@ public class DataArray implements Iterable<Object>, SerializableArray
         }
         catch (DateTimeParseException e)
         {
-            String reason = "Cannot parse value for %s into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestamp";
-            throw new ParsingException(String.format(reason, e.getParsedString()));
+            String reason = "Cannot parse value for index %d into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestamp";
+            throw new ParsingException(String.format(reason, index, e.getParsedString()));
         }
         return value == null ? defaultValue : value;
     }

@@ -292,6 +292,15 @@ public class Requester
             body = EMPTY_BODY;
 
         builder.method(method, body);
+
+        if (apiRequest.getRawBody() != null)
+        {
+            LOG.trace("Sending request on route {}/{} with body\n{}",
+                method,
+                apiRequest.getRoute().getCompiledRoute(),
+                apiRequest.getRawBody()
+            );
+        }
     }
 
     private void applyHeaders(Request<?> apiRequest, okhttp3.Request.Builder builder)
@@ -306,7 +315,7 @@ public class Requester
         if (apiRequest.getHeaders() != null)
         {
             for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
-                builder.addHeader(header.getKey(), header.getValue());
+                builder.header(header.getKey(), header.getValue());
         }
     }
 

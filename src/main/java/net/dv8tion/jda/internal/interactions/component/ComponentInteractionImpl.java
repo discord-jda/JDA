@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.internal.interactions.component;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -24,6 +26,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
@@ -46,12 +49,23 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
         DataObject messageJson = data.getObject("message");
         messageId = messageJson.getUnsignedLong("id");
 
-        message = messageJson.isNull("type")
-                ? null
-                : jda.getEntityBuilder().createMessageWithChannel(messageJson, getMessageChannel(), false);
+        if (messageJson.isNull("type"))
+        {
+            message = null;
+        }
+        else
+        {
+            Guild guild = getGuild();
+            MessageChannel channel = getChannel();
+            if (channel != null)
+                message = jda.getEntityBuilder().createMessageWithChannel(messageJson, channel, false);
+            else
+                message = jda.getEntityBuilder().createMessageWithLookup(messageJson, guild, false);
+            // We assume that component interactions come from messages the bot sent
+            ((ReceivedMessage) message).withHook(getHook());
+        }
     }
 
-    @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
     public MessageChannelUnion getChannel()

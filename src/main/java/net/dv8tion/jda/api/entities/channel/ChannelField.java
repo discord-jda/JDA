@@ -41,9 +41,6 @@ import javax.annotation.Nullable;
  */
 public enum ChannelField
 {
-    //TODO-v5: Should these be the REST JSON names (camelCase), the AuditLogKey names (snake_case), or JDA's generic naming (Event.IDENTIFIER)
-    //TODO-v5: Current using JDA's generic namings
-
     //Generic
 
     /**
@@ -76,7 +73,6 @@ public enum ChannelField
      */
     PARENT("parent", AuditLogKey.CHANNEL_PARENT),
 
-    //TODO-v5 if the calculation of IPositionableChannel#getPosition() changes, this may need modification too.
     /**
      * The position of this channel relative to other channels in the guild.
      *
@@ -162,7 +158,7 @@ public enum ChannelField
      * @see AudioChannel#getRegion()
      * @see net.dv8tion.jda.api.Region
      */
-    REGION("region", null), //TODO-v5: JDA needs to add support for channel-specific audit log tracking
+    REGION("region", null),
 
     /**
      * The maximum user count of this channel.
@@ -255,14 +251,14 @@ public enum ChannelField
      */
     DEFAULT_FORUM_LAYOUT("default_forum_layout", AuditLogKey.DEFAULT_FORUM_LAYOUT),
 
-//    /**
-//     * The default sort order of a forum channel.
-//     *
-//     * <p>Limited to {@link ForumChannel Forum Channels}.
-//     *
-//     * @see ForumChannel#getDefaultSortOrder()
-//     */
-//    DEFAULT_SORT_ORDER("default_sort_order", AuditLogKey.CHANNEL_DEFAULT_SORT_ORDER)
+    /**
+     * The default sort order of a forum channel.
+     *
+     * <p>Limited to {@link ForumChannel Forum Channels} and {@link MediaChannel Media Channels}.
+     *
+     * @see ForumChannel#getDefaultSortOrder()
+     */
+    DEFAULT_SORT_ORDER("default_sort_order", AuditLogKey.CHANNEL_DEFAULT_SORT_ORDER)
     ;
 
     private final String fieldName;

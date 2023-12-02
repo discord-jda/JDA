@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.utils;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
@@ -47,15 +46,6 @@ public final class Helpers
     public static <T> Consumer<T> emptyConsumer()
     {
         return (Consumer<T>) EMPTY_CONSUMER;
-    }
-
-    public static <T extends Channel> T safeChannelCast(Object instance, Class<T> toObjectClass)
-    {
-        if (toObjectClass.isInstance(instance))
-            return toObjectClass.cast(instance);
-
-        String cleanedClassName = instance.getClass().getSimpleName().replace("Impl", "");
-        throw new IllegalStateException(Helpers.format("Cannot convert channel of type %s to %s!", cleanedClassName, toObjectClass.getSimpleName()));
     }
 
     public static OffsetDateTime toOffset(long instant)

@@ -28,11 +28,11 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -63,6 +63,9 @@ public interface InteractionHook extends WebhookClient<Message>
 {
     /**
      * The interaction attached to this hook.
+     * 
+     * @throws IllegalStateException
+     *         If this instance was created through {@link #from(JDA, String)}
      *
      * @return The {@link Interaction}
      */
@@ -78,10 +81,7 @@ public interface InteractionHook extends WebhookClient<Message>
      * @see    System#currentTimeMillis()
      * @see    #isExpired()
      */
-    default long getExpirationTimestamp()
-    {
-        return getInteraction().getTimeCreated().plus(15, ChronoUnit.MINUTES).toEpochSecond() * 1000;
-    }
+    long getExpirationTimestamp();
 
     /**
      * Whether this interaction has expired.
@@ -133,7 +133,10 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Message> retrieveOriginal();
+    default RestAction<Message> retrieveOriginal()
+    {
+        return retrieveMessageById("@original");
+    }
 
     /**
      * Edit the source message sent by this interaction.
@@ -375,5 +378,30 @@ public interface InteractionHook extends WebhookClient<Message>
     default RestAction<Void> deleteOriginal()
     {
         return deleteMessageById("@original");
+    }
+
+    /**
+     * Creates an instance of {@link InteractionHook} capable of executing webhook requests.
+     * <p>Messages created by this client may not have a fully accessible channel or guild available, and {@link #getInteraction()} throws.
+     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#UNKNOWN UNKNOWN},
+     * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
+     *
+     * @param  jda
+     *         The JDA instance, used to handle rate-limits
+     * @param  token
+     *         The interaction token for the webhook
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the token is blank
+     *
+     * @return The {@link InteractionHook} instance
+     */
+    @Nonnull
+    static InteractionHook from(@Nonnull JDA jda, @Nonnull String token)
+    {
+        Checks.notNull(jda, "JDA");
+        Checks.notBlank(token, "Token");
+
+        return new InteractionHookImpl(jda, token);
     }
 }

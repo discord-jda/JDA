@@ -90,8 +90,6 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
     @Nonnull
     NewsChannel asNewsChannel();
 
-    //TODO: add asForumChannel() (I think ForumChannels can be the default?)
-
     /**
      * Casts this union to a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}.
      * This method exists for developer discoverability.
@@ -110,6 +108,7 @@ public interface DefaultGuildChannelUnion extends StandardGuildChannel
      *
      * @return The channel as a {@link net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer}
      */
+    @Nonnull
     IThreadContainer asThreadContainer();
 
     /**

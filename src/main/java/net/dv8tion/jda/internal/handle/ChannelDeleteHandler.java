@@ -155,6 +155,22 @@ public class ChannelDeleteHandler extends SocketHandler
                         channel));
                 break;
             }
+            case MEDIA:
+            {
+                MediaChannel channel = getJDA().getMediaChannelsView().remove(channelId);
+                if (channel == null || guild == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a media channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getMediaChannelsView().remove(channel.getIdLong());
+                getJDA().handleEvent(
+                    new ChannelDeleteEvent(
+                        getJDA(), responseNumber,
+                        channel));
+                break;
+            }
             case PRIVATE:
             {
                 PrivateChannel channel = getJDA().getChannelsView().remove(ChannelType.PRIVATE, channelId);

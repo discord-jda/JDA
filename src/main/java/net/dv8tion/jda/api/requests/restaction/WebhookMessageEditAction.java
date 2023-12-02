@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
@@ -29,7 +28,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
  * @see   net.dv8tion.jda.api.interactions.InteractionHook#editOriginal(String)
  * @see   net.dv8tion.jda.api.entities.WebhookClient#editMessageById(long, String)
  */
-// TODO: WebhookMessage type (no channel/guild attached)
-public interface WebhookMessageEditAction<T> extends MessageEditRequest<WebhookMessageEditAction<T>>, FluentRestAction<T, WebhookMessageEditAction<T>>
+public interface WebhookMessageEditAction<T> extends MessageEditRequest<WebhookMessageEditAction<T>>, AbstractWebhookMessageAction<T, WebhookMessageEditAction<T>>
 {
 }

@@ -27,12 +27,10 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
 
-import javax.annotation.Nonnull;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 public class WebhookMessageEditActionImpl<T>
-    extends TriggerRestAction<T>
+    extends AbstractWebhookMessageActionImpl<T, WebhookMessageEditActionImpl<T>>
     implements WebhookMessageEditAction<T>, MessageEditBuilderMixin<WebhookMessageEditAction<T>>
 {
     private final Function<DataObject, T> transformer;
@@ -55,8 +53,18 @@ public class WebhookMessageEditActionImpl<T>
     {
         try (MessageEditData data = builder.build())
         {
-            return getMultipartBody(data.getFiles(), data.toData());
+            DataObject payload = data.toData();
+            return getMultipartBody(data.getFiles(), payload);
         }
+    }
+
+    @Override
+    protected Route.CompiledRoute finalizeRoute()
+    {
+        Route.CompiledRoute route = super.finalizeRoute();
+        if (threadId != null)
+            route = route.withQueryParams("thread_id", threadId);
+        return route;
     }
 
     @Override
@@ -64,19 +72,5 @@ public class WebhookMessageEditActionImpl<T>
     {
         T message = transformer.apply(response.getObject());
         request.onSuccess(message);
-    }
-
-    @Nonnull
-    @Override
-    public WebhookMessageEditAction<T> setCheck(BooleanSupplier checks)
-    {
-        return (WebhookMessageEditAction<T>) super.setCheck(checks);
-    }
-
-    @Nonnull
-    @Override
-    public WebhookMessageEditAction<T> deadline(long timestamp)
-    {
-        return (WebhookMessageEditAction<T>) super.deadline(timestamp);
     }
 }
