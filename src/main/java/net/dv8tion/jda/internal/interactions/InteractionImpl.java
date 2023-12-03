@@ -109,7 +109,7 @@ public class InteractionImpl implements Interaction
             this.user = user;
         }
 
-        this.entitlements = data.getArray("entitlements")
+        this.entitlements = data.optArray("entitlements").orElseGet(DataArray::empty)
                 .stream(DataArray::getObject)
                 .map(jda.getEntityBuilder()::createEntitlement)
                 .collect(Collectors.toList());
@@ -191,6 +191,7 @@ public class InteractionImpl implements Interaction
     {
         return member;
     }
+
     @Nonnull
     @Override
     public List<Entitlement> getEntitlements()
