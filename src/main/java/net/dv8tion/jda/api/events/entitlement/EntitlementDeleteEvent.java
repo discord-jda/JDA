@@ -28,11 +28,9 @@ import javax.annotation.Nonnull;
  *     <li>Discord removes an entitlement from a user via internal tooling</li>
  * </ul>
  * <p><b>Notice</b><br>
- * Entitlements are not deleted when they expire.
- * <br><br>
- * The ending date is updated for active subscriptions at the end of a billing period, to indicate a renewal.
- * When a subscription is cancelled, the ending date will not be updated again as it is not renewed for the next billing period.
- * Cancellation does not cause an immediate event and cancelled subscriptions do not delete an existing entitlement, since it is still active for the current billing period.
+ * The {@link Entitlement#getTimeEnding() timeEnding} is updated for active subscriptions at the end of every billing period to
+ * indicate renewal. When an {@link Entitlement Entitlement} has not been renewed, Discord will indicate this by not emitting
+ * an {@link EntitlementUpdateEvent} with the new {@link Entitlement#getTimeEnding() timeEnding} date
  *
  * @see #getEntitlement()
  * @see EntitlementUpdateEvent
