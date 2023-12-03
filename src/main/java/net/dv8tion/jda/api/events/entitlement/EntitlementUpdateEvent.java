@@ -22,12 +22,13 @@ import net.dv8tion.jda.api.entities.Entitlement;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates a user's subscription has renewed for the next billing period.
- * The {@link Entitlement#getEndsAt() endsAt} field will have an updated value with the new expiration date.
+ * Indicates an {@link Entitlement Entitlement} has renewed for the next billing period.
+ * The {@link Entitlement#getTimeEnding() timeEnding} will have an updated value with the new expiration date.
  *
  * <p><b>Notice</b><br>
- * If a user's subscription is cancelled, you will not receive an {@link EntitlementDeleteEvent EntitlementDeleteEvent}.
- * <br>Instead, you will simply not receive an {@link EntitlementUpdateEvent EntitlementUpdateEvent} with a new {@link Entitlement#getEndsAt() endsAt} date at the end of the billing period.
+ * The {@link Entitlement#getTimeEnding() timeEnding} is updated for active subscriptions at the end of every billing period to
+ * indicate renewal. When an {@link Entitlement Entitlement} has not been renewed, Discord will indicate this by not emitting
+ * an {@link EntitlementUpdateEvent} with the new {@link Entitlement#getTimeEnding() timeEnding} date
  *
  * @see #getEntitlement()
  */

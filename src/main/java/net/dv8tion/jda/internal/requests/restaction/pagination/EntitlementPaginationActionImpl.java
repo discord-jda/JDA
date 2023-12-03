@@ -29,9 +29,9 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,19 +40,22 @@ public class EntitlementPaginationActionImpl
     extends PaginationActionImpl<Entitlement, EntitlementPaginationAction>
     implements EntitlementPaginationAction
 {
-    protected String[] skuIds;
-    protected Long guildId;
-    protected Long userId;
+    protected List<String> skuIds;
+    protected long guildId;
+    protected long userId;
     protected boolean excludeEnded;
 
     public EntitlementPaginationActionImpl(JDA api)
     {
         super(api, Route.Applications.GET_ENTITLEMENTS.compile(api.getSelfUser().getApplicationId()), 1, 100, 100);
+        this.skuIds = new ArrayList<>();
+        this.guildId = 0;
+        this.userId = 0;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public EntitlementPaginationAction order(@NotNull PaginationAction.PaginationOrder order)
+    public EntitlementPaginationAction order(@Nonnull PaginationAction.PaginationOrder order)
     {
         if (order == PaginationOrder.BACKWARD && lastKey == 0)
             lastKey = Long.MAX_VALUE;
@@ -61,40 +64,50 @@ public class EntitlementPaginationActionImpl
         return super.order(order);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EntitlementPaginationAction user(@Nullable UserSnowflake user)
     {
         if (user == null)
-            userId = null;
+            userId = 0;
         else
             userId = user.getIdLong();
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public EntitlementPaginationAction skuIds(@Nullable String... skuIds)
+    public EntitlementPaginationAction skuIds(long... skuIds)
     {
-        if (skuIds == null)
-            this.skuIds = null;
-        else
-        {
-            Checks.noneNull(skuIds, "skuIds");
-            this.skuIds = skuIds;
-        }
+        this.skuIds.clear();
+        for (long skuId : skuIds)
+            this.skuIds.add(Long.toUnsignedString(skuId));
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    public EntitlementPaginationAction guild(@Nullable Long guildId)
+    public EntitlementPaginationAction skuIds(@Nonnull String... skuIds)
+    {
+        this.skuIds.clear();
+
+        Checks.noneNull(skuIds, "skuIds");
+        for (String skuId : skuIds)
+            Checks.isSnowflake(skuId, "skuId");
+
+        Collections.addAll(this.skuIds, skuIds);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public EntitlementPaginationAction guild(long guildId)
     {
         this.guildId = guildId;
         return this;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EntitlementPaginationAction excludeEnded(boolean excludeEnded)
     {
@@ -107,14 +120,14 @@ public class EntitlementPaginationActionImpl
     {
         Route.CompiledRoute route = super.finalizeRoute();
 
-        if (userId != null)
-            route = route.withQueryParams("user_id", String.valueOf(userId));
+        if (userId != 0)
+            route = route.withQueryParams("user_id", Long.toUnsignedString(userId));
 
-        if (skuIds != null)
+        if (!skuIds.isEmpty())
             route = route.withQueryParams("sku_ids", String.join(",", skuIds));
 
-        if (guildId != null)
-            route = route.withQueryParams("guild_id", String.valueOf(guildId));
+        if (guildId != 0)
+            route = route.withQueryParams("guild_id", Long.toUnsignedString(guildId));
 
         if (excludeEnded)
             route = route.withQueryParams("exclude_ended", String.valueOf(true));

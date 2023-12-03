@@ -27,14 +27,14 @@ public class EntitlementImpl implements Entitlement
     private long id;
     private long skuId;
     private long applicationId;
-    private Long userId;
-    private Long guildId;
+    private long userId;
+    private long guildId;
     private EntitlementType type;
     private boolean deleted;
     private OffsetDateTime startsAt;
     private OffsetDateTime endsAt;
 
-    public EntitlementImpl(long id, long skuId, long applicationId, Long userId, Long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
+    public EntitlementImpl(long id, long skuId, long applicationId, long userId, long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
     {
         this.id = id;
         this.skuId = skuId;
@@ -67,14 +67,14 @@ public class EntitlementImpl implements Entitlement
 
     @Nullable
     @Override
-    public Long getUserIdLong()
+    public long getUserIdLong()
     {
         return userId;
     }
 
     @Nullable
     @Override
-    public Long getGuildIdLong()
+    public long getGuildIdLong()
     {
         return guildId;
     }
@@ -94,14 +94,14 @@ public class EntitlementImpl implements Entitlement
 
     @Nullable
     @Override
-    public OffsetDateTime getStartsAt()
+    public OffsetDateTime getTimeStarting()
     {
         return startsAt;
     }
 
     @Nullable
     @Override
-    public OffsetDateTime getEndsAt()
+    public OffsetDateTime getTimeEnding()
     {
         return endsAt;
     }

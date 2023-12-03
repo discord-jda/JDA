@@ -3,14 +3,13 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the application entitlements endpoint.
- * <br>
+ *
  * <p><b>Limits</b><br>
  * Minimum - 1<br>
  * Maximum - 100
@@ -40,35 +39,45 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
-    @NotNull
+    @Nonnull
     EntitlementPaginationAction user(@Nullable UserSnowflake user);
 
     /**
      * Filters {@link Entitlement Entitlement}s by their SKU id
      *
      * @param skuIds
-     *        The SKU ids to filter by or {@code null} to remove SKU filtering
+     *        The SKU ids to filter by
      *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
     @Nonnull
-    EntitlementPaginationAction skuIds(@Nullable String... skuIds);
+    EntitlementPaginationAction skuIds(long... skuIds);
+
+    /**
+     * Filters {@link Entitlement Entitlement}s by their SKU id
+     *
+     * @param skuIds
+     *        The SKU ids to filter by
+     *
+     * @return The current EntitlementPaginationAction for chaining convenience
+     */
+    @Nonnull
+    EntitlementPaginationAction skuIds(@Nonnull String... skuIds);
 
     /**
      * Filters {@link Entitlement Entitlement} by a guild id
      *
      * @param guildId
-     *        The guild id used to filter or {@code null} to remove guild filtering
+     *        The guild id to filter by
      *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
     @Nonnull
-    EntitlementPaginationAction guild(@Nullable Long guildId);
+    EntitlementPaginationAction guild(long guildId);
 
     /**
      * Whether to exclude subscriptions which have gone past their end date.
-     *
-     * Test entitlements which are created through the API do not have an end date.
+     * <p>Test entitlements which are created through the API do not have an end date.
      *
      * @param excludeEnded
      *        Whether to exclude ended subscriptions from returned {@link Entitlement Entitlement}s

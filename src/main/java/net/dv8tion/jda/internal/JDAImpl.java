@@ -84,7 +84,6 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -1144,7 +1143,7 @@ public class JDAImpl implements JDA
         });
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EntitlementPaginationAction retrieveEntitlements()
     {

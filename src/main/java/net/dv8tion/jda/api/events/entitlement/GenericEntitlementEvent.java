@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.Event;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that an {@link Entitlement Entitlement} was either created, updated or deleted
+ * Indicates that an {@link Entitlement Entitlement} was either created, updated, or deleted
  *
  * @see EntitlementCreateEvent
  * @see EntitlementUpdateEvent
@@ -33,7 +33,7 @@ public abstract class GenericEntitlementEvent extends Event
 {
     protected final Entitlement entitlement;
 
-    GenericEntitlementEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
+    protected GenericEntitlementEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement) {
         super(api, responseNumber);
         this.entitlement = entitlement;
     }
