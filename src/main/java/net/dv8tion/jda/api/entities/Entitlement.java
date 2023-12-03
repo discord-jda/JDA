@@ -73,10 +73,9 @@ public interface Entitlement extends ISnowflake
     /**
      * The id of the user that purchased the {@link Entitlement Entitlement}
      *
-     * @return The id of the user that purchased the {@link Entitlement Entitlement}
+     * @return The id of the user that purchased the {@link Entitlement Entitlement} or 0 if this is not a user subscription
      */
-    @Nullable
-    Long getUserIdLong();
+    long getUserIdLong();
 
     /**
      * The id of the user that purchased the {@link Entitlement Entitlement}
@@ -86,7 +85,7 @@ public interface Entitlement extends ISnowflake
     @Nullable
     default String getUserId()
     {
-        if (getUserIdLong() == null)
+        if (getUserIdLong() == 0)
             return null;
 
         return Long.toUnsignedString(getUserIdLong());
@@ -95,22 +94,19 @@ public interface Entitlement extends ISnowflake
     /**
      * The guild id that is granted access to the {@link Entitlement Entitlement}'s SKU
      *
-     * @return The id of the guild that is granted access to the {@link Entitlement Entitlement}'s SKU,
-     * or {@code null} if this entitlement is related to a subscription of type "User Subscription"
+     * @return The id of the guild that purchased the {@link Entitlement Entitlement} or 0 if this is not a guild subscription
      */
-    @Nullable
-    Long getGuildIdLong();
+    long getGuildIdLong();
 
     /**
      * The guild id that is granted access to the {@link Entitlement Entitlement}'s SKU
      *
-     * @return The id of the guild that is granted access to the {@link Entitlement Entitlement}'s SKU,
-     * or {@code null} if this entitlement is related to a subscription of type "User Subscription"
+     * @return The id of the guild that purchased the {@link Entitlement Entitlement} or 0 if this is not a guild subscription
      */
     @Nullable
     default String getGuildId()
     {
-        if (getGuildIdLong() == null)
+        if (getGuildIdLong() == 0)
             return null;
 
         return Long.toUnsignedString(getGuildIdLong());
