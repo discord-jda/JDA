@@ -769,6 +769,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SortedChannelCacheViewImpl<GuildChannel> getGuildChannelCache()
+    {
+        return channelCache;
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<Role> getRoleCache()
     {
         return roleCache;

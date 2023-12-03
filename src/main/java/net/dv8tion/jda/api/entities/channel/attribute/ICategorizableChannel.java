@@ -31,11 +31,23 @@ import javax.annotation.Nullable;
  * @see Category
  * @see net.dv8tion.jda.api.entities.Guild#getCategories()
  */
-public interface ICategorizableChannel extends GuildChannel, IPermissionContainer
+public interface ICategorizableChannel extends GuildChannel, IPermissionContainer, IPositionableChannel
 {
     @Override
     @Nonnull
     ICategorizableChannelManager<?, ?> getManager();
+
+    /**
+     * Computes the relative position of this channel in the {@link #getParentCategory() parent category}.
+     * <br>This is effectively the same as {@code getParentCategory().getChannels().indexOf(channel)}.
+     *
+     * @return The relative position in the parent category, or {@code -1} if no parent is set
+     */
+    default int getPositionInCategory()
+    {
+        Category parent = getParentCategory();
+        return parent == null ? -1 : parent.getChannels().indexOf(this);
+    }
 
     /**
      * Get the snowflake of the {@link Category} that contains this channel.

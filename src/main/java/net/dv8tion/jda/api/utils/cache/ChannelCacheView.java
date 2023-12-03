@@ -17,11 +17,34 @@
 package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Specialized {@link SnowflakeCacheView} type used for handling channels.
+ * <br>This type caches all relevant channel types, including threads.
+ *
+ * <p>Internally, this cache view makes a distinction between the varying {@link ChannelType ChannelTypes} and provides convenient methods to access a filtered subset.
+ *
+ * @param <T>
+ *        The channel type
+ */
 public interface ChannelCacheView<T extends Channel> extends SnowflakeCacheView<T>
 {
+    /**
+     * Creates a decorator around this cache, filtered to only provide access to the given type.
+     *
+     * @param type
+     *        The type class (Like {@code TextChannel.class})
+     * @param <C>
+     *        The type parameter
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The filtered cache view
+     */
     @Nonnull
     <C extends T> ChannelCacheView<C> ofType(@Nonnull Class<C> type);
 }

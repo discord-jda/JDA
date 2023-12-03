@@ -240,7 +240,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
 
         protected FilteredCacheView(Class<C> type)
         {
-            Checks.notNull(type, "Channel Type");
+            Checks.notNull(type, "Type");
             this.type = type;
             ChannelType concrete = null;
             for (ChannelType channelType : ChannelType.values())

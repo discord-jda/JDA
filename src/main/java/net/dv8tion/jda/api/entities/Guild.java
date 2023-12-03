@@ -59,10 +59,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import net.dv8tion.jda.api.utils.cache.MemberCacheView;
-import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
@@ -1560,6 +1557,21 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
     @Nonnull
     @Override
     SortedSnowflakeCacheView<ForumChannel> getForumChannelCache();
+
+    /**
+     * {@link SortedChannelCacheView SortedChannelCacheView} of {@link GuildChannel}.
+     *
+     * <p>Provides cache access to all channels of this guild, including thread channels (unlike {@link #getChannels()}).
+     * The cache view attempts to provide a sorted list, based on how channels are displayed in the client.
+     * Various methods like {@link SortedChannelCacheView#forEachUnordered(Consumer)} or {@link SortedChannelCacheView#lockedIterator()}
+     * bypass sorting for optimization reasons.
+     *
+     * <p>It is possible to filter the channels to more specific types using {@link SortedChannelCacheView#ofType(Class)}.
+     *
+     * @return {@link SortedChannelCacheView SortedChannelCacheView}
+     */
+    @Nonnull
+    SortedChannelCacheView<GuildChannel> getGuildChannelCache();
 
     /**
      * Populated list of {@link GuildChannel channels} for this guild.

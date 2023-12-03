@@ -16,10 +16,23 @@
 
 package net.dv8tion.jda.api.utils.cache;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Specialized {@link ChannelCacheView} type used for handling sorted lists of channels.
+ * <br>Sorting is done with respect to the positioning in the official Discord client, by comparing positions and category information.
+ *
+ * <p>Internally, this cache view makes a distinction between the varying {@link ChannelType ChannelTypes} and provides convenient methods to access a filtered subset.
+ *
+ * @param <T>
+ *        The channel type
+ *
+ * @see   Guild#getChannels()
+ */
 public interface SortedChannelCacheView<T extends Channel & Comparable<? super T>> extends ChannelCacheView<T>, SortedSnowflakeCacheView<T>
 {
     @Nonnull
