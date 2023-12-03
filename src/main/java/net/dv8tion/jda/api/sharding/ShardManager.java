@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
@@ -211,6 +212,25 @@ public interface ShardManager extends IGuildChannelContainer
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("no active shards"))
                 .retrieveApplicationInfo();
+    }
+
+    /**
+     * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * which allows you to {@link Iterable iterate} over {@link Entitlement}s that are applicable to the logged in application.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If there is no running shard
+     *
+     * @return {@link EntitlementPaginationAction EntitlementPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default EntitlementPaginationAction retrieveEntitlements()
+    {
+        return this.getShardCache().stream()
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("no active shards"))
+                .retrieveEntitlements();
     }
 
     /**
