@@ -46,28 +46,38 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * Filters {@link Entitlement Entitlement}s by their SKU id
      *
      * @param skuIds
-     *        The SKU ids to filter by or {@code null} to remove SKU filtering
+     *        The SKU ids to filter by
      *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
     @Nonnull
-    EntitlementPaginationAction skuIds(@Nullable String... skuIds);
+    EntitlementPaginationAction skuIds(long... skuIds);
+
+    /**
+     * Filters {@link Entitlement Entitlement}s by their SKU id
+     *
+     * @param skuIds
+     *        The SKU ids to filter by
+     *
+     * @return The current EntitlementPaginationAction for chaining convenience
+     */
+    @Nonnull
+    EntitlementPaginationAction skuIds(@Nonnull String... skuIds);
 
     /**
      * Filters {@link Entitlement Entitlement} by a guild id
      *
      * @param guildId
-     *        The guild id used to filter or {@code null} to remove guild filtering
+     *        The guild id to filter by
      *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
     @Nonnull
-    EntitlementPaginationAction guild(@Nullable Long guildId);
+    EntitlementPaginationAction guild(long guildId);
 
     /**
      * Whether to exclude subscriptions which have gone past their end date.
-     *
-     * Test entitlements which are created through the API do not have an end date.
+     * <p>Test entitlements which are created through the API do not have an end date.
      *
      * @param excludeEnded
      *        Whether to exclude ended subscriptions from returned {@link Entitlement Entitlement}s
