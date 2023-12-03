@@ -3,14 +3,13 @@ package net.dv8tion.jda.api.requests.restaction.pagination;
 import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the application entitlements endpoint.
- * <br>
+ *
  * <p><b>Limits</b><br>
  * Minimum - 1<br>
  * Maximum - 100
@@ -40,7 +39,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
-    @NotNull
+    @Nonnull
     EntitlementPaginationAction user(@Nullable UserSnowflake user);
 
     /**
