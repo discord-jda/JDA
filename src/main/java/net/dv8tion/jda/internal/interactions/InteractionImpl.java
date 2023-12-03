@@ -35,7 +35,6 @@ import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

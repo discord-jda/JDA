@@ -29,9 +29,10 @@ import javax.annotation.Nonnull;
  * </ul>
  * <p><b>Notice</b><br>
  * Entitlements are not deleted when they expire.
- * <br>
- * If a user's subscription is cancelled, you will not receive an {@link EntitlementDeleteEvent EntitlementDeleteEvent}.
- * <br>Instead, you will simply not receive an {@link EntitlementUpdateEvent EntitlementUpdateEvent} with a new {@link Entitlement#getEndsAt() endsAt} date at the end of the billing period.
+ * <br><br>
+ * The ending date is updated for active subscriptions at the end of a billing period, to indicate a renewal.
+ * When a subscription is cancelled, the ending date will not be updated again as it is not renewed for the next billing period.
+ * Cancellation does not cause an immediate event and cancelled subscriptions do not delete an existing entitlement, since it is still active for the current billing period.
  *
  * @see #getEntitlement()
  * @see EntitlementUpdateEvent
