@@ -22,8 +22,8 @@ import javax.annotation.Nullable;
  * public static void fetchEntitlements(JDA api, String skuId, Consumer<List<Entitlement>> callback) {
  *     List<Entitlement> entitlements = new ArrayList<>()
  *     EntitlementPaginationAction action = api.retrieveEntitlements().skuIds(skuId).excludeEnded(true)
- *     action.forEachAsync((entitlements) -> {
- *           entitlements.add(entitlements)
+ *     action.forEachAsync((entitlement) -> {
+ *           entitlements.add(entitlement)
  *           return true; //continues to retrieve all entitlements until there are none left to retrieve
  *     }.thenRun(() -> callback.accept(entitlements));
  * }
