@@ -195,8 +195,22 @@ public enum MessageType
      */
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, true),
 
+    /**
+     * Sent when an application is added as integration to a private channel or group channel.
+     */
     PRIVATE_CHANNEL_INTEGRATION_ADDED(33, true, true),
+
+    /**
+     * Sent when an application integration is removed from a private channel or group channel.
+     */
     PRIVATE_CHANNEL_INTEGRATION_REMOVED(34, true, true),
+
+    /**
+     * Sent as a reply by an interaction, when a feature that requires premium features is used.
+     * <br>The author is the bot or application.
+     *
+     * <p>Bots generally do not receive this message type.
+     */
     PREMIUM_REFERRAL(35, true, true),
 
     /**
@@ -212,7 +226,15 @@ public enum MessageType
      */
     GUILD_INCIDENT_ALERT_MODE_DISABLED(37, true, false),
 
+    /**
+     * Sent when a moderator reports a raid in a guild.
+     * <br>The message author is the reporter.
+     */
     GUILD_INCIDENT_REPORT_RAID(38, true, false),
+
+    /**
+     * Sent when a moderator reports a raid as a false alarm in a guild.
+     */
     GUILD_INCIDENT_REPORT_FALSE_ALARM(39, true, false),
 
     /**
