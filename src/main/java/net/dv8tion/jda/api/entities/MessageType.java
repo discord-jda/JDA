@@ -205,13 +205,10 @@ public enum MessageType
      */
     PRIVATE_CHANNEL_INTEGRATION_REMOVED(34, true, true),
 
-    /**
-     * Sent as a reply by an interaction, when a feature that requires premium features is used.
-     * <br>The author is the bot or application.
-     *
-     * <p>Bots generally do not receive this message type.
-     */
-    PREMIUM_REFERRAL(35, true, true),
+//    /**
+//     * Unclear what this is for or if its used at all
+//     */
+//    PREMIUM_REFERRAL(35, true, true),
 
     /**
      * Sent when a moderator activates a temporary security measure, such as pausing invites or direct messages.
