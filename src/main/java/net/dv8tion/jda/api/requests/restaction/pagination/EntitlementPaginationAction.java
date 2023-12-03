@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  * </p>
  *
  * <p><b>Example</b><br>
- * //Fetch all entitlements for a given SKU ID
+ * //Fetch all entitlements for a given SKU id
  * public static CompletableFuture<> fetchEntitlements(JDA api, long skuId, Consumer<List<Entitlement>> callback) {
  *     List<Entitlement> entitlements = new ArrayList<>()
  *     EntitlementPaginationAction action = api.retrieveEntitlements().excludeEnded(true)
@@ -54,7 +54,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
     EntitlementPaginationAction skuIds(@Nullable String... skuIds);
 
     /**
-     * Filters {@link Entitlement Entitlement} by a {@link net.dv8tion.jda.api.entities.Guild Guild} id
+     * Filters {@link Entitlement Entitlement} by a guild id
      *
      * @param guildId
      *        The guild id used to filter or {@code null} to remove guild filtering
