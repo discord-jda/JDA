@@ -94,14 +94,14 @@ public class EntitlementImpl implements Entitlement
 
     @Nullable
     @Override
-    public OffsetDateTime getStartsAt()
+    public OffsetDateTime getTimeStarting()
     {
         return startsAt;
     }
 
     @Nullable
     @Override
-    public OffsetDateTime getEndsAt()
+    public OffsetDateTime getTimeEnding()
     {
         return endsAt;
     }

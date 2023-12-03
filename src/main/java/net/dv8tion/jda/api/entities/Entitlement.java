@@ -137,7 +137,7 @@ public interface Entitlement extends ISnowflake
      * @return Start date at which the {@link Entitlement Entitlement} is valid. Not present when using test entitlements.
      */
     @Nullable
-    OffsetDateTime getStartsAt();
+    OffsetDateTime getTimeStarting();
 
     /**
      * Date at which the {@link Entitlement Entitlement} is no longer valid.
@@ -145,12 +145,13 @@ public interface Entitlement extends ISnowflake
      * @return Date at which the {@link Entitlement Entitlement} is no longer valid. Not present when using test entitlements.
      */
     @Nullable
-    OffsetDateTime getEndsAt();
+    OffsetDateTime getTimeEnding();
 
     /**
      * Represents the type of this Entitlement
      */
-    enum EntitlementType {
+    enum EntitlementType
+    {
         APPLICATION_SUBSCRIPTION(8),
         /**
          * Placeholder for unsupported types.
