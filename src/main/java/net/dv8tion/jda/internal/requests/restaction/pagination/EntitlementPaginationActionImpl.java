@@ -79,13 +79,9 @@ public class EntitlementPaginationActionImpl
     @Override
     public EntitlementPaginationAction skuIds(long... skuIds)
     {
-        if (skuIds.length == 0)
-            this.skuIds.clear();
-        else
-        {
-            for (long skuId : skuIds)
-                this.skuIds.add(Long.toUnsignedString(skuId));
-        }
+        this.skuIds.clear();
+        for (long skuId : skuIds)
+            this.skuIds.add(Long.toUnsignedString(skuId));
         return this;
     }
 
@@ -93,15 +89,13 @@ public class EntitlementPaginationActionImpl
     @Override
     public EntitlementPaginationAction skuIds(@Nonnull String... skuIds)
     {
-        if (skuIds.length == 0)
-            this.skuIds.clear();
-        else
-        {
-            Checks.noneNull(skuIds, "skuIds");
-            for (String skuId : skuIds)
-                Checks.isSnowflake(skuId, "skuId");
-            Collections.addAll(this.skuIds, skuIds);
-        }
+        this.skuIds.clear();
+
+        Checks.noneNull(skuIds, "skuIds");
+        for (String skuId : skuIds)
+            Checks.isSnowflake(skuId, "skuId");
+
+        Collections.addAll(this.skuIds, skuIds);
         return this;
     }
 
