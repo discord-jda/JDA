@@ -16,6 +16,6 @@
 
 /**
  * Events that indicate that a {@link net.dv8tion.jda.api.entities.Entitlement Entitlement}
- * is either created, updated or deleted.
+ * is either created, updated, or deleted.
  */
 package net.dv8tion.jda.api.events.entitlement;
