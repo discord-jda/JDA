@@ -195,15 +195,15 @@ public enum MessageType
      */
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, true),
 
-    /**
-     * Sent when an application is added as integration to a private channel or group channel.
-     */
-    PRIVATE_CHANNEL_INTEGRATION_ADDED(33, true, true),
-
-    /**
-     * Sent when an application integration is removed from a private channel or group channel.
-     */
-    PRIVATE_CHANNEL_INTEGRATION_REMOVED(34, true, true),
+//    /**
+//     * Sent when an application is added as integration to a private channel or group channel.
+//     */
+//    PRIVATE_CHANNEL_INTEGRATION_ADDED(33, true, true),
+//
+//    /**
+//     * Sent when an application integration is removed from a private channel or group channel.
+//     */
+//    PRIVATE_CHANNEL_INTEGRATION_REMOVED(34, true, true),
 
 //    /**
 //     * Unclear what this is for or if its used at all
