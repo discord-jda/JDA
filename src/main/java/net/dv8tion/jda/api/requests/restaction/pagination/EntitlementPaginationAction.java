@@ -10,23 +10,24 @@ import javax.annotation.Nullable;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the application entitlements endpoint.
- *
+ * <br>
  * <p><b>Limits</b><br>
  * Minimum - 1<br>
  * Maximum - 100
- * </p>
+ * <br>Default - 100
  *
  * <p><b>Example</b><br>
+ * <pre>{@code
  * //Fetch all entitlements for a given SKU id
- * public static CompletableFuture<> fetchEntitlements(JDA api, long skuId, Consumer<List<Entitlement>> callback) {
+ * public static void fetchEntitlements(JDA api, String skuId, Consumer<List<Entitlement>> callback) {
  *     List<Entitlement> entitlements = new ArrayList<>()
- *     EntitlementPaginationAction action = api.retrieveEntitlements().excludeEnded(true)
+ *     EntitlementPaginationAction action = api.retrieveEntitlements().skuIds(skuId).excludeEnded(true)
  *     action.forEachAsync((entitlements) -> {
  *           entitlements.add(entitlements)
  *           return true; //continues to retrieve all entitlements until there are none left to retrieve
  *     }.thenRun(() -> callback.accept(entitlements));
  * }
- * </p>
+ * }</pre>
  */
 public interface EntitlementPaginationAction extends PaginationAction<Entitlement, EntitlementPaginationAction>
 {
