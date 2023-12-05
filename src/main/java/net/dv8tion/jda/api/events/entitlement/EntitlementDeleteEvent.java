@@ -22,15 +22,11 @@ import net.dv8tion.jda.api.entities.Entitlement;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a user's entitlement was deleted. Entitlement deletions are infrequent, and occur when:
+ * Indicates that an {@link Entitlement Entitlement} was deleted. {@link Entitlement Entitlement} deletions are infrequent and occur strictly when:
  * <ul>
- *     <li>Discord issues a refund for a subscription</li>
- *     <li>Discord removes an entitlement from a user via internal tooling</li>
+ *     <li>Discord issues a refund for a subscription; or</li>
+ *     <li>Discord removes an {@link Entitlement Entitlement} via internal tooling</li>
  * </ul>
- * <p><b>Notice</b><br>
- * The {@link Entitlement#getTimeEnding() timeEnding} is updated for active subscriptions at the end of every billing period to
- * indicate renewal. When an {@link Entitlement Entitlement} has not been renewed, Discord will indicate this by not emitting
- * an {@link EntitlementUpdateEvent} with the new {@link Entitlement#getTimeEnding() timeEnding} date
  *
  * @see #getEntitlement()
  * @see EntitlementUpdateEvent
