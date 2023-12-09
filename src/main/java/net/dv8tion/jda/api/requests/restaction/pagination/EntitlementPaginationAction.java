@@ -10,6 +10,9 @@ import javax.annotation.Nullable;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the application entitlements endpoint.
+ * <p>By default, JDA will include {@link Entitlement Entitlement}'s which have ended, that is, {@link Entitlement Entitlement}'s which
+ * have gone past their {@link Entitlement#getTimeEnding() timeEnding}. You may use {@link EntitlementPaginationAction#excludeEnded excludeEnded(true)}
+ * to only return {@link Entitlement}'s which are still active
  *
  * <p><b>Limits</b><br>
  * Minimum - 1<br>

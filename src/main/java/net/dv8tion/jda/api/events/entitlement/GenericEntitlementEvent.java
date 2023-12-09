@@ -39,6 +39,11 @@ public abstract class GenericEntitlementEvent extends Event
         this.entitlement = entitlement;
     }
 
+    /**
+     * The {@link Entitlement Entitlement}
+     *
+     * @return The {@link Entitlement Entitlement}
+     */
     @Nonnull
     public Entitlement getEntitlement()
     {
