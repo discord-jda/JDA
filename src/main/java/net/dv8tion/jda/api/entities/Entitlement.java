@@ -26,13 +26,6 @@ import java.time.OffsetDateTime;
  */
 public interface Entitlement extends ISnowflake
 {
-    /**
-     * The id of the entitlement
-     *
-     * @return The id of the {@link Entitlement Entitlement}
-     */
-    @Override
-    long getIdLong();
 
     /**
      * The id of the SKU related to this {@link Entitlement Entitlement}

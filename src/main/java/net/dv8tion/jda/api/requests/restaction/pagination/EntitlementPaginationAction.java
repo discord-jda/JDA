@@ -1,6 +1,7 @@
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Entitlement;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
@@ -9,6 +10,9 @@ import javax.annotation.Nullable;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the application entitlements endpoint.
+ * <p>By default, JDA will include {@link Entitlement Entitlement}'s which have ended, that is, {@link Entitlement Entitlement}'s which
+ * have gone past their {@link Entitlement#getTimeEnding() timeEnding}. You may use {@link EntitlementPaginationAction#excludeEnded excludeEnded(true)}
+ * to only return {@link Entitlement}'s which are still active
  *
  * <p><b>Limits</b><br>
  * Minimum - 1<br>
@@ -74,6 +78,28 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      */
     @Nonnull
     EntitlementPaginationAction guild(long guildId);
+
+    /**
+     * Filters {@link Entitlement Entitlement} by a guild id
+     *
+     * @param guildId
+     *        The guild id to filter by
+     *
+     * @return The current EntitlementPaginationAction for chaining convenience
+     */
+    @Nonnull
+    EntitlementPaginationAction guild(@Nonnull String guildId);
+
+    /**
+     * Filters {@link Entitlement Entitlement} by a {@link Guild Guild}
+     *
+     * @param guild
+     *        The {@link Guild Guild} to filter by
+     *
+     * @return The current EntitlementPaginationAction for chaining convenience
+     */
+    @Nonnull
+    EntitlementPaginationAction guild(@Nonnull Guild guild);
 
     /**
      * Whether to exclude subscriptions which have gone past their end date.
