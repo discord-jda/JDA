@@ -65,14 +65,12 @@ public class EntitlementImpl implements Entitlement
         return applicationId;
     }
 
-    @Nullable
     @Override
     public long getUserIdLong()
     {
         return userId;
     }
 
-    @Nullable
     @Override
     public long getGuildIdLong()
     {
