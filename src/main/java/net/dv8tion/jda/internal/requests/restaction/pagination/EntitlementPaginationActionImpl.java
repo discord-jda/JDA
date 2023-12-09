@@ -92,11 +92,11 @@ public class EntitlementPaginationActionImpl
     @Override
     public EntitlementPaginationAction skuIds(@Nonnull String... skuIds)
     {
-        this.skuIds.clear();
-
         Checks.noneNull(skuIds, "skuIds");
         for (String skuId : skuIds)
             Checks.isSnowflake(skuId, "skuId");
+
+        this.skuIds.clear();
 
         Collections.addAll(this.skuIds, skuIds);
         return this;
