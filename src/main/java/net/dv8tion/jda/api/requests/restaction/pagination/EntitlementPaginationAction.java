@@ -1,6 +1,7 @@
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Entitlement;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
@@ -74,6 +75,28 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      */
     @Nonnull
     EntitlementPaginationAction guild(long guildId);
+
+    /**
+     * Filters {@link Entitlement Entitlement} by a guild id
+     *
+     * @param guildId
+     *        The guild id to filter by
+     *
+     * @return The current EntitlementPaginationAction for chaining convenience
+     */
+    @Nonnull
+    EntitlementPaginationAction guild(@Nonnull String guildId);
+
+    /**
+     * Filters {@link Entitlement Entitlement} by a {@link Guild Guild}
+     *
+     * @param guild
+     *        The {@link Guild Guild} to filter by
+     *
+     * @return The current EntitlementPaginationAction for chaining convenience
+     */
+    @Nonnull
+    EntitlementPaginationAction guild(@Nonnull Guild guild);
 
     /**
      * Whether to exclude subscriptions which have gone past their end date.

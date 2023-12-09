@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Entitlement;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
@@ -25,10 +26,12 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -104,6 +107,25 @@ public class EntitlementPaginationActionImpl
     public EntitlementPaginationAction guild(long guildId)
     {
         this.guildId = guildId;
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public EntitlementPaginationAction guild(@NotNull String guildId)
+    {
+        Checks.notNull(guildId, "guildId");
+        Checks.isSnowflake(guildId, "guildId");
+        this.guildId = MiscUtil.parseSnowflake(guildId);
+        return this;
+    }
+
+    @NotNull
+    @Override
+    public EntitlementPaginationAction guild(@NotNull Guild guild)
+    {
+        Checks.notNull(guild, "guild");
+        this.guildId = guild.getIdLong();
         return this;
     }
 
