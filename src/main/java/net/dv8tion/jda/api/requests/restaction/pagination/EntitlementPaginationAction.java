@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -85,10 +86,20 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @param guildId
      *        The guild id to filter by
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@code guildId} is {@code null}, empty or is not a valid snowflake
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code guildId} is negative or has a value greater than {@link Long#MAX_VALUE Long.MAX_VALUE}
+     *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
     @Nonnull
-    EntitlementPaginationAction guild(@Nonnull String guildId);
+    default EntitlementPaginationAction guild(@Nonnull String guildId) {
+        Checks.notNull(guildId, "guildId");
+        Checks.isSnowflake(guildId, "guildId");
+        guild(Long.parseUnsignedLong(guildId));
+        return this;
+    }
 
     /**
      * Filters {@link Entitlement Entitlement} by a {@link Guild Guild}
@@ -96,10 +107,17 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @param guild
      *        The {@link Guild Guild} to filter by
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@code guild} is {@code null}
+     *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
     @Nonnull
-    EntitlementPaginationAction guild(@Nonnull Guild guild);
+    default EntitlementPaginationAction guild(@Nonnull Guild guild) {
+        Checks.notNull(guild, "guild");
+        guild(guild.getIdLong());
+        return this;
+    }
 
     /**
      * Whether to exclude subscriptions which have gone past their end date.
