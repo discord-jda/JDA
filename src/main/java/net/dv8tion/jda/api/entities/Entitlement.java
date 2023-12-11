@@ -85,14 +85,14 @@ public interface Entitlement extends ISnowflake
     }
 
     /**
-     * The guild id that is granted access to the {@link Entitlement Entitlement}'s SKU
+     * The guild id that is granted access to the {@link Entitlement Entitlement}s SKU
      *
      * @return The id of the guild that purchased the {@link Entitlement Entitlement} or 0 if this is not a guild subscription
      */
     long getGuildIdLong();
 
     /**
-     * The guild id that is granted access to the {@link Entitlement Entitlement}'s SKU
+     * The guild id that is granted access to the {@link Entitlement Entitlement}s SKU
      *
      * @return The id of the guild that purchased the {@link Entitlement Entitlement} or 0 if this is not a guild subscription
      */
