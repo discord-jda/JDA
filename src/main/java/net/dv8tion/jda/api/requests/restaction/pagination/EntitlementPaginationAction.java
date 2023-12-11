@@ -88,8 +88,6 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code guildId} is {@code null}, empty or is not a valid snowflake
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code guildId} is negative or has a value greater than {@link Long#MAX_VALUE Long.MAX_VALUE}
      *
      * @return The current EntitlementPaginationAction for chaining convenience
      */
