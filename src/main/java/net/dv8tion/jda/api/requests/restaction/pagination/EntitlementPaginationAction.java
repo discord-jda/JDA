@@ -94,7 +94,8 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current EntitlementPaginationAction for chaining convenience
      */
     @Nonnull
-    default EntitlementPaginationAction guild(@Nonnull String guildId) {
+    default EntitlementPaginationAction guild(@Nonnull String guildId)
+    {
         Checks.notNull(guildId, "guildId");
         Checks.isSnowflake(guildId, "guildId");
         guild(Long.parseUnsignedLong(guildId));
@@ -113,7 +114,8 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current EntitlementPaginationAction for chaining convenience
      */
     @Nonnull
-    default EntitlementPaginationAction guild(@Nonnull Guild guild) {
+    default EntitlementPaginationAction guild(@Nonnull Guild guild)
+    {
         Checks.notNull(guild, "guild");
         guild(guild.getIdLong());
         return this;
