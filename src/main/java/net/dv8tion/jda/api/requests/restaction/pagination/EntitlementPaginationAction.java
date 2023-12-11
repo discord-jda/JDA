@@ -11,9 +11,9 @@ import javax.annotation.Nullable;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the application entitlements endpoint.
- * <p>By default, JDA will include {@link Entitlement Entitlement}'s which have ended, that is, {@link Entitlement Entitlement}'s which
+ * <p>By default, JDA will include {@link Entitlement Entitlement}s which have ended, that is, {@link Entitlement Entitlement}s which
  * have gone past their {@link Entitlement#getTimeEnding() timeEnding}. You may use {@link EntitlementPaginationAction#excludeEnded excludeEnded(true)}
- * to only return {@link Entitlement}'s which are still active
+ * to only return {@link Entitlement}s which are still active
  *
  * <p><b>Limits</b><br>
  * Minimum - 1<br>
@@ -42,7 +42,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      *        The {@link UserSnowflake UserSnowflake} used to filter or {@code null} to remove user filtering.
      *        This can be a member or user instance of {@link User#fromId(long)}
      *
-     * @return The current EntitlementPaginationAction for chaining convenience
+     * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
     EntitlementPaginationAction user(@Nullable UserSnowflake user);
@@ -53,7 +53,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @param skuIds
      *        The SKU ids to filter by
      *
-     * @return The current EntitlementPaginationAction for chaining convenience
+     * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
     EntitlementPaginationAction skuIds(long... skuIds);
@@ -64,46 +64,46 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @param skuIds
      *        The SKU ids to filter by
      *
-     * @return The current EntitlementPaginationAction for chaining convenience
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided {@code skuIds} are {@code null}, empty or are not a valid snowflake
+     *
+     * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
     EntitlementPaginationAction skuIds(@Nonnull String... skuIds);
 
     /**
-     * Filters {@link Entitlement Entitlement} by a guild id
+     * Filters {@link Entitlement Entitlement}s by a guild id
      *
      * @param guildId
      *        The guild id to filter by
      *
-     * @return The current EntitlementPaginationAction for chaining convenience
+     * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
     EntitlementPaginationAction guild(long guildId);
 
     /**
-     * Filters {@link Entitlement Entitlement} by a guild id
+     * Filters {@link Entitlement Entitlement}s by a guild id
      *
      * @param guildId
      *        The guild id to filter by
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code guildId} is {@code null}, empty or is not a valid snowflake
-     * @throws java.lang.NumberFormatException
-     *         If the provided {@code guildId} is negative or has a value greater than {@link Long#MAX_VALUE Long.MAX_VALUE}
      *
-     * @return The current EntitlementPaginationAction for chaining convenience
+     * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
     default EntitlementPaginationAction guild(@Nonnull String guildId)
     {
         Checks.notNull(guildId, "guildId");
         Checks.isSnowflake(guildId, "guildId");
-        guild(Long.parseUnsignedLong(guildId));
-        return this;
+        return guild(Long.parseUnsignedLong(guildId));
     }
 
     /**
-     * Filters {@link Entitlement Entitlement} by a {@link Guild Guild}
+     * Filters {@link Entitlement Entitlement}s by a {@link Guild Guild}
      *
      * @param guild
      *        The {@link Guild Guild} to filter by
@@ -111,14 +111,13 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code guild} is {@code null}
      *
-     * @return The current EntitlementPaginationAction for chaining convenience
+     * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
     default EntitlementPaginationAction guild(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "guild");
-        guild(guild.getIdLong());
-        return this;
+        return guild(guild.getIdLong());
     }
 
     /**
@@ -128,7 +127,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @param excludeEnded
      *        Whether to exclude ended subscriptions from returned {@link Entitlement Entitlement}s
      *
-     * @return The current EntitlementPaginationAction for chaining convenience
+     * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
     EntitlementPaginationAction excludeEnded(boolean excludeEnded);
