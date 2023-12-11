@@ -98,8 +98,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
     {
         Checks.notNull(guildId, "guildId");
         Checks.isSnowflake(guildId, "guildId");
-        guild(Long.parseUnsignedLong(guildId));
-        return this;
+        return guild(Long.parseUnsignedLong(guildId));
     }
 
     /**
@@ -117,8 +116,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
     default EntitlementPaginationAction guild(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "guild");
-        guild(guild.getIdLong());
-        return this;
+        return guild(guild.getIdLong());
     }
 
     /**
