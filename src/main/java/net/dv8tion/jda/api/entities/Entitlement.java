@@ -66,7 +66,7 @@ public interface Entitlement extends ISnowflake
     /**
      * The id of the user that purchased the {@link Entitlement Entitlement}
      *
-     * @return The id of the user that purchased the {@link Entitlement Entitlement} or 0 if this is not a user subscription
+     * @return The id of the user that purchased the {@link Entitlement Entitlement}
      */
     long getUserIdLong();
 
@@ -78,9 +78,6 @@ public interface Entitlement extends ISnowflake
     @Nullable
     default String getUserId()
     {
-        if (getUserIdLong() == 0)
-            return null;
-
         return Long.toUnsignedString(getUserIdLong());
     }
 
@@ -94,7 +91,7 @@ public interface Entitlement extends ISnowflake
     /**
      * The guild id that is granted access to the {@link Entitlement Entitlement}s SKU
      *
-     * @return The id of the guild that purchased the {@link Entitlement Entitlement} or 0 if this is not a guild subscription
+     * @return The id of the guild that purchased the {@link Entitlement Entitlement} or {@code null} if this is not a guild subscription
      */
     @Nullable
     default String getGuildId()
