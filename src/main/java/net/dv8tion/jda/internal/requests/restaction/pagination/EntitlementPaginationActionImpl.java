@@ -160,6 +160,8 @@ public class EntitlementPaginationActionImpl
 
         if (!entitlements.isEmpty())
         {
+            if (useCache)
+                cached.addAll(entitlements);
             last = entitlements.get(entitlements.size() - 1);
             lastKey = last.getIdLong();
         }
