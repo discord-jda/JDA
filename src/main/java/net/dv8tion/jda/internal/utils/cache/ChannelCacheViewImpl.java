@@ -301,8 +301,6 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
                         ? (Iterator<? extends C>) getMap(concreteType).valueCollection().iterator()
                         : filteredMaps()
                             .flatMap(map -> map.valueCollection().stream())
-                            .filter(type::isInstance)
-                            .map(type::cast)
                             .iterator();
                 return new LockIterator<>(directIterator, readLock);
             }
