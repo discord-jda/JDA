@@ -1217,6 +1217,7 @@ public class EntityBuilder
             .setParentCategory(json.getLong("parent_id", 0))
             .setLatestMessageIdLong(json.getLong("last_message_id", 0))
             .setName(json.getString("name"))
+            .setStatus(json.getString("status", ""))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
             .setNSFW(json.getBoolean("nsfw"))

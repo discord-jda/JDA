@@ -195,6 +195,45 @@ public enum MessageType
      */
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, true),
 
+//    /**
+//     * Sent when an application is added as integration to a private channel or group channel.
+//     */
+//    PRIVATE_CHANNEL_INTEGRATION_ADDED(33, true, true),
+//
+//    /**
+//     * Sent when an application integration is removed from a private channel or group channel.
+//     */
+//    PRIVATE_CHANNEL_INTEGRATION_REMOVED(34, true, true),
+
+//    /**
+//     * Unclear what this is for or if its used at all
+//     */
+//    PREMIUM_REFERRAL(35, true, true),
+
+    /**
+     * Sent when a moderator activates a temporary security measure, such as pausing invites or direct messages.
+     * <br>The message content is an ISO 8601 timestamp, which indicates when the action expires and disables the security measures automatically.
+     *
+     * @see java.time.OffsetDateTime#parse(CharSequence)
+     */
+    GUILD_INCIDENT_ALERT_MODE_ENABLED(36, true, false),
+
+    /**
+     * Sent when a moderator deactivates a temporary security measure, such as pausing invites or direct messages.
+     */
+    GUILD_INCIDENT_ALERT_MODE_DISABLED(37, true, false),
+
+    /**
+     * Sent when a moderator reports a raid in a guild.
+     * <br>The message author is the reporter.
+     */
+    GUILD_INCIDENT_REPORT_RAID(38, true, false),
+
+    /**
+     * Sent when a moderator reports a raid as a false alarm in a guild.
+     */
+    GUILD_INCIDENT_REPORT_FALSE_ALARM(39, true, false),
+
     /**
      * Unknown MessageType.
      */

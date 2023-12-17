@@ -168,6 +168,14 @@ public enum ChannelField
      * @see VoiceChannel#getUserLimit()
      */
     USER_LIMIT("userlimit", AuditLogKey.CHANNEL_USER_LIMIT),
+    /**
+     * The status of the channel.
+     *
+     * <p>Limited to {@link VoiceChannel Voice Channels}.
+     *
+     * @see VoiceChannel#getStatus()
+     */
+    VOICE_STATUS("status", AuditLogKey.CHANNEL_VOICE_STATUS),
 
 
     //Thread Specific
