@@ -63,9 +63,8 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     {
         return getGuild()
                 .getGuildChannelCache()
+                .ofType(ICategorizableChannel.class)
                 .applyStream(stream -> stream
-                    .filter(ICategorizableChannel.class::isInstance)
-                    .map(ICategorizableChannel.class::cast)
                     .filter(it -> this.equals(it.getParentCategory()))
                     .sorted()
                     .collect(Helpers.toUnmodifiableList())

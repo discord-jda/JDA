@@ -255,6 +255,20 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             this.concreteType = concrete;
         }
 
+        protected boolean isOfChannelType(ChannelType channelType)
+        {
+            return channelType != null && type.isAssignableFrom(channelType.getInterface());
+        }
+
+        @SuppressWarnings("unchecked")
+        protected Stream<TLongObjectMap<C>> filteredMaps()
+        {
+            return caches.entrySet()
+                    .stream()
+                    .filter(entry -> isOfChannelType(entry.getKey()))
+                    .map(entry -> (TLongObjectMap<C>) entry.getValue());
+        }
+
         @Nonnull
         @Override
         public List<C> asList()
@@ -285,10 +299,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             {
                 Iterator<? extends C> directIterator = concreteType != null
                         ? (Iterator<? extends C>) getMap(concreteType).valueCollection().iterator()
-                        : caches.entrySet()
-                            .stream()
-                            .filter((entry) -> type.isAssignableFrom(entry.getKey().getInterface()))
-                            .map(Map.Entry::getValue)
+                        : filteredMaps()
                             .flatMap(map -> map.valueCollection().stream())
                             .filter(type::isInstance)
                             .map(type::cast)
@@ -307,7 +318,11 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         {
             try (UnlockHook hook = readLock())
             {
-                return concreteType != null ? getMap(concreteType).size() : applyStream(Stream::count);
+                return concreteType != null
+                        ? getMap(concreteType).size()
+                        : filteredMaps()
+                            .mapToLong(TLongObjectMap::size)
+                            .sum();
             }
         }
 
@@ -316,7 +331,10 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         {
             try (UnlockHook hook = readLock())
             {
-                return concreteType != null ? getMap(concreteType).isEmpty() : applyStream(stream -> !stream.findAny().isPresent());
+                return concreteType != null
+                        ? getMap(concreteType).isEmpty()
+                        : filteredMaps()
+                            .allMatch(TLongObjectMap::isEmpty);
             }
         }
 
@@ -362,10 +380,11 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
                 if (concreteType != null)
                     return type.cast(getMap(concreteType).get(id));
 
-                T element = ChannelCacheViewImpl.this.getElementById(id);
-                if (type.isInstance(element))
-                    return type.cast(element);
-                return null;
+                return filteredMaps()
+                        .map(it -> it.get(id))
+                        .filter(Objects::nonNull)
+                        .findFirst()
+                        .orElse(null);
             }
         }
 

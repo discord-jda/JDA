@@ -774,6 +774,15 @@ public class GuildImpl implements Guild
         return channelCache;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
+    {
+        return GuildChannel.class.isAssignableFrom(type)
+            ? (T) channelCache.ofType((Class<? extends GuildChannel>) type).getElementById(id)
+            : null;
+    }
+
     @Nonnull
     @Override
     public SortedSnowflakeCacheView<Role> getRoleCache()

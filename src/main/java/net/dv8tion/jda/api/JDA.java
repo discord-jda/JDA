@@ -19,7 +19,6 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -1476,17 +1475,6 @@ public interface JDA extends IGuildChannelContainer
     default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
-    }
-
-    @Nullable
-    @Override
-    default <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
-    {
-        Checks.notNull(type, "Class");
-        Channel channel = getPrivateChannelById(id);
-        if (channel != null)
-            return type.isInstance(channel) ? type.cast(channel) : null;
-        return IGuildChannelContainer.super.getChannelById(type, id);
     }
 
     /**

@@ -800,6 +800,12 @@ public class JDAImpl implements JDA
         return channel;
     }
 
+    @Override
+    public <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
+    {
+        return channelCache.ofType(type).getElementById(id);
+    }
+
     @Nonnull
     @Override
     public CacheRestAction<PrivateChannel> openPrivateChannelById(long userId)
