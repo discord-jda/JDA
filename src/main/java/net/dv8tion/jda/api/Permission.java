@@ -87,6 +87,7 @@ public enum Permission
     VOICE_START_ACTIVITIES(   39, true, true, "Use Activities"),
     VOICE_USE_SOUNDBOARD(     42, true, true, "Use Soundboard"),
     VOICE_USE_EXTERNAL_SOUNDS(45, true, true, "Use External Sounds"),
+    VOICE_SET_STATUS(         48, true, true, "Set Voice Channel Status"),
 
     // Stage Channel Permissions
     REQUEST_TO_SPEAK(      32, true, true, "Request to Speak"),

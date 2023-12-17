@@ -26,8 +26,11 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
+import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IAgeRestrictedChannelMixin;
@@ -36,6 +39,7 @@ import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContain
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildMessageChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImpl;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -55,6 +59,7 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
 
     private String region;
+    private String status = "";
     private long latestMessageId;
     private int bitrate;
     private int userLimit;
@@ -162,6 +167,29 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
         return new VoiceChannelManagerImpl(this);
     }
 
+    @Nonnull
+    @Override
+    public String getStatus()
+    {
+        return status;
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> modifyStatus(@Nonnull String status)
+    {
+        Checks.notLonger(status, MAX_STATUS_LENGTH, "Voice Status");
+        checkCanAccessChannel();
+        if (this.equals(getGuild().getSelfMember().getVoiceState().getChannel()))
+            checkPermission(Permission.VOICE_SET_STATUS);
+        else
+            checkCanManage();
+
+        Route.CompiledRoute route = Route.Channels.SET_STATUS.compile(getId());
+        DataObject body = DataObject.empty().put("status", status.isEmpty() ? null : status);
+        return new AuditableRestActionImpl<>(api, route, body);
+    }
+
     @Override
     public TLongObjectMap<Member> getConnectedMembersMap()
     {
@@ -207,6 +235,12 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     public VoiceChannelImpl setLatestMessageIdLong(long latestMessageId)
     {
         this.latestMessageId = latestMessageId;
+        return this;
+    }
+
+    public VoiceChannelImpl setStatus(String status)
+    {
+        this.status = status;
         return this;
     }
 
