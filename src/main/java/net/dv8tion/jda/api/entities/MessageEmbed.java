@@ -115,6 +115,13 @@ public class MessageEmbed implements SerializableData
     @ForRemoval
     public static final int EMBED_MAX_LENGTH_CLIENT = 2000;
 
+    /**
+     * The maximum amount of total embed fields the embed can hold
+     * 
+     * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean) 
+     */
+    public static final int MAX_FIELD_AMOUNT = 25;
+
     protected final Object mutex = new Object();
 
     protected final String url;
