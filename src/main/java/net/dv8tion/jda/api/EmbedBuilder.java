@@ -175,9 +175,9 @@ public class EmbedBuilder
         if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH)
             throw new IllegalStateException(Helpers.format("Description is longer than %d! Please limit your input!", MessageEmbed.DESCRIPTION_MAX_LENGTH));
         if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
-            throw new IllegalStateException(String.format("Cannot build an embed with more than %d characters!", MessageEmbed.EMBED_MAX_LENGTH_BOT));
+            throw new IllegalStateException(Helpers.format("Cannot build an embed with more than %d characters!", MessageEmbed.EMBED_MAX_LENGTH_BOT));
         if (fields.size() > MessageEmbed.MAX_FIELD_AMOUNT)
-            throw new IllegalStateException(String.format("Cannot build an embed with more than %d embed fields set!", MessageEmbed.MAX_FIELD_AMOUNT));
+            throw new IllegalStateException(Helpers.format("Cannot build an embed with more than %d embed fields set!", MessageEmbed.MAX_FIELD_AMOUNT));
         final String description = this.description.length() < 1 ? null : this.description.toString();
 
         return EntityBuilder.createMessageEmbed(url, title, description, EmbedType.RICH, timestamp,
