@@ -105,7 +105,7 @@ dependencies {
 
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.14")
-    api("com.squareup.okhttp3:okhttp:4.10.0")
+    api("com.squareup.okhttp3:okhttp:4.12.0")
 
     //Opus library support
     api("club.minnced:opus-java:1.1.1")
@@ -122,9 +122,8 @@ dependencies {
 
     //General Utility
     implementation("net.sf.trove4j:trove4j:3.0.3")
-    // Match the minor version of lavaplayers jackson dependency
-    implementation("com.fasterxml.jackson.core:jackson-core:2.14.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.16.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
@@ -133,7 +132,7 @@ dependencies {
         addAll(configurations["compileOnly"].allDependencies)
     }
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
     testImplementation("org.reflections:reflections:0.10.2")
 }
 
