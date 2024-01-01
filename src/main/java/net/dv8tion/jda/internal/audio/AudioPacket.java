@@ -120,6 +120,7 @@ public class AudioPacket
                     throw new IndexOutOfBoundsException("Invalid payload offset index");
                 }
         // strip excess 0 bytes
+        while (data[i] == 0){ 
                       i++;}
 
            if(i>=data.length)
