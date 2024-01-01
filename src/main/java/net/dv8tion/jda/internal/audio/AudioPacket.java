@@ -115,10 +115,18 @@ public class AudioPacket
                 + 4                    // header which defines a profile and length each 2-bytes = 4 bytes
                 + csrcLength           // length of CSRC list (this seems to be always 0 when an extension exists)
                 + headerLength * 4;    // number of 4-byte words in extension = len * 4 bytes
-
+                if(i<0 || i>=data.length)
+                {
+                    throw new IndexOutOfBoundsException("Invalid payload offset index");
+                }
         // strip excess 0 bytes
-        while (data[i] == 0)
-            i++;
+                      i++;}
+
+           if(i>=data.length)
+           {
+              throw new IndexOutOfBoundsException("Invalid payload offset index");
+           }
+
         return i;
     }
 
