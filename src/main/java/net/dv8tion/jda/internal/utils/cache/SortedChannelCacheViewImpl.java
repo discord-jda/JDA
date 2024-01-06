@@ -37,7 +37,7 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
 
     @Nonnull
     @Override
-    public <C extends T> SortedChannelCacheView<C> ofType(@Nonnull Class<C> type)
+    public <C extends T> SortedFilteredCacheView<C> ofType(@Nonnull Class<C> type)
     {
         return new SortedFilteredCacheView<>(type);
     }
@@ -113,7 +113,7 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
         return asSet().iterator();
     }
 
-    private class SortedFilteredCacheView<C extends T> extends FilteredCacheView<C> implements SortedChannelCacheView<C>
+    public class SortedFilteredCacheView<C extends T> extends FilteredCacheView<C> implements SortedChannelCacheView<C>
     {
         protected SortedFilteredCacheView(Class<C> type)
         {
@@ -152,7 +152,7 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
                 stream
                     .filter(it -> Helpers.equals(name, it.getName(), ignoreCase))
                     .sorted()
-                    .collect(Collectors.toList())
+                    .collect(Helpers.toUnmodifiableList())
             );
         }
 

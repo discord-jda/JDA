@@ -92,6 +92,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -150,6 +151,7 @@ public class GuildImpl implements Guild
     {
         //Remove everything from global cache
         // this prevents some race-conditions for getting audio managers from guilds
+        getJDA().getGuildsView().remove(id);
 
         ChannelCacheViewImpl<Channel> channelsView = getJDA().getChannelsView();
         try (UnlockHook hook = channelsView.writeLock())
@@ -809,34 +811,49 @@ public class GuildImpl implements Guild
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
         if (includeHidden)
-            return channelCache.applyStream(stream -> stream.filter(it -> !it.getType().isThread()).sorted().collect(Helpers.toUnmodifiableList()));
+        {
+            return channelCache.applyStream(stream ->
+                stream.filter(it -> !it.getType().isThread())
+                      .sorted()
+                      .collect(Helpers.toUnmodifiableList())
+            );
+        }
+
+        // When we remove hidden channels there are 2 considerations to account for:
+        //
+        // 1. A channel is not visible if we don't have VIEW_CHANNEL permissions
+        // 2. A category is not visible if we don't see any channels within it
+        //
+        // For this reason we first resolve the category channel lists individually, and then filter out empty categories.
+        //
+        // Note: We avoid using Category#getChannels because it would iterate the entire cache each time.
+        // This is an optimization to avoid many unnecessary iterations.
 
         Member self = getSelfMember();
 
+        // We group all channels by their categories first, so that we can later check which categories have no visible channels
         Map<Category, Set<GuildChannel>> grouped = new HashMap<>();
-        channelCache.forEachUnordered(channel -> {
+        // Using sets here ensures deduplication
+        Function<Category, Set<GuildChannel>> newSet = k -> new HashSet<>();
+        channelCache.ofType(ICategorizableChannel.class).forEachUnordered(channel ->
+        {
+            // Hide threads and inaccessible channels
             if (channel.getType().isThread() || !self.hasPermission(channel, Permission.VIEW_CHANNEL)) return;
-
-            if (channel instanceof ICategorizableChannel)
-            {
-                Category category = ((ICategorizableChannel) channel).getParentCategory();
-                grouped.computeIfAbsent(category, (k) -> new HashSet<>()).add(channel);
-                grouped.computeIfAbsent(null, (k) -> new HashSet<>()).add(category);
-            }
-            else
-            {
-                grouped.computeIfAbsent(null, (k) -> new HashSet<>()).add(channel);
-            }
+            // Group all categorized channels to their respective category (or null if no parent is set)
+            Category category = channel.getParentCategory();
+            grouped.computeIfAbsent(category, newSet).add(channel);
+            // Categories are not nested, so their parent is also null, we just always add it to that group
+            // Empty categories will never show up here, since no categorizable channel will add them to this group
+            grouped.computeIfAbsent(null, newSet).add(category);
         });
 
-        for (Map.Entry<Category, Set<GuildChannel>> entry : grouped.entrySet())
-        {
-            if (entry.getKey() == null) continue;
-            if (entry.getValue().isEmpty())
-                grouped.get(null).remove(entry.getKey());
-        }
-
-        return grouped.values().stream().flatMap(Set::stream).sorted().collect(Helpers.toUnmodifiableList());
+        // Finally, sort them in the expected order
+        return grouped
+                .values()
+                .stream()
+                .flatMap(Set::stream)
+                .sorted() // See ChannelUtil.compare
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
