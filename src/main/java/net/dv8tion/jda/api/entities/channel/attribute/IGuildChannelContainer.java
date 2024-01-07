@@ -48,6 +48,15 @@ import java.util.List;
  */
 public interface IGuildChannelContainer<C extends Channel>
 {
+    /**
+     * Unified cache of all channels associated with this shard or guild.
+     *
+     * <p>This {@link ChannelCacheView} stores all channels in individually typed maps based on {@link ChannelType}.
+     * You can use {@link ChannelCacheView#getElementById(ChannelType, long)} or {@link ChannelCacheView#ofType(Class)} to filter
+     * out more specific types.
+     *
+     * @return {@link ChannelCacheView}
+     */
     @Nonnull
     ChannelCacheView<C> getChannelCache();
 

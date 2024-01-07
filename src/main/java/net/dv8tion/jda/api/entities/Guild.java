@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.entities.automod.build.AutoModRuleData;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IInviteContainer;
@@ -1566,7 +1567,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * Various methods like {@link SortedChannelCacheView#forEachUnordered(Consumer)} or {@link SortedChannelCacheView#lockedIterator()}
      * bypass sorting for optimization reasons.
      *
-     * <p>It is possible to filter the channels to more specific types using {@link SortedChannelCacheView#ofType(Class)}.
+     * <p>It is possible to filter the channels to more specific types using
+     * {@link ChannelCacheView#getElementById(ChannelType, long)} or {@link SortedChannelCacheView#ofType(Class)}.
      *
      * @return {@link SortedChannelCacheView SortedChannelCacheView}
      */
