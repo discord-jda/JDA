@@ -135,6 +135,8 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     public boolean canTalk(@Nonnull Member member)
     {
         Checks.notNull(member, "Member");
+        if (type == ChannelType.GUILD_PRIVATE_THREAD && threadMembers.get(member.getIdLong()) == null)
+            return member.hasPermission(getParentChannel(), Permission.MANAGE_THREADS, Permission.MESSAGE_SEND_IN_THREADS);
         return member.hasPermission(getParentChannel(), Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND_IN_THREADS);
     }
 
