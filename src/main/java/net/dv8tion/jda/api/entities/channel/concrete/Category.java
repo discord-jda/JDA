@@ -62,7 +62,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
     default List<GuildChannel> getChannels()
     {
         return getGuild()
-                .getGuildChannelCache()
+                .getChannelCache()
                 .ofType(ICategorizableChannel.class)
                 .applyStream(stream -> stream
                     .filter(it -> this.equals(it.getParentCategory()))

@@ -19,6 +19,7 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -70,7 +71,7 @@ import java.util.regex.Matcher;
  *
  * @see JDABuilder
  */
-public interface JDA extends IGuildChannelContainer
+public interface JDA extends IGuildChannelContainer<Channel>
 {
     /**
      * Represents the connection status of JDA and its Main WebSocket.

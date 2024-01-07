@@ -58,6 +58,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         return type.isThread() ? ChannelType.GUILD_PUBLIC_THREAD : type;
     }
 
+    @Nullable
     @SuppressWarnings("unchecked")
     protected <C extends T> TLongObjectMap<C> getMap(@Nonnull ChannelType type)
     {
@@ -226,6 +227,16 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         }
     }
 
+    public T getElementById(@Nonnull ChannelType type, long id)
+    {
+        Checks.notNull(type, "ChannelType");
+        try (UnlockHook hook = readLock())
+        {
+            TLongObjectMap<T> map = getMap(type);
+            return map == null ? null : map.get(id);
+        }
+    }
+
     @Nonnull
     @Override
     public Iterator<T> iterator()
@@ -352,6 +363,14 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         public <C1 extends C> ChannelCacheView<C1> ofType(@Nonnull Class<C1> type)
         {
             return ChannelCacheViewImpl.this.ofType(type);
+        }
+
+        @Nullable
+        @Override
+        public C getElementById(@Nonnull ChannelType type, long id)
+        {
+            T channel = ChannelCacheViewImpl.this.getElementById(type, id);
+            return this.type.isInstance(channel) ? this.type.cast(channel) : null;
         }
 
         @Nullable

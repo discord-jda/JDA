@@ -1076,7 +1076,7 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        CategoryImpl channel = (CategoryImpl) getJDA().getChannelsView().getElementById(id);
+        CategoryImpl channel = (CategoryImpl) getJDA().getCategoryById(id);
         if (channel == null)
         {
             if (guild == null)
@@ -1438,7 +1438,7 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        MediaChannelImpl channel = (MediaChannelImpl) getJDA().getChannelsView().getElementById(id);
+        MediaChannelImpl channel = (MediaChannelImpl) getJDA().getMediaChannelById(id);
         if (channel == null)
         {
             if (guild == null)
@@ -1671,7 +1671,7 @@ public class EntityBuilder
         if (guild == null)
             return createMessage0(json, createPrivateChannelByMessage(json), null, modifyCache);
         //If we know that the message was sent in a guild, we can use the guild to resolve the channel directly
-        MessageChannel channel = guild.getChannelById(MessageChannel.class, json.getUnsignedLong("channel_id"));
+        MessageChannel channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id"));
 //        if (channel == null)
 //            throw new IllegalArgumentException(MISSING_CHANNEL);
         return createMessage0(json, channel, (GuildImpl) guild, modifyCache);

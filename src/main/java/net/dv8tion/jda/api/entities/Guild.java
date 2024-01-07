@@ -90,7 +90,7 @@ import java.util.stream.Collectors;
  * @see JDA#getGuildsByName(String, boolean)
  * @see JDA#getGuilds()
  */
-public interface Guild extends IGuildChannelContainer, ISnowflake
+public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
 {
     /** Template for {@link #getIconUrl()}. */
     String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
@@ -1571,7 +1571,8 @@ public interface Guild extends IGuildChannelContainer, ISnowflake
      * @return {@link SortedChannelCacheView SortedChannelCacheView}
      */
     @Nonnull
-    SortedChannelCacheView<GuildChannel> getGuildChannelCache();
+    @Override
+    SortedChannelCacheView<GuildChannel> getChannelCache();
 
     /**
      * Populated list of {@link GuildChannel channels} for this guild.

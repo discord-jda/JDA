@@ -771,18 +771,22 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SortedChannelCacheViewImpl<GuildChannel> getGuildChannelCache()
+    public SortedChannelCacheViewImpl<GuildChannel> getChannelCache()
     {
         return channelCache;
     }
 
+    @Nullable
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
+    public GuildChannel getGuildChannelById(long id)
     {
-        return GuildChannel.class.isAssignableFrom(type)
-            ? (T) channelCache.ofType((Class<? extends GuildChannel>) type).getElementById(id)
-            : null;
+        return channelCache.getElementById(id);
+    }
+
+    @Override
+    public GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    {
+        return channelCache.getElementById(type, id);
     }
 
     @Nonnull

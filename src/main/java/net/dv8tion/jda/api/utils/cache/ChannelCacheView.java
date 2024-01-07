@@ -18,8 +18,10 @@ package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Specialized {@link SnowflakeCacheView} type used for handling channels.
@@ -47,4 +49,37 @@ public interface ChannelCacheView<T extends Channel> extends SnowflakeCacheView<
      */
     @Nonnull
     <C extends T> ChannelCacheView<C> ofType(@Nonnull Class<C> type);
+
+    /**
+     * Retrieves the entity represented by the provided ID.
+     *
+     * @param  type
+     *         The expected {@link ChannelType}
+     * @param  id
+     *         The ID of the entity
+     *
+     * @return Possibly-null entity for the specified ID, null if the expected type is different from the actual type
+     */
+    @Nullable
+    T getElementById(@Nonnull ChannelType type, long id);
+
+    /**
+     * Retrieves the entity represented by the provided ID.
+     *
+     * @param  type
+     *         The expected {@link ChannelType}
+     * @param  id
+     *         The ID of the entity
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided String is {@code null} or
+     *         cannot be resolved to an unsigned long id
+     *
+     * @return Possibly-null entity for the specified ID, null if the expected type is different from the actual type
+     */
+    @Nullable
+    default T getElementById(@Nonnull ChannelType type, @Nonnull String id)
+    {
+        return getElementById(type, MiscUtil.parseSnowflake(id));
+    }
 }

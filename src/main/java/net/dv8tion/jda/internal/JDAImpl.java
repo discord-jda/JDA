@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -55,6 +56,7 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
+import net.dv8tion.jda.api.utils.cache.ChannelCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -724,6 +726,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public ChannelCacheView<Channel> getChannelCache()
+    {
+        return channelCache;
+    }
+
+    @Nonnull
+    @Override
     public SnowflakeCacheView<Category> getCategoryCache()
     {
         return channelCache.ofType(Category.class);
@@ -804,6 +813,19 @@ public class JDAImpl implements JDA
     public <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
     {
         return channelCache.ofType(type).getElementById(id);
+    }
+
+    @Override
+    public GuildChannel getGuildChannelById(long id)
+    {
+        return channelCache.ofType(GuildChannel.class).getElementById(id);
+    }
+
+    @Override
+    public GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    {
+        Channel channel = channelCache.getElementById(type, id);
+        return channel instanceof GuildChannel ? (GuildChannel) channel : null;
     }
 
     @Nonnull
