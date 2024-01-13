@@ -828,36 +828,30 @@ public class GuildImpl implements Guild
         // 1. A channel is not visible if we don't have VIEW_CHANNEL permissions
         // 2. A category is not visible if we don't see any channels within it
         //
-        // For this reason we first resolve the category channel lists individually, and then filter out empty categories.
+        // In our implementation we iterate all applicable channels and only add categories,
+        // when a member of the category is added too.
         //
         // Note: We avoid using Category#getChannels because it would iterate the entire cache each time.
         // This is an optimization to avoid many unnecessary iterations.
 
         Member self = getSelfMember();
 
-        // We group all channels by their categories first, so that we can later check which categories have no visible channels
-        Map<Category, Set<GuildChannel>> grouped = new HashMap<>();
-        // Using sets here ensures deduplication
-        Function<Category, Set<GuildChannel>> newSet = k -> new HashSet<>();
+        SortedSet<GuildChannel> channels = new TreeSet<>();
         channelCache.ofType(ICategorizableChannel.class).forEachUnordered(channel ->
         {
             // Hide threads and inaccessible channels
             if (channel.getType().isThread() || !self.hasPermission(channel, Permission.VIEW_CHANNEL)) return;
-            // Group all categorized channels to their respective category (or null if no parent is set)
+
             Category category = channel.getParentCategory();
-            grouped.computeIfAbsent(category, newSet).add(channel);
-            // Categories are not nested, so their parent is also null, we just always add it to that group
-            // Empty categories will never show up here, since no categorizable channel will add them to this group
-            grouped.computeIfAbsent(null, newSet).add(category);
+            channels.add(channel);
+
+            // Empty categories will never show up here,
+            // since no categorizable channel will add them to this group
+            if (category != null)
+                channels.add(category);
         });
 
-        // Finally, sort them in the expected order
-        return grouped
-                .values()
-                .stream()
-                .flatMap(Set::stream)
-                .sorted() // See ChannelUtil.compare
-                .collect(Helpers.toUnmodifiableList());
+        return Collections.unmodifiableList(new ArrayList<>(channels));
     }
 
     @Nonnull
