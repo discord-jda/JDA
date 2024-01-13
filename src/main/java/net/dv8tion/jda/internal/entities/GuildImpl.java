@@ -192,8 +192,14 @@ public class GuildImpl implements Guild
     public void uncacheChannel(GuildChannel channel, boolean keepThreads)
     {
         long id = channel.getIdLong();
-        if (channelCache.remove(channel.getType(), id) != null)
-            api.getChannelsView().remove(channel.getType(), id);
+
+        // Enforce idempotence by checking the channel was in cache
+        // If the channel was not in cache, there is no reason to cleanup anything else.
+        // This idempotency makes sure that new cache is never affected by old cache
+        if (channelCache.remove(channel.getType(), id) == null)
+            return;
+
+        api.getChannelsView().remove(channel.getType(), id);
 
         if (!keepThreads && channel instanceof IThreadContainer)
         {
