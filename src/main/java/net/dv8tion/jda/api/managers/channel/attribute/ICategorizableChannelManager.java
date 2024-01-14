@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
  * @param <M> The manager type
  */
 public interface ICategorizableChannelManager<T extends ICategorizableChannel, M extends ICategorizableChannelManager<T, M>>
-        extends ChannelManager<T, M>, IPermissionContainerManager<T, M>
+        extends ChannelManager<T, M>, IPermissionContainerManager<T, M>, IPositionableChannelManager<T, M>
 {
     /**
      * Sets the <b><u>{@link Category Parent Category}</u></b>

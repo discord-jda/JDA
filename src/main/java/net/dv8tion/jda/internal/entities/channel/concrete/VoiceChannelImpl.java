@@ -243,12 +243,4 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
         this.status = status;
         return this;
     }
-
-    // -- Abstract Hooks --
-
-    @Override
-    protected void onPositionChange()
-    {
-        getGuild().getVoiceChannelsView().clearCachedLists();
-    }
 }
