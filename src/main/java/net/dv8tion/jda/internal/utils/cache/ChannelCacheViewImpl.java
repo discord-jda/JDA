@@ -193,7 +193,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         return applyStream(stream ->
             stream
                 .filter((channel) -> Helpers.equals(channel.getName(), name, ignoreCase))
-                .collect(Collectors.toList())
+                .collect(Helpers.toUnmodifiableList())
         );
     }
 
@@ -340,7 +340,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             return applyStream(stream ->
                 stream
                     .filter(channel -> Helpers.equals(channel.getName(), name, ignoreCase))
-                    .collect(Collectors.toList())
+                    .collect(Helpers.toUnmodifiableList())
             );
         }
 
