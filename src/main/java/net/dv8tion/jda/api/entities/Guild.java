@@ -904,7 +904,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * <p>This will only check cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
-     * @return Possibly-immutable list of members who boost this guild
+     * @return Immutable list of members who boost this guild
      */
     @Nonnull
     List<Member> getBoosters();

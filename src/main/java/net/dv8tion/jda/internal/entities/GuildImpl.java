@@ -92,7 +92,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -537,7 +536,7 @@ public class GuildImpl implements Guild
         return memberCache.applyStream((members) ->
             members.filter(m -> m.getTimeBoosted() != null)
                    .sorted(Comparator.comparing(Member::getTimeBoosted))
-                   .collect(Collectors.toList()));
+                   .collect(Helpers.toUnmodifiableList()));
     }
 
     @Override
