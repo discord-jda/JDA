@@ -86,11 +86,10 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
     @Nonnull
     default List<Button> getButtons()
     {
-        return Collections.unmodifiableList(
-            getComponents().stream()
+        return getComponents().stream()
                 .filter(Button.class::isInstance)
                 .map(Button.class::cast)
-                    .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
