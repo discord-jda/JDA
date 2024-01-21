@@ -2476,6 +2476,11 @@ public class EntityBuilder
         final List<String> tags = object.optArray("tags").orElseGet(DataArray::empty)
                     .stream(DataArray::getString)
                     .collect(Collectors.toList());
+        final List<String> redirectUris = object.optArray("redirect_uris").orElseGet(DataArray::empty)
+                .stream(DataArray::getString)
+                .collect(Collectors.toList());
+        final String interactionsEndpointUrl = object.getString("interactions_endpoint_url", null);
+        final String roleConnectionsVerificationUrl = object.getString("role_connections_verification_url", null);
 
         final Optional<DataObject> installParams = object.optObject("install_params");
 
@@ -2488,7 +2493,8 @@ public class EntityBuilder
                     .orElse(Collections.emptyList());
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, flags, isBotPublic, name,
-                termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes);
+                termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, redirectUris, interactionsEndpointUrl,
+                roleConnectionsVerificationUrl, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)
