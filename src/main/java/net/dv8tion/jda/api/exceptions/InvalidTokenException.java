@@ -26,18 +26,6 @@ public class InvalidTokenException extends RuntimeException
      */
     public InvalidTokenException()
     {
-        super();
+        super("The provided token is invalid!");
     }
-
-    /**
-     * Constructs an {@code InvalidTokenException} with the specified detail message.
-     *
-     * @param  message   
-     *         The detail message.
-     */
-    public InvalidTokenException(String message)
-    {
-        super(message);
-    }
-
 }

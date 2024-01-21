@@ -71,7 +71,7 @@ import java.util.regex.Matcher;
  *
  * @see JDABuilder
  */
-public interface JDA extends IGuildChannelContainer
+public interface JDA extends IGuildChannelContainer<Channel>
 {
     /**
      * Represents the connection status of JDA and its Main WebSocket.
@@ -1476,17 +1476,6 @@ public interface JDA extends IGuildChannelContainer
     default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
-    }
-
-    @Nullable
-    @Override
-    default <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
-    {
-        Checks.notNull(type, "Class");
-        Channel channel = getPrivateChannelById(id);
-        if (channel != null)
-            return type.isInstance(channel) ? type.cast(channel) : null;
-        return IGuildChannelContainer.super.getChannelById(type, id);
     }
 
     /**

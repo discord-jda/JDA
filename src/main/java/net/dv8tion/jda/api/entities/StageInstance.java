@@ -21,12 +21,11 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.managers.StageInstanceManager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A Stage Instance holds information about a live stage.
@@ -77,15 +76,15 @@ public interface StageInstance extends ISnowflake
      * <p>Only {@link StageChannel#isModerator(Member) stage moderators} can promote or invite speakers.
      * A stage moderator can move between speaker and audience at any time.
      *
-     * @return {@link List} of {@link Member Members} which can speak in this stage instance
+     * @return Immutable {@link List} of {@link Member Members} which can speak in this stage instance
      */
     @Nonnull
     default List<Member> getSpeakers()
     {
-        return Collections.unmodifiableList(getChannel().getMembers()
+        return getChannel().getMembers()
                 .stream()
                 .filter(member -> !member.getVoiceState().isSuppressed()) // voice states should not be null since getMembers() checks only for connected members in the channel
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -98,15 +97,15 @@ public interface StageInstance extends ISnowflake
      * <p>Only {@link StageChannel#isModerator(Member) stage moderators} can promote or invite speakers.
      * A stage moderator can move between speaker and audience at any time.
      *
-     * @return {@link List} of {@link Member Members} which cannot speak in this stage instance
+     * @return Immutable {@link List} of {@link Member Members} which cannot speak in this stage instance
      */
     @Nonnull
     default List<Member> getAudience()
     {
-        return Collections.unmodifiableList(getChannel().getMembers()
+        return getChannel().getMembers()
                 .stream()
                 .filter(member -> member.getVoiceState().isSuppressed()) // voice states should not be null since getMembers() checks only for connected members in the channel
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**

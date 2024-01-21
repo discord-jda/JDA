@@ -75,7 +75,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         {
 //            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild. UserId: {} GuildId: {}", userId, id);
             // Remove user from voice channel if applicable
-            guild.getVoiceChannelsView().forEachUnordered((channel) -> {
+            guild.getVoiceChannelCache().forEachUnordered((channel) -> {
                 VoiceChannelImpl impl = (VoiceChannelImpl) channel;
                 Member connected = impl.getConnectedMembersMap().remove(userId);
                 if (connected != null) // user left channel!

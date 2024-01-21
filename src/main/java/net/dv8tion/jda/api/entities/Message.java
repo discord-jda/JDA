@@ -60,6 +60,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -698,7 +699,7 @@ public interface Message extends ISnowflake, Formattable
                 .stream()
                 .filter(ActionRow.class::isInstance)
                 .map(ActionRow.class::cast)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -714,7 +715,7 @@ public interface Message extends ISnowflake, Formattable
         return getComponents().stream()
                 .map(LayoutComponent::getButtons)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -765,7 +766,7 @@ public interface Message extends ISnowflake, Formattable
             filter = b -> label.equals(b.getLabel());
         return getButtons().stream()
                 .filter(filter)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**

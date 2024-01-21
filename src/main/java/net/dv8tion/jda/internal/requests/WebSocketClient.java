@@ -801,15 +801,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         locked("Interrupted while trying to invalidate chunk/sync queue", chunkSyncQueue::clear);
 
-        api.getTextChannelsView().clear();
-        api.getVoiceChannelsView().clear();
-        api.getCategoriesView().clear();
-        api.getNewsChannelView().clear();
-        api.getPrivateChannelsView().clear();
-        api.getStageChannelView().clear();
-        api.getThreadChannelsView().clear();
-        api.getForumChannelsView().clear();
-        api.getMediaChannelsView().clear();
+        api.getChannelsView().clear();
 
         api.getGuildsView().clear();
         api.getUsersView().clear();
@@ -1416,6 +1408,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("USER_UPDATE",                            new UserUpdateHandler(api));
         handlers.put("VOICE_SERVER_UPDATE",                    new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",                     new VoiceStateUpdateHandler(api));
+        handlers.put("VOICE_CHANNEL_STATUS_UPDATE",            new VoiceChannelStatusUpdateHandler(api));
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);

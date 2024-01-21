@@ -25,11 +25,11 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
 
@@ -328,9 +328,16 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         if (isSet(ATTACHMENTS))
         {
             DataArray attachments = DataArray.empty();
+
+            int fileUploadCount = 0;
+            for (AttachedFile file : files)
+            {
+                attachments.add(file.toAttachmentData(fileUploadCount));
+                if (file instanceof FileUpload)
+                    fileUploadCount++;
+            }
+
             json.put("attachments", attachments);
-            for (int i = 0; i < files.size(); i++)
-                attachments.add(files.get(i).toAttachmentData(i));
         }
 
         return json;
@@ -344,12 +351,10 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     @Nonnull
     public synchronized List<FileUpload> getFiles()
     {
-        return Collections.unmodifiableList(
-            files.stream()
-                 .filter(FileUpload.class::isInstance)
-                 .map(FileUpload.class::cast)
-                 .collect(Collectors.toList())
-        );
+        return files.stream()
+                .filter(FileUpload.class::isInstance)
+                .map(FileUpload.class::cast)
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Override

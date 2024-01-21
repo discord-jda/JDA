@@ -31,11 +31,10 @@ import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuild
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.TextChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<TextChannelImpl> implements
         TextChannel,
@@ -60,9 +59,9 @@ public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<Tex
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(getGuild().getMembersView().stream()
+        return getGuild().getMembersView().stream()
             .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
-            .collect(Collectors.toList()));
+            .collect(Helpers.toUnmodifiableList());
     }
 
     @Override
@@ -104,12 +103,5 @@ public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<Tex
     {
         this.slowmode = slowmode;
         return this;
-    }
-
-    // -- Abstract hooks --
-    @Override
-    protected void onPositionChange()
-    {
-        getGuild().getTextChannelsView().clearCachedLists();
     }
 }

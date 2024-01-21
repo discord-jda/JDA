@@ -223,6 +223,11 @@ public final class Helpers
         return out.toArray(new String[0]);
     }
 
+    public static boolean equals(String a, String b, boolean ignoreCase)
+    {
+        return ignoreCase ? a == b || (a != null && b != null && a.equalsIgnoreCase(b)) : Objects.equals(a, b);
+    }
+
     // ## CollectionUtils ##
 
     public static boolean deepEquals(Collection<?> first, Collection<?> second)

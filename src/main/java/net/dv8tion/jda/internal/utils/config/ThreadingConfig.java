@@ -20,23 +20,22 @@ import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 public class ThreadingConfig
 {
     private final Object audioLock = new Object();
 
-    private ScheduledExecutorService rateLimitPool;
+    private ScheduledExecutorService rateLimitScheduler;
+    private ExecutorService rateLimitElastic;
     private ScheduledExecutorService gatewayPool;
     private ExecutorService callbackPool;
     private ExecutorService eventPool;
     private ScheduledExecutorService audioPool;
 
-    private boolean shutdownRateLimitPool;
+    private boolean shutdownRateLimitScheduler;
+    private boolean shutdownRateLimitElastic;
     private boolean shutdownGatewayPool;
     private boolean shutdownCallbackPool;
     private boolean shutdownEventPool;
@@ -46,16 +45,23 @@ public class ThreadingConfig
     {
         this.callbackPool = ForkJoinPool.commonPool();
 
-        this.shutdownRateLimitPool = true;
+        this.shutdownRateLimitScheduler = true;
+        this.shutdownRateLimitElastic = true;
         this.shutdownGatewayPool = true;
         this.shutdownCallbackPool = false;
         this.shutdownAudioPool = true;
     }
 
-    public void setRateLimitPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
+    public void setRateLimitScheduler(@Nullable ScheduledExecutorService executor, boolean shutdown)
     {
-        this.rateLimitPool = executor;
-        this.shutdownRateLimitPool = shutdown;
+        this.rateLimitScheduler = executor;
+        this.shutdownRateLimitScheduler = shutdown;
+    }
+
+    public void setRateLimitElastic(@Nullable ExecutorService executor, boolean shutdown)
+    {
+        this.rateLimitElastic = executor;
+        this.shutdownRateLimitScheduler = shutdown;
     }
 
     public void setGatewayPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
@@ -84,10 +90,19 @@ public class ThreadingConfig
 
     public void init(@Nonnull Supplier<String> identifier)
     {
-        if (this.rateLimitPool == null)
-            this.rateLimitPool = newScheduler(5, identifier, "RateLimit", false);
+        if (this.rateLimitScheduler == null)
+            this.rateLimitScheduler = newScheduler(2, identifier, "RateLimit-Scheduler", false);
         if (this.gatewayPool == null)
             this.gatewayPool = newScheduler(1, identifier, "Gateway");
+        if (this.rateLimitElastic == null)
+        {
+            this.rateLimitElastic = Executors.newCachedThreadPool(new CountingThreadFactory(identifier, "RateLimit-Elastic", false));
+            if (this.rateLimitElastic instanceof ThreadPoolExecutor)
+            {
+                ((ThreadPoolExecutor) this.rateLimitElastic).setCorePoolSize(1);
+                ((ThreadPoolExecutor) this.rateLimitElastic).setKeepAliveTime(2, TimeUnit.MINUTES);
+            }
+        }
     }
 
     public void shutdown()
@@ -104,8 +119,10 @@ public class ThreadingConfig
 
     public void shutdownRequester()
     {
-        if (shutdownRateLimitPool)
-            rateLimitPool.shutdown();
+        if (shutdownRateLimitScheduler)
+            rateLimitScheduler.shutdown();
+        if (shutdownRateLimitElastic)
+            rateLimitElastic.shutdown();
     }
 
     public void shutdownNow()
@@ -114,8 +131,10 @@ public class ThreadingConfig
             callbackPool.shutdownNow();
         if (shutdownGatewayPool)
             gatewayPool.shutdownNow();
-        if (shutdownRateLimitPool)
-            rateLimitPool.shutdownNow();
+        if (shutdownRateLimitScheduler)
+            rateLimitScheduler.shutdownNow();
+        if (shutdownRateLimitElastic)
+            rateLimitElastic.shutdownNow();
         if (shutdownEventPool && eventPool != null)
             eventPool.shutdownNow();
         if (shutdownAudioPool && audioPool != null)
@@ -123,9 +142,15 @@ public class ThreadingConfig
     }
 
     @Nonnull
-    public ScheduledExecutorService getRateLimitPool()
+    public ScheduledExecutorService getRateLimitScheduler()
     {
-        return rateLimitPool;
+        return rateLimitScheduler;
+    }
+
+    @Nonnull
+    public ExecutorService getRateLimitElastic()
+    {
+        return rateLimitElastic;
     }
 
     @Nonnull
@@ -162,9 +187,14 @@ public class ThreadingConfig
         return pool;
     }
 
-    public boolean isShutdownRateLimitPool()
+    public boolean isShutdownRateLimitScheduler()
     {
-        return shutdownRateLimitPool;
+        return shutdownRateLimitScheduler;
+    }
+
+    public boolean isShutdownRateLimitElastic()
+    {
+        return shutdownRateLimitElastic;
     }
 
     public boolean isShutdownGatewayPool()

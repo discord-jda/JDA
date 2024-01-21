@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
+import net.dv8tion.jda.api.utils.cache.ChannelCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -45,8 +46,20 @@ import java.util.List;
  * <p>For the most efficient usage, it is recommended to use {@link CacheView} getters such as {@link #getTextChannelCache()}.
  * List getters usually require making a snapshot copy of the underlying cache view, which may introduce an undesirable performance hit.
  */
-public interface IGuildChannelContainer
+public interface IGuildChannelContainer<C extends Channel>
 {
+    /**
+     * Unified cache of all channels associated with this shard or guild.
+     *
+     * <p>This {@link ChannelCacheView} stores all channels in individually typed maps based on {@link ChannelType}.
+     * You can use {@link ChannelCacheView#getElementById(ChannelType, long)} or {@link ChannelCacheView#ofType(Class)} to filter
+     * out more specific types.
+     *
+     * @return {@link ChannelCacheView}
+     */
+    @Nonnull
+    ChannelCacheView<C> getChannelCache();
+
     /**
      * Get a channel of the specified type by id.
      *
@@ -67,7 +80,7 @@ public interface IGuildChannelContainer
      * @return The casted channel, if it exists and is assignable to the provided class, or null
      */
     @Nullable
-    default <T extends Channel> T getChannelById(@Nonnull Class<T> type, @Nonnull String id)
+    default <T extends C> T getChannelById(@Nonnull Class<T> type, @Nonnull String id)
     {
         return getChannelById(type, MiscUtil.parseSnowflake(id));
     }
@@ -92,11 +105,10 @@ public interface IGuildChannelContainer
      * @return The casted channel, if it exists and is assignable to the provided class, or null
      */
     @Nullable
-    default <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
+    default <T extends C> T getChannelById(@Nonnull Class<T> type, long id)
     {
         Checks.notNull(type, "Class");
-        GuildChannel channel = getGuildChannelById(id);
-        return type.isInstance(channel) ? type.cast(channel) : null;
+        return getChannelCache().ofType(type).getElementById(id);
     }
 
     /**
@@ -164,24 +176,8 @@ public interface IGuildChannelContainer
     @Nullable
     default GuildChannel getGuildChannelById(long id)
     {
-        //TODO-v5-unified-channel-cache
-        GuildChannel channel = getTextChannelById(id);
-        if (channel == null)
-            channel = getNewsChannelById(id);
-        if (channel == null)
-            channel = getVoiceChannelById(id);
-        if (channel == null)
-            channel = getStageChannelById(id);
-        if (channel == null)
-            channel = getCategoryById(id);
-        if (channel == null)
-            channel = getThreadChannelById(id);
-        if (channel == null)
-            channel = getForumChannelById(id);
-        if (channel == null)
-            channel = getMediaChannelById(id);
-
-        return channel;
+        C channel = getChannelCache().getElementById(id);
+        return channel instanceof GuildChannel ? (GuildChannel) channel : null;
     }
 
     /**
@@ -260,29 +256,8 @@ public interface IGuildChannelContainer
     @Nullable
     default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
     {
-        Checks.notNull(type, "ChannelType");
-        switch (type)
-        {
-        case NEWS:
-            return getNewsChannelById(id);
-        case TEXT:
-            return getTextChannelById(id);
-        case VOICE:
-            return getVoiceChannelById(id);
-        case STAGE:
-            return getStageChannelById(id);
-        case CATEGORY:
-            return getCategoryById(id);
-        case FORUM:
-            return getForumChannelById(id);
-        case MEDIA:
-            return getMediaChannelById(id);
-        }
-
-        if (type.isThread())
-            return getThreadChannelById(id);
-
-        return null;
+        C channel = getChannelCache().getElementById(type, id);
+        return channel instanceof GuildChannel ? (GuildChannel) channel : null;
     }
 
 
@@ -352,7 +327,7 @@ public interface IGuildChannelContainer
     @Nullable
     default StageChannel getStageChannelById(@Nonnull String id)
     {
-        return getStageChannelCache().getElementById(id);
+        return (StageChannel) getChannelCache().getElementById(ChannelType.STAGE, id);
     }
 
     /**
@@ -374,7 +349,7 @@ public interface IGuildChannelContainer
     @Nullable
     default StageChannel getStageChannelById(long id)
     {
-        return getStageChannelCache().getElementById(id);
+        return (StageChannel) getChannelCache().getElementById(ChannelType.STAGE, id);
     }
 
     /**
@@ -473,7 +448,7 @@ public interface IGuildChannelContainer
     @Nullable
     default ThreadChannel getThreadChannelById(@Nonnull String id)
     {
-        return getThreadChannelCache().getElementById(id);
+        return (ThreadChannel) getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
     }
 
     /**
@@ -497,7 +472,7 @@ public interface IGuildChannelContainer
     @Nullable
     default ThreadChannel getThreadChannelById(long id)
     {
-        return getThreadChannelCache().getElementById(id);
+        return (ThreadChannel) getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
     }
 
     /**
@@ -595,7 +570,7 @@ public interface IGuildChannelContainer
     @Nullable
     default Category getCategoryById(@Nonnull String id)
     {
-        return getCategoryCache().getElementById(id);
+        return (Category) getChannelCache().getElementById(ChannelType.CATEGORY, id);
     }
 
     /**
@@ -617,7 +592,7 @@ public interface IGuildChannelContainer
     @Nullable
     default Category getCategoryById(long id)
     {
-        return getCategoryCache().getElementById(id);
+        return (Category) getChannelCache().getElementById(ChannelType.CATEGORY, id);
     }
 
     /**
@@ -711,7 +686,7 @@ public interface IGuildChannelContainer
     @Nullable
     default TextChannel getTextChannelById(@Nonnull String id)
     {
-        return getTextChannelCache().getElementById(id);
+        return (TextChannel) getChannelCache().getElementById(ChannelType.TEXT, id);
     }
 
     /**
@@ -733,7 +708,7 @@ public interface IGuildChannelContainer
     @Nullable
     default TextChannel getTextChannelById(long id)
     {
-        return getTextChannelCache().getElementById(id);
+        return (TextChannel) getChannelCache().getElementById(ChannelType.TEXT, id);
     }
 
     /**
@@ -827,7 +802,7 @@ public interface IGuildChannelContainer
     @Nullable
     default NewsChannel getNewsChannelById(@Nonnull String id)
     {
-        return getNewsChannelCache().getElementById(id);
+        return (NewsChannel) getChannelCache().getElementById(ChannelType.NEWS, id);
     }
 
     /**
@@ -849,7 +824,7 @@ public interface IGuildChannelContainer
     @Nullable
     default NewsChannel getNewsChannelById(long id)
     {
-        return getNewsChannelCache().getElementById(id);
+        return (NewsChannel) getChannelCache().getElementById(ChannelType.NEWS, id);
     }
 
     /**
@@ -943,7 +918,7 @@ public interface IGuildChannelContainer
     @Nullable
     default VoiceChannel getVoiceChannelById(@Nonnull String id)
     {
-        return getVoiceChannelCache().getElementById(id);
+        return (VoiceChannel) getChannelCache().getElementById(ChannelType.VOICE, id);
     }
 
     /**
@@ -965,7 +940,7 @@ public interface IGuildChannelContainer
     @Nullable
     default VoiceChannel getVoiceChannelById(long id)
     {
-        return getVoiceChannelCache().getElementById(id);
+        return (VoiceChannel) getChannelCache().getElementById(ChannelType.VOICE, id);
     }
 
     /**
@@ -1058,7 +1033,7 @@ public interface IGuildChannelContainer
     @Nullable
     default ForumChannel getForumChannelById(@Nonnull String id)
     {
-        return getForumChannelCache().getElementById(id);
+        return (ForumChannel) getChannelCache().getElementById(ChannelType.FORUM, id);
     }
 
     /**
@@ -1080,7 +1055,7 @@ public interface IGuildChannelContainer
     @Nullable
     default ForumChannel getForumChannelById(long id)
     {
-        return getForumChannelCache().getElementById(id);
+        return (ForumChannel) getChannelCache().getElementById(ChannelType.FORUM, id);
     }
 
     /**
@@ -1172,7 +1147,7 @@ public interface IGuildChannelContainer
     @Nullable
     default MediaChannel getMediaChannelById(@Nonnull String id)
     {
-        return getMediaChannelCache().getElementById(id);
+        return (MediaChannel) getChannelCache().getElementById(ChannelType.MEDIA, id);
     }
 
     /**
@@ -1194,7 +1169,7 @@ public interface IGuildChannelContainer
     @Nullable
     default MediaChannel getMediaChannelById(long id)
     {
-        return getMediaChannelCache().getElementById(id);
+        return (MediaChannel) getChannelCache().getElementById(ChannelType.MEDIA, id);
     }
 
     /**

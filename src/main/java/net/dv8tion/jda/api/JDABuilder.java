@@ -63,8 +63,10 @@ public class JDABuilder
     protected final List<Object> listeners = new LinkedList<>();
     protected final EnumSet<CacheFlag> automaticallyDisabled = EnumSet.noneOf(CacheFlag.class);
 
-    protected ScheduledExecutorService rateLimitPool = null;
-    protected boolean shutdownRateLimitPool = true;
+    protected ScheduledExecutorService rateLimitScheduler = null;
+    protected boolean shutdownRateLimitScheduler = true;
+    protected ExecutorService rateLimitElastic = null;
+    protected boolean shutdownRateLimitElastic = true;
     protected ScheduledExecutorService mainWsPool = null;
     protected boolean shutdownMainWsPool = true;
     protected ExecutorService callbackPool = null;
@@ -913,8 +915,13 @@ public class JDABuilder
      *         The thread-pool to use for rate-limit handling
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated This pool is now split into two pools.
+     *             You should use {@link #setRateLimitScheduler(ScheduledExecutorService)} and {@link #setRateLimitElastic(ExecutorService)} instead.
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setRateLimitScheduler(pool)")
     public JDABuilder setRateLimitPool(@Nullable ScheduledExecutorService pool)
     {
         return setRateLimitPool(pool, pool == null);
@@ -937,12 +944,113 @@ public class JDABuilder
      *         Whether {@link JDA#shutdown()} should shutdown this pool
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated This pool is now split into two pools.
+     *             You should use {@link #setRateLimitScheduler(ScheduledExecutorService, boolean)} and {@link #setRateLimitElastic(ExecutorService, boolean)} instead.
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setRateLimitScheduler(pool, automaticShutdown)")
     public JDABuilder setRateLimitPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
     {
-        this.rateLimitPool = pool;
-        this.shutdownRateLimitPool = automaticShutdown;
+        this.rateLimitScheduler = pool;
+        this.shutdownRateLimitScheduler = automaticShutdown;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
+     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
+     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimitPool(executor, true)}</b>
+     *
+     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
+     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
+     * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 2 threads.
+     *
+     * @param  pool
+     *         The thread-pool to use for rate-limit handling
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setRateLimitScheduler(@Nullable ScheduledExecutorService pool)
+    {
+        return setRateLimitScheduler(pool, pool == null);
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
+     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
+     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
+     * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 2 threads.
+     *
+     * @param  pool
+     *         The thread-pool to use for rate-limit handling
+     * @param  automaticShutdown
+     *         Whether {@link JDA#shutdown()} should shutdown this pool
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setRateLimitScheduler(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
+    {
+        this.rateLimitScheduler = pool;
+        this.shutdownRateLimitScheduler = automaticShutdown;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used in
+     * the JDA request handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     * <br><b>This automatically disables the automatic shutdown of the rate-limit elastic pool, you can enable
+     * it using {@link #setRateLimitElastic(ExecutorService, boolean) setRateLimitElastic(executor, true)}</b>
+     *
+     * <p>This is used mostly by the Rate-Limiter to execute the blocking HTTP requests at runtime.
+     *
+     * <p>Default: {@link Executors#newCachedThreadPool()}.
+     *
+     * @param  pool
+     *         The thread-pool to use for executing http requests
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setRateLimitElastic(@Nullable ExecutorService pool)
+    {
+        return setRateLimitElastic(pool, pool == null);
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used in
+     * the JDA request handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>This is used mostly by the Rate-Limiter to execute the blocking HTTP requests at runtime.
+     *
+     * <p>Default: {@link Executors#newCachedThreadPool()}.
+     *
+     * @param  pool
+     *         The thread-pool to use for executing http requests
+     * @param  automaticShutdown
+     *         Whether {@link JDA#shutdown()} should shutdown this pool
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setRateLimitElastic(@Nullable ExecutorService pool, boolean automaticShutdown)
+    {
+        this.rateLimitElastic = pool;
+        this.shutdownRateLimitElastic = automaticShutdown;
         return this;
     }
 
@@ -1797,7 +1905,8 @@ public class JDABuilder
         ThreadingConfig threadingConfig = new ThreadingConfig();
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
-        threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
+        threadingConfig.setRateLimitScheduler(rateLimitScheduler, shutdownRateLimitScheduler);
+        threadingConfig.setRateLimitElastic(rateLimitElastic, shutdownRateLimitElastic);
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
         threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);

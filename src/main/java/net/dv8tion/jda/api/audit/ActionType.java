@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.audit;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
+import net.dv8tion.jda.api.entities.channel.attribute.IVoiceStatusChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
@@ -634,6 +635,27 @@ public enum ActionType
      * </ul>
      */
     AUTO_MODERATION_MEMBER_TIMEOUT(    145, TargetType.MEMBER),
+
+    /**
+     * A user updated the {@link IVoiceStatusChannel#getStatus() status} of a voice channel.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link AuditLogKey#CHANNEL_VOICE_STATUS CHANNEL_VOICE_STATUS}</li>
+     *     <li>{@link AuditLogKey#CHANNEL_ID CHANNEL_ID}</li>
+     * </ul>
+     */
+    VOICE_CHANNEL_STATUS_UPDATE(192, TargetType.CHANNEL),
+
+    /**
+     * A user removed the {@link IVoiceStatusChannel#getStatus() status} of a voice channel.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link AuditLogKey#CHANNEL_ID CHANNEL_ID}</li>
+     * </ul>
+     */
+    VOICE_CHANNEL_STATUS_DELETE(193, TargetType.CHANNEL),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 

@@ -241,6 +241,14 @@ public enum AuditLogKey
     CHANNEL_TOPIC("topic"),
 
     /**
+     * Change of the {@link VoiceChannel#getStatus() VoiceChannel.getStatus()} value.
+     * <br>Only for {@link ChannelType#VOICE ChannelType.VOICE}
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    CHANNEL_VOICE_STATUS("status"),
+
+    /**
      * Change of the {@link ISlowmodeChannel#getSlowmode()} value.
      *
      * <p>Expected type: <b>Integer</b>

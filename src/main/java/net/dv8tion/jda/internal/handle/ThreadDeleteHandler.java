@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 
 public class ThreadDeleteHandler extends SocketHandler
 {
@@ -40,14 +42,16 @@ public class ThreadDeleteHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         final long threadId = content.getLong("id");
 
-        ThreadChannel thread = getJDA().getThreadChannelsView().remove(threadId);
+        ChannelCacheViewImpl<Channel> channelsView = getJDA().getChannelsView();
+        ThreadChannel thread = channelsView.ofType(ThreadChannel.class).getElementById(threadId);
         if (thread == null || guild == null)
         {
             WebSocketClient.LOG.debug("THREAD_DELETE attempted to delete a thread that is not yet cached. JSON: {}", content);
             return null;
         }
 
-        guild.getThreadChannelsView().remove(threadId);
+        channelsView.remove(thread.getType(), threadId);
+        guild.getChannelView().remove(thread);
 
         getJDA().handleEvent(
             new ChannelDeleteEvent(

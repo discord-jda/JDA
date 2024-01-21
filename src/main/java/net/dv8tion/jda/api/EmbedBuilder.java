@@ -155,7 +155,15 @@ public class EmbedBuilder
      * that has been checked as being valid for sending.
      *
      * @throws java.lang.IllegalStateException
-     *         If the embed is empty. Can be checked with {@link #isEmpty()}.
+     *         <ul>
+     *             <li>If the embed is empty. Can be checked with {@link #isEmpty()}.</li>
+     *             <li>If the character limit for {@code description}, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#DESCRIPTION_MAX_LENGTH} as {@value net.dv8tion.jda.api.entities.MessageEmbed#DESCRIPTION_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the embed's total length, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#EMBED_MAX_LENGTH_BOT} as {@value net.dv8tion.jda.api.entities.MessageEmbed#EMBED_MAX_LENGTH_BOT},
+     *             is exceeded.</li>
+     *             <li>If the embed's number of embed fields, defined by {@link net.dv8tion.jda.api.entities.MessageEmbed#MAX_FIELD_AMOUNT} as {@value net.dv8tion.jda.api.entities.MessageEmbed#MAX_FIELD_AMOUNT},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return the built, sendable {@link net.dv8tion.jda.api.entities.MessageEmbed}
      */
@@ -167,7 +175,9 @@ public class EmbedBuilder
         if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH)
             throw new IllegalStateException(Helpers.format("Description is longer than %d! Please limit your input!", MessageEmbed.DESCRIPTION_MAX_LENGTH));
         if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
-            throw new IllegalStateException("Cannot build an embed with more than " + MessageEmbed.EMBED_MAX_LENGTH_BOT + " characters!");
+            throw new IllegalStateException(Helpers.format("Cannot build an embed with more than %d characters!", MessageEmbed.EMBED_MAX_LENGTH_BOT));
+        if (fields.size() > MessageEmbed.MAX_FIELD_AMOUNT)
+            throw new IllegalStateException(Helpers.format("Cannot build an embed with more than %d embed fields set!", MessageEmbed.MAX_FIELD_AMOUNT));
         final String description = this.description.length() < 1 ? null : this.description.toString();
 
         return EntityBuilder.createMessageEmbed(url, title, description, EmbedType.RICH, timestamp,

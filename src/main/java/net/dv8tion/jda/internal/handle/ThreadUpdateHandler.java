@@ -17,8 +17,10 @@
 package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.set.TLongSet;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.channel.update.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -27,8 +29,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.channel.concrete.ThreadChannelImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -194,10 +195,10 @@ public class ThreadUpdateHandler extends SocketHandler
 
         if (thread.isArchived())
         {
-            SortedSnowflakeCacheViewImpl<ThreadChannel> guildView = thread.getGuild().getThreadChannelsView();
-            SnowflakeCacheViewImpl<ThreadChannel> globalView = api.getThreadChannelsView();
-            guildView.remove(threadId);
-            globalView.remove(threadId);
+            ChannelCacheViewImpl<GuildChannel> guildView = thread.getGuild().getChannelView();
+            ChannelCacheViewImpl<Channel> globalView = api.getChannelsView();
+            guildView.remove(thread);
+            globalView.remove(thread);
         }
 
         return null;

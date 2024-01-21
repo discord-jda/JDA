@@ -22,18 +22,18 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.RestConfig;
-import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
@@ -42,17 +42,23 @@ import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 /**
@@ -366,6 +372,9 @@ public class DefaultShardManager implements ShardManager
         {
             this.executor.shutdown();
         }
+
+        // Shutdown shared pools
+        this.threadingConfig.shutdown();
     }
 
     @Override
@@ -486,10 +495,17 @@ public class DefaultShardManager implements ShardManager
             httpClient = sessionConfig.getHttpBuilder().build();
         }
 
+        retrieveShardTotal(httpClient);
+        threadingConfig.init(queue.isEmpty() ? getShardsTotal() : queue.size());
+
         // imagine if we had macros or closures or destructuring :)
-        ExecutorPair<ScheduledExecutorService> rateLimitPair = resolveExecutor(threadingConfig.getRateLimitPoolProvider(), shardId);
-        ScheduledExecutorService rateLimitPool = rateLimitPair.executor;
-        boolean shutdownRateLimitPool = rateLimitPair.automaticShutdown;
+        ExecutorPair<ScheduledExecutorService> rateLimitSchedulerPair = resolveExecutor(threadingConfig.getRateLimitSchedulerProvider(), shardId);
+        ScheduledExecutorService rateLimitScheduler = rateLimitSchedulerPair.executor;
+        boolean shutdownRateLimitScheduler = rateLimitSchedulerPair.automaticShutdown;
+
+        ExecutorPair<ExecutorService> rateLimitElasticPair = resolveExecutor(threadingConfig.getRateLimitElasticProvider(), shardId);
+        ExecutorService rateLimitElastic = rateLimitElasticPair.executor;
+        boolean shutdownRateLimitElastic = rateLimitElasticPair.automaticShutdown;
 
         ExecutorPair<ScheduledExecutorService> gatewayPair = resolveExecutor(threadingConfig.getGatewayPoolProvider(), shardId);
         ScheduledExecutorService gatewayPool = gatewayPair.executor;
@@ -510,7 +526,8 @@ public class DefaultShardManager implements ShardManager
         AuthorizationConfig authConfig = new AuthorizationConfig(token);
         SessionConfig sessionConfig = this.sessionConfig.toSessionConfig(httpClient);
         ThreadingConfig threadingConfig = new ThreadingConfig();
-        threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
+        threadingConfig.setRateLimitScheduler(rateLimitScheduler, shutdownRateLimitScheduler);
+        threadingConfig.setRateLimitElastic(rateLimitElastic, shutdownRateLimitElastic);
         threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
@@ -557,21 +574,9 @@ public class DefaultShardManager implements ShardManager
             this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
             this.gatewayURL = gateway.getUrl();
             if (this.gatewayURL == null)
-                LOG.error("Acquired null gateway url from SessionController");
+                throw new IllegalStateException("Acquired null gateway url from SessionController");
             else
                 LOG.info("Login Successful!");
-
-            if (getShardsTotal() == -1)
-            {
-                shardingConfig.setShardsTotal(gateway.getShardTotal());
-                this.shards = new ShardCacheViewImpl(getShardsTotal());
-
-                synchronized (queue)
-                {
-                    for (int i = 0; i < getShardsTotal(); i++)
-                        queue.add(i);
-                }
-            }
         }
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, getShardsTotal());
@@ -591,9 +596,7 @@ public class DefaultShardManager implements ShardManager
         jda.setSelfUser(selfUser);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents(), this.metaConfig.getEncoding());
-        if (getShardsTotal() == -1)
-            shardingConfig.setShardsTotal(shardTotal);
+        jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents(), this.metaConfig.getEncoding());
 
         return jda;
     }
@@ -635,6 +638,51 @@ public class DefaultShardManager implements ShardManager
         presenceConfig.setStatusProvider(statusProvider);
     }
 
+    private synchronized void retrieveShardTotal(OkHttpClient httpClient)
+    {
+        if (getShardsTotal() != -1)
+            return;
+
+        LOG.debug("Fetching shard total using temporary rate-limiter");
+
+        CompletableFuture<Integer> future = new CompletableFuture<>();
+        ScheduledExecutorService pool = Executors.newSingleThreadScheduledExecutor(task -> {
+            Thread thread = new Thread(task, "DefaultShardManager retrieveShardTotal");
+            thread.setDaemon(true);
+            return thread;
+        });
+
+        try
+        {
+            RestRateLimiter.RateLimitConfig rateLimitConfig = new RestRateLimiter.RateLimitConfig(pool, RestRateLimiter.GlobalRateLimit.create(), true);
+            SequentialRestRateLimiter rateLimiter = new SequentialRestRateLimiter(rateLimitConfig);
+            rateLimiter.enqueue(new ShardTotalTask(future, httpClient));
+
+            int shardTotal = future.join();
+            this.shardingConfig.setShardsTotal(shardTotal);
+            this.shards = new ShardCacheViewImpl(shardTotal);
+
+            synchronized (queue)
+            {
+                for (int i = 0; i < shardTotal; i++)
+                    queue.add(i);
+            }
+        }
+        catch (CompletionException ex)
+        {
+            if (ex.getCause() instanceof RuntimeException)
+                throw (RuntimeException) ex.getCause();
+            if (ex.getCause() instanceof Error)
+                throw (Error) ex.getCause();
+            throw ex;
+        }
+        finally
+        {
+            future.cancel(false);
+            pool.shutdownNow();
+        }
+    }
+
     /**
      * This method creates the internal {@link java.util.concurrent.ScheduledExecutorService ScheduledExecutorService}.
      * It is intended as a hook for custom implementations to create their own executor.
@@ -671,6 +719,143 @@ public class DefaultShardManager implements ShardManager
         {
             this.executor = executor;
             this.automaticShutdown = automaticShutdown;
+        }
+    }
+
+    protected class ShardTotalTask implements RestRateLimiter.Work
+    {
+        private final CompletableFuture<Integer> future;
+        private final OkHttpClient httpClient;
+        private int failedAttempts = 0;
+
+        protected ShardTotalTask(CompletableFuture<Integer> future, OkHttpClient httpClient)
+        {
+            this.future = future;
+            this.httpClient = httpClient;
+        }
+
+        @Nonnull
+        @Override
+        public Route.CompiledRoute getRoute()
+        {
+            return Route.Misc.GATEWAY_BOT.compile();
+        }
+
+        @Nonnull
+        @Override
+        public JDA getJDA()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Nullable
+        @Override
+        public okhttp3.Response execute()
+        {
+            try
+            {
+                RestConfig config = restConfigProvider.apply(0);
+                String url = config.getBaseUrl() + getRoute().getCompiledRoute();
+                LOG.debug("Requesting shard total with url {}", url);
+
+                okhttp3.Request.Builder builder = new okhttp3.Request.Builder()
+                        .get()
+                        .url(url)
+                        .header("authorization", "Bot " + token)
+                        .header("accept-encoding", "gzip")
+                        .header("user-agent", config.getUserAgent());
+
+                Consumer<? super okhttp3.Request.Builder> customBuilder = config.getCustomBuilder();
+                if (customBuilder != null)
+                    customBuilder.accept(builder);
+
+                Call call = httpClient.newCall(builder.build());
+                okhttp3.Response response = call.execute();
+
+                try
+                {
+                    LOG.debug("Received response with code {}", response.code());
+                    InputStream body = IOUtil.getBody(response);
+
+                    if (response.isSuccessful())
+                    {
+                        DataObject json = DataObject.fromJson(body);
+                        int shardTotal = json.getInt("shards");
+                        future.complete(shardTotal);
+                    }
+                    else if (response.code() == 401)
+                    {
+                        future.completeExceptionally(new InvalidTokenException());
+                    }
+                    else if (response.code() != 429 && response.code() < 500 || ++failedAttempts > 4)
+                    {
+                        future.completeExceptionally(new IllegalStateException(
+                            "Failed to fetch recommended shard total! Code: " + response.code() + "\n" +
+                            new String(IOUtil.readFully(body), StandardCharsets.UTF_8)
+                        ));
+                    }
+                    else if (response.code() >= 500)
+                    {
+                        int backoff = 1 << failedAttempts;
+                        LOG.warn("Failed to retrieve recommended shard total. Code: {} ... retrying in {}s", response.code(), backoff);
+                        response = response.newBuilder()
+                                .headers(response.headers()
+                                    .newBuilder()
+                                    .set(RestRateLimiter.RESET_AFTER_HEADER, String.valueOf(backoff))
+                                    .set(RestRateLimiter.REMAINING_HEADER, String.valueOf(0))
+                                    .set(RestRateLimiter.LIMIT_HEADER, String.valueOf(1))
+                                    .set(RestRateLimiter.SCOPE_HEADER, "custom")
+                                    .build())
+                                .build();
+                    }
+
+                    return response;
+                }
+                finally
+                {
+                    response.close();
+                }
+            }
+            catch (IOException e)
+            {
+                future.completeExceptionally(e);
+                throw new UncheckedIOException(e);
+            }
+            catch (Throwable e)
+            {
+                future.completeExceptionally(e);
+                throw e;
+            }
+        }
+
+        @Override
+        public boolean isSkipped()
+        {
+            return isCancelled();
+        }
+
+        @Override
+        public boolean isDone()
+        {
+            return future.isDone();
+        }
+
+        @Override
+        public boolean isPriority()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isCancelled()
+        {
+            return future.isCancelled();
+        }
+
+        @Override
+        public void cancel()
+        {
+            future.cancel(false);
         }
     }
 }

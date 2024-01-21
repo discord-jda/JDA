@@ -280,11 +280,4 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
         this.latestMessageId = latestMessageId;
         return this;
     }
-
-    // -- Abstract Hooks --
-    @Override
-    protected void onPositionChange()
-    {
-        getGuild().getStageChannelsView().clearCachedLists();
-    }
 }

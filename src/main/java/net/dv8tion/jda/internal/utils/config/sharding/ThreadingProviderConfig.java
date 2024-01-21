@@ -26,7 +26,8 @@ import java.util.concurrent.ThreadFactory;
 
 public class ThreadingProviderConfig
 {
-    private final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider;
+    private final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitSchedulerProvider;
+    private final ThreadPoolProvider<? extends ExecutorService> rateLimitElasticProvider;
     private final ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider;
     private final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider;
     private final ThreadPoolProvider<? extends ExecutorService> eventPoolProvider;
@@ -34,14 +35,16 @@ public class ThreadingProviderConfig
     private final ThreadFactory threadFactory;
 
     public ThreadingProviderConfig(
-            @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider,
+            @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitSchedulerProvider,
+            @Nullable ThreadPoolProvider<? extends ExecutorService> rateLimitElasticProvider,
             @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider,
             @Nullable ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
             @Nullable ThreadPoolProvider<? extends ExecutorService> eventPoolProvider,
             @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider,
             @Nullable ThreadFactory threadFactory)
     {
-        this.rateLimitPoolProvider = rateLimitPoolProvider;
+        this.rateLimitSchedulerProvider = rateLimitSchedulerProvider;
+        this.rateLimitElasticProvider = rateLimitElasticProvider;
         this.gatewayPoolProvider = gatewayPoolProvider;
         this.callbackPoolProvider = callbackPoolProvider;
         this.eventPoolProvider = eventPoolProvider;
@@ -55,10 +58,48 @@ public class ThreadingProviderConfig
         return threadFactory;
     }
 
-    @Nullable
-    public ThreadPoolProvider<? extends ScheduledExecutorService> getRateLimitPoolProvider()
+    private void init(ThreadPoolProvider<?> provider, int shardTotal)
     {
-        return rateLimitPoolProvider;
+        if (provider instanceof ThreadPoolProvider.LazySharedProvider)
+            ((ThreadPoolProvider.LazySharedProvider<?>) provider).init(shardTotal);
+    }
+
+    private void shutdown(ThreadPoolProvider<?> provider)
+    {
+        if (provider instanceof ThreadPoolProvider.LazySharedProvider)
+            ((ThreadPoolProvider.LazySharedProvider<?>) provider).shutdown();
+    }
+
+    public void init(int shardTotal)
+    {
+        init(rateLimitSchedulerProvider, shardTotal);
+        init(rateLimitElasticProvider, shardTotal);
+        init(gatewayPoolProvider, shardTotal);
+        init(callbackPoolProvider, shardTotal);
+        init(eventPoolProvider, shardTotal);
+        init(audioPoolProvider, shardTotal);
+    }
+
+    public void shutdown()
+    {
+        shutdown(rateLimitSchedulerProvider);
+        shutdown(rateLimitElasticProvider);
+        shutdown(gatewayPoolProvider);
+        shutdown(callbackPoolProvider);
+        shutdown(eventPoolProvider);
+        shutdown(audioPoolProvider);
+    }
+
+    @Nullable
+    public ThreadPoolProvider<? extends ScheduledExecutorService> getRateLimitSchedulerProvider()
+    {
+        return rateLimitSchedulerProvider;
+    }
+
+    @Nullable
+    public ThreadPoolProvider<? extends ExecutorService> getRateLimitElasticProvider()
+    {
+        return rateLimitElasticProvider;
     }
 
     @Nullable
@@ -88,6 +129,6 @@ public class ThreadingProviderConfig
     @Nonnull
     public static ThreadingProviderConfig getDefault()
     {
-        return new ThreadingProviderConfig(null, null, null, null, null, null);
+        return new ThreadingProviderConfig(null, null, null, null, null, null, null);
     }
 }
