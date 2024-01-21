@@ -135,7 +135,6 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.reflections:reflections:0.10.2")
-    testImplementation("com.github.javaparser:javaparser-core:3.25.5")
 }
 
 val compileJava: JavaCompile by tasks
