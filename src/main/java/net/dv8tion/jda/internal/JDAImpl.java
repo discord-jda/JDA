@@ -615,9 +615,9 @@ public class JDAImpl implements JDA
         Checks.notNull(users, "users");
         for(User u : users)
             Checks.notNull(u, "All users");
-        return Collections.unmodifiableList(getGuilds().stream()
+        return getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull

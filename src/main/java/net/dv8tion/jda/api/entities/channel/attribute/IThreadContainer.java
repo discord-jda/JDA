@@ -26,12 +26,11 @@ import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Abstraction of all channel types, which can contain or manage {@link ThreadChannel ThreadChannels}.
@@ -59,11 +58,10 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
     @Nonnull
     default List<ThreadChannel> getThreadChannels()
     {
-        return Collections.unmodifiableList(
-            getGuild().getThreadChannelCache().applyStream(stream ->
-                stream.filter(thread -> thread.getParentChannel() == this)
-                      .collect(Collectors.toList())
-            ));
+        return getGuild().getThreadChannelCache().applyStream(stream ->
+            stream.filter(thread -> thread.getParentChannel() == this)
+                  .collect(Helpers.toUnmodifiableList())
+        );
     }
 
     /**

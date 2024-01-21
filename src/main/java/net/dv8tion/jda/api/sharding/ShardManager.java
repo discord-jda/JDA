@@ -39,6 +39,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.cache.UnifiedChannelCacheView;
 
 import javax.annotation.CheckReturnValue;
@@ -428,11 +429,10 @@ public interface ShardManager extends IGuildChannelContainer
     default List<Guild> getMutualGuilds(@Nonnull final Collection<User> users)
     {
         Checks.noneNull(users, "users");
-        return Collections.unmodifiableList(
-                this.getGuildCache().stream()
+        return this.getGuildCache().stream()
                 .filter(guild -> users.stream()
                         .allMatch(guild::isMember))
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
