@@ -16,17 +16,20 @@
 
 package net.dv8tion.jda.api.events.annotations;
 
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.lang.annotation.*;
 
 /**
- * Annotation used by events and {@link GatewayIntent#fromEvents(Class[])}
+ * Annotates the required intents for this event.
+ * <br>This is used by {@link GatewayIntent#fromEvents(Class[])}
  * to determine which intents are required and/or optional for a given event type.
  *
  * @see GatewayIntent#fromEvents(Class[])
+ * @see JDABuilder#enableIntents(GatewayIntent, GatewayIntent...)
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequiredIntents

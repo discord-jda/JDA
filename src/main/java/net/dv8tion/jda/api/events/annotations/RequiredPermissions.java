@@ -17,15 +17,18 @@
 package net.dv8tion.jda.api.events.annotations;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.IPermissionHolder;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.lang.annotation.*;
 
 /**
- * Annotation used by events to determine which permissions are required and/or optional for a given event type.
+ * Annotates the required and/or optional permissions on this event.
  *
  * @see Permission
+ * @see IPermissionHolder#hasPermission(GuildChannel, Permission...)
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequiredPermissions

@@ -16,27 +16,32 @@
 
 package net.dv8tion.jda.api.events.annotations;
 
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import java.lang.annotation.*;
 
 /**
- * Annotation used by events, specifying that a cached member is required for the event to fire for said member.
+ * Annotates this event as requiring a cached member to fire,
+ * or a method requiring a cached member to return appropriate results.
  *
- * <p>There are multiple ways a member/user would be cached,
- * the prerequisite being that the {@link MemberCachePolicy} needs to allow it to be cached first.
+ * <p>For a member/user to be cached, {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} needs to be enabled,
+ * and the {@link MemberCachePolicy} configured to allow some, if not all, members to be cached.
  * <br>Assuming the cache policy allows a member to be cached, the member will be loaded in the cache when either:
  * <ul>
- *     <li>JDA loads it on startup, using {@link ChunkingFilter}</li>
- *     <li>It is loaded explicitly, using {@link Guild#retrieveMemberById(long)} for example</li>
- *     <li>An event from the member is received, such as {@link SlashCommandInteractionEvent} for example</li>
+ *     <li>JDA loads it on startup, if a {@link ChunkingFilter} is configured</li>
+ *     <li>It is loaded explicitly, for example, using {@link Guild#retrieveMemberById(long)}</li>
+ *     <li>An event containing a member is received, such as {@link SlashCommandInteractionEvent}</li>
  * </ul>
  *
  * @see MemberCachePolicy
  * @see ChunkingFilter
+ * @see JDABuilder#setMemberCachePolicy(MemberCachePolicy)
+ * @see JDABuilder#setChunkingFilter(ChunkingFilter)
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

@@ -16,17 +16,20 @@
 
 package net.dv8tion.jda.api.events.annotations;
 
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.lang.annotation.*;
 
 /**
- * Annotation used by events and {@link CacheFlag#fromEvents(Class[])}
+ * Annotates the required cache flags for this event.
+ * <br>This is used by {@link CacheFlag#fromEvents(Class[])}
  * to determine which cache flags are required and/or optional for a given event type.
  *
  * @see CacheFlag#fromEvents(Class[])
+ * @see JDABuilder#enableCache(CacheFlag, CacheFlag...)
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RequiredCacheFlags
