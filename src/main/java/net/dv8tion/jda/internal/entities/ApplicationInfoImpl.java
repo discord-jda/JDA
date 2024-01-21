@@ -73,7 +73,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.owner = owner;
         this.team = team;
         this.tags = Collections.unmodifiableList(tags);
-        this.redirectUris = redirectUris;
+        this.redirectUris = Collections.unmodifiableList(redirectUris);
         this.interactionsEndpointUrl = interactionsEndpointUrl;
         this.roleConnectionsVerificationUrl = roleConnectionsVerificationUrl;
         this.customAuthUrl = customAuthUrl;
