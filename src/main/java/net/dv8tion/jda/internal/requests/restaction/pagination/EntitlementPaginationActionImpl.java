@@ -155,11 +155,10 @@ public class EntitlementPaginationActionImpl
             }
         }
 
-        if (order == PaginationOrder.BACKWARD)
-            Collections.reverse(entitlements);
-
         if (!entitlements.isEmpty())
         {
+            if (useCache)
+                cached.addAll(entitlements);
             last = entitlements.get(entitlements.size() - 1);
             lastKey = last.getIdLong();
         }
