@@ -155,9 +155,6 @@ public class EntitlementPaginationActionImpl
             }
         }
 
-        if (order == PaginationOrder.BACKWARD)
-            Collections.reverse(entitlements);
-
         if (!entitlements.isEmpty())
         {
             if (useCache)
