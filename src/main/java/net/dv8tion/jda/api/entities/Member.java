@@ -468,7 +468,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
 
     /**
      * Bans this Member and deletes messages sent by the user based on the amount of delDays.
-     * <br>If you wish to ban a user without deleting any messages, provide {@code deletionTimeframe} with a value of 0.
+     * <br>If you wish to ban a user without deleting any messages, use {@link Member#ban() Member.ban()} instead.
      * To set a ban reason, use {@link AuditableRestAction#reason(String)}.
      *
      * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserSnowflake)}.
@@ -506,6 +506,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *
      * @return {@link AuditableRestAction}
      *
+     * @see    Member#ban()
      * @see    Guild#ban(UserSnowflake, int, TimeUnit)
      * @see    AuditableRestAction#reason(String)
      */
@@ -514,6 +515,52 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     default AuditableRestAction<Void> ban(int deletionTimeframe, @Nonnull TimeUnit unit)
     {
         return getGuild().ban(this, deletionTimeframe, unit);
+    }
+
+    /**
+     * Bans this Member and does not delete any messages sent by the user.
+     * <br>If you wish to ban a user and delete their messages, use {@link Member#ban(int, TimeUnit) Member.ban(int, TimeUnit)} instead.
+     * To set a ban reason, use {@link AuditableRestAction#reason(String)}.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserSnowflake)}.
+     *
+     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
+     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     *     <br>The user no longer exists</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link Member#canInteract(Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided deletionTimeframe is negative.</li>
+     *             <li>If the provided deletionTimeframe is longer than 7 days.</li>
+     *             <li>If the provided time unit is {@code null}</li>
+     *         </ul>
+     *
+     * @return {@link AuditableRestAction}
+     *
+     * @see    Member#ban(int, TimeUnit)
+     * @see    Guild#ban(UserSnowflake, int, TimeUnit)
+     * @see    AuditableRestAction#reason(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> ban()
+    {
+        return ban(0, TimeUnit.SECONDS);
     }
 
     /**
