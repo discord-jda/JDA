@@ -655,12 +655,14 @@ public class MessageEmbed implements SerializableData
     public static class VideoInfo
     {
         protected final String url;
+        protected final String proxyUrl;
         protected final int width;
         protected final int height;
 
-        public VideoInfo(String url, int width, int height)
+        public VideoInfo(String url, String proxyUrl, int width, int height)
         {
             this.url = url;
+            this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
         }
@@ -674,6 +676,32 @@ public class MessageEmbed implements SerializableData
         public String getUrl()
         {
             return url;
+        }
+
+        /**
+         * The url of the video, proxied by Discord
+         * <br>This url is used to access the video through Discord instead of directly to prevent ip scraping.
+         *
+         * @return Possibly-null String containing the proxied video url.
+         */
+        @Nullable
+        public String getProxyUrl()
+        {
+            return proxyUrl;
+        }
+
+        /**
+         * Returns an {@link AttachmentProxy} for this embed video.
+         *
+         * @return Possibly-null {@link AttachmentProxy} of this embed video
+         *
+         * @see    #getProxyUrl()
+         */
+        @Nullable
+        public AttachmentProxy getProxy()
+        {
+            final String proxyUrl = getProxyUrl();
+            return proxyUrl == null ? null : new AttachmentProxy(proxyUrl);
         }
 
         /**
