@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.FileProxy;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -691,17 +692,17 @@ public class MessageEmbed implements SerializableData
         }
 
         /**
-         * Returns an {@link AttachmentProxy} for this embed video.
+         * Returns a {@link FileProxy} for this embed video.
          *
-         * @return Possibly-null {@link AttachmentProxy} of this embed video
+         * @return Possibly-null {@link FileProxy} of this embed video
          *
          * @see    #getProxyUrl()
          */
         @Nullable
-        public AttachmentProxy getProxy()
+        public FileProxy getProxy()
         {
             final String proxyUrl = getProxyUrl();
-            return proxyUrl == null ? null : new AttachmentProxy(proxyUrl);
+            return proxyUrl == null ? null : new FileProxy(proxyUrl);
         }
 
         /**
