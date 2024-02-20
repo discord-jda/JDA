@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class ChannelConsistencyTest
 {
     private static Set<String> getMethodNames(Class<?> clazz)
@@ -57,7 +59,7 @@ public class ChannelConsistencyTest
         {
             String channelName = getChannelName(type);
             String methodName = "create" + channelName + "Channel";
-            Assertions.assertTrue(guildMethods.contains(methodName), "Missing method Guild#" + methodName);
+            assertTrue(guildMethods.contains(methodName), "Missing method Guild#" + methodName);
         }
 
         Set<String> categoryMethods = getMethodNames(Category.class);
@@ -66,7 +68,7 @@ public class ChannelConsistencyTest
         {
             String channelName = getChannelName(type);
             String methodName = "create" + channelName + "Channel";
-            Assertions.assertTrue(categoryMethods.contains(methodName), "Missing method Category#" + methodName);
+            assertTrue(categoryMethods.contains(methodName), "Missing method Category#" + methodName);
         }
     }
 
@@ -87,17 +89,17 @@ public class ChannelConsistencyTest
             String channelName = getChannelName(type);
 
             String methodName = "get" + channelName + "ChannelCache";
-            Assertions.assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
+            assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
 
             methodName = "get" + channelName + "ChannelsByName";
-            Assertions.assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
+            assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
 
             methodName = "get" + channelName + "ChannelById";
-            Assertions.assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
+            assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
 
             methodName = "get" + channelName + "Channels";
-            Assertions.assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
-            Assertions.assertTrue(categoryMethods.contains(methodName), "Missing method Category#" + methodName);
+            assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
+            assertTrue(categoryMethods.contains(methodName), "Missing method Category#" + methodName);
         }
     }
 
@@ -114,7 +116,7 @@ public class ChannelConsistencyTest
         {
             String channelName = getChannelName(type);
 
-            Assertions.assertDoesNotThrow(() -> {
+            assertDoesNotThrow(() -> {
                 Class.forName("net.dv8tion.jda.api.managers.channel.concrete." + channelName + "ChannelManager");
             }, "Missing manager interface for ChannelType." + type);
         }

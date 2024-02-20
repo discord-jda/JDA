@@ -19,8 +19,9 @@ package net.dv8tion.jda.entities;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageSerializationTest
 {
@@ -42,39 +43,39 @@ public class MessageSerializationTest
 
         MessageEmbed dataEmbed = EmbedBuilder.fromData(embed.toData()).build();
 
-        Assertions.assertEquals(embed.getType(), dataEmbed.getType());
-        Assertions.assertEquals(EmbedType.RICH, embed.getType());
+        assertEquals(embed.getType(), dataEmbed.getType());
+        assertEquals(EmbedType.RICH, embed.getType());
 
-        Assertions.assertEquals(embed.getDescription(), dataEmbed.getDescription());
-        Assertions.assertEquals(embed.getTitle(), dataEmbed.getTitle());
-        Assertions.assertEquals(embed.getUrl(), dataEmbed.getUrl());
-        Assertions.assertEquals(embed.getAuthor(), dataEmbed.getAuthor());
-        Assertions.assertEquals(embed.getFooter(), dataEmbed.getFooter());
-        Assertions.assertEquals(embed.getImage(), dataEmbed.getImage());
-        Assertions.assertEquals(embed.getThumbnail(), dataEmbed.getThumbnail());
-        Assertions.assertEquals(embed.getFields(), dataEmbed.getFields());
+        assertEquals(embed.getDescription(), dataEmbed.getDescription());
+        assertEquals(embed.getTitle(), dataEmbed.getTitle());
+        assertEquals(embed.getUrl(), dataEmbed.getUrl());
+        assertEquals(embed.getAuthor(), dataEmbed.getAuthor());
+        assertEquals(embed.getFooter(), dataEmbed.getFooter());
+        assertEquals(embed.getImage(), dataEmbed.getImage());
+        assertEquals(embed.getThumbnail(), dataEmbed.getThumbnail());
+        assertEquals(embed.getFields(), dataEmbed.getFields());
 
-        Assertions.assertEquals(embed, dataEmbed);
+        assertEquals(embed, dataEmbed);
 
-        Assertions.assertEquals("Description Text", dataEmbed.getDescription());
-        Assertions.assertEquals("Title Text", dataEmbed.getTitle());
-        Assertions.assertEquals("https://example.com/title", dataEmbed.getUrl());
-        Assertions.assertEquals("Author Text", dataEmbed.getAuthor().getName());
-        Assertions.assertEquals("https://example.com/author", dataEmbed.getAuthor().getUrl());
-        Assertions.assertEquals("https://example.com/author_icon", dataEmbed.getAuthor().getIconUrl());
-        Assertions.assertEquals("Footer Text", dataEmbed.getFooter().getText());
-        Assertions.assertEquals("https://example.com/footer_icon", dataEmbed.getFooter().getIconUrl());
-        Assertions.assertEquals("https://example.com/image", dataEmbed.getImage().getUrl());
-        Assertions.assertEquals("https://example.com/thumbnail", dataEmbed.getThumbnail().getUrl());
-        Assertions.assertEquals(3, dataEmbed.getFields().size());
-        Assertions.assertEquals("Field 1", dataEmbed.getFields().get(0).getName());
-        Assertions.assertEquals("Field 1 Text", dataEmbed.getFields().get(0).getValue());
-        Assertions.assertTrue(dataEmbed.getFields().get(0).isInline());
-        Assertions.assertEquals("Field 2", dataEmbed.getFields().get(1).getName());
-        Assertions.assertEquals("Field 2 Text", dataEmbed.getFields().get(1).getValue());
-        Assertions.assertFalse(dataEmbed.getFields().get(1).isInline());
-        Assertions.assertEquals("Field 3", dataEmbed.getFields().get(2).getName());
-        Assertions.assertEquals("Field 3 Text", dataEmbed.getFields().get(2).getValue());
-        Assertions.assertTrue(dataEmbed.getFields().get(2).isInline());
+        assertEquals("Description Text", dataEmbed.getDescription());
+        assertEquals("Title Text", dataEmbed.getTitle());
+        assertEquals("https://example.com/title", dataEmbed.getUrl());
+        assertEquals("Author Text", dataEmbed.getAuthor().getName());
+        assertEquals("https://example.com/author", dataEmbed.getAuthor().getUrl());
+        assertEquals("https://example.com/author_icon", dataEmbed.getAuthor().getIconUrl());
+        assertEquals("Footer Text", dataEmbed.getFooter().getText());
+        assertEquals("https://example.com/footer_icon", dataEmbed.getFooter().getIconUrl());
+        assertEquals("https://example.com/image", dataEmbed.getImage().getUrl());
+        assertEquals("https://example.com/thumbnail", dataEmbed.getThumbnail().getUrl());
+        assertEquals(3, dataEmbed.getFields().size());
+        assertEquals("Field 1", dataEmbed.getFields().get(0).getName());
+        assertEquals("Field 1 Text", dataEmbed.getFields().get(0).getValue());
+        assertTrue(dataEmbed.getFields().get(0).isInline());
+        assertEquals("Field 2", dataEmbed.getFields().get(1).getName());
+        assertEquals("Field 2 Text", dataEmbed.getFields().get(1).getValue());
+        assertFalse(dataEmbed.getFields().get(1).isInline());
+        assertEquals("Field 3", dataEmbed.getFields().get(2).getName());
+        assertEquals("Field 3 Text", dataEmbed.getFields().get(2).getValue());
+        assertTrue(dataEmbed.getFields().get(2).isInline());
     }
 }

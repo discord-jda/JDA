@@ -14,93 +14,93 @@
  * limitations under the License.
  */
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static net.dv8tion.jda.api.utils.MarkdownUtil.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MarkdownUtilTest
 {
     @Test
     public void testBold()
     {
-        Assertions.assertEquals("**Hello World**", bold("Hello World"));
-        Assertions.assertEquals("**Hello \\*\\*Test\\*\\* World**", bold("Hello **Test** World"));
-        Assertions.assertEquals("**Hello *Test* World**", bold("Hello *Test* World"));
+        assertEquals("**Hello World**", bold("Hello World"));
+        assertEquals("**Hello \\*\\*Test\\*\\* World**", bold("Hello **Test** World"));
+        assertEquals("**Hello *Test* World**", bold("Hello *Test* World"));
     }
 
     @Test
     public void testItalics()
     {
-        Assertions.assertEquals("_Hello World_", italics("Hello World"));
-        Assertions.assertEquals("_Hello \\_Test\\_ World_", italics("Hello _Test_ World"));
-        Assertions.assertEquals("_Hello __Test__ World_", italics("Hello __Test__ World"));
+        assertEquals("_Hello World_", italics("Hello World"));
+        assertEquals("_Hello \\_Test\\_ World_", italics("Hello _Test_ World"));
+        assertEquals("_Hello __Test__ World_", italics("Hello __Test__ World"));
     }
 
     @Test
     public void testUnderline()
     {
-        Assertions.assertEquals("__Hello World__", underline("Hello World"));
-        Assertions.assertEquals("__Hello \\_\\_Test\\_\\_ World__", underline("Hello __Test__ World"));
-        Assertions.assertEquals("__Hello _Test_ World__", underline("Hello _Test_ World"));
+        assertEquals("__Hello World__", underline("Hello World"));
+        assertEquals("__Hello \\_\\_Test\\_\\_ World__", underline("Hello __Test__ World"));
+        assertEquals("__Hello _Test_ World__", underline("Hello _Test_ World"));
     }
 
     @Test
     public void testMonospace()
     {
-        Assertions.assertEquals("`Hello World`", monospace("Hello World"));
-        Assertions.assertEquals("`Hello \\`Test\\` World`", monospace("Hello `Test` World"));
-        Assertions.assertEquals("`Hello ``Test`` World`", monospace("Hello ``Test`` World"));
+        assertEquals("`Hello World`", monospace("Hello World"));
+        assertEquals("`Hello \\`Test\\` World`", monospace("Hello `Test` World"));
+        assertEquals("`Hello ``Test`` World`", monospace("Hello ``Test`` World"));
     }
 
     @Test
     public void testCodeblock()
     {
-        Assertions.assertEquals("```java\nHello World```", codeblock("java", "Hello World"));
-        Assertions.assertEquals("```java\nHello \\```java\nTest\\``` World```", codeblock("java", "Hello ```java\nTest``` World"));
-        Assertions.assertEquals("```java\nHello `Test` World```", codeblock("java", "Hello `Test` World"));
+        assertEquals("```java\nHello World```", codeblock("java", "Hello World"));
+        assertEquals("```java\nHello \\```java\nTest\\``` World```", codeblock("java", "Hello ```java\nTest``` World"));
+        assertEquals("```java\nHello `Test` World```", codeblock("java", "Hello `Test` World"));
 
-        Assertions.assertEquals("```Hello World```", codeblock("Hello World"));
-        Assertions.assertEquals("```Hello \\```java\nTest\\``` World```", codeblock("Hello ```java\nTest``` World"));
-        Assertions.assertEquals("```Hello `Test` World```", codeblock("Hello `Test` World"));
+        assertEquals("```Hello World```", codeblock("Hello World"));
+        assertEquals("```Hello \\```java\nTest\\``` World```", codeblock("Hello ```java\nTest``` World"));
+        assertEquals("```Hello `Test` World```", codeblock("Hello `Test` World"));
     }
 
     @Test
     public void testSpoiler()
     {
-        Assertions.assertEquals("||Hello World||", spoiler("Hello World"));
-        Assertions.assertEquals("||Hello \\||Test\\|| World||", spoiler("Hello ||Test|| World"));
-        Assertions.assertEquals("||Hello |Test| World||", spoiler("Hello |Test| World"));
+        assertEquals("||Hello World||", spoiler("Hello World"));
+        assertEquals("||Hello \\||Test\\|| World||", spoiler("Hello ||Test|| World"));
+        assertEquals("||Hello |Test| World||", spoiler("Hello |Test| World"));
     }
 
     @Test
     public void testStrike()
     {
-        Assertions.assertEquals("~~Hello World~~", strike("Hello World"));
-        Assertions.assertEquals("~~Hello \\~~Test\\~~ World~~", strike("Hello ~~Test~~ World"));
-        Assertions.assertEquals("~~Hello ~Test~ World~~", strike("Hello ~Test~ World"));
+        assertEquals("~~Hello World~~", strike("Hello World"));
+        assertEquals("~~Hello \\~~Test\\~~ World~~", strike("Hello ~~Test~~ World"));
+        assertEquals("~~Hello ~Test~ World~~", strike("Hello ~Test~ World"));
     }
 
     @Test
     public void testQuote()
     {
-        Assertions.assertEquals("> Hello World", quote("Hello World"));
-        Assertions.assertEquals("> Hello \n> \\> Test World", quote("Hello \n> Test World"));
-        Assertions.assertEquals("> Hello > Test World", quote("Hello > Test World"));
+        assertEquals("> Hello World", quote("Hello World"));
+        assertEquals("> Hello \n> \\> Test World", quote("Hello \n> Test World"));
+        assertEquals("> Hello > Test World", quote("Hello > Test World"));
     }
 
     @Test
     public void testQuoteBlock()
     {
-        Assertions.assertEquals(">>> Hello World", quoteBlock("Hello World"));
-        Assertions.assertEquals(">>> Hello \n>>> Test World", quoteBlock("Hello \n>>> Test World"));
+        assertEquals(">>> Hello World", quoteBlock("Hello World"));
+        assertEquals(">>> Hello \n>>> Test World", quoteBlock("Hello \n>>> Test World"));
     }
 
     @Test
     public void testMaskedLink()
     {
-        Assertions.assertEquals("[Hello](World)", maskedLink("Hello", "World"));
-        Assertions.assertEquals("[Hello](World%29)", maskedLink("Hello", "World)"));
-        Assertions.assertEquals("[Hello\\]](World%29)", maskedLink("Hello]", "World)"));
+        assertEquals("[Hello](World)", maskedLink("Hello", "World"));
+        assertEquals("[Hello](World%29)", maskedLink("Hello", "World)"));
+        assertEquals("[Hello\\]](World%29)", maskedLink("Hello]", "World)"));
     }
 }
