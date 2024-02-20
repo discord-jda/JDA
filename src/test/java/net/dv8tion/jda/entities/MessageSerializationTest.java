@@ -25,21 +25,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageSerializationTest
 {
+
+    private static MessageEmbed getTestEmbed()
+    {
+        return new EmbedBuilder()
+        .setDescription("Description Text")
+        .setTitle("Title Text", "https://example.com/title")
+        .setAuthor("Author Text", "https://example.com/author", "https://example.com/author_icon")
+        .setFooter("Footer Text", "https://example.com/footer_icon")
+        .setImage("https://example.com/image")
+        .setThumbnail("https://example.com/thumbnail")
+        .addField("Field 1", "Field 1 Text", true)
+        .addField("Field 2", "Field 2 Text", false)
+        .addField("Field 3", "Field 3 Text", true).build();
+    }
+
     @Test
     void testEmbedSerialization()
     {
-        EmbedBuilder builder = new EmbedBuilder();
-        builder.setDescription("Description Text");
-        builder.setTitle("Title Text", "https://example.com/title");
-        builder.setAuthor("Author Text", "https://example.com/author", "https://example.com/author_icon");
-        builder.setFooter("Footer Text", "https://example.com/footer_icon");
-        builder.setImage("https://example.com/image");
-        builder.setThumbnail("https://example.com/thumbnail");
-        builder.addField("Field 1", "Field 1 Text", true);
-        builder.addField("Field 2", "Field 2 Text", false);
-        builder.addField("Field 3", "Field 3 Text", true);
-
-        MessageEmbed embed = builder.build();
+        MessageEmbed embed = getTestEmbed();
 
         MessageEmbed dataEmbed = EmbedBuilder.fromData(embed.toData()).build();
 
