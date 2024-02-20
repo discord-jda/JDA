@@ -25,21 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MessageSerializationTest
 {
-
-    private static MessageEmbed getTestEmbed()
-    {
-        return new EmbedBuilder()
-        .setDescription("Description Text")
-        .setTitle("Title Text", "https://example.com/title")
-        .setAuthor("Author Text", "https://example.com/author", "https://example.com/author_icon")
-        .setFooter("Footer Text", "https://example.com/footer_icon")
-        .setImage("https://example.com/image")
-        .setThumbnail("https://example.com/thumbnail")
-        .addField("Field 1", "Field 1 Text", true)
-        .addField("Field 2", "Field 2 Text", false)
-        .addField("Field 3", "Field 3 Text", true).build();
-    }
-
     @Test
     void testEmbedSerialization()
     {
@@ -81,5 +66,19 @@ public class MessageSerializationTest
         assertEquals("Field 3", dataEmbed.getFields().get(2).getName());
         assertEquals("Field 3 Text", dataEmbed.getFields().get(2).getValue());
         assertTrue(dataEmbed.getFields().get(2).isInline());
+    }
+
+    private MessageEmbed getTestEmbed()
+    {
+        return new EmbedBuilder()
+                .setDescription("Description Text")
+                .setTitle("Title Text", "https://example.com/title")
+                .setAuthor("Author Text", "https://example.com/author", "https://example.com/author_icon")
+                .setFooter("Footer Text", "https://example.com/footer_icon")
+                .setImage("https://example.com/image")
+                .setThumbnail("https://example.com/thumbnail")
+                .addField("Field 1", "Field 1 Text", true)
+                .addField("Field 2", "Field 2 Text", false)
+                .addField("Field 3", "Field 3 Text", true).build();
     }
 }
