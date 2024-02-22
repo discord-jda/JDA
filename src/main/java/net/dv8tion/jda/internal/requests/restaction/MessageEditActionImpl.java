@@ -22,7 +22,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
@@ -32,6 +34,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
+import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
@@ -101,6 +104,15 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
         DataObject json = response.getObject();
         ReceivedMessage message = entityBuilder.createMessageBestEffort(json, channel, guild);
         request.onSuccess(message.withHook(webhook));
+    }
+
+    @Override
+    protected void handleErrorResponse(Response response, Request<Message> request, ErrorResponseException exception)
+    {
+        if (webhook instanceof InteractionHookImpl && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+            request.onFailure(new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration"));
+        else
+            super.handleErrorResponse(response, request, exception);
     }
 
     @Nonnull

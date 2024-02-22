@@ -34,14 +34,13 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
@@ -51,6 +50,7 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -774,7 +774,17 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
-            return new AuditableRestActionImpl<>(getJDA(), route);
+            return new AuditableRestActionImpl<Void>(getJDA(), route)
+            {
+                @Override
+                protected void handleErrorResponse(Response response, Request<Void> request, ErrorResponseException exception)
+                {
+                    if (webhook instanceof InteractionHookImpl && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+                        request.onFailure(new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration"));
+                    else
+                        super.handleErrorResponse(response, request, exception);
+                }
+            };
         }
 
         SelfUser self = getJDA().getSelfUser();
@@ -839,7 +849,17 @@ public class ReceivedMessage implements Message
             newFlags &= ~suppressionValue;
         DataObject body = DataObject.empty().put("flags", newFlags);
 
-        return new AuditableRestActionImpl<>(api, route, body);
+        return new AuditableRestActionImpl<Void>(api, route, body)
+        {
+            @Override
+            protected void handleErrorResponse(Response response, Request<Void> request, ErrorResponseException exception)
+            {
+                if (webhook instanceof InteractionHookImpl && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+                    request.onFailure(new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration"));
+                else
+                    super.handleErrorResponse(response, request, exception);
+            }
+        };
     }
 
     @Nonnull

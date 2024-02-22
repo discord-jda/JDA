@@ -277,8 +277,10 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         if (response.isOk())
             handleSuccess(response, request);
+        else if (response.isRateLimit())
+            request.onFailure(request.createRateLimitedException(response));
         else
-            request.onFailure(response);
+            handleErrorResponse(response, request, request.createErrorResponseException(response));
     }
 
     protected void handleSuccess(Response response, Request<T> request)
@@ -287,6 +289,11 @@ public class RestActionImpl<T> implements RestAction<T>
             request.onSuccess(null);
         else
             request.onSuccess(handler.apply(response, request));
+    }
+
+    protected void handleErrorResponse(Response response, Request<T> request, ErrorResponseException exception)
+    {
+        request.onFailure(exception);
     }
 
     private long getDeadline()
