@@ -779,7 +779,9 @@ public class ReceivedMessage implements Message
                 @Override
                 protected void handleErrorResponse(Response response, Request<Void> request, ErrorResponseException exception)
                 {
-                    if (webhook instanceof InteractionHookImpl && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+                    if (webhook instanceof InteractionHookImpl
+                            && !((InteractionHookImpl) webhook).isAck()
+                            && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
                         request.onFailure(new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration"));
                     else
                         super.handleErrorResponse(response, request, exception);
@@ -854,7 +856,9 @@ public class ReceivedMessage implements Message
             @Override
             protected void handleErrorResponse(Response response, Request<Void> request, ErrorResponseException exception)
             {
-                if (webhook instanceof InteractionHookImpl && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+                if (webhook instanceof InteractionHookImpl
+                        && !((InteractionHookImpl) webhook).isAck()
+                        && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
                     request.onFailure(new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration"));
                 else
                     super.handleErrorResponse(response, request, exception);

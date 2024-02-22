@@ -109,7 +109,9 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     @Override
     protected void handleErrorResponse(Response response, Request<Message> request, ErrorResponseException exception)
     {
-        if (webhook instanceof InteractionHookImpl && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+        if (webhook instanceof InteractionHookImpl
+                && !((InteractionHookImpl) webhook).isAck()
+                && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
             request.onFailure(new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration"));
         else
             super.handleErrorResponse(response, request, exception);
