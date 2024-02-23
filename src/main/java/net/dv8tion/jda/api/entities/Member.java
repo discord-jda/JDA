@@ -342,6 +342,20 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     List<Role> getRoles();
 
     /**
+     * Whether this Member has specific roles.
+     *
+     * @param  roles
+     *         Required roles
+     *
+     * @return true if this Member has all roles that is required in {@code roles} parameter.
+     *
+     * @see    Guild#addRoleToMember(UserSnowflake, Role)
+     * @see    Guild#removeRoleFromMember(UserSnowflake, Role)
+     * @see    Guild#modifyMemberRoles(Member, Collection, Collection)
+     */
+    boolean hasRoles(@Nonnull Role... roles);
+
+    /**
      * The {@link java.awt.Color Color} of this Member's name in a Guild.
      *
      * <p>This is determined by the color of the highest role assigned to them that does not have the default color.

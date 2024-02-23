@@ -38,7 +38,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -205,6 +204,24 @@ public class MemberImpl implements Member
         roleList.sort(Comparator.reverseOrder());
 
         return Collections.unmodifiableList(roleList);
+    }
+
+    @Override
+    public boolean hasRoles(@Nonnull Role... roles)
+    {
+        switch (roles.length)
+        {
+            case 0:
+                return true;
+            case 1:
+                return this.roles.contains(roles[0]);
+            case 2:
+                return this.roles.contains(roles[0]) && this.roles.contains(roles[1]);
+            case 3:
+                return this.roles.contains(roles[0]) && this.roles.contains(roles[1]) && this.roles.contains(roles[2]);
+            default:
+                return this.roles.containsAll(Arrays.asList(roles));
+        }
     }
 
     @Override
