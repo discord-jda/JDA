@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.ErrorMapper;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import okhttp3.RequestBody;
@@ -67,6 +68,13 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
     public AuditableRestActionImpl(JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler)
     {
         super(api, route, data, handler);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<T> setErrorMapper(ErrorMapper errorMapper)
+    {
+        return (AuditableRestAction<T>) super.setErrorMapper(errorMapper);
     }
 
     @Nonnull
