@@ -2542,7 +2542,7 @@ public final class TweetNaclFast {
         return crypto_box_open_afternm(m,c,d,n,k);
     }
 
-    private static final long K[] = {
+    private static final long[] K = {
             0x428a2f98d728ae22L, 0x7137449123ef65cdL, 0xb5c0fbcfec4d3b2fL, 0xe9b5dba58189dbbcL,
             0x3956c25bf348b538L, 0x59f111f1b605d019L, 0x923f82a4af194f9bL, 0xab1c5ed5da6d8118L,
             0xd807aa98a3030242L, 0x12835b0145706fbeL, 0x243185be4ee4b28cL, 0x550c7dc3d5ffb4e2L,
@@ -2999,7 +2999,7 @@ public final class TweetNaclFast {
 
     // gf: long[16]
     ///private static void add(gf p[4],gf q[4])
-    private static void add(long [] p[], long [] q[])
+    private static void add(long[][] p, long[][] q)
     {
         long [] a = new long[16];
         long [] b = new long[16];
@@ -3044,7 +3044,7 @@ public final class TweetNaclFast {
         M(p3,0, e,0, h,0);
     }
 
-    private static void cswap(long [] p[], long [] q[], byte b)
+    private static void cswap(long[][] p, long[][] q, byte b)
     {
         int i;
 
@@ -3052,7 +3052,7 @@ public final class TweetNaclFast {
             sel25519(p[i],0, q[i],0, b);
     }
 
-    private static void pack(byte [] r, long [] p[])
+    private static void pack(byte [] r, long[][] p)
     {
         long [] tx = new long[16];
         long [] ty = new long[16];
@@ -3068,7 +3068,7 @@ public final class TweetNaclFast {
         r[31] ^= par25519(tx,0) << 7;
     }
 
-    private static void scalarmult(long [] p[], long [] q[], byte[] s,final int soff)
+    private static void scalarmult(long[][] p, long[][] q, byte[] s, final int soff)
     {
         int i;
 
@@ -3091,7 +3091,7 @@ public final class TweetNaclFast {
         ///L/og.d(TAG, "scalarmult -> "+dbgt);
     }
 
-    private static void scalarbase(long [] p[], byte[] s,final int soff)
+    private static void scalarbase(long[][] p, byte[] s, final int soff)
     {
         long [] [] q = new long [4] [];
 
@@ -3131,14 +3131,14 @@ public final class TweetNaclFast {
         return 0;
     }
 
-    private static final long L[] = {
+    private static final long[] L = {
             0xed, 0xd3, 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58,
             0xd6, 0x9c, 0xf7, 0xa2, 0xde, 0xf9, 0xde, 0x14,
             0,    0,    0,    0,    0,    0,    0,    0,
             0,    0,    0,    0,    0,    0,    0,    0x10
     };
 
-    private static void modL(byte[] r,final int roff, long x[])
+    private static void modL(byte[] r, final int roff, long[] x)
     {
         long carry;
         int i, j;
@@ -3227,7 +3227,7 @@ public final class TweetNaclFast {
         return 0;
     }
 
-    private static int unpackneg(long [] r[], byte p[])
+    private static int unpackneg(long[][] r, byte[] p)
     {
         long []    t = new long [16];
         long []  chk = new long [16];

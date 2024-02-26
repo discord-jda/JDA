@@ -377,38 +377,38 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
     public void onGenericCommandInteraction(@Nonnull GenericCommandInteractionEvent event) {}
     public void onGenericContextInteraction(@Nonnull GenericContextInteractionEvent<?> event) {}
-    public void onGenericSelectMenuInteraction(@Nonnull GenericSelectMenuInteractionEvent event) {}
+    public void onGenericSelectMenuInteraction(@Nonnull GenericSelectMenuInteractionEvent<?, ?> event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
     public void onGenericUserPresence(@Nonnull GenericUserPresenceEvent event) {}
-    public void onGenericUserUpdate(@Nonnull GenericUserUpdateEvent event) {}
-    public void onGenericSelfUpdate(@Nonnull GenericSelfUpdateEvent event) {}
+    public void onGenericUserUpdate(@Nonnull GenericUserUpdateEvent<?> event) {}
+    public void onGenericSelfUpdate(@Nonnull GenericSelfUpdateEvent<?> event) {}
     public void onGenericStageInstance(@Nonnull GenericStageInstanceEvent event) {}
-    public void onGenericStageInstanceUpdate(@Nonnull GenericStageInstanceUpdateEvent event) {}
+    public void onGenericStageInstanceUpdate(@Nonnull GenericStageInstanceUpdateEvent<?> event) {}
     public void onGenericChannel(@Nonnull GenericChannelEvent event) {}
     public void onGenericChannelUpdate(@Nonnull GenericChannelUpdateEvent<?> event) {}
     public void onGenericThread(@Nonnull GenericThreadEvent event) {}
     public void onGenericThreadMember(@Nonnull GenericThreadMemberEvent event) {}
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
-    public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
+    public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent<?> event) {}
     public void onGenericGuildInvite(@Nonnull GenericGuildInviteEvent event) {}
     public void onGenericGuildMember(@Nonnull GenericGuildMemberEvent event) {}
-    public void onGenericGuildMemberUpdate(@Nonnull GenericGuildMemberUpdateEvent event) {}
+    public void onGenericGuildMemberUpdate(@Nonnull GenericGuildMemberUpdateEvent<?> event) {}
     public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
     public void onGenericAutoModRule(@Nonnull GenericAutoModRuleEvent event) {}
     public void onGenericRole(@Nonnull GenericRoleEvent event) {}
-    public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
+    public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent<?> event) {}
     public void onGenericEmoji(@Nonnull GenericEmojiEvent event) {}
-    public void onGenericEmojiUpdate(@Nonnull GenericEmojiUpdateEvent event) {}
+    public void onGenericEmojiUpdate(@Nonnull GenericEmojiUpdateEvent<?> event) {}
     public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
-    public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
+    public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent<?> event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
-    public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent event) {}
+    public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent<?> event) {}
     public void onGenericScheduledEventGateway(@Nonnull GenericScheduledEventGatewayEvent event) {}
     public void onGenericScheduledEventUser(@Nonnull GenericScheduledEventUserEvent event) {}
     public void onGenericForumTag(@Nonnull GenericForumTagEvent event) {}
-    public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent event) {}
+    public void onGenericForumTagUpdate(@Nonnull GenericForumTagUpdateEvent<?> event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
