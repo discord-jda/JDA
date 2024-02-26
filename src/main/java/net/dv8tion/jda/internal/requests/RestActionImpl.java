@@ -278,7 +278,7 @@ public class RestActionImpl<T> implements RestAction<T>
         if (response.isOk())
             handleSuccess(response, request);
         else if (response.isRateLimit())
-            request.onFailure(request.createRateLimitedException(response));
+            request.onRateLimited(response);
         else
             handleErrorResponse(response, request, request.createErrorResponseException(response));
     }

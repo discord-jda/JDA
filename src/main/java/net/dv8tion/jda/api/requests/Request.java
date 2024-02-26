@@ -138,7 +138,7 @@ public class Request<T>
     {
         if (response.code == 429)
         {
-            onFailure(createRateLimitedException(response));
+            onRateLimited(response);
         }
         else
         {
@@ -146,10 +146,9 @@ public class Request<T>
         }
     }
 
-    @Nonnull
-    public RateLimitedException createRateLimitedException(@Nonnull Response response)
+    public void onRateLimited(Response response)
     {
-        return new RateLimitedException(route, response.retryAfter);
+        onFailure(new RateLimitedException(route, response.retryAfter));
     }
 
     @Nonnull
