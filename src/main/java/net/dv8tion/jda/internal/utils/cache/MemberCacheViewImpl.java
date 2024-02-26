@@ -92,17 +92,17 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
     public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles)
     {
         Checks.noneNull(roles, "Roles");
-        if (isEmpty())
+
+        Set<Role> rolesWithoutPublicRoleSet = roles.stream()
+                .filter(role -> !role.isPublicRole())
+                .collect(Collectors.toSet());
+
+        if (isEmpty() || rolesWithoutPublicRoleSet.isEmpty())
             return Collections.emptyList();
 
-        List<Role> rolesWithoutPublicRole = roles.stream().filter(role -> !role.isPublicRole()).collect(Collectors.toList());
-        if (rolesWithoutPublicRole.isEmpty())
-            return asList();
-
         List<Member> members = new ArrayList<>();
-        forEach(member ->
-        {
-            if (member.getRoles().containsAll(rolesWithoutPublicRole))
+        forEach(member -> {
+            if (new HashSet<>(member.getRoles()).containsAll(rolesWithoutPublicRoleSet))
                 members.add(member);
         });
         return members;

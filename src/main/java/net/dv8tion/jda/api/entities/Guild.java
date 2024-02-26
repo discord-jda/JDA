@@ -2723,7 +2723,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
         if (rolesWithoutPublicRole.isEmpty())
             return loadMembers();
 
-        return findMembers(member -> member.getRoles().containsAll(rolesWithoutPublicRole));
+        return findMembers(member -> new HashSet<>(member.getRoles()).containsAll(rolesWithoutPublicRole));
     }
 
     /**
