@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
-import net.dv8tion.jda.internal.requests.ErrorMapper;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.message.MessageEditBuilderMixin;
 import okhttp3.RequestBody;
@@ -102,13 +101,6 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
         DataObject json = response.getObject();
         ReceivedMessage message = entityBuilder.createMessageBestEffort(json, channel, guild);
         request.onSuccess(message.withHook(webhook));
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditActionImpl setErrorMapper(ErrorMapper errorMapper)
-    {
-        return (MessageEditActionImpl) super.setErrorMapper(errorMapper);
     }
 
     @Nonnull

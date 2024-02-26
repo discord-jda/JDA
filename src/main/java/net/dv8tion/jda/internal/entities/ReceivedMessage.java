@@ -777,8 +777,9 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
-            return new AuditableRestActionImpl<Void>(getJDA(), route)
-                    .setErrorMapper(getUnknownWebhookErrorMapper());
+            final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
+            action.setErrorMapper(getUnknownWebhookErrorMapper());
+            return action;
         }
 
         SelfUser self = getJDA().getSelfUser();
@@ -843,8 +844,9 @@ public class ReceivedMessage implements Message
             newFlags &= ~suppressionValue;
         DataObject body = DataObject.empty().put("flags", newFlags);
 
-        return new AuditableRestActionImpl<Void>(api, route, body)
-                .setErrorMapper(getUnknownWebhookErrorMapper());
+        final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(api, route, body);
+        action.setErrorMapper(getUnknownWebhookErrorMapper());
+        return action;
     }
 
     @Nonnull
@@ -989,7 +991,8 @@ public class ReceivedMessage implements Message
                 ? new MessageEditActionImpl(getChannel(), getId())
                 : new MessageEditActionImpl(getJDA(), hasGuild() ? getGuild() : null, getChannelId(), getId());
 
-        return messageEditAction.setErrorMapper(getUnknownWebhookErrorMapper());
+        messageEditAction.setErrorMapper(getUnknownWebhookErrorMapper());
+        return messageEditAction;
     }
 
     private ErrorMapper getUnknownWebhookErrorMapper()

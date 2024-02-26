@@ -147,11 +147,9 @@ public class RestActionImpl<T> implements RestAction<T>
         this.handler = handler;
     }
 
-    @Nonnull
-    public RestAction<T> setErrorMapper(ErrorMapper errorMapper)
+    public void setErrorMapper(ErrorMapper errorMapper)
     {
         this.errorMapper = errorMapper;
-        return this;
     }
 
     public RestActionImpl<T> priority()
