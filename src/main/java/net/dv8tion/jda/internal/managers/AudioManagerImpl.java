@@ -99,7 +99,7 @@ public class AudioManagerImpl implements AudioManager
             throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
 
         // if userLimit is 0 if no limit is set!
-        final int userLimit = channel instanceof VoiceChannel ? ((VoiceChannel) channel).getUserLimit() : 0;
+        final int userLimit = channel instanceof VoiceChannel ? channel.getUserLimit() : 0;
         if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR))
         {
             // Check if we can actually join this channel

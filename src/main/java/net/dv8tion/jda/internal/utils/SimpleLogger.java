@@ -80,7 +80,7 @@ class SimpleLogger extends MarkerIgnoringBase {
         try {
             prop = System.getProperty(name);
         } catch (SecurityException e) {
-            ; // Ignore
+            // Ignore
         }
         return (prop == null) ? SIMPLE_LOGGER_PROPS.getProperty(name) : prop;
     }
@@ -142,14 +142,12 @@ class SimpleLogger extends MarkerIgnoringBase {
 
     private static void loadProperties() {
         // Add props from the resource Logger.properties
-        InputStream in = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-            public InputStream run() {
-                ClassLoader threadCL = Thread.currentThread().getContextClassLoader();
-                if (threadCL != null) {
-                    return threadCL.getResourceAsStream(CONFIGURATION_FILE);
-                } else {
-                    return ClassLoader.getSystemResourceAsStream(CONFIGURATION_FILE);
-                }
+        InputStream in = AccessController.doPrivileged((PrivilegedAction<InputStream>) () -> {
+            ClassLoader threadCL = Thread.currentThread().getContextClassLoader();
+            if (threadCL != null) {
+                return threadCL.getResourceAsStream(CONFIGURATION_FILE);
+            } else {
+                return ClassLoader.getSystemResourceAsStream(CONFIGURATION_FILE);
             }
         });
         if (null != in) {
@@ -261,9 +259,9 @@ class SimpleLogger extends MarkerIgnoringBase {
         if (SHOW_SHORT_LOG_NAME) {
             if (shortLogName == null)
                 shortLogName = computeShortName();
-            buf.append(String.valueOf(shortLogName)).append(" - ");
+            buf.append(shortLogName).append(" - ");
         } else if (SHOW_LOG_NAME) {
-            buf.append(String.valueOf(name)).append(" - ");
+            buf.append(name).append(" - ");
         }
 
         // Append the message

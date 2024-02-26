@@ -139,7 +139,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     public long getExpirationTimestamp()
     {
         OffsetDateTime creationTime = interaction == null ? OffsetDateTime.now() : interaction.getTimeCreated();
-        return creationTime.plus(15, ChronoUnit.MINUTES).toEpochSecond() * 1000;
+        return creationTime.plusMinutes(15).toEpochSecond() * 1000;
     }
 
     @Nonnull

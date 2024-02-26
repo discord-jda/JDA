@@ -61,17 +61,12 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
         // get next item from current iterator if exists
         if (currentIterator != null)
         {
-            if (!currentIterator.hasNext())
-            {
-                currentIterator.close();
-                currentIterator = null;
-            }
-            else
+            if (currentIterator.hasNext())
             {
                 if (findNext()) return true;
-                currentIterator.close();
-                currentIterator = null;
             }
+            currentIterator.close();
+            currentIterator = null;
         }
         // get next iterator in chain
         return processChain();

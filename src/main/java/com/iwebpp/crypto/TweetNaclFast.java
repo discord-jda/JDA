@@ -8,6 +8,7 @@
 package com.iwebpp.crypto;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.concurrent.atomic.AtomicLong;
@@ -670,7 +671,7 @@ public final class TweetNaclFast {
             return out;
         }
         public static byte[] sha512(String message) throws UnsupportedEncodingException {
-            return sha512(message.getBytes("utf-8"));
+            return sha512(message.getBytes(StandardCharsets.UTF_8));
         }
 
         /*

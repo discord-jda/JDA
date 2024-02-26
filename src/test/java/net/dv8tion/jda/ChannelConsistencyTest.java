@@ -39,7 +39,7 @@ public class ChannelConsistencyTest
 
     private static String getChannelName(ChannelType type)
     {
-        return type.name().substring(0, 1) + type.name().substring(1).toLowerCase(Locale.ROOT);
+        return type.name().charAt(0) + type.name().substring(1).toLowerCase(Locale.ROOT);
     }
 
     @Test

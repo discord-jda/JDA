@@ -59,13 +59,11 @@ public class MessageBulkDeleteHandler extends SocketHandler
         {
             SocketHandler handler = getJDA().getClient().getHandlers().get("MESSAGE_DELETE");
             content.getArray("ids").forEach(id ->
-            {
-                handler.handle(responseNumber, DataObject.empty()
-                    .put("t", "MESSAGE_DELETE")
-                    .put("d", DataObject.empty()
-                        .put("channel_id", Long.toUnsignedString(channelId))
-                        .put("id", id)));
-            });
+                    handler.handle(responseNumber, DataObject.empty()
+                        .put("t", "MESSAGE_DELETE")
+                        .put("d", DataObject.empty()
+                            .put("channel_id", Long.toUnsignedString(channelId))
+                            .put("id", id))));
         }
         else
         {

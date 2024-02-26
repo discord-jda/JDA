@@ -112,7 +112,7 @@ public class ActivityTest
 
         assertFalse(activity.isRich());
         assertEquals(Activity.ActivityType.PLAYING, activity.getType());
-        assertEquals("Games", activity.getName());;
+        assertEquals("Games", activity.getName());
         assertNull(activity.getState());
         assertNull(activity.getUrl());
     }
@@ -129,7 +129,7 @@ public class ActivityTest
 
         assertFalse(activity.isRich(), "isRich()");
         assertEquals(Activity.ActivityType.PLAYING, activity.getType());
-        assertEquals("Games", activity.getName());;
+        assertEquals("Games", activity.getName());
         assertEquals("Active", activity.getState());
         assertNull(activity.getUrl(), "url");
 

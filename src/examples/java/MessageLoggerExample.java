@@ -26,6 +26,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -36,6 +38,7 @@ import java.util.EnumSet;
 
 public class MessageLoggerExample extends ListenerAdapter
 {
+    private static final Logger log = LoggerFactory.getLogger(MessageLoggerExample.class);
     // See https://emojipedia.org/red-heart/ and find the codepoints
     public static final Emoji HEART = Emoji.fromUnicode("U+2764");
 
@@ -122,7 +125,7 @@ public class MessageLoggerExample extends ListenerAdapter
         catch (InterruptedException e)
         {
             // Thrown if the awaitReady() call is interrupted
-            e.printStackTrace();
+            log.error("An error occurred while configuring the internal JDA cache", e);
         }
     }
 

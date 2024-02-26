@@ -977,7 +977,7 @@ public class OptionData implements SerializableData
     public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices)
     {
         Checks.notNull(choices, "Choices");
-        if (choices.size() == 0)
+        if (choices.isEmpty())
             return this;
         if (this.choices == null || !type.canSupportChoices())
             throw new IllegalStateException("Cannot add choices for an option of type " + type);

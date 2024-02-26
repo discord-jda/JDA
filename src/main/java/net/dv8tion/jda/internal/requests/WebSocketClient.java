@@ -819,7 +819,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         try (UnlockHook hook = managerView.writeLock())
         {
             final TLongObjectMap<AudioManager> managerMap = managerView.getMap();
-            if (managerMap.size() > 0)
+            if (!managerMap.isEmpty())
                 LOG.trace("Updating AudioManager references");
 
             for (TLongObjectIterator<AudioManager> it = managerMap.iterator(); it.hasNext(); )

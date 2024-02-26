@@ -28,7 +28,7 @@ public class JsonTest
         DataObject object = DataObject.fromJson(json);
         Assertions.assertEquals(10, object.getInt("int", 0));
         Assertions.assertEquals(100, object.getLong("long", 0));
-        Assertions.assertEquals(true, object.getBoolean("boolean", false));
+        Assertions.assertTrue(object.getBoolean("boolean", false));
         Assertions.assertEquals("test", object.getString("string", null));
     }
 

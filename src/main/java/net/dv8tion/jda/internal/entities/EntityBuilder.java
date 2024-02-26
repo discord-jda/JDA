@@ -816,19 +816,19 @@ public class EntityBuilder
             removedRoles.add(role);
         }
 
-        if (removedRoles.size() > 0)
+        if (!removedRoles.isEmpty())
             currentRoles.removeAll(removedRoles);
-        if (newRoles.size() > 0)
+        if (!newRoles.isEmpty())
             currentRoles.addAll(newRoles);
 
-        if (removedRoles.size() > 0)
+        if (!removedRoles.isEmpty())
         {
             getJDA().handleEvent(
                 new GuildMemberRoleRemoveEvent(
                     getJDA(), responseNumber,
                     member, removedRoles));
         }
-        if (newRoles.size() > 0)
+        if (!newRoles.isEmpty())
         {
             getJDA().handleEvent(
                 new GuildMemberRoleAddEvent(
@@ -956,7 +956,7 @@ public class EntityBuilder
             String partyId = obj.isNull("id") ? null : obj.getString("id");
             DataArray sizeArr = obj.isNull("size") ? null : obj.getArray("size");
             long size = 0, max = 0;
-            if (sizeArr != null && sizeArr.length() > 0)
+            if (sizeArr != null && !sizeArr.isEmpty())
             {
                 size = sizeArr.getLong(0);
                 max = sizeArr.length() < 2 ? 0 : sizeArr.getLong(1);
