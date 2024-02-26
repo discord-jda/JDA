@@ -24,7 +24,6 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
 
 public class CustomEmojiImpl implements CustomEmoji, EmojiUnion
 {

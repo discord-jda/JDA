@@ -36,7 +36,6 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Future;
