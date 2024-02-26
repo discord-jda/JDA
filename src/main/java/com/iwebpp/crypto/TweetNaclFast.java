@@ -247,8 +247,7 @@ public final class TweetNaclFast {
             // cipher buffer
             byte [] c = new byte[m.length];
 
-            for (int i = 0; i < mlen; i ++)
-                m[i+zerobytesLength] = message[i+moff];
+            if (mlen >= 0) System.arraycopy(message, moff, m, zerobytesLength, mlen);
 
             if (0 != crypto_box_afternm(c, m, m.length, theNonce, sharedKey))
                 return null;
@@ -257,8 +256,7 @@ public final class TweetNaclFast {
             ///return new byte_buf_t(c, boxzerobytesLength, c.length-boxzerobytesLength);
             byte [] ret = new byte[c.length-boxzerobytesLength];
 
-            for (int i = 0; i < ret.length; i ++)
-                ret[i] = c[i+boxzerobytesLength];
+            System.arraycopy(c, boxzerobytesLength, ret, 0, ret.length);
 
             return ret;
         }
@@ -283,8 +281,7 @@ public final class TweetNaclFast {
             // message buffer
             byte [] m = new byte[c.length];
 
-            for (int i = 0; i < boxlen; i++)
-                c[i+boxzerobytesLength] = box[i+boxoff];
+            System.arraycopy(box, boxoff, c, boxzerobytesLength, boxlen);
 
             if (crypto_box_open_afternm(m, c, c.length, theNonce, sharedKey) != 0)
                 return null;
@@ -293,8 +290,7 @@ public final class TweetNaclFast {
             ///return new byte_buf_t(m, zerobytesLength, m.length-zerobytesLength);
             byte [] ret = new byte[m.length-zerobytesLength];
 
-            for (int i = 0; i < ret.length; i ++)
-                ret[i] = m[i+zerobytesLength];
+            System.arraycopy(m, zerobytesLength, ret, 0, ret.length);
 
             return ret;
         }
@@ -376,8 +372,7 @@ public final class TweetNaclFast {
             byte [] pk = kp.getPublicKey();
 
             // copy sk
-            for (int i = 0; i < sk.length; i ++)
-                sk[i] = secretKey[i];
+            System.arraycopy(secretKey, 0, sk, 0, sk.length);
 
             crypto_scalarmult_base(pk, sk);
             return kp;
@@ -482,8 +477,7 @@ public final class TweetNaclFast {
             // cipher buffer
             byte [] c = new byte[m.length];
 
-            for (int i = 0; i < mlen; i ++)
-                m[i+zerobytesLength] = message[i+moff];
+            if (mlen >= 0) System.arraycopy(message, moff, m, zerobytesLength, mlen);
 
             if (0 != crypto_secretbox(c, m, m.length, theNonce, key))
                 return null;
@@ -493,8 +487,7 @@ public final class TweetNaclFast {
             ///return new byte_buf_t(c, boxzerobytesLength, c.length-boxzerobytesLength);
             byte [] ret = new byte[c.length-boxzerobytesLength];
 
-            for (int i = 0; i < ret.length; i ++)
-                ret[i] = c[i+boxzerobytesLength];
+            System.arraycopy(c, boxzerobytesLength, ret, 0, ret.length);
 
             return ret;
         }
@@ -545,8 +538,7 @@ public final class TweetNaclFast {
             // message buffer
             byte [] m = new byte[c.length];
 
-            for (int i = 0; i < boxlen; i++)
-                c[i+boxzerobytesLength] = box[i+boxoff];
+            System.arraycopy(box, boxoff, c, boxzerobytesLength, boxlen);
 
             if (0 != crypto_secretbox_open(m, c, c.length, theNonce, key))
                 return null;
@@ -555,8 +547,7 @@ public final class TweetNaclFast {
             ///return new byte_buf_t(m, zerobytesLength, m.length-zerobytesLength);
             byte [] ret = new byte[m.length-zerobytesLength];
 
-            for (int i = 0; i < ret.length; i ++)
-                ret[i] = m[i+zerobytesLength];
+            System.arraycopy(m, zerobytesLength, ret, 0, ret.length);
 
             return ret;
         }
@@ -766,8 +757,7 @@ public final class TweetNaclFast {
         public byte [] detached(byte [] message) {
             byte[] signedMsg = this.sign(message);
             byte[] sig = new byte[signatureLength];
-            for (int i = 0; i < sig.length; i++)
-                sig[i] = signedMsg[i];
+            System.arraycopy(signedMsg, 0, sig, 0, sig.length);
             return sig;
         }
 
@@ -783,10 +773,8 @@ public final class TweetNaclFast {
                 return false;
             byte [] sm = new byte[signatureLength + message.length];
             byte [] m = new byte[signatureLength + message.length];
-            for (int i = 0; i < signatureLength; i++)
-                sm[i] = signature[i];
-            for (int i = 0; i < message.length; i++)
-                sm[i + signatureLength] = message[i];
+            System.arraycopy(signature, 0, sm, 0, signatureLength);
+            System.arraycopy(message, 0, sm, signatureLength, message.length);
             return (crypto_sign_open(m, -1, sm, 0, sm.length, theirPublicKey) >= 0);
         }
 
@@ -829,12 +817,11 @@ public final class TweetNaclFast {
             byte [] sk = kp.getSecretKey();
 
             // copy sk
-            for (int i = 0; i < kp.getSecretKey().length; i ++)
-                sk[i] = secretKey[i];
+            System.arraycopy(secretKey, 0, sk, 0, kp.getSecretKey().length);
 
             // copy pk from sk
-            for (int i = 0; i < kp.getPublicKey().length; i ++)
-                pk[i] = secretKey[32+i]; // hard-copy
+            // hard-copy
+            System.arraycopy(secretKey, 32, pk, 0, kp.getPublicKey().length);
 
             return kp;
         }
@@ -845,8 +832,7 @@ public final class TweetNaclFast {
             byte [] sk = kp.getSecretKey();
 
             // copy sk
-            for (int i = 0; i < seedLength; i ++)
-                sk[i] = seed[i];
+            System.arraycopy(seed, 0, sk, 0, seedLength);
 
             // generate pk from sk
             crypto_sign_keypair(pk, sk, true);
@@ -1426,7 +1412,7 @@ public final class TweetNaclFast {
         byte [] s = new byte[32];
         crypto_core_hsalsa20(s,n,k,sigma);
         byte [] sn = new byte[8];
-        for (int i = 0; i < 8; i++) sn[i] = n[i+16];
+        System.arraycopy(n, 16, sn, 0, 8);
         return crypto_stream_salsa20(c,cpos,d,sn,s);
     }
 
@@ -1444,7 +1430,7 @@ public final class TweetNaclFast {
 
         crypto_core_hsalsa20(s,n,k,sigma);
         byte [] sn = new byte[8];
-        for (int i = 0; i < 8; i++) sn[i] = n[i+16];
+        System.arraycopy(n, 16, sn, 0, 8);
         return crypto_stream_salsa20_xor(c,cpos,m,mpos,d,sn,s);
     }
 
