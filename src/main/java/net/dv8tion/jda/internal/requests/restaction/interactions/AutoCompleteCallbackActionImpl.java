@@ -69,10 +69,10 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
                              "Choice of type %s cannot be converted to INTEGER", choice.getType());
                 long valueLong = choice.getAsLong();
                 Checks.check(valueLong <= OptionData.MAX_POSITIVE_NUMBER,
-                             "Choice value cannot be larger than %d Provided: %d",
+                             "Choice value cannot be larger than %f Provided: %d",
                              OptionData.MAX_POSITIVE_NUMBER, valueLong);
                 Checks.check(valueLong >= OptionData.MIN_NEGATIVE_NUMBER,
-                             "Choice value cannot be smaller than %d. Provided: %d",
+                             "Choice value cannot be smaller than %f. Provided: %d",
                              OptionData.MIN_NEGATIVE_NUMBER, valueLong);
                 break;
             case NUMBER:
@@ -80,10 +80,10 @@ public class AutoCompleteCallbackActionImpl extends InteractionCallbackImpl<Void
                              "Choice of type %s cannot be converted to NUMBER", choice.getType());
                 double valueDouble = choice.getAsDouble();
                 Checks.check(valueDouble <= OptionData.MAX_POSITIVE_NUMBER,
-                             "Choice value cannot be larger than %d Provided: %d",
+                             "Choice value cannot be larger than %f Provided: %f",
                              OptionData.MAX_POSITIVE_NUMBER, valueDouble);
                 Checks.check(valueDouble >= OptionData.MIN_NEGATIVE_NUMBER,
-                             "Choice value cannot be smaller than %d. Provided: %d",
+                             "Choice value cannot be smaller than %f. Provided: %f",
                              OptionData.MIN_NEGATIVE_NUMBER, valueDouble);
                 break;
             case STRING:
