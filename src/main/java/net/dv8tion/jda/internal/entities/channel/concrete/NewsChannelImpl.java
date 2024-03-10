@@ -35,11 +35,10 @@ import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuild
 import net.dv8tion.jda.internal.managers.channel.concrete.NewsChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<NewsChannelImpl>
         implements NewsChannel,
@@ -61,9 +60,9 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(getGuild().getMembersView().stream()
+        return getGuild().getMembersView().stream()
             .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
-            .collect(Collectors.toList()));
+            .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -107,12 +106,5 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
     public NewsChannelManager getManager()
     {
         return new NewsChannelManagerImpl(this);
-    }
-
-    // -- Abstract hooks --
-    @Override
-    protected void onPositionChange()
-    {
-        getGuild().getNewsChannelView().clearCachedLists();
     }
 }

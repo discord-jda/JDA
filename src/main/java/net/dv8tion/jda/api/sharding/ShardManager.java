@@ -32,12 +32,15 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
+import net.dv8tion.jda.api.utils.cache.ChannelCacheView;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.cache.UnifiedChannelCacheView;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -57,7 +60,7 @@ import java.util.stream.Collectors;
  * @since  3.4
  * @author Aljoscha Grebe
  */
-public interface ShardManager extends IGuildChannelContainer
+public interface ShardManager extends IGuildChannelContainer<Channel>
 {
     /**
      * Adds all provided listeners to the event-listeners that will be used to handle events.
@@ -426,11 +429,10 @@ public interface ShardManager extends IGuildChannelContainer
     default List<Guild> getMutualGuilds(@Nonnull final Collection<User> users)
     {
         Checks.noneNull(users, "users");
-        return Collections.unmodifiableList(
-                this.getGuildCache().stream()
+        return this.getGuildCache().stream()
                 .filter(guild -> users.stream()
                         .allMatch(guild::isMember))
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -685,17 +687,6 @@ public interface ShardManager extends IGuildChannelContainer
         return this.getRoleCache().getElementsByName(name, ignoreCase);
     }
 
-    @Nullable
-    @Override
-    default <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
-    {
-        Checks.notNull(type, "Class");
-        Channel channel = getPrivateChannelById(id);
-        if (channel != null)
-            return type.isInstance(channel) ? type.cast(channel) : null;
-        return IGuildChannelContainer.super.getChannelById(type, id);
-    }
-
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannel} with an id that matches the provided
@@ -817,6 +808,13 @@ public interface ShardManager extends IGuildChannelContainer
     default SnowflakeCacheView<MediaChannel> getMediaChannelCache()
     {
         return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getMediaChannelCache));
+    }
+
+    @Nonnull
+    @Override
+    default ChannelCacheView<Channel> getChannelCache()
+    {
+        return new UnifiedChannelCacheView<>(() -> this.getShardCache().stream().map(JDA::getChannelCache));
     }
 
     /**
@@ -971,7 +969,7 @@ public interface ShardManager extends IGuildChannelContainer
 
     /**
      * Restarts all shards, shutting old ones down first.
-     * 
+     *
      * <p>As all shards need to connect to discord again this will take equally long as the startup of a new ShardManager
      * (using the 5000ms + backoff as delay between starting new JDA instances).
      *

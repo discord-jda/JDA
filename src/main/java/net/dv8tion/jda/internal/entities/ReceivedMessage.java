@@ -808,7 +808,7 @@ public class ReceivedMessage implements Message
         Route.CompiledRoute route;
         if (isWebhookRequest())
         {
-            route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
+            route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), getId());
         }
         else
         {

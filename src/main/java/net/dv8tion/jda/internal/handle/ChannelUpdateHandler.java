@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
@@ -61,7 +62,7 @@ import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMix
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
@@ -350,17 +351,16 @@ public class ChannelUpdateHandler extends SocketHandler
         for (ThreadChannel thread : threads)
         {
             GuildImpl guild = (GuildImpl) channel.getGuild();
-            SnowflakeCacheViewImpl<ThreadChannel>
-                    guildThreadView = guild.getThreadChannelsView(),
-                    threadView = getJDA().getThreadChannelsView();
+            ChannelCacheViewImpl<GuildChannel> guildThreadView = guild.getChannelView();
+            ChannelCacheViewImpl<Channel> threadView = getJDA().getChannelsView();
             try (
                     UnlockHook vlock = guildThreadView.writeLock();
                     UnlockHook jlock = threadView.writeLock())
             {
                 //TODO-threads: When we figure out how member chunking is going to work for thread related members
                 // we may need to revisit this to ensure they kicked out of the cache if needed.
-                threadView.getMap().remove(thread.getIdLong());
-                guildThreadView.getMap().remove(thread.getIdLong());
+                threadView.remove(thread.getType(), thread.getIdLong());
+                guildThreadView.remove(thread);
             }
         }
 
