@@ -25,11 +25,12 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CommandDataTest
 {
@@ -44,27 +45,27 @@ public class CommandDataTest
                 .addOption(OptionType.INTEGER, "days", "The duration of the ban", false); // test with explicit false
 
         DataObject data = command.toData();
-        Assertions.assertEquals("ban", data.getString("name"));
-        Assertions.assertEquals("Ban a user from this server", data.getString("description"));
-        Assertions.assertFalse(data.getBoolean("dm_permission"));
-        Assertions.assertEquals(Permission.BAN_MEMBERS.getRawValue(), data.getUnsignedLong("default_member_permissions"));
+        assertEquals("ban", data.getString("name"));
+        assertEquals("Ban a user from this server", data.getString("description"));
+        assertFalse(data.getBoolean("dm_permission"));
+        assertEquals(Permission.BAN_MEMBERS.getRawValue(), data.getUnsignedLong("default_member_permissions"));
 
         DataArray options = data.getArray("options");
 
         DataObject option = options.getObject(0);
-        Assertions.assertTrue(option.getBoolean("required"));
-        Assertions.assertEquals("user", option.getString("name"));
-        Assertions.assertEquals("The user to ban", option.getString("description"));
+        assertTrue(option.getBoolean("required"));
+        assertEquals("user", option.getString("name"));
+        assertEquals("The user to ban", option.getString("description"));
 
         option = options.getObject(1);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("reason", option.getString("name"));
-        Assertions.assertEquals("The ban reason", option.getString("description"));
+        assertFalse(option.getBoolean("required"));
+        assertEquals("reason", option.getString("name"));
+        assertEquals("The ban reason", option.getString("description"));
 
         option = options.getObject(2);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("days", option.getString("name"));
-        Assertions.assertEquals("The duration of the ban", option.getString("description"));
+        assertFalse(option.getBoolean("required"));
+        assertEquals("days", option.getString("name"));
+        assertEquals("The duration of the ban", option.getString("description"));
     }
 
     @Test
@@ -74,11 +75,11 @@ public class CommandDataTest
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
         DataObject data = command.toData();
 
-        Assertions.assertEquals(0, data.getUnsignedLong("default_member_permissions"));
+        assertEquals(0, data.getUnsignedLong("default_member_permissions"));
 
         command.setDefaultPermissions(DefaultMemberPermissions.ENABLED);
         data = command.toData();
-        Assertions.assertTrue(data.isNull("default_member_permissions"));
+        assertTrue(data.isNull("default_member_permissions"));
     }
 
     @Test
@@ -91,29 +92,29 @@ public class CommandDataTest
                     .addOption(OptionType.INTEGER, "days", "The duration of the ban", false)); // test with explicit false
 
         DataObject data = command.toData();
-        Assertions.assertEquals("mod", data.getString("name"));
-        Assertions.assertEquals("Moderation commands", data.getString("description"));
+        assertEquals("mod", data.getString("name"));
+        assertEquals("Moderation commands", data.getString("description"));
 
         DataObject subdata = data.getArray("options").getObject(0);
-        Assertions.assertEquals("ban", subdata.getString("name"));
-        Assertions.assertEquals("Ban a user from this server", subdata.getString("description"));
+        assertEquals("ban", subdata.getString("name"));
+        assertEquals("Ban a user from this server", subdata.getString("description"));
 
         DataArray options = subdata.getArray("options");
 
         DataObject option = options.getObject(0);
-        Assertions.assertTrue(option.getBoolean("required"));
-        Assertions.assertEquals("user", option.getString("name"));
-        Assertions.assertEquals("The user to ban", option.getString("description"));
+        assertTrue(option.getBoolean("required"));
+        assertEquals("user", option.getString("name"));
+        assertEquals("The user to ban", option.getString("description"));
 
         option = options.getObject(1);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("reason", option.getString("name"));
-        Assertions.assertEquals("The ban reason", option.getString("description"));
+        assertFalse(option.getBoolean("required"));
+        assertEquals("reason", option.getString("name"));
+        assertEquals("The ban reason", option.getString("description"));
 
         option = options.getObject(2);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("days", option.getString("name"));
-        Assertions.assertEquals("The duration of the ban", option.getString("description"));
+        assertFalse(option.getBoolean("required"));
+        assertEquals("days", option.getString("name"));
+        assertEquals("The duration of the ban", option.getString("description"));
     }
 
     @Test
@@ -127,32 +128,32 @@ public class CommandDataTest
                         .addOption(OptionType.INTEGER, "days", "The duration of the ban", false))); // test with explicit false
 
         DataObject data = command.toData();
-        Assertions.assertEquals("mod", data.getString("name"));
-        Assertions.assertEquals("Moderation commands", data.getString("description"));
+        assertEquals("mod", data.getString("name"));
+        assertEquals("Moderation commands", data.getString("description"));
 
         DataObject group = data.getArray("options").getObject(0);
-        Assertions.assertEquals("ban", group.getString("name"));
-        Assertions.assertEquals("Ban or unban a user from this server", group.getString("description"));
+        assertEquals("ban", group.getString("name"));
+        assertEquals("Ban or unban a user from this server", group.getString("description"));
 
         DataObject subdata = group.getArray("options").getObject(0);
-        Assertions.assertEquals("add", subdata.getString("name"));
-        Assertions.assertEquals("Ban a user from this server", subdata.getString("description"));
+        assertEquals("add", subdata.getString("name"));
+        assertEquals("Ban a user from this server", subdata.getString("description"));
         DataArray options = subdata.getArray("options");
 
         DataObject option = options.getObject(0);
-        Assertions.assertTrue(option.getBoolean("required"));
-        Assertions.assertEquals("user", option.getString("name"));
-        Assertions.assertEquals("The user to ban", option.getString("description"));
+        assertTrue(option.getBoolean("required"));
+        assertEquals("user", option.getString("name"));
+        assertEquals("The user to ban", option.getString("description"));
 
         option = options.getObject(1);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("reason", option.getString("name"));
-        Assertions.assertEquals("The ban reason", option.getString("description"));
+        assertFalse(option.getBoolean("required"));
+        assertEquals("reason", option.getString("name"));
+        assertEquals("The ban reason", option.getString("description"));
 
         option = options.getObject(2);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("days", option.getString("name"));
-        Assertions.assertEquals("The duration of the ban", option.getString("description"));
+        assertFalse(option.getBoolean("required"));
+        assertEquals("days", option.getString("name"));
+        assertEquals("The duration of the ban", option.getString("description"));
     }
 
     @Test
@@ -161,36 +162,36 @@ public class CommandDataTest
         CommandDataImpl command = new CommandDataImpl("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true));
+        assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true));
 
         SubcommandData subcommand = new SubcommandData("sub", "Simple subcommand");
         subcommand.addOption(OptionType.STRING, "opt", "desc");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> subcommand.addOption(OptionType.STRING, "other", "desc", true));
+        assertThrows(IllegalArgumentException.class, () -> subcommand.addOption(OptionType.STRING, "other", "desc", true));
     }
 
     @Test
     public void testNameChecks()
     {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("valid_name", ""));
+        assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalid name", "Valid description"));
+        assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalidName", "Valid description"));
+        assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("valid_name", ""));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("valid_name", ""));
+        assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalid name", "Valid description"));
+        assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalidName", "Valid description"));
+        assertThrows(IllegalArgumentException.class, () -> new SubcommandData("valid_name", ""));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("valid_name", ""));
+        assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("invalid name", "Valid description"));
+        assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("invalidName", "Valid description"));
+        assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("valid_name", ""));
     }
 
     @Test
     public void testChoices()
     {
         OptionData option = new OptionData(OptionType.INTEGER, "choice", "Option with choices!");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("valid_name", ""));
+        assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalid name", "Valid description"));
+        assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalidName", "Valid description"));
+        assertThrows(IllegalArgumentException.class, () -> option.addChoice("valid_name", ""));
 
         List<Command.Choice> choices = new ArrayList<>();
         for (int i = 0; i < 25; i++)
@@ -198,8 +199,8 @@ public class CommandDataTest
             option.addChoice("choice_" + i, i);
             choices.add(new Command.Choice("choice_" + i, i));
         }
-        Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("name", 100));
-        Assertions.assertEquals(25, option.getChoices().size());
-        Assertions.assertEquals(choices, option.getChoices());
+        assertThrows(IllegalArgumentException.class, () -> option.addChoice("name", 100));
+        assertEquals(25, option.getChoices().size());
+        assertEquals(choices, option.getChoices());
     }
 }

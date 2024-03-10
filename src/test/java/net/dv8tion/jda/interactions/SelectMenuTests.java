@@ -21,10 +21,11 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.B
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.DefaultValue;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SelectMenuTests
 {
@@ -37,9 +38,9 @@ public class SelectMenuTests
         EntitySelectMenu menu = builder.build();
         DataObject value = menu.toData().getArray("default_values").getObject(0);
 
-        Assertions.assertEquals(Arrays.asList(DefaultValue.role("1234")), menu.getDefaultValues());
-        Assertions.assertEquals("role", value.getString("type"));
-        Assertions.assertEquals("1234", value.getString("id"));
+        assertEquals(Arrays.asList(DefaultValue.role("1234")), menu.getDefaultValues());
+        assertEquals("role", value.getString("type"));
+        assertEquals("1234", value.getString("id"));
 
         builder = EntitySelectMenu.create("customid", SelectTarget.USER);
         builder.setDefaultValues(DefaultValue.user("1234"));
@@ -47,9 +48,9 @@ public class SelectMenuTests
         menu = builder.build();
         value = menu.toData().getArray("default_values").getObject(0);
 
-        Assertions.assertEquals(Arrays.asList(DefaultValue.user("1234")), menu.getDefaultValues());
-        Assertions.assertEquals("user", value.getString("type"));
-        Assertions.assertEquals("1234", value.getString("id"));
+        assertEquals(Arrays.asList(DefaultValue.user("1234")), menu.getDefaultValues());
+        assertEquals("user", value.getString("type"));
+        assertEquals("1234", value.getString("id"));
 
         builder = EntitySelectMenu.create("customid", SelectTarget.CHANNEL);
         builder.setDefaultValues(DefaultValue.channel("1234"));
@@ -57,39 +58,39 @@ public class SelectMenuTests
         menu = builder.build();
         value = menu.toData().getArray("default_values").getObject(0);
 
-        Assertions.assertEquals(Arrays.asList(DefaultValue.channel("1234")), menu.getDefaultValues());
-        Assertions.assertEquals("channel", value.getString("type"));
-        Assertions.assertEquals("1234", value.getString("id"));
+        assertEquals(Arrays.asList(DefaultValue.channel("1234")), menu.getDefaultValues());
+        assertEquals("channel", value.getString("type"));
+        assertEquals("1234", value.getString("id"));
     }
 
     @Test
     public void testEntitySelectDefaultValueInvalid()
     {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);
             builder.setDefaultValues(DefaultValue.user("1234"));
         });
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);
             builder.setDefaultValues(DefaultValue.channel("1234"));
         });
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE, SelectTarget.USER);
             builder.setDefaultValues(DefaultValue.channel("1234"));
         });
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Builder builder = EntitySelectMenu.create("customid", SelectTarget.USER);
             builder.setDefaultValues(DefaultValue.channel("1234"));
         });
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Builder builder = EntitySelectMenu.create("customid", SelectTarget.USER);
             builder.setDefaultValues(DefaultValue.role("1234"));
         });
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Builder builder = EntitySelectMenu.create("customid", SelectTarget.CHANNEL);
             builder.setDefaultValues(DefaultValue.user("1234"));
         });
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             Builder builder = EntitySelectMenu.create("customid", SelectTarget.CHANNEL);
             builder.setDefaultValues(DefaultValue.role("1234"));
         });
