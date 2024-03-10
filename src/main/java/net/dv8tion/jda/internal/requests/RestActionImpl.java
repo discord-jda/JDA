@@ -63,6 +63,7 @@ public class RestActionImpl<T> implements RestAction<T>
     private final Route.CompiledRoute route;
     private final RequestBody data;
     private final BiFunction<Response, Request<T>, T> handler;
+    private ErrorMapper errorMapper = null;
 
     private boolean priority = false;
     private long deadline = 0;
@@ -144,6 +145,11 @@ public class RestActionImpl<T> implements RestAction<T>
         this.route = route;
         this.data = data;
         this.handler = handler;
+    }
+
+    public void setErrorMapper(ErrorMapper errorMapper)
+    {
+        this.errorMapper = errorMapper;
     }
 
     public RestActionImpl<T> priority()
@@ -277,8 +283,20 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         if (response.isOk())
             handleSuccess(response, request);
+        else if (response.isRateLimit())
+            request.onRateLimited(response);
         else
-            request.onFailure(response);
+        {
+            final ErrorResponseException exception = request.createErrorResponseException(response);
+            final Throwable mappedThrowable = this.errorMapper != null
+                    ? this.errorMapper.apply(response, request, exception)
+                    : null;
+
+            if (mappedThrowable != null)
+                request.onFailure(mappedThrowable);
+            else
+                request.onFailure(exception);
+        }
     }
 
     protected void handleSuccess(Response response, Request<T> request)
