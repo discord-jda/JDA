@@ -19,13 +19,14 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public abstract class RestActionOperator<I, O> implements RestAction<O>
+public abstract class RestActionOperator<I, O> implements AuditableRestAction<O>
 {
     protected BooleanSupplier check;
     protected long deadline = -1;
@@ -72,6 +73,15 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
 
     @Nonnull
     @Override
+    public AuditableRestAction<O> reason(@Nullable String reason)
+    {
+        if (action instanceof AuditableRestAction)
+            ((AuditableRestAction<I>) action).reason(reason);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public JDA getJDA()
     {
         return action.getJDA();
@@ -79,7 +89,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
 
     @Nonnull
     @Override
-    public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
+    public AuditableRestAction<O> setCheck(@Nullable BooleanSupplier checks)
     {
         this.check = checks;
         action.setCheck(checks);
@@ -95,7 +105,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
 
     @Nonnull
     @Override
-    public RestAction<O> deadline(long timestamp)
+    public AuditableRestAction<O> deadline(long timestamp)
     {
         this.deadline = timestamp;
         action.deadline(timestamp);
