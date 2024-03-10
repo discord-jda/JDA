@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.message;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -37,6 +39,7 @@ import java.util.List;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
+@RequiredIntents(sometimes = {GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES})
 public class MessageEmbedEvent extends GenericMessageEvent
 {
     private final List<MessageEmbed> embeds;

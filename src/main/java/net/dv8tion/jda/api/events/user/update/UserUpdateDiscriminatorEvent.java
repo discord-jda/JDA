@@ -19,6 +19,9 @@ package net.dv8tion.jda.api.events.user.update;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -33,7 +36,7 @@ import javax.annotation.Nonnull;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
- * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this by default!
  *
  * <p>Additionally, this event requires the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
  * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
@@ -46,6 +49,8 @@ import javax.annotation.Nonnull;
  */
 @Deprecated
 @ForRemoval
+@RequiredIntents(always = GatewayIntent.GUILD_MEMBERS)
+@RequiresCachedMember
 public class UserUpdateDiscriminatorEvent extends GenericUserUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";
