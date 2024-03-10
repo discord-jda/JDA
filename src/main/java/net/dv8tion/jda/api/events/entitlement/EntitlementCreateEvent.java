@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.api.events.entitlement;
 
-import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Entitlement;
+
+import javax.annotation.Nonnull;
 
 /**
- * Interaction of any Application Command.
+ * Indicates that a user subscribed to a SKU.
  *
- * <p>This includes all context menu commands and slash commands.
- *
- * @see ContextInteraction
- * @see SlashCommandInteraction
+ * @see #getEntitlement()
  */
-public interface CommandInteraction extends IReplyCallback, CommandInteractionPayload, IModalCallback, IPremiumRequiredReplyCallback
+public class EntitlementCreateEvent extends GenericEntitlementEvent
 {
+    public EntitlementCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Entitlement entitlement)
+    {
+        super(api, responseNumber, entitlement);
+    }
 }

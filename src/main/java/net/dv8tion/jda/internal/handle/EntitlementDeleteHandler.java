@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
+import net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.JDAImpl;
 
-/**
- * Interaction of any Application Command.
- *
- * <p>This includes all context menu commands and slash commands.
- *
- * @see ContextInteraction
- * @see SlashCommandInteraction
- */
-public interface CommandInteraction extends IReplyCallback, CommandInteractionPayload, IModalCallback, IPremiumRequiredReplyCallback
+public class EntitlementDeleteHandler extends SocketHandler
 {
+    public EntitlementDeleteHandler(JDAImpl api)
+    {
+        super(api);
+    }
+
+    @Override
+    protected Long handleInternally(DataObject content)
+    {
+        getJDA().handleEvent(new EntitlementDeleteEvent(getJDA(), responseNumber, getJDA().getEntityBuilder().createEntitlement(content)));
+        return null;
+    }
 }

@@ -52,6 +52,7 @@ import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -75,6 +76,7 @@ import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandListUpdateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.EntitlementPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -1162,6 +1164,13 @@ public class JDAImpl implements JDA
             this.clientId = info.getId();
             return info;
         });
+    }
+
+    @Nonnull
+    @Override
+    public EntitlementPaginationAction retrieveEntitlements()
+    {
+        return new EntitlementPaginationActionImpl(this);
     }
 
     @Nonnull

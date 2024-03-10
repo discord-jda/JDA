@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.api.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
+import net.dv8tion.jda.api.requests.FluentRestAction;
 
 /**
- * Interaction of any Application Command.
+ * An {@link InteractionCallbackAction} that can be used to send the "Premium required" interaction response.
  *
- * <p>This includes all context menu commands and slash commands.
- *
- * @see ContextInteraction
- * @see SlashCommandInteraction
+ * @see net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback
  */
-public interface CommandInteraction extends IReplyCallback, CommandInteractionPayload, IModalCallback, IPremiumRequiredReplyCallback
+public interface PremiumRequiredCallbackAction extends InteractionCallbackAction<Void>, FluentRestAction<Void, PremiumRequiredCallbackAction>
 {
+
 }

@@ -34,7 +34,6 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -225,19 +224,19 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     }
 
     @Override
-    public boolean removeOptions(@NotNull Predicate<? super OptionData> condition)
+    public boolean removeOptions(@Nonnull Predicate<? super OptionData> condition)
     {
         return data.removeOptions(condition);
     }
 
     @Override
-    public boolean removeSubcommands(@NotNull Predicate<? super SubcommandData> condition)
+    public boolean removeSubcommands(@Nonnull Predicate<? super SubcommandData> condition)
     {
         return data.removeSubcommands(condition);
     }
 
     @Override
-    public boolean removeSubcommandGroups(@NotNull Predicate<? super SubcommandGroupData> condition)
+    public boolean removeSubcommandGroups(@Nonnull Predicate<? super SubcommandGroupData> condition)
     {
         return data.removeSubcommandGroups(condition);
     }

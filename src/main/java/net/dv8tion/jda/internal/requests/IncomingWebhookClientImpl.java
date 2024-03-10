@@ -33,7 +33,6 @@ import net.dv8tion.jda.internal.requests.restaction.WebhookMessageDeleteActionIm
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageRetrieveActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.function.Function;
@@ -82,7 +81,7 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> im
 
     @Nonnull
     @Override
-    public WebhookMessageDeleteAction deleteMessageById(@NotNull String messageId)
+    public WebhookMessageDeleteAction deleteMessageById(@Nonnull String messageId)
     {
         WebhookMessageDeleteActionImpl action = (WebhookMessageDeleteActionImpl) super.deleteMessageById(messageId);
         action.run();

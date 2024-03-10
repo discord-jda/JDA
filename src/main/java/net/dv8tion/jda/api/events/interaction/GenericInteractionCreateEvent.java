@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.api.interactions.Interaction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Indicates that an {@link Interaction} was created.
@@ -119,6 +121,13 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public User getUser()
     {
         return interaction.getUser();
+    }
+
+    @Nonnull
+    @Override
+    public List<Entitlement> getEntitlements()
+    {
+        return interaction.getEntitlements();
     }
 
     @Override

@@ -45,6 +45,7 @@ public class Route
         public static final Route GET_BOT_APPLICATION =             new Route(GET, "oauth2/applications/@me");
         public static final Route GET_ROLE_CONNECTION_METADATA =    new Route(GET, "applications/{application_id}/role-connections/metadata");
         public static final Route UPDATE_ROLE_CONNECTION_METADATA = new Route(PUT, "applications/{application_id}/role-connections/metadata");
+        public static final Route GET_ENTITLEMENTS =                new Route(GET, "applications/{application_id}/entitlements");
     }
 
     public static class Interactions

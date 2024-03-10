@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -26,15 +27,16 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class InteractionImpl implements Interaction
 {
@@ -47,6 +49,7 @@ public class InteractionImpl implements Interaction
     protected final User user;
     protected final Channel channel;
     protected final DiscordLocale userLocale;
+    protected final List<Entitlement> entitlements;
     protected final JDAImpl api;
 
     //This is used to give a proper error when an interaction is ack'd twice
@@ -104,6 +107,11 @@ public class InteractionImpl implements Interaction
             }
             this.user = user;
         }
+
+        this.entitlements = data.optArray("entitlements").orElseGet(DataArray::empty)
+                .stream(DataArray::getObject)
+                .map(jda.getEntityBuilder()::createEntitlement)
+                .collect(Collectors.toList());
     }
 
     // Used to allow interaction hook to send messages after acknowledgements
@@ -181,6 +189,13 @@ public class InteractionImpl implements Interaction
     public Member getMember()
     {
         return member;
+    }
+
+    @Nonnull
+    @Override
+    public List<Entitlement> getEntitlements()
+    {
+        return entitlements;
     }
 
     @Nonnull

@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.*;
+import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -1882,6 +1883,16 @@ public interface JDA extends IGuildChannelContainer<Channel>
     @Nonnull
     @CheckReturnValue
     RestAction<ApplicationInfo> retrieveApplicationInfo();
+
+    /**
+     * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * which allows you to {@link Iterable iterate} over {@link Entitlement}s that are applicable to the logged in application.
+     *
+     * @return {@link EntitlementPaginationAction EntitlementPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    EntitlementPaginationAction retrieveEntitlements();
 
     /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
