@@ -17,7 +17,6 @@
 //to build everything:             "gradlew build"
 //to build and upload everything:  "gradlew release"
 
-import Build_gradle.Pom
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.marcphilipp.gradle.nexus.InitializeNexusStagingRepository
 import de.marcphilipp.gradle.nexus.NexusPublishExtension
@@ -33,10 +32,11 @@ plugins {
     signing
     `java-library`
     `maven-publish`
+    `jvm-test-suite`
 
     id("io.codearte.nexus-staging") version "0.30.0"
     id("de.marcphilipp.nexus-publish") version "0.4.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 val javaVersion = JavaVersion.current()
@@ -53,7 +53,7 @@ val commitHash: String by lazy {
     val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT") ?: System.getenv("GITHUB_SHA")
     // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
     if (isCI && commit != null)
-        commit.substring(0, 7)
+        commit.take(7)
     else
         "DEV"
 }
@@ -72,7 +72,9 @@ project.version = "$versionObj" + if (isNewVersion) "" else "_$commitHash"
 
 project.group = "net.dv8tion"
 
-val archivesBaseName = "JDA"
+base {
+    archivesName = "JDA"
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -146,14 +148,14 @@ val clean: Task by tasks
 val test: Test by tasks
 val check: Task by tasks
 
-shadowJar.archiveClassifier.set("withDependencies")
+shadowJar.archiveClassifier = "withDependencies"
 
 fun nullable(string: String?): String {
     return if (string == null) "null"
            else "\"$string\""
 }
 
-val sourcesForRelease = task<Copy>("sourcesForRelease") {
+val sourcesForRelease by tasks.creating(Copy::class) {
     from("src/main/java") {
         include("**/JDAInfo.java")
         val tokens = mapOf(
@@ -167,14 +169,14 @@ val sourcesForRelease = task<Copy>("sourcesForRelease") {
         // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
         filter { it.replace(Regex("\"!@|@!\""), "@") }
         // Then we can replace the @...@ with the respective values here
-        filter<ReplaceTokens>(mapOf("tokens" to tokens))
+        filter<ReplaceTokens>("tokens" to tokens)
     }
     into("build/filteredSrc")
 
     includeEmptyDirs = false
 }
 
-val generateJavaSources = task<SourceTask>("generateJavaSources") {
+val generateJavaSources by tasks.creating(SourceTask::class) {
     val javaSources = sourceSets["main"].allJava.filter {
         it.name != "JDAInfo.java"
     }.asFileTree
@@ -183,9 +185,9 @@ val generateJavaSources = task<SourceTask>("generateJavaSources") {
     dependsOn(sourcesForRelease)
 }
 
-val noOpusJar = task<ShadowJar>("noOpusJar") {
+val noOpusJar by tasks.creating(ShadowJar::class) {
     dependsOn(shadowJar)
-    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
+    archiveClassifier = shadowJar.archiveClassifier.map { "$it-no-opus" }
 
     configurations = shadowJar.configurations
     from(sourceSets["main"].output)
@@ -197,10 +199,10 @@ val noOpusJar = task<ShadowJar>("noOpusJar") {
     manifest.inheritFrom(jar.manifest)
 }
 
-val minimalJar = task<ShadowJar>("minimalJar") {
+val minimalJar by tasks.creating(ShadowJar::class) {
     dependsOn(shadowJar)
     minimize()
-    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-min")
+    archiveClassifier = shadowJar.archiveClassifier.map { "$it-min" }
 
     configurations = shadowJar.configurations
     from(sourceSets["main"].output)
@@ -211,8 +213,8 @@ val minimalJar = task<ShadowJar>("minimalJar") {
     manifest.inheritFrom(jar.manifest)
 }
 
-val sourcesJar = task<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier = "sources"
     from("src/main/java") {
         exclude("**/JDAInfo.java")
     }
@@ -221,9 +223,9 @@ val sourcesJar = task<Jar>("sourcesJar") {
     dependsOn(sourcesForRelease)
 }
 
-val javadocJar = task<Jar>("javadocJar") {
+val javadocJar by tasks.creating(ShadowJar::class){
     dependsOn(javadoc)
-    archiveClassifier.set("javadoc")
+    archiveClassifier = "javadoc"
     from(javadoc.destinationDir)
 }
 
@@ -250,10 +252,9 @@ compileJava.apply {
 }
 
 jar.apply {
-    archiveBaseName.set(project.name)
-    manifest.attributes(mapOf(
+    manifest.attributes(
             "Implementation-Version" to project.version,
-            "Automatic-Module-Name" to "net.dv8tion.jda"))
+            "Automatic-Module-Name" to "net.dv8tion.jda")
 }
 
 javadoc.apply {
@@ -312,11 +313,13 @@ build.apply {
     shadowJar.mustRunAfter(sourcesJar)
 }
 
-test.apply {
-    useJUnitPlatform()
-    failFast = true
+testing {
+    suites {
+        named<JvmTestSuite>("test") {
+            useJUnitJupiter()
+        }
+    }
 }
-
 
 fun getProjectProperty(name: String) = project.properties[name] as? String
 
@@ -361,31 +364,31 @@ class Version(
 
 fun generatePom(pom: Pom) {
     pom.packaging = "jar"
-    pom.name.set(project.name)
-    pom.description.set("Java wrapper for the popular chat & VOIP service: Discord https://discord.com")
-    pom.url.set("https://github.com/discord-jda/JDA")
+    pom.name = project.name
+    pom.description = "Java wrapper for the popular chat & VOIP service: Discord https://discord.com"
+    pom.url = "https://github.com/discord-jda/JDA"
     pom.scm {
-        url.set("https://github.com/discord-jda/JDA")
-        connection.set("scm:git:git://github.com/discord-jda/JDA")
-        developerConnection.set("scm:git:ssh:git@github.com:discord-jda/JDA")
+        url = "https://github.com/discord-jda/JDA"
+        connection = "scm:git:git://github.com/discord-jda/JDA"
+        developerConnection = "scm:git:ssh:git@github.com:discord-jda/JDA"
     }
     pom.licenses {
         license {
-            name.set("The Apache Software License, Version 2.0")
-            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            distribution.set("repo")
+            name = "The Apache Software License, Version 2.0"
+            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution = "repo"
         }
     }
     pom.developers {
         developer {
-            id.set("Minn")
-            name.set("Florian Spieß")
-            email.set("business@minn.dev")
+            id = "Minn"
+            name = "Florian Spieß"
+            email = "business@minn.dev"
         }
         developer {
-            id.set("DV8FromTheWorld")
-            name.set("Austin Keener")
-            email.set("keeneraustin@yahoo.com")
+            id ="DV8FromTheWorld"
+            name ="Austin Keener"
+            email ="keeneraustin@yahoo.com"
         }
     }
 }
@@ -396,11 +399,11 @@ fun generatePom(pom: Pom) {
 // Skip fat jar publication (See https://github.com/johnrengelman/shadow/issues/586)
 components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) { skip() }
 val SoftwareComponentContainer.java
-    get() = components.getByName("java") as AdhocComponentWithVariants
+    get() = getByName<AdhocComponentWithVariants>("java")
 
 publishing {
     publications {
-        register("Release", MavenPublication::class) {
+        register<MavenPublication>("Release") {
             from(components["java"])
 
             artifactId = project.name
@@ -435,13 +438,13 @@ configure<NexusStagingExtension> {
 configure<NexusPublishExtension> {
     nexusPublishing {
         repositories.sonatype {
-            username.set(getProjectProperty("ossrhUser") ?: "")
-            password.set(getProjectProperty("ossrhPassword") ?: "")
-            stagingProfileId.set(getProjectProperty("stagingProfileId") ?: "")
+            username = getProjectProperty("ossrhUser") ?: ""
+            password = getProjectProperty("ossrhPassword") ?: ""
+            stagingProfileId = getProjectProperty("stagingProfileId") ?: ""
         }
         // Sonatype is very slow :)
-        connectTimeout.set(Duration.ofMinutes(1))
-        clientTimeout.set(Duration.ofMinutes(10))
+        connectTimeout = Duration.ofMinutes(1)
+        clientTimeout = Duration.ofMinutes(10)
     }
 }
 
@@ -472,15 +475,14 @@ tasks.create("release") {
     dependsOn(tasks.withType<PublishToMavenRepository>())
 
     // Closes the sonatype repository and publishes to maven central
-    val closeAndReleaseRepository: Task by tasks
-    dependsOn(closeAndReleaseRepository)
+    dependsOn(tasks.closeAndReleaseRepository)
 
     // Builds all jars for publications
     dependsOn(build)
     enabled = shouldPublish
 
     doLast { // Only runs when shouldPublish = true
-        println("Saving version $versionObj to .version")
+        logger.lifecycle("Saving version $versionObj to .version")
         val file = File(".version")
         file.createNewFile()
         file.writeText(versionObj.toString())
@@ -495,3 +497,4 @@ tasks.withType<PublishToMavenRepository> {
 tasks.withType<Copy> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
+
