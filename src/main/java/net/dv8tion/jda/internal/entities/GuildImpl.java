@@ -82,10 +82,12 @@ import net.dv8tion.jda.internal.utils.cache.*;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -1543,6 +1545,43 @@ public class GuildImpl implements Guild
             params.put("delete_message_seconds", unit.toSeconds(duration));
 
         return new AuditableRestActionImpl<>(getJDA(), route, params);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<UserSnowflake> users, @Nullable Duration deletionTime)
+    {
+        deletionTime = deletionTime == null ? Duration.ZERO : deletionTime;
+        Checks.noneNull(users, "Users");
+        Checks.check(!deletionTime.isNegative(), "Deletion time cannot be negative");
+        Checks.check(deletionTime.getSeconds() <= TimeUnit.DAYS.toSeconds(7), "Deletion timeframe must not be larger than 7 days. Provided: %d seconds", deletionTime.getSeconds());
+        Checks.check(users.size() <= 200, "Cannot ban more than 200 users at once");
+        checkPermission(Permission.BAN_MEMBERS);
+
+        for (UserSnowflake user : users)
+        {
+            checkOwner(user.getIdLong(), "ban");
+            checkPosition(user);
+        }
+
+        Set<Long> userIds = users.stream().map(UserSnowflake::getIdLong).collect(Collectors.toSet());
+        DataObject body = DataObject.empty()
+                .put("user_ids", userIds)
+                .put("delete_message_seconds", deletionTime.getSeconds());
+        Route.CompiledRoute route = Route.Guilds.BULK_BAN.compile(getId());
+
+        return new AuditableRestActionImpl<>(getJDA(), route, body, (res, req) -> {
+            DataObject responseBody = res.getObject();
+            List<UserSnowflake> bannedUsers = responseBody.getArray("banned_users")
+                .stream(DataArray::getLong)
+                .map(UserSnowflake::fromId)
+                .collect(Collectors.toList());
+            List<UserSnowflake> failedUsers = responseBody.getArray("failed_users")
+                .stream(DataArray::getLong)
+                .map(UserSnowflake::fromId)
+                .collect(Collectors.toList());
+            return new BulkBanResponse(bannedUsers, failedUsers);
+        });
     }
 
     @Nonnull

@@ -103,6 +103,7 @@ public class Route
         public static final Route GET_BAN =            new Route(GET,    "guilds/{guild_id}/bans/{user_id}");
         public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}");
         public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}");
+        public static final Route BULK_BAN =           new Route(POST,   "guilds/{guild_id}/bulk-bans");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}");
         public static final Route ADD_MEMBER =         new Route(PUT,    "guilds/{guild_id}/members/{user_id}");
