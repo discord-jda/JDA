@@ -1,0 +1,107 @@
+# Original Action made by freya022 (https://github.com/freya022)
+
+name: Jitpack preview comment
+on:
+  pull_request_target: # target is required to run on PRs with merge conflicts, see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - close
+    paths:
+      - 'build.gradle.kts'
+      - 'src/main/**.java'
+      - 'src/test/**.java'
+      - 'src/main/**.kt'
+      - 'src/test/**.kt'
+
+permissions:
+  pull-requests: write
+
+jobs:
+  hide-comment:
+    if: ${{ github.event.pull_request.state == 'closed' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: jitpack-preview-comment
+          hide: true
+  update-comment:
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.state == 'open' }}
+    runs-on: ubuntu-latest
+    env:
+      REPO_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
+      REPO_NAME: ${{ github.event.pull_request.head.repo.name }}
+    steps:
+      - uses: actions/github-script@v6.4.1
+        id: get-hash
+        with:
+          script: return "${{ github.event.pull_request.head.sha }}".substring(0, 10)
+          result-encoding: string
+        
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+         header: jitpack-preview-comment
+         message: |-
+           ## How to use a preview of this feature
+
+           You will need to replace your JDA dependency with the following declaration:
+
+           <details>
+           <summary>Maven</summary>
+
+           ```xml
+           <repositories>
+               <repository>
+                   <id>jitpack</id>
+                   <url>https://jitpack.io</url>
+               </repository>
+           </repositories>
+
+           <dependencies>
+               <dependency>
+                   <groupId>io.github.${{ env.REPO_OWNER }}</groupId>
+                   <artifactId>${{ env.REPO_NAME }}</artifactId>
+                   <version>${{ steps.get-hash.outputs.result }}</version>
+               </dependency>
+           </dependencies>
+           ```
+
+           </details>
+
+           <details>
+           <summary>Gradle</summary>
+
+           ```gradle
+           repositories {
+               mavenCentral()
+               maven { url 'https://jitpack.io' }
+           }
+
+           dependencies {
+               implementation 'io.github.${{ env.REPO_OWNER }}:${{ env.REPO_NAME }}:${{ steps.get-hash.outputs.result }}'
+           }
+           ```
+
+           </details>
+
+           <details>
+           <summary>Kotlin Gradle</summary>
+
+           ```kt
+           repositories {
+               mavenCentral()
+               maven("https://jitpack.io")
+           }
+
+           dependencies {
+               implementation("io.github.${{ env.REPO_OWNER }}:${{ env.REPO_NAME }}:${{ steps.get-hash.outputs.result }}")
+           }
+           ```
+
+           </details>
+           
+           Commit hash: ${{ steps.get-hash.outputs.result }}
+
+           See also: https://jda.wiki/using-jda/using-new-features/
