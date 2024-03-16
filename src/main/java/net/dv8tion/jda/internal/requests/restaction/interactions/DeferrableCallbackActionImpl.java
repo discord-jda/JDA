@@ -19,9 +19,12 @@ package net.dv8tion.jda.internal.requests.restaction.interactions;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.restaction.interactions.DeferrableInteractionCallbackAction;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 
-public abstract class DeferrableCallbackActionImpl extends InteractionCallbackImpl<InteractionHook>
+import javax.annotation.Nonnull;
+
+public abstract class DeferrableCallbackActionImpl extends InteractionCallbackImpl<InteractionHook> implements DeferrableInteractionCallbackAction<InteractionHook>
 {
     protected final InteractionHookImpl hook;
 
@@ -29,6 +32,13 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
     {
         super(hook.getInteraction());
         this.hook = hook;
+    }
+
+    @Nonnull
+    @Override
+    public InteractionHook getHook()
+    {
+        return hook;
     }
 
     //Here we intercept the responses and forward this information to our followup hook

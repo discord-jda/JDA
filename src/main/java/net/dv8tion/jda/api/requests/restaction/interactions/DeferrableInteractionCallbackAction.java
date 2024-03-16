@@ -17,17 +17,19 @@
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.requests.FluentRestAction;
-import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
 import javax.annotation.Nonnull;
 
 /**
- * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
+ * A callback action which comes from a deferrable {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
  */
-public interface MessageEditCallbackAction extends DeferrableInteractionCallbackAction<InteractionHook>, MessageEditRequest<MessageEditCallbackAction>, FluentRestAction<InteractionHook, MessageEditCallbackAction>
+public interface DeferrableInteractionCallbackAction<T> extends InteractionCallbackAction<T>
 {
+    /**
+     * The {@link InteractionHook} of this deferrable action.
+     *
+     * @return The interaction hook
+     */
     @Nonnull
-    @Override
-    MessageEditCallbackAction closeResources();
+    InteractionHook getHook();
 }
