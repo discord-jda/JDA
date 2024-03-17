@@ -1557,6 +1557,7 @@ public class GuildImpl implements Guild
         Checks.check(deletionTime.getSeconds() <= TimeUnit.DAYS.toSeconds(7), "Deletion timeframe must not be larger than 7 days. Provided: %d seconds", deletionTime.getSeconds());
         Checks.check(users.size() <= 200, "Cannot ban more than 200 users at once");
         checkPermission(Permission.BAN_MEMBERS);
+        checkPermission(Permission.MANAGE_SERVER);
 
         for (UserSnowflake user : users)
         {

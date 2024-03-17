@@ -3684,6 +3684,16 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @param  deletionTime
      *         Delete recent messages of the given timeframe (for instance the last hour with {@code Duration.ofHours(1)})
      *
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If any of the provided users is the guild owner or has a higher or equal role position
+     * @throws InsufficientPermissionException
+     *         If the bot does not have {@link Permission#BAN_MEMBERS} or {@link Permission#MANAGE_SERVER}
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the users collection is null or contains null</li>
+     *             <li>If the deletionTime is negative</li>
+     *         </ul>
+     *
      * @return {@link AuditableRestAction} - Type: {@link BulkBanResponse}
      */
     @Nonnull
@@ -3714,6 +3724,16 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      *         The timeframe for the history of messages that will be deleted. (seconds precision)
      * @param  unit
      *         Timeframe unit as a {@link TimeUnit} (for example {@code ban(user, 7, TimeUnit.DAYS)}).
+     *
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If any of the provided users is the guild owner or has a higher or equal role position
+     * @throws InsufficientPermissionException
+     *         If the bot does not have {@link Permission#BAN_MEMBERS} or {@link Permission#MANAGE_SERVER}
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If null is provided</li>
+     *             <li>If the deletionTimeframe is negative</li>
+     *         </ul>
      *
      * @return {@link AuditableRestAction} - Type: {@link BulkBanResponse}
      */
