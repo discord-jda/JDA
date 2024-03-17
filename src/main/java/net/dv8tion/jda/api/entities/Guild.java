@@ -3667,6 +3667,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      *
      * <p>The {@link BulkBanResponse} includes a list of {@link BulkBanResponse#getFailedUsers() failed users},
      * which is populated with users that could not be banned, for instance due to some internal server error or permission issues.
+     * This list of failed users also includes all users that were already banned.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -3674,8 +3675,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>One of the users does not exist</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FAILED_TO_BAN_USERS FAILED_TO_BAN_USERS}
+     *     <br>None of the users could be banned</li>
      * </ul>
      *
      * @param  users
@@ -3695,6 +3696,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      *
      * <p>The {@link BulkBanResponse} includes a list of {@link BulkBanResponse#getFailedUsers() failed users},
      * which is populated with users that could not be banned, for instance due to some internal server error or permission issues.
+     * This list of failed users also includes all users that were already banned.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -3702,8 +3704,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
-     *     <br>One of the users does not exist</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FAILED_TO_BAN_USERS FAILED_TO_BAN_USERS}
+     *     <br>None of the users could be banned</li>
      * </ul>
      *
      * @param  users

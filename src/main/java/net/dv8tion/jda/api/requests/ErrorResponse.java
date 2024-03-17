@@ -184,6 +184,7 @@ public enum ErrorResponse
     MESSAGE_BLOCKED_BY_AUTOMOD(               200000, "Message was blocked by automatic moderation"),
     TITLE_BLOCKED_BY_AUTOMOD(                 200001, "Title was blocked by automatic moderation"),
     MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER(   240000, "Message blocked by harmful links filter"),
+    FAILED_TO_BAN_USERS(                      500000, "Failed to ban users"),
 
     SERVER_ERROR(                                 0, "Discord encountered an internal server error! Not good!");
 
