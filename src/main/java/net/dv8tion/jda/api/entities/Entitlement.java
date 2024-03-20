@@ -21,8 +21,9 @@ import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
- * Represents a Discord Entitlement for premium App subscriptions.
- * <br>This should contain all information provided from Discord about an {@link Entitlement Entitlement}.
+ * Represents a user or guild that has access to a premium offering in your application.
+ *
+ * @see <a href="https://discord.com/developers/docs/monetization/entitlements" target="_blank">Discord Docs about Entitlements</a>
  */
 public interface Entitlement extends ISnowflake
 {
