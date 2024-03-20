@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -111,7 +112,7 @@ public class InteractionImpl implements Interaction
         this.entitlements = data.optArray("entitlements").orElseGet(DataArray::empty)
                 .stream(DataArray::getObject)
                 .map(jda.getEntityBuilder()::createEntitlement)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     // Used to allow interaction hook to send messages after acknowledgements
