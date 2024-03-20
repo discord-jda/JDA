@@ -8,6 +8,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 /**
  * {@link PaginationAction PaginationAction} that paginates the application entitlements endpoint.
@@ -71,6 +72,20 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      */
     @Nonnull
     EntitlementPaginationAction skuIds(@Nonnull String... skuIds);
+
+    /**
+     * Filters {@link Entitlement Entitlement}s by their SKU id
+     *
+     * @param skuIds
+     *        The SKU ids to filter by
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided {@code skuIds} are {@code null}, empty or invalid snowflakes
+     *
+     * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
+     */
+    @Nonnull
+    EntitlementPaginationAction skuIds(@Nonnull Collection<String> skuIds);
 
     /**
      * Filters {@link Entitlement Entitlement}s by a guild id
