@@ -59,9 +59,16 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
     }
 
     @Override
+    @Nullable
     public O complete(boolean shouldQueue) throws RateLimitedException
     {
-        return supply(action.complete(shouldQueue)).complete(shouldQueue);
+        I complete = action.complete(shouldQueue);
+
+        if (this.condition != null && !this.condition.test(complete))
+        {
+            return null;
+        }
+        return supply(complete).complete(shouldQueue);
     }
 
     @Nonnull
@@ -69,6 +76,13 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
     public CompletableFuture<O> submit(boolean shouldQueue)
     {
         return action.submit(shouldQueue)
-                .thenCompose((result) -> supply(result).submit(shouldQueue));
+                .thenCompose((result) ->
+                {
+                    if (condition != null && !condition.test(result))
+                    {
+                        return CompletableFuture.completedFuture(null);
+                    }
+                    return supply(result).submit(shouldQueue);
+                });
     }
 }
