@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -33,12 +35,14 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -60,6 +64,8 @@ public class CommandImpl implements Command
     private final List<Command.Subcommand> subcommands;
     private final long id, guildId, applicationId, version;
     private final boolean guildOnly, nsfw;
+    private final Set<InteractionContextType> contexts;
+    private final Set<IntegrationType> integrationTypes;
     private final Command.Type type;
     private final DefaultMemberPermissions defaultMemberPermissions;
 
@@ -85,6 +91,18 @@ public class CommandImpl implements Command
                 : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
         this.guildOnly = !json.getBoolean("dm_permission", true);
+        this.contexts = json.optArray("contexts")
+                .map(d -> d.stream(DataArray::getString)
+                        .map(InteractionContextType::fromKey)
+                        .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class))
+                )
+                .orElse(EnumSet.noneOf(InteractionContextType.class));
+        this.integrationTypes = json.optArray("integration_types")
+                .map(d -> d.stream(DataArray::getString)
+                        .map(IntegrationType::fromKey)
+                        .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class))
+                )
+                .orElse(EnumSet.noneOf(IntegrationType.class));
         this.nsfw = json.getBoolean("nsfw");
     }
 
@@ -222,6 +240,20 @@ public class CommandImpl implements Command
     public boolean isGuildOnly()
     {
         return guildOnly;
+    }
+
+    @Nonnull
+    @Override
+    public Set<InteractionContextType> getContexts()
+    {
+        return contexts;
+    }
+
+    @Nonnull
+    @Override
+    public Set<IntegrationType> getIntegrationTypes()
+    {
+        return integrationTypes;
     }
 
     @Override

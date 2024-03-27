@@ -18,15 +18,13 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Discord Application from its bot's point of view.
@@ -403,6 +401,30 @@ public interface ApplicationInfo extends ISnowflake
      * @return The bitset
      */
     long getFlagsRaw();
+
+    //TODO document
+    @Nonnull
+    Map<IntegrationType, IntegrationTypeConfiguration> getIntegrationTypesConfig();
+
+    //TODO document
+    interface IntegrationTypeConfiguration
+    {
+        //TODO document
+        @Nullable
+        InstallParameters getInstallParameters();
+    }
+
+    //TODO document
+    interface InstallParameters
+    {
+        //TODO document
+        @Nonnull
+        List<String> getScopes();
+
+        //TODO document
+        @Nonnull
+        Set<Permission> getPermissions();
+    }
 
     /**
      * Flag constants corresponding to the <a href="https://discord.com/developers/docs/resources/application#application-object-application-flags" target="_blank">Discord Enum</a>

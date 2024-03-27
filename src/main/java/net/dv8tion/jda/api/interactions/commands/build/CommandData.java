@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
@@ -28,8 +30,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Builder for Application Commands.
@@ -147,9 +151,34 @@ public interface CommandData extends SerializableData
      *         Whether to restrict this command to guilds
      *
      * @return The builder instance, for chaining
+     *
+     * @deprecated Replaced with {@link #setContexts(InteractionContextType...)}
      */
     @Nonnull
+    @Deprecated
     CommandData setGuildOnly(boolean guildOnly);
+
+    //TODO document
+    @Nonnull
+    default CommandData setContexts(@Nonnull InteractionContextType... contexts)
+    {
+        return setContexts(Arrays.asList(contexts));
+    }
+
+    //TODO document
+    @Nonnull
+    CommandData setContexts(@Nonnull Collection<InteractionContextType> contexts);
+
+    //TODO document
+    @Nonnull
+    default CommandData setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
+    {
+        return setIntegrationTypes(Arrays.asList(integrationTypes));
+    }
+
+    //TODO document
+    @Nonnull
+    CommandData setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes);
 
     /**
      * Sets whether this command should only be usable in NSFW (age-restricted) channels.
@@ -208,8 +237,19 @@ public interface CommandData extends SerializableData
      * <br>Always true for guild commands.
      *
      * @return True, if this command is restricted to guilds.
+     *
+     * @deprecated Replaced with {@link #getContexts()}
      */
+    @Deprecated
     boolean isGuildOnly();
+
+    //TODO document
+    @Nonnull
+    Set<InteractionContextType> getContexts();
+
+    //TODO document
+    @Nonnull
+    Set<IntegrationType> getIntegrationTypes();
 
     /**
      * Whether this command should only be usable in NSFW (age-restricted) channels
@@ -242,6 +282,8 @@ public interface CommandData extends SerializableData
             final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
             return data.setDefaultPermissions(command.getDefaultPermissions())
                     .setGuildOnly(command.isGuildOnly())
+                    .setContexts(command.getContexts())
+                    .setIntegrationTypes(command.getIntegrationTypes())
                     .setNSFW(command.isNSFW())
                     .setNameLocalizations(command.getNameLocalizations().toMap())
                     .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());

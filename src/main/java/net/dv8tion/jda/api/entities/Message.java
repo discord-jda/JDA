@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -2205,9 +2206,16 @@ public interface Message extends ISnowflake, Formattable
      * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
+     *
+     * @deprecated Replaced with {@link #getInteractionMetadata()}
      */
     @Nullable
+    @Deprecated
     Interaction getInteraction();
+
+    //TODO document
+    @Nullable
+    InteractionMetadata getInteractionMetadata();
 
     /**
      * Creates a new, public {@link ThreadChannel} spawning/starting at this {@link Message} inside the {@link IThreadContainer} this message was sent in.
@@ -2955,7 +2963,10 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     *
+     * @deprecated Replaced with {@link InteractionMetadata}
      */
+    @Deprecated
     class Interaction implements ISnowflake
     {
         private final long id;
@@ -3033,6 +3044,84 @@ public interface Message extends ISnowflake, Formattable
         public Member getMember()
         {
             return member;
+        }
+    }
+
+    //TODO document
+    class InteractionMetadata implements ISnowflake
+    {
+        private final long id;
+        private final int type;
+        private final UserSnowflake userId;
+        private final IntegrationOwners integrationOwners;
+        private final Long originalResponseMessageId;
+        private final Long interactedMessageId; //TODO ??
+        private final InteractionMetadata triggeringInteraction;
+
+        public InteractionMetadata(long id, int type, UserSnowflake userId, IntegrationOwners integrationOwners, Long originalResponseMessageId, Long interactedMessageId, InteractionMetadata triggeringInteraction)
+        {
+            this.id = id;
+            this.type = type;
+            this.userId = userId;
+            this.integrationOwners = integrationOwners;
+            this.originalResponseMessageId = originalResponseMessageId;
+            this.interactedMessageId = interactedMessageId;
+            this.triggeringInteraction = triggeringInteraction;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        //TODO document
+        @Nonnull
+        public int getTypeRaw()
+        {
+            return type;
+        }
+
+        //TODO document
+        @Nonnull
+        public InteractionType getType()
+        {
+            return InteractionType.fromKey(type);
+        }
+
+        //TODO document
+        @Nonnull
+        public UserSnowflake getUserId()
+        {
+            return userId;
+        }
+
+        //TODO document
+        @Nonnull
+        public IntegrationOwners getIntegrationOwners()
+        {
+            return integrationOwners;
+        }
+
+        //TODO document
+        @Nullable
+        public Long getOriginalResponseMessageId()
+        {
+            return originalResponseMessageId;
+        }
+
+        //TODO document
+        @Nullable
+        public Long getInteractedMessageId()
+        {
+            return interactedMessageId;
+        }
+
+        //TODO document
+        @Nullable
+        public InteractionMetadata getTriggeringInteraction()
+        {
+            return triggeringInteraction;
         }
     }
 }

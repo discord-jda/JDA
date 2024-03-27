@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
@@ -33,6 +34,7 @@ import net.dv8tion.jda.internal.utils.ChannelUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * Abstract representation for any kind of Discord interaction.
@@ -230,6 +232,18 @@ public interface Interaction extends ISnowflake
             throw new IllegalStateException("This interaction did not happen in a guild");
         return getGuild().getLocale();
     }
+
+    //TODO document
+    @Nonnull
+    InteractionContextType getContext();
+
+    //TODO document
+    @Nonnull
+    Set<Permission> getApplicationPermissions();
+
+    //TODO document
+    @Nullable
+    IntegrationOwners getIntegrationOwners();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this interaction

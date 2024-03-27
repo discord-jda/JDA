@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -25,7 +26,9 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -35,6 +38,8 @@ import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.Set;
 
 public class InteractionImpl implements Interaction
 {
@@ -47,6 +52,9 @@ public class InteractionImpl implements Interaction
     protected final User user;
     protected final Channel channel;
     protected final DiscordLocale userLocale;
+    protected final InteractionContextType context;
+    protected final IntegrationOwners integrationOwners;
+    protected final Set<Permission> appPermissions;
     protected final JDAImpl api;
 
     //This is used to give a proper error when an interaction is ack'd twice
@@ -62,6 +70,13 @@ public class InteractionImpl implements Interaction
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
         this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
+        // Absent in guild-scoped commands
+        if (data.hasKey("context"))
+            this.context = InteractionContextType.fromKey(data.getString("context"));
+        else
+            this.context = null;
+        this.appPermissions = Collections.unmodifiableSet(Permission.getPermissions(data.getLong("app_permissions")));
+        this.integrationOwners = new IntegrationOwnersImpl(data.optObject("authorizing_integration_owners").orElseGet(DataObject::empty));
 
         DataObject channelJson = data.getObject("channel");
         if (guild != null)
@@ -167,6 +182,27 @@ public class InteractionImpl implements Interaction
     public DiscordLocale getUserLocale()
     {
         return userLocale;
+    }
+
+    @Nonnull
+    @Override
+    public InteractionContextType getContext()
+    {
+        return context;
+    }
+
+    @Nonnull
+    @Override
+    public Set<Permission> getApplicationPermissions()
+    {
+        return appPermissions;
+    }
+
+    @Nullable
+    @Override
+    public IntegrationOwners getIntegrationOwners()
+    {
+        return integrationOwners;
     }
 
     @Nonnull

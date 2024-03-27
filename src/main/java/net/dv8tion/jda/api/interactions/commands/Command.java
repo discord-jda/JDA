@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
@@ -225,8 +227,19 @@ public interface Command extends ISnowflake, ICommandReference
      * <br>Always true for guild commands.
      *
      * @return True, if this command is restricted to guilds.
+     *
+     * @deprecated Replaced with {@link #getContexts()}
      */
+    @Deprecated
     boolean isGuildOnly();
+
+    //TODO document
+    @Nonnull
+    Set<InteractionContextType> getContexts();
+
+    //TODO document
+    @Nonnull
+    Set<IntegrationType> getIntegrationTypes();
 
     /**
      * Whether this command is restricted to NSFW (age-restricted) channels.

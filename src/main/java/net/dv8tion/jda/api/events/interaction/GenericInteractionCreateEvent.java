@@ -17,16 +17,20 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 
 /**
  * Indicates that an {@link Interaction} was created.
@@ -105,6 +109,27 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public DiscordLocale getGuildLocale()
     {
         return interaction.getGuildLocale();
+    }
+
+    @Nonnull
+    @Override
+    public InteractionContextType getContext()
+    {
+        return interaction.getContext();
+    }
+
+    @Nonnull
+    @Override
+    public Set<Permission> getApplicationPermissions()
+    {
+        return interaction.getApplicationPermissions();
+    }
+
+    @Nullable
+    @Override
+    public IntegrationOwners getIntegrationOwners()
+    {
+        return interaction.getIntegrationOwners();
     }
 
     @Nullable

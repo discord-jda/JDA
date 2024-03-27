@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogChange;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -52,6 +53,8 @@ import net.dv8tion.jda.api.events.guild.member.update.*;
 import net.dv8tion.jda.api.events.user.update.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
+import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -67,6 +70,7 @@ import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
 import net.dv8tion.jda.internal.entities.sticker.*;
 import net.dv8tion.jda.internal.handle.EventCache;
+import net.dv8tion.jda.internal.interactions.IntegrationOwnersImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -1853,6 +1857,10 @@ public class EntityBuilder
         if (!jsonObject.isNull("interaction"))
             messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
 
+        Message.InteractionMetadata interactionMetadata = null;
+        if (!jsonObject.isNull("interaction_metadata"))
+            interactionMetadata = createMessageInteractionMetadata(jsonObject.getObject("interaction_metadata"));
+
         // Lazy Mention parsing and caching (includes reply mentions)
         Mentions mentions = new MessageMentionsImpl(
             api, guild, content, mentionsEveryone,
@@ -1867,7 +1875,7 @@ public class EntityBuilder
 
         return new ReceivedMessage(id, channelId, guildId, api, guild, channel, type, messageReference, fromWebhook, applicationId, tts, pinned,
                 content, nonce, user, member, activity, editTime, mentions, reactions, attachments, embeds, stickers, components, flags,
-                messageInteraction, startedThread, position);
+                messageInteraction, interactionMetadata, startedThread, position);
     }
 
     private static MessageActivity createMessageActivity(DataObject jsonObject)
@@ -2131,6 +2139,21 @@ public class EntityBuilder
         }
 
         return new Message.Interaction(id, type, name, user, member);
+    }
+
+    public Message.InteractionMetadata createMessageInteractionMetadata(DataObject content)
+    {
+        final long id = content.getLong("id");
+        final int type = content.getInt("type");
+        final long userId = content.getLong("user_id");
+        final IntegrationOwners integrationOwners = new IntegrationOwnersImpl(content.getObject("authorizing_integration_owners"));
+        final Long originalResponseMessageId = content.isNull("original_response_message_id") ? null : content.getLong("original_response_message_id");
+        final Long interactedMessageId = content.isNull("interacted_message_id") ? null : content.getLong("interacted_message_id");
+        final Message.InteractionMetadata triggeringInteraction = content.optObject("triggering_interaction_metadata")
+                .map(this::createMessageInteractionMetadata)
+                .orElse(null);
+
+        return new Message.InteractionMetadata(id, type, UserSnowflake.fromId(userId), integrationOwners, originalResponseMessageId, interactedMessageId, triggeringInteraction);
     }
 
     @Nullable
@@ -2493,9 +2516,30 @@ public class EntityBuilder
                             .collect(Collectors.toList()))
                     .orElse(Collections.emptyList());
 
+        final Optional<DataObject> integrationTypesConfigDict = object.optObject("integration_types_config");
+        final Map<IntegrationType, ApplicationInfo.IntegrationTypeConfiguration> integrationTypesConfig = integrationTypesConfigDict
+            .map(d -> {
+                final Map<IntegrationType, ApplicationInfo.IntegrationTypeConfiguration> map = new EnumMap<>(IntegrationType.class);
+                for (String key : d.keys())
+                {
+                    final DataObject value = d.getObject(key);
+
+                    final ApplicationInfo.InstallParameters installParameters = value.optObject("oauth2_install_params")
+                            .map(oauth2InstallParams -> new ApplicationInfoImpl.InstallParametersImpl(
+                                    oauth2InstallParams.getArray("scopes").stream(DataArray::getString).collect(Collectors.toList()),
+                                    Permission.getPermissions(oauth2InstallParams.getLong("permissions"))
+                            ))
+                            .orElse(null);
+
+                    map.put(IntegrationType.fromKey(key), new ApplicationInfoImpl.IntegrationTypeConfigurationImpl(installParameters));
+                }
+                return map;
+            })
+            .orElse(Collections.emptyMap());
+
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, flags, isBotPublic, name,
                 termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, redirectUris, interactionsEndpointUrl,
-                roleConnectionsVerificationUrl, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes);
+                roleConnectionsVerificationUrl, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes, integrationTypesConfig);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)
