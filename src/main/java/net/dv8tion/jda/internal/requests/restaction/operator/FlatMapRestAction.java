@@ -60,7 +60,6 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
     }
 
     @Override
-    @Nullable
     public O complete(boolean shouldQueue) throws RateLimitedException
     {
         I complete = action.complete(shouldQueue);
