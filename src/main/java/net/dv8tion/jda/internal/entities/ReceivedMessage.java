@@ -1005,7 +1005,7 @@ public class ReceivedMessage implements Message
             if (webhook instanceof InteractionHookImpl
                     && !((InteractionHookImpl) webhook).isAck()
                     && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
-                return new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration");
+                return new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration", exception);
             else
                 return null;
         };
