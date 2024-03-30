@@ -22,6 +22,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -92,6 +93,8 @@ public class MarkdownSanitizer
         tokens.put(STRIKE, "~~");
     }
 
+    private Matcher urlMatcher;
+    private int urlPlaceholderID;
     private int ignored;
     private SanitizationStrategy strategy;
 
@@ -553,6 +556,11 @@ public class MarkdownSanitizer
     public String compute(@Nonnull String sequence)
     {
         Checks.notNull(sequence, "Input");
+
+        setUrlMatcher(sequence);
+        String[][] urlSubBox = getURLSubBox(sequence);
+        sequence = replaceURLs(sequence, urlSubBox, true);
+
         StringBuilder builder = new StringBuilder();
         String end = handleQuote(sequence);
         if (end != null) return end;
@@ -590,7 +598,10 @@ public class MarkdownSanitizer
             applyStrategy(nextRegion, handleRegion(i + delta, endRegion, sequence, nextRegion), builder);
             i = endRegion + delta;
         }
-        return builder.toString();
+
+        sequence = replaceURLs(builder.toString(), urlSubBox, false);
+
+        return sequence;
     }
 
     private String handleQuote(@Nonnull String sequence)
@@ -629,5 +640,67 @@ public class MarkdownSanitizer
          * <br>{@code "**Hello** World!" -> "\**Hello\** World!"}
          */
         ESCAPE,
+    }
+
+    //URL Handling Methods
+
+    private String[][] getURLSubBox(@Nonnull String sequence)
+    { //Serves as a look-up table to replace URLs with its placeholders, and vise versa.
+        int urlCount = countURLs();
+        String[][] urlSubBox = new String[2][urlCount];
+        urlPlaceholderID = 10000000;
+        urlMatcher.reset();
+        for(int i = 0; i <= urlCount - 1; i++)
+        {
+            urlSubBox[1][i] = generateURLReplacement(sequence);
+            urlMatcher.find();
+            urlSubBox[0][i] = urlMatcher.group();
+        }
+        return urlSubBox;
+    }
+
+    private String replaceURLs(@Nonnull String sequence, String[][] subBox, boolean start)
+    {
+        StringBuilder builder = new StringBuilder(sequence);
+        String url;
+        for(int i = 0; i <= subBox[1].length - 1; i++)
+        {
+            url = subBox[start ? 0 : 1][i];
+            builder.replace(builder.indexOf(url), builder.indexOf(url) + url.length(), subBox[start ? 1 : 0][i]);
+        }
+        return builder.toString();
+    }
+
+    private int countURLs()
+    {
+        try
+        {
+            int i = 0;
+            while(urlMatcher.find())
+            {
+                i++;
+            }
+            return i;
+        } catch (RuntimeException e)
+        {
+            return 0;
+        }
+    }
+
+    private void setUrlMatcher(@Nonnull String sequence)
+    {
+        String urlPattern = "(http|https)://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,3}(/\\S*)?";
+        urlMatcher = Pattern.compile(urlPattern).matcher(sequence);
+    }
+
+    private String generateURLReplacement(@Nonnull String sequence)
+    {
+        String urlReplacement = "URL-" + (urlPlaceholderID);
+        if(sequence.contains(urlReplacement))
+        {
+            urlPlaceholderID++;
+            return generateURLReplacement(sequence);
+        }
+        else return urlReplacement;
     }
 }
