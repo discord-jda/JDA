@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -66,7 +67,7 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
 
         if (this.condition != null && !this.condition.test(complete))
         {
-            return null;
+            throw new CancellationException("FlatMap condition failed");
         }
         return supply(complete).complete(shouldQueue);
     }
@@ -80,7 +81,10 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
                 {
                     if (condition != null && !condition.test(result))
                     {
-                        return CompletableFuture.completedFuture(null);
+                        CompletableFuture<O> future = new CompletableFuture<>();
+                        future.cancel(true);
+
+                        return future;
                     }
                     return supply(result).submit(shouldQueue);
                 });
