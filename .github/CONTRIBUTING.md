@@ -1,6 +1,6 @@
 ## Making Changes
 
-Depending on your changes there are certain rules you have to follow if you expectyour Pull Request (PR) to be merged.
+Depending on your changes there are certain rules you have to follow if you expect your Pull Request (PR) to be merged.
 
 1. Check for existing pull requests that might already implement your changes.  
     You can review those pull requests with your suggestions for improvements.
