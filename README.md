@@ -43,10 +43,10 @@ The core concepts of JDA have been developed to make building scalable apps easy
 
 1. Event System  
     Providing simplified events from the gateway API, to respond to any platform events in real-time without much hassle.
-2. Rest Actions  
+1. Rest Actions  
     Easy to use and scalable implementation of REST API functionality, letting you choose between callbacks with combinators, futures, and blocking.
     The library also handles rate-limits imposed by Discord automatically, while still offering ways to replace the default implementation.
-4. Customizable Cache  
+1. Customizable Cache  
     Trading memory usage for better performance where necessary, with sane default presets to choose from and customize.
 
 ## Installation
