@@ -44,7 +44,7 @@ The core concepts of JDA have been developed to make building scalable apps easy
 1. Event System  
     Providing simplified events from the gateway API, to respond to any platform events in real-time without much hassle.
 2. Rest Actions  
-    Easy to use and scalable implementation of REST API functionality, letting you choose your own flavor of async (reactive callbacks / futures / blocking).
+    Easy to use and scalable implementation of REST API functionality, letting you choose between callbacks with combinators, futures, and blocking.
 3. Customizable Cache  
     Trading memory usage for better performance where necessary, with sane default presets to choose from and customize.
 
