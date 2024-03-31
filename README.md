@@ -16,6 +16,9 @@
 [jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-purple.svg
 [license-shield]: https://img.shields.io/badge/License-Apache%202.0-white.svg
 [migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-darkgreen.svg
+[GatewayIntent]: https://docs.jda.wiki/net/dv8tion/jda/api/requests/GatewayIntent.html
+[JDABuilder]: https://docs.jda.wiki/net/dv8tion/jda/api/JDABuilder.html
+[DefaultShardManagerBuilder]: https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html
 
 <img align="right" src="https://github.com/discord-jda/JDA/blob/assets/assets/readme/logo.png?raw=true" height="200" width="200">
 
@@ -30,236 +33,171 @@
 [ ![troubleshooting-shield] ][troubleshooting]
 [ ![migration-shield][] ][migration]
 
-
 # JDA (Java Discord API)
 
-JDA strives to provide a clean and full wrapping of the Discord REST API and its WebSocket-Events for Java.
-This library is a helpful tool that provides the functionality to create a Discord bot in Java.
+This open source library is intended for implementing bots on Discord using the real-time gateway and REST API. It provides event based functionality to implement bots of any kind, allowing for effective and scalable applications.
 
-## Summary
+## Overview
 
-1. [Introduction](#creating-the-jda-object)
-2. [Sharding](#sharding-a-bot)
-3. [Entity Lifetimes](#entity-lifetimes)
-4. [Download](#download)
-5. [Documentation](#documentation)
-6. [Support](#getting-help)
-7. [Extensions And Plugins](#third-party-recommendations)
-8. [Contributing](#contributing-to-jda)
-9. [Dependencies](#dependencies)
-10. [Other Libraries](#related-projects)
+The core concepts of JDA have been developed to make building scalable apps easy:
 
-## UserBots and SelfBots
+1. Event System  
+    Providing simplified events from the gateway API, to respond to any platform events in real-time without much hassle.
+2. Rest Actions  
+    Easy to use and scalable implementation of REST API functionality, letting you choose your own flavor of async (reactive callbacks / futures / blocking).
+3. Customizable Cache  
+    Trading memory usage for better performance where necessary, with sane default presets to choose from and customize.
 
-Discord is currently prohibiting creation and usage of automated client accounts (AccountType.CLIENT).
-We have officially dropped support for client login as of version **4.2.0**!
-If you need a bot, use a bot account from the [Application Dashboard](https://discord.com/developers/applications).
+## Installation
 
-[Read More](https://support.discord.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
+[ ![maven-central][] ](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
+[ ![jitpack][] ](https://jitpack.io/#discord-jda/JDA)
 
-## Creating the JDA Object
+This library is available on maven central. The current latest version is always shown in the [GitHub Release](https://github.com/discord-jda/JDA/releases/latest).
 
-Creating the JDA Object is done via the JDABuilder class. After setting the token and other options via setters,
-the JDA Object is then created by calling the `build()` method. When `build()` returns,
-JDA might not have finished starting up. However, you can use `awaitReady()`
-on the JDA object to ensure that the entire cache is loaded before proceeding.
-Note that this method is blocking and will cause the thread to sleep until startup has completed.
+The minimum java version supported by JDA is **Java SE 8**. JDA also uses JSR 305 to support solid interoperability with Kotlin out of the box.
 
-**Example**:
+### Gradle
 
-```java
-JDA jda = JDABuilder.createDefault("token").build();
+```gradle
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("net.dv8tion:JDA:$version") { // replace $version with the latest version
+      // Optionally disable audio natives to reduce jar size by excluding `opus-java`
+      // Gradle DSL:
+      // exclude module: 'opus-java'
+      // Kotlin DSL:
+      // exclude(module="opus-java")
+    }
+}
 ```
 
-### Configuration
+### Maven
 
-Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of configurations to improve the experience.
+```xml
+<dependency>
+    <groupId>net.dv8tion</groupId>
+    <artifactId>JDA</artifactId>
+    <version>$version</version> <!-- replace $version with the latest version -->
+    <!-- Optionally disable audio natives to reduce jar size by excluding `opus-java`
+    <exclusions>
+        <exclusion>
+            <groupId>club.minnced</groupId>
+            <artifactId>opus-java</artifactId>
+        </exclusion>
+    </exclusions>
+    -->
+</dependency>
+```
 
-**Example**:
+## Creating a Bot
+
+To use this library, you have to create an Application in the [Discord Application Dashboard](https://discord.com/developers/applications) and grab your bot token. You can find a step-by-step guide for this in our wiki page [Creating a Discord Bot](https://jda.wiki/using-jda/getting-started/#creating-a-discord-bot).
+
+## Getting Started
+
+We provide a number of [examples](https://github.com/discord-jda/JDA/tree/master/src/examples/java) to introduce you to JDA. You can also take a look at our official [Wiki][wiki], [Documentation][docs], and [FAQ][faq].
+
+Every bot implemented by JDA starts out using the [JDABuilder][JDABuilder] or [DefaultShardManagerBuilder][DefaultShardManagerBuilder]. Both builders provide a set of default presets for cache usage and events it wants to receive:
+
+- `createDefault` - Enables cache for users who are active in voice channels and all cache flags
+- `createLight` - Disables all user cache and cache flags
+- `create` - Enables member chunking, caches all users, and enables all cache flags
+
+We receommend reading the guide on [caching and intents](https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/) to get a feel for configuring your bot properly. Here are some possible use-cases:
+
+### Example: Message Logging
+
+A small-scale bot that simply logs messages to the console using the [JDABuilder][JDABuilder], intended for smaller bots that don't intend to grow to thousands of guilds
+
+Starting your bot and attaching an event listener, using the right [intents][GatewayIntent]:
 
 ```java
 public static void main(String[] args) {
-    JDABuilder builder = JDABuilder.createDefault(args[0]);
-    
-    // Disable parts of the cache
-    builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
-    // Enable the bulk delete event
-    builder.setBulkDeleteSplittingEnabled(false);
-    // Set activity (like "playing Something")
-    builder.setActivity(Activity.watching("TV"));
-    
-    builder.build();
+  JDABuilder.createLight(token, EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
+      .addEventListener(new MessageReceiveListener())
+      .build();
 }
 ```
 
-> See [JDABuilder](https://docs.jda.wiki/net/dv8tion/jda/api/JDABuilder.html)
-  and [DefaultShardManagerBuilder](https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
+**Important Note:** This also makes use of a **privileged** intent, which you have to explicitly enable in your application dashboard when you create your bot.
 
-You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
-Additionally, you can change the handling of the member/user cache by disabling **intents** or changing the **member cache policy**.
-To learn more about intents and member loading/caching, read the [Gateway Intents Guide](https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/).
+Your event listener could look like this:
 
 ```java
-public void configureMemoryUsage(JDABuilder builder) {
-    // Disable cache for member activities (streaming/games/spotify)
-    builder.disableCache(CacheFlag.ACTIVITY);
-
-    // Only cache members who are either in a voice channel or owner of the guild
-    builder.setMemberCachePolicy(MemberCachePolicy.VOICE.or(MemberCachePolicy.OWNER));
-
-    // Disable member chunking on startup
-    builder.setChunkingFilter(ChunkingFilter.NONE);
-
-    // Disable presence updates and typing events
-    builder.disableIntents(GatewayIntent.GUILD_PRESENCE, GatewayIntent.GUILD_MESSAGE_TYPING);
-
-    // Consider guilds with more than 50 members as "large". 
-    // Large guilds will only provide online members in their setup and thus reduce bandwidth if chunking is disabled.
-    builder.setLargeThreshold(50);
+public class MessageReceiveListener extends ListenerAdapter {
+  @Override
+  public void onMessageReceived(MessageReceivedEvent event) {
+    System.out.printf("[%s] %#s: %s\n",
+      event.getChannel(),
+      event.getAuthor(),
+      event.getMessage().getContentDisplay());
+  }
 }
 ```
 
-### Listening for Events
+You can find a more thorough example with the [MessageLoggerExample](https://github.com/discord-jda/JDA/blob/master/src/examples/java/MessageLoggerExample.java) class.
 
-The event system in JDA is configured through a hierarchy of classes/interfaces.
-We offer two implementations for the `IEventManager`:
+### Example: Slash Command Bot
 
-- **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
-- **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation which can be applied to methods
-
-By default, the **InterfacedEventManager** is used.
-Since you can create your own implementation of `IEventManager`, this is a very versatile and configurable system.
-If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
-configure it on the `JDABuilder` with `setEventManager(...)`.
-
-#### Examples:
-
-**Using EventListener**:
+This is a bot that makes use of [interactions](https://jda.wiki/using-jda/interactions/) to respond to user commands. Unlike the message logging bot, this bot can work without any enabled intents, since interactions are always available.
 
 ```java
-public class ReadyListener implements EventListener {
-    public static void main(String[] args) throws InterruptedException {
-        // Note: It is important to register your ReadyListener before building
-        JDA jda = JDABuilder.createDefault("token")
-            .addEventListeners(new ReadyListener())
-            .build();
+public static void main(String[] args) {
+  JDA jda = JDABuilder.createLight(token, Collections.emptyList())
+      .addEventListener(new SlashCommandListener())
+      .build();
 
-        // optionally block until JDA is ready
-        jda.awaitReady();
-    }
+  // Register your commands to make them visible globally on Discord:
 
-    @Override
-    public void onEvent(GenericEvent event) {
-        if (event instanceof ReadyEvent) {
-            System.out.println("API is ready!");
-        }
-    }
+  CommandListUpdateAction commands = jda.updateCommands();
+
+  // Add all your commands on this action instance
+  commands.addCommands(
+    Commands.slash("say", "Makes the bot say what you tell it to")
+      .addOption(STRING, "content", "What the bot should say", true) // Accepting a user input
+  );
+
+  commands.addCommands(
+    Commands.slash("leave", "Makes the bot leave the server")
+      .setGuildOnly(true) // this doesn't make sense in DMs
+      .setDefaultPermissions(DefaultMemberPermissions.DISABLED) // only admins should be able to use this command.
+  );
+
+  // Then finally send your commands to discord using the API
+  commands.queue();
 }
 ```
 
-**Using ListenerAdapter**:
+An event listener that responds to commands could look like this:
 
 ```java
-public class MessageListener extends ListenerAdapter {
-    public static void main(String[] args) {
-        JDA jda = JDABuilder.createDefault("token")
-                .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
-                .build();
-        //You can also add event listeners to the already built JDA instance
-        // Note that some events may not be received if the listener is added after calling build()
-        // This includes events such as the ReadyEvent
-        jda.addEventListener(new MessageListener());
+public class SlashCommandListener extends ListenerAdapter {
+  @Override
+  public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+    switch (event.getName()) {
+      case "say" -> {
+        String content = event.getOption("content", OptionMapping::getAsString);
+        event.reply(content).queue();
+      };
+      case "leave" -> {
+        event.reply("I'm leaving the server now!")
+          .setEphemeral(true) // this message is only visible to the command user
+          .flatMap(m -> event.getGuild().leave()) // append a follow-up action using flatMap
+          .queue(); // enqueue both actions to run in sequence (send message -> leave guild)
+      };
+      default -> return;
     }
-
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.isFromType(ChannelType.PRIVATE)) {
-            System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(),
-                                    event.getMessage().getContentDisplay());
-        } else {
-            System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
-                        event.getTextChannel().getName(), event.getMember().getEffectiveName(),
-                        event.getMessage().getContentDisplay());
-        }
-    }
+  }
 }
 ```
 
-**Slash-Commands**:
+You can find a more thorough example with the [SlashBotExample](https://github.com/discord-jda/JDA/blob/master/src/examples/java/SlashBotExample.java) class.
 
-```java
-public class Bot extends ListenerAdapter {
-    public static void main(String[] args) {
-        if (args.length < 1) {
-            System.out.println("You have to provide a token as first argument!");
-            System.exit(1);
-        }
-        // args[0] would be the token (using an environment variable or config file is preferred for security)
-        // We don't need any intents for this bot. Slash commands work without any intents!
-        JDA jda = JDABuilder.createLight(args[0], Collections.emptyList())
-            .addEventListeners(new Bot())
-            .setActivity(Activity.playing("Type /ping"))
-            .build();
-
-        // Sets the global command list to the provided commands (removing all others)
-        jda.updateCommands().addCommands(
-            Commands.slash("ping", "Calculate ping of the bot"),
-            Commands.slash("ban", "Ban a user from the server")
-                    .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)) // only usable with ban permissions
-                    .setGuildOnly(true) // Ban command only works inside a guild
-                    .addOption(OptionType.USER, "user", "The user to ban", true) // required option of type user (target to ban)
-                    .addOption(OptionType.STRING, "reason", "The ban reason") // optional reason
-        ).queue();
-    }
-    
-    @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        // make sure we handle the right command
-        switch (event.getName()) {
-            case "ping":
-                long time = System.currentTimeMillis();
-                event.reply("Pong!").setEphemeral(true) // reply or acknowledge
-                     .flatMap(v ->
-                          event.getHook().editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time) // then edit original
-                     ).queue(); // Queue both reply and edit
-                break;
-            case "ban":
-                // double check permissions, don't trust Discord on this!
-                if (!event.getMember().hasPermission(Permission.BAN_MEMBERS)) {
-                    event.reply("You cannot ban members! Nice try ;)").setEphemeral(true).queue();
-                    break;
-                }
-                User target = event.getOption("user", OptionMapping::getUser);
-                // optionally check for member information
-                Member member = event.getOption("user", OptionMapping::getMember);
-                if (!event.getMember().canInteract(member)) {
-                    event.reply("You cannot ban this user.").setEphemeral(true).queue();
-                    break;
-                }
-                // Before starting our ban request, tell the user we received the command
-                // This sends a "Bot is thinking..." message which is later edited once we finished
-                event.deferReply().queue();
-                String reason = event.getOption("reason", OptionMapping::getAsString);
-                AuditableRestAction<Void> action = event.getGuild().ban(target, 0); // Start building our ban request
-                if (reason != null) // reason is optional
-                    action = action.reason(reason); // set the reason for the ban in the audit logs and ban log
-                action.queue(v -> {
-                    // Edit the thinking message with our response on success
-                    event.getHook().editOriginal("**" + target.getAsTag() + "** was banned by **" + event.getUser().getAsTag() + "**!").queue();
-                }, error -> {
-                    // Tell the user we encountered some error
-                    event.getHook().editOriginal("Some error occurred, try again!").queue();
-                    error.printStackTrace();
-                });
-                break;
-            default:
-                System.out.printf("Unknown command %s used by %#s%n", event.getName(), event.getUser());
-        }
-    }
-}
-```
-
-### RestAction
+## RestAction
 
 Through [RestAction](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
  
@@ -291,224 +229,7 @@ public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
 }
 ```
 
-### More Examples
-
-We provide a small set of Examples in the [Example Directory](https://github.com/discord-jda/JDA/tree/master/src/examples/java).
-
-## Sharding a Bot
-
-When your bot joins over 2500 guilds, it is required to perform **Sharding**.
-This means, your connection is split up into multiple **shards**, each only accessing a fraction of your total available guilds.
-A shard can at most contain 2500 guilds when starting up the bot.
-
-Each shard is assigned a **shard id** and **shard total** (usually shown as `id / total`), which uniquely identifies which guilds are accessible on that shard.
-For instance, the first of 2 shards would be `0 / 2` and the second would be `1 / 2`.
-
-If you want to use sharding with your bot, make use of the [DefaultShardManager](https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManager.html) as seen in the example below.
-This manager automatically assigns the right number of shards to your bot, so you do not need to do any math yourself.
-
-Internally, this shard manager also handles the proper scaling of threads for connections and handles the login rate-limit (Identify Rate-Limit) to properly startup without issues.
-
-If you do not want to use the shard manager, and instead manage sharding yourself, you can use [JDABuilder#useSharding](https://docs.jda.wiki/net/dv8tion/jda/api/JDABuilder.html#useSharding(int,int)) and [ConcurrentSessionController](https://docs.jda.wiki/net/dv8tion/jda/api/utils/ConcurrentSessionController.html).
-
-
-### Example Sharding - Using DefaultShardManager
-
-```java
-public static void main(String[] args) {
-    DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(args[0]);
-    builder.addEventListeners(new MessageListener());
-    builder.build();
-}
-```
-
-## Entity Lifetimes
-
-An **Entity** is the term used to describe types such as **GuildChannel**/**Message**/**User** and other entities that Discord provides.
-Instances of these entities are created and deleted by JDA when Discord instructs it. This means the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
-This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
-When Discord instructs JDA to delete entities, they are simply removed from the JDA cache and lose their references.
-Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become outdated.
-Discord may instruct to delete these entities randomly for cache synchronization with the API.
-
-**It is not recommended to store _any_ of these entities for a longer period of time!**
-Instead of keeping (e.g.) a `User` instance in some field, an ID should be used. With the ID of a user,
-you can use `getUserById(id)` to get and keep the user reference in a local variable (see below).
-
-### Entity Updates
-
-When an entity is updated through its manager, they will send a request to the Discord API which will update the state
-of the entity. The success of this request **does not** imply the entity has been updated yet. All entities are updated
-by the aforementioned **Gateway Events** which means you cannot rely on the cache being updated yet once the
-execution of a RestAction has completed. Some requests rely on the cache being updated to correctly update the entity.
-An example of this is updating roles of a member which overrides all roles of the member by sending a list of the
-new set of roles. This is done by first checking the current cache, the roles the member has right now, and appending
-or removing the requested roles. If the cache has not yet been updated by an event, this will result in unexpected behavior.
-
-### Entity Deletion
-
-Discord may request that a client (the JDA session) invalidates its entire cache. When this happens, JDA will remove all of its current entities and reconnect the session. This is signaled through the `SessionRecreateEvent`. When entities are removed from the JDA cache, your instance will keep stale entities in memory. This results in memory duplication, potential memory leaks, and outdated state. It is **highly recommended** to only keep references to entities by storing their **id** and using the respective `get...ById(id)` method when needed. Alternatively, keep the entity stored and make sure to replace it as soon as possible when the cache is replaced.
-
-#### Example
-
-```java
-public class UserLogger extends ListenerAdapter {
-    private final User user;
-    
-    public UserLogger(User user) {
-        this.user = user;
-    }
-    
-    private User getUser(JDA api) {
-        // Acquire a reference to the User instance through the id
-        User newUser = api.getUserById(this.user.getIdLong());
-        if (newUser != null)
-            this.user = newUser;
-        return this.user;
-    }
-    
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event) {
-        User author = event.getAuthor();
-        Message message = event.getMessage();
-        if (author.getIdLong() == this.user.getIdLong()) {
-            // Update user from message instance (likely more up-to-date)
-            this.user = author;
-            // Print the message of the user
-            System.out.println(author.getAsTag() + ": " + message.getContentDisplay());
-        }
-    }
-    
-    @Override
-    public void onGuildJoin(GuildJoinEvent event) {
-        JDA api = event.getJDA();
-        User user = getUser(); // use getter to refresh user automatically on access
-        user.openPrivateChannel().queue((channel) -> {
-            // Send a private message to the user
-            channel.sendMessageFormat("I have joined a new guild: **%s**", event.getGuild().getName()).queue();
-        });
-    }
-}
-```
-
-## Download
-
-[ ![maven-central][] ](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
-[ ![jitpack][] ](https://jitpack.io/#discord-jda/JDA)
-
-Latest Release: [GitHub Release](https://github.com/discord-jda/JDA/releases/latest) <br>
-
-Be sure to replace the **VERSION** key below with the one of the versions shown above! For snapshots, please use the instructions provided by [JitPack](https://jitpack.io/#discord-jda/JDA).
-
-**Maven**
-```xml
-<dependency>
-    <groupId>net.dv8tion</groupId>
-    <artifactId>JDA</artifactId>
-    <version>VERSION</version>
-</dependency>
-```
-
-**Maven without Audio**
-```xml
-<dependency>
-    <groupId>net.dv8tion</groupId>
-    <artifactId>JDA</artifactId>
-    <version>VERSION</version>
-    <exclusions>
-        <exclusion>
-            <groupId>club.minnced</groupId>
-            <artifactId>opus-java</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-```
-
-**Gradle**
-```gradle
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    //Change 'implementation' to 'compile' in old Gradle versions
-    implementation("net.dv8tion:JDA:VERSION")
-}
-```
-
-**Gradle without Audio**
-```gradle
-dependencies {
-    //Change 'implementation' to 'compile' in old Gradle versions
-    implementation("net.dv8tion:JDA:VERSION") {
-        exclude module: 'opus-java'
-    }
-}
-```
-
-The snapshot builds are only available via JitPack and require adding the JitPack resolver, you need to specify specific commits to access those builds.
-Stable releases are published to [maven-central](https://mvnrepository.com/artifact/net.dv8tion/JDA).
-
-If you do not need any opus de-/encoding done by JDA (voice receive/send with PCM) you can exclude `opus-java` entirely.
-This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
-
-If you want to use a custom opus library you can provide the absolute path to `OpusLibrary.loadFrom(String)` before using
-the audio API of JDA. This works without `opus-java-natives` as it only requires `opus-java-api`.
-<br>_For this setup you should only exclude `opus-java-natives` as `opus-java-api` is a requirement for en-/decoding._
-
-See [opus-java](https://github.com/discord-java/opus-java)
-
-### Logging Framework - SLF4J
-
-JDA is using [SLF4J](https://www.slf4j.org/) to log its messages.
-
-That means you should add some SLF4J implementation to your build path in addition to JDA.
-If no implementation is found, following message will be printed to the console on startup:
-```
-SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-```
-
-JDA currently provides a fallback Logger in case that no SLF4J implementation is present.
-We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as log to files
-
-There is a guide for logback-classic available in our wiki: [Logging Setup](https://jda.wiki/setup/logging/)
-
-## Documentation
-
-Docs can be found on the [GitHub Pages][docs]
-<br>We also have a wiki filled with information and troubleshooting guides at [jda.wiki][wiki]
-
-### Annotations
-
-We use a number of annotations to indicate future plans for implemented functionality such as new features of
-the Discord API.
-
-- [Incubating](https://github.com/discord-jda/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/Incubating.java)
-    <br>This annotation is used to indicate that functionality may change in the future. Often used when a new feature is added.
-- [ReplaceWith](https://github.com/discord-jda/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ReplaceWith.java)
-    <br>Paired with `@Deprecated` this is used to inform you how the new code-fragment is supposed to look once the hereby annotated functionality is removed.
-- [ForRemoval](https://github.com/discord-jda/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/ForRemoval.java)
-    <br>Paired with `@Deprecated` this indicates that we plan to entirely remove the hereby annotated functionality in the future.
-- [DeprecatedSince](https://github.com/discord-jda/JDA/blob/master/src/main/java/net/dv8tion/jda/annotations/DeprecatedSince.java)
-    <br>Paired with `@Deprecated` this specifies when a feature was marked as deprecated.
-
-[Sources](https://github.com/discord-jda/JDA/tree/master/src/main/java/net/dv8tion/jda/annotations)
-
-## Getting Help
-
-For general troubleshooting you can visit our wiki [Troubleshooting][troubleshooting] and [FAQ][faq].
-<br>If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
-
-Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/discord-api).
-Once you joined, you can find JDA-specific help in the `#java_jda` channel.
-
-For guides and setup help you can also take a look at the [wiki](https://jda.wiki/)
-<br>Especially interesting are the [Getting Started](https://jda.wiki/introduction/jda/)
-and [Setup](https://jda.wiki/setup/intellij/) Pages.
-
-## Third Party Recommendations
+## Extensions
 
 ### [Lavaplayer](https://github.com/lavalink-devs/lavaplayer)
 
@@ -537,7 +258,7 @@ as it is easier.
 [Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
 
 
-### [jda-nas](https://github.com/sedmelluq/jda-nas) and [udpqueue](https://github.com/MinnDevelopment/udpqueue.rs)
+### [udpqueue](https://github.com/MinnDevelopment/udpqueue.rs) (an extension of [jda-nas](https://github.com/sedmelluq/jda-nas))
 
 Created and maintained by [sedmelluq](https://github.com/sedmelluq) and extended by [MinnDevelopment](https://github.com/MinnDevelopment)
 <br>Provides a native implementation for the JDA Audio Send-System to avoid GC pauses.
@@ -571,74 +292,17 @@ fun main() {
 
 There is a number of examples available in the [README](https://github.com/MinnDevelopment/jda-ktx/#jda-ktx).
 
-------
-
-More can be found in our github organization: [JDA-Applications](https://github.com/JDA-Applications)
-
 ## Contributing to JDA
 
 If you want to contribute to JDA, make sure to base your branch off of our **master** branch (or a feature-branch)
 and create your PR into that **same** branch.
 
-More information can be found at the wiki page [Contributing](https://jda.wiki/contributing/contributing/).
+Please follow our [Contributing Guidelines](https://github.com/discord-jda/JDA/blob/master/.github/CONTRIBUTING.md).
 
-## Versioning and Deprecation Policy
+Do not expect your pull request to get immediate attention, sometimes it will take a long time to get a response.
 
-Since the Discord API is in itself a moving standard, the stability is never guaranteed. For this reason, JDA does not follow the common semver versioning strategy.
+## Breaking Changes
 
-The JDA version is structured with a looser definition, where the version change indicates the significance of changes.
-For instance, using `5.1.2` as a baseline:
+Due to the nature of the Discord API, the library will regularly introduce breaking changes to allow for a quick adoption of newer features. We try to keep these breaking changes minimal, but cannot avoid them entirely.
 
-- A change to the major like `6.0.0` indicates that a lot of code has to be adjusted due to major changes to the interfaces. A change like this always comes with a full migration guide like [Migrating from 4.X to 5.X](https://jda.wiki/introduction/migration-v4-v5/).
-- A change to the minor like `5.2.0` indicates some code may need to be adjusted due to the removal or change of interfaces. You can usually find the necessary changes in the release documentation.
-- A change to the patch like `5.1.3` indicates bug fixes and new feature additions that are backwards compatible.
-
-If a feature is marked as deprecated, it usually also indicates an alternative. For instance:
-
-```java
-@Deprecated
-@DeprecatedSince("5.1.2")
-@ForRemoval(deadline="5.2.0")
-@ReplaceWith("setFoo(foo)")
-public void changeFoo(Foo foo) { ... }
-```
-
-The method `changeFoo` was deprecated in release `5.1.2` and is going to be removed in `5.2.0`. Your change should replace all usage of `changeFoo(foo)` with `setFoo(foo)`.
-
-Sometimes, a feature might be removed without a replacement. This will be clearly explained in the documentation.
-
-
-## Dependencies:
-
-This project requires **Java 8+**.<br>
-All dependencies are managed automatically by Gradle.
- * NV WebSocket Client
-   * Version: **2.14**
-   * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
- * OkHttp
-   * Version: **4.10.0**
-   * [Github](https://github.com/square/okhttp)
- * Apache Commons Collections4
-   * Version: **4.4**
-   * [Website](https://commons.apache.org/proper/commons-collections)
- * jackson
-   * Version: **2.14.1**
-   * [Github](https://github.com/FasterXML/jackson)
- * Trove4j
-   * Version: **3.0.3**
-   * [BitBucket](https://bitbucket.org/trove4j/trove)
- * slf4j-api
-   * Version: **1.7.36**
-   * [Website](https://www.slf4j.org/)
- * opus-java (optional)
-   * Version: **1.1.1**
-   * [GitHub](https://github.com/discord-java/opus-java)
-
-## Related Projects
-
-- [Discord4J](https://github.com/Discord4J/Discord4J)
-- [Discord.NET](https://github.com/discord-net/Discord.Net)
-- [discord.py](https://github.com/Rapptz/discord.py)
-- [serenity](https://github.com/serenity-rs/serenity)
-
-**See also:** [Discord API Community Libraries](https://github.com/apacheli/discord-api-libs)
+Most breaking changes will result in a **minor** version bump (`5.1.2` -> `5.2.0`).
