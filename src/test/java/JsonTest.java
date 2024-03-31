@@ -15,8 +15,9 @@
  */
 
 import net.dv8tion.jda.api.utils.data.DataObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonTest
 {
@@ -26,10 +27,10 @@ public class JsonTest
     public void testParse()
     {
         DataObject object = DataObject.fromJson(json);
-        Assertions.assertEquals(10, object.getInt("int", 0));
-        Assertions.assertEquals(100, object.getLong("long", 0));
-        Assertions.assertEquals(true, object.getBoolean("boolean", false));
-        Assertions.assertEquals("test", object.getString("string", null));
+        assertThat(object.getInt("int", 0)).isEqualTo(10);
+        assertThat(object.getLong("long", 0)).isEqualTo(100);
+        assertThat(object.getBoolean("boolean", false)).isEqualTo(true);
+        assertThat(object.getString("string", null)).isEqualTo("test");
     }
 
     @Test
@@ -38,6 +39,6 @@ public class JsonTest
         DataObject object = DataObject.fromJson(json);
         String result = object.toString();
         DataObject symmetric = DataObject.fromJson(result);
-        Assertions.assertEquals(object.toMap(), symmetric.toMap()); // lucky that this works here :)
+        assertThat(symmetric.toMap()).isEqualTo(object.toMap()); // lucky that this works here :)
     }
 }

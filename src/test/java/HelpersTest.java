@@ -15,92 +15,93 @@
  */
 
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class HelpersTest
 {
     @Test
     public void testIsEmpty()
     {
-        Assertions.assertTrue(Helpers.isEmpty(null));
-        Assertions.assertTrue(Helpers.isEmpty(""));
-        Assertions.assertFalse(Helpers.isEmpty("null"));
-        Assertions.assertFalse(Helpers.isEmpty("testing with spaces"));
+        assertThat(Helpers.isEmpty(null)).isTrue();
+        assertThat(Helpers.isEmpty("")).isTrue();
+        assertThat(Helpers.isEmpty("null")).isFalse();
+        assertThat(Helpers.isEmpty("testing with spaces")).isFalse();
     }
 
     @Test
     public void testContainsWhitespace()
     {
-        Assertions.assertTrue(Helpers.containsWhitespace(" "));
-        Assertions.assertTrue(Helpers.containsWhitespace("testing with spaces"));
-        Assertions.assertFalse(Helpers.containsWhitespace(null));
-        Assertions.assertFalse(Helpers.containsWhitespace(""));
-        Assertions.assertFalse(Helpers.containsWhitespace("null"));
+        assertThat(Helpers.containsWhitespace(" ")).isTrue();
+        assertThat(Helpers.containsWhitespace("testing with spaces")).isTrue();
+        assertThat(Helpers.containsWhitespace(null)).isFalse();
+        assertThat(Helpers.containsWhitespace("")).isFalse();
+        assertThat(Helpers.containsWhitespace("null")).isFalse();
     }
 
     @Test
     public void testIsBlank()
     {
-        Assertions.assertTrue(Helpers.isBlank(" "));
-        Assertions.assertTrue(Helpers.isBlank(null));
-        Assertions.assertTrue(Helpers.isBlank(""));
-        Assertions.assertFalse(Helpers.isBlank("testing with spaces"));
-        Assertions.assertFalse(Helpers.isBlank("null"));
+        assertThat(Helpers.isBlank(" ")).isTrue();
+        assertThat(Helpers.isBlank(null)).isTrue();
+        assertThat(Helpers.isBlank("")).isTrue();
+        assertThat(Helpers.isBlank("testing with spaces")).isFalse();
+        assertThat(Helpers.isBlank("null")).isFalse();
     }
 
     @Test
     public void testCountMatches()
     {
-        Assertions.assertEquals(3, Helpers.countMatches("Hello World", 'l'));
-        Assertions.assertEquals(1, Helpers.countMatches("Hello World", ' '));
-        Assertions.assertEquals(0, Helpers.countMatches("Hello World", '_'));
-        Assertions.assertEquals(0, Helpers.countMatches("", '!'));
-        Assertions.assertEquals(0, Helpers.countMatches(null, '?'));
+        assertThat(Helpers.countMatches("Hello World", 'l')).isEqualTo(3);
+        assertThat(Helpers.countMatches("Hello World", ' ')).isEqualTo(1);
+        assertThat(Helpers.countMatches("Hello World", '_')).isEqualTo(0);
+        assertThat(Helpers.countMatches("", '!')).isEqualTo(0);
+        assertThat(Helpers.countMatches(null, '?')).isEqualTo(0);
     }
 
     @Test
     public void testTruncate()
     {
-        Assertions.assertEquals("Hello", Helpers.truncate("Hello World", 5));
-        Assertions.assertEquals("Hello", Helpers.truncate("Hello", 5));
-        Assertions.assertEquals("Hello", Helpers.truncate("Hello", 10));
-        Assertions.assertEquals("", Helpers.truncate("", 10));
-        Assertions.assertEquals("", Helpers.truncate("Test", 0));
-        Assertions.assertNull(Helpers.truncate(null, 10));
+        assertThat(Helpers.truncate("Hello World", 5)).isEqualTo("Hello");
+        assertThat(Helpers.truncate("Hello", 5)).isEqualTo("Hello");
+        assertThat(Helpers.truncate("Hello", 10)).isEqualTo("Hello");
+        assertThat(Helpers.truncate("", 10)).isEqualTo("");
+        assertThat(Helpers.truncate("Test", 0)).isEqualTo("");
+        assertThat(Helpers.truncate(null, 10)).isNull();
     }
 
     @Test
     public void testRightPad()
     {
-        Assertions.assertEquals("Hello    ", Helpers.rightPad("Hello", 9));
-        Assertions.assertEquals("Hello World", Helpers.rightPad("Hello World", 9));
-        Assertions.assertEquals("Hello", Helpers.rightPad("Hello", 5));
+        assertThat(Helpers.rightPad("Hello", 9)).isEqualTo("Hello    ");
+        assertThat(Helpers.rightPad("Hello World", 9)).isEqualTo("Hello World");
+        assertThat(Helpers.rightPad("Hello", 5)).isEqualTo("Hello");
     }
 
     @Test
     public void testLeftPad()
     {
-        Assertions.assertEquals("    Hello", Helpers.leftPad("Hello", 9));
-        Assertions.assertEquals("Hello World", Helpers.leftPad("Hello World", 9));
-        Assertions.assertEquals("Hello", Helpers.leftPad("Hello", 5));
+        assertThat(Helpers.leftPad("Hello", 9)).isEqualTo("    Hello");
+        assertThat(Helpers.leftPad("Hello World", 9)).isEqualTo("Hello World");
+        assertThat(Helpers.leftPad("Hello", 5)).isEqualTo("Hello");
     }
 
     @Test
     public void testIsNumeric()
     {
-        Assertions.assertTrue(Helpers.isNumeric("10"));
-        Assertions.assertTrue(Helpers.isNumeric("1"));
-        Assertions.assertTrue(Helpers.isNumeric("0"));
-        Assertions.assertTrue(Helpers.isNumeric(String.valueOf(Long.MAX_VALUE)));
-        Assertions.assertFalse(Helpers.isNumeric(null));
-        Assertions.assertFalse(Helpers.isNumeric(""));
-        Assertions.assertFalse(Helpers.isNumeric("Test"));
-        Assertions.assertFalse(Helpers.isNumeric("1.0"));
-        Assertions.assertFalse(Helpers.isNumeric("1e10"));
+        assertThat(Helpers.isNumeric("10")).isTrue();
+        assertThat(Helpers.isNumeric("1")).isTrue();
+        assertThat(Helpers.isNumeric("0")).isTrue();
+        assertThat(Helpers.isNumeric(String.valueOf(Long.MAX_VALUE))).isTrue();
+        assertThat(Helpers.isNumeric(null)).isFalse();
+        assertThat(Helpers.isNumeric("")).isFalse();
+        assertThat(Helpers.isNumeric("Test")).isFalse();
+        assertThat(Helpers.isNumeric("1.0")).isFalse();
+        assertThat(Helpers.isNumeric("1e10")).isFalse();
     }
 
     @Test
@@ -111,11 +112,11 @@ public class HelpersTest
         List<String> c = Arrays.asList("A", "B");
         List<String> d = Arrays.asList("A", "B", "C");
 
-        Assertions.assertTrue(Helpers.deepEquals(a, a));
-        Assertions.assertTrue(Helpers.deepEquals(a, d));
-        Assertions.assertTrue(Helpers.deepEqualsUnordered(a, b));
-        Assertions.assertFalse(Helpers.deepEquals(a, b));
-        Assertions.assertFalse(Helpers.deepEquals(a, c));
-        Assertions.assertFalse(Helpers.deepEqualsUnordered(b, c));
+        assertThat(Helpers.deepEquals(a, a)).isTrue();
+        assertThat(Helpers.deepEquals(a, d)).isTrue();
+        assertThat(Helpers.deepEqualsUnordered(a, b)).isTrue();
+        assertThat(Helpers.deepEquals(a, b)).isFalse();
+        assertThat(Helpers.deepEquals(a, c)).isFalse();
+        assertThat(Helpers.deepEqualsUnordered(b, c)).isFalse();
     }
 }

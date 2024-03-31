@@ -18,8 +18,9 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataPath;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class DataPathTest
 {
@@ -29,10 +30,10 @@ public class DataPathTest
         DataObject object = DataObject.empty()
                 .put("foo", "10"); // string to also test parsing
 
-        Assertions.assertEquals(10, DataPath.getInt(object, "foo"));
+        assertThat(DataPath.getInt(object, "foo")).isEqualTo(10);
 
         DataArray array = DataArray.empty().add("20");
-        Assertions.assertEquals(20, DataPath.getInt(array, "[0]"));
+        assertThat(DataPath.getInt(array, "[0]")).isEqualTo(20);
     }
 
     @Test
@@ -40,13 +41,17 @@ public class DataPathTest
     {
         DataObject object = DataObject.empty();
 
-        Assertions.assertEquals(0L, DataPath.getLong(object, "foo?", 0));
-        Assertions.assertThrows(ParsingException.class, () -> DataPath.getLong(object, "foo"));
+        assertThat(DataPath.getLong(object, "foo?", 0)).isEqualTo(0L);
+        assertThatThrownBy(() -> DataPath.getLong(object, "foo"))
+            .hasMessage("Unable to resolve value with key foo to type long: null")
+            .isInstanceOf(ParsingException.class);
 
         DataArray array = DataArray.empty();
 
-        Assertions.assertTrue(DataPath.getBoolean(array, "[0]?", true));
-        Assertions.assertThrows(ParsingException.class, () -> DataPath.getObject(array, "[0]"));
+        assertThat(DataPath.getBoolean(array, "[0]?", true)).isTrue();
+        assertThatThrownBy(() -> DataPath.getObject(array, "[0]"))
+            .hasMessage("Could not resolve value of type Object at path \"[0]\"")
+            .isInstanceOf(ParsingException.class);
     }
 
     @Test
@@ -55,9 +60,11 @@ public class DataPathTest
         DataObject object = DataObject.empty().put("foo", 10.0);
         DataArray array = DataArray.empty().add(object);
 
-        Assertions.assertEquals(10.0, DataPath.getDouble(array, "[0].foo"));
-        Assertions.assertEquals(20.0, DataPath.getDouble(array, "[1]?.foo", 20.0));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> DataPath.getDouble(array, "[1].foo"));
+        assertThat(DataPath.getDouble(array, "[0].foo")).isEqualTo(10.0);
+        assertThat(DataPath.getDouble(array, "[1]?.foo", 20.0)).isEqualTo(20.0);
+
+        assertThatIndexOutOfBoundsException()
+            .isThrownBy(() -> DataPath.getDouble(array, "[1].foo"));
     }
 
     @Test
@@ -66,9 +73,10 @@ public class DataPathTest
         DataArray array = DataArray.empty().add("hello");
         DataObject object = DataObject.empty().put("foo", array);
 
-        Assertions.assertEquals("hello", DataPath.getString(object, "foo[0]"));
-        Assertions.assertEquals("world", DataPath.getString(object, "foo[1]?", "world"));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> DataPath.getString(object, "foo[1]"));
+        assertThat(DataPath.getString(object, "foo[0]")).isEqualTo("hello");
+        assertThat(DataPath.getString(object, "foo[1]?", "world")).isEqualTo("world");
+        assertThatIndexOutOfBoundsException()
+            .isThrownBy(() -> DataPath.getString(object, "foo[1]"));
     }
 
     @Test
@@ -76,13 +84,17 @@ public class DataPathTest
     {
         DataArray array = DataArray.empty().add(DataArray.empty().add("10"));
 
-        Assertions.assertEquals(10, DataPath.getUnsignedInt(array, "[0][0]"));
-        Assertions.assertEquals(20, DataPath.getUnsignedInt(array, "[0][1]?", 20));
-        Assertions.assertEquals(20, DataPath.getUnsignedInt(array, "[1]?[0]", 20));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> DataPath.getUnsignedInt(array, "[0][1]"));
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> DataPath.getUnsignedInt(array, "[1][0]"));
-        Assertions.assertThrows(ParsingException.class, () -> DataPath.getUnsignedInt(array, "[0][1]?"));
-        Assertions.assertThrows(ParsingException.class, () -> DataPath.getUnsignedInt(array, "[1]?[0]"));
+        assertThat(DataPath.getUnsignedInt(array, "[0][0]")).isEqualTo(10);
+        assertThat(DataPath.getUnsignedInt(array, "[0][1]?", 20)).isEqualTo(20);
+        assertThat(DataPath.getUnsignedInt(array, "[1]?[0]", 20)).isEqualTo(20);
+        assertThatIndexOutOfBoundsException().isThrownBy(() -> DataPath.getUnsignedInt(array, "[0][1]"));
+        assertThatIndexOutOfBoundsException().isThrownBy(() -> DataPath.getUnsignedInt(array, "[1][0]"));
+        assertThatThrownBy(() -> DataPath.getUnsignedInt(array, "[0][1]?"))
+            .hasMessage("Could not resolve value of type unsigned int at path \"[0][1]?\"")
+            .isInstanceOf(ParsingException.class);
+        assertThatThrownBy(() -> DataPath.getUnsignedInt(array, "[1]?[0]"))
+            .hasMessage("Could not resolve value of type unsigned int at path \"[1]?[0]\"")
+            .isInstanceOf(ParsingException.class);
     }
 
     @Test
@@ -94,8 +106,10 @@ public class DataPathTest
                         .put("foo", DataObject.empty()
                             .put("bar", "hello"))));
 
-        Assertions.assertEquals("hello", DataPath.getString(object, "array[0].foo.bar"));
-        Assertions.assertEquals("world", DataPath.getString(object, "array[0].wrong?.bar", "world"));
-        Assertions.assertThrows(ParsingException.class, () -> DataPath.getString(object, "array[0].wrong?.bar"));
+        assertThat(DataPath.getString(object, "array[0].foo.bar")).isEqualTo("hello");
+        assertThat(DataPath.getString(object, "array[0].wrong?.bar", "world")).isEqualTo("world");
+        assertThatThrownBy(() -> DataPath.getString(object, "array[0].wrong?.bar"))
+            .hasMessage("Could not resolve value of type String at path \"array[0].wrong?.bar\"")
+            .isInstanceOf(ParsingException.class);
     }
 }

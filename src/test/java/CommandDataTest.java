@@ -25,14 +25,41 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-import org.junit.jupiter.api.Assertions;
+import net.dv8tion.jda.util.PrettyRepresentation;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+
 public class CommandDataTest
 {
+    private static DataObject defaultCommand()
+    {
+        return DataObject.empty()
+                .put("type", 1)
+                .put("dm_permission", true)
+                .put("name_localizations", DataObject.empty())
+                .put("description_localizations", DataObject.empty())
+                .put("nsfw", false)
+                .put("default_member_permissions", null)
+                .put("options", DataArray.empty());
+    }
+
+    private static DataObject defaultOption(OptionType type, String name, String description)
+    {
+        return DataObject.empty()
+                .put("type", type.getKey())
+                .put("name", name)
+                .put("description", description)
+                .put("required", false)
+                .put("autocomplete", false)
+                .put("name_localizations", DataObject.empty())
+                .put("description_localizations", DataObject.empty());
+    }
+
     @Test
     public void testNormal()
     {
@@ -44,27 +71,19 @@ public class CommandDataTest
                 .addOption(OptionType.INTEGER, "days", "The duration of the ban", false); // test with explicit false
 
         DataObject data = command.toData();
-        Assertions.assertEquals("ban", data.getString("name"));
-        Assertions.assertEquals("Ban a user from this server", data.getString("description"));
-        Assertions.assertFalse(data.getBoolean("dm_permission"));
-        Assertions.assertEquals(Permission.BAN_MEMBERS.getRawValue(), data.getUnsignedLong("default_member_permissions"));
 
-        DataArray options = data.getArray("options");
-
-        DataObject option = options.getObject(0);
-        Assertions.assertTrue(option.getBoolean("required"));
-        Assertions.assertEquals("user", option.getString("name"));
-        Assertions.assertEquals("The user to ban", option.getString("description"));
-
-        option = options.getObject(1);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("reason", option.getString("name"));
-        Assertions.assertEquals("The ban reason", option.getString("description"));
-
-        option = options.getObject(2);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("days", option.getString("name"));
-        Assertions.assertEquals("The duration of the ban", option.getString("description"));
+        assertThat(data)
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(defaultCommand()
+                .put("type", 1)
+                .put("name", "ban")
+                .put("description", "Ban a user from this server")
+                .put("dm_permission", false)
+                .put("default_member_permissions", "4")
+                .put("options", DataArray.empty()
+                    .add(defaultOption(OptionType.USER, "user", "The user to ban").put("required", true))
+                    .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
+                    .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))));
     }
 
     @Test
@@ -72,13 +91,12 @@ public class CommandDataTest
     {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
-        DataObject data = command.toData();
 
-        Assertions.assertEquals(0, data.getUnsignedLong("default_member_permissions"));
+        assertThat(command.toData().get("default_member_permissions")).isEqualTo("0");
 
         command.setDefaultPermissions(DefaultMemberPermissions.ENABLED);
-        data = command.toData();
-        Assertions.assertTrue(data.isNull("default_member_permissions"));
+
+        assertThat(command.toData().opt("default_member_permissions")).isEmpty();
     }
 
     @Test
@@ -90,30 +108,19 @@ public class CommandDataTest
                     .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
                     .addOption(OptionType.INTEGER, "days", "The duration of the ban", false)); // test with explicit false
 
-        DataObject data = command.toData();
-        Assertions.assertEquals("mod", data.getString("name"));
-        Assertions.assertEquals("Moderation commands", data.getString("description"));
-
-        DataObject subdata = data.getArray("options").getObject(0);
-        Assertions.assertEquals("ban", subdata.getString("name"));
-        Assertions.assertEquals("Ban a user from this server", subdata.getString("description"));
-
-        DataArray options = subdata.getArray("options");
-
-        DataObject option = options.getObject(0);
-        Assertions.assertTrue(option.getBoolean("required"));
-        Assertions.assertEquals("user", option.getString("name"));
-        Assertions.assertEquals("The user to ban", option.getString("description"));
-
-        option = options.getObject(1);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("reason", option.getString("name"));
-        Assertions.assertEquals("The ban reason", option.getString("description"));
-
-        option = options.getObject(2);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("days", option.getString("name"));
-        Assertions.assertEquals("The duration of the ban", option.getString("description"));
+        assertThat(command.toData())
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(defaultCommand()
+                .put("name", "mod")
+                .put("description", "Moderation commands")
+                    .put("options", DataArray.empty()
+                        .add(defaultOption(OptionType.SUB_COMMAND, "ban", "Ban a user from this server")
+                            .remove("autocomplete")
+                            .remove("required")
+                            .put("options", DataArray.empty()
+                                .add(defaultOption(OptionType.USER, "user", "The user to ban").put("required", true))
+                                .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
+                                .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))))));
     }
 
     @Test
@@ -126,33 +133,23 @@ public class CommandDataTest
                         .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
                         .addOption(OptionType.INTEGER, "days", "The duration of the ban", false))); // test with explicit false
 
-        DataObject data = command.toData();
-        Assertions.assertEquals("mod", data.getString("name"));
-        Assertions.assertEquals("Moderation commands", data.getString("description"));
-
-        DataObject group = data.getArray("options").getObject(0);
-        Assertions.assertEquals("ban", group.getString("name"));
-        Assertions.assertEquals("Ban or unban a user from this server", group.getString("description"));
-
-        DataObject subdata = group.getArray("options").getObject(0);
-        Assertions.assertEquals("add", subdata.getString("name"));
-        Assertions.assertEquals("Ban a user from this server", subdata.getString("description"));
-        DataArray options = subdata.getArray("options");
-
-        DataObject option = options.getObject(0);
-        Assertions.assertTrue(option.getBoolean("required"));
-        Assertions.assertEquals("user", option.getString("name"));
-        Assertions.assertEquals("The user to ban", option.getString("description"));
-
-        option = options.getObject(1);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("reason", option.getString("name"));
-        Assertions.assertEquals("The ban reason", option.getString("description"));
-
-        option = options.getObject(2);
-        Assertions.assertFalse(option.getBoolean("required"));
-        Assertions.assertEquals("days", option.getString("name"));
-        Assertions.assertEquals("The duration of the ban", option.getString("description"));
+        assertThat(command.toData())
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(defaultCommand()
+                .put("name", "mod")
+                .put("description", "Moderation commands")
+                .put("options", DataArray.empty()
+                    .add(defaultOption(OptionType.SUB_COMMAND_GROUP, "ban", "Ban or unban a user from this server")
+                        .remove("autocomplete")
+                        .remove("required")
+                        .put("options", DataArray.empty()
+                            .add(defaultOption(OptionType.SUB_COMMAND, "add", "Ban a user from this server")
+                                .remove("autocomplete")
+                                .remove("required")
+                                .put("options", DataArray.empty()
+                                    .add(defaultOption(OptionType.USER, "user", "The user to ban").put("required", true))
+                                    .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
+                                    .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))))))));
     }
 
     @Test
@@ -161,45 +158,79 @@ public class CommandDataTest
         CommandDataImpl command = new CommandDataImpl("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true));
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> command.addOption(OptionType.STRING, "other", "desc", true))
+            .withMessage("Cannot add required options after non-required options!");
 
         SubcommandData subcommand = new SubcommandData("sub", "Simple subcommand");
         subcommand.addOption(OptionType.STRING, "opt", "desc");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> subcommand.addOption(OptionType.STRING, "other", "desc", true));
+
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> subcommand.addOption(OptionType.STRING, "other", "desc", true))
+            .withMessage("Cannot add required options after non-required options!");
     }
 
     @Test
     public void testNameChecks()
     {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandDataImpl("valid_name", ""));
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new CommandDataImpl("invalid name", "Valid description"))
+            .withMessage("Name must match regex ^[\\w-]+$. Provided: \"invalid name\"");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new CommandDataImpl("invalidName", "Valid description"))
+            .withMessage("Name must be lowercase only! Provided: \"invalidName\"");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new CommandDataImpl("valid_name", ""))
+            .withMessage("Description may not be empty");
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("valid_name", ""));
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new SubcommandData("invalid name", "Valid description"))
+            .withMessage("Name must match regex ^[\\w-]+$. Provided: \"invalid name\"");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new SubcommandData("invalidName", "Valid description"))
+            .withMessage("Name must be lowercase only! Provided: \"invalidName\"");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new SubcommandData("valid_name", ""))
+            .withMessage("Description may not be empty");
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandGroupData("valid_name", ""));
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new SubcommandGroupData("invalid name", "Valid description"))
+            .withMessage("Name must match regex ^[\\w-]+$. Provided: \"invalid name\"");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new SubcommandGroupData("invalidName", "Valid description"))
+            .withMessage("Name must be lowercase only! Provided: \"invalidName\"");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> new SubcommandGroupData("valid_name", ""))
+            .withMessage("Description may not be empty");
     }
 
     @Test
     public void testChoices()
     {
-        OptionData option = new OptionData(OptionType.INTEGER, "choice", "Option with choices!");
-        Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("valid_name", ""));
+        OptionData stringOption = new OptionData(OptionType.STRING, "choice", "Option with choices!");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> stringOption.addChoice("invalid name", 0))
+            .withMessage("Cannot add long choice for OptionType.STRING");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> stringOption.addChoice("invalidName", 0.0))
+            .withMessage("Cannot add double choice for OptionType.STRING");
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> stringOption.addChoice("valid_name", ""))
+            .withMessage("Value may not be empty");
 
+        OptionData intOption = new OptionData(OptionType.INTEGER, "choice", "Option with choices!");
         List<Command.Choice> choices = new ArrayList<>();
         for (int i = 0; i < 25; i++)
         {
-            option.addChoice("choice_" + i, i);
+            intOption.addChoice("choice_" + i, i);
             choices.add(new Command.Choice("choice_" + i, i));
         }
-        Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("name", 100));
-        Assertions.assertEquals(25, option.getChoices().size());
-        Assertions.assertEquals(choices, option.getChoices());
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> intOption.addChoice("name", 100))
+            .withMessage("Cannot have more than 25 choices for an option!");
+        assertThat(intOption.getChoices())
+            .hasSize(25);
+        assertThat(intOption.getChoices())
+            .isEqualTo(choices);
     }
 }

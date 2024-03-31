@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
@@ -782,12 +783,12 @@ public class DataArray implements Iterable<Object>, SerializableArray
     @Nonnull
     public String toPrettyString()
     {
-        DefaultPrettyPrinter.Indenter indent = new DefaultIndenter("    ", DefaultIndenter.SYS_LF);
-        DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
-        printer.withObjectIndenter(indent).withArrayIndenter(indent);
         try
         {
-            return mapper.writer(printer).writeValueAsString(data);
+            return mapper.writer(new DefaultPrettyPrinter())
+                    .with(SerializationFeature.INDENT_OUTPUT)
+                    .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+                    .writeValueAsString(data);
         }
         catch (JsonProcessingException e)
         {

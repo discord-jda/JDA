@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class EntityStringTest
@@ -32,157 +32,175 @@ public class EntityStringTest
     @Order(1)
     public void testSimple()
     {
-        assertEquals("AnEntity", new EntityString(new AnEntity()).toString());
-        assertEquals("AnEntity:AName", new EntityString(new AnEntity()).setName("AName").toString());
+        assertThat(new EntityString(new AnEntity()))
+            .hasToString("AnEntity");
+        assertThat(new EntityString(new AnEntity()).setName("AName"))
+            .hasToString("AnEntity:AName");
     }
 
     @Test
     @Order(2)
     public void testClassNameAsString()
     {
-        assertEquals("NotAnEntity", new EntityString("NotAnEntity").toString());
-        assertEquals("NotAnEntity:AName", new EntityString("NotAnEntity").setName("AName").toString());
+        assertThat(new EntityString("NotAnEntity"))
+            .hasToString("NotAnEntity");
+        assertThat(new EntityString("NotAnEntity").setName("AName"))
+            .hasToString("NotAnEntity:AName");
     }
 
     @Test
     @Order(3)
     public void testType()
     {
-        assertEquals("AnEntity[AType]", new EntityString(new AnEntity()).setType("AType").toString());
-        assertEquals("AnEntity[AType]:AName", new EntityString(new AnEntity()).setType("AType").setName("AName").toString());
-        assertEquals("AnEntity[NEWS]:AName", new EntityString(new AnEntity()).setType(ChannelType.NEWS).setName("AName").toString());
+        assertThat(new EntityString(new AnEntity()).setType("AType"))
+            .hasToString("AnEntity[AType]");
+        assertThat(new EntityString(new AnEntity()).setType("AType").setName("AName"))
+            .hasToString("AnEntity[AType]:AName");
+        assertThat(new EntityString(new AnEntity()).setType(ChannelType.NEWS).setName("AName"))
+            .hasToString("AnEntity[NEWS]:AName");
     }
 
     @Test
     @Order(4)
     public void testMetadata()
     {
-        assertEquals("AnEntity(Metadata1)", new EntityString(new AnEntity()).addMetadata(null, "Metadata1").toString());
-        assertEquals("AnEntity(MetaKey=Metadata1)", new EntityString(new AnEntity()).addMetadata("MetaKey", "Metadata1").toString());
-        assertEquals("AnEntity(MetaKey=42)", new EntityString(new AnEntity()).addMetadata("MetaKey", 42).toString());
-        assertEquals("AnEntity(MetaKey1=Metadata1, MetaKey2=Metadata2)", new EntityString(new AnEntity())
+        assertThat(new EntityString(new AnEntity()).addMetadata(null, "Metadata1"))
+            .hasToString("AnEntity(Metadata1)");
+        assertThat(new EntityString(new AnEntity()).addMetadata("MetaKey", "Metadata1"))
+            .hasToString("AnEntity(MetaKey=Metadata1)");
+        assertThat(new EntityString(new AnEntity()).addMetadata("MetaKey", 42))
+            .hasToString("AnEntity(MetaKey=42)");
+        assertThat(new EntityString(new AnEntity())
                 .addMetadata("MetaKey1", "Metadata1")
-                .addMetadata("MetaKey2", "Metadata2")
-                .toString());
+                .addMetadata("MetaKey2", "Metadata2"))
+            .hasToString("AnEntity(MetaKey1=Metadata1, MetaKey2=Metadata2)");
     }
 
     @Test
     @Order(5)
     public void testAll()
     {
-        assertEquals("AnEntity:AName(Metadata1)", new EntityString(new AnEntity())
+        assertThat(new EntityString(new AnEntity())
                 .setName("AName")
-                .addMetadata(null, "Metadata1")
-                .toString());
-        assertEquals("AnEntity:AName(MetaKey=Metadata1)", new EntityString(new AnEntity())
+                .addMetadata(null, "Metadata1"))
+            .hasToString("AnEntity:AName(Metadata1)");
+        assertThat(new EntityString(new AnEntity())
                 .setName("AName")
-                .addMetadata("MetaKey", "Metadata1")
-                .toString());
-        assertEquals("AnEntity:AName(MetaKey=42)", new EntityString(new AnEntity())
+                .addMetadata("MetaKey", "Metadata1"))
+            .hasToString("AnEntity:AName(MetaKey=Metadata1)");
+        assertThat(new EntityString(new AnEntity())
                 .setName("AName")
-                .addMetadata("MetaKey", 42)
-                .toString());
-        assertEquals("AnEntity:AName(MetaKey1=Metadata1, MetaKey2=Metadata2)", new EntityString(new AnEntity())
+                .addMetadata("MetaKey", 42))
+            .hasToString("AnEntity:AName(MetaKey=42)");
+        assertThat(new EntityString(new AnEntity())
                 .setName("AName")
                 .addMetadata("MetaKey1", "Metadata1")
-                .addMetadata("MetaKey2", "Metadata2")
-                .toString());
+                .addMetadata("MetaKey2", "Metadata2"))
+            .hasToString("AnEntity:AName(MetaKey1=Metadata1, MetaKey2=Metadata2)");
 
-        assertEquals("AnEntity[Type]:AName(Metadata1)", new EntityString(new AnEntity())
+        assertThat(new EntityString(new AnEntity())
                 .setName("AName")
                 .setType("Type")
-                .addMetadata(null, "Metadata1")
-                .toString());
-        assertEquals("AnEntity[Type]:AName(MetaKey=Metadata1)", new EntityString(new AnEntity())
+                .addMetadata(null, "Metadata1"))
+            .hasToString("AnEntity[Type]:AName(Metadata1)");
+        assertThat(new EntityString(new AnEntity())
                 .setName("AName")
                 .setType("Type")
-                .addMetadata("MetaKey", "Metadata1")
-                .toString());
-        assertEquals("AnEntity[Type]:AName(MetaKey=42)", new EntityString(new AnEntity())
+                .addMetadata("MetaKey", "Metadata1"))
+            .hasToString("AnEntity[Type]:AName(MetaKey=Metadata1)");
+        assertThat(new EntityString(new AnEntity())
                 .setName("AName")
                 .setType("Type")
-                .addMetadata("MetaKey", 42)
-                .toString());
-        assertEquals("AnEntity[Type]:AName(MetaKey1=Metadata1, MetaKey2=Metadata2)", new EntityString(new AnEntity())
+                .addMetadata("MetaKey", 42))
+            .hasToString("AnEntity[Type]:AName(MetaKey=42)");
+        assertThat(new EntityString(new AnEntity())
                 .setName("AName")
                 .setType("Type")
                 .addMetadata("MetaKey1", "Metadata1")
-                .addMetadata("MetaKey2", "Metadata2")
-                .toString());
+                .addMetadata("MetaKey2", "Metadata2"))
+            .hasToString("AnEntity[Type]:AName(MetaKey1=Metadata1, MetaKey2=Metadata2)");
     }
 
     @Test
     @Order(6)
     public void testSimpleSnowflake()
     {
-        assertEquals("ASnowflake(id=42)", new EntityString(new ASnowflake()).toString());
-        assertEquals("ASnowflake:AName(id=42)", new EntityString(new ASnowflake()).setName("AName").toString());
+        assertThat(new EntityString(new ASnowflake()))
+            .hasToString("ASnowflake(id=42)");
+        assertThat(new EntityString(new ASnowflake()).setName("AName"))
+            .hasToString("ASnowflake:AName(id=42)");
     }
 
     @Test
     @Order(7)
     public void testTypeSnowflake()
     {
-        assertEquals("ASnowflake[AType](id=42)", new EntityString(new ASnowflake()).setType("AType").toString());
-        assertEquals("ASnowflake[AType]:AName(id=42)", new EntityString(new ASnowflake()).setType("AType").setName("AName").toString());
-        assertEquals("ASnowflake[NEWS]:AName(id=42)", new EntityString(new ASnowflake()).setType(ChannelType.NEWS).setName("AName").toString());
+        assertThat(new EntityString(new ASnowflake()).setType("AType"))
+            .hasToString("ASnowflake[AType](id=42)");
+        assertThat(new EntityString(new ASnowflake()).setType("AType").setName("AName"))
+            .hasToString("ASnowflake[AType]:AName(id=42)");
+        assertThat(new EntityString(new ASnowflake()).setType(ChannelType.NEWS).setName("AName"))
+            .hasToString("ASnowflake[NEWS]:AName(id=42)");
     }
 
     @Test
     @Order(8)
     public void testMetadataSnowflake()
     {
-        assertEquals("ASnowflake(id=42, Metadata1)", new EntityString(new ASnowflake()).addMetadata(null, "Metadata1").toString());
-        assertEquals("ASnowflake(id=42, MetaKey=Metadata1)", new EntityString(new ASnowflake()).addMetadata("MetaKey", "Metadata1").toString());
-        assertEquals("ASnowflake(id=42, MetaKey=42)", new EntityString(new ASnowflake()).addMetadata("MetaKey", 42).toString());
-        assertEquals("ASnowflake(id=42, MetaKey1=Metadata1, MetaKey2=Metadata2)", new EntityString(new ASnowflake())
+        assertThat(new EntityString(new ASnowflake()).addMetadata(null, "Metadata1"))
+            .hasToString("ASnowflake(id=42, Metadata1)");
+        assertThat(new EntityString(new ASnowflake()).addMetadata("MetaKey", "Metadata1"))
+            .hasToString("ASnowflake(id=42, MetaKey=Metadata1)");
+        assertThat(new EntityString(new ASnowflake()).addMetadata("MetaKey", 42))
+            .hasToString("ASnowflake(id=42, MetaKey=42)");
+        assertThat(new EntityString(new ASnowflake())
                 .addMetadata("MetaKey1", "Metadata1")
-                .addMetadata("MetaKey2", "Metadata2")
-                .toString());
+                .addMetadata("MetaKey2", "Metadata2"))
+            .hasToString("ASnowflake(id=42, MetaKey1=Metadata1, MetaKey2=Metadata2)");
     }
 
     @Test
     @Order(9)
     public void testAllSnowflake()
     {
-        assertEquals("ASnowflake:AName(id=42, Metadata1)", new EntityString(new ASnowflake())
+        assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
-                .addMetadata(null, "Metadata1")
-                .toString());
-        assertEquals("ASnowflake:AName(id=42, MetaKey=Metadata1)", new EntityString(new ASnowflake())
+                .addMetadata(null, "Metadata1"))
+            .hasToString("ASnowflake:AName(id=42, Metadata1)");
+        assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
-                .addMetadata("MetaKey", "Metadata1")
-                .toString());
-        assertEquals("ASnowflake:AName(id=42, MetaKey=42)", new EntityString(new ASnowflake())
+                .addMetadata("MetaKey", "Metadata1"))
+            .hasToString("ASnowflake:AName(id=42, MetaKey=Metadata1)");
+        assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
-                .addMetadata("MetaKey", 42)
-                .toString());
-        assertEquals("ASnowflake:AName(id=42, MetaKey1=Metadata1, MetaKey2=Metadata2)", new EntityString(new ASnowflake())
+                .addMetadata("MetaKey", 42))
+            .hasToString("ASnowflake:AName(id=42, MetaKey=42)");
+        assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
                 .addMetadata("MetaKey1", "Metadata1")
-                .addMetadata("MetaKey2", "Metadata2")
-                .toString());
+                .addMetadata("MetaKey2", "Metadata2"))
+            .hasToString("ASnowflake:AName(id=42, MetaKey1=Metadata1, MetaKey2=Metadata2)");
 
-        assertEquals("ASnowflake[Type]:AName(id=42, Metadata1)", new EntityString(new ASnowflake())
+        assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
                 .setType("Type")
-                .addMetadata(null, "Metadata1")
-                .toString());
-        assertEquals("ASnowflake[Type]:AName(id=42, MetaKey=Metadata1)", new EntityString(new ASnowflake())
+                .addMetadata(null, "Metadata1"))
+            .hasToString("ASnowflake[Type]:AName(id=42, Metadata1)");
+        assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
                 .setType("Type")
-                .addMetadata("MetaKey", "Metadata1")
-                .toString());
-        assertEquals("ASnowflake[Type]:AName(id=42, MetaKey=42)", new EntityString(new ASnowflake())
+                .addMetadata("MetaKey", "Metadata1"))
+            .hasToString("ASnowflake[Type]:AName(id=42, MetaKey=Metadata1)");
+        assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
                 .setType("Type")
-                .addMetadata("MetaKey", 42)
-                .toString());
-        assertEquals("ASnowflake[Type]:AName(id=42, MetaKey1=Metadata1, MetaKey2=Metadata2)", new EntityString(new ASnowflake())
+                .addMetadata("MetaKey", 42))
+            .hasToString("ASnowflake[Type]:AName(id=42, MetaKey=42)");
+        assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
                 .setType("Type")
                 .addMetadata("MetaKey1", "Metadata1")
-                .addMetadata("MetaKey2", "Metadata2")
-                .toString());
+                .addMetadata("MetaKey2", "Metadata2"))
+            .hasToString("ASnowflake[Type]:AName(id=42, MetaKey1=Metadata1, MetaKey2=Metadata2)");
     }
 }

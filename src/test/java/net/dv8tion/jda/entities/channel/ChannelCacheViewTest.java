@@ -40,7 +40,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 class ChannelCacheViewTest
@@ -182,10 +182,10 @@ class ChannelCacheViewTest
     {
         SortedChannelCacheView<GuildChannel> cache = getMockedGuildCache();
         String output = toListString(cache.stream());
-        assertEquals(VALID_SORT_ORDER, output);
+        assertThat(output).isEqualTo(VALID_SORT_ORDER);
 
         output = toListString(cache.parallelStream());
-        assertEquals(VALID_SORT_ORDER, output);
+        assertThat(output).isEqualTo(VALID_SORT_ORDER);
     }
 
     @Test
@@ -193,13 +193,13 @@ class ChannelCacheViewTest
     {
         SortedChannelCacheView<GuildChannel> cache = getMockedGuildCache();
         String output = toListString(cache.streamUnordered());
-        assertNotEquals(VALID_SORT_ORDER, output);
+        assertThat(output).isNotEqualTo(VALID_SORT_ORDER);
 
         output = toListString(cache.parallelStreamUnordered());
-        assertNotEquals(VALID_SORT_ORDER, output);
+        assertThat(output).isNotEqualTo(VALID_SORT_ORDER);
 
         output = cache.applyStream(ChannelCacheViewTest::toListString);
-        assertNotEquals(VALID_SORT_ORDER, output);
+        assertThat(output).isNotEqualTo(VALID_SORT_ORDER);
     }
 
     @Test
@@ -208,15 +208,16 @@ class ChannelCacheViewTest
         SortedChannelCacheView<GuildChannel> cache = getMockedGuildCache();
         String output = toListString(cache.asList().stream());
 
-        assertEquals(VALID_SORT_ORDER, output);
+        assertThat(output).isEqualTo(VALID_SORT_ORDER);
 
         SortedChannelCacheView<VoiceChannel> voiceView = cache.ofType(VoiceChannel.class);
         List<VoiceChannel> fromOfType = voiceView.asList();
         List<GuildChannel> voiceChannelFilter = cache.applyStream(stream -> stream.filter(VoiceChannel.class::isInstance).collect(Collectors.toList()));
 
-        assertEquals(voiceView.size(), voiceChannelFilter.size());
-        assertTrue(fromOfType.containsAll(voiceChannelFilter), "The filtered CacheView must contain all of VoiceChannel");
-        assertTrue(voiceChannelFilter.containsAll(fromOfType), "The filtered CacheView must contain exactly all of VoiceChannel");
+        assertThat(voiceChannelFilter)
+            .hasSameSizeAs(voiceView);
+        assertThat(voiceChannelFilter)
+            .hasSameElementsAs(fromOfType);
     }
 
     @Test
@@ -225,15 +226,16 @@ class ChannelCacheViewTest
         SortedChannelCacheView<GuildChannel> cache = getMockedGuildCache();
         String output = toListString(cache.asSet().stream());
 
-        assertEquals(VALID_SORT_ORDER, output);
+        assertThat(output).isEqualTo(VALID_SORT_ORDER);
 
         SortedChannelCacheView<VoiceChannel> voiceView = cache.ofType(VoiceChannel.class);
         Set<VoiceChannel> fromOfType = voiceView.asSet();
         Set<GuildChannel> voiceChannelFilter = cache.applyStream(stream -> stream.filter(VoiceChannel.class::isInstance).collect(Collectors.toSet()));
 
-        assertEquals(voiceView.size(), voiceChannelFilter.size());
-        assertTrue(fromOfType.containsAll(voiceChannelFilter), "The filtered CacheView must contain all of VoiceChannel");
-        assertTrue(voiceChannelFilter.containsAll(fromOfType), "The filtered CacheView must contain exactly all of VoiceChannel");
+        assertThat(voiceChannelFilter)
+            .hasSize((int) voiceView.size());
+        assertThat(voiceChannelFilter)
+            .hasSameElementsAs(fromOfType);
     }
 
     @Test
@@ -242,12 +244,12 @@ class ChannelCacheViewTest
         SortedChannelCacheView<GuildChannel> cache = getMockedGuildCache();
         NavigableSet<GuildChannel> asSet = cache.asSet();
 
-        assertEquals(asSet.size(), cache.size());
+        assertThat(cache).hasSameSizeAs(asSet);
 
         SortedChannelCacheView<GuildMessageChannel> ofTypeMessage = cache.ofType(GuildMessageChannel.class);
         Set<GuildChannel> filterMessageType = asSet.stream().filter(GuildMessageChannel.class::isInstance).collect(Collectors.toSet());
 
-        assertEquals(filterMessageType.size(), ofTypeMessage.size());
+        assertThat(ofTypeMessage).hasSameSizeAs(filterMessageType);
     }
 
     @Test
@@ -255,16 +257,22 @@ class ChannelCacheViewTest
     {
         SortedChannelCacheView<GuildChannel> empty = new SortedChannelCacheViewImpl<>(GuildChannel.class);
 
-        assertTrue(empty.isEmpty(), "New cache must be empty");
+        assertThat(empty).isEmpty();
 
         SortedChannelCacheViewImpl<GuildChannel> filled = getMockedGuildCache();
 
-        assertFalse(filled.ofType(GuildMessageChannel.class).isEmpty(), "Filtered cache must not be empty before remove");
+        assertThat(filled.ofType(GuildMessageChannel.class))
+            .as("Filtered cache must not be empty before remove")
+            .isNotEmpty();
 
         filled.removeIf(GuildMessageChannel.class, (c) -> true);
 
-        assertFalse(filled.isEmpty(), "Filled cache must not be empty");
-        assertTrue(filled.ofType(GuildMessageChannel.class).isEmpty(), "Filtered cache must be empty");
+        assertThat(filled)
+            .as("Filled cache must not be empty")
+            .isNotEmpty();
+        assertThat(filled.ofType(GuildMessageChannel.class))
+            .as("Filtered cache must be empty")
+            .isEmpty();
     }
 
     @Test
@@ -276,17 +284,21 @@ class ChannelCacheViewTest
 
         GuildChannel textWithoutParent = getByName.get().get(0);
 
-        assertSame(textWithoutParent, cache.remove(textWithoutParent), "Remove returns instance");
-        assertTrue(getByName.get().isEmpty(), "Channel should be removed");
+        assertThat(textWithoutParent)
+            .as("Remove returns instance")
+            .isSameAs(cache.remove(textWithoutParent));
+        assertThat(getByName.get())
+            .as("Channel should be removed")
+            .isEmpty();
 
         List<GuildMessageChannel> messageChannels = getOfType.get();
 
-        assertFalse(messageChannels.isEmpty(), "Message channels should not be removed");
+        assertThat(messageChannels).isNotEmpty();
 
         cache.removeIf(GuildChannel.class, GuildMessageChannel.class::isInstance);
 
         messageChannels = getOfType.get();
 
-        assertTrue(messageChannels.isEmpty(), "Message channels should be removed");
+        assertThat(messageChannels).isEmpty();
     }
 }

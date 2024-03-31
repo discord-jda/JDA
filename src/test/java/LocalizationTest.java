@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LocalizationTest
 {
@@ -71,40 +71,40 @@ public class LocalizationTest
     @Test
     public void commandLocalization()
     {
-        assertEquals("ban", DataPath.getString(data, "name_localizations.fr"));
-        assertEquals("Bannis un utilisateur", DataPath.getString(data, "description_localizations.fr"));
+        assertThat(DataPath.getString(data, "name_localizations.fr")).isEqualTo("ban");
+        assertThat(DataPath.getString(data, "description_localizations.fr")).isEqualTo("Bannis un utilisateur");
     }
 
     @Test
     public void subcommandLocalization()
     {
-        assertEquals("utilisateur", navigateOptions("user").getObject("name_localizations").getString("fr"));
-        assertEquals("Bannis un utilisateur", navigateOptions("user").getObject("description_localizations").getString("fr"));
+        assertThat(navigateOptions("user").getObject("name_localizations").getString("fr")).isEqualTo("utilisateur");
+        assertThat(navigateOptions("user").getObject("description_localizations").getString("fr")).isEqualTo("Bannis un utilisateur");
     }
 
     @Test
     public void subcommandGroupLocalization()
     {
-        assertEquals("permanent", navigateOptions("user", "perm").getObject("name_localizations").getString("fr"));
-        assertEquals("Bannis un utilisateur pour toujours", navigateOptions("user", "perm").getObject("description_localizations").getString("fr"));
+        assertThat(navigateOptions("user", "perm").getObject("name_localizations").getString("fr")).isEqualTo("permanent");
+        assertThat(navigateOptions("user", "perm").getObject("description_localizations").getString("fr")).isEqualTo("Bannis un utilisateur pour toujours");
     }
 
     @Test
     public void optionLocalization()
     {
-        assertEquals("utilisateur", navigateOptions("user", "perm", "user").getObject("name_localizations").getString("fr"));
-        assertEquals("L'utilisateur à bannir", navigateOptions("user", "perm", "user").getObject("description_localizations").getString("fr"));
+        assertThat(navigateOptions("user", "perm", "user").getObject("name_localizations").getString("fr")).isEqualTo("utilisateur");
+        assertThat(navigateOptions("user", "perm", "user").getObject("description_localizations").getString("fr")).isEqualTo("L'utilisateur à bannir");
 
-        assertEquals("nb_jours", navigateOptions("user", "perm", "del_days").getObject("name_localizations").getString("fr"));
-        assertEquals("Nombre de jours de messages à supprimer", navigateOptions("user", "perm", "del_days").getObject("description_localizations").getString("fr"));
+        assertThat(navigateOptions("user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("nb_jours");
+        assertThat(navigateOptions("user", "perm", "del_days").getObject("description_localizations").getString("fr")).isEqualTo("Nombre de jours de messages à supprimer");
     }
 
     @Test
     public void choiceLocalization()
     {
-        assertEquals("1 jour", navigateChoice("1 Day", "user", "perm", "del_days").getObject("name_localizations").getString("fr"));
-        assertEquals("7 jours", navigateChoice("7 Days", "user", "perm", "del_days").getObject("name_localizations").getString("fr"));
-        assertEquals("14 jours", navigateChoice("14 Days", "user", "perm", "del_days").getObject("name_localizations").getString("fr"));
+        assertThat(navigateChoice("1 Day", "user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("1 jour");
+        assertThat(navigateChoice("7 Days", "user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("7 jours");
+        assertThat(navigateChoice("14 Days", "user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("14 jours");
     }
 
     @Test
@@ -112,7 +112,7 @@ public class LocalizationTest
     {
         final DataObject data = slashCommandData.toData();
         final DataObject reconstitutedData = CommandData.fromData(data).toData();
-        assertEquals(data.toMap(), reconstitutedData.toMap());
+        assertThat(reconstitutedData.toMap()).isEqualTo(data.toMap());
     }
 
     private DataObject navigateOptions(String... names)

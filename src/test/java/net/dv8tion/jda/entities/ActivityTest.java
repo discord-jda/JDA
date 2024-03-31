@@ -22,11 +22,12 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.util.PrettyRepresentation;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ActivityTest
 {
@@ -41,6 +42,13 @@ public class ActivityTest
             json.put("name", name);
 
         return json;
+    }
+
+    private static void assertEquals(DataObject expected, DataObject actual)
+    {
+        assertThat(actual)
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(expected);
     }
 
     @Test
@@ -110,11 +118,11 @@ public class ActivityTest
                 .put("name", "Games")
         );
 
-        assertFalse(activity.isRich());
-        assertEquals(Activity.ActivityType.PLAYING, activity.getType());
-        assertEquals("Games", activity.getName());;
-        assertNull(activity.getState());
-        assertNull(activity.getUrl());
+        assertThat(activity.isRich()).isFalse();
+        assertThat(activity.getType()).isEqualTo(Activity.ActivityType.PLAYING);
+        assertThat(activity.getName()).isEqualTo("Games");
+        assertThat(activity.getState()).isNull();
+        assertThat(activity.getUrl()).isNull();
     }
 
     @Test
@@ -127,11 +135,11 @@ public class ActivityTest
                 .put("state", "Active")
         );
 
-        assertFalse(activity.isRich(), "isRich()");
-        assertEquals(Activity.ActivityType.PLAYING, activity.getType());
-        assertEquals("Games", activity.getName());;
-        assertEquals("Active", activity.getState());
-        assertNull(activity.getUrl(), "url");
+        assertThat(activity.isRich()).isFalse();
+        assertThat(activity.getType()).isEqualTo(Activity.ActivityType.PLAYING);
+        assertThat(activity.getName()).isEqualTo("Games");;
+        assertThat(activity.getState()).isEqualTo("Active");
+        assertThat(activity.getUrl()).isNull();
 
         activity = EntityBuilder.createActivity(
             DataObject.empty()
@@ -155,30 +163,31 @@ public class ActivityTest
         );
 
         RichPresence rich = activity.asRichPresence();
-        assertEquals(activity, rich);
+        assertThat(rich).isNotNull();
+        assertThat(rich).isEqualTo(activity);
 
-        assertEquals(Activity.ActivityType.PLAYING, rich.getType());
-        assertEquals("The Best Game Ever", rich.getName());
-        assertEquals("In a Group", rich.getState());
+        assertThat(rich.getType()).isEqualTo(Activity.ActivityType.PLAYING);
+        assertThat(rich.getName()).isEqualTo("The Best Game Ever");
+        assertThat(rich.getState()).isEqualTo("In a Group");
 
-        assertNotNull(rich.getParty(), "party");
-        assertEquals("1234", rich.getParty().getId());
-        assertEquals(3, rich.getParty().getSize());
-        assertEquals(6, rich.getParty().getMax());
+        assertThat(rich.getParty()).isNotNull();
+        assertThat(rich.getParty().getId()).isEqualTo("1234");
+        assertThat(rich.getParty().getSize()).isEqualTo(3);
+        assertThat(rich.getParty().getMax()).isEqualTo(6);
 
-        assertNotNull(rich.getTimestamps());
-        assertEquals(1507665886, rich.getTimestamps().getStart());
-        assertEquals(1507666000, rich.getTimestamps().getEnd());
+        assertThat(rich.getTimestamps()).isNotNull();
+        assertThat(rich.getTimestamps().getStart()).isEqualTo(1507665886);
+        assertThat(rich.getTimestamps().getEnd()).isEqualTo(1507666000);
 
-        assertNotNull(rich.getLargeImage(), "assets.large_image");
-        assertEquals("canary-large", rich.getLargeImage().getKey());
-        assertNull(rich.getLargeImage().getText(), "assets.large_text");
+        assertThat(rich.getLargeImage()).isNotNull();
+        assertThat(rich.getLargeImage().getKey()).isEqualTo("canary-large");
+        assertThat(rich.getLargeImage().getText()).isNull();
 
-        assertNotNull(rich.getSmallImage(), "assets.small_image");
-        assertEquals("ptb-large", rich.getSmallImage().getKey());
-        assertEquals("Small icon", rich.getSmallImage().getText());
+        assertThat(rich.getSmallImage()).isNotNull();
+        assertThat(rich.getSmallImage().getKey()).isEqualTo("ptb-large");
+        assertThat(rich.getSmallImage().getText()).isEqualTo("Small icon");
 
-        assertEquals("4b2fdce12f639de8bfa7e3591b71a0d679d7c93f", rich.getSessionId());
-        assertEquals("e7eb30d2ee025ed05c71ea495f770b76454ee4e0", rich.getSyncId());
+        assertThat(rich.getSessionId()).isEqualTo("4b2fdce12f639de8bfa7e3591b71a0d679d7c93f");
+        assertThat(rich.getSyncId()).isEqualTo("e7eb30d2ee025ed05c71ea495f770b76454ee4e0");
     }
 }

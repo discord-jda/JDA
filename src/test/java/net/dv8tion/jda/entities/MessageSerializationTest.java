@@ -17,10 +17,13 @@
 package net.dv8tion.jda.entities;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.junit.jupiter.api.Assertions;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.util.PrettyRepresentation;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MessageSerializationTest
 {
@@ -42,39 +45,38 @@ public class MessageSerializationTest
 
         MessageEmbed dataEmbed = EmbedBuilder.fromData(embed.toData()).build();
 
-        Assertions.assertEquals(embed.getType(), dataEmbed.getType());
-        Assertions.assertEquals(EmbedType.RICH, embed.getType());
+        assertThat(dataEmbed).isNotSameAs(embed);
+        assertThat(dataEmbed).isEqualTo(embed);
 
-        Assertions.assertEquals(embed.getDescription(), dataEmbed.getDescription());
-        Assertions.assertEquals(embed.getTitle(), dataEmbed.getTitle());
-        Assertions.assertEquals(embed.getUrl(), dataEmbed.getUrl());
-        Assertions.assertEquals(embed.getAuthor(), dataEmbed.getAuthor());
-        Assertions.assertEquals(embed.getFooter(), dataEmbed.getFooter());
-        Assertions.assertEquals(embed.getImage(), dataEmbed.getImage());
-        Assertions.assertEquals(embed.getThumbnail(), dataEmbed.getThumbnail());
-        Assertions.assertEquals(embed.getFields(), dataEmbed.getFields());
-
-        Assertions.assertEquals(embed, dataEmbed);
-
-        Assertions.assertEquals("Description Text", dataEmbed.getDescription());
-        Assertions.assertEquals("Title Text", dataEmbed.getTitle());
-        Assertions.assertEquals("https://example.com/title", dataEmbed.getUrl());
-        Assertions.assertEquals("Author Text", dataEmbed.getAuthor().getName());
-        Assertions.assertEquals("https://example.com/author", dataEmbed.getAuthor().getUrl());
-        Assertions.assertEquals("https://example.com/author_icon", dataEmbed.getAuthor().getIconUrl());
-        Assertions.assertEquals("Footer Text", dataEmbed.getFooter().getText());
-        Assertions.assertEquals("https://example.com/footer_icon", dataEmbed.getFooter().getIconUrl());
-        Assertions.assertEquals("https://example.com/image", dataEmbed.getImage().getUrl());
-        Assertions.assertEquals("https://example.com/thumbnail", dataEmbed.getThumbnail().getUrl());
-        Assertions.assertEquals(3, dataEmbed.getFields().size());
-        Assertions.assertEquals("Field 1", dataEmbed.getFields().get(0).getName());
-        Assertions.assertEquals("Field 1 Text", dataEmbed.getFields().get(0).getValue());
-        Assertions.assertTrue(dataEmbed.getFields().get(0).isInline());
-        Assertions.assertEquals("Field 2", dataEmbed.getFields().get(1).getName());
-        Assertions.assertEquals("Field 2 Text", dataEmbed.getFields().get(1).getValue());
-        Assertions.assertFalse(dataEmbed.getFields().get(1).isInline());
-        Assertions.assertEquals("Field 3", dataEmbed.getFields().get(2).getName());
-        Assertions.assertEquals("Field 3 Text", dataEmbed.getFields().get(2).getValue());
-        Assertions.assertTrue(dataEmbed.getFields().get(2).isInline());
+        assertThat(dataEmbed.toData())
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty()
+                .put("title", "Title Text")
+                .put("url", "https://example.com/title")
+                .put("description", "Description Text")
+                .put("image", DataObject.empty()
+                    .put("url", "https://example.com/image"))
+                .put("thumbnail", DataObject.empty()
+                    .put("url", "https://example.com/thumbnail"))
+                .put("footer", DataObject.empty()
+                    .put("icon_url", "https://example.com/footer_icon")
+                    .put("text", "Footer Text"))
+                .put("author", DataObject.empty()
+                    .put("icon_url", "https://example.com/author_icon")
+                    .put("name", "Author Text")
+                    .put("url", "https://example.com/author"))
+                .put("fields", DataArray.empty()
+                    .add(DataObject.empty()
+                        .put("inline", true)
+                        .put("name", "Field 1")
+                        .put("value", "Field 1 Text"))
+                    .add(DataObject.empty()
+                        .put("inline", false)
+                        .put("name", "Field 2")
+                        .put("value", "Field 2 Text"))
+                    .add(DataObject.empty()
+                        .put("inline", true)
+                        .put("name", "Field 3")
+                        .put("value", "Field 3 Text"))));
     }
 }
