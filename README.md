@@ -20,7 +20,7 @@
 [JDABuilder]: https://docs.jda.wiki/net/dv8tion/jda/api/JDABuilder.html
 [DefaultShardManagerBuilder]: https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html
 
-<img align="right" src="https://github.com/discord-jda/JDA/blob/assets/assets/readme/logo.png?raw=true" height="200" width="200">
+<img align="right" src="https://github.com/discord-jda/JDA/blob/assets/assets/readme/logo.png?raw=true" height="150" width="150">
 
 [ ![maven-central][] ][download]
 [ ![jitpack][] ](https://jitpack.io/#discord-jda/JDA)
