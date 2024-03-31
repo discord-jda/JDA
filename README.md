@@ -123,7 +123,8 @@ public static void main(String[] args) {
 }
 ```
 
-**Important Note:** This also makes use of a **privileged** intent, which you have to explicitly enable in your application dashboard when you create your bot.
+> [!CAUTION]
+> This also makes use of a **privileged** intent, which you have to explicitly enable in your application dashboard when you create your bot.
 
 Your event listener could look like this:
 
