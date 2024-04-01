@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.api.Permission;
+package net.dv8tion.jda.test.interactions;import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
-import net.dv8tion.jda.util.PrettyRepresentation;
+import net.dv8tion.jda.test.PrettyRepresentation;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

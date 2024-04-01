@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import org.junit.jupiter.api.Test;
+package net.dv8tion.jda.test.util;import org.junit.jupiter.api.Test;
 
 import static net.dv8tion.jda.api.utils.MarkdownUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;

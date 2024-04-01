@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.api.exceptions.ParsingException;
+package net.dv8tion.jda.test.data;import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.util.PrettyRepresentation;
+import net.dv8tion.jda.test.PrettyRepresentation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.entitystring;
+package net.dv8tion.jda.test.entitystring;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
 

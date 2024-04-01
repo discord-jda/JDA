@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.entities;
+package net.dv8tion.jda.test.entities;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.util.PrettyRepresentation;
+import net.dv8tion.jda.test.PrettyRepresentation;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

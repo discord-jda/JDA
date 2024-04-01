@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.entities;
+package net.dv8tion.jda.test.entities;
 
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.RichPresence;
@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
-import net.dv8tion.jda.util.PrettyRepresentation;
+import net.dv8tion.jda.test.PrettyRepresentation;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

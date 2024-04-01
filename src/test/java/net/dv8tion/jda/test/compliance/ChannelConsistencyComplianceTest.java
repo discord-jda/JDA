@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda;
+package net.dv8tion.jda.test.compliance;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;

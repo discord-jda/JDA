@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.internal.utils.Helpers;
+package net.dv8tion.jda.test.util;import net.dv8tion.jda.internal.utils.Helpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

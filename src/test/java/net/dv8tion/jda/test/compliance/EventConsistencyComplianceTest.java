@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda;
+package net.dv8tion.jda.test.compliance;
 
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -33,7 +33,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-public class EventConsistencyTest
+public class EventConsistencyComplianceTest
 {
     static Set<Class<? extends GenericEvent>> eventTypes;
     static Set<Class<? extends GenericEvent>> excludedTypes;
