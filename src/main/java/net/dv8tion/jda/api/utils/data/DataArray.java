@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -821,7 +820,9 @@ public class DataArray implements Iterable<Object>, SerializableArray
     @Nullable
     private <T> T get(@Nonnull Class<T> type, int index, @Nullable Function<String, T> stringMapper, @Nullable Function<Number, T> numberMapper)
     {
-        Object value = data.get(index);
+        if (index < 0)
+            throw new IndexOutOfBoundsException("Index out of range: " + index);
+        Object value = index < data.size() ? data.get(index) : null;
         if (value == null)
             return null;
         if (type.isInstance(value))
@@ -857,5 +858,22 @@ public class DataArray implements Iterable<Object>, SerializableArray
     public DataArray toDataArray()
     {
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+            return true;
+        if (!(o instanceof DataArray))
+            return false;
+        DataArray objects = (DataArray) o;
+        return Objects.equals(data, objects.data);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(data);
     }
 }
