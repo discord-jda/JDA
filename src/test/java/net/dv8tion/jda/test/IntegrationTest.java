@@ -16,34 +16,63 @@
 
 package net.dv8tion.jda.test;
 
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.Requester;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
-import org.mockito.Spy;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.ScheduledExecutorService;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.assertArg;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class IntegrationTest
 {
     @Mock
     protected JDAImpl jda;
-    @Spy
+    @Mock
+    protected Requester requester;
+    @Mock
     protected ScheduledExecutorService scheduledExecutorService;
 
     private AutoCloseable closeable;
 
     @BeforeEach
-    void setup()
+    protected final void setup()
     {
         closeable = openMocks(this);
+        when(jda.getRequester()).thenReturn(requester);
     }
 
     @AfterEach
-    void teardown() throws Exception
+    protected final void teardown() throws Exception
     {
         closeable.close();
+    }
+
+    @Nonnull
+    protected DataObject normalizeRequestBody(@Nonnull DataObject body)
+    {
+        return body;
+    }
+
+    protected void assertNextRequestBodyEquals(DataObject expectedBody)
+    {
+        doNothing().when(requester).request(assertArg(request -> {
+            assertThat(request.getRawBody())
+                    .isNotNull()
+                    .isInstanceOf(DataObject.class);
+            DataObject body = normalizeRequestBody((DataObject) request.getRawBody());
+
+            assertThat(body)
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(expectedBody);
+        }));
     }
 }
