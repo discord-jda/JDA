@@ -37,7 +37,7 @@
 
 This open source library is intended for implementing bots on Discord using the real-time gateway and REST API. It provides event based functionality to implement bots of any kind, allowing for effective and scalable applications.
 
-## Overview
+## 📖 Overview
 
 The core concepts of JDA have been developed to make building scalable apps easy:
 
@@ -49,7 +49,7 @@ The core concepts of JDA have been developed to make building scalable apps easy
 1. Customizable Cache  
     Trading memory usage for better performance where necessary, with sane default presets to choose from and customize.
 
-## Installation
+## 🔬 Installation
 
 [![maven-central][]](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
 [![jitpack][]](https://jitpack.io/#discord-jda/JDA)
@@ -94,11 +94,11 @@ dependencies {
 </dependency>
 ```
 
-## Creating a Bot
+## 🤖 Creating a Bot
 
 To use this library, you have to create an Application in the [Discord Application Dashboard](https://discord.com/developers/applications) and grab your bot token. You can find a step-by-step guide for this in our wiki page [Creating a Discord Bot](https://jda.wiki/using-jda/getting-started/#creating-a-discord-bot).
 
-## Getting Started
+## 🏃‍♂️ Getting Started
 
 We provide a number of [examples](https://github.com/discord-jda/JDA/tree/master/src/examples/java) to introduce you to JDA. You can also take a look at our official [Wiki][wiki], [Documentation][docs], and [FAQ][faq].
 
@@ -199,7 +199,7 @@ public class SlashCommandListener extends ListenerAdapter {
 
 You can find a more thorough example with the [SlashBotExample](https://github.com/discord-jda/JDA/blob/master/src/examples/java/SlashBotExample.java) class.
 
-## RestAction
+## 🚀 RestAction
 
 Through [RestAction](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
  
@@ -231,7 +231,7 @@ public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
 }
 ```
 
-## Extensions
+## 🧩 Extensions
 
 ### [Lavaplayer](https://github.com/lavalink-devs/lavaplayer)
 
@@ -294,7 +294,7 @@ fun main() {
 
 There is a number of examples available in the [README](https://github.com/MinnDevelopment/jda-ktx/#jda-ktx).
 
-## Contributing to JDA
+## ☝️ Contributing to JDA
 
 If you want to contribute to JDA, make sure to base your branch off of our **master** branch (or a feature-branch)
 and create your PR into that **same** branch.
@@ -304,7 +304,7 @@ Please follow our [Contributing Guidelines](https://github.com/discord-jda/JDA/b
 Do not expect your pull request to get immediate attention, sometimes it will take a long time to get a response.
 You can join our [discord server][discord-invite] and ask in [#lib-dev](https://discord.com/channels/125227483518861312/869965829024915466) before starting to work on a new PR, to get more immediate feedback from our community members.
 
-## Breaking Changes
+## 🚨 Breaking Changes
 
 Due to the nature of the Discord API, the library will regularly introduce breaking changes to allow for a quick adoption of newer features. We try to keep these breaking changes minimal, but cannot avoid them entirely.
 
