@@ -2,7 +2,7 @@
 [jitpack]: https://img.shields.io/badge/Snapshots-JitPack-blue
 [download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
-[migration]: https://jda.wiki/introduction/migration-v3-v4/
+[migration]: https://jda.wiki/introduction/migration-v4-v5/
 [jenkins]: https://ci.dv8tion.net/job/JDA5
 [license]: https://github.com/discord-jda/JDA/tree/master/LICENSE
 [faq]: https://jda.wiki/introduction/faq/
@@ -15,23 +15,23 @@
 [troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-darkgreen.svg
 [jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-purple.svg
 [license-shield]: https://img.shields.io/badge/License-Apache%202.0-white.svg
-[migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-darkgreen.svg
+[migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V4-darkgreen.svg
 [GatewayIntent]: https://docs.jda.wiki/net/dv8tion/jda/api/requests/GatewayIntent.html
 [JDABuilder]: https://docs.jda.wiki/net/dv8tion/jda/api/JDABuilder.html
 [DefaultShardManagerBuilder]: https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html
 
 <img align="right" src="https://github.com/discord-jda/JDA/blob/assets/assets/readme/logo.png?raw=true" height="150" width="150">
 
-[ ![maven-central][] ][download]
-[ ![jitpack][] ](https://jitpack.io/#discord-jda/JDA)
-[ ![jenkins-shield][] ][jenkins]
-[ ![license-shield][] ][license]
+[![maven-central][]][download]
+[![jitpack][]](https://jitpack.io/#discord-jda/JDA)
+[![jenkins-shield][]][jenkins]
+[![license-shield][]][license]
 
-[ ![discord-shield][] ][discord-invite]
-[ ![faq-shield] ][faq]
-[ ![docs-shield] ][docs]
-[ ![troubleshooting-shield] ][troubleshooting]
-[ ![migration-shield][] ][migration]
+[![discord-shield][]][discord-invite]
+[![faq-shield]][faq]
+[![docs-shield]][docs]
+[![troubleshooting-shield]][troubleshooting]
+[![migration-shield][]][migration]
 
 # JDA (Java Discord API)
 
@@ -51,8 +51,8 @@ The core concepts of JDA have been developed to make building scalable apps easy
 
 ## Installation
 
-[ ![maven-central][] ](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
-[ ![jitpack][] ](https://jitpack.io/#discord-jda/JDA)
+[![maven-central][]](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
+[![jitpack][]](https://jitpack.io/#discord-jda/JDA)
 
 This library is available on maven central. The current latest version is always shown in the [GitHub Release](https://github.com/discord-jda/JDA/releases/latest).
 
