@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test.interactions;import net.dv8tion.jda.api.Permission;
+package net.dv8tion.jda.test.interactions;
+
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;

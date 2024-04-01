@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test.util;import net.dv8tion.jda.api.utils.MarkdownSanitizer;
+package net.dv8tion.jda.test.util;
+
+import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

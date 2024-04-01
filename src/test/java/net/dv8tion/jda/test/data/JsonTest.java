@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test.data;import net.dv8tion.jda.api.exceptions.ParsingException;
+package net.dv8tion.jda.test.data;
+
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Helpers;
