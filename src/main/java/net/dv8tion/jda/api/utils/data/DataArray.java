@@ -218,7 +218,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      */
     public boolean isNull(int index)
     {
-        return data.get(index) == null;
+        return index >= length() || data.get(index) == null;
     }
 
     /**

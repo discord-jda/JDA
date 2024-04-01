@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.util.PrettyRepresentation;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
-import java.util.AbstractMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class JsonTest
 {
@@ -44,6 +51,9 @@ public class JsonTest
             .of(10, 100L, true, "\"test\"", 4.2, 5.2f)
             .map(String::valueOf)
             .collect(Collectors.joining(",\n", "[", "]"));
+
+    private static final byte[] simpleEtfArray = {-125, 108, 0, 0, 0, 6, 97, 10, 97, 100, 100, 0, 4, 116, 114, 117, 101, 109, 0, 0, 0, 4, 116, 101, 115, 116, 70, 64, 16, -52, -52, -52, -52, -52, -51, 70, 64, 20, -52, -52, -52, -52, -52, -51, 106};
+    private static final byte[] complexEtfArray = {-125, 108, 0, 0, 0, 6, 109, 0, 0, 0, 3, 111, 110, 101, 97, 2, 70, 64, 11, -103, -103, -103, -103, -103, -102, 97, 7, 116, 0, 0, 0, 2, 109, 0, 0, 0, 5, 102, 105, 114, 115, 116, 109, 0, 0, 0, 5, 101, 105, 103, 104, 116, 109, 0, 0, 0, 6, 115, 101, 99, 111, 110, 100, 106, 108, 0, 0, 0, 2, 109, 0, 0, 0, 4, 110, 105, 110, 101, 116, 0, 0, 0, 1, 109, 0, 0, 0, 3, 107, 101, 121, 109, 0, 0, 0, 3, 116, 101, 110, 106, 106};
 
     @Nested
     class DataObjectTest
@@ -94,6 +104,9 @@ public class JsonTest
             assertThat(data).isEqualTo(DataObject.empty());
             assertThat(data).hasToString("{}");
 
+            assertThat(data.isNull("key")).isTrue();
+            assertThat(data.hasKey("key")).isFalse();
+
             assertThat(data.getDouble("key", 5.3)).isEqualTo(5.3);
             assertThat(data.getInt("key", 4)).isEqualTo(4);
             assertThat(data.getUnsignedInt("key", 7)).isEqualTo(7);
@@ -125,6 +138,22 @@ public class JsonTest
                 entry("double", 4.2),
                 entry("time", TEST_TIME_STRING)
             );
+        }
+
+        @Test
+        void testFactories()
+        {
+            DataObject reference = DataObject.fromJson(testJson);
+
+            assertThat(DataObject.fromJson(testJson.getBytes(StandardCharsets.UTF_8)))
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(reference);
+            assertThat(DataObject.fromJson(new StringReader(testJson)))
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(reference);
+            assertThat(DataObject.fromJson(new ByteArrayInputStream(testJson.getBytes(StandardCharsets.UTF_8))))
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(reference);
         }
     }
 
@@ -173,6 +202,10 @@ public class JsonTest
             assertThat(data).isEqualTo(DataArray.empty());
             assertThat(data).hasToString("[]");
 
+            assertThat(data.isNull(0)).isTrue();
+            assertThat(data.length()).isEqualTo(0);
+            assertThat(data.isEmpty()).isTrue();
+
             assertThat(data.getDouble(0, 5.3)).isEqualTo(5.3);
             assertThat(data.getInt(0, 4)).isEqualTo(4);
             assertThat(data.getUnsignedInt(0, 7)).isEqualTo(7);
@@ -196,6 +229,102 @@ public class JsonTest
             assertThat(symmetric.toList()).containsExactly(
                 10, 100, true, "test", 4.2, 5.2
             );
+        }
+
+        @Test
+        void testStream()
+        {
+            DataArray intArray = IntStream.range(0, 3).boxed().collect(Helpers.toDataArray());
+            assertThat(intArray.stream(DataArray::getInt))
+                .containsExactly(0, 1, 2);
+            assertThat(intArray.stream(DataArray::getLong))
+                .containsExactly(0L, 1L, 2L);
+
+            DataArray doubleArray = DoubleStream.of(0.1, 0.5, 1.2, 4.2).boxed().collect(Helpers.toDataArray());
+            assertThat(doubleArray.stream(DataArray::getDouble))
+                .containsExactly(0.1, 0.5, 1.2, 4.2);
+
+            DataArray stringArray = DataArray.empty().add("foo").add("bar");
+            assertThat(stringArray.stream(DataArray::getString))
+                .containsExactly("foo", "bar");
+
+            DataArray polyTypedArray = DataArray.empty().add(1).add(2.3).add("four");
+            assertThatThrownBy(() -> polyTypedArray.stream(DataArray::getInt).toArray())
+                .isInstanceOf(NumberFormatException.class);
+            assertThatThrownBy(() -> polyTypedArray.stream(DataArray::getDouble).toArray())
+                .isInstanceOf(NumberFormatException.class);
+            assertThatThrownBy(() -> polyTypedArray.stream(DataArray::getObject).toArray())
+                .isInstanceOf(ParsingException.class)
+                .hasMessage("Cannot parse value for index 0 into type Map: 1 instance of Integer");
+            assertThat(polyTypedArray.stream(DataArray::getString))
+                .containsExactly("1", "2.3", "four");
+
+            DataArray objectArray = DataArray.empty()
+                .add(DataObject.empty().put("foo", 1))
+                .add(DataObject.empty().put("foo", 2));
+            assertThat(objectArray.stream(DataArray::getObject).map(obj -> obj.getInt("foo")))
+                .containsExactly(1, 2);
+
+            objectArray.add(DataArray.empty());
+            assertThatThrownBy(() ->
+                objectArray.stream(DataArray::getObject).map(obj -> obj.getInt("foo")).toArray()
+            )
+                .isInstanceOf(ParsingException.class)
+                .hasMessage("Cannot parse value for index 2 into type Map: [] instance of ArrayList");
+        }
+
+        @Test
+        void testFactories()
+        {
+            assertThat(DataArray.fromJson(new StringReader(testJsonArray)))
+                .withRepresentation(new PrettyRepresentation())
+                .containsExactly(10, 100, true, "test", 4.2, 5.2);
+            assertThat(DataArray.fromJson(new ByteArrayInputStream(testJsonArray.getBytes(StandardCharsets.UTF_8))))
+                .withRepresentation(new PrettyRepresentation())
+                .containsExactly(10, 100, true, "test", 4.2, 5.2);
+            assertThat(DataArray.fromJson(testJsonArray))
+                .withRepresentation(new PrettyRepresentation())
+                .containsExactly(10, 100, true, "test", 4.2, 5.2);
+
+            List<?> inputList = Arrays.asList(10, 100L, true, "test", 4.2, 5.2f);
+            DataArray array = DataArray.fromCollection(inputList);
+            assertThat(array)
+                .withRepresentation(new PrettyRepresentation())
+                .as("Do not lose types from input collections")
+                .containsExactly(10, 100L, true, "test", 4.2, 5.2f);
+            assertThat(array.toList()).isNotSameAs(inputList);
+            assertThat(array.toList()).isEqualTo(inputList);
+            assertThat(array.add("foo").toList()).isNotEqualTo(inputList);
+
+            assertThat(DataArray.fromETF(simpleEtfArray))
+                .withRepresentation(new PrettyRepresentation())
+                .containsExactly(10, 100, true, "test", 4.2, 5.2);
+            assertThat(DataArray.fromETF(simpleEtfArray).toETF())
+                .isEqualTo(simpleEtfArray);
+        }
+
+        @Test
+        void testExTerm()
+        {
+            DataArray array = DataArray.empty()
+                    .add("one")
+                    .add(2)
+                    .add(3.45)
+                    .add(7L)
+                    .add(DataObject.empty()
+                        .put("first", "eight")
+                        .put("second", DataArray.empty()))
+                    .add(DataArray.empty()
+                        .add("nine")
+                        .add(DataObject.empty()
+                            .put("key", "ten")));
+
+            assertThat(array).hasSize(6);
+            assertThat(array.toETF()).isEqualTo(complexEtfArray);
+            assertThat(DataArray.fromETF(complexEtfArray).toETF())
+                .isEqualTo(complexEtfArray);
+            assertThat(DataArray.fromETF(complexEtfArray).toPrettyString())
+                .isEqualToIgnoringWhitespace(array.toPrettyString());
         }
     }
 
