@@ -45,7 +45,7 @@ public class ChannelConsistencyComplianceTest
     }
 
     @Test
-    public void checkCreateChannelMethods()
+    void checkCreateChannelMethods()
     {
         Set<String> guildMethods = getMethodNames(Guild.class);
 
@@ -73,7 +73,7 @@ public class ChannelConsistencyComplianceTest
     }
 
     @Test
-    public void checkCacheAccessMethods()
+    void checkCacheAccessMethods()
     {
         Set<String> jdaMethods = getMethodNames(IGuildChannelContainer.class);
         Set<String> categoryMethods = getMethodNames(Category.class);
@@ -104,7 +104,7 @@ public class ChannelConsistencyComplianceTest
     }
 
     @Test
-    public void checkManagerExists()
+    void checkManagerExists()
     {
         EnumSet<ChannelType> editable = EnumSet.complementOf(EnumSet.of(
             ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,

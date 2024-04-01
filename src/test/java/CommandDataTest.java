@@ -61,7 +61,7 @@ public class CommandDataTest
     }
 
     @Test
-    public void testNormal()
+    void testNormal()
     {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
                 .setGuildOnly(true)
@@ -87,7 +87,7 @@ public class CommandDataTest
     }
 
     @Test
-    public void testDefaultMemberPermissions()
+    void testDefaultMemberPermissions()
     {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
@@ -100,7 +100,7 @@ public class CommandDataTest
     }
 
     @Test
-    public void testSubcommand()
+    void testSubcommand()
     {
         CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
@@ -124,7 +124,7 @@ public class CommandDataTest
     }
 
     @Test
-    public void testSubcommandGroup()
+    void testSubcommandGroup()
     {
         CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
                 .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
@@ -153,7 +153,7 @@ public class CommandDataTest
     }
 
     @Test
-    public void testRequiredThrows()
+    void testRequiredThrows()
     {
         CommandDataImpl command = new CommandDataImpl("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
@@ -171,7 +171,7 @@ public class CommandDataTest
     }
 
     @Test
-    public void testNameChecks()
+    void testNameChecks()
     {
         assertThatIllegalArgumentException()
             .isThrownBy(() -> new CommandDataImpl("invalid name", "Valid description"))
@@ -205,7 +205,7 @@ public class CommandDataTest
     }
 
     @Test
-    public void testChoices()
+    void testChoices()
     {
         OptionData stringOption = new OptionData(OptionType.STRING, "choice", "Option with choices!");
         assertThatIllegalArgumentException()

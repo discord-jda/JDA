@@ -52,7 +52,7 @@ public class ActivityTest
     }
 
     @Test
-    public void activitySerializationTest()
+    void activitySerializationTest()
     {
         assertEquals(
             formatActivity(0, "playing test", null),
@@ -110,7 +110,7 @@ public class ActivityTest
     }
 
     @Test
-    public void activityBasicDeserializationTest()
+    void activityBasicDeserializationTest()
     {
         Activity activity = EntityBuilder.createActivity(
             DataObject.empty()
@@ -126,7 +126,7 @@ public class ActivityTest
     }
 
     @Test
-    public void activityRichDeserializationTest()
+    void activityRichDeserializationTest()
     {
         Activity activity = EntityBuilder.createActivity(
             DataObject.empty()

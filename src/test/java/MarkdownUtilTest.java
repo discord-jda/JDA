@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MarkdownUtilTest
 {
     @Test
-    public void testBold()
+    void testBold()
     {
         assertThat(bold("Hello World")).isEqualTo("**Hello World**");
         assertThat(bold("Hello **Test** World")).isEqualTo("**Hello \\*\\*Test\\*\\* World**");
@@ -30,7 +30,7 @@ public class MarkdownUtilTest
     }
 
     @Test
-    public void testItalics()
+    void testItalics()
     {
         assertThat(italics("Hello World")).isEqualTo("_Hello World_");
         assertThat(italics("Hello _Test_ World")).isEqualTo("_Hello \\_Test\\_ World_");
@@ -38,7 +38,7 @@ public class MarkdownUtilTest
     }
 
     @Test
-    public void testUnderline()
+    void testUnderline()
     {
         assertThat(underline("Hello World")).isEqualTo("__Hello World__");
         assertThat(underline("Hello __Test__ World")).isEqualTo("__Hello \\_\\_Test\\_\\_ World__");
@@ -46,7 +46,7 @@ public class MarkdownUtilTest
     }
 
     @Test
-    public void testMonospace()
+    void testMonospace()
     {
         assertThat(monospace("Hello World")).isEqualTo("`Hello World`");
         assertThat(monospace("Hello `Test` World")).isEqualTo("`Hello \\`Test\\` World`");
@@ -54,7 +54,7 @@ public class MarkdownUtilTest
     }
 
     @Test
-    public void testCodeblock()
+    void testCodeblock()
     {
         assertThat(codeblock("java", "Hello World")).isEqualTo("```java\nHello World```");
         assertThat(codeblock("java", "Hello ```java\nTest``` World")).isEqualTo("```java\nHello \\```java\nTest\\``` World```");
@@ -66,7 +66,7 @@ public class MarkdownUtilTest
     }
 
     @Test
-    public void testSpoiler()
+    void testSpoiler()
     {
         assertThat(spoiler("Hello World")).isEqualTo("||Hello World||");
         assertThat(spoiler("Hello ||Test|| World")).isEqualTo("||Hello \\||Test\\|| World||");
@@ -74,7 +74,7 @@ public class MarkdownUtilTest
     }
 
     @Test
-    public void testStrike()
+    void testStrike()
     {
         assertThat(strike("Hello World")).isEqualTo("~~Hello World~~");
         assertThat(strike("Hello ~~Test~~ World")).isEqualTo("~~Hello \\~~Test\\~~ World~~");
@@ -82,7 +82,7 @@ public class MarkdownUtilTest
     }
 
     @Test
-    public void testQuote()
+    void testQuote()
     {
         assertThat(quote("Hello World")).isEqualTo("> Hello World");
         assertThat(quote("Hello \n> Test World")).isEqualTo("> Hello \n> \\> Test World");
@@ -90,14 +90,14 @@ public class MarkdownUtilTest
     }
 
     @Test
-    public void testQuoteBlock()
+    void testQuoteBlock()
     {
         assertThat(quoteBlock("Hello World")).isEqualTo(">>> Hello World");
         assertThat(quoteBlock("Hello \n>>> Test World")).isEqualTo(">>> Hello \n>>> Test World");
     }
 
     @Test
-    public void testMaskedLink()
+    void testMaskedLink()
     {
         assertThat(maskedLink("Hello", "World")).isEqualTo("[Hello](World)");
         assertThat(maskedLink("Hello", "World)")).isEqualTo("[Hello](World%29)");

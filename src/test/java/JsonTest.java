@@ -24,7 +24,7 @@ public class JsonTest
     private static final String json = "{\"int\":10,\"long\":100,\"boolean\":true,\"string\":\"test\"}";
 
     @Test
-    public void testParse()
+    void testParse()
     {
         DataObject object = DataObject.fromJson(json);
         assertThat(object.getInt("int", 0)).isEqualTo(10);
@@ -34,7 +34,7 @@ public class JsonTest
     }
 
     @Test
-    public void testJsonToString()
+    void testJsonToString()
     {
         DataObject object = DataObject.fromJson(json);
         String result = object.toString();

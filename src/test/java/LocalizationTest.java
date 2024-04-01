@@ -36,7 +36,7 @@ public class LocalizationTest
     private static DataObject data;
 
     @BeforeAll
-    public static void setup()
+    static void setup()
     {
         final LocalizationFunction localizationFunction = ResourceBundleLocalizationFunction
                 .fromBundles("MyCommands", DiscordLocale.FRENCH)
@@ -69,28 +69,28 @@ public class LocalizationTest
     }
 
     @Test
-    public void commandLocalization()
+    void commandLocalization()
     {
         assertThat(DataPath.getString(data, "name_localizations.fr")).isEqualTo("ban");
         assertThat(DataPath.getString(data, "description_localizations.fr")).isEqualTo("Bannis un utilisateur");
     }
 
     @Test
-    public void subcommandLocalization()
+    void subcommandLocalization()
     {
         assertThat(navigateOptions("user").getObject("name_localizations").getString("fr")).isEqualTo("utilisateur");
         assertThat(navigateOptions("user").getObject("description_localizations").getString("fr")).isEqualTo("Bannis un utilisateur");
     }
 
     @Test
-    public void subcommandGroupLocalization()
+    void subcommandGroupLocalization()
     {
         assertThat(navigateOptions("user", "perm").getObject("name_localizations").getString("fr")).isEqualTo("permanent");
         assertThat(navigateOptions("user", "perm").getObject("description_localizations").getString("fr")).isEqualTo("Bannis un utilisateur pour toujours");
     }
 
     @Test
-    public void optionLocalization()
+    void optionLocalization()
     {
         assertThat(navigateOptions("user", "perm", "user").getObject("name_localizations").getString("fr")).isEqualTo("utilisateur");
         assertThat(navigateOptions("user", "perm", "user").getObject("description_localizations").getString("fr")).isEqualTo("L'utilisateur à bannir");
@@ -100,7 +100,7 @@ public class LocalizationTest
     }
 
     @Test
-    public void choiceLocalization()
+    void choiceLocalization()
     {
         assertThat(navigateChoice("1 Day", "user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("1 jour");
         assertThat(navigateChoice("7 Days", "user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("7 jours");
@@ -108,7 +108,7 @@ public class LocalizationTest
     }
 
     @Test
-    public void reconstructData()
+    void reconstructData()
     {
         final DataObject data = slashCommandData.toData();
         final DataObject reconstitutedData = CommandData.fromData(data).toData();

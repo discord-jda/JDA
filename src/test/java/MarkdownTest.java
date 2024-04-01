@@ -25,19 +25,19 @@ class MarkdownTest
     private MarkdownSanitizer markdown;
 
     @BeforeEach
-    public void setup()
+    void setup()
     {
         markdown = new MarkdownSanitizer().withStrategy(MarkdownSanitizer.SanitizationStrategy.REMOVE);
     }
 
     @Test
-    public void testComplex()
+    void testComplex()
     {
         assertThat(markdown.compute("**A_B||C~~D__E`F`__~~||_**")).isEqualTo("ABCDEF");
     }
 
     @Test
-    public void testTrivial()
+    void testTrivial()
     {
         assertThat(markdown.compute("")).isEqualTo("");
         assertThat(markdown.compute("Hello World ~~~~")).isEqualTo("Hello World ~~~~");
@@ -45,7 +45,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testBold()
+    void testBold()
     {
         assertThat(markdown.compute("**Hello**")).isEqualTo("Hello");
         assertThat(markdown.compute("**Hello")).isEqualTo("**Hello");
@@ -53,7 +53,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testItalics()
+    void testItalics()
     {
         assertThat(markdown.compute("*Hello*")).isEqualTo("Hello");
         assertThat(markdown.compute("_Hello_")).isEqualTo("Hello");
@@ -66,7 +66,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testBoldItalics()
+    void testBoldItalics()
     {
         assertThat(markdown.compute("***Hello***")).isEqualTo("Hello");
         assertThat(markdown.compute("***Hello")).isEqualTo("***Hello");
@@ -74,7 +74,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testUnderline()
+    void testUnderline()
     {
         assertThat(markdown.compute("__Hello__")).isEqualTo("Hello");
         assertThat(markdown.compute("__Hello")).isEqualTo("__Hello");
@@ -82,7 +82,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testStrike()
+    void testStrike()
     {
         assertThat(markdown.compute("~~Hello~~")).isEqualTo("Hello");
         assertThat(markdown.compute("~~Hello")).isEqualTo("~~Hello");
@@ -90,7 +90,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testSpoiler()
+    void testSpoiler()
     {
         assertThat(markdown.compute("||Hello||")).isEqualTo("Hello");
         assertThat(markdown.compute("||Hello")).isEqualTo("||Hello");
@@ -98,7 +98,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testMono()
+    void testMono()
     {
         assertThat(markdown.compute("`Hello`")).isEqualTo("Hello");
         assertThat(markdown.compute("`Hello")).isEqualTo("`Hello");
@@ -110,7 +110,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testMonoTwo()
+    void testMonoTwo()
     {
         assertThat(markdown.compute("``Hello``")).isEqualTo("Hello");
         assertThat(markdown.compute("``Hello")).isEqualTo("``Hello");
@@ -126,7 +126,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testBlock()
+    void testBlock()
     {
         assertThat(markdown.compute("```Hello```")).isEqualTo("Hello");
         assertThat(markdown.compute("```Hello")).isEqualTo("```Hello");
@@ -144,7 +144,7 @@ class MarkdownTest
     }
 
     @Test
-    public void testQuote()
+    void testQuote()
     {
         assertThat(markdown.compute("> Hello > World")).isEqualTo("Hello > World");
         assertThat(markdown.compute("> Hello\n> World")).isEqualTo("Hello\nWorld");
@@ -160,26 +160,26 @@ class IgnoreMarkdownTest
     private MarkdownSanitizer markdown;
 
     @BeforeEach
-    public void setup()
+    void setup()
     {
         markdown = new MarkdownSanitizer().withIgnored(0xFFFFFFFF);
     }
 
     @Test
-    public void testComplex()
+    void testComplex()
     {
         assertThat(markdown.compute("**A_B||C~~D__E`F`__~~||_**")).isEqualTo("**A_B||C~~D__E`F`__~~||_**");
     }
 
     @Test
-    public void testBold()
+    void testBold()
     {
         assertThat(markdown.compute("**Hello**")).isEqualTo("**Hello**");
         assertThat(markdown.compute("**Hello")).isEqualTo("**Hello");
     }
 
     @Test
-    public void testItalics()
+    void testItalics()
     {
         assertThat(markdown.compute("*Hello*")).isEqualTo("*Hello*");
         assertThat(markdown.compute("_Hello_")).isEqualTo("_Hello_");
@@ -189,7 +189,7 @@ class IgnoreMarkdownTest
     }
 
     @Test
-    public void testBoldItalics()
+    void testBoldItalics()
     {
         assertThat(markdown.compute("***Hello***")).isEqualTo("***Hello***");
         assertThat(markdown.compute("***Hello")).isEqualTo("***Hello");
@@ -197,28 +197,28 @@ class IgnoreMarkdownTest
     }
 
     @Test
-    public void testUnderline()
+    void testUnderline()
     {
         assertThat(markdown.compute("__Hello__")).isEqualTo("__Hello__");
         assertThat(markdown.compute("__Hello")).isEqualTo("__Hello");
     }
 
     @Test
-    public void testStrike()
+    void testStrike()
     {
         assertThat(markdown.compute("~~Hello~~")).isEqualTo("~~Hello~~");
         assertThat(markdown.compute("~~Hello")).isEqualTo("~~Hello");
     }
 
     @Test
-    public void testSpoiler()
+    void testSpoiler()
     {
         assertThat(markdown.compute("||Hello||")).isEqualTo("||Hello||");
         assertThat(markdown.compute("||Hello")).isEqualTo("||Hello");
     }
 
     @Test
-    public void testMono()
+    void testMono()
     {
         assertThat(markdown.compute("`Hello`")).isEqualTo("`Hello`");
         assertThat(markdown.compute("`Hello")).isEqualTo("`Hello");
@@ -228,7 +228,7 @@ class IgnoreMarkdownTest
     }
 
     @Test
-    public void testMonoTwo()
+    void testMonoTwo()
     {
         assertThat(markdown.compute("``Hello``")).isEqualTo("``Hello``");
         assertThat(markdown.compute("``Hello")).isEqualTo("``Hello");
@@ -241,7 +241,7 @@ class IgnoreMarkdownTest
     }
 
     @Test
-    public void testBlock()
+    void testBlock()
     {
         assertThat(markdown.compute("```Hello```")).isEqualTo("```Hello```");
         assertThat(markdown.compute("```Hello")).isEqualTo("```Hello");
@@ -256,7 +256,7 @@ class IgnoreMarkdownTest
     }
 
     @Test
-    public void testQuote()
+    void testQuote()
     {
         assertThat(markdown.compute("> Hello > World")).isEqualTo("> Hello > World");
         assertThat(markdown.compute("> Hello\n> World")).isEqualTo("> Hello\n> World");
@@ -272,19 +272,19 @@ class EscapeMarkdownTest
     private MarkdownSanitizer markdown;
 
     @BeforeEach
-    public void setup()
+    void setup()
     {
         markdown = new MarkdownSanitizer().withStrategy(MarkdownSanitizer.SanitizationStrategy.ESCAPE);
     }
 
     @Test
-    public void testComplex()
+    void testComplex()
     {
         assertThat(markdown.compute("**A_B||C~~D__E`F`__~~||_**")).isEqualTo("\\*\\*A\\_B\\||C\\~~D\\_\\_E\\`F\\`\\_\\_\\~~\\||\\_\\*\\*");
     }
 
     @Test
-    public void testBold()
+    void testBold()
     {
         assertThat(markdown.compute("**Hello**")).isEqualTo("\\*\\*Hello\\*\\*");
         assertThat(markdown.compute("**Hello")).isEqualTo("**Hello");
@@ -292,7 +292,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testItalics()
+    void testItalics()
     {
         assertThat(markdown.compute("*Hello*")).isEqualTo("\\*Hello\\*");
         assertThat(markdown.compute("_Hello_")).isEqualTo("\\_Hello\\_");
@@ -305,7 +305,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testBoldItalics()
+    void testBoldItalics()
     {
         assertThat(markdown.compute("***Hello***")).isEqualTo("\\*\\*\\*Hello\\*\\*\\*");
         assertThat(markdown.compute("***Hello")).isEqualTo("***Hello");
@@ -313,7 +313,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testUnderline()
+    void testUnderline()
     {
         assertThat(markdown.compute("__Hello__")).isEqualTo("\\_\\_Hello\\_\\_");
         assertThat(markdown.compute("__Hello")).isEqualTo("__Hello");
@@ -321,7 +321,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testStrike()
+    void testStrike()
     {
         assertThat(markdown.compute("~~Hello~~")).isEqualTo("\\~~Hello\\~~");
         assertThat(markdown.compute("~~Hello")).isEqualTo("~~Hello");
@@ -329,7 +329,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testSpoiler()
+    void testSpoiler()
     {
         assertThat(markdown.compute("||Hello||")).isEqualTo("\\||Hello\\||");
         assertThat(markdown.compute("||Hello")).isEqualTo("||Hello");
@@ -337,7 +337,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testMono()
+    void testMono()
     {
         assertThat(markdown.compute("`Hello`")).isEqualTo("\\`Hello\\`");
         assertThat(markdown.compute("`Hello")).isEqualTo("`Hello");
@@ -350,7 +350,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testMonoTwo()
+    void testMonoTwo()
     {
         assertThat(markdown.compute("``Hello``")).isEqualTo("\\``Hello\\``");
         assertThat(markdown.compute("``Hello")).isEqualTo("``Hello");
@@ -366,7 +366,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testBlock()
+    void testBlock()
     {
         assertThat(markdown.compute("```Hello```")).isEqualTo("\\```Hello\\```");
         assertThat(markdown.compute("```Hello")).isEqualTo("```Hello");
@@ -384,7 +384,7 @@ class EscapeMarkdownTest
     }
 
     @Test
-    public void testQuote()
+    void testQuote()
     {
         assertThat(markdown.compute("> Hello > World")).isEqualTo("\\> Hello > World");
         assertThat(markdown.compute("> Hello\n> World")).isEqualTo("\\> Hello\n\\> World");
@@ -399,7 +399,7 @@ class EscapeMarkdownTest
 class EscapeMarkdownAllTest
 {
     @Test
-    public void testAsterisk()
+    void testAsterisk()
     {
         assertThat(MarkdownSanitizer.escape("Hello*World", true)).isEqualTo("Hello\\*World");
         assertThat(MarkdownSanitizer.escape("Hello**World", true)).isEqualTo("Hello\\*\\*World");
@@ -411,7 +411,7 @@ class EscapeMarkdownAllTest
     }
 
     @Test
-    public void testUnderscore()
+    void testUnderscore()
     {
         assertThat(MarkdownSanitizer.escape("Hello_World", true)).isEqualTo("Hello\\_World");
         assertThat(MarkdownSanitizer.escape("Hello__World", true)).isEqualTo("Hello\\_\\_World");
@@ -423,7 +423,7 @@ class EscapeMarkdownAllTest
     }
 
     @Test
-    public void testCodeBlock()
+    void testCodeBlock()
     {
         assertThat(MarkdownSanitizer.escape("Hello`World", true)).isEqualTo("Hello\\`World");
         assertThat(MarkdownSanitizer.escape("Hello``World", true)).isEqualTo("Hello\\`\\`World");
@@ -435,7 +435,7 @@ class EscapeMarkdownAllTest
     }
 
     @Test
-    public void testSpoiler()
+    void testSpoiler()
     {
         assertThat(MarkdownSanitizer.escape("Hello||World", true)).isEqualTo("Hello\\|\\|World");
         assertThat(MarkdownSanitizer.escape("Hello|World", true)).isEqualTo("Hello|World");
@@ -445,14 +445,14 @@ class EscapeMarkdownAllTest
     }
 
     @Test
-    public void testStrike()
+    void testStrike()
     {
         assertThat(MarkdownSanitizer.escape("Hello~~World", true)).isEqualTo("Hello\\~\\~World");
         assertThat(MarkdownSanitizer.escape("Hello\\~\\~World", true)).isEqualTo("Hello\\~\\~World");
     }
 
     @Test
-    public void testQuote()
+    void testQuote()
     {
         assertThat(MarkdownSanitizer.escape("> Hello World", true)).isEqualTo("\\> Hello World");
         assertThat(MarkdownSanitizer.escape(">Hello World", true)).isEqualTo(">Hello World");

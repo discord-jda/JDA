@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 public class SelectMenuTests
 {
     @Test
-    public void testEntitySelectDefaultValueValid()
+    void testEntitySelectDefaultValueValid()
     {
         Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);
         builder.setDefaultValues(DefaultValue.role("1234"));
@@ -63,7 +63,7 @@ public class SelectMenuTests
     }
 
     @Test
-    public void testEntitySelectDefaultValueInvalid()
+    void testEntitySelectDefaultValueInvalid()
     {
         assertThatIllegalArgumentException().isThrownBy(() -> {
             Builder builder = EntitySelectMenu.create("customid", SelectTarget.ROLE);

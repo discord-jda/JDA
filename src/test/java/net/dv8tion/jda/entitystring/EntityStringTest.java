@@ -30,7 +30,7 @@ public class EntityStringTest
 {
     @Test
     @Order(1)
-    public void testSimple()
+    void testSimple()
     {
         assertThat(new EntityString(new AnEntity()))
             .hasToString("AnEntity");
@@ -40,7 +40,7 @@ public class EntityStringTest
 
     @Test
     @Order(2)
-    public void testClassNameAsString()
+    void testClassNameAsString()
     {
         assertThat(new EntityString("NotAnEntity"))
             .hasToString("NotAnEntity");
@@ -50,7 +50,7 @@ public class EntityStringTest
 
     @Test
     @Order(3)
-    public void testType()
+    void testType()
     {
         assertThat(new EntityString(new AnEntity()).setType("AType"))
             .hasToString("AnEntity[AType]");
@@ -62,7 +62,7 @@ public class EntityStringTest
 
     @Test
     @Order(4)
-    public void testMetadata()
+    void testMetadata()
     {
         assertThat(new EntityString(new AnEntity()).addMetadata(null, "Metadata1"))
             .hasToString("AnEntity(Metadata1)");
@@ -78,7 +78,7 @@ public class EntityStringTest
 
     @Test
     @Order(5)
-    public void testAll()
+    void testAll()
     {
         assertThat(new EntityString(new AnEntity())
                 .setName("AName")
@@ -123,7 +123,7 @@ public class EntityStringTest
 
     @Test
     @Order(6)
-    public void testSimpleSnowflake()
+    void testSimpleSnowflake()
     {
         assertThat(new EntityString(new ASnowflake()))
             .hasToString("ASnowflake(id=42)");
@@ -133,7 +133,7 @@ public class EntityStringTest
 
     @Test
     @Order(7)
-    public void testTypeSnowflake()
+    void testTypeSnowflake()
     {
         assertThat(new EntityString(new ASnowflake()).setType("AType"))
             .hasToString("ASnowflake[AType](id=42)");
@@ -145,7 +145,7 @@ public class EntityStringTest
 
     @Test
     @Order(8)
-    public void testMetadataSnowflake()
+    void testMetadataSnowflake()
     {
         assertThat(new EntityString(new ASnowflake()).addMetadata(null, "Metadata1"))
             .hasToString("ASnowflake(id=42, Metadata1)");
@@ -161,7 +161,7 @@ public class EntityStringTest
 
     @Test
     @Order(9)
-    public void testAllSnowflake()
+    void testAllSnowflake()
     {
         assertThat(new EntityString(new ASnowflake())
                 .setName("AName")
