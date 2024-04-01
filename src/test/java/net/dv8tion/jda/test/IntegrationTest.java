@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.test;
 
+import net.dv8tion.jda.api.requests.Method;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -62,9 +63,12 @@ public class IntegrationTest
         return body;
     }
 
-    protected void assertNextRequestBodyEquals(DataObject expectedBody)
+    protected void assertNextRequestEquals(Method method, String compiledRoute, DataObject expectedBody)
     {
         doNothing().when(requester).request(assertArg(request -> {
+            assertThat(request.getRoute().getMethod()).isEqualTo(method);
+            assertThat(request.getRoute().getCompiledRoute()).isEqualTo(compiledRoute);
+
             assertThat(request.getRawBody())
                     .isNotNull()
                     .isInstanceOf(DataObject.class);

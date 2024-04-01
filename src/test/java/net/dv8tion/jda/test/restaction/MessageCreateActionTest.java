@@ -28,13 +28,17 @@ import org.mockito.Mock;
 
 import javax.annotation.Nonnull;
 
+import static net.dv8tion.jda.api.requests.Method.POST;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class MessageCreateActionTest extends IntegrationTest
 {
-    public static final String FIXED_NONCE = "123456";
+    private static final String FIXED_CHANNEL_ID = "1234567890";
+    private static final String FIXED_NONCE = "123456";
+    private static final String ENDPOINT_URL = "channels/" + FIXED_CHANNEL_ID + "/messages";
+
     @Mock
     protected MessageChannel channel;
 
@@ -59,7 +63,7 @@ public class MessageCreateActionTest extends IntegrationTest
     @BeforeEach
     void setupChannel()
     {
-        when(channel.getId()).thenReturn("1234567890");
+        when(channel.getId()).thenReturn(FIXED_CHANNEL_ID);
         when(channel.getJDA()).thenReturn(jda);
     }
 
@@ -75,7 +79,8 @@ public class MessageCreateActionTest extends IntegrationTest
     @Test
     void testContentOnly()
     {
-        assertNextRequestBodyEquals(defaultMessageRequest().put("content", "test content"));
+        assertNextRequestEquals(POST, ENDPOINT_URL, defaultMessageRequest()
+            .put("content", "test content"));
 
         new MessageCreateActionImpl(channel)
             .setContent("test content")
@@ -87,7 +92,7 @@ public class MessageCreateActionTest extends IntegrationTest
     @Test
     void testEmbedOnly()
     {
-        assertNextRequestBodyEquals(defaultMessageRequest()
+        assertNextRequestEquals(POST, ENDPOINT_URL, defaultMessageRequest()
             .put("embeds", DataArray.empty()
                 .add(DataObject.empty().put("description", "test description"))));
 
