@@ -22,11 +22,13 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 import net.dv8tion.jda.api.interactions.commands.localization.ResourceBundleLocalizationFunction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.DataPath;
+import net.dv8tion.jda.util.PrettyRepresentation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,31 +40,31 @@ public class LocalizationTest
     @BeforeAll
     static void setup()
     {
-        final LocalizationFunction localizationFunction = ResourceBundleLocalizationFunction
+        LocalizationFunction localizationFunction = ResourceBundleLocalizationFunction
                 .fromBundles("MyCommands", DiscordLocale.FRENCH)
                 .build();
 
         slashCommandData = Commands.slash("ban", "Bans someone").addSubcommandGroups(
-                new SubcommandGroupData("user", "Bans a member").addSubcommands(
-                        new SubcommandData("perm", "Bans an user permanently").addOptions(
-                                new OptionData(OptionType.STRING, "user", "The user to ban"),
-                                new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
-                                        .addChoices(
-                                                new Command.Choice("1 Day", "1"),
-                                                new Command.Choice("7 Days", "7"),
-                                                new Command.Choice("14 Days", "14")
-                                        )
-                        ),
-                        new SubcommandData("temp", "Bans an user temporarily").addOptions(
-                                new OptionData(OptionType.STRING, "user", "The user to ban"),
-                                new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
-                                        .addChoices(
-                                                new Command.Choice("1 Day", "1"),
-                                                new Command.Choice("7 Days", "7"),
-                                                new Command.Choice("14 Days", "14")
-                                        )
+            new SubcommandGroupData("user", "Bans a member").addSubcommands(
+                new SubcommandData("perm", "Bans a user permanently").addOptions(
+                    new OptionData(OptionType.STRING, "user", "The user to ban"),
+                    new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
+                        .addChoices(
+                            new Command.Choice("1 Day", "1"),
+                            new Command.Choice("7 Days", "7"),
+                            new Command.Choice("14 Days", "14")
+                        )
+                ),
+                new SubcommandData("temp", "Bans a user temporarily").addOptions(
+                    new OptionData(OptionType.STRING, "user", "The user to ban"),
+                    new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
+                        .addChoices(
+                            new Command.Choice("1 Day", "1"),
+                            new Command.Choice("7 Days", "7"),
+                            new Command.Choice("14 Days", "14")
                         )
                 )
+            )
         ).setLocalizationFunction(localizationFunction);
 
         data = slashCommandData.toData();
@@ -71,40 +73,103 @@ public class LocalizationTest
     @Test
     void commandLocalization()
     {
-        assertThat(DataPath.getString(data, "name_localizations.fr")).isEqualTo("ban");
-        assertThat(DataPath.getString(data, "description_localizations.fr")).isEqualTo("Bannis un utilisateur");
+        assertThat(data.getString("name")).isEqualTo("ban");
+        assertThat(data.getString("description")).isEqualTo("Bans someone");
+
+        assertThat(data.getObject("name_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "ban"));
+        assertThat(data.getObject("description_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "Bannis un utilisateur"));
     }
 
     @Test
     void subcommandLocalization()
     {
-        assertThat(navigateOptions("user").getObject("name_localizations").getString("fr")).isEqualTo("utilisateur");
-        assertThat(navigateOptions("user").getObject("description_localizations").getString("fr")).isEqualTo("Bannis un utilisateur");
+        DataObject subcommandGroup = getOption(data, "user");
+
+        assertThat(subcommandGroup.getString("name")).isEqualTo("user");
+        assertThat(subcommandGroup.getString("description")).isEqualTo("Bans a member");
+
+        assertThat(subcommandGroup.getObject("name_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "utilisateur"));
+        assertThat(subcommandGroup.getObject("description_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "Bannis un utilisateur"));
     }
 
     @Test
     void subcommandGroupLocalization()
     {
-        assertThat(navigateOptions("user", "perm").getObject("name_localizations").getString("fr")).isEqualTo("permanent");
-        assertThat(navigateOptions("user", "perm").getObject("description_localizations").getString("fr")).isEqualTo("Bannis un utilisateur pour toujours");
+        DataObject subcommandGroup = getOption(data, "user");
+        DataObject subcommand = getOption(subcommandGroup, "perm");
+
+        assertThat(subcommand.getString("name")).isEqualTo("perm");
+        assertThat(subcommand.getString("description")).isEqualTo("Bans a user permanently");
+
+        assertThat(subcommand.getObject("name_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "permanent"));
+        assertThat(subcommand.getObject("description_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "Bannis un utilisateur pour toujours"));
     }
 
     @Test
     void optionLocalization()
     {
-        assertThat(navigateOptions("user", "perm", "user").getObject("name_localizations").getString("fr")).isEqualTo("utilisateur");
-        assertThat(navigateOptions("user", "perm", "user").getObject("description_localizations").getString("fr")).isEqualTo("L'utilisateur à bannir");
+        DataObject subcommandGroup = getOption(data, "user");
+        DataObject subcommand = getOption(subcommandGroup, "perm");
+        DataObject userOption = getOption(subcommand, "user");
+        DataObject delDaysOption = getOption(subcommand, "del_days");
 
-        assertThat(navigateOptions("user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("nb_jours");
-        assertThat(navigateOptions("user", "perm", "del_days").getObject("description_localizations").getString("fr")).isEqualTo("Nombre de jours de messages à supprimer");
+        assertThat(userOption.getString("name")).isEqualTo("user");
+        assertThat(userOption.getString("description")).isEqualTo("The user to ban");
+
+        assertThat(delDaysOption.getString("name")).isEqualTo("del_days");
+        assertThat(delDaysOption.getString("description")).isEqualTo("The amount of days to delete messages");
+
+        assertThat(userOption.getObject("name_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "utilisateur"));
+        assertThat(userOption.getObject("description_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "L'utilisateur à bannir"));
+
+        assertThat(delDaysOption.getObject("name_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "nb_jours"));
+        assertThat(delDaysOption.getObject("description_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "Nombre de jours de messages à supprimer"));
     }
 
     @Test
     void choiceLocalization()
     {
-        assertThat(navigateChoice("1 Day", "user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("1 jour");
-        assertThat(navigateChoice("7 Days", "user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("7 jours");
-        assertThat(navigateChoice("14 Days", "user", "perm", "del_days").getObject("name_localizations").getString("fr")).isEqualTo("14 jours");
+        DataObject subcommandGroup = getOption(data, "user");
+        DataObject subcommand = getOption(subcommandGroup, "perm");
+        DataObject delDaysOption = getOption(subcommand, "del_days");
+
+        DataObject days1 = getChoice(delDaysOption, "1 Day");
+        assertThat(days1.getString("name")).isEqualTo("1 Day");
+        assertThat(days1.getObject("name_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "1 jour"));
+
+        DataObject days7 = getChoice(delDaysOption, "7 Days");
+        assertThat(days7.getString("name")).isEqualTo("7 Days");
+        assertThat(days7.getObject("name_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "7 jours"));
+
+        DataObject days14 = getChoice(delDaysOption, "14 Days");
+        assertThat(days14.getString("name")).isEqualTo("14 Days");
+        assertThat(days14.getObject("name_localizations"))
+            .withRepresentation(new PrettyRepresentation())
+            .isEqualTo(DataObject.empty().put("fr", "14 jours"));
     }
 
     @Test
@@ -115,26 +180,28 @@ public class LocalizationTest
         assertThat(reconstitutedData.toMap()).isEqualTo(data.toMap());
     }
 
-    private DataObject navigateOptions(String... names)
+    private static DataObject getOption(DataObject root, String name)
     {
-        DataObject o = data;
-        for (String name : names)
-        {
-            o = o.getArray("options").stream(DataArray::getObject)
-                    .filter(s -> s.getString("name").equals(name))
-                    .findAny()
-                    .orElseThrow(() -> new IllegalArgumentException("Could not find an option with path: " + Arrays.toString(names)));
-        }
-        return o;
+        Stream<DataObject> options = root.getArray("options")
+                .stream(DataArray::getObject)
+                .filter(option -> option.getString("name").equals(name));
+        return assertExactlyOne(options);
     }
 
-    private DataObject navigateChoice(String choiceName, String... names)
+    private static DataObject getChoice(DataObject root, String name)
     {
-        return navigateOptions(names)
-                .getArray("choices")
+        Stream<DataObject> choices = root.getArray("choices")
                 .stream(DataArray::getObject)
-                .filter(s -> s.getString("name").equals(choiceName))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Could not find choice '" + choiceName + "' with path: " + Arrays.toString(names)));
+                .filter(choice -> choice.getString("name").equals(name));
+        return assertExactlyOne(choices);
+    }
+
+    private static <T> T assertExactlyOne(Stream<T> stream)
+    {
+        List<T> results = stream.collect(Collectors.toList());
+        assertThat(results)
+            .withRepresentation(new PrettyRepresentation())
+            .hasSize(1);
+        return results.get(0);
     }
 }
