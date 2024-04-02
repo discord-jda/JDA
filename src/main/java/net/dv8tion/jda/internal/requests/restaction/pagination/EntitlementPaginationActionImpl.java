@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -53,13 +52,9 @@ public class EntitlementPaginationActionImpl
 
     @Nonnull
     @Override
-    public EntitlementPaginationAction order(@Nonnull PaginationAction.PaginationOrder order)
+    public EnumSet<PaginationOrder> getSupportedOrders()
     {
-        if (order == PaginationOrder.BACKWARD && lastKey == 0)
-            lastKey = Long.MAX_VALUE;
-        else if (order == PaginationOrder.FORWARD && lastKey == Long.MAX_VALUE)
-            lastKey = 0;
-        return super.order(order);
+        return EnumSet.of(PaginationOrder.BACKWARD, PaginationOrder.FORWARD);
     }
 
     @Nonnull
