@@ -3629,8 +3629,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be banned due to a permission discrepancy</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     *     <br>The user does not exist</li>
      * </ul>
      *
      * @param  user
@@ -3660,6 +3660,90 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> ban(@Nonnull UserSnowflake user, int deletionTimeframe, @Nonnull TimeUnit unit);
+
+    /**
+     * Bans up to 200 of the provided users.
+     * <br>To set a ban reason, use {@link AuditableRestAction#reason(String)}.
+     *
+     * <p>The {@link BulkBanResponse} includes a list of {@link BulkBanResponse#getFailedUsers() failed users},
+     * which is populated with users that could not be banned, for instance due to some internal server error or permission issues.
+     * This list of failed users also includes all users that were already banned.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FAILED_TO_BAN_USERS FAILED_TO_BAN_USERS}
+     *     <br>None of the users could be banned</li>
+     * </ul>
+     *
+     * @param  users
+     *         The users to ban
+     * @param  deletionTime
+     *         Delete recent messages of the given timeframe (for instance the last hour with {@code Duration.ofHours(1)})
+     *
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If any of the provided users is the guild owner or has a higher or equal role position
+     * @throws InsufficientPermissionException
+     *         If the bot does not have {@link Permission#BAN_MEMBERS} or {@link Permission#MANAGE_SERVER}
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the users collection is null or contains null</li>
+     *             <li>If the deletionTime is negative</li>
+     *         </ul>
+     *
+     * @return {@link AuditableRestAction} - Type: {@link BulkBanResponse}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<UserSnowflake> users, @Nullable Duration deletionTime);
+
+    /**
+     * Bans up to 200 of the provided users.
+     * <br>To set a ban reason, use {@link AuditableRestAction#reason(String)}.
+     *
+     * <p>The {@link BulkBanResponse} includes a list of {@link BulkBanResponse#getFailedUsers() failed users},
+     * which is populated with users that could not be banned, for instance due to some internal server error or permission issues.
+     * This list of failed users also includes all users that were already banned.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FAILED_TO_BAN_USERS FAILED_TO_BAN_USERS}
+     *     <br>None of the users could be banned</li>
+     * </ul>
+     *
+     * @param  users
+     *         The users to ban
+     * @param  deletionTimeframe
+     *         The timeframe for the history of messages that will be deleted. (seconds precision)
+     * @param  unit
+     *         Timeframe unit as a {@link TimeUnit} (for example {@code ban(user, 7, TimeUnit.DAYS)}).
+     *
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If any of the provided users is the guild owner or has a higher or equal role position
+     * @throws InsufficientPermissionException
+     *         If the bot does not have {@link Permission#BAN_MEMBERS} or {@link Permission#MANAGE_SERVER}
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If null is provided</li>
+     *             <li>If the deletionTimeframe is negative</li>
+     *         </ul>
+     *
+     * @return {@link AuditableRestAction} - Type: {@link BulkBanResponse}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<UserSnowflake> users, int deletionTimeframe, @Nonnull TimeUnit unit)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        return ban(users, Duration.ofSeconds(unit.toSeconds(deletionTimeframe)));
+    }
 
     /**
      * Unbans the specified {@link UserSnowflake} from this Guild.

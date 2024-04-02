@@ -35,6 +35,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
 
     protected String name;
     protected Icon avatar;
+    protected Icon banner;
 
     /**
      * Creates a new AccountManager instance
@@ -63,6 +64,8 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         super.reset(fields);
         if ((fields & AVATAR) == AVATAR)
             avatar = null;
+        if ((fields & BANNER) == BANNER)
+            banner = null;
         return this;
     }
 
@@ -110,6 +113,16 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public AccountManager setBanner(Icon banner)
+    {
+        this.banner = banner;
+        set |= BANNER;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -123,6 +136,8 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
             body.put("username", name);
         if (shouldUpdate(AVATAR))
             body.put("avatar", avatar == null ? null : avatar.getEncoding());
+        if (shouldUpdate(BANNER))
+            body.put("banner", banner == null ? null : banner.getEncoding());
 
         reset();
         return getRequestBody(body);

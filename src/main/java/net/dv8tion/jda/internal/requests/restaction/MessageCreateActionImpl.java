@@ -35,6 +35,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 
 public class MessageCreateActionImpl extends RestActionImpl<Message> implements MessageCreateAction, MessageCreateBuilderMixin<MessageCreateAction>
 {
+    protected static final SecureRandom nonceGenerator = new SecureRandom();
     protected static boolean defaultFailOnInvalidReply = false;
 
     private final MessageChannel channel;
@@ -83,8 +85,11 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         try (MessageCreateData data = builder.build())
         {
             DataObject json = data.toData();
-            if (nonce != null)
+            json.put("enforce_nonce", true);
+            if (nonce != null && !nonce.isEmpty())
                 json.put("nonce", nonce);
+            else
+                json.put("nonce", Long.toUnsignedString(nonceGenerator.nextLong()));
             if (stickers != null && !stickers.isEmpty())
                 json.put("sticker_ids", stickers);
             if (messageReferenceId != null)
