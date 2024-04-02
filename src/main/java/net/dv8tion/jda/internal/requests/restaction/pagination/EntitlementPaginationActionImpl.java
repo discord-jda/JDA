@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -32,9 +31,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class EntitlementPaginationActionImpl
     extends PaginationActionImpl<Entitlement, EntitlementPaginationAction>
@@ -55,13 +52,9 @@ public class EntitlementPaginationActionImpl
 
     @Nonnull
     @Override
-    public EntitlementPaginationAction order(@Nonnull PaginationAction.PaginationOrder order)
+    public EnumSet<PaginationOrder> getSupportedOrders()
     {
-        if (order == PaginationOrder.BACKWARD && lastKey == 0)
-            lastKey = Long.MAX_VALUE;
-        else if (order == PaginationOrder.FORWARD && lastKey == Long.MAX_VALUE)
-            lastKey = 0;
-        return super.order(order);
+        return EnumSet.of(PaginationOrder.BACKWARD, PaginationOrder.FORWARD);
     }
 
     @Nonnull
@@ -96,6 +89,22 @@ public class EntitlementPaginationActionImpl
         this.skuIds.clear();
 
         Collections.addAll(this.skuIds, skuIds);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public EntitlementPaginationAction skuIds(@Nonnull Collection<String> skuIds)
+    {
+        Checks.noneNull(skuIds, "skuIds");
+
+        this.skuIds.clear();
+        for (String skuId : skuIds)
+        {
+            Checks.isSnowflake(skuId, "skuId");
+            this.skuIds.add(skuId);
+        }
+
         return this;
     }
 
