@@ -278,7 +278,8 @@ public class ExTermDecoder
         int arity = buffer.getInt();
         while (arity-- > 0)
         {
-            String key = (String) unpack0(buffer);
+            Object rawKey = unpack0(buffer);
+            String key = String.valueOf(rawKey);
             Object value = unpack0(buffer);
             map.put(key, value);
         }
