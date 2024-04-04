@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.entitystring;
+package net.dv8tion.jda.test.entitystring;
 
-public class AnEntity
+import net.dv8tion.jda.api.entities.ISnowflake;
+
+public class ASnowflake implements ISnowflake
 {
-
+    @Override
+    public long getIdLong()
+    {
+        return 42;
+    }
 }

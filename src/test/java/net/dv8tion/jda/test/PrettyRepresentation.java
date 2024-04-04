@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.entitystring;
+package net.dv8tion.jda.test;
 
-import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import org.assertj.core.presentation.StandardRepresentation;
 
-public class ASnowflake implements ISnowflake
+public class PrettyRepresentation extends StandardRepresentation
 {
     @Override
-    public long getIdLong()
+    protected String fallbackToStringOf(Object object)
     {
-        return 42;
+        if (object instanceof DataObject)
+            return ((DataObject) object).toPrettyString();
+        else if (object instanceof DataArray)
+            return ((DataArray) object).toPrettyString();
+        return object.toString();
     }
 }

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda;
+package net.dv8tion.jda.test.compliance;
 
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.self.SelfUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
@@ -31,7 +30,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EventConsistencyTest
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+
+public class EventConsistencyComplianceTest
 {
     static Set<Class<? extends GenericEvent>> eventTypes;
     static Set<Class<? extends GenericEvent>> excludedTypes;
@@ -61,7 +63,9 @@ public class EventConsistencyTest
                 continue;
             String name = type.getSimpleName();
             String methodName = "on" + name.substring(0, name.length() - "Event".length());
-            Assertions.assertDoesNotThrow(() -> adapter.getDeclaredMethod(methodName, type), "Method for event " + type + " is missing!");
+            assertThatCode(() -> adapter.getDeclaredMethod(methodName, type))
+                .as("Method for event " + type + " is missing!")
+                .doesNotThrowAnyException();
             found.add(methodName);
         }
 
@@ -69,7 +73,9 @@ public class EventConsistencyTest
         {
             if (!method.isAccessible() || method.getAnnotation(Deprecated.class) != null)
                 continue;
-            Assertions.assertTrue(found.contains(method.getName()), "Dangling method found in ListenerAdapter " + method.getName());
+            assertThat(found.contains(method.getName()))
+                .as("Dangling method found in ListenerAdapter " + method.getName())
+                .isTrue();
         }
     }
 }

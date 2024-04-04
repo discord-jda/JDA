@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda;
+package net.dv8tion.jda.test.compliance;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -30,7 +29,10 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ChannelConsistencyTest
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+
+public class ChannelConsistencyComplianceTest
 {
     private static Set<String> getMethodNames(Class<?> clazz)
     {
@@ -39,11 +41,11 @@ public class ChannelConsistencyTest
 
     private static String getChannelName(ChannelType type)
     {
-        return type.name().substring(0, 1) + type.name().substring(1).toLowerCase(Locale.ROOT);
+        return type.name().charAt(0) + type.name().substring(1).toLowerCase(Locale.ROOT);
     }
 
     @Test
-    public void checkCreateChannelMethods()
+    void checkCreateChannelMethods()
     {
         Set<String> guildMethods = getMethodNames(Guild.class);
 
@@ -57,7 +59,7 @@ public class ChannelConsistencyTest
         {
             String channelName = getChannelName(type);
             String methodName = "create" + channelName + "Channel";
-            Assertions.assertTrue(guildMethods.contains(methodName), "Missing method Guild#" + methodName);
+            assertThat(guildMethods).contains(methodName);
         }
 
         Set<String> categoryMethods = getMethodNames(Category.class);
@@ -66,12 +68,12 @@ public class ChannelConsistencyTest
         {
             String channelName = getChannelName(type);
             String methodName = "create" + channelName + "Channel";
-            Assertions.assertTrue(categoryMethods.contains(methodName), "Missing method Category#" + methodName);
+            assertThat(categoryMethods).contains(methodName);
         }
     }
 
     @Test
-    public void checkCacheAccessMethods()
+    void checkCacheAccessMethods()
     {
         Set<String> jdaMethods = getMethodNames(IGuildChannelContainer.class);
         Set<String> categoryMethods = getMethodNames(Category.class);
@@ -87,22 +89,22 @@ public class ChannelConsistencyTest
             String channelName = getChannelName(type);
 
             String methodName = "get" + channelName + "ChannelCache";
-            Assertions.assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
+            assertThat(jdaMethods).contains(methodName);
 
             methodName = "get" + channelName + "ChannelsByName";
-            Assertions.assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
+            assertThat(jdaMethods).contains(methodName);
 
             methodName = "get" + channelName + "ChannelById";
-            Assertions.assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
+            assertThat(jdaMethods).contains(methodName);
 
             methodName = "get" + channelName + "Channels";
-            Assertions.assertTrue(jdaMethods.contains(methodName), "Missing method IGuildChannelContainer#" + methodName);
-            Assertions.assertTrue(categoryMethods.contains(methodName), "Missing method Category#" + methodName);
+            assertThat(jdaMethods).contains(methodName);
+            assertThat(categoryMethods).contains(methodName);
         }
     }
 
     @Test
-    public void checkManagerExists()
+    void checkManagerExists()
     {
         EnumSet<ChannelType> editable = EnumSet.complementOf(EnumSet.of(
             ChannelType.PRIVATE, ChannelType.GROUP, ChannelType.CATEGORY,
@@ -114,9 +116,9 @@ public class ChannelConsistencyTest
         {
             String channelName = getChannelName(type);
 
-            Assertions.assertDoesNotThrow(() -> {
-                Class.forName("net.dv8tion.jda.api.managers.channel.concrete." + channelName + "ChannelManager");
-            }, "Missing manager interface for ChannelType." + type);
+            assertThatCode(() ->
+                Class.forName("net.dv8tion.jda.api.managers.channel.concrete." + channelName + "ChannelManager")
+            ).as("Missing manager interface for ChannelType." + type).doesNotThrowAnyException();
         }
     }
 }
