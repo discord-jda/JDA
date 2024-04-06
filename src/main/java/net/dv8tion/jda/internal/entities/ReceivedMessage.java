@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
@@ -51,7 +52,9 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.ErrorMapper;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageEditActionImpl;
@@ -774,7 +777,9 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
-            return new AuditableRestActionImpl<>(getJDA(), route);
+            final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
+            action.setErrorMapper(getUnknownWebhookErrorMapper());
+            return action;
         }
 
         SelfUser self = getJDA().getSelfUser();
@@ -839,7 +844,9 @@ public class ReceivedMessage implements Message
             newFlags &= ~suppressionValue;
         DataObject body = DataObject.empty().put("flags", newFlags);
 
-        return new AuditableRestActionImpl<>(api, route, body);
+        final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(api, route, body);
+        action.setErrorMapper(getUnknownWebhookErrorMapper());
+        return action;
     }
 
     @Nonnull
@@ -980,8 +987,27 @@ public class ReceivedMessage implements Message
     @Nonnull
     private MessageEditActionImpl editRequest()
     {
-        return hasChannel()
+        final MessageEditActionImpl messageEditAction = hasChannel()
                 ? new MessageEditActionImpl(getChannel(), getId())
                 : new MessageEditActionImpl(getJDA(), hasGuild() ? getGuild() : null, getChannelId(), getId());
+
+        messageEditAction.setErrorMapper(getUnknownWebhookErrorMapper());
+        return messageEditAction;
+    }
+
+    private ErrorMapper getUnknownWebhookErrorMapper()
+    {
+        if (!isWebhookRequest())
+            return null;
+
+        return (response, request, exception) ->
+        {
+            if (webhook instanceof InteractionHookImpl
+                    && !((InteractionHookImpl) webhook).isAck()
+                    && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+                return new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration", exception);
+            else
+                return null;
+        };
     }
 }
