@@ -19,6 +19,8 @@ package net.dv8tion.jda.test.entities.guild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Method;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -32,14 +34,17 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.test.Constants;
 import net.dv8tion.jda.test.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -68,31 +73,90 @@ public class GuildActionsTest extends IntegrationTest
         }
     }
 
-    @Test
-    void testBulkBanDuplicates()
+    protected void hasPermission(boolean has)
     {
-        hasPermission();
-
-        Duration duration = Duration.ofSeconds(random.nextInt(10000));
-        String reason = Helpers.format("User %d was banned by %d for %s", Constants.BUTLER_USER_ID, Constants.MINN_USER_ID, duration);
-        List<UserSnowflake> users = Arrays.asList(
-            User.fromId(Constants.BUTLER_USER_ID),
-            User.fromId(Constants.BUTLER_USER_ID)
-        );
-
-        assertThatNextRequest()
-            .hasMethod(Method.POST)
-            .hasCompiledRoute("guilds/" + Constants.GUILD_ID + "/bulk-ban")
-            .hasAuditReason(reason)
-            .hasBodyEqualTo(DataObject.empty()
-                .put("delete_message_seconds", duration.getSeconds())
-                .put("user_ids", DataArray.empty().add(Constants.BUTLER_USER_ID)));
-
-        guild.ban(users, duration).reason(reason).queue();
+        when(selfMember.hasPermission(any(Permission[].class))).thenReturn(has);
     }
 
-    protected void hasPermission()
+    @Nested
+    class BulkBan
     {
-        when(selfMember.hasPermission(any(Permission[].class))).thenReturn(true);
+        @Test
+        void testMissingPermissions()
+        {
+            hasPermission(false);
+
+            assertThatThrownBy(() -> guild.ban(Collections.emptyList(), Duration.ZERO))
+                .isInstanceOf(InsufficientPermissionException.class)
+                .hasMessage("Cannot perform action due to a lack of Permission. Missing permission: " + Permission.BAN_MEMBERS);
+        }
+
+        @Test
+        void testBanOwner()
+        {
+            hasPermission(true);
+
+            guild.setOwnerId(Constants.BUTLER_USER_ID);
+
+            Set<UserSnowflake> users = Collections.singleton(User.fromId(Constants.BUTLER_USER_ID));
+
+            assertThatThrownBy(() -> guild.ban(users, Duration.ZERO))
+                .isInstanceOf(HierarchyException.class)
+                .hasMessage("Cannot ban the owner of a guild.");
+        }
+
+        @Test
+        void testInvalidInputs()
+        {
+            hasPermission(true);
+
+            Set<UserSnowflake> users = Collections.singleton(null);
+
+            assertThatIllegalArgumentException()
+                .isThrownBy(() -> guild.ban(users, Duration.ZERO).queue())
+                .withMessage("Users may not be null");
+            assertThatIllegalArgumentException()
+                .isThrownBy(() -> guild.ban(null, null).queue())
+                .withMessage("Users may not be null");
+            assertThatIllegalArgumentException()
+                .isThrownBy(() -> guild.ban(Collections.emptyList(), Duration.ofSeconds(-1)).queue())
+                .withMessage("Deletion time cannot be negative");
+            assertThatIllegalArgumentException()
+                .isThrownBy(() -> guild.ban(Collections.emptyList(), Duration.ofDays(100)).queue())
+                .withMessage("Deletion timeframe must not be larger than 7 days. Provided: 8640000 seconds");
+            assertThatIllegalArgumentException()
+                .isThrownBy(() ->
+                    guild.ban(
+                        LongStream.range(1, 300)
+                            .map(i -> random.nextLong())
+                            .mapToObj(User::fromId)
+                            .collect(Collectors.toList()),
+                        null
+                    ).queue()
+                ).withMessage("Cannot ban more than 200 users at once");
+        }
+
+        @Test
+        void testDuplicates()
+        {
+            hasPermission(true);
+
+            Duration duration = Duration.ofSeconds(random.nextInt(10000));
+            String reason = Helpers.format("User %d was banned by %d for %s", Constants.BUTLER_USER_ID, Constants.MINN_USER_ID, duration);
+            List<UserSnowflake> users = Arrays.asList(
+                User.fromId(Constants.BUTLER_USER_ID),
+                User.fromId(Constants.BUTLER_USER_ID)
+            );
+
+            assertThatNextRequest()
+                .hasMethod(Method.POST)
+                .hasCompiledRoute("guilds/" + Constants.GUILD_ID + "/bulk-ban")
+                .hasAuditReason(reason)
+                .hasBodyEqualTo(DataObject.empty()
+                    .put("delete_message_seconds", duration.getSeconds())
+                    .put("user_ids", DataArray.empty().add(Constants.BUTLER_USER_ID)));
+
+            guild.ban(users, duration).reason(reason).queue();
+        }
     }
 }

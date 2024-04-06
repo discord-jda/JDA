@@ -33,7 +33,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 public class IntegrationTest
 {
-    protected Random random = new Random(4242);
+    protected Random random = new Random();
     @Mock
     protected JDAImpl jda;
     @Mock
@@ -47,6 +47,7 @@ public class IntegrationTest
     @BeforeEach
     protected final void setup()
     {
+        random.setSeed(4242);
         expectedRequestCount = 0;
         closeable = openMocks(this);
         when(jda.getRequester()).thenReturn(requester);
