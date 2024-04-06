@@ -79,8 +79,10 @@ public class MessageCreateActionTest extends IntegrationTest
     @Test
     void testContentOnly()
     {
-        assertNextRequestEquals(POST, ENDPOINT_URL, defaultMessageRequest()
-            .put("content", "test content"));
+        assertThatNextRequest()
+            .hasMethod(POST)
+            .hasCompiledRoute(ENDPOINT_URL)
+            .hasBodyEqualTo(defaultMessageRequest().put("content", "test content"));
 
         new MessageCreateActionImpl(channel)
             .setContent("test content")
@@ -92,9 +94,12 @@ public class MessageCreateActionTest extends IntegrationTest
     @Test
     void testEmbedOnly()
     {
-        assertNextRequestEquals(POST, ENDPOINT_URL, defaultMessageRequest()
-            .put("embeds", DataArray.empty()
-                .add(DataObject.empty().put("description", "test description"))));
+        assertThatNextRequest()
+            .hasMethod(POST)
+            .hasCompiledRoute(ENDPOINT_URL)
+            .hasBodyEqualTo(defaultMessageRequest()
+                .put("embeds", DataArray.empty()
+                    .add(DataObject.empty().put("description", "test description"))));
 
         new MessageCreateActionImpl(channel)
             .setEmbeds(new EmbedBuilder()

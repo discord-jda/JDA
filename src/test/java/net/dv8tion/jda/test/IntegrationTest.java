@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.test;
 
-import net.dv8tion.jda.api.requests.Method;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -27,9 +26,6 @@ import org.mockito.Mock;
 import javax.annotation.Nonnull;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.assertArg;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -63,20 +59,9 @@ public class IntegrationTest
         return body;
     }
 
-    protected void assertNextRequestEquals(Method method, String compiledRoute, DataObject expectedBody)
+    protected RestActionAssertions assertThatNextRequest()
     {
-        doNothing().when(requester).request(assertArg(request -> {
-            assertThat(request.getRoute().getMethod()).isEqualTo(method);
-            assertThat(request.getRoute().getCompiledRoute()).isEqualTo(compiledRoute);
-
-            assertThat(request.getRawBody())
-                    .isNotNull()
-                    .isInstanceOf(DataObject.class);
-            DataObject body = normalizeRequestBody((DataObject) request.getRawBody());
-
-            assertThat(body)
-                .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(expectedBody);
-        }));
+        return RestActionAssertions.assertThatNextAction(requester)
+                .withNormalizedBody(this::normalizeRequestBody);
     }
 }
