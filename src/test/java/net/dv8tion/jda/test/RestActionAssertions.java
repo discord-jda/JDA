@@ -24,9 +24,7 @@ import org.jetbrains.annotations.Contract;
 import org.mockito.ThrowingConsumer;
 
 import javax.annotation.Nonnull;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,6 +94,28 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
                 .as("RestAction should send request using expected REST endpoint")
                 .isEqualTo(route)
         );
+    }
+
+    @Contract("_->this")
+    public RestActionAssertions hasQueryParams(@Nonnull Object... params)
+    {
+        assertThat(params.length).isEven();
+
+        Map<String, String> expectedQuery = new LinkedHashMap<>();
+
+        for (int i = 0; i < params.length; i += 2)
+            expectedQuery.put(String.valueOf(params[i]), String.valueOf(params[i + 1]));
+
+        return checkAssertions(request -> {
+            Map<String, String> actualQuery = new LinkedHashMap<>();
+            String[] query = request.getRoute().getCompiledRoute().split("[?&=]");
+
+            for (int i = 1; i < query.length; i += 2)
+                actualQuery.put(query[i], query[i + 1]);
+
+            assertThat(actualQuery)
+                .containsExactlyEntriesOf(expectedQuery);
+        });
     }
 
     @Contract("_->this")
