@@ -36,6 +36,10 @@ import net.dv8tion.jda.api.events.emoji.GenericEmojiEvent;
 import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateNameEvent;
 import net.dv8tion.jda.api.events.emoji.update.EmojiUpdateRolesEvent;
 import net.dv8tion.jda.api.events.emoji.update.GenericEmojiUpdateEvent;
+import net.dv8tion.jda.api.events.entitlement.EntitlementCreateEvent;
+import net.dv8tion.jda.api.events.entitlement.EntitlementDeleteEvent;
+import net.dv8tion.jda.api.events.entitlement.EntitlementUpdateEvent;
+import net.dv8tion.jda.api.events.entitlement.GenericEntitlementEvent;
 import net.dv8tion.jda.api.events.guild.*;
 import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
@@ -363,6 +367,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildStickerUpdateDescription(@Nonnull GuildStickerUpdateDescriptionEvent event) {}
     public void onGuildStickerUpdateAvailable(@Nonnull GuildStickerUpdateAvailableEvent event) {}
 
+    // Entitlement events
+    public void onEntitlementCreate(@Nonnull EntitlementCreateEvent event) {}
+    public void onEntitlementUpdate(@Nonnull EntitlementUpdateEvent event) {}
+    public void onEntitlementDelete(@Nonnull EntitlementDeleteEvent event) {}
+
     // Debug Events
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
@@ -403,6 +412,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEmojiUpdate(@Nonnull GenericEmojiUpdateEvent event) {}
     public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
+    public void onGenericEntitlement(@Nonnull GenericEntitlementEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
     public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent event) {}
     public void onGenericScheduledEventGateway(@Nonnull GenericScheduledEventGatewayEvent event) {}

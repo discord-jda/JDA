@@ -33,7 +33,6 @@ import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionIm
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageDeleteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -91,7 +90,7 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessageComponents(@NotNull Collection<? extends LayoutComponent> components)
+    public WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         return sendRequest().setComponents(components);
     }

@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
-
-import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
-
 /**
- * Interaction of any Application Command.
- *
- * <p>This includes all context menu commands and slash commands.
- *
- * @see ContextInteraction
- * @see SlashCommandInteraction
+ * Events that indicate that a {@link net.dv8tion.jda.api.entities.Entitlement Entitlement}
+ * is either created, updated, or deleted.
  */
-public interface CommandInteraction extends IReplyCallback, CommandInteractionPayload, IModalCallback, IPremiumRequiredReplyCallback
-{
-}
+package net.dv8tion.jda.api.events.entitlement;

@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.PremiumRequiredCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.Nonnull;
@@ -123,5 +124,12 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
     public ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
         return interaction.replyModal(modal);
+    }
+
+    @Nonnull
+    @Override
+    public PremiumRequiredCallbackAction replyWithPremiumRequired()
+    {
+        return interaction.replyWithPremiumRequired();
     }
 }

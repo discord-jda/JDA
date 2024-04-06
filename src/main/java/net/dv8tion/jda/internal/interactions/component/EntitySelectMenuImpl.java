@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -99,7 +98,7 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         return defaultValues;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public DataObject toData()
     {
