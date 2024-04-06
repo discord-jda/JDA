@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Replying with {@link #replyWithPremiumRequired()} will automatically acknowledge this interaction.
  *
- * <p><b>Note:</b>This interaction requires <a href="https://discord.com/developers/docs/monetization/overview" target="_blank">monetization</a> to be enabled.</p>
+ * <p><b>Note:</b>This interaction requires <a href="https://discord.com/developers/docs/monetization/overview" target="_blank">monetization</a> to be enabled.
  */
 public interface IPremiumRequiredReplyCallback extends IDeferrableCallback
 {
