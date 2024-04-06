@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.requests.Method;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.jetbrains.annotations.Contract;
 import org.mockito.ThrowingConsumer;
 
@@ -104,7 +105,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
         Map<String, String> expectedQuery = new LinkedHashMap<>();
 
         for (int i = 0; i < params.length; i += 2)
-            expectedQuery.put(String.valueOf(params[i]), String.valueOf(params[i + 1]));
+            expectedQuery.put(String.valueOf(params[i]), EncodingUtil.encodeUTF8(String.valueOf(params[i + 1])));
 
         return checkAssertions(request -> {
             Map<String, String> actualQuery = new LinkedHashMap<>();

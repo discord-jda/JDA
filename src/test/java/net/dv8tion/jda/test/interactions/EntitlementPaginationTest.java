@@ -101,7 +101,7 @@ public class EntitlementPaginationTest extends IntegrationTest
                 sku.add(Long.toUnsignedString(random.nextLong()));
 
             assertThatNextRequest()
-                .hasQueryParams("limit", "100", "sku_ids", String.join("%2C", sku));
+                .hasQueryParams("limit", "100", "sku_ids", String.join(",", sku));
 
             action.skuIds(sku).queue();
         }
