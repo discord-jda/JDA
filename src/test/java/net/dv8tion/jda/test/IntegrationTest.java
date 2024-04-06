@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mock;
 
 import javax.annotation.Nonnull;
@@ -41,17 +42,23 @@ public class IntegrationTest
     protected ScheduledExecutorService scheduledExecutorService;
 
     private AutoCloseable closeable;
+    private int expectedRequestCount;
 
     @BeforeEach
     protected final void setup()
     {
+        expectedRequestCount = 0;
         closeable = openMocks(this);
         when(jda.getRequester()).thenReturn(requester);
     }
 
     @AfterEach
-    protected final void teardown() throws Exception
+    protected final void teardown(TestInfo testInfo) throws Exception
     {
+        verify(
+            requester,
+            times(expectedRequestCount).description("Requests sent by " + testInfo.getDisplayName())
+        ).request(any());
         closeable.close();
     }
 
@@ -63,12 +70,8 @@ public class IntegrationTest
 
     protected RestActionAssertions assertThatNextRequest()
     {
+        expectedRequestCount += 1;
         return RestActionAssertions.assertThatNextAction(requester)
                 .withNormalizedBody(this::normalizeRequestBody);
-    }
-
-    protected void assertRequestStarted()
-    {
-        verify(requester, times(1)).request(any());
     }
 }

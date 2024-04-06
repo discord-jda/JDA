@@ -89,8 +89,6 @@ public class GuildActionsTest extends IntegrationTest
                 .put("user_ids", DataArray.empty().add(Constants.BUTLER_USER_ID)));
 
         guild.ban(users, duration).reason(reason).queue();
-
-        assertRequestStarted();
     }
 
     protected void hasPermission()

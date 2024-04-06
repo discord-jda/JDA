@@ -86,8 +86,6 @@ public class MessageCreateActionTest extends IntegrationTest
         new MessageCreateActionImpl(channel)
             .setContent("test content")
             .queue();
-
-        assertRequestStarted();
     }
 
     @Test
@@ -105,8 +103,6 @@ public class MessageCreateActionTest extends IntegrationTest
                 .setDescription("test description")
                 .build())
             .queue();
-
-        assertRequestStarted();
     }
 
     @Nonnull
