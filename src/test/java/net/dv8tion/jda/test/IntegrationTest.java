@@ -24,13 +24,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class IntegrationTest
 {
+    protected Random random = new Random(4242);
     @Mock
     protected JDAImpl jda;
     @Mock
@@ -63,5 +65,10 @@ public class IntegrationTest
     {
         return RestActionAssertions.assertThatNextAction(requester)
                 .withNormalizedBody(this::normalizeRequestBody);
+    }
+
+    protected void assertRequestStarted()
+    {
+        verify(requester, times(1)).request(any());
     }
 }

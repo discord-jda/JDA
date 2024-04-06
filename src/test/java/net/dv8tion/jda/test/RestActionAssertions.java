@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Contract;
 import org.mockito.ThrowingConsumer;
 
 import javax.annotation.Nonnull;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -71,10 +72,9 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
             normalizeRequestBody.accept(dataObject);
             normalizeRequestBody.accept(expected);
 
-            assertThat(dataObject)
-                .withRepresentation(new PrettyRepresentation())
+            assertThat(dataObject.toPrettyString())
                 .as("RestAction should send request using expected request body")
-                .isEqualTo(expected);
+                .isEqualTo(expected.toPrettyString());
         });
     }
 
@@ -95,6 +95,16 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
             assertThat(request.getRoute().getCompiledRoute())
                 .as("RestAction should send request using expected REST endpoint")
                 .isEqualTo(route)
+        );
+    }
+
+    @Contract("_->this")
+    public RestActionAssertions hasAuditReason(@Nonnull String reason)
+    {
+        return checkAssertions(request ->
+            assertThat(request.getHeaders())
+                .as("RestAction should set header")
+                .contains(new AbstractMap.SimpleEntry<>("X-Audit-Log-Reason", reason))
         );
     }
 

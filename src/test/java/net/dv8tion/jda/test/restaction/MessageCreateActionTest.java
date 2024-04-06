@@ -30,8 +30,7 @@ import javax.annotation.Nonnull;
 
 import static net.dv8tion.jda.api.requests.Method.POST;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 public class MessageCreateActionTest extends IntegrationTest
 {
@@ -88,7 +87,7 @@ public class MessageCreateActionTest extends IntegrationTest
             .setContent("test content")
             .queue();
 
-        verify(requester, times(1)).request(any());
+        assertRequestStarted();
     }
 
     @Test
@@ -107,7 +106,7 @@ public class MessageCreateActionTest extends IntegrationTest
                 .build())
             .queue();
 
-        verify(requester, times(1)).request(any());
+        assertRequestStarted();
     }
 
     @Nonnull
