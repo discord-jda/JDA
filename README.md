@@ -323,7 +323,7 @@ fun main() {
 
 There are a number of examples available in the [README](https://github.com/MinnDevelopment/jda-ktx/#jda-ktx).
 
-## ☝️ Contributing to JDA
+## 🍴 Contributing to JDA
 
 If you want to contribute to JDA, make sure to base your branch off of our **master** branch (or a feature-branch)
 and create your PR into that **same** branch.
