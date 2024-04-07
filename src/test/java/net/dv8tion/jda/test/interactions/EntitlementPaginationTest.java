@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.test.interactions;
 
+import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -43,6 +44,17 @@ public class EntitlementPaginationTest extends IntegrationTest
     protected SelfUser selfUser;
 
     protected EntitlementPaginationActionImpl action;
+
+    private DataObject fakeEntitlement(String id)
+    {
+        return DataObject.empty()
+            .put("id", id)
+            .put("sku_id", randomSnowflake())
+            .put("application_id", randomSnowflake())
+            .put("user_id", randomSnowflake())
+            .put("type", 8)
+            .put("deleted", false);
+    }
 
     @BeforeEach
     void setupSelfUser()
@@ -77,6 +89,34 @@ public class EntitlementPaginationTest extends IntegrationTest
             .hasQueryParams("limit", "100");
 
         action.queue();
+
+        DataArray array = DataArray.empty()
+            .add(fakeEntitlement("2"))
+            .add(fakeEntitlement("1"));
+
+        whenSuccess(action, array, response ->
+            assertThat(response)
+                .hasSize(2)
+                .map(Entitlement::getId)
+                .containsExactly("2", "1")
+        );
+
+        assertThatNextRequest()
+            .hasQueryParams("limit", "100", "before", "1");
+
+        action.queue();
+
+        whenSuccess(action, DataArray.empty(), response ->
+            assertThat(response)
+                .isEmpty()
+        );
+
+        assertThat(action.cacheSize()).isEqualTo(2);
+        assertThat(action.getCached())
+            .hasSize(2)
+            .map(Entitlement::getId)
+            .containsExactly("2", "1");
+
     }
 
     @Test
@@ -86,6 +126,33 @@ public class EntitlementPaginationTest extends IntegrationTest
             .hasQueryParams("limit", 100, "after", 0);
 
         action.reverse().queue();
+
+        DataArray array = DataArray.empty()
+            .add(fakeEntitlement("1"))
+            .add(fakeEntitlement("2"));
+
+        whenSuccess(action, array, response ->
+            assertThat(response)
+                .hasSize(2)
+                .map(Entitlement::getId)
+                .containsExactly("1", "2")
+        );
+
+        assertThatNextRequest()
+            .hasQueryParams("limit", "100", "after", "2");
+
+        action.queue();
+
+        whenSuccess(action, DataArray.empty(), response ->
+            assertThat(response)
+                .isEmpty()
+        );
+
+        assertThat(action.cacheSize()).isEqualTo(2);
+        assertThat(action.getCached())
+            .hasSize(2)
+            .map(Entitlement::getId)
+            .containsExactly("1", "2");
     }
 
     @Test

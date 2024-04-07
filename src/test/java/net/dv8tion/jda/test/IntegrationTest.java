@@ -97,4 +97,9 @@ public class IntegrationTest
 
         verify(request, times(1)).onSuccess(any());
     }
+
+    protected String randomSnowflake()
+    {
+        return Long.toUnsignedString(random.nextLong());
+    }
 }

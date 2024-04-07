@@ -2560,11 +2560,11 @@ public class EntityBuilder
     public Entitlement createEntitlement(DataObject object)
     {
         return new EntitlementImpl(
-                object.getLong("id"),
-                object.getLong("sku_id"),
-                object.getLong("application_id"),
-                object.getLong("user_id", 0),
-                object.getLong("guild_id", 0),
+                object.getUnsignedLong("id"),
+                object.getUnsignedLong("sku_id"),
+                object.getUnsignedLong("application_id"),
+                object.getUnsignedLong("user_id", 0),
+                object.getUnsignedLong("guild_id", 0),
                 Entitlement.EntitlementType.fromKey(object.getInt("type")),
                 object.getBoolean("deleted"),
                 object.getOffsetDateTime("starts_at", null),
