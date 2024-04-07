@@ -18,6 +18,8 @@ package net.dv8tion.jda.test.interactions;
 
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.restaction.pagination.EntitlementPaginationActionImpl;
 import net.dv8tion.jda.test.Constants;
 import net.dv8tion.jda.test.IntegrationTest;
@@ -30,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static net.dv8tion.jda.api.requests.Method.GET;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 public class EntitlementPaginationTest extends IntegrationTest
@@ -51,11 +54,27 @@ public class EntitlementPaginationTest extends IntegrationTest
     }
 
     @Test
-    void testDefaultPagination()
+    void testParsingFailure()
     {
         assertThatNextRequest()
             .hasMethod(GET)
             .hasCompiledRoute(String.format(routeTemplate, Constants.BUTLER_USER_ID, "?limit=100"));
+
+        action.queue();
+
+        DataArray responseBody = DataArray.empty()
+                .add(DataObject.empty()); // Invalid entitlement object
+
+        whenSuccess(action, responseBody, response ->
+            assertThat(response).isEmpty() // Is logged and skipped
+        );
+    }
+
+    @Test
+    void testDefaultPagination()
+    {
+        assertThatNextRequest()
+            .hasQueryParams("limit", "100");
 
         action.queue();
     }

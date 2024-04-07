@@ -16,9 +16,14 @@
 
 package net.dv8tion.jda.test;
 
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
@@ -27,6 +32,7 @@ import org.mockito.Mock;
 import javax.annotation.Nonnull;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -51,6 +57,7 @@ public class IntegrationTest
         expectedRequestCount = 0;
         closeable = openMocks(this);
         when(jda.getRequester()).thenReturn(requester);
+        when(jda.getEntityBuilder()).thenReturn(new EntityBuilder(jda));
     }
 
     @AfterEach
@@ -74,5 +81,20 @@ public class IntegrationTest
         expectedRequestCount += 1;
         return RestActionAssertions.assertThatNextAction(requester)
                 .withNormalizedBody(this::normalizeRequestBody);
+    }
+
+    protected <T> void whenSuccess(RestActionImpl<T> action, DataArray array, Consumer<T> assertion)
+    {
+        Response response = mock();
+        Request<T> request = mock();
+
+        when(response.isOk()).thenReturn(true);
+        when(response.getArray()).thenReturn(array);
+
+        doNothing().when(request).onSuccess(assertArg(assertion));
+
+        action.handleResponse(response, request);
+
+        verify(request, times(1)).onSuccess(any());
     }
 }
