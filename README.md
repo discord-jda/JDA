@@ -54,7 +54,7 @@ The core concepts of JDA have been developed to make building scalable apps easy
 [![maven-central][]](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
 [![jitpack][]](https://jitpack.io/#discord-jda/JDA)
 
-This library is available on maven central. The current latest version is always shown in the [GitHub Release](https://github.com/discord-jda/JDA/releases/latest).
+This library is available on maven central. The latest version is always shown in the [GitHub Release](https://github.com/discord-jda/JDA/releases/latest).
 
 The minimum java version supported by JDA is **Java SE 8**. JDA also uses JSR 305 to support solid interoperability with Kotlin out of the box.
 
@@ -108,11 +108,11 @@ Every bot implemented by JDA starts out using the [JDABuilder][JDABuilder] or [D
 - `createLight` - Disables all user cache and cache flags
 - `create` - Enables member chunking, caches all users, and enables all cache flags
 
-We receommend reading the guide on [caching and intents](https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/) to get a feel for configuring your bot properly. Here are some possible use-cases:
+We recommend reading the guide on [caching and intents](https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/) to get a feel for configuring your bot properly. Here are some possible use-cases:
 
 ### Example: Message Logging
 
-A small-scale bot that simply logs messages to the console using the [JDABuilder][JDABuilder], intended for smaller bots that don't intend to grow to thousands of guilds
+Simply logging messages to the console. Making use of [JDABuilder][JDABuilder], the intended entry point for smaller bots that don't intend to grow to thousands of guilds.
 
 Starting your bot and attaching an event listener, using the right [intents][GatewayIntent]:
 
@@ -212,34 +212,63 @@ It can be combined with reactive libraries such as [reactor-core](https://github
 
 The RestAction interface also supports a number of operators to avoid callback hell:
 
-- [`map`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)
+- [`map`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)  
     Convert the result of the `RestAction` to a different value
-- [`flatMap`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)
+- [`flatMap`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)  
     Chain another `RestAction` on the result
-- [`delay`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)
+- [`delay`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)  
     Delay the element of the previous step
+
+As well as combinators like:
+
+- [`and`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#and(net.dv8tion.jda.api.requests.RestAction,java.util.function.BiFunction))  
+   Require another RestAction to complete successfully, running in parallel
+- [`allOf`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#allOf(java.util.Collection))  
+   Accumulate a list of many actions into one (see also [`mapToResult`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#mapToResult()))
+- [`zip`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#zip(net.dv8tion.jda.api.requests.RestAction,net.dv8tion.jda.api.requests.RestAction...))  
+   Similar to `and`, but combines the results into a list
+  
+
+And configurators like:
+
+- [`timeout`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#timeout(long,java.util.concurrent.TimeUnit)) and [`deadline`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#deadline(long))  
+   Configure how long the action is allowed to be in queue, cancelling if it takes too long
+- [`setCheck`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#setCheck(java.util.function.BooleanSupplier))  
+   Running some checks right before the request is sent, this can be helpful when it is in queue for a while
+- [`reason`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/restaction/AuditableRestAction.html#reason(java.lang.String))  
+   The [audit log reason](https://discord.com/developers/docs/resources/audit-log) for an action
 
 **Example**:
 
 ```java
 public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
     return channel.sendMessage("The following message will destroy itself in 1 minute!")
-        .delay(10, SECONDS, scheduler) // edit 10 seconds later
-        .flatMap((it) -> it.editMessage(content))
-        .delay(1, MINUTES, scheduler) // delete 1 minute later
-        .flatMap(Message::delete);
+        .addActionRow(Button.danger("delete", "Delete now")) // further amend message before sending
+        .delay(10, SECONDS, scheduler) // after sending, wait 10 seconds
+        .flatMap((it) -> it.editMessage(content)) // then edit the message
+        .delay(1, MINUTES, scheduler) // wait another minute
+        .flatMap(Message::delete); // then delete
 }
 ```
+
+This could then be used in code:
+
+```java
+selfDestruct(channel, "Hello friend, this is my secret message").queue();
+```
+
+> [!IMPORTANT]
+> The final call to `queue()` sends the request and all chained requests. Without calling this method, you only provision the `RestAction`.
 
 ## 🧩 Extensions
 
 ### [Lavaplayer](https://github.com/lavalink-devs/lavaplayer)
 
-Created by [sedmelluq](https://github.com/sedmelluq) and now maintained by the [lavalink community](https://github.com/lavalink-devs)
-<br>Lavaplayer is the most popular library used by Music Bots created in Java.
-It is highly compatible with JDA and Discord4J and allows to play audio from
-Youtube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/lavalink-devs/lavaplayer#supported-formats).
-<br>The library can easily be expanded to more services by implementing your own AudioSourceManager and registering it.
+Created by [sedmelluq](https://github.com/sedmelluq) and now maintained by the [lavalink community](https://github.com/lavalink-devs)  
+Lavaplayer is the most popular library used by Music Bots created in Java.
+It is highly compatible with JDA and Discord4J and allows playing audio from
+YouTube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/lavalink-devs/lavaplayer#supported-formats).  
+The library can easily be expanded to more services by implementing your own AudioSourceManager and registering it.
 
 It is recommended to read the [Usage](https://github.com/lavalink-devs/lavaplayer#usage) section of Lavaplayer
 to understand a proper implementation.
@@ -254,7 +283,7 @@ Lavalink is a popular standalone audio sending node based on Lavaplayer. Lavalin
 and allows streaming music via many servers. It supports most of Lavaplayer's features.
 
 Lavalink is used by many large bots, as well as bot developers who can not use a Java library like Lavaplayer.
-If you plan on serving music on a smaller scale with JDA it is often preferable to just use Lavaplayer directly
+If you plan on serving music on a smaller scale with JDA, it is often preferable to just use Lavaplayer directly
 as it is easier.
 
 [Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
@@ -262,10 +291,10 @@ as it is easier.
 
 ### [udpqueue](https://github.com/MinnDevelopment/udpqueue.rs) (an extension of [jda-nas](https://github.com/sedmelluq/jda-nas))
 
-Created and maintained by [sedmelluq](https://github.com/sedmelluq) and extended by [MinnDevelopment](https://github.com/MinnDevelopment)
-<br>Provides a native implementation for the JDA Audio Send-System to avoid GC pauses.
+Created and maintained by [sedmelluq](https://github.com/sedmelluq) and extended by [MinnDevelopment](https://github.com/MinnDevelopment)  
+Provides a native implementation for the JDA Audio Send-System to avoid GC pauses.
 
-Note that this send system creates an extra UDP-Client which causes audio receive to no longer function properly,
+Note that this send-system creates an extra UDP-Client which causes audio receive to no longer function properly,
 since Discord identifies the sending UDP-Client as the receiver.
 
 ```java
@@ -275,8 +304,8 @@ JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN)
 
 ### [jda-ktx](https://github.com/MinnDevelopment/jda-ktx)
 
-Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).
-<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a more idiomatic Kotlin experience.
+Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).  
+Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a more idiomatic Kotlin experience.
 
 ```kotlin
 fun main() {
@@ -292,7 +321,7 @@ fun main() {
 }
 ```
 
-There is a number of examples available in the [README](https://github.com/MinnDevelopment/jda-ktx/#jda-ktx).
+There are a number of examples available in the [README](https://github.com/MinnDevelopment/jda-ktx/#jda-ktx).
 
 ## ☝️ Contributing to JDA
 
@@ -308,4 +337,4 @@ You can join our [discord server][discord-invite] and ask in [#lib-dev](https://
 
 Due to the nature of the Discord API, the library will regularly introduce breaking changes to allow for a quick adoption of newer features. We try to keep these breaking changes minimal, but cannot avoid them entirely.
 
-Most breaking changes will result in a **minor** version bump (`5.1.2` -> `5.2.0`).
+Most breaking changes will result in a **minor** version bump (`5.1.2` → `5.2.0`).
