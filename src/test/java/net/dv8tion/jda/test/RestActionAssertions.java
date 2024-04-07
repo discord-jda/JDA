@@ -18,12 +18,14 @@ package net.dv8tion.jda.test;
 
 import net.dv8tion.jda.api.requests.Method;
 import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.jetbrains.annotations.Contract;
 import org.mockito.ThrowingConsumer;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Consumer;
@@ -34,16 +36,29 @@ import static org.mockito.Mockito.doNothing;
 
 public class RestActionAssertions implements ThrowingConsumer<Request<?>>
 {
+    private final RestAction<?> action;
     private final List<ThrowingConsumer<Request<?>>> assertions = new ArrayList<>();
     private Consumer<? super DataObject> normalizeRequestBody = (v) -> {};
 
-    public static RestActionAssertions assertThatNextAction(Requester requester)
+    public RestActionAssertions(RestAction<?> action)
     {
-        RestActionAssertions assertions = new RestActionAssertions();
+        this.action = action;
+    }
+
+    @CheckReturnValue
+    public static RestActionAssertions assertThatNextAction(Requester requester, RestAction<?> action)
+    {
+        RestActionAssertions assertions = new RestActionAssertions(action);
         doNothing().when(requester).request(assertArg(assertions::acceptThrows));
         return assertions;
     }
 
+    public void whenQueueCalled()
+    {
+        action.queue();
+    }
+
+    @CheckReturnValue
     @Contract("_->this")
     public RestActionAssertions withNormalizedBody(@Nonnull Consumer<? super DataObject> normalizer)
     {
@@ -51,6 +66,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
         return this;
     }
 
+    @CheckReturnValue
     @Contract("_->this")
     public RestActionAssertions checkAssertions(@Nonnull ThrowingConsumer<Request<?>> assertion)
     {
@@ -58,6 +74,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
         return this;
     }
 
+    @CheckReturnValue
     @Contract("_->this")
     public RestActionAssertions hasBodyEqualTo(@Nonnull DataObject expected)
     {
@@ -77,6 +94,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
         });
     }
 
+    @CheckReturnValue
     @Contract("_->this")
     public RestActionAssertions hasMethod(@Nonnull Method method)
     {
@@ -87,6 +105,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
         );
     }
 
+    @CheckReturnValue
     @Contract("_->this")
     public RestActionAssertions hasCompiledRoute(@Nonnull String route)
     {
@@ -97,6 +116,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
         );
     }
 
+    @CheckReturnValue
     @Contract("_->this")
     public RestActionAssertions hasQueryParams(@Nonnull Object... params)
     {
@@ -119,6 +139,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
         });
     }
 
+    @CheckReturnValue
     @Contract("_->this")
     public RestActionAssertions hasAuditReason(@Nonnull String reason)
     {

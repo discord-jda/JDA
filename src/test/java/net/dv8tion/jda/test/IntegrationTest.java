@@ -18,6 +18,7 @@ package net.dv8tion.jda.test;
 
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mock;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
@@ -76,10 +78,11 @@ public class IntegrationTest
         return body;
     }
 
-    protected RestActionAssertions assertThatNextRequest()
+    @CheckReturnValue
+    protected RestActionAssertions assertThatRequestFrom(@Nonnull RestAction<?> action)
     {
         expectedRequestCount += 1;
-        return RestActionAssertions.assertThatNextAction(requester)
+        return RestActionAssertions.assertThatNextAction(requester, action)
                 .withNormalizedBody(this::normalizeRequestBody);
     }
 

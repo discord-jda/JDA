@@ -18,6 +18,7 @@ package net.dv8tion.jda.test.restaction;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
@@ -78,31 +79,31 @@ public class MessageCreateActionTest extends IntegrationTest
     @Test
     void testContentOnly()
     {
-        assertThatNextRequest()
+        MessageCreateAction action = new MessageCreateActionImpl(channel)
+                .setContent("test content");
+
+        assertThatRequestFrom(action)
             .hasMethod(POST)
             .hasCompiledRoute(ENDPOINT_URL)
-            .hasBodyEqualTo(defaultMessageRequest().put("content", "test content"));
-
-        new MessageCreateActionImpl(channel)
-            .setContent("test content")
-            .queue();
+            .hasBodyEqualTo(defaultMessageRequest().put("content", "test content"))
+            .whenQueueCalled();
     }
 
     @Test
     void testEmbedOnly()
     {
-        assertThatNextRequest()
+        MessageCreateAction action = new MessageCreateActionImpl(channel)
+            .setEmbeds(new EmbedBuilder()
+                .setDescription("test description")
+                .build());
+
+        assertThatRequestFrom(action)
             .hasMethod(POST)
             .hasCompiledRoute(ENDPOINT_URL)
             .hasBodyEqualTo(defaultMessageRequest()
                 .put("embeds", DataArray.empty()
-                    .add(DataObject.empty().put("description", "test description"))));
-
-        new MessageCreateActionImpl(channel)
-            .setEmbeds(new EmbedBuilder()
-                .setDescription("test description")
-                .build())
-            .queue();
+                    .add(DataObject.empty().put("description", "test description"))))
+            .whenQueueCalled();
     }
 
     @Nonnull

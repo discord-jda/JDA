@@ -108,14 +108,13 @@ public class BulkBanTest extends AbstractGuildTest
             User.fromId(Constants.BUTLER_USER_ID)
         );
 
-        assertThatNextRequest()
+        assertThatRequestFrom(guild.ban(users, duration).reason(reason))
             .hasMethod(Method.POST)
             .hasCompiledRoute("guilds/" + Constants.GUILD_ID + "/bulk-ban")
             .hasAuditReason(reason)
             .hasBodyEqualTo(DataObject.empty()
                 .put("delete_message_seconds", duration.getSeconds())
-                .put("user_ids", DataArray.empty().add(Constants.BUTLER_USER_ID)));
-
-        guild.ban(users, duration).reason(reason).queue();
+                .put("user_ids", DataArray.empty().add(Constants.BUTLER_USER_ID)))
+            .whenQueueCalled();
     }
 }

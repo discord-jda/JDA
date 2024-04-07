@@ -68,11 +68,10 @@ public class EntitlementPaginationTest extends IntegrationTest
     @Test
     void testParsingFailure()
     {
-        assertThatNextRequest()
+        assertThatRequestFrom(action)
             .hasMethod(GET)
-            .hasCompiledRoute(String.format(routeTemplate, Constants.BUTLER_USER_ID, "?limit=100"));
-
-        action.queue();
+            .hasCompiledRoute(String.format(routeTemplate, Constants.BUTLER_USER_ID, "?limit=100"))
+            .whenQueueCalled();
 
         DataArray responseBody = DataArray.empty()
                 .add(DataObject.empty()); // Invalid entitlement object
@@ -85,10 +84,9 @@ public class EntitlementPaginationTest extends IntegrationTest
     @Test
     void testDefaultPagination()
     {
-        assertThatNextRequest()
-            .hasQueryParams("limit", "100");
-
-        action.queue();
+        assertThatRequestFrom(action)
+            .hasQueryParams("limit", "100")
+            .whenQueueCalled();
 
         DataArray array = DataArray.empty()
             .add(fakeEntitlement("2"))
@@ -101,10 +99,9 @@ public class EntitlementPaginationTest extends IntegrationTest
                 .containsExactly("2", "1")
         );
 
-        assertThatNextRequest()
-            .hasQueryParams("limit", "100", "before", "1");
-
-        action.queue();
+        assertThatRequestFrom(action)
+            .hasQueryParams("limit", "100", "before", "1")
+            .whenQueueCalled();
 
         whenSuccess(action, DataArray.empty(), response ->
             assertThat(response)
@@ -122,10 +119,9 @@ public class EntitlementPaginationTest extends IntegrationTest
     @Test
     void testReversePagination()
     {
-        assertThatNextRequest()
-            .hasQueryParams("limit", 100, "after", 0);
-
-        action.reverse().queue();
+        assertThatRequestFrom(action.reverse())
+            .hasQueryParams("limit", 100, "after", 0)
+            .whenQueueCalled();
 
         DataArray array = DataArray.empty()
             .add(fakeEntitlement("1"))
@@ -138,10 +134,9 @@ public class EntitlementPaginationTest extends IntegrationTest
                 .containsExactly("1", "2")
         );
 
-        assertThatNextRequest()
-            .hasQueryParams("limit", "100", "after", "2");
-
-        action.queue();
+        assertThatRequestFrom(action)
+            .hasQueryParams("limit", "100", "after", "2")
+            .whenQueueCalled();
 
         whenSuccess(action, DataArray.empty(), response ->
             assertThat(response)
@@ -160,10 +155,9 @@ public class EntitlementPaginationTest extends IntegrationTest
     {
         long skipId = Math.abs(random.nextLong());
 
-        assertThatNextRequest()
-            .hasQueryParams("limit", "100", "before", skipId);
-
-        action.skipTo(skipId).queue();
+        assertThatRequestFrom(action.skipTo(skipId))
+            .hasQueryParams("limit", "100", "before", skipId)
+            .whenQueueCalled();
     }
 
     @Nested
@@ -172,10 +166,9 @@ public class EntitlementPaginationTest extends IntegrationTest
         @Test
         void byExcludeEnded()
         {
-            assertThatNextRequest()
-                .hasQueryParams("limit", "100", "exclude_ended", "true");
-
-            action.excludeEnded(true).queue();
+            assertThatRequestFrom(action.excludeEnded(true))
+                .hasQueryParams("limit", "100", "exclude_ended", "true")
+                .whenQueueCalled();
         }
 
         @Test
@@ -186,28 +179,25 @@ public class EntitlementPaginationTest extends IntegrationTest
             for (int i = -5; i < random.nextInt(10); i++)
                 sku.add(Long.toUnsignedString(random.nextLong()));
 
-            assertThatNextRequest()
-                .hasQueryParams("limit", "100", "sku_ids", String.join(",", sku));
-
-            action.skuIds(sku).queue();
+            assertThatRequestFrom(action.skuIds(sku))
+                .hasQueryParams("limit", "100", "sku_ids", String.join(",", sku))
+                .whenQueueCalled();
         }
 
         @Test
         void byUserId()
         {
-            assertThatNextRequest()
-                .hasQueryParams( "limit", 100, "user_id", Constants.MINN_USER_ID);
-
-            action.user(User.fromId(Constants.MINN_USER_ID)).queue();
+            assertThatRequestFrom(action.user(User.fromId(Constants.MINN_USER_ID)))
+                .hasQueryParams( "limit", 100, "user_id", Constants.MINN_USER_ID)
+                .whenQueueCalled();
         }
 
         @Test
         void byGuildId()
         {
-            assertThatNextRequest()
-                .hasQueryParams("limit", 100, "guild_id", Constants.GUILD_ID);
-
-            action.guild(Constants.GUILD_ID).queue();
+            assertThatRequestFrom(action.guild(Constants.GUILD_ID))
+                .hasQueryParams("limit", 100, "guild_id", Constants.GUILD_ID)
+                .whenQueueCalled();
         }
     }
 }
