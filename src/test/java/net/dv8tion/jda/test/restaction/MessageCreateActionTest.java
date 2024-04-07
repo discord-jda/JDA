@@ -18,6 +18,7 @@ package net.dv8tion.jda.test.restaction;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
@@ -30,8 +31,7 @@ import javax.annotation.Nonnull;
 
 import static net.dv8tion.jda.api.requests.Method.POST;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 public class MessageCreateActionTest extends IntegrationTest
 {
@@ -79,30 +79,31 @@ public class MessageCreateActionTest extends IntegrationTest
     @Test
     void testContentOnly()
     {
-        assertNextRequestEquals(POST, ENDPOINT_URL, defaultMessageRequest()
-            .put("content", "test content"));
+        MessageCreateAction action = new MessageCreateActionImpl(channel)
+                .setContent("test content");
 
-        new MessageCreateActionImpl(channel)
-            .setContent("test content")
-            .queue();
-
-        verify(requester, times(1)).request(any());
+        assertThatRequestFrom(action)
+            .hasMethod(POST)
+            .hasCompiledRoute(ENDPOINT_URL)
+            .hasBodyEqualTo(defaultMessageRequest().put("content", "test content"))
+            .whenQueueCalled();
     }
 
     @Test
     void testEmbedOnly()
     {
-        assertNextRequestEquals(POST, ENDPOINT_URL, defaultMessageRequest()
-            .put("embeds", DataArray.empty()
-                .add(DataObject.empty().put("description", "test description"))));
-
-        new MessageCreateActionImpl(channel)
+        MessageCreateAction action = new MessageCreateActionImpl(channel)
             .setEmbeds(new EmbedBuilder()
                 .setDescription("test description")
-                .build())
-            .queue();
+                .build());
 
-        verify(requester, times(1)).request(any());
+        assertThatRequestFrom(action)
+            .hasMethod(POST)
+            .hasCompiledRoute(ENDPOINT_URL)
+            .hasBodyEqualTo(defaultMessageRequest()
+                .put("embeds", DataArray.empty()
+                    .add(DataObject.empty().put("description", "test description"))))
+            .whenQueueCalled();
     }
 
     @Nonnull

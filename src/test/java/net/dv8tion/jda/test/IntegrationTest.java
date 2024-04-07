@@ -16,25 +16,32 @@
 
 package net.dv8tion.jda.test;
 
-import net.dv8tion.jda.api.requests.Method;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mock;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.assertArg;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class IntegrationTest
 {
+    protected Random random = new Random();
     @Mock
     protected JDAImpl jda;
     @Mock
@@ -43,17 +50,25 @@ public class IntegrationTest
     protected ScheduledExecutorService scheduledExecutorService;
 
     private AutoCloseable closeable;
+    private int expectedRequestCount;
 
     @BeforeEach
     protected final void setup()
     {
+        random.setSeed(4242);
+        expectedRequestCount = 0;
         closeable = openMocks(this);
         when(jda.getRequester()).thenReturn(requester);
+        when(jda.getEntityBuilder()).thenReturn(new EntityBuilder(jda));
     }
 
     @AfterEach
-    protected final void teardown() throws Exception
+    protected final void teardown(TestInfo testInfo) throws Exception
     {
+        verify(
+            requester,
+            times(expectedRequestCount).description("Requests sent by " + testInfo.getDisplayName())
+        ).request(any());
         closeable.close();
     }
 
@@ -63,20 +78,31 @@ public class IntegrationTest
         return body;
     }
 
-    protected void assertNextRequestEquals(Method method, String compiledRoute, DataObject expectedBody)
+    @CheckReturnValue
+    protected RestActionAssertions assertThatRequestFrom(@Nonnull RestAction<?> action)
     {
-        doNothing().when(requester).request(assertArg(request -> {
-            assertThat(request.getRoute().getMethod()).isEqualTo(method);
-            assertThat(request.getRoute().getCompiledRoute()).isEqualTo(compiledRoute);
+        expectedRequestCount += 1;
+        return RestActionAssertions.assertThatNextAction(requester, action)
+                .withNormalizedBody(this::normalizeRequestBody);
+    }
 
-            assertThat(request.getRawBody())
-                    .isNotNull()
-                    .isInstanceOf(DataObject.class);
-            DataObject body = normalizeRequestBody((DataObject) request.getRawBody());
+    protected <T> void whenSuccess(RestActionImpl<T> action, DataArray array, Consumer<T> assertion)
+    {
+        Response response = mock();
+        Request<T> request = mock();
 
-            assertThat(body)
-                .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(expectedBody);
-        }));
+        when(response.isOk()).thenReturn(true);
+        when(response.getArray()).thenReturn(array);
+
+        doNothing().when(request).onSuccess(assertArg(assertion));
+
+        action.handleResponse(response, request);
+
+        verify(request, times(1)).onSuccess(any());
+    }
+
+    protected String randomSnowflake()
+    {
+        return Long.toUnsignedString(random.nextLong());
     }
 }
