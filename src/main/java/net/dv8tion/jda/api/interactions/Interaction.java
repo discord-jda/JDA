@@ -239,6 +239,30 @@ public interface Interaction extends ISnowflake
     List<Entitlement> getEntitlements();
 
     /**
+     * Gets the context in which this command was executed.
+     *
+     * @return The context in which this command was executed
+     */
+    @Nonnull
+    InteractionContextType getContext();
+
+    /**
+     * Returns the integration owners of this interaction, which depends on how the app was installed.
+     *
+     * <p>This will be {@code null} if the command is installed <b>only</b> {@link IntegrationType#GUILD_INSTALL on guilds},
+     * regardless of if the command is on the global scope, or on a guild:
+     * <ul>
+     *     <li>❌ : Global command with {@link IntegrationType#GUILD_INSTALL} (and nothing else)</li>
+     *     <li>❌ : Guild command with {@link IntegrationType#GUILD_INSTALL} (and nothing else)</li>
+     *     <li>✔️ : Any other case</li>
+     * </ul>
+     *
+     * @return The integration owners of this interaction, or {@code null}
+     */
+    @Nullable
+    IntegrationOwners getIntegrationOwners();
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this interaction
      *
      * @return the corresponding JDA instance

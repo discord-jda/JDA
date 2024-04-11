@@ -24,7 +24,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -107,6 +109,20 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public DiscordLocale getGuildLocale()
     {
         return interaction.getGuildLocale();
+    }
+
+    @Nonnull
+    @Override
+    public InteractionContextType getContext()
+    {
+        return interaction.getContext();
+    }
+
+    @Nullable
+    @Override
+    public IntegrationOwners getIntegrationOwners()
+    {
+        return interaction.getIntegrationOwners();
     }
 
     @Nullable

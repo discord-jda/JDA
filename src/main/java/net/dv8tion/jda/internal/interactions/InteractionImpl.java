@@ -26,18 +26,21 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class InteractionImpl implements Interaction
 {
@@ -51,6 +54,8 @@ public class InteractionImpl implements Interaction
     protected final Channel channel;
     protected final DiscordLocale userLocale;
     protected final List<Entitlement> entitlements;
+    protected final InteractionContextType context;
+    protected final IntegrationOwners integrationOwners;
     protected final JDAImpl api;
 
     //This is used to give a proper error when an interaction is ack'd twice
@@ -66,6 +71,9 @@ public class InteractionImpl implements Interaction
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
         this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
+        // Absent in guild-scoped commands
+        this.context = data.opt("context").map(o -> InteractionContextType.fromKey(String.valueOf(o))).orElse(null);
+        this.integrationOwners = data.optObject("authorizing_integration_owners").map(IntegrationOwnersImpl::new).orElse(null);
 
         DataObject channelJson = data.getObject("channel");
         if (guild != null)
@@ -176,6 +184,20 @@ public class InteractionImpl implements Interaction
     public DiscordLocale getUserLocale()
     {
         return userLocale;
+    }
+
+    @Nonnull
+    @Override
+    public InteractionContextType getContext()
+    {
+        return context;
+    }
+
+    @Nullable
+    @Override
+    public IntegrationOwners getIntegrationOwners()
+    {
+        return integrationOwners;
     }
 
     @Nonnull
