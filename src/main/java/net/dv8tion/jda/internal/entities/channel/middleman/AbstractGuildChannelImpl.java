@@ -27,9 +27,9 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImpl<T>> extends AbstractChannelImpl<T> implements GuildChannelMixin<T>
 {
-    private GuildImpl guild;
+    private Guild guild;
 
-    public AbstractGuildChannelImpl(long id, GuildImpl guild)
+    public AbstractGuildChannelImpl(long id, Guild guild)
     {
         super(id, guild.getJDA());
         this.guild = guild;
@@ -37,11 +37,11 @@ public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImp
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
+    public Guild getGuild()
     {
         Guild cachedGuild = getJDA().getGuildById(id);
         if (cachedGuild instanceof GuildImpl)
-            return this.guild = (GuildImpl) cachedGuild;
+            return this.guild = cachedGuild;
         return guild;
     }
 

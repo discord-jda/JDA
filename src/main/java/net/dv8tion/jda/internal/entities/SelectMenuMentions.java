@@ -39,7 +39,7 @@ public class SelectMenuMentions implements Mentions
 {
     private final DataObject resolved;
     private final JDAImpl jda;
-    private final GuildImpl guild;
+    private final Guild guild;
     private final List<String> values;
 
     private List<User> cachedUsers;

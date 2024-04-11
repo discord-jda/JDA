@@ -413,8 +413,7 @@ public class PermissionUtil
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
 
-        Guild guild = channel.getGuild();
-        if (!guild.equals(role.getGuild()))
+        if (!channel.getGuild().equals(role.getGuild()))
             throw new IllegalArgumentException("Provided channel and role are not of the same guild!");
 
         long permissions = getExplicitPermission(channel, role);
@@ -519,8 +518,7 @@ public class PermissionUtil
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
 
-        final Guild guild = member.getGuild();
-        checkGuild(channel.getGuild(), guild, "Member");
+        checkGuild(channel.getGuild(), member.getGuild(), "Member");
 
         long permission = includeRoles ? getExplicitPermission(member) : 0L;
 
