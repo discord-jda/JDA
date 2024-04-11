@@ -77,6 +77,12 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         super(id, guild);
     }
 
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
     @Nonnull
     @Override
     public ForumChannelManager getManager()

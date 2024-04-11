@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
+import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Route;
@@ -62,7 +63,7 @@ import java.util.concurrent.TimeUnit;
  * @see   Guild#getMembersWithRoles(Role...)
  * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
+public interface Member extends IMentionable, IPermissionHolder, IDetachableEntity, UserSnowflake
 {
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";

@@ -76,6 +76,12 @@ public class RoleImpl implements Role
     }
 
     @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
+    @Override
     public int getPosition()
     {
         if (frozenPosition > Integer.MIN_VALUE)

@@ -76,6 +76,12 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     {
         super(id, guild);
     }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
     
     @Nonnull
     @Override

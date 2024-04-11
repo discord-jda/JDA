@@ -51,6 +51,12 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> impleme
         super(id, guild);
     }
 
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
     @Nonnull
     @Override
     public ChannelType getType()

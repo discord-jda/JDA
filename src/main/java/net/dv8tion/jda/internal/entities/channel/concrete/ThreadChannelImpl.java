@@ -87,6 +87,12 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         this.type = type;
     }
 
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
     @Nonnull
     @Override
     public EnumSet<ChannelFlag> getFlags()

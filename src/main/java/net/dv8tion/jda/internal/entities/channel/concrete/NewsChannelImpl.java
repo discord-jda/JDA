@@ -49,6 +49,12 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
         super(id, guild);
     }
 
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
     @Nonnull
     @Override
     public ChannelType getType()

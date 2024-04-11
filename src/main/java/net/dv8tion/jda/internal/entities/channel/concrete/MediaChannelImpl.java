@@ -76,6 +76,12 @@ public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
         super(id, guild);
     }
 
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
     @Nonnull
     @Override
     public MediaChannelManager getManager()

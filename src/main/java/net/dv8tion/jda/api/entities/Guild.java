@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
+import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
@@ -92,7 +93,7 @@ import java.util.stream.Collectors;
  * @see JDA#getGuildsByName(String, boolean)
  * @see JDA#getGuilds()
  */
-public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
+public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake, IDetachableEntity
 {
     /** Template for {@link #getIconUrl()}. */
     String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
