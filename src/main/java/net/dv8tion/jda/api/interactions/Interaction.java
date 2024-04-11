@@ -97,6 +97,19 @@ public interface Interaction extends ISnowflake
     Guild getGuild();
 
     /**
+     * Whether this interaction happened in a guild the bot is in.
+     *
+     * @return {@code true}, if this interaction happened in a guild the bot is in
+     */
+    default boolean hasFullGuild()
+    {
+        final Guild guild = getGuild();
+        if (guild == null)
+            return false;
+        return !guild.isDetached();
+    }
+
+    /**
      * Whether this interaction came from a {@link Guild}.
      * <br>This is identical to {@code getGuild() != null}
      *
