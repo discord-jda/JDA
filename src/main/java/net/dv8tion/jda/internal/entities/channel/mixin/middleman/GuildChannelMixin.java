@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.entities.channel.mixin.ChannelMixin;
+import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 
 import javax.annotation.CheckReturnValue;
@@ -33,7 +34,8 @@ import javax.annotation.Nonnull;
 public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
         GuildChannel,
         GuildChannelUnion,
-        ChannelMixin<T>
+        ChannelMixin<T>,
+        IDetachableEntityMixin
 {
     // ---- Default implementations of interface ----
     @Override
