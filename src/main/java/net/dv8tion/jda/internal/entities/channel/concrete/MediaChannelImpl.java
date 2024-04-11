@@ -18,28 +18,22 @@ package net.dv8tion.jda.internal.entities.channel.concrete;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelFlag;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.MediaChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
-import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.managers.channel.concrete.MediaChannelManager;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.*;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.MediaChannelMixin;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.managers.channel.concrete.MediaChannelManagerImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
@@ -51,12 +45,7 @@ import java.util.List;
 public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
     implements MediaChannel,
         GuildChannelUnion,
-        StandardGuildChannelMixin<MediaChannelImpl>,
-        IAgeRestrictedChannelMixin<MediaChannelImpl>,
-        ISlowmodeChannelMixin<MediaChannelImpl>,
-        IWebhookContainerMixin<MediaChannelImpl>,
-        IPostContainerMixin<MediaChannelImpl>,
-        ITopicChannelMixin<MediaChannelImpl>
+        MediaChannelMixin<MediaChannelImpl>
 {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
     private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
@@ -84,6 +73,13 @@ public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
 
     @Nonnull
     @Override
+    public GuildImpl getGuild()
+    {
+        return (GuildImpl) super.getGuild();
+    }
+
+    @Nonnull
+    @Override
     public MediaChannelManager getManager()
     {
         return new MediaChannelManagerImpl(this);
@@ -97,37 +93,6 @@ public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
                 .stream()
                 .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
                 .collect(Helpers.toUnmodifiableList());
-    }
-
-    @Nonnull
-    @Override
-    public ChannelAction<MediaChannel> createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        ChannelAction<MediaChannel> action = guild.createMediaChannel(name)
-                .setNSFW(nsfw)
-                .setTopic(topic)
-                .setSlowmode(slowmode)
-                .setAvailableTags(getAvailableTags());
-        if (defaultSortOrder != -1)
-            action.setDefaultSortOrder(SortOrder.fromKey(defaultSortOrder));
-        if (defaultReaction instanceof UnicodeEmoji)
-            action.setDefaultReaction(defaultReaction);
-        if (guild.equals(getGuild()))
-        {
-            Category parent = getParentCategory();
-            action.setDefaultReaction(defaultReaction);
-            if (parent != null)
-                action.setParent(parent);
-            for (PermissionOverride o : overrides.valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-            }
-        }
-        return action;
     }
 
     @Nonnull
@@ -253,12 +218,14 @@ public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
         return this;
     }
 
+    @Override
     public MediaChannelImpl setFlags(int flags)
     {
         this.flags = flags;
         return this;
     }
 
+    @Override
     public MediaChannelImpl setDefaultReaction(DataObject emoji)
     {
         if (emoji != null && !emoji.isNull("emoji_id"))
@@ -270,6 +237,7 @@ public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
         return this;
     }
 
+    @Override
     public MediaChannelImpl setDefaultSortOrder(int defaultSortOrder)
     {
         this.defaultSortOrder = defaultSortOrder;

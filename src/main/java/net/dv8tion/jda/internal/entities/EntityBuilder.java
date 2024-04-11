@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -35,7 +34,6 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
-import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -67,7 +65,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPostContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.emoji.ApplicationEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
@@ -83,7 +80,6 @@ import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ChannelCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
@@ -102,7 +98,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
 
-public class EntityBuilder
+public class EntityBuilder extends AbstractEntityBuilder
 {
     public static final Logger LOG = JDALogger.getLog(EntityBuilder.class);
     public static final String MISSING_CHANNEL = "MISSING_CHANNEL";
@@ -122,16 +118,9 @@ public class EntityBuilder
         richGameFields = Collections.unmodifiableSet(tmp);
     }
 
-    protected final JDAImpl api;
-
-    public EntityBuilder(JDA api)
+    public EntityBuilder(JDAImpl api)
     {
-        this.api = (JDAImpl) api;
-    }
-
-    public JDAImpl getJDA()
-    {
-        return api;
+        super(api);
     }
 
     public SelfUser createSelfUser(DataObject self)
@@ -620,23 +609,7 @@ public class EntityBuilder
         {
             // Create a brand new member
             member = new MemberImpl(guild, user);
-            member.setNickname(memberJson.getString("nick", null));
-            member.setAvatarId(memberJson.getString("avatar", null));
-            if (!memberJson.isNull("flags"))
-                member.setFlags(memberJson.getInt("flags"));
-
-            long boostTimestamp = memberJson.isNull("premium_since")
-                ? 0
-                : Helpers.toTimestamp(memberJson.getString("premium_since"));
-            member.setBoostDate(boostTimestamp);
-
-            long timeOutTimestamp = memberJson.isNull("communication_disabled_until")
-                ? 0
-                : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
-            member.setTimeOutEnd(timeOutTimestamp);
-
-            if (!memberJson.isNull("pending"))
-                member.setPending(memberJson.getBoolean("pending"));
+            configureMember(memberJson, member);
             Set<Role> roles = member.getRoleSet();
             for (int i = 0; i < roleArray.length(); i++)
             {
@@ -658,12 +631,6 @@ public class EntityBuilder
                     roles.add(role);
             }
             updateMember(guild, member, memberJson, roles);
-        }
-
-        // Load joined_at if necessary
-        if (!memberJson.isNull("joined_at") && !member.hasTimeJoined())
-        {
-            member.setJoinDate(Helpers.toTimestamp(memberJson.getString("joined_at")));
         }
 
         // Load voice state and presence if necessary
@@ -1131,10 +1098,7 @@ public class EntityBuilder
             }
         }
 
-        channel
-            .setName(json.getString("name"))
-            .setPosition(json.getInt("position"));
-
+        configureCategory(json, channel);
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
@@ -1172,16 +1136,7 @@ public class EntityBuilder
             }
         }
 
-        channel
-            .setParentCategory(json.getLong("parent_id", 0))
-            .setLatestMessageIdLong(json.getLong("last_message_id", 0))
-            .setName(json.getString("name"))
-            .setTopic(json.getString("topic", null))
-            .setPosition(json.getInt("position"))
-            .setNSFW(json.getBoolean("nsfw"))
-            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
-            .setSlowmode(json.getInt("rate_limit_per_user", 0));
-
+        configureTextChannel(json, channel);
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
@@ -1219,14 +1174,7 @@ public class EntityBuilder
             }
         }
 
-        channel
-                .setParentCategory(json.getLong("parent_id", 0))
-                .setLatestMessageIdLong(json.getLong("last_message_id", 0))
-                .setName(json.getString("name"))
-                .setTopic(json.getString("topic", null))
-                .setPosition(json.getInt("position"))
-                .setNSFW(json.getBoolean("nsfw"));
-
+        configureNewsChannel(json, channel);
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
@@ -1263,19 +1211,7 @@ public class EntityBuilder
             }
         }
 
-        channel
-            .setParentCategory(json.getLong("parent_id", 0))
-            .setLatestMessageIdLong(json.getLong("last_message_id", 0))
-            .setName(json.getString("name"))
-            .setStatus(json.getString("status", ""))
-            .setPosition(json.getInt("position"))
-            .setUserLimit(json.getInt("user_limit"))
-            .setNSFW(json.getBoolean("nsfw"))
-            .setBitrate(json.getInt("bitrate"))
-            .setRegion(json.getString("rtc_region", null))
-//            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
-            .setSlowmode(json.getInt("rate_limit_per_user", 0));
-
+        configureVoiceChannel(json, channel);
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
@@ -1312,18 +1248,7 @@ public class EntityBuilder
             }
         }
 
-        channel
-            .setParentCategory(json.getLong("parent_id", 0))
-            .setLatestMessageIdLong(json.getLong("last_message_id", 0))
-            .setName(json.getString("name"))
-            .setPosition(json.getInt("position"))
-            .setBitrate(json.getInt("bitrate"))
-            .setUserLimit(json.getInt("user_limit", 0))
-            .setNSFW(json.getBoolean("nsfw"))
-            .setRegion(json.getString("rtc_region", null))
-//            .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
-            .setSlowmode(json.getInt("rate_limit_per_user", 0));
-
+        configureStageChannel(json, channel);
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
@@ -1345,7 +1270,6 @@ public class EntityBuilder
         boolean playbackCache = false;
         final long id = json.getUnsignedLong("id");
         final long parentId = json.getUnsignedLong("parent_id");
-        final ChannelType type = ChannelType.fromId(json.getInt("type"));
 
         if (guild == null)
             guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
@@ -1365,6 +1289,7 @@ public class EntityBuilder
                     UnlockHook vlock = guildThreadView.writeLock();
                     UnlockHook jlock = threadView.writeLock())
             {
+                final ChannelType type = ChannelType.fromId(json.getInt("type"));
                 channel = new ThreadChannelImpl(id, guild, type);
                 if (modifyCache)
                 {
@@ -1374,7 +1299,7 @@ public class EntityBuilder
             }
         }
 
-        DataObject threadMetadata = json.getObject("thread_metadata");
+        configureThreadChannel(json, channel);
 
         if (!json.isNull("applied_tags") && api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
         {
@@ -1382,22 +1307,7 @@ public class EntityBuilder
             channel.setAppliedTags(IntStream.range(0, array.length()).mapToLong(array::getUnsignedLong));
         }
 
-        channel
-                .setName(json.getString("name"))
-                .setFlags(json.getInt("flags", 0))
-                .setParentChannel(parent)
-                .setOwnerId(json.getLong("owner_id"))
-                .setMemberCount(json.getInt("member_count"))
-                .setMessageCount(json.getInt("message_count"))
-                .setTotalMessageCount(json.getInt("total_message_count", 0))
-                .setLatestMessageIdLong(json.getLong("last_message_id", 0))
-                .setSlowmode(json.getInt("rate_limit_per_user", 0))
-                .setLocked(threadMetadata.getBoolean("locked"))
-                .setArchived(threadMetadata.getBoolean("archived"))
-                .setInvitable(threadMetadata.getBoolean("invitable"))
-                .setArchiveTimestamp(Helpers.toTimestamp(threadMetadata.getString("archive_timestamp")))
-                .setCreationTimestamp(threadMetadata.isNull("create_timestamp") ? 0 : Helpers.toTimestamp(threadMetadata.getString("create_timestamp")))
-                .setAutoArchiveDuration(ThreadChannel.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration")));
+        channel.setParentChannel(parent);
 
         //If the bot in the thread already, then create a thread member for the bot.
         if (!json.isNull("member"))
@@ -1462,27 +1372,7 @@ public class EntityBuilder
                 playbackCache = globalView.put(channel) == null;
             }
         }
-
-        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
-        {
-            DataArray tags = json.getArray("available_tags");
-            for (int i = 0; i < tags.length(); i++)
-                createForumTag(channel, tags.getObject(i), i);
-        }
-
-        channel
-                .setParentCategory(json.getLong("parent_id", 0))
-                .setFlags(json.getInt("flags", 0))
-                .setDefaultReaction(json.optObject("default_reaction_emoji").orElse(null))
-                .setDefaultSortOrder(json.getInt("default_sort_order", -1))
-                .setDefaultLayout(json.getInt("default_forum_layout", -1))
-                .setName(json.getString("name"))
-                .setTopic(json.getString("topic", null))
-                .setPosition(json.getInt("position"))
-                .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
-                .setSlowmode(json.getInt("rate_limit_per_user", 0))
-                .setNSFW(json.getBoolean("nsfw"));
-
+        configureForumChannel(json, channel);
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
@@ -1518,52 +1408,11 @@ public class EntityBuilder
                 playbackCache = globalView.put(channel) == null;
             }
         }
-
-        if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
-        {
-            DataArray tags = json.getArray("available_tags");
-            for (int i = 0; i < tags.length(); i++)
-                createForumTag(channel, tags.getObject(i), i);
-        }
-
-        channel
-                .setParentCategory(json.getLong("parent_id", 0))
-                .setFlags(json.getInt("flags", 0))
-                .setDefaultReaction(json.optObject("default_reaction_emoji").orElse(null))
-                .setDefaultSortOrder(json.getInt("default_sort_order", -1))
-                .setName(json.getString("name"))
-                .setTopic(json.getString("topic", null))
-                .setPosition(json.getInt("position"))
-                .setDefaultThreadSlowmode(json.getInt("default_thread_rate_limit_per_user", 0))
-                .setSlowmode(json.getInt("rate_limit_per_user", 0))
-                .setNSFW(json.getBoolean("nsfw"));
-
+        configureMediaChannel(json, channel);
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
-    }
-
-    public ForumTagImpl createForumTag(IPostContainerMixin<?> channel, DataObject json, int index)
-    {
-        final long id = json.getUnsignedLong("id");
-        SortedSnowflakeCacheViewImpl<ForumTag> cache = channel.getAvailableTagCache();
-        ForumTagImpl tag = (ForumTagImpl) cache.get(id);
-
-        if (tag == null)
-        {
-            try (UnlockHook lock = cache.writeLock())
-            {
-                tag = new ForumTagImpl(id);
-                cache.getMap().put(id, tag);
-            }
-        }
-
-        tag.setName(json.getString("name"))
-           .setModerated(json.getBoolean("moderated"))
-           .setEmoji(json)
-           .setPosition(index);
-        return tag;
     }
 
     public PrivateChannel createPrivateChannel(DataObject json)
@@ -1682,22 +1531,7 @@ public class EntityBuilder
                 playbackCache = roleView.getMap().put(id, role) == null;
             }
         }
-        final int color = roleJson.getInt("color");
-        role.setName(roleJson.getString("name"))
-            .setRawPosition(roleJson.getInt("position"))
-            .setRawPermissions(roleJson.getLong("permissions"))
-            .setManaged(roleJson.getBoolean("managed"))
-            .setHoisted(roleJson.getBoolean("hoist"))
-            .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
-            .setMentionable(roleJson.getBoolean("mentionable"))
-            .setTags(roleJson.optObject("tags").orElseGet(DataObject::empty));
-
-        final String iconId = roleJson.getString("icon", null);
-        final String emoji = roleJson.getString("unicode_emoji", null);
-        if (iconId == null && emoji == null)
-            role.setIcon(null);
-        else
-            role.setIcon(new RoleIcon(iconId, emoji, id));
+        configureRole(roleJson, role, id);
 
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);

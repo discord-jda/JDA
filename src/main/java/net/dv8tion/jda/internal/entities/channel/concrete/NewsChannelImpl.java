@@ -17,21 +17,18 @@
 package net.dv8tion.jda.internal.entities.channel.concrete;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.NewsChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildMessageChannelImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.NewsChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.NewsChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -42,7 +39,8 @@ import java.util.List;
 
 public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<NewsChannelImpl>
         implements NewsChannel,
-        DefaultGuildChannelUnion
+        DefaultGuildChannelUnion,
+        NewsChannelMixin<NewsChannelImpl>
 {
     public NewsChannelImpl(long id, GuildImpl guild)
     {
@@ -53,6 +51,13 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
     public boolean isDetached()
     {
         return false;
+    }
+
+    @Nonnull
+    @Override
+    public GuildImpl getGuild()
+    {
+        return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
@@ -83,28 +88,6 @@ public class NewsChannelImpl extends AbstractStandardGuildMessageChannelImpl<New
             DataObject json = response.getObject();
             return new Webhook.WebhookReference(request.getJDA(), json.getUnsignedLong("webhook_id") , json.getUnsignedLong("channel_id"));
         });
-    }
-
-    @Nonnull
-    @Override
-    public ChannelAction<NewsChannel> createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        ChannelAction<NewsChannel> action = guild.createNewsChannel(name).setNSFW(nsfw).setTopic(topic);
-        if (guild.equals(getGuild()))
-        {
-            Category parent = getParentCategory();
-            if (parent != null)
-                action.setParent(parent);
-            for (PermissionOverride o : overrides.valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-            }
-        }
-        return action;
     }
 
     @Nonnull

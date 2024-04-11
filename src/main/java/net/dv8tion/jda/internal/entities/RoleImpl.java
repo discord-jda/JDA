@@ -30,11 +30,11 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.RoleMixin;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -46,11 +46,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Objects;
 
-public class RoleImpl implements Role
+public class RoleImpl implements Role, RoleMixin<RoleImpl>
 {
     private final long id;
     private final JDAImpl api;
@@ -277,20 +276,6 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public RoleAction createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        return guild.createRole()
-                    .setColor(color)
-                    .setHoisted(hoisted)
-                    .setMentionable(mentionable)
-                    .setName(name)
-                    .setPermissions(rawPermissions)
-                    .setIcon(icon == null ? null : icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
-    }
-
-    @Nonnull
-    @Override
     public RoleManager getManager()
     {
         return new RoleManagerImpl(this);
@@ -397,42 +382,49 @@ public class RoleImpl implements Role
 
     // -- Setters --
 
+    @Override
     public RoleImpl setName(String name)
     {
         this.name = name;
         return this;
     }
 
+    @Override
     public RoleImpl setColor(int color)
     {
         this.color = color;
         return this;
     }
 
+    @Override
     public RoleImpl setManaged(boolean managed)
     {
         this.managed = managed;
         return this;
     }
 
+    @Override
     public RoleImpl setHoisted(boolean hoisted)
     {
         this.hoisted = hoisted;
         return this;
     }
 
+    @Override
     public RoleImpl setMentionable(boolean mentionable)
     {
         this.mentionable = mentionable;
         return this;
     }
 
+    @Override
     public RoleImpl setRawPermissions(long rawPermissions)
     {
         this.rawPermissions = rawPermissions;
         return this;
     }
 
+    @Override
     public RoleImpl setRawPosition(int rawPosition)
     {
         SortedSnowflakeCacheViewImpl<Role> roleCache = (SortedSnowflakeCacheViewImpl<Role>) getGuild().getRoleCache();
@@ -441,6 +433,7 @@ public class RoleImpl implements Role
         return this;
     }
 
+    @Override
     public RoleImpl setTags(DataObject tags)
     {
         if (this.tags == null)
@@ -449,6 +442,7 @@ public class RoleImpl implements Role
         return this;
     }
 
+    @Override
     public RoleImpl setIcon(RoleIcon icon)
     {
         this.icon = icon;
