@@ -37,6 +37,8 @@ import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
+import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -2337,9 +2339,21 @@ public interface Message extends ISnowflake, Formattable
      * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
+     *
+     * @deprecated Replaced with {@link #getInteractionMetadata()}
      */
     @Nullable
+    @Deprecated
     Interaction getInteraction();
+
+    /**
+     * Returns the interaction metadata,
+     * available when the message is a response or a followup to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
+     *
+     * @return The {@link InteractionMetadata} of this message, or {@code null}
+     */
+    @Nullable
+    InteractionMetadata getInteractionMetadata();
 
     /**
      * Creates a new, public {@link ThreadChannel} spawning/starting at this {@link Message} inside the {@link IThreadContainer} this message was sent in.
@@ -2831,7 +2845,10 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     *
+     * @deprecated Replaced with {@link InteractionMetadata}
      */
+    @Deprecated
     class Interaction implements ISnowflake
     {
         private final long id;
@@ -2909,6 +2926,125 @@ public interface Message extends ISnowflake, Formattable
         public Member getMember()
         {
             return member;
+        }
+    }
+
+    /**
+     * Metadata about the interaction, including the source of the interaction and relevant server and user IDs.
+     *
+     * @see Message#getInteractionMetadata()
+     */
+    class InteractionMetadata implements ISnowflake
+    {
+        private final long id;
+        private final int type;
+        private final UserSnowflake userId;
+        private final IntegrationOwners integrationOwners;
+        private final Long originalResponseMessageId;
+        private final Long interactedMessageId;
+        private final InteractionMetadata triggeringInteraction;
+
+        public InteractionMetadata(long id, int type, UserSnowflake userId, IntegrationOwners integrationOwners, Long originalResponseMessageId, Long interactedMessageId, InteractionMetadata triggeringInteraction)
+        {
+            this.id = id;
+            this.type = type;
+            this.userId = userId;
+            this.integrationOwners = integrationOwners;
+            this.originalResponseMessageId = originalResponseMessageId;
+            this.interactedMessageId = interactedMessageId;
+            this.triggeringInteraction = triggeringInteraction;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        /**
+         * The raw interaction type.
+         * <br>It is recommended to use {@link #getType()} instead.
+         *
+         * @return The raw interaction type
+         */
+        public int getTypeRaw()
+        {
+            return type;
+        }
+
+        /**
+         * The {@link net.dv8tion.jda.api.interactions.InteractionType} for this interaction.
+         *
+         * @return The {@link net.dv8tion.jda.api.interactions.InteractionType} or {@link net.dv8tion.jda.api.interactions.InteractionType#UNKNOWN}
+         */
+        @Nonnull
+        public InteractionType getType()
+        {
+            return InteractionType.fromKey(type);
+        }
+
+        /**
+         * The id of the user who caused this interaction.
+         *
+         * @return The {@link UserSnowflake}
+         */
+        @Nonnull
+        public UserSnowflake getUserId()
+        {
+            return userId;
+        }
+
+        /**
+         * Returns the integration owners of this interaction, which depends on how the app was installed.
+         *
+         * <p>This will be {@code null} if the command is installed <b>only</b> {@link IntegrationType#GUILD_INSTALL on guilds},
+         * regardless of if the command is on the global scope, or on a guild:
+         * <ul>
+         *     <li>❌ : Global command with {@link IntegrationType#GUILD_INSTALL} (and nothing else)</li>
+         *     <li>❌ : Guild command with {@link IntegrationType#GUILD_INSTALL} (and nothing else)</li>
+         *     <li>✔️ : Any other case</li>
+         * </ul>
+         *
+         * @return The integration owners of this interaction, or {@code null}
+         */
+        @Nonnull
+        public IntegrationOwners getIntegrationOwners()
+        {
+            return integrationOwners;
+        }
+
+        /**
+         * The ID of the original response message, present only on followup messages.
+         *
+         * @return The ID of the original response message, or {@code null}
+         */
+        @Nullable
+        public Long getOriginalResponseMessageId()
+        {
+            return originalResponseMessageId;
+        }
+
+        /**
+         * The ID of the message containing the component which created this message.
+         *
+         * @return the ID of the message containing the component which created this message, or {@code null}
+         */
+        @Nullable
+        public Long getInteractedMessageId()
+        {
+            return interactedMessageId;
+        }
+
+        /**
+         * Metadata for the interaction that was used to open the modal,
+         * present only on modal submit interactions.
+         *
+         * @return Metadata for the interaction that was used to open the modal, or {@code null}
+         */
+        @Nullable
+        public InteractionMetadata getTriggeringInteraction()
+        {
+            return triggeringInteraction;
         }
     }
 }
