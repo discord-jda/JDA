@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogChange;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -55,6 +56,7 @@ import net.dv8tion.jda.api.events.guild.member.update.*;
 import net.dv8tion.jda.api.events.user.update.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -2619,9 +2621,30 @@ public class EntityBuilder
                             .collect(Collectors.toList()))
                     .orElse(Collections.emptyList());
 
+        final Optional<DataObject> integrationTypesConfigDict = object.optObject("integration_types_config");
+        final Map<IntegrationType, ApplicationInfo.IntegrationTypeConfiguration> integrationTypesConfig = integrationTypesConfigDict
+            .map(d -> {
+                final Map<IntegrationType, ApplicationInfo.IntegrationTypeConfiguration> map = new EnumMap<>(IntegrationType.class);
+                for (String key : d.keys())
+                {
+                    final DataObject value = d.getObject(key);
+
+                    final ApplicationInfo.InstallParameters installParameters = value.optObject("oauth2_install_params")
+                            .map(oauth2InstallParams -> new ApplicationInfoImpl.InstallParametersImpl(
+                                    oauth2InstallParams.getArray("scopes").stream(DataArray::getString).collect(Collectors.toList()),
+                                    Permission.getPermissions(oauth2InstallParams.getLong("permissions"))
+                            ))
+                            .orElse(null);
+
+                    map.put(IntegrationType.fromKey(key), new ApplicationInfoImpl.IntegrationTypeConfigurationImpl(installParameters));
+                }
+                return map;
+            })
+            .orElse(Collections.emptyMap());
+
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, flags, isBotPublic, name,
                 termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, redirectUris, interactionsEndpointUrl,
-                roleConnectionsVerificationUrl, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes);
+                roleConnectionsVerificationUrl, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes, integrationTypesConfig);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)
