@@ -125,7 +125,11 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @see    java.util.EnumSet EnumSet
      */
-    boolean hasPermission(@Nonnull Collection<Permission> permissions);
+    default boolean hasPermission(@Nonnull Collection<Permission> permissions)
+    {
+        Checks.notNull(permissions, "Permission Collection");
+        return hasPermission(permissions.toArray(Permission.EMPTY_PERMISSIONS));
+    }
 
     /**
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.api.Permission Permissions} in the specified GuildChannel.
@@ -158,7 +162,11 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
-    boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions);
+    default boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
+    {
+        Checks.notNull(permissions, "Permission Collection");
+        return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
+    }
 
     /**
      * Checks whether or not this PermissionHolder has {@link Permission#VIEW_CHANNEL VIEW_CHANNEL}
