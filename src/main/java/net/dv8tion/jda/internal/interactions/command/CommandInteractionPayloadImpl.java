@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.interactions.command;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -30,7 +31,6 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
@@ -113,7 +113,6 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
 
         if (this.guild != null)
         {
-            GuildImpl guild = (GuildImpl) this.guild;
             resolveJson.optObject("members").ifPresent(members ->
             {
                 DataObject users = resolveJson.getObject("users");
@@ -121,19 +120,25 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
                 {
                     DataObject memberJson = members.getObject(memberId);
                     memberJson.put("user", users.getObject(memberId)); // Add user json as well for parsing
-                    MemberImpl optionMember = entityBuilder.createMember(guild, memberJson);
+                    Member optionMember = interactionEntityBuilder.createMember(guild, memberJson);
                     if (hasFullGuild())
                         entityBuilder.updateMemberCache((MemberImpl) optionMember);
                     resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
                 });
             });
             resolveJson.optObject("roles").ifPresent(roles ->
+            {
                 roles.keys()
-                    .stream()
-                    .map(this.guild::getRoleById)
-                    .filter(Objects::nonNull)
-                    .forEach(role -> resolved.put(role.getIdLong(), role))
-            );
+                        .stream()
+                        .map(roleId ->
+                        {
+                            if (hasFullGuild())
+                                return guild.getRoleById(roleId);
+                            return interactionEntityBuilder.createRole(guild, roles.getObject(roleId));
+                        })
+                        .filter(Objects::nonNull)
+                        .forEach(role -> resolved.put(role.getIdLong(), role));
+            });
             resolveJson.optObject("channels").ifPresent(channels ->
                 channels.keys().forEach(id -> {
                     ISnowflake channelObj = jda.getGuildChannelById(id);
@@ -141,7 +146,9 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
                     if (channelObj != null)
                         resolved.put(channelObj.getIdLong(), channelObj);
                     else if (ChannelType.fromId(channelJson.getInt("type")).isThread())
-                        resolved.put(Long.parseUnsignedLong(id), api.getEntityBuilder().createThreadChannel(guild, channelJson, guild.getIdLong(), false));
+                        resolved.put(Long.parseUnsignedLong(id), interactionEntityBuilder.createThreadChannel(guild, channelJson));
+                    else
+                        resolved.put(Long.parseUnsignedLong(id), interactionEntityBuilder.createGuildChannel(guild, channelJson));
                 })
             );
         }

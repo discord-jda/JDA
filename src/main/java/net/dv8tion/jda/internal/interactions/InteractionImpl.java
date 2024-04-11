@@ -33,9 +33,11 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.InteractionEntityBuilder;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
+import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -57,6 +59,7 @@ public class InteractionImpl implements Interaction
     protected final InteractionContextType context;
     protected final IntegrationOwners integrationOwners;
     protected final JDAImpl api;
+    protected final InteractionEntityBuilder interactionEntityBuilder;
 
     //This is used to give a proper error when an interaction is ack'd twice
     // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
@@ -65,10 +68,12 @@ public class InteractionImpl implements Interaction
     public InteractionImpl(JDAImpl jda, DataObject data)
     {
         this.api = jda;
+        final DataObject userObj = data.optObject("member").orElse(data).getObject("user");
+        this.interactionEntityBuilder = new InteractionEntityBuilder(jda, data.getLong("channel_id"), userObj.getUnsignedLong("id"));
         this.id = data.getUnsignedLong("id");
         this.token = data.getString("token");
         this.type = data.getInt("type");
-        this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
+        this.guild = data.optObject("guild").map(interactionEntityBuilder::getOrCreateGuild).orElse(null);
         this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
         // Absent in guild-scoped commands
@@ -88,6 +93,18 @@ public class InteractionImpl implements Interaction
             if (channel == null)
                 throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: " + channelJson.getInt("type"));
             this.channel = channel;
+        }
+        else if (guild instanceof DetachedGuildImpl)
+        {
+            member = interactionEntityBuilder.createMember(guild, data.getObject("member"));
+            user = member.getUser();
+
+            if (ChannelType.fromId(channelJson.getInt("type")).isThread())
+                channel = interactionEntityBuilder.createThreadChannel(guild, channelJson);
+            else
+                channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
+            if (channel == null)
+                throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: " + channelJson.getInt("type"));
         }
         else
         {

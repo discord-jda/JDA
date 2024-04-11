@@ -38,6 +38,7 @@ public class EntitySelectInteractionImpl extends SelectMenuInteractionImpl<IMent
         DataObject content = data.getObject("data");
         this.mentions = new SelectMenuMentions(
                 jda,
+                interactionEntityBuilder,
                 getGuild(),
                 content.optObject("resolved").orElseGet(DataObject::empty),
                 content.optArray("values").orElseGet(DataArray::empty)
