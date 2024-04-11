@@ -99,6 +99,8 @@ public class SelectMenuMentions implements Mentions
     @Override
     public List<GuildChannel> getChannels()
     {
+        if (guild == null)
+            return Collections.emptyList();
         if (cachedChannels != null)
             return cachedChannels;
 
@@ -151,6 +153,8 @@ public class SelectMenuMentions implements Mentions
     @Override
     public List<Role> getRoles()
     {
+        if (guild == null)
+            return Collections.emptyList();
         if (cachedRoles != null)
             return cachedRoles;
 
@@ -208,6 +212,8 @@ public class SelectMenuMentions implements Mentions
     @Override
     public List<Member> getMembers()
     {
+        if (guild == null)
+            return Collections.emptyList();
         if (cachedMembers != null)
             return cachedMembers;
 
