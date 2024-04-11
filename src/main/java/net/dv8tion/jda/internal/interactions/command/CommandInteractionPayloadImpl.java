@@ -122,7 +122,8 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
                     DataObject memberJson = members.getObject(memberId);
                     memberJson.put("user", users.getObject(memberId)); // Add user json as well for parsing
                     MemberImpl optionMember = entityBuilder.createMember(guild, memberJson);
-                    entityBuilder.updateMemberCache(optionMember);
+                    if (hasFullGuild())
+                        entityBuilder.updateMemberCache((MemberImpl) optionMember);
                     resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
                 });
             });

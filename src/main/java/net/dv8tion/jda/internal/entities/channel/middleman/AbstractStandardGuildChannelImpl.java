@@ -73,6 +73,7 @@ public abstract class AbstractStandardGuildChannelImpl<T extends AbstractStandar
 
     protected final void onPositionChange()
     {
-        getGuild().getChannelView().clearCachedLists();
+        if (!isDetached())
+            ((GuildImpl) getGuild()).getChannelView().clearCachedLists();
     }
 }

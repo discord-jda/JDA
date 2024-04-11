@@ -201,8 +201,10 @@ public class SelectMenuMentions implements Mentions
                 .map(json -> json.put("user", userMap.getObject(json.getString("id"))))
                 .map(json -> builder.createMember(guild, json))
                 .filter(Objects::nonNull)
-                .filter(member -> {
-                    builder.updateMemberCache(member);
+                .filter(member ->
+                {
+                    if (!member.isDetached())
+                        jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
                     return true;
                 })
                 .collect(Helpers.toUnmodifiableList());

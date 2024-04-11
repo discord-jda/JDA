@@ -1555,7 +1555,10 @@ public class EntityBuilder extends AbstractEntityBuilder
     {
         // Use channel directly if message is from a known guild channel
         if (channel instanceof GuildMessageChannel)
-            return createMessage0(json, channel, (GuildImpl) ((GuildMessageChannel) channel).getGuild(), modifyCache);
+        {
+            final GuildMessageChannel messageChannel = (GuildMessageChannel) channel;
+            return createMessage0(json, channel, messageChannel.isDetached() ? null : (GuildImpl) messageChannel.getGuild(), modifyCache);
+        }
         // Try to resolve private channel recipient if needed
         if (channel instanceof PrivateChannel)
             return createMessageWithLookup(json, null, modifyCache);
