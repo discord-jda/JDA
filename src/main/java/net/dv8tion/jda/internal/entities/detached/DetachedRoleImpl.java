@@ -37,7 +37,6 @@ import net.dv8tion.jda.internal.utils.PermissionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.time.OffsetDateTime;
 import java.util.EnumSet;
 
 public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
@@ -275,30 +274,6 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
         return new EntityString(this)
                 .setName(getName())
                 .toString();
-    }
-
-    @Override
-    public int compareTo(@Nonnull Role r)
-    {
-        if (this == r)
-            return 0;
-        if (!(r instanceof DetachedRoleImpl))
-            throw new IllegalArgumentException("Cannot compare different role implementations");
-        DetachedRoleImpl impl = (DetachedRoleImpl) r;
-
-        if (this.guild.getIdLong() != impl.guild.getIdLong())
-            throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
-
-        if (this.getPositionRaw() != r.getPositionRaw())
-            return this.getPositionRaw() - r.getPositionRaw();
-
-        OffsetDateTime thisTime = this.getTimeCreated();
-        OffsetDateTime rTime = r.getTimeCreated();
-
-        //We compare the provided role's time to this's time instead of the reverse as one would expect due to how
-        // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy ranking when
-        // it shares the same position as another role.
-        return rTime.compareTo(thisTime);
     }
 
     // -- Setters --
