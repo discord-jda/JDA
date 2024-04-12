@@ -67,7 +67,7 @@ public class InteractionCreateHandler extends SocketHandler
         // Check channel type
         DataObject channelJson = content.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
-        if (!channelType.isMessage() || channelType == ChannelType.GROUP)
+        if (!channelType.isMessage())
         {
             WebSocketClient.LOG.debug("Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channelJson);
             return null;

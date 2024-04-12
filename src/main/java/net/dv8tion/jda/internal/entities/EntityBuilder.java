@@ -1559,6 +1559,9 @@ public class EntityBuilder extends AbstractEntityBuilder
             final GuildMessageChannel messageChannel = (GuildMessageChannel) channel;
             return createMessage0(json, channel, messageChannel.isDetached() ? null : (GuildImpl) messageChannel.getGuild(), modifyCache);
         }
+        if (channel instanceof GroupChannel)
+            return createMessage0(json, channel, null, modifyCache);
+
         // Try to resolve private channel recipient if needed
         if (channel instanceof PrivateChannel)
             return createMessageWithLookup(json, null, modifyCache);

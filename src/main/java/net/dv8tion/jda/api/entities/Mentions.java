@@ -296,7 +296,7 @@ public interface Mentions
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance. This only
      * counts direct mentions of the role and not mentions through everyone mentions.
      *
-     * <p>This is always empty in {@link PrivateChannel PrivateChannels}.
+     * <p>This is always empty in {@link PrivateChannel PrivateChannels} and {@link PrivateChannel PrivateChannels}.
      *
      * @return Immutable list of mentioned Members, or an empty list
      */

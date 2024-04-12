@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -137,6 +138,7 @@ public interface MessageChannel extends Channel, Formattable
      * <br>For {@link ThreadChannel} this method checks for {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND_IN_THREADS} instead of {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND}.
      * <br>For {@link PrivateChannel} this method checks if the user that this PrivateChannel communicates with is not a bot,
      * but it does <b>not</b> check if the said user blocked the currently logged in user or have their DMs disabled.
+     * <br>For {@link GroupChannel} this method returns false.
      *
      * @return True, if we are able to read and send messages in this channel
      */

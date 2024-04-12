@@ -111,27 +111,30 @@ public class InteractionImpl implements Interaction
             member = null;
             long channelId = channelJson.getUnsignedLong("id");
             ChannelType type = ChannelType.fromId(channelJson.getInt("type"));
-            if (type != ChannelType.PRIVATE)
-                throw new IllegalArgumentException("Received interaction in unexpected channel type! Type " + type + " is not supported yet!");
-            PrivateChannel channel = jda.getPrivateChannelById(channelId);
-            if (channel == null)
-            {
-                channel = jda.getEntityBuilder().createPrivateChannel(
-                    DataObject.empty()
-                        .put("id", channelId)
-                        .put("recipient", data.getObject("user"))
-                );
-            }
-            this.channel = channel;
+            if (type == ChannelType.PRIVATE) {
+                PrivateChannel channel = jda.getPrivateChannelById(channelId);
+                if (channel == null) {
+                    channel = jda.getEntityBuilder().createPrivateChannel(
+                            DataObject.empty()
+                                    .put("id", channelId)
+                                    .put("recipient", data.getObject("user"))
+                    );
+                }
+                this.channel = channel;
 
-            User user = channel.getUser();
-            if (user == null)
-            {
-                user = jda.getEntityBuilder().createUser(data.getObject("user"));
-                ((PrivateChannelImpl) channel).setUser(user);
-                ((UserImpl) user).setPrivateChannel(channel);
+                User user = channel.getUser();
+                if (user == null) {
+                    user = jda.getEntityBuilder().createUser(data.getObject("user"));
+                    ((PrivateChannelImpl) channel).setUser(user);
+                    ((UserImpl) user).setPrivateChannel(channel);
+                }
+                this.user = user;
+            } else if (type == ChannelType.GROUP) {
+                this.channel = interactionEntityBuilder.createGroupChannel(channelJson);
+                this.user = jda.getEntityBuilder().createUser(data.getObject("user"));
+            } else {
+                throw new IllegalArgumentException("Received interaction in unexpected channel type! Type " + type + " is not supported yet!");
             }
-            this.user = user;
         }
 
         this.entitlements = data.optArray("entitlements").orElseGet(DataArray::empty)
