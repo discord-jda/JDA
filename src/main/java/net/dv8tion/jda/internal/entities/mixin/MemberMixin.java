@@ -17,9 +17,11 @@
 package net.dv8tion.jda.internal.entities.mixin;
 
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 
 public interface MemberMixin<T extends MemberMixin<T>>
-    extends Member
+    extends Member,
+        IDetachableEntityMixin
 {
     T setNickname(String nickname);
 

@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
-import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.entities.mixin.MemberMixin;
 import net.dv8tion.jda.internal.interactions.ChannelInteractionPermissions;
 import net.dv8tion.jda.internal.interactions.MemberInteractionPermissions;
@@ -41,7 +40,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
-public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImpl>, IDetachableEntityMixin
+public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImpl>
 {
     private final JDAImpl api;
 

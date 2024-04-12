@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.RoleImpl.RoleTagsImpl;
-import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.entities.mixin.RoleMixin;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -41,7 +40,7 @@ import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 
-public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>, IDetachableEntityMixin
+public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
 {
     private final long id;
     private final JDAImpl api;

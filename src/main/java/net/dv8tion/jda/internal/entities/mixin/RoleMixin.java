@@ -21,12 +21,14 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
 public interface RoleMixin<T extends RoleMixin<T>>
-    extends Role
+    extends Role,
+        IDetachableEntityMixin
 {
     @Nonnull
     @Override
