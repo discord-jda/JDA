@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
 import net.dv8tion.jda.internal.entities.mixin.MemberMixin;
@@ -36,6 +37,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -345,6 +347,13 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     public MemberInteractionPermissions getInteractionPermissions()
     {
         return interactionPermissions;
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> modifyFlags(@Nonnull Collection<MemberFlag> newFlags)
+    {
+        throw detachedException();
     }
 
     @Override
