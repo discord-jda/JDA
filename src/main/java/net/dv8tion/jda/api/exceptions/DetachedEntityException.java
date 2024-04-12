@@ -13,25 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.exceptions;
 
-package net.dv8tion.jda.internal.entities.detached.mixin;
-
-import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
-import net.dv8tion.jda.api.exceptions.DetachedEntityException;
-
-import javax.annotation.Nonnull;
-
-public interface IDetachableEntityMixin extends IDetachableEntity
+/**
+ * Indicates that the operation cannot be done on a detached entity.
+ *
+ * @see net.dv8tion.jda.api.entities.detached.IDetachableEntity
+ */
+public class DetachedEntityException extends RuntimeException
 {
-    default void checkAttached()
+    /**
+     * Creates a new DetachedEntityException
+     */
+    public DetachedEntityException()
     {
-        if (isDetached())
-            throw detachedException();
+        this("Cannot perform action as the bot is not in the guild");
     }
 
-    @Nonnull
-    default DetachedEntityException detachedException()
+    /**
+     * Creates a new DetachedEntityException
+     *
+     * @param reason
+     *        The reason for this Exception
+     */
+    public DetachedEntityException(String reason)
     {
-        return new DetachedEntityException();
+        super(reason);
     }
 }

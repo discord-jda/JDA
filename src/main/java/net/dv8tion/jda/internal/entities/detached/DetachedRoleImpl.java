@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -74,7 +74,7 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>, IDet
     @Override
     public int getPosition()
     {
-        throw new PermissionException("Can only get the raw position in a detached role");
+        throw new DetachedEntityException("Can only get the raw position in a detached role");
     }
 
     @Override
