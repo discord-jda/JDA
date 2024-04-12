@@ -78,6 +78,7 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
     // Overridden by AudioChannelMixin
     default void checkCanAccess()
     {
+        checkAttached();
         if (!hasPermission(Permission.VIEW_CHANNEL))
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
     }

@@ -52,6 +52,8 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
      *
      * @throws IllegalStateException
      *         If this role is not in the guild cache
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild, use {@link #getPermissionsRaw()} instead.
      *
      * @return The position of this {@link net.dv8tion.jda.api.entities.Role Role} as integer.
      */
@@ -185,6 +187,8 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
      * @throws java.lang.IllegalArgumentException
      *         If the specified guild is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild the role should be copied to.
      *
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
@@ -215,6 +219,8 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
      *
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES} Permission and every Permission the provided Role has
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
@@ -235,6 +241,8 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the currently logged in account does not have the required position to modify this role
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return The RoleManager of this Role
      */
@@ -262,6 +270,8 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
      *         If we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES MANAGE_ROLES}
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the role is too high in the role hierarchy to be deleted
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */

@@ -67,6 +67,8 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link RestAction}
      *
@@ -94,6 +96,9 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *
      * @param  targetChannelId
      *         The target channel id
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link RestAction}
      *
@@ -131,6 +136,8 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         If the currently logged in account does not have {@link Permission#MANAGE_WEBHOOKS} in the <b>target channel</b>.
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link RestAction}
      *
@@ -184,6 +191,8 @@ public interface NewsChannel extends StandardGuildMessageChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
      *
@@ -195,6 +204,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
     {
         Checks.isSnowflake(messageId);
         Checks.checkAccess(getGuild().getSelfMember(), this);
+        Checks.checkAttached(this);
         Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getId(), messageId);
         return new RestActionImpl<>(getJDA(), route,
                 (response, request) -> request.getJDA().getEntityBuilder().createMessageWithChannel(response.getObject(), this, false));
@@ -232,6 +242,8 @@ public interface NewsChannel extends StandardGuildMessageChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
      *

@@ -35,6 +35,7 @@ public interface RoleMixin<T extends RoleMixin<T>>
     default RoleAction createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
+        checkAttached();
         return guild.createRole()
                     .setColor(getColorRaw())
                     .setHoisted(isHoisted())

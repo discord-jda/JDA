@@ -62,6 +62,9 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * <br>Checks for both {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} and
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
+     *
      * @param  member
      *         The Member to check
      *
@@ -116,6 +119,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -170,6 +175,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -217,6 +224,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         If the size of the list less than 2 or more than 100 messages.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -274,6 +283,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         If any of the provided ids cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -312,6 +323,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is {@code null} or empty.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -345,6 +358,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -380,6 +395,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
      *         If provided with null
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link RestAction}
      */
@@ -412,6 +429,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
      *         If provided with null
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link RestAction}
      */
@@ -444,6 +463,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *           <li>If the list is empty or has more than 3 stickers</li>
      *           <li>If null is provided</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link MessageCreateAction}
      *
@@ -475,6 +496,8 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *           <li>If the list is empty or has more than 3 stickers</li>
      *           <li>If null is provided</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link MessageCreateAction}
      *

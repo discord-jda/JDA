@@ -79,6 +79,9 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
     /**
      * Retrieves the {@link User} which owns this {@link GroupChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
+     *
      * @return A {@link RestAction} to retrieve the {@link User User} which owns this {@link GroupChannel}.
      */
     @Nonnull

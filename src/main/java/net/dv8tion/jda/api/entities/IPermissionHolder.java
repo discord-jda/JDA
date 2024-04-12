@@ -47,6 +47,9 @@ public interface IPermissionHolder extends ISnowflake
      * The Guild-Wide Permissions this PermissionHolder holds.
      * <br><u>Changes to the returned set do not affect this entity directly.</u>
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a member and the bot isn't in the guild.
+     *
      * @return An EnumSet of Permissions granted to this PermissionHolder.
      */
     @Nonnull
@@ -63,6 +66,10 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws java.lang.IllegalArgumentException
      *         If the channel is null
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a role and the bot isn't in the guild.
+     * @throws UnsupportedOperationException
+     *         if this is a member, the bot isn't in the guild, and the channel isn't the current interaction's channel.
      *
      * @return Set of Permissions granted to this Permission Holder in the specified channel.
      */
@@ -74,6 +81,9 @@ public interface IPermissionHolder extends ISnowflake
      * <br>This disregards owner and administrator privileges.
      * For a role this is identical to {@link #getPermissions()} and members have all their roles taken into consideration.
      * <br><u>Changes to the returned set do not affect this entity directly.</u>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a member and the bot isn't in the guild.
      *
      * @return EnumSet of the explicitly granted permissions
      */
@@ -92,6 +102,10 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws java.lang.IllegalArgumentException
      *         If the channel is null
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a role and the bot isn't in the guild.
+     * @throws UnsupportedOperationException
+     *         if this is a member, the bot isn't in the guild, and the channel isn't the current interaction's channel.
      *
      * @return EnumSet of the explicitly granted permissions in the specified channel
      */
@@ -106,6 +120,8 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a member and the bot isn't in the guild.
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      */
@@ -120,6 +136,8 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a member and the bot isn't in the guild.
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      *
@@ -141,6 +159,10 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a role and the bot isn't in the guild.
+     * @throws UnsupportedOperationException
+     *         if this is a member, the bot isn't in the guild, and the channel isn't the current interaction's channel.
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      *
@@ -159,6 +181,10 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a role and the bot isn't in the guild.
+     * @throws UnsupportedOperationException
+     *         if this is a member, the bot isn't in the guild, and the channel isn't the current interaction's channel.
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
@@ -177,6 +203,10 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this is a role and the bot isn't in the guild.
+     * @throws UnsupportedOperationException
+     *         if this is a member, the bot isn't in the guild, and the channel isn't the current interaction's channel.
      *
      * @return True, if the PermissionHolder has access
      */
@@ -202,6 +232,8 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws IllegalArgumentException
      *         If either of the channels is null or not from the same guild as this permission holder
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return True, if the channels can be synced
      */
@@ -218,6 +250,8 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @throws IllegalArgumentException
      *         If the channel is null or not from the same guild as this permission holder
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return True, if the channel can be synced
      */

@@ -54,6 +54,8 @@ public interface IPermissionContainer extends GuildChannel
      *
      * @throws IllegalArgumentException
      *         If the provided permission holder is null, or from a different guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      *         relating to the provided Member or Role.
@@ -71,6 +73,9 @@ public interface IPermissionContainer extends GuildChannel
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
      * Without that CacheFlag, this list will only contain overrides for the currently logged in account and roles.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
+     *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for this {@link GuildChannel GuildChannel}.
      */
@@ -83,6 +88,9 @@ public interface IPermissionContainer extends GuildChannel
      * that are part of this {@link GuildChannel GuildChannel}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Member Member}
@@ -100,6 +108,9 @@ public interface IPermissionContainer extends GuildChannel
     /**
      * Gets all of the {@link net.dv8tion.jda.api.entities.Role Role} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link GuildChannel GuildChannel}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Role Roles}
@@ -125,6 +136,8 @@ public interface IPermissionContainer extends GuildChannel
      *         If we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws java.lang.IllegalArgumentException
      *         If the provided permission holder is null or not from this guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction}
      *         <br>With the current settings of an existing override or a fresh override with no permissions set

@@ -60,6 +60,8 @@ public interface ISlowmodeChannel extends GuildChannel
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot isn't in the guild.
      *
      * @return The {@link ISlowmodeChannelManager} of this {@link ISlowmodeChannel}
      *
