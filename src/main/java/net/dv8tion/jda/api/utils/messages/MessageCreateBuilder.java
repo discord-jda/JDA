@@ -59,6 +59,7 @@ import java.util.List;
 public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder> implements MessageCreateRequest<MessageCreateBuilder>
 {
     private final List<FileUpload> files = new ArrayList<>(10);
+    private MessagePollCreateData poll;
     private boolean tts;
 
     public MessageCreateBuilder() {}
@@ -191,6 +192,21 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         return Collections.unmodifiableList(files);
     }
 
+    @Nullable
+    @Override
+    public MessagePollCreateData getPoll()
+    {
+        return poll;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setPoll(@Nullable MessagePollCreateData poll)
+    {
+        this.poll = poll;
+        return this;
+    }
+
     @Nonnull
     @Override
     public MessageCreateBuilder addFiles(@Nonnull Collection<? extends FileUpload> files)
@@ -222,7 +238,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     @Override
     public boolean isEmpty()
     {
-        return Helpers.isBlank(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty();
+        return Helpers.isBlank(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty() && poll == null;
     }
 
     @Override
@@ -255,7 +271,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
         if (components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
-        return new MessageCreateData(content, embeds, files, components, mentions, tts, messageFlags);
+        return new MessageCreateData(content, embeds, files, components, mentions, poll, tts, messageFlags);
     }
 
     @Nonnull

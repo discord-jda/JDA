@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -296,6 +297,12 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     @Override
     List<FileUpload> getAttachments();
+
+    @Nullable
+    MessagePollCreateData getPoll();
+
+    @Nonnull
+    R setPoll(@Nullable MessagePollCreateData poll);
 
     /**
      * Whether the message should use <em>Text-to-Speech</em> (TTS).
