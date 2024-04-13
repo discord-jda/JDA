@@ -240,6 +240,11 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
         return getFiles();
     }
 
+    /**
+     * The poll to send with the message
+     *
+     * @return The poll, or null if no poll is sent
+     */
     @Nullable
     public MessagePollData getPoll()
     {

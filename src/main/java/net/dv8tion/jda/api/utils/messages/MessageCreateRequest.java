@@ -298,9 +298,24 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Override
     List<FileUpload> getAttachments();
 
+    /**
+     * The poll attached to this message
+     *
+     * @return The attached poll, or null if no poll is present
+     */
     @Nullable
     MessagePollData getPoll();
 
+    /**
+     * Add a poll to this message.
+     *
+     * @param  poll
+     *         The poll to send
+     *
+     * @return The same instance for chaining
+     *
+     * @see    MessagePollBuilder
+     */
     @Nonnull
     R setPoll(@Nullable MessagePollData poll);
 
