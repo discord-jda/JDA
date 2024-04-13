@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,9 +35,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessagePollBuilder
 {
+    private final List<MessagePoll.Answer> answers = new ArrayList<>(MessagePoll.MAX_ANSWERS);
     private MessagePoll.LayoutType layout = MessagePoll.LayoutType.DEFAULT;
     private String title;
-    private Map<Long, MessagePoll.Answer> answers = new LinkedHashMap<>();
     private Duration duration = Duration.ofHours(24);
     private boolean isMultiAnswer;
 
@@ -177,7 +176,7 @@ public class MessagePollBuilder
     @Nonnull
     public MessagePollBuilder addAnswer(@Nonnull String title)
     {
-        return addAnswer(this.answers.size(), title, null);
+        return addAnswer(title, null);
     }
 
     /**
@@ -196,53 +195,12 @@ public class MessagePollBuilder
     @Nonnull
     public MessagePollBuilder addAnswer(@Nonnull String title, @Nullable Emoji emoji)
     {
-        return addAnswer(this.answers.size(), title, emoji);
-    }
-
-    /**
-     * Add an answer to this poll.
-     *
-     * @param  id
-     *         The unique identifier for this answer
-     * @param  title
-     *         The answer title
-     *
-     * @throws IllegalArgumentException
-     *         If the title is null, blank, or longer than {@value MessagePoll#MAX_ANSWER_TEXT_LENGTH} characters
-     *
-     * @return The updated builder
-     */
-    @Nonnull
-    public MessagePollBuilder addAnswer(long id, @Nonnull String title)
-    {
-        return addAnswer(id, title, null);
-    }
-
-    /**
-     * Add an answer to this poll.
-     *
-     * @param  id
-     *         The unique identifier for this answer
-     * @param  title
-     *         The answer title
-     * @param  emoji
-     *         Optional emoji to show next to the answer text
-     *
-     * @throws IllegalArgumentException
-     *         If the title is null, blank, or longer than {@value MessagePoll#MAX_ANSWER_TEXT_LENGTH} characters
-     *
-     * @return The updated builder
-     */
-    @Nonnull
-    public MessagePollBuilder addAnswer(long id, @Nonnull String title, @Nullable Emoji emoji)
-    {
         Checks.notBlank(title, "Answer title");
         title = title.trim();
         Checks.notLonger(title, MessagePoll.MAX_ANSWER_TEXT_LENGTH, "Answer title");
-        if (!this.answers.containsKey(id))
-            Checks.check(this.answers.size() < MessagePoll.MAX_ANSWERS, "Poll cannot have more than %d answers", MessagePoll.MAX_ANSWERS);
+        Checks.check(this.answers.size() < MessagePoll.MAX_ANSWERS, "Poll cannot have more than %d answers", MessagePoll.MAX_ANSWERS);
 
-        this.answers.put(id, new MessagePoll.Answer(id, title, (EmojiUnion) emoji, 0, false));
+        this.answers.add(new MessagePoll.Answer(this.answers.size() + 1, title, (EmojiUnion) emoji, 0, false));
         return this;
     }
 
@@ -262,7 +220,7 @@ public class MessagePollBuilder
         return new MessagePollData(
             layout,
             new MessagePoll.Question(title, null),
-            new ArrayList<>(answers.values()),
+            new ArrayList<>(answers),
             duration,
             isMultiAnswer
         );
