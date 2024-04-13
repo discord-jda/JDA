@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test;
+package net.dv8tion.jda.test.assertions.restaction;
 
 import net.dv8tion.jda.api.requests.Method;
 import net.dv8tion.jda.api.requests.Request;

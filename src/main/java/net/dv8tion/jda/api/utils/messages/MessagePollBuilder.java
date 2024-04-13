@@ -93,7 +93,7 @@ public class MessagePollBuilder
     {
         Checks.notBlank(title, "Title");
         title = title.trim();
-        Checks.notLonger(title, MessagePoll.MAX_QUESTION_TEXT_LENGTH, "Poll question title");
+        Checks.notLonger(title, MessagePoll.MAX_QUESTION_TEXT_LENGTH, "Title");
 
         this.title = title;
         return this;
@@ -238,7 +238,7 @@ public class MessagePollBuilder
     {
         Checks.notBlank(title, "Answer title");
         title = title.trim();
-        Checks.notLonger(title, MessagePoll.MAX_ANSWER_TEXT_LENGTH, "Poll answer title");
+        Checks.notLonger(title, MessagePoll.MAX_ANSWER_TEXT_LENGTH, "Answer title");
         if (!this.answers.containsKey(id))
             Checks.check(this.answers.size() < MessagePoll.MAX_ANSWERS, "Poll cannot have more than %d answers", MessagePoll.MAX_ANSWERS);
 
