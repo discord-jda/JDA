@@ -144,8 +144,7 @@ public class MessagePollBuilder
     public MessagePollBuilder setDuration(long duration, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
-        this.duration = Duration.ofHours(unit.toHours(duration));
-        return this;
+        return setDuration(Duration.ofHours(unit.toHours(duration)));
     }
 
     /**
