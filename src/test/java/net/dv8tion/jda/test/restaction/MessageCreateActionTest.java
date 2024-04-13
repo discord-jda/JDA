@@ -74,7 +74,7 @@ public class MessageCreateActionTest extends IntegrationTest
         assertThatIllegalStateException().isThrownBy(() ->
             new MessageCreateActionImpl(channel)
                 .queue()
-        ).withMessage("Cannot build empty messages! Must provide at least one of: content, embed, file, or stickers");
+        ).withMessage("Cannot build empty messages! Must provide at least one of: content, embed, file, poll, or stickers");
     }
 
     @Test
