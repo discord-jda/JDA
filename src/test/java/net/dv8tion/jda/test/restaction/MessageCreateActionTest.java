@@ -54,6 +54,7 @@ public class MessageCreateActionTest extends IntegrationTest
                 .put("components", DataArray.empty())
                 .put("content", "")
                 .put("embeds", DataArray.empty())
+                .put("poll", null)
                 .put("enforce_nonce", true)
                 .put("flags", 0)
                 .put("nonce", FIXED_NONCE)
