@@ -18,9 +18,11 @@ package net.dv8tion.jda.test.restaction;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.test.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.requests.Method.POST;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -104,6 +107,51 @@ public class MessageCreateActionTest extends IntegrationTest
             .hasBodyEqualTo(defaultMessageRequest()
                 .put("embeds", DataArray.empty()
                     .add(DataObject.empty().put("description", "test description"))))
+            .whenQueueCalled();
+    }
+
+    @Test
+    void testPollOnly()
+    {
+        MessageCreateAction action = new MessageCreateActionImpl(channel)
+            .setPoll(new MessagePollBuilder("Test poll")
+                .setDuration(3, TimeUnit.DAYS)
+                .setMultiAnswer(true)
+                .addAnswer("Test answer 1")
+                .addAnswer("Test answer 2", Emoji.fromUnicode("🤔"))
+                .addAnswer("Test answer 3", Emoji.fromCustom("minn", 821355005788684298L, true))
+                .build());
+
+        assertThatRequestFrom(action)
+            .hasMethod(POST)
+            .hasCompiledRoute(ENDPOINT_URL)
+            .hasBodyEqualTo(defaultMessageRequest()
+                .put("poll", DataObject.empty()
+                    .put("duration", 72)
+                    .put("allow_multiselect", true)
+                    .put("layout_type", 1)
+                    .put("question", DataObject.empty()
+                        .put("text", "Test poll"))
+                    .put("answers", DataArray.empty()
+                        .add(DataObject.empty()
+                            .put("answer_id", 0)
+                            .put("poll_media", DataObject.empty()
+                                .put("text", "Test answer 1")
+                                .put("emoji", null)))
+                        .add(DataObject.empty()
+                            .put("answer_id", 1)
+                            .put("poll_media", DataObject.empty()
+                                .put("text", "Test answer 2")
+                                .put("emoji", DataObject.empty()
+                                    .put("name", "🤔"))))
+                        .add(DataObject.empty()
+                            .put("answer_id", 2)
+                            .put("poll_media", DataObject.empty()
+                                .put("text", "Test answer 3")
+                                .put("emoji", DataObject.empty()
+                                    .put("name", "minn")
+                                    .put("id", 821355005788684298L)
+                                    .put("animated", true)))))))
             .whenQueueCalled();
     }
 
