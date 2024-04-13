@@ -164,6 +164,7 @@ public enum ErrorResponse
     SERVER_NOT_ENOUGH_BOOSTS(                 50101, "This server needs more boosts to perform this action"),
     MIXED_PREMIUM_ROLES_FOR_EMOJI(            50144, "Cannot mix subscription and non subscription roles for an emoji"),
     ILLEGAL_EMOJI_CONVERSION(                 50145, "Cannot convert between premium emoji and normal emoji"),
+    USER_MUST_BE_VERIFIED(                    50178, "The user account must first be verified"),
     MFA_NOT_ENABLED(                          60003, "MFA auth required but not enabled"),
     NO_USER_WITH_TAG_EXISTS(                  80004, "No users with DiscordTag exist"),
     REACTION_BLOCKED(                         90001, "Reaction Blocked"),
