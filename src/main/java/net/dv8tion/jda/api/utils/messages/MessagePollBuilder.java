@@ -118,7 +118,7 @@ public class MessagePollBuilder
     {
         Checks.notNull(duration, "Duration");
         Checks.positive(duration.toHours(), "Duration");
-        Checks.check(duration.toHours() <= MessagePoll.MAX_DURATION_HOURS, "Poll duration may not be longer than 7 days. Provided: %d hours", duration.toHours());
+        Checks.check(duration.toHours() <= MessagePoll.MAX_DURATION_HOURS, "Poll duration may not be longer than 168 hours (= 7 days). Provided: %d hours", duration.toHours());
 
         this.duration = duration;
         return this;

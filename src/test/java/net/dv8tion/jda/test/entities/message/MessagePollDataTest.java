@@ -53,7 +53,7 @@ public class MessagePollDataTest
             .withMessage(notPositiveError("Duration"));
         assertThatIllegalArgumentException()
             .isThrownBy(() -> builder.setDuration(Duration.ofHours(500)))
-            .withMessage("Poll duration may not be longer than 7 days. Provided: 500 hours");
+            .withMessage("Poll duration may not be longer than 168 hours (= 7 days). Provided: 500 hours");
 
         assertThatIllegalArgumentException()
             .isThrownBy(() -> builder.setDuration(10, null))
@@ -62,8 +62,8 @@ public class MessagePollDataTest
             .isThrownBy(() -> builder.setDuration(-1, TimeUnit.HOURS))
             .withMessage(notPositiveError("Duration"));
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setDuration(10, TimeUnit.DAYS))
-            .withMessage("Poll duration may not be longer than 7 days. Provided: 240 hours");
+            .isThrownBy(() -> builder.setDuration(8, TimeUnit.DAYS))
+            .withMessage("Poll duration may not be longer than 168 hours (= 7 days). Provided: 192 hours");
 
         assertStringChecks("Answer title", builder::addAnswer)
             .checksNotBlank()
