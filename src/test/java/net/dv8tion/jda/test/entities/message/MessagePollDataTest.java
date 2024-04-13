@@ -33,39 +33,30 @@ public class MessagePollDataTest
     void testInvalidInputs()
     {
         assertStringChecks("Title", MessagePollBuilder::new)
+            .checksNotNull()
             .checksNotBlank()
             .checksNotLonger(300);
 
         MessagePollBuilder builder = new MessagePollBuilder("test title");
 
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setLayout(null))
-            .withMessage(isNullError("Layout"));
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setLayout(MessagePoll.LayoutType.UNKNOWN))
-            .withMessage("Layout cannot be UNKNOWN");
+        assertEnumChecks("Layout", builder::setLayout)
+            .checksNotNull()
+            .checkIsNot(MessagePoll.LayoutType.UNKNOWN);
 
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setDuration(null))
-            .withMessage(isNullError("Duration"));
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setDuration(Duration.ZERO))
-            .withMessage(notPositiveError("Duration"));
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setDuration(Duration.ofHours(500)))
-            .withMessage("Poll duration may not be longer than 168 hours (= 7 days). Provided: 500 hours");
+        assertDurationChecks("Duration", builder::setDuration)
+            .checksNotNull()
+            .checksPositive()
+            .throwsFor(Duration.ofHours(500), "Duration may not be longer than 168 hours (= 7 days). Provided: 500 hours");
 
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setDuration(10, null))
-            .withMessage(isNullError("TimeUnit"));
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setDuration(-1, TimeUnit.HOURS))
-            .withMessage(notPositiveError("Duration"));
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> builder.setDuration(8, TimeUnit.DAYS))
-            .withMessage("Poll duration may not be longer than 168 hours (= 7 days). Provided: 192 hours");
+        assertTimeUnitChecks("TimeUnit", (unit) -> builder.setDuration(1, unit))
+            .checksNotNull();
+
+        assertLongChecks("Duration", (duration) -> builder.setDuration(duration, TimeUnit.SECONDS))
+            .checksPositive()
+            .throwsFor(TimeUnit.DAYS.toSeconds(8), "Duration may not be longer than 168 hours (= 7 days). Provided: 192 hours");
 
         assertStringChecks("Answer title", builder::addAnswer)
+            .checksNotNull()
             .checksNotBlank()
             .checksNotLonger(55);
 

@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.test;
 
-import net.dv8tion.jda.test.assertions.checks.StringChecksAssertions;
+import net.dv8tion.jda.test.assertions.checks.*;
 import org.junit.jupiter.api.function.ThrowingConsumer;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class ChecksHelper
 {
@@ -49,5 +52,25 @@ public class ChecksHelper
     public static StringChecksAssertions assertStringChecks(String name, ThrowingConsumer<String> callable)
     {
         return new StringChecksAssertions(name, callable);
+    }
+
+    public static <E extends Enum<E>> EnumChecksAssertions<E> assertEnumChecks(String name, ThrowingConsumer<E> callable)
+    {
+        return new EnumChecksAssertions<>(name, callable);
+    }
+
+    public static DurationChecksAssertions assertDurationChecks(String name, ThrowingConsumer<Duration> callable)
+    {
+        return new DurationChecksAssertions(name, callable);
+    }
+
+    public static SimpleChecksAssertions<TimeUnit> assertTimeUnitChecks(String name, ThrowingConsumer<TimeUnit> callable)
+    {
+        return new SimpleChecksAssertions<>(name, callable);
+    }
+
+    public static LongChecksAssertions assertLongChecks(String name, ThrowingConsumer<Long> callable)
+    {
+        return new LongChecksAssertions(name, callable);
     }
 }

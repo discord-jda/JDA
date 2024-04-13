@@ -32,12 +32,17 @@ public class AbstractChecksAssertions<T, S extends AbstractChecksAssertions<T, S
         this.callable = callable;
     }
 
-    @SuppressWarnings("unchecked")
     public S checksNotNull()
     {
+        return throwsFor(null, isNullError(name));
+    }
+
+    @SuppressWarnings("unchecked")
+    public S throwsFor(T input, String expectedError)
+    {
         assertThatIllegalArgumentException()
-            .isThrownBy(() -> callable.accept(null))
-            .withMessage(isNullError(name));
+            .isThrownBy(() -> callable.accept(input))
+            .withMessage(expectedError);
         return (S) this;
     }
 }

@@ -20,7 +20,6 @@ import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import static net.dv8tion.jda.test.ChecksHelper.*;
 import static net.dv8tion.jda.test.TestHelpers.repeat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 public class StringChecksAssertions extends AbstractChecksAssertions<String, StringChecksAssertions>
 {
@@ -31,35 +30,23 @@ public class StringChecksAssertions extends AbstractChecksAssertions<String, Str
 
     public StringChecksAssertions checksNotEmpty()
     {
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> callable.accept(null))
-            .withMessage(isNullError(name));
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> callable.accept(""))
-            .withMessage(isEmptyError(name));
+        throwsFor(null, isNullError(name));
+        throwsFor("", isEmptyError(name));
         return this;
     }
 
     public StringChecksAssertions checksNotBlank()
     {
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> callable.accept(null))
-            .withMessage(isNullError(name));
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> callable.accept(""))
-            .withMessage(isBlankError(name));
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> callable.accept(" "))
-            .withMessage(isBlankError(name));
+        throwsFor(null, isNullError(name));
+        throwsFor("", isBlankError(name));
+        throwsFor(" ", isBlankError(name));
         return this;
     }
 
     public StringChecksAssertions checksNotLonger(int maxLength)
     {
         String invalidInput = repeat("s", maxLength + 1);
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> callable.accept(invalidInput))
-            .withMessage(tooLongError(name, maxLength, invalidInput));
+        throwsFor(invalidInput, tooLongError(name, maxLength, invalidInput));
         return this;
     }
 }
