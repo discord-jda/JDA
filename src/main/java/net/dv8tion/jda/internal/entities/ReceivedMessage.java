@@ -625,6 +625,20 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
+    public AuditableRestAction<Message> expirePoll()
+    {
+        checkUser();
+        return new AuditableRestActionImpl<>(getJDA(), Route.Messages.EXPIRE_POLL.compile(getChannelId(), getId()), (response, request) -> {
+            JDAImpl jda = (JDAImpl) getJDA();
+            EntityBuilder entityBuilder = jda.getEntityBuilder();
+            if (hasChannel())
+                return entityBuilder.createMessageWithChannel(response.getObject(), channel, false);
+            return entityBuilder.createMessageFromWebhook(response.getObject(), hasGuild() ? getGuild() : null);
+        });
+    }
+
+    @Nonnull
+    @Override
     public Mentions getMentions()
     {
         return mentions;

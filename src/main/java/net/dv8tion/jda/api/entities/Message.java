@@ -685,6 +685,10 @@ public interface Message extends ISnowflake, Formattable
     @Nullable
     MessagePoll getPoll();
 
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Message> expirePoll();
+
     /**
      * Rows of interactive components such as {@link Button Buttons}.
      * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.

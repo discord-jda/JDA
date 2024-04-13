@@ -972,6 +972,26 @@ public interface MessageChannel extends Channel, Formattable
         return deleteMessageById(Long.toUnsignedString(messageId));
     }
 
+    // FIXME Note: can't expire polls from other users
+
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Message> expirePollById(@Nonnull String messageId)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        return new AuditableRestActionImpl<>(getJDA(), Route.Messages.EXPIRE_POLL.compile(getId(), messageId), (response, request) -> {
+            JDAImpl jda = (JDAImpl) getJDA();
+            return jda.getEntityBuilder().createMessageWithChannel(response.getObject(), MessageChannel.this, false);
+        });
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Message> expirePollById(long messageId)
+    {
+        return expirePollById(Long.toUnsignedString(messageId));
+    }
+
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object for each call of this method.
      * <br>MessageHistory is <b>NOT</b> an internal message cache, but rather it queries the Discord servers for previously sent messages.
