@@ -33,6 +33,8 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.requests.Method.POST;
+import static net.dv8tion.jda.test.restaction.MessageCreateActionTest.Data.emoji;
+import static net.dv8tion.jda.test.restaction.MessageCreateActionTest.Data.pollAnswer;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.when;
 
@@ -133,25 +135,9 @@ public class MessageCreateActionTest extends IntegrationTest
                     .put("question", DataObject.empty()
                         .put("text", "Test poll"))
                     .put("answers", DataArray.empty()
-                        .add(DataObject.empty()
-                            .put("answer_id", 1)
-                            .put("poll_media", DataObject.empty()
-                                .put("text", "Test answer 1")
-                                .put("emoji", null)))
-                        .add(DataObject.empty()
-                            .put("answer_id", 2)
-                            .put("poll_media", DataObject.empty()
-                                .put("text", "Test answer 2")
-                                .put("emoji", DataObject.empty()
-                                    .put("name", "🤔"))))
-                        .add(DataObject.empty()
-                            .put("answer_id", 3)
-                            .put("poll_media", DataObject.empty()
-                                .put("text", "Test answer 3")
-                                .put("emoji", DataObject.empty()
-                                    .put("name", "minn")
-                                    .put("id", 821355005788684298L)
-                                    .put("animated", true)))))))
+                        .add(pollAnswer(1, "Test answer 1", null))
+                        .add(pollAnswer(2, "Test answer 2", emoji("🤔")))
+                        .add(pollAnswer(3, "Test answer 3", emoji("minn", 821355005788684298L, true))))))
             .whenQueueCalled();
     }
 
@@ -159,5 +145,30 @@ public class MessageCreateActionTest extends IntegrationTest
     protected DataObject normalizeRequestBody(@Nonnull DataObject body)
     {
         return body.put("nonce", FIXED_NONCE);
+    }
+
+    static class Data
+    {
+        static DataObject pollAnswer(long id, String title, DataObject emoji)
+        {
+            return DataObject.empty()
+                .put("answer_id", id)
+                .put("poll_media", DataObject.empty()
+                    .put("text", title)
+                    .put("emoji", emoji));
+        }
+
+        static DataObject emoji(String name)
+        {
+            return DataObject.empty().put("name", name);
+        }
+
+        static DataObject emoji(String name, long id, boolean animated)
+        {
+            return DataObject.empty()
+                    .put("name", name)
+                    .put("id", id)
+                    .put("animated", animated);
+        }
     }
 }
