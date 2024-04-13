@@ -45,14 +45,14 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     private final List<FileUpload> files;
     private final List<LayoutComponent> components;
     private final AllowedMentionsData mentions;
-    private final MessagePollCreateData poll;
+    private final MessagePollData poll;
     private final boolean tts;
     private final int flags;
 
     protected MessageCreateData(
             String content,
             List<MessageEmbed> embeds, List<FileUpload> files, List<LayoutComponent> components,
-            AllowedMentionsData mentions, MessagePollCreateData poll, boolean tts, int flags)
+            AllowedMentionsData mentions, MessagePollData poll, boolean tts, int flags)
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
@@ -241,7 +241,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     }
 
     @Nullable
-    public MessagePollCreateData getPoll()
+    public MessagePollData getPoll()
     {
         return poll;
     }

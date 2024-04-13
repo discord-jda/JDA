@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
-import net.dv8tion.jda.api.utils.messages.MessagePollCreateData;
+import net.dv8tion.jda.api.utils.messages.MessagePollData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -65,14 +65,14 @@ public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> ex
 
     @Nullable
     @Override
-    default MessagePollCreateData getPoll()
+    default MessagePollData getPoll()
     {
         return getBuilder().getPoll();
     }
 
     @Nonnull
     @Override
-    default R setPoll(@Nullable MessagePollCreateData poll)
+    default R setPoll(@Nullable MessagePollData poll)
     {
         getBuilder().setPoll(poll);
         return (R) this;

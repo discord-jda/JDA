@@ -59,7 +59,7 @@ import java.util.List;
 public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder> implements MessageCreateRequest<MessageCreateBuilder>
 {
     private final List<FileUpload> files = new ArrayList<>(10);
-    private MessagePollCreateData poll;
+    private MessagePollData poll;
     private boolean tts;
 
     public MessageCreateBuilder() {}
@@ -194,14 +194,14 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
     @Nullable
     @Override
-    public MessagePollCreateData getPoll()
+    public MessagePollData getPoll()
     {
         return poll;
     }
 
     @Nonnull
     @Override
-    public MessageCreateBuilder setPoll(@Nullable MessagePollCreateData poll)
+    public MessageCreateBuilder setPoll(@Nullable MessagePollData poll)
     {
         this.poll = poll;
         return this;

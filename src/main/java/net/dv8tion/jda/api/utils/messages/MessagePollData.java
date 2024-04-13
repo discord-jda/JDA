@@ -22,11 +22,12 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MessagePollCreateData implements SerializableData
+public class MessagePollData implements SerializableData
 {
     private final MessagePoll.LayoutType layout;
     private final MessagePoll.Question question;
@@ -34,13 +35,19 @@ public class MessagePollCreateData implements SerializableData
     private final Duration duration;
     private final boolean isMultiAnswer;
 
-    public MessagePollCreateData(MessagePoll.LayoutType layout, MessagePoll.Question question, List<MessagePoll.Answer> answers, Duration duration, boolean isMultiAnswer)
+    public MessagePollData(MessagePoll.LayoutType layout, MessagePoll.Question question, List<MessagePoll.Answer> answers, Duration duration, boolean isMultiAnswer)
     {
         this.layout = layout;
         this.question = question;
         this.answers = answers;
         this.duration = duration;
         this.isMultiAnswer = isMultiAnswer;
+    }
+
+    @Nonnull
+    public static MessagePollBuilder builder(@Nonnull String title)
+    {
+        return new MessagePollBuilder(title);
     }
 
     @NotNull

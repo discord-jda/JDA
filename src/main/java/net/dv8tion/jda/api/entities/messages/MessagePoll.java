@@ -26,6 +26,11 @@ import java.util.List;
 
 public interface MessagePoll
 {
+    int MAX_QUESTION_TEXT_LENGTH = 300;
+    int MAX_ANSWER_TEXT_LENGTH = 55;
+    int MAX_ANSWERS = 10;
+    long MAX_DURATION_HOURS = 7 * 24;
+
     @Nonnull
     LayoutType getLayout();
 

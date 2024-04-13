@@ -299,10 +299,10 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     List<FileUpload> getAttachments();
 
     @Nullable
-    MessagePollCreateData getPoll();
+    MessagePollData getPoll();
 
     @Nonnull
-    R setPoll(@Nullable MessagePollCreateData poll);
+    R setPoll(@Nullable MessagePollData poll);
 
     /**
      * Whether the message should use <em>Text-to-Speech</em> (TTS).
