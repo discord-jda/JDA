@@ -972,8 +972,34 @@ public interface MessageChannel extends Channel, Formattable
         return deleteMessageById(Long.toUnsignedString(messageId));
     }
 
-    // FIXME Note: can't expire polls from other users
-
+    /**
+     * Expire the poll attached to this message.
+     *
+     * <p><b>A bot cannot expire the polls of other users.</b>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#POLL_ALREADY_EXPIRED POLL_ALREADY_EXPIRED}
+     *     <br>If the poll has already expired</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>If the poll was sent by another user</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_EXPIRE_MISSING_POLL CANNOT_EXPIRE_MISSING_POLL}
+     *     <br>The message did not have a poll attached</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message no longer exists</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The ID for the poll message
+     *
+     * @throws IllegalArgumentException
+     *         If the provided messageId is not a valid snowflake
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Message}
+     */
     @Nonnull
     @CheckReturnValue
     default AuditableRestAction<Message> expirePollById(@Nonnull String messageId)
@@ -985,6 +1011,31 @@ public interface MessageChannel extends Channel, Formattable
         });
     }
 
+    /**
+     * Expire the poll attached to this message.
+     *
+     * <p><b>A bot cannot expire the polls of other users.</b>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#POLL_ALREADY_EXPIRED POLL_ALREADY_EXPIRED}
+     *     <br>If the poll has already expired</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>If the poll was sent by another user</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_EXPIRE_MISSING_POLL CANNOT_EXPIRE_MISSING_POLL}
+     *     <br>The message did not have a poll attached</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message no longer exists</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The ID for the poll message
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Message}
+     */
     @Nonnull
     @CheckReturnValue
     default AuditableRestAction<Message> expirePollById(long messageId)

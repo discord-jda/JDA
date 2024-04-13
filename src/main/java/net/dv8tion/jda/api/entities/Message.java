@@ -682,9 +682,24 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     List<LayoutComponent> getComponents();
 
+    /**
+     * The {@link MessagePoll} attached to this message.
+     *
+     * @return Possibly-null poll instance for this message
+     *
+     * @see    #expirePoll()
+     */
     @Nullable
     MessagePoll getPoll();
 
+    /**
+     * Expire the poll attached to this message.
+     *
+     * @throws IllegalStateException
+     *         If this poll was not sent by the currently logged in account or no poll was attached to this message
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Message}
+     */
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Message> expirePoll();

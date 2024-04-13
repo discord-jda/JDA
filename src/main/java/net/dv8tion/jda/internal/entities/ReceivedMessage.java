@@ -628,6 +628,8 @@ public class ReceivedMessage implements Message
     public AuditableRestAction<Message> expirePoll()
     {
         checkUser();
+        if (poll == null)
+            throw new IllegalStateException("This message does not contain a poll");
         return new AuditableRestActionImpl<>(getJDA(), Route.Messages.EXPIRE_POLL.compile(getChannelId(), getId()), (response, request) -> {
             JDAImpl jda = (JDAImpl) getJDA();
             EntityBuilder entityBuilder = jda.getEntityBuilder();

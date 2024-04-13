@@ -27,6 +27,23 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A poll that can be attached to a {@link MessageCreateRequest}.
+ *
+ * <p><b>Example</b><br>
+ * <pre>{@code
+ * channel.sendMessage("Hello guys! Check my poll:")
+ *   .setPoll(
+ *     MessagePollData.builder("Which programming language is better?")
+ *       .addAnswer("Java", Emoji.fromFormatted("<:java:1006323566314274856>"))
+ *       .addAnswer("Kotlin", Emoji.fromFormatted("<:kotlin:295940257797636096>"))
+ *       .build())
+ *   .queue()
+ * }</pre>
+ *
+ * @see #builder(String)
+ * @see MessageCreateBuilder#setPoll(MessagePollData)
+ */
 public class MessagePollData implements SerializableData
 {
     private final MessagePoll.LayoutType layout;
@@ -44,6 +61,19 @@ public class MessagePollData implements SerializableData
         this.isMultiAnswer = isMultiAnswer;
     }
 
+    /**
+     * Creates a new {@link MessagePollBuilder}.
+     *
+     * <p>A poll must have at least one answer.
+     *
+     * @param  title
+     *         The poll title (up to {@value MessagePoll#MAX_QUESTION_TEXT_LENGTH} characters)
+     *
+     * @throws IllegalArgumentException
+     *         If the title is blank or longer than {@value MessagePoll#MAX_QUESTION_TEXT_LENGTH} characters
+     *
+     * @return {@link MessagePollBuilder}
+     */
     @Nonnull
     public static MessagePollBuilder builder(@Nonnull String title)
     {
