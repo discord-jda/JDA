@@ -20,13 +20,18 @@ import net.dv8tion.jda.test.assertions.checks.*;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public class ChecksHelper
 {
     public static String tooLongError(String name, int maxLength, String value)
     {
         return name + " may not be longer than " + maxLength + " characters! Provided: \"" + value + "\"";
+    }
+
+    public static String notInRangeError(String name, int minLength, int maxLength, String value)
+    {
+        return name + " must be between " + minLength + " and " + maxLength + " characters long! Provided: \"" + value + "\"";
     }
 
     public static String isNullError(String name)
@@ -42,6 +47,21 @@ public class ChecksHelper
     public static String isBlankError(String name)
     {
         return name + " may not be blank";
+    }
+
+    public static String isNotLowercase(String name, String value)
+    {
+        return name + " must be lowercase only! Provided: \"" + value + "\"";
+    }
+
+    public static String notRegexMatch(String name, Pattern pattern, String value)
+    {
+        return name + " must match regex ^" + pattern + "$. Provided: \"" + value + "\"";
+    }
+
+    public static String isNegativeError(String name)
+    {
+        return name + " may not be negative";
     }
 
     public static String notPositiveError(String name)
@@ -64,13 +84,13 @@ public class ChecksHelper
         return new DurationChecksAssertions(name, callable);
     }
 
-    public static SimpleChecksAssertions<TimeUnit> assertTimeUnitChecks(String name, ThrowingConsumer<TimeUnit> callable)
-    {
-        return new SimpleChecksAssertions<>(name, callable);
-    }
-
     public static LongChecksAssertions assertLongChecks(String name, ThrowingConsumer<Long> callable)
     {
         return new LongChecksAssertions(name, callable);
+    }
+
+    public static <T> SimpleChecksAssertions<T> assertChecks(String name, ThrowingConsumer<T> callable)
+    {
+        return new SimpleChecksAssertions<>(name, callable);
     }
 }

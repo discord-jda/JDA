@@ -18,6 +18,8 @@ package net.dv8tion.jda.test.assertions.checks;
 
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
+import java.util.regex.Pattern;
+
 import static net.dv8tion.jda.test.ChecksHelper.*;
 import static net.dv8tion.jda.test.TestHelpers.repeat;
 
@@ -47,6 +49,27 @@ public class StringChecksAssertions extends AbstractChecksAssertions<String, Str
     {
         String invalidInput = repeat("s", maxLength + 1);
         throwsFor(invalidInput, tooLongError(name, maxLength, invalidInput));
+        return this;
+    }
+
+    public StringChecksAssertions checksLowercaseOnly()
+    {
+        throwsFor("InvalidCasing", isNotLowercase(name, "InvalidCasing"));
+        return this;
+    }
+
+    public StringChecksAssertions checksRange(int minLength, int maxLength)
+    {
+        String tooLong = repeat("s", maxLength + 1);
+        String tooShort = repeat("s", minLength - 1);
+        throwsFor(tooShort, notInRangeError(name, minLength, maxLength, tooShort));
+        throwsFor(tooLong, notInRangeError(name, minLength, maxLength, tooLong));
+        return this;
+    }
+
+    public StringChecksAssertions checksRegex(String input, Pattern regex)
+    {
+        throwsFor(input, notRegexMatch(name, regex, input));
         return this;
     }
 }

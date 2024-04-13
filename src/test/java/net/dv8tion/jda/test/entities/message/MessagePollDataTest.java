@@ -18,6 +18,7 @@ package net.dv8tion.jda.test.entities.message;
 
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
+import net.dv8tion.jda.test.ChecksHelper;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -48,7 +49,7 @@ public class MessagePollDataTest
             .checksPositive()
             .throwsFor(Duration.ofHours(500), "Duration may not be longer than 168 hours (= 7 days). Provided: 500 hours");
 
-        assertTimeUnitChecks("TimeUnit", (unit) -> builder.setDuration(1, unit))
+        ChecksHelper.<TimeUnit>assertChecks("TimeUnit", (unit) -> builder.setDuration(1, unit))
             .checksNotNull();
 
         assertLongChecks("Duration", (duration) -> builder.setDuration(duration, TimeUnit.SECONDS))

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import java.time.Duration;
 
+import static net.dv8tion.jda.test.ChecksHelper.isNegativeError;
 import static net.dv8tion.jda.test.ChecksHelper.notPositiveError;
 
 public class DurationChecksAssertions extends AbstractChecksAssertions<Duration, DurationChecksAssertions>
@@ -27,6 +28,12 @@ public class DurationChecksAssertions extends AbstractChecksAssertions<Duration,
     public DurationChecksAssertions(String name, ThrowingConsumer<Duration> callable)
     {
         super(name, callable);
+    }
+
+    public DurationChecksAssertions checksNotNegative()
+    {
+        throwsFor(Duration.ofSeconds(-1), isNegativeError(name));
+        return this;
     }
 
     public DurationChecksAssertions checksPositive()
