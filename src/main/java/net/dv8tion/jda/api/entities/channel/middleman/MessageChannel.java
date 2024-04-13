@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -50,6 +51,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -1088,6 +1090,43 @@ public interface MessageChannel extends Channel, Formattable
     default AuditableRestAction<Message> expirePollById(long messageId)
     {
         return expirePollById(Long.toUnsignedString(messageId));
+    }
+
+    /**
+     * Paginate the users who voted for a poll answer.
+     *
+     * @param  messageId
+     *         The message id for the poll
+     * @param  answerId
+     *         The id of the poll answer, usually the ordinal position of the answer (first is 1)
+     *
+     * @throws IllegalArgumentException
+     *         If the message id is not a valid snowflake
+     *
+     * @return {@link PollVotersPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PollVotersPaginationAction retrievePollVotersById(@Nonnull String messageId, long answerId)
+    {
+        return new PollVotersPaginationActionImpl(getJDA(), getId(), messageId, answerId);
+    }
+
+    /**
+     * Paginate the users who voted for a poll answer.
+     *
+     * @param  messageId
+     *         The message id for the poll
+     * @param  answerId
+     *         The id of the poll answer, usually the ordinal position of the answer (first is 1)
+     *
+     * @return {@link PollVotersPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PollVotersPaginationAction retrievePollVotersById(long messageId, long answerId)
+    {
+        return new PollVotersPaginationActionImpl(getJDA(), getId(), Long.toUnsignedString(messageId), answerId);
     }
 
     /**

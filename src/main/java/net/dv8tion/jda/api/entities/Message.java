@@ -49,6 +49,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
@@ -61,6 +62,7 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
+import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -704,6 +706,21 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Message> expirePoll();
+
+    /**
+     * Paginate the users who voted for a poll answer.
+     *
+     * @param  answerId
+     *         The id of the poll answer, usually the ordinal position of the answer (first is 1)
+     *
+     * @return {@link PollVotersPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PollVotersPaginationAction retrievePollVoters(long answerId)
+    {
+        return new PollVotersPaginationActionImpl(getJDA(), getChannelId(), getId(), answerId);
+    }
 
     /**
      * Rows of interactive components such as {@link Button Buttons}.
