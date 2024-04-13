@@ -194,6 +194,9 @@ public enum GatewayIntent
      */
     AUTO_MODERATION_EXECUTION(21),
 
+    GUILD_MESSAGE_POLLS(24),
+    DIRECT_MESSAGE_POLLS(25),
+
     ;
 
     /**
