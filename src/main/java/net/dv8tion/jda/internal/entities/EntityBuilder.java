@@ -1911,7 +1911,9 @@ public class EntityBuilder
         DataArray answersData = data.getArray("answers");
         DataObject questionData = data.getObject("question");
 
-        DataObject resultsData = data.getObject("results");
+        DataObject resultsData = data.optObject("results").orElseGet(
+            () -> DataObject.empty().put("answer_counts", DataArray.empty()) // FIXME: Discord bug
+        );
         boolean isFinalized = resultsData.getBoolean("is_finalized");
 
         DataArray resultVotes = resultsData.getArray("answer_counts");

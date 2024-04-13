@@ -259,8 +259,8 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         List<LayoutComponent> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
-        if (content.isEmpty() && embeds.isEmpty() && files.isEmpty() && components.isEmpty())
-            throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, components, or files");
+        if (content.isEmpty() && embeds.isEmpty() && files.isEmpty() && components.isEmpty() && poll == null)
+            throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, components, poll, or files");
 
         int length = Helpers.codePointLength(content);
         if (length > Message.MAX_CONTENT_LENGTH)
