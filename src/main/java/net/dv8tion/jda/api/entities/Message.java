@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
@@ -680,6 +681,9 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     List<LayoutComponent> getComponents();
+
+    @Nullable
+    MessagePoll getPoll();
 
     /**
      * Rows of interactive components such as {@link Button Buttons}.
