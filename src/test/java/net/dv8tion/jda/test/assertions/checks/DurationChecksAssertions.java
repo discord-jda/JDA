@@ -19,7 +19,10 @@ package net.dv8tion.jda.test.assertions.checks;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import java.time.Duration;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
+import static net.dv8tion.jda.internal.utils.Helpers.durationToString;
 import static net.dv8tion.jda.test.ChecksHelper.isNegativeError;
 import static net.dv8tion.jda.test.ChecksHelper.notPositiveError;
 
@@ -40,6 +43,15 @@ public class DurationChecksAssertions extends AbstractChecksAssertions<Duration,
     {
         throwsFor(Duration.ofSeconds(-1), notPositiveError(name));
         throwsFor(Duration.ZERO, notPositiveError(name));
+        return this;
+    }
+
+    public DurationChecksAssertions checksNotLonger(Duration maxDuration, TimeUnit resolution)
+    {
+        Duration input = maxDuration.plusSeconds(resolution.toSeconds(1));
+        throwsFor(input,
+            String.format(Locale.ROOT, "%s may not be longer than %s. Provided: %s",
+                name, durationToString(maxDuration, resolution), durationToString(input, resolution)));
         return this;
     }
 }

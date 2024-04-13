@@ -47,14 +47,14 @@ public class MessagePollDataTest
         assertDurationChecks("Duration", builder::setDuration)
             .checksNotNull()
             .checksPositive()
-            .throwsFor(Duration.ofHours(500), "Duration may not be longer than 168 hours (= 7 days). Provided: 500 hours");
+            .checksNotLonger(Duration.ofHours(7 * 24), TimeUnit.HOURS);
 
         ChecksHelper.<TimeUnit>assertChecks("TimeUnit", (unit) -> builder.setDuration(1, unit))
             .checksNotNull();
 
         assertLongChecks("Duration", (duration) -> builder.setDuration(duration, TimeUnit.SECONDS))
             .checksPositive()
-            .throwsFor(TimeUnit.DAYS.toSeconds(8), "Duration may not be longer than 168 hours (= 7 days). Provided: 192 hours");
+            .throwsFor(TimeUnit.DAYS.toSeconds(8), "Duration may not be longer than 168 hours (7 days). Provided: 192 hours (8 days)");
 
         assertStringChecks("Answer title", builder::addAnswer)
             .checksNotNull()
