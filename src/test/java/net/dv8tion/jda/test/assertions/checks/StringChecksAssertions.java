@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.test.assertions.checks;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import java.util.regex.Pattern;
 
 import static net.dv8tion.jda.test.ChecksHelper.*;
-import static net.dv8tion.jda.test.TestHelpers.repeat;
 
 public class StringChecksAssertions extends AbstractChecksAssertions<String, StringChecksAssertions>
 {
@@ -47,7 +47,7 @@ public class StringChecksAssertions extends AbstractChecksAssertions<String, Str
 
     public StringChecksAssertions checksNotLonger(int maxLength)
     {
-        String invalidInput = repeat("s", maxLength + 1);
+        String invalidInput = StringUtils.repeat("s", maxLength + 1);
         throwsFor(invalidInput, tooLongError(name, maxLength, invalidInput));
         return this;
     }
@@ -60,8 +60,8 @@ public class StringChecksAssertions extends AbstractChecksAssertions<String, Str
 
     public StringChecksAssertions checksRange(int minLength, int maxLength)
     {
-        String tooLong = repeat("s", maxLength + 1);
-        String tooShort = repeat("s", minLength - 1);
+        String tooLong = StringUtils.repeat("s", maxLength + 1);
+        String tooShort = StringUtils.repeat("s", minLength - 1);
         throwsFor(tooShort, notInRangeError(name, minLength, maxLength, tooShort));
         throwsFor(tooLong, notInRangeError(name, minLength, maxLength, tooLong));
         return this;

@@ -136,6 +136,7 @@ dependencies {
     testImplementation("org.reflections:reflections:0.10.2")
     testImplementation("org.mockito:mockito-core:5.8.0")
     testImplementation("org.assertj:assertj-core:3.25.3")
+    testImplementation("org.apache.commons:commons-lang3:3.14.0")
 }
 
 val compileJava: JavaCompile by tasks
