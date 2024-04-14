@@ -51,7 +51,7 @@ val commitHash: String by lazy {
 }
 
 val previousVersion: Version by lazy {
-    val file = File(".version")
+    val file = layout.projectDirectory.file(".version").asFile
     if (file.canRead())
         Version.parse(file.readText().trim())
     else
@@ -132,16 +132,17 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.25.3")
 }
 
-val compileJava: JavaCompile by tasks
-val shadowJar: ShadowJar by tasks
-val javadoc: Javadoc by tasks
-val jar: Jar by tasks
-val build: Task by tasks
-val clean: Task by tasks
-val test: Test by tasks
-val check: Task by tasks
+val jar by tasks.getting(Jar::class) {
+    archiveBaseName.set(project.name)
+    manifest.attributes(
+            "Implementation-Version" to project.version,
+            "Automatic-Module-Name" to "net.dv8tion.jda")
+}
 
-shadowJar.archiveClassifier.set("withDependencies")
+val shadowJar by tasks.getting(ShadowJar::class) {
+    archiveClassifier.set("withDependencies")
+    exclude("*.pom")
+}
 
 fun nullable(string: String?): String {
     return if (string == null) "null"
@@ -216,42 +217,7 @@ val sourcesJar by tasks.creating(Jar::class) {
     dependsOn(sourcesForRelease)
 }
 
-val javadocJar by tasks.creating(Jar::class) {
-    dependsOn(javadoc)
-    archiveClassifier.set("javadoc")
-    from(javadoc.destinationDir)
-}
-
-tasks.withType<ShadowJar> {
-    exclude("*.pom")
-}
-
-tasks.withType<JavaCompile> {
-    val arguments = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
-    options.encoding = "UTF-8"
-    options.isIncremental = true
-    if (javaVersion.isJava9Compatible) doFirst {
-        arguments += "--release"
-        arguments += "8"
-    }
-    doFirst {
-        options.compilerArgs = arguments
-    }
-}
-
-compileJava.apply {
-    source = generateJavaSources.source
-    dependsOn(generateJavaSources)
-}
-
-jar.apply {
-    archiveBaseName.set(project.name)
-    manifest.attributes(
-            "Implementation-Version" to project.version,
-            "Automatic-Module-Name" to "net.dv8tion.jda")
-}
-
-javadoc.apply {
+val javadoc by tasks.getting(Javadoc::class) {
     isFailOnError = isCI
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
@@ -295,7 +261,34 @@ javadoc.apply {
     exclude("com/iwebpp/crypto")
 }
 
-build.apply {
+val javadocJar by tasks.creating(Jar::class) {
+    dependsOn(javadoc)
+    archiveClassifier.set("javadoc")
+    from(javadoc.destinationDir)
+}
+
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+    options.isIncremental = true
+
+    val args = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
+
+    if (javaVersion.isJava9Compatible) {
+        args.add("--release")
+        args.add("8")
+    }
+
+    doFirst {
+        options.compilerArgs = args
+    }
+}
+
+val compileJava by tasks.getting(JavaCompile::class) {
+    dependsOn(generateJavaSources)
+    source = generateJavaSources.source
+}
+
+val build by tasks.getting(Task::class) {
     dependsOn(jar)
     dependsOn(javadocJar)
     dependsOn(sourcesJar)
@@ -303,11 +296,11 @@ build.apply {
     dependsOn(noOpusJar)
     dependsOn(minimalJar)
 
-    jar.mustRunAfter(clean)
+    jar.mustRunAfter(tasks.clean)
     shadowJar.mustRunAfter(sourcesJar)
 }
 
-test.apply {
+val test by tasks.getting(Test::class) {
     useJUnitPlatform()
     failFast = true
 }
