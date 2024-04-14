@@ -45,7 +45,7 @@ val commitHash: String by lazy {
     val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT") ?: System.getenv("GITHUB_SHA")
     // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
     if (isCI && commit != null)
-        commit.substring(0, 7)
+        commit.take(7)
     else
         "DEV"
 }
@@ -61,10 +61,12 @@ val previousVersion: Version by lazy {
 val isNewVersion = previousVersion != versionObj
 // Use normal version string for new releases and commitHash for other builds
 project.version = "$versionObj" + if (isNewVersion) "" else "_$commitHash"
-
 project.group = "net.dv8tion"
 
-val archivesBaseName = "JDA"
+
+base {
+    archivesName.set("JDA")
+}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -146,28 +148,28 @@ fun nullable(string: String?): String {
            else "\"$string\""
 }
 
-val sourcesForRelease = task<Copy>("sourcesForRelease") {
+val sourcesForRelease by tasks.creating(Copy::class) {
     from("src/main/java") {
         include("**/JDAInfo.java")
         val tokens = mapOf(
-                "versionMajor" to versionObj.major,
-                "versionMinor" to versionObj.minor,
-                "versionRevision" to versionObj.revision,
-                "versionClassifier" to nullable(versionObj.classifier),
-                "commitHash" to commitHash
+            "versionMajor" to versionObj.major,
+            "versionMinor" to versionObj.minor,
+            "versionRevision" to versionObj.revision,
+            "versionClassifier" to nullable(versionObj.classifier),
+            "commitHash" to commitHash
         )
         // Allow for setting null on some strings without breaking the source
         // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
         filter { it.replace(Regex("\"!@|@!\""), "@") }
         // Then we can replace the @...@ with the respective values here
-        filter<ReplaceTokens>(mapOf("tokens" to tokens))
+        filter<ReplaceTokens>("tokens" to tokens)
     }
     into("build/filteredSrc")
 
     includeEmptyDirs = false
 }
 
-val generateJavaSources = task<SourceTask>("generateJavaSources") {
+val generateJavaSources by tasks.creating(SourceTask::class) {
     val javaSources = sourceSets["main"].allJava.filter {
         it.name != "JDAInfo.java"
     }.asFileTree
@@ -176,7 +178,7 @@ val generateJavaSources = task<SourceTask>("generateJavaSources") {
     dependsOn(sourcesForRelease)
 }
 
-val noOpusJar = task<ShadowJar>("noOpusJar") {
+val noOpusJar by tasks.creating(ShadowJar::class) {
     dependsOn(shadowJar)
     archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
 
@@ -190,7 +192,7 @@ val noOpusJar = task<ShadowJar>("noOpusJar") {
     manifest.inheritFrom(jar.manifest)
 }
 
-val minimalJar = task<ShadowJar>("minimalJar") {
+val minimalJar by tasks.creating(ShadowJar::class) {
     dependsOn(shadowJar)
     minimize()
     archiveClassifier.set(shadowJar.archiveClassifier.get() + "-min")
@@ -204,7 +206,7 @@ val minimalJar = task<ShadowJar>("minimalJar") {
     manifest.inheritFrom(jar.manifest)
 }
 
-val sourcesJar = task<Jar>("sourcesJar") {
+val sourcesJar by tasks.creating(Jar::class) {
     archiveClassifier.set("sources")
     from("src/main/java") {
         exclude("**/JDAInfo.java")
@@ -214,7 +216,7 @@ val sourcesJar = task<Jar>("sourcesJar") {
     dependsOn(sourcesForRelease)
 }
 
-val javadocJar = task<Jar>("javadocJar") {
+val javadocJar by tasks.creating(Jar::class) {
     dependsOn(javadoc)
     archiveClassifier.set("javadoc")
     from(javadoc.destinationDir)
@@ -244,9 +246,9 @@ compileJava.apply {
 
 jar.apply {
     archiveBaseName.set(project.name)
-    manifest.attributes(mapOf(
+    manifest.attributes(
             "Implementation-Version" to project.version,
-            "Automatic-Module-Name" to "net.dv8tion.jda"))
+            "Automatic-Module-Name" to "net.dv8tion.jda")
 }
 
 javadoc.apply {
@@ -389,7 +391,7 @@ fun generatePom(): MavenPom.() -> Unit = {
 // Skip fat jar publication (See https://github.com/johnrengelman/shadow/issues/586)
 components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) { skip() }
 val SoftwareComponentContainer.java
-    get() = components.getByName("java") as AdhocComponentWithVariants
+    get() = components.getByName<AdhocComponentWithVariants>("java")
 
 publishing {
     publications {
@@ -434,7 +436,7 @@ nexusPublishing {
 val ossrhConfigured = getProjectProperty("ossrhUser") != null
 val shouldPublish = isNewVersion && canSign && ossrhConfigured
 
-val rebuild = tasks.create("rebuild") {
+val rebuild by tasks.creating {
     group = "build"
 
     dependsOn(build)
@@ -452,12 +454,23 @@ tasks.withType<AbstractNexusStagingRepositoryTask> {
     enabled = shouldPublish
 }
 
-val release = tasks.create("release") {
+val release by tasks.creating {
+    group = "publishing"
+    enabled = shouldPublish
+
     dependsOn(publishingTasks)
+
+    doLast { // Only runs when shouldPublish = true
+        logger.lifecycle("Saving version $versionObj to .version")
+        val file = layout.projectDirectory.file(".version")
+        file.asFile.createNewFile()
+        file.asFile.writeText(versionObj.toString())
+    }
 }
 
 afterEvaluate {
-    tasks["closeAndReleaseSonatypeStagingRepository"].apply {
+    val closeAndReleaseSonatypeStagingRepository by tasks.getting
+    closeAndReleaseSonatypeStagingRepository.apply {
         release.dependsOn(this)
         mustRunAfter(publishingTasks)
     }
