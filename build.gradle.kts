@@ -31,6 +31,14 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
+
+////////////////////////////////////
+//                                //
+//     Project Configuration      //
+//                                //
+////////////////////////////////////
+
+
 val javaVersion = JavaVersion.current()
 val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "beta.22")
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
@@ -59,6 +67,7 @@ val previousVersion: Version by lazy {
 }
 
 val isNewVersion = previousVersion != versionObj
+
 // Use normal version string for new releases and commitHash for other builds
 project.version = "$versionObj" + if (isNewVersion) "" else "_$commitHash"
 project.group = "net.dv8tion"
@@ -80,6 +89,13 @@ configure<SourceSetContainer> {
         runtimeClasspath += sourceSets["main"].output
     }
 }
+
+
+////////////////////////////////////
+//                                //
+//    Dependency Configuration    //
+//                                //
+////////////////////////////////////
 
 
 repositories {
@@ -132,6 +148,14 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.25.3")
 }
 
+
+////////////////////////////////////
+//                                //
+//    Build Task Configuration    //
+//                                //
+////////////////////////////////////
+
+
 val jar by tasks.getting(Jar::class) {
     archiveBaseName.set(project.name)
     manifest.attributes(
@@ -144,11 +168,6 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     exclude("*.pom")
 }
 
-fun nullable(string: String?): String {
-    return if (string == null) "null"
-           else "\"$string\""
-}
-
 val sourcesForRelease by tasks.creating(Copy::class) {
     from("src/main/java") {
         include("**/JDAInfo.java")
@@ -156,7 +175,7 @@ val sourcesForRelease by tasks.creating(Copy::class) {
             "versionMajor" to versionObj.major,
             "versionMinor" to versionObj.minor,
             "versionRevision" to versionObj.revision,
-            "versionClassifier" to nullable(versionObj.classifier),
+            "versionClassifier" to nullableReplacement(versionObj.classifier),
             "commitHash" to commitHash
         )
         // Allow for setting null on some strings without breaking the source
@@ -306,48 +325,16 @@ val test by tasks.getting(Test::class) {
 }
 
 
-fun getProjectProperty(name: String) = project.properties[name] as? String
+////////////////////////////////////
+//                                //
+//    Publishing And Signing      //
+//                                //
+////////////////////////////////////
 
-class Version(
-    val major: String,
-    val minor: String,
-    val revision: String,
-    val classifier: String? = null
-) {
-    companion object {
-        fun parse(string: String): Version {
-            val (major, minor, revision) = string.substringBefore("-").split(".")
-            val classifier = if ("-" in string) string.substringAfter("-") else null
-            return Version(major, minor, revision, classifier)
-        }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is Version) return false
-        return major == other.major
-            && minor == other.minor
-            && revision == other.revision
-            && classifier == other.classifier
-    }
-
-    override fun toString(): String {
-        return "$major.$minor.$revision" + if (classifier != null) "-$classifier" else ""
-    }
-}
-
-
-////////////////////////////////////////
-////////////////////////////////////////
-////                                ////
-////     Publishing And Signing     ////
-////                                ////
-////////////////////////////////////////
-////////////////////////////////////////
 
 // Generate pom file for maven central
 
-fun generatePom(): MavenPom.() -> Unit = {
+fun MavenPom.populate() {
     packaging = "jar"
     name.set(project.name)
     description.set("Java wrapper for the popular chat & VOIP service: Discord https://discord.com")
@@ -378,9 +365,6 @@ fun generatePom(): MavenPom.() -> Unit = {
     }
 }
 
-
-// Publish
-
 // Skip fat jar publication (See https://github.com/johnrengelman/shadow/issues/586)
 components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElements.get()) { skip() }
 val SoftwareComponentContainer.java
@@ -398,12 +382,15 @@ publishing {
             artifact(sourcesJar)
             artifact(javadocJar)
 
-            pom.apply(generatePom())
+            pom.populate()
         }
     }
 }
 
+val ossrhConfigured = getProjectProperty("ossrhUser") != null
 val canSign = getProjectProperty("signing.keyId") != null
+val shouldPublish = isNewVersion && canSign && ossrhConfigured
+
 if (canSign) {
     signing {
         sign(publishing.publications.getByName("Release"))
@@ -426,10 +413,15 @@ nexusPublishing {
     }
 }
 
-val ossrhConfigured = getProjectProperty("ossrhUser") != null
-val shouldPublish = isNewVersion && canSign && ossrhConfigured
 
-val rebuild by tasks.creating {
+////////////////////////////////////
+//                                //
+//   Release Task Configuration   //
+//                                //
+////////////////////////////////////
+
+
+val rebuild by tasks.creating(Task::class) {
     group = "build"
 
     dependsOn(build)
@@ -447,7 +439,7 @@ tasks.withType<AbstractNexusStagingRepositoryTask> {
     enabled = shouldPublish
 }
 
-val release by tasks.creating {
+val release by tasks.creating(Task::class) {
     group = "publishing"
     enabled = shouldPublish
 
@@ -466,5 +458,39 @@ afterEvaluate {
     closeAndReleaseSonatypeStagingRepository.apply {
         release.dependsOn(this)
         mustRunAfter(publishingTasks)
+    }
+}
+
+
+////////////////////////////////////
+//                                //
+//            Helpers             //
+//                                //
+////////////////////////////////////
+
+
+fun getProjectProperty(name: String) = project.properties[name] as? String
+
+fun nullableReplacement(string: String?): String {
+    return if (string == null) "null"
+    else "\"$string\""
+}
+
+data class Version(
+    val major: String,
+    val minor: String,
+    val revision: String,
+    val classifier: String? = null
+) {
+    companion object {
+        fun parse(string: String): Version {
+            val (major, minor, revision) = string.substringBefore("-").split(".")
+            val classifier = string.substringAfter("-").takeIf { "-" in string }
+            return Version(major, minor, revision, classifier)
+        }
+    }
+
+    override fun toString(): String {
+        return "$major.$minor.$revision" + if (classifier != null) "-$classifier" else ""
     }
 }
