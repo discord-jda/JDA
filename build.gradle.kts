@@ -17,25 +17,17 @@
 //to build everything:             "gradlew build"
 //to build and upload everything:  "gradlew release"
 
-import Build_gradle.Pom
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import de.marcphilipp.gradle.nexus.InitializeNexusStagingRepository
-import de.marcphilipp.gradle.nexus.NexusPublishExtension
-import io.codearte.gradle.nexus.BaseStagingTask
-import io.codearte.gradle.nexus.NexusStagingExtension
+import io.github.gradlenexus.publishplugin.AbstractNexusStagingRepositoryTask
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Duration
-
-// Don't remove this, its needed for reasons....
-typealias Pom = org.gradle.api.publish.maven.MavenPom
 
 plugins {
     signing
     `java-library`
     `maven-publish`
 
-    id("io.codearte.nexus-staging") version "0.30.0"
-    id("de.marcphilipp.nexus-publish") version "0.4.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -360,24 +352,24 @@ class Version(
 
 // Generate pom file for maven central
 
-fun generatePom(pom: Pom) {
-    pom.packaging = "jar"
-    pom.name.set(project.name)
-    pom.description.set("Java wrapper for the popular chat & VOIP service: Discord https://discord.com")
-    pom.url.set("https://github.com/discord-jda/JDA")
-    pom.scm {
+fun generatePom(): MavenPom.() -> Unit = {
+    packaging = "jar"
+    name.set(project.name)
+    description.set("Java wrapper for the popular chat & VOIP service: Discord https://discord.com")
+    url.set("https://github.com/discord-jda/JDA")
+    scm {
         url.set("https://github.com/discord-jda/JDA")
         connection.set("scm:git:git://github.com/discord-jda/JDA")
         developerConnection.set("scm:git:ssh:git@github.com:discord-jda/JDA")
     }
-    pom.licenses {
+    licenses {
         license {
             name.set("The Apache Software License, Version 2.0")
             url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
             distribution.set("repo")
         }
     }
-    pom.developers {
+    developers {
         developer {
             id.set("Minn")
             name.set("Florian Spieß")
@@ -401,7 +393,7 @@ val SoftwareComponentContainer.java
 
 publishing {
     publications {
-        register("Release", MavenPublication::class) {
+        register<MavenPublication>("Release") {
             from(components["java"])
 
             artifactId = project.name
@@ -411,13 +403,11 @@ publishing {
             artifact(sourcesJar)
             artifact(javadocJar)
 
-            generatePom(pom)
+            pom.apply(generatePom())
         }
     }
 }
 
-
-// Turn off sign tasks if we don't have a key
 val canSign = getProjectProperty("signing.keyId") != null
 if (canSign) {
     signing {
@@ -425,74 +415,50 @@ if (canSign) {
     }
 }
 
-// Staging and Promotion
+nexusPublishing {
+    repositories.sonatype {
+        username.set(getProjectProperty("ossrhUser"))
+        password.set(getProjectProperty("ossrhPassword"))
+        stagingProfileId.set(getProjectProperty("stagingProfileId"))
+    }
 
-configure<NexusStagingExtension> {
-    username = getProjectProperty("ossrhUser") ?: ""
-    password = getProjectProperty("ossrhPassword") ?: ""
-    stagingProfileId = getProjectProperty("stagingProfileId") ?: ""
-}
+    connectTimeout.set(Duration.ofMinutes(1))
+    clientTimeout.set(Duration.ofMinutes(10))
 
-configure<NexusPublishExtension> {
-    nexusPublishing {
-        repositories.sonatype {
-            username.set(getProjectProperty("ossrhUser") ?: "")
-            password.set(getProjectProperty("ossrhPassword") ?: "")
-            stagingProfileId.set(getProjectProperty("stagingProfileId") ?: "")
-        }
-        // Sonatype is very slow :)
-        connectTimeout.set(Duration.ofMinutes(1))
-        clientTimeout.set(Duration.ofMinutes(10))
+    transitionCheckOptions {
+        maxRetries.set(100)
+        delayBetween.set(Duration.ofSeconds(5))
     }
 }
-
-// This links the close/release tasks to the right repository (from the publication above)
 
 val ossrhConfigured = getProjectProperty("ossrhUser") != null
 val shouldPublish = isNewVersion && canSign && ossrhConfigured
 
-// Turn off the staging tasks if we don't want to publish
-tasks.withType<InitializeNexusStagingRepository> {
-    enabled = shouldPublish
-}
+val rebuild = tasks.create("rebuild") {
+    group = "build"
 
-tasks.withType<BaseStagingTask> {
-    enabled = shouldPublish
-    // We give each step an hour because it takes very long sometimes ...
-    numberOfRetries = 30 // 30 tries
-    delayBetweenRetriesInMillis = 2 * 60 * 1000 // 2 minutes
-}
-
-// Getting staging profile is fine though
-tasks.getByName("getStagingProfile").enabled = ossrhConfigured
-
-tasks.create("release") {
-    // Only close repository after release is published
-    val closeRepository by tasks
-    closeRepository.mustRunAfter(tasks.withType<PublishToMavenRepository>())
-    dependsOn(tasks.withType<PublishToMavenRepository>())
-
-    // Closes the sonatype repository and publishes to maven central
-    val closeAndReleaseRepository: Task by tasks
-    dependsOn(closeAndReleaseRepository)
-
-    // Builds all jars for publications
     dependsOn(build)
-    enabled = shouldPublish
+    dependsOn(tasks.clean)
+    build.mustRunAfter(tasks.clean)
+}
 
-    doLast { // Only runs when shouldPublish = true
-        println("Saving version $versionObj to .version")
-        val file = File(".version")
-        file.createNewFile()
-        file.writeText(versionObj.toString())
+val publishingTasks = tasks.withType<PublishToMavenRepository> {
+    enabled = shouldPublish
+    mustRunAfter(rebuild)
+    dependsOn(rebuild)
+}
+
+tasks.withType<AbstractNexusStagingRepositoryTask> {
+    enabled = shouldPublish
+}
+
+val release = tasks.create("release") {
+    dependsOn(publishingTasks)
+}
+
+afterEvaluate {
+    tasks["closeAndReleaseSonatypeStagingRepository"].apply {
+        release.dependsOn(this)
+        mustRunAfter(publishingTasks)
     }
-}
-
-tasks.withType<PublishToMavenRepository> {
-    enabled = shouldPublish
-}
-
-// Gradle stop complaining please
-tasks.withType<Copy> {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
