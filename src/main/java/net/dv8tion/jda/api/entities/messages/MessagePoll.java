@@ -31,7 +31,7 @@ import java.util.List;
  * Poll sent with messages.
  *
  * @see Message#getPoll()
- * @see Message#expirePoll()
+ * @see Message#endPoll()
  */
 public interface MessagePoll
 {
@@ -75,11 +75,11 @@ public interface MessagePoll
     /**
      * The time when this poll will automatically expire.
      *
-     * <p>The author of the poll can always expire the poll manually, using {@link Message#expirePoll()}.
+     * <p>The author of the poll can always expire the poll manually, using {@link Message#endPoll()}.
      *
-     * @return {@link OffsetDateTime} representing the time when the poll expires automatically
+     * @return {@link OffsetDateTime} representing the time when the poll expires automatically, or null if it never expires
      */
-    @Nonnull
+    @Nullable
     OffsetDateTime getTimeExpiresAt();
 
     /**

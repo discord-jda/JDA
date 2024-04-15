@@ -1022,7 +1022,7 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * Expire the poll attached to this message.
+     * End the poll attached to this message.
      *
      * <p><b>A bot cannot expire the polls of other users.</b>
      *
@@ -1051,7 +1051,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Message> expirePollById(@Nonnull String messageId)
+    default AuditableRestAction<Message> endPollById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
         return new AuditableRestActionImpl<>(getJDA(), Route.Messages.EXPIRE_POLL.compile(getId(), messageId), (response, request) -> {
@@ -1061,7 +1061,7 @@ public interface MessageChannel extends Channel, Formattable
     }
 
     /**
-     * Expire the poll attached to this message.
+     * End the poll attached to this message.
      *
      * <p><b>A bot cannot expire the polls of other users.</b>
      *
@@ -1087,9 +1087,9 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Message> expirePollById(long messageId)
+    default AuditableRestAction<Message> endPollById(long messageId)
     {
-        return expirePollById(Long.toUnsignedString(messageId));
+        return endPollById(Long.toUnsignedString(messageId));
     }
 
     /**

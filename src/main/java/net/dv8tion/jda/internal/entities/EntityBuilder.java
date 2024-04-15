@@ -1905,7 +1905,7 @@ public class EntityBuilder
     public static MessagePollImpl createMessagePoll(DataObject data)
     {
         MessagePoll.LayoutType layout = MessagePoll.LayoutType.fromKey(data.getInt("layout_type"));
-        OffsetDateTime expiresAt = data.getOffsetDateTime("expiry");
+        OffsetDateTime expiresAt = data.isNull("expiry") ? null : data.getOffsetDateTime("expiry");
         boolean isMultiAnswer = data.getBoolean("allow_multiselect");
 
         DataArray answersData = data.getArray("answers");

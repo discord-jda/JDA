@@ -625,7 +625,7 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public AuditableRestAction<Message> expirePoll()
+    public AuditableRestAction<Message> endPoll()
     {
         checkUser();
         if (poll == null)

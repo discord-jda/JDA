@@ -690,13 +690,13 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Possibly-null poll instance for this message
      *
-     * @see    #expirePoll()
+     * @see    #endPoll()
      */
     @Nullable
     MessagePoll getPoll();
 
     /**
-     * Expire the poll attached to this message.
+     * End the poll attached to this message.
      *
      * @throws IllegalStateException
      *         If this poll was not sent by the currently logged in account or no poll was attached to this message
@@ -705,7 +705,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Message> expirePoll();
+    AuditableRestAction<Message> endPoll();
 
     /**
      * Paginate the users who voted for a poll answer.
