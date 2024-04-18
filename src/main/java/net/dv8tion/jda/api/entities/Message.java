@@ -343,7 +343,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.
      * <br><b>This is only valid if the Message was actually sent in a GuildMessageChannel.</b> This will return {@code null}
-     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook.
+     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook (including apps).
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
@@ -491,8 +491,8 @@ public interface Message extends ISnowflake, Formattable
     ChannelType getChannelType();
 
     /**
-     * Indicates if this Message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} instead of a
-     * {@link User User}.
+     * Indicates if this Message was sent either by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or an app,
+     * instead of a {@link User User}.
      * <br>Useful if you want to ignore non-users.
      *
      * @return True if this message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
