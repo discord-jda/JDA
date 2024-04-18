@@ -194,16 +194,15 @@ public enum GatewayIntent
      */
     AUTO_MODERATION_EXECUTION(21),
 
-// FIXME: Add these once they work
-//    /**
-//     * Events for poll votes in {@link net.dv8tion.jda.api.entities.Guild Guilds}.
-//     */
-//    GUILD_MESSAGE_POLLS(24),
-//
-//    /**
-//     * Events for poll votes in {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannels}.
-//     */
-//    DIRECT_MESSAGE_POLLS(25),
+    /**
+     * Events for poll votes in {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     */
+    GUILD_MESSAGE_POLLS(24),
+
+    /**
+     * Events for poll votes in {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannels}.
+     */
+    DIRECT_MESSAGE_POLLS(25),
 
     ;
 
