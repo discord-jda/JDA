@@ -78,4 +78,14 @@ public interface ThreadChannelPaginationAction extends PaginationAction<ThreadCh
     {
         return getChannel().getGuild();
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <b>Note:</b> When paginating over public and not-joined private threads,
+     * this skips based on {@link ThreadChannel#getTimeArchiveInfoLastModified() the archive timestamp}.
+     */
+    @Nonnull
+    @Override
+    ThreadChannelPaginationAction skipTo(long id);
 }
