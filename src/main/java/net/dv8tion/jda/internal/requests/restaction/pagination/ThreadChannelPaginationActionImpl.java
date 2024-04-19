@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -100,7 +101,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
 
                 try
                 {
-                    ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().getIdLong());
+                    ThreadChannel thread = builder.createThreadChannel((GuildImpl) getGuild(), threadObj, getGuild().getIdLong(), false);
                     list.add(thread);
 
                     if (this.useCache)
