@@ -61,6 +61,9 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.*;
 import net.dv8tion.jda.api.events.interaction.component.*;
 import net.dv8tion.jda.api.events.message.*;
+import net.dv8tion.jda.api.events.message.poll.GenericMessagePollVoteEvent;
+import net.dv8tion.jda.api.events.message.poll.MessagePollVoteAddEvent;
+import net.dv8tion.jda.api.events.message.poll.MessagePollVoteRemoveEvent;
 import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
@@ -186,6 +189,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {}
     public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
     public void onMessageReactionRemoveEmoji(@Nonnull MessageReactionRemoveEmojiEvent event) {}
+    public void onMessagePollVoteAdd(@Nonnull MessagePollVoteAddEvent event) {}
+    public void onMessagePollVoteRemove(@Nonnull MessagePollVoteRemoveEvent event) {}
 
     //PermissionOverride Events
     public void onPermissionOverrideDelete(@Nonnull PermissionOverrideDeleteEvent event) {}
@@ -389,6 +394,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericSelectMenuInteraction(@Nonnull GenericSelectMenuInteractionEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
+    public void onGenericMessagePollVote(@Nonnull GenericMessagePollVoteEvent event) {}
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
     public void onGenericUserPresence(@Nonnull GenericUserPresenceEvent event) {}
     public void onGenericUserUpdate(@Nonnull GenericUserUpdateEvent event) {}

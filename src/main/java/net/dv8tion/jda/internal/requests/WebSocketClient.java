@@ -1395,6 +1395,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("MESSAGE_REACTION_REMOVE",                new MessageReactionHandler(api, false));
         handlers.put("MESSAGE_REACTION_REMOVE_ALL",            new MessageReactionBulkRemoveHandler(api));
         handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",          new MessageReactionClearEmojiHandler(api));
+        handlers.put("MESSAGE_POLL_VOTE_ADD",                  new MessagePollVoteHandler(api, true));
+        handlers.put("MESSAGE_POLL_VOTE_REMOVE",               new MessagePollVoteHandler(api, false));
         handlers.put("MESSAGE_UPDATE",                         new MessageUpdateHandler(api));
         handlers.put("PRESENCE_UPDATE",                        new PresenceUpdateHandler(api));
         handlers.put("READY",                                  new ReadyHandler(api));
