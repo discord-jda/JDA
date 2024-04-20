@@ -155,14 +155,8 @@ public interface CommandInteractionPayload extends Interaction
                 switch (o.getType())
                 {
                 case CHANNEL:
-                    builder.append("<#").append(o.getAsLong()).append(">");
-                    continue;
                 case USER:
-                    builder.append("<@").append(o.getAsLong()).append(">");
-                    continue;
                 case ROLE:
-                    builder.append("<@&").append(o.getAsLong()).append(">");
-                    continue;
                 case MENTIONABLE:
                     builder.append(o.getAsLong());
                     continue;
