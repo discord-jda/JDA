@@ -630,7 +630,7 @@ public class ReceivedMessage implements Message
         checkUser();
         if (poll == null)
             throw new IllegalStateException("This message does not contain a poll");
-        return new AuditableRestActionImpl<>(getJDA(), Route.Messages.EXPIRE_POLL.compile(getChannelId(), getId()), (response, request) -> {
+        return new AuditableRestActionImpl<>(getJDA(), Route.Messages.END_POLL.compile(getChannelId(), getId()), (response, request) -> {
             JDAImpl jda = (JDAImpl) getJDA();
             EntityBuilder entityBuilder = jda.getEntityBuilder();
             if (hasChannel())

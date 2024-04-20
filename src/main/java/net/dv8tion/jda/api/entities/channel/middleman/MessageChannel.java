@@ -1054,7 +1054,7 @@ public interface MessageChannel extends Channel, Formattable
     default AuditableRestAction<Message> endPollById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        return new AuditableRestActionImpl<>(getJDA(), Route.Messages.EXPIRE_POLL.compile(getId(), messageId), (response, request) -> {
+        return new AuditableRestActionImpl<>(getJDA(), Route.Messages.END_POLL.compile(getId(), messageId), (response, request) -> {
             JDAImpl jda = (JDAImpl) getJDA();
             return jda.getEntityBuilder().createMessageWithChannel(response.getObject(), MessageChannel.this, false);
         });
