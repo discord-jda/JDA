@@ -36,7 +36,7 @@ plugins {
 
     id("io.codearte.nexus-staging") version "0.30.0"
     id("de.marcphilipp.nexus-publish") version "0.4.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 val javaVersion = JavaVersion.current()
@@ -97,33 +97,32 @@ dependencies {
     /* ABI dependencies */
 
     //Code safety
-    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    compileOnly("org.jetbrains:annotations:23.0.0")
+    compileOnly(libs.findbugs)
+    compileOnly(libs.jetbrains.annotations)
 
     //Logger
-    api("org.slf4j:slf4j-api:1.7.36")
+    api(libs.slf4j)
 
     //Web Connection Support
-    api("com.neovisionaries:nv-websocket-client:2.14")
-    api("com.squareup.okhttp3:okhttp:4.12.0")
+    api(libs.websocket.client)
+    api(libs.okhttp)
 
     //Opus library support
-    api("club.minnced:opus-java:1.1.1")
+    api(libs.opus)
 
     //Collections Utility
-    api("org.apache.commons:commons-collections4:4.4")
+    api(libs.commons.collections)
 
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore
     // since jna is a transitive runtime dependency of opus-java we don't include it explicitly as dependency
-    compileOnly("net.java.dev.jna:jna:4.4.0")
+    compileOnly(libs.jna)
 
     /* Internal dependencies */
 
     //General Utility
-    implementation("net.sf.trove4j:trove4j:3.0.3")
-    implementation("com.fasterxml.jackson.core:jackson-core:2.16.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")
+    implementation(libs.trove4j)
+    implementation(libs.bundles.jackson)
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
@@ -132,11 +131,11 @@ dependencies {
         addAll(configurations["compileOnly"].allDependencies)
     }
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
-    testImplementation("org.reflections:reflections:0.10.2")
-    testImplementation("org.mockito:mockito-core:5.8.0")
-    testImplementation("org.assertj:assertj-core:3.25.3")
-    testImplementation("org.apache.commons:commons-lang3:3.14.0")
+    testImplementation(libs.junit)
+    testImplementation(libs.reflections)
+    testImplementation(libs.mockito)
+    testImplementation(libs.assertj)
+    testImplementation(libs.commons.lang3)
 }
 
 val compileJava: JavaCompile by tasks
