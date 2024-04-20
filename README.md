@@ -201,14 +201,18 @@ You can find a more thorough example with the [SlashBotExample](https://github.c
 
 ## 🚀 RestAction
 
-Through [RestAction](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
- 
- - [callbacks](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
- - [promises](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
- - and [sync](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
+In this library, the [RestAction](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html) interface is used as a request builder for all API endpoints.
+This interface represents a lazy request builder, as shown in this simple example:
 
-and it is up to the user to decide which pattern to utilize.
-It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
+```java
+channel.sendMessage("Hello Friend!")
+  .addFiles(FileUpload.fromData(greetImage)) // Chain builder methods to configure the request
+  .queue() // Send the request asynchronously
+```
+
+> [!IMPORTANT]
+> The final call to [`queue()`](https://docs.jda.wiki/net/dv8tion/jda/api/requests/RestAction.html#queue%28%29) sends the request.
+> You can also send the request synchronously or using futures, check out our extended guide in the [RestAction Wiki](https://jda.wiki/using-jda/using-restaction/).
 
 The RestAction interface also supports a number of operators to avoid callback hell:
 
@@ -256,9 +260,6 @@ This could then be used in code:
 ```java
 selfDestruct(channel, "Hello friend, this is my secret message").queue();
 ```
-
-> [!IMPORTANT]
-> The final call to `queue()` sends the request and all chained requests. Without calling this method, you only provision the `RestAction`.
 
 ## 🧩 Extensions
 
