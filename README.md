@@ -290,10 +290,11 @@ Lavaplayer is the most popular library used by Music Bots created in Java.
 It is highly compatible with JDA and Discord4J and allows playing audio from
 YouTube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/lavalink-devs/lavaplayer#supported-formats).  
 The library can easily be expanded to more services by implementing your own AudioSourceManager and registering it.
+We recommend to also use [udpqueue](#udpqueue-an-extension-of-jda-nas) in addition to lavaplayer, to avoid stuttering issues caused by GC pauses.
 
 It is recommended to read the [Usage](https://github.com/lavalink-devs/lavaplayer#usage) section of Lavaplayer
-to understand a proper implementation.
-<br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
+to understand a proper implementation.  
+Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
 https://github.com/lavalink-devs/lavaplayer/tree/master/demo-jda
 
 ### [udpqueue](https://github.com/MinnDevelopment/udpqueue.rs) (an extension of [jda-nas](https://github.com/sedmelluq/jda-nas))
