@@ -49,6 +49,8 @@ The core concepts of JDA have been developed to make building scalable apps easy
 1. Customizable Cache  
     Trading memory usage for better performance where necessary, with sane default presets to choose from and customize.
 
+You can learn more by visiting our [wiki][wiki] or referencing our [Javadocs][docs].
+
 ## 🔬 Installation
 
 [![maven-central][]](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
@@ -112,6 +114,9 @@ We recommend reading the guide on [caching and intents](https://jda.wiki/using-j
 
 ### Example: Message Logging
 
+> [!NOTE]
+> The following example makes use of the **privileged intent** `GatewayIntent.MESSAGE_CONTENT`, which must be explicitly enabled in your application dashboard. You can find out more about intents in our [wiki guide](https://jda.wiki/using-jda/gateway-intents-and-member-cache-policy/).
+
 Simply logging messages to the console. Making use of [JDABuilder][JDABuilder], the intended entry point for smaller bots that don't intend to grow to thousands of guilds.
 
 Starting your bot and attaching an event listener, using the right [intents][GatewayIntent]:
@@ -123,9 +128,6 @@ public static void main(String[] args) {
       .build();
 }
 ```
-
-> [!CAUTION]
-> This also makes use of a **privileged** intent, which you have to explicitly enable in your application dashboard when you create your bot.
 
 Your event listener could look like this:
 
@@ -160,10 +162,7 @@ public static void main(String[] args) {
   // Add all your commands on this action instance
   commands.addCommands(
     Commands.slash("say", "Makes the bot say what you tell it to")
-      .addOption(STRING, "content", "What the bot should say", true) // Accepting a user input
-  );
-
-  commands.addCommands(
+      .addOption(STRING, "content", "What the bot should say", true), // Accepting a user input
     Commands.slash("leave", "Makes the bot leave the server")
       .setGuildOnly(true) // this doesn't make sense in DMs
       .setDefaultPermissions(DefaultMemberPermissions.DISABLED) // only admins should be able to use this command.
@@ -263,46 +262,6 @@ selfDestruct(channel, "Hello friend, this is my secret message").queue();
 
 ## 🧩 Extensions
 
-### [Lavaplayer](https://github.com/lavalink-devs/lavaplayer)
-
-Created by [sedmelluq](https://github.com/sedmelluq) and now maintained by the [lavalink community](https://github.com/lavalink-devs)  
-Lavaplayer is the most popular library used by Music Bots created in Java.
-It is highly compatible with JDA and Discord4J and allows playing audio from
-YouTube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/lavalink-devs/lavaplayer#supported-formats).  
-The library can easily be expanded to more services by implementing your own AudioSourceManager and registering it.
-
-It is recommended to read the [Usage](https://github.com/lavalink-devs/lavaplayer#usage) section of Lavaplayer
-to understand a proper implementation.
-<br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
-https://github.com/lavalink-devs/lavaplayer/tree/master/demo-jda
-
-### [Lavalink](https://github.com/lavalink-devs/Lavalink)
-
-Created by [Freya Arbjerg](https://github.com/freyacodes) and now maintained by the [lavalink community](https://github.com/lavalink-devs).
-
-Lavalink is a popular standalone audio sending node based on Lavaplayer. Lavalink was built with scalability in mind,
-and allows streaming music via many servers. It supports most of Lavaplayer's features.
-
-Lavalink is used by many large bots, as well as bot developers who can not use a Java library like Lavaplayer.
-If you plan on serving music on a smaller scale with JDA, it is often preferable to just use Lavaplayer directly
-as it is easier.
-
-[Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
-
-
-### [udpqueue](https://github.com/MinnDevelopment/udpqueue.rs) (an extension of [jda-nas](https://github.com/sedmelluq/jda-nas))
-
-Created and maintained by [sedmelluq](https://github.com/sedmelluq) and extended by [MinnDevelopment](https://github.com/MinnDevelopment)  
-Provides a native implementation for the JDA Audio Send-System to avoid GC pauses.
-
-Note that this send-system creates an extra UDP-Client which causes audio receive to no longer function properly,
-since Discord identifies the sending UDP-Client as the receiver.
-
-```java
-JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN)
-    .setAudioSendFactory(new NativeAudioSendFactory());
-```
-
 ### [jda-ktx](https://github.com/MinnDevelopment/jda-ktx)
 
 Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).  
@@ -324,7 +283,46 @@ fun main() {
 
 There are a number of examples available in the [README](https://github.com/MinnDevelopment/jda-ktx/#jda-ktx).
 
-## 🍴 Contributing to JDA
+### [Lavaplayer](https://github.com/lavalink-devs/lavaplayer)
+
+Created by [sedmelluq](https://github.com/sedmelluq) and now maintained by the [lavalink community](https://github.com/lavalink-devs)  
+Lavaplayer is the most popular library used by Music Bots created in Java.
+It is highly compatible with JDA and Discord4J and allows playing audio from
+YouTube, Soundcloud, Twitch, Bandcamp and [more providers](https://github.com/lavalink-devs/lavaplayer#supported-formats).  
+The library can easily be expanded to more services by implementing your own AudioSourceManager and registering it.
+
+It is recommended to read the [Usage](https://github.com/lavalink-devs/lavaplayer#usage) section of Lavaplayer
+to understand a proper implementation.
+<br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
+https://github.com/lavalink-devs/lavaplayer/tree/master/demo-jda
+
+### [udpqueue](https://github.com/MinnDevelopment/udpqueue.rs) (an extension of [jda-nas](https://github.com/sedmelluq/jda-nas))
+
+Created and maintained by [sedmelluq](https://github.com/sedmelluq) and extended by [MinnDevelopment](https://github.com/MinnDevelopment)  
+Provides a native implementation for the JDA Audio Send-System **to avoid GC pauses potentially causing problems** with continuous audio playback.
+
+Note that this send-system creates an extra UDP-Client which causes audio receive to no longer function properly,
+since Discord identifies the sending UDP-Client as the receiver.
+
+```java
+JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN)
+    .setAudioSendFactory(new NativeAudioSendFactory());
+```
+
+### [Lavalink](https://github.com/lavalink-devs/Lavalink)
+
+Created by [Freya Arbjerg](https://github.com/freyacodes) and now maintained by the [lavalink community](https://github.com/lavalink-devs).
+
+Lavalink is a popular standalone audio sending node based on Lavaplayer. Lavalink was built with scalability in mind,
+and allows streaming music via many servers. It supports most of Lavaplayer's features.
+
+Lavalink is used by many large bots, as well as bot developers who can not use a Java library like Lavaplayer.
+If you plan on serving music on a smaller scale with JDA, it is often preferable to just use Lavaplayer directly
+as it is easier.
+
+[Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
+
+## 🛠️ Contributing to JDA
 
 If you want to contribute to JDA, make sure to base your branch off of our **master** branch (or a feature-branch)
 and create your PR into that **same** branch.
