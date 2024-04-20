@@ -149,6 +149,26 @@ public interface CommandInteractionPayload extends Interaction
         for (OptionMapping o : getOptions())
         {
             builder.append(" ").append(o.getName()).append(": ");
+            // Discord doesn't send the resolved entities on autocomplete interactions
+            if (this instanceof CommandAutoCompleteInteraction)
+            {
+                switch (o.getType())
+                {
+                case CHANNEL:
+                    builder.append("<#").append(o.getAsLong()).append(">");
+                    continue;
+                case USER:
+                    builder.append("<@").append(o.getAsLong()).append(">");
+                    continue;
+                case ROLE:
+                    builder.append("<@&").append(o.getAsLong()).append(">");
+                    continue;
+                case MENTIONABLE:
+                    builder.append(o.getAsLong());
+                    continue;
+                }
+            }
+
             switch (o.getType())
             {
             case CHANNEL:
