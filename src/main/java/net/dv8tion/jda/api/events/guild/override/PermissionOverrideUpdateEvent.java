@@ -40,7 +40,7 @@ import java.util.EnumSet;
  *
  * <p>These events require {@link CacheFlag#MEMBER_OVERRIDES} to be enabled for member overrides,
  * unless the member is the {@link net.dv8tion.jda.api.entities.Guild#getSelfMember() self member}.
- * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this by default!
  */
 public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEvent
 {
