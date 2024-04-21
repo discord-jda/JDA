@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test;
+package net.dv8tion.jda.api.requests.restaction.pagination;
 
-public interface Constants
+import net.dv8tion.jda.api.entities.User;
+
+/**
+ * {@link PaginationAction PaginationAction} that paginates the votes for a poll answer.
+ *
+ * <p><b>Limits</b><br>
+ * Minimum - 1<br>
+ * Maximum - 1000
+ * <br>Default - 1000
+ */
+public interface PollVotersPaginationAction extends PaginationAction<User, PollVotersPaginationAction>
 {
-    long GUILD_ID = 125227483518861312L;
-    long CHANNEL_ID = 125227483518861312L;
-    long MINN_USER_ID = 86699011792191488L;
-    long BUTLER_USER_ID = 150203841827045376L;
 }

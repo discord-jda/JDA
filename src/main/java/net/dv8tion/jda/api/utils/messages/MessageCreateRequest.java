@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -296,6 +297,27 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     @Nonnull
     @Override
     List<FileUpload> getAttachments();
+
+    /**
+     * The poll attached to this message
+     *
+     * @return The attached poll, or null if no poll is present
+     */
+    @Nullable
+    MessagePollData getPoll();
+
+    /**
+     * Add a poll to this message.
+     *
+     * @param  poll
+     *         The poll to send
+     *
+     * @return The same instance for chaining
+     *
+     * @see    MessagePollBuilder
+     */
+    @Nonnull
+    R setPoll(@Nullable MessagePollData poll);
 
     /**
      * Whether the message should use <em>Text-to-Speech</em> (TTS).

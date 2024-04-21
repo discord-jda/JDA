@@ -135,6 +135,7 @@ dependencies {
     testImplementation(libs.reflections)
     testImplementation(libs.mockito)
     testImplementation(libs.assertj)
+    testImplementation(libs.commons.lang3)
 }
 
 val compileJava: JavaCompile by tasks

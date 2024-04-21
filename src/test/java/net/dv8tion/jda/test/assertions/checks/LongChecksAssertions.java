@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test;
+package net.dv8tion.jda.test.assertions.checks;
 
-public interface Constants
+import org.junit.jupiter.api.function.ThrowingConsumer;
+
+import static net.dv8tion.jda.test.ChecksHelper.notPositiveError;
+
+public class LongChecksAssertions extends AbstractChecksAssertions<Long, LongChecksAssertions>
 {
-    long GUILD_ID = 125227483518861312L;
-    long CHANNEL_ID = 125227483518861312L;
-    long MINN_USER_ID = 86699011792191488L;
-    long BUTLER_USER_ID = 150203841827045376L;
+    public LongChecksAssertions(String name, ThrowingConsumer<Long> callable)
+    {
+        super(name, callable);
+    }
+
+    public LongChecksAssertions checksPositive()
+    {
+        throwsFor( 0L, notPositiveError(name));
+        throwsFor( -1L, notPositiveError(name));
+        return this;
+    }
 }

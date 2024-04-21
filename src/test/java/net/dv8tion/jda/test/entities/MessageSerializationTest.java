@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MessageSerializationTest
 {
-
     private static final String DESCRIPTION_TEXT = "Description Text";
     private static final String TITLE_TEXT = "Title Text";
     private static final String TITLE_URL = "https://example.com/title";

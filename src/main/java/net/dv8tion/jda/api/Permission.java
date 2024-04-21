@@ -64,6 +64,7 @@ public enum Permission
     USE_APPLICATION_COMMANDS(    31, true, true, "Use Application Commands"),
     MESSAGE_EXT_STICKER(         37, true, true, "Use External Stickers"),
     MESSAGE_ATTACH_VOICE_MESSAGE(46, true, true, "Send Voice Messages"),
+    MESSAGE_SEND_POLLS(          49, true, true, "Create Polls"),
 
     // Thread Permissions
     MANAGE_THREADS(          34, true, true, "Manage Threads"),

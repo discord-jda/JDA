@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test;
+package net.dv8tion.jda.test.assertions.checks;
 
-public interface Constants
+import org.junit.jupiter.api.function.ThrowingConsumer;
+
+public class SimpleChecksAssertions<T> extends AbstractChecksAssertions<T, SimpleChecksAssertions<T>>
 {
-    long GUILD_ID = 125227483518861312L;
-    long CHANNEL_ID = 125227483518861312L;
-    long MINN_USER_ID = 86699011792191488L;
-    long BUTLER_USER_ID = 150203841827045376L;
+    public SimpleChecksAssertions(String name, ThrowingConsumer<T> callable)
+    {
+        super(name, callable);
+    }
 }

@@ -40,7 +40,9 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -153,6 +155,33 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
         checkCanSendMessage();
         checkCanSendMessageEmbeds();
         return MessageChannelUnion.super.sendMessageEmbeds(embeds);
+    }
+
+    @NotNull
+    @Override
+    default MessageCreateAction sendMessageComponents(@NotNull LayoutComponent component, @NotNull LayoutComponent... other)
+    {
+        checkCanAccessChannel();
+        checkCanSendMessage();
+        return MessageChannelUnion.super.sendMessageComponents(component, other);
+    }
+
+    @Nonnull
+    @Override
+    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    {
+        checkCanAccessChannel();
+        checkCanSendMessage();
+        return MessageChannelUnion.super.sendMessageComponents(components);
+    }
+
+    @Nonnull
+    @Override
+    default MessageCreateAction sendMessagePoll(@Nonnull MessagePollData poll)
+    {
+        checkCanAccessChannel();
+        checkCanSendMessage();
+        return MessageChannelUnion.super.sendMessagePoll(poll);
     }
 
     @Nonnull

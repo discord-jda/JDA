@@ -82,7 +82,6 @@ import net.dv8tion.jda.internal.utils.cache.*;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1553,7 +1552,7 @@ public class GuildImpl implements Guild
     {
         deletionTime = deletionTime == null ? Duration.ZERO : deletionTime;
         Checks.noneNull(users, "Users");
-        Checks.check(!deletionTime.isNegative(), "Deletion time cannot be negative");
+        Checks.notNegative(deletionTime.getSeconds(), "Deletion timeframe");
         Checks.check(deletionTime.getSeconds() <= TimeUnit.DAYS.toSeconds(7), "Deletion timeframe must not be larger than 7 days. Provided: %d seconds", deletionTime.getSeconds());
         Checks.check(users.size() <= 200, "Cannot ban more than 200 users at once");
         checkPermission(Permission.BAN_MEMBERS);

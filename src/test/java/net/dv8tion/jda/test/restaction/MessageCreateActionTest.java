@@ -18,9 +18,11 @@ package net.dv8tion.jda.test.restaction;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.test.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,8 +30,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.requests.Method.POST;
+import static net.dv8tion.jda.test.restaction.MessageCreateActionTest.Data.emoji;
+import static net.dv8tion.jda.test.restaction.MessageCreateActionTest.Data.pollAnswer;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.when;
 
@@ -54,6 +59,7 @@ public class MessageCreateActionTest extends IntegrationTest
                 .put("components", DataArray.empty())
                 .put("content", "")
                 .put("embeds", DataArray.empty())
+                .put("poll", null)
                 .put("enforce_nonce", true)
                 .put("flags", 0)
                 .put("nonce", FIXED_NONCE)
@@ -73,7 +79,7 @@ public class MessageCreateActionTest extends IntegrationTest
         assertThatIllegalStateException().isThrownBy(() ->
             new MessageCreateActionImpl(channel)
                 .queue()
-        ).withMessage("Cannot build empty messages! Must provide at least one of: content, embed, file, or stickers");
+        ).withMessage("Cannot build empty messages! Must provide at least one of: content, embed, file, poll, or stickers");
     }
 
     @Test
@@ -106,9 +112,63 @@ public class MessageCreateActionTest extends IntegrationTest
             .whenQueueCalled();
     }
 
+    @Test
+    void testPollOnly()
+    {
+        MessageCreateAction action = new MessageCreateActionImpl(channel)
+            .setPoll(new MessagePollBuilder("Test poll")
+                .setDuration(3, TimeUnit.DAYS)
+                .setMultiAnswer(true)
+                .addAnswer("Test answer 1")
+                .addAnswer("Test answer 2", Emoji.fromUnicode("🤔"))
+                .addAnswer("Test answer 3", Emoji.fromCustom("minn", 821355005788684298L, true))
+                .build());
+
+        assertThatRequestFrom(action)
+            .hasMethod(POST)
+            .hasCompiledRoute(ENDPOINT_URL)
+            .hasBodyEqualTo(defaultMessageRequest()
+                .put("poll", DataObject.empty()
+                    .put("duration", 72)
+                    .put("allow_multiselect", true)
+                    .put("layout_type", 1)
+                    .put("question", DataObject.empty()
+                        .put("text", "Test poll"))
+                    .put("answers", DataArray.empty()
+                        .add(pollAnswer(1, "Test answer 1", null))
+                        .add(pollAnswer(2, "Test answer 2", emoji("🤔")))
+                        .add(pollAnswer(3, "Test answer 3", emoji("minn", 821355005788684298L, true))))))
+            .whenQueueCalled();
+    }
+
     @Nonnull
     protected DataObject normalizeRequestBody(@Nonnull DataObject body)
     {
         return body.put("nonce", FIXED_NONCE);
+    }
+
+    static class Data
+    {
+        static DataObject pollAnswer(long id, String title, DataObject emoji)
+        {
+            return DataObject.empty()
+                .put("answer_id", id)
+                .put("poll_media", DataObject.empty()
+                    .put("text", title)
+                    .put("emoji", emoji));
+        }
+
+        static DataObject emoji(String name)
+        {
+            return DataObject.empty().put("name", name);
+        }
+
+        static DataObject emoji(String name, long id, boolean animated)
+        {
+            return DataObject.empty()
+                    .put("name", name)
+                    .put("id", id)
+                    .put("animated", animated);
+        }
     }
 }

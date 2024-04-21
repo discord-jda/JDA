@@ -186,6 +186,12 @@ public enum ErrorResponse
     TITLE_BLOCKED_BY_AUTOMOD(                 200001, "Title was blocked by automatic moderation"),
     MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER(   240000, "Message blocked by harmful links filter"),
     FAILED_TO_BAN_USERS(                      500000, "Failed to ban users"),
+    POLL_VOTING_BLOCKED(                      520000, "Poll voting blocked"),
+    POLL_EXPIRED(                             520001, "Poll expired"),
+    POLL_INVALID_CHANNEL_TYPE(                520002, "Invalid channel type for poll creation"),
+    CANNOT_UPDATE_POLL_MESSAGE(               520003, "Cannot edit a poll message"),
+    POLL_WITH_UNUSABLE_EMOJI(                 520004, "Cannot use an emoji included with the poll"),
+    CANNOT_EXPIRE_MISSING_POLL(               520006, "Cannot expire a non-poll message"),
 
     SERVER_ERROR(                                 0, "Discord encountered an internal server error! Not good!");
 
