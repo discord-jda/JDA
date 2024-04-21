@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.messages;
+package net.dv8tion.jda.internal.entities.messages;
+
+import net.dv8tion.jda.api.entities.messages.MessagePoll;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
