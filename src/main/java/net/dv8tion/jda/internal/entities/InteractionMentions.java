@@ -46,7 +46,7 @@ public class InteractionMentions extends AbstractMentions
         return it instanceof User
                 ? (User) it
                 : it instanceof Member
-                    ? ((Member) it).getUser()
+                    ? ((Member) it).user
                     : null;
     }
 
@@ -77,7 +77,7 @@ public class InteractionMentions extends AbstractMentions
     @Override
     protected boolean isUserMentioned(IMentionable mentionable)
     {
-        return resolved.containsKey(mentionable.getIdLong())
+        return resolved.containsKey(mentionable.idLong)
                 && (content.contains("<@!" + mentionable.getId() + ">") || content.contains("<@" + mentionable.getId() + ">"));
     }
 }

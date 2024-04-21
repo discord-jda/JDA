@@ -129,15 +129,15 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         DataObject body = DataObject.empty();
 
         //Required fields. Populate with current values..
-        body.put("username", getSelfUser().getName());
+        body.put("username", getSelfUser().name);
         body.put("avatar", getSelfUser().getAvatarId());
 
         if (shouldUpdate(NAME))
             body.put("username", name);
         if (shouldUpdate(AVATAR))
-            body.put("avatar", avatar == null ? null : avatar.getEncoding());
+            body.put("avatar", avatar == null ? null : avatar.encoding);
         if (shouldUpdate(BANNER))
-            body.put("banner", banner == null ? null : banner.getEncoding());
+            body.put("banner", banner == null ? null : banner.encoding);
 
         reset();
         return getRequestBody(body);

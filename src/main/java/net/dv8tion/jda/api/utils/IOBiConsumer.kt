@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils
 
-package net.dv8tion.jda.api.utils;
-
-import java.io.IOException;
+import java.io.IOException
 
 /**
- * Consumer accepting two arguments and throwing {@link IOException}.
+ * Consumer accepting two arguments and throwing [IOException].
  *
  * @param <T> The type of the first argument
  * @param <R> The type of the second argument
- */
-@FunctionalInterface
-public interface IOBiConsumer<T, R>
-{
-    void accept(T a, R b) throws IOException;
+</R></T> */
+fun interface IOBiConsumer<T, R> {
+    @Throws(IOException::class)
+    fun accept(a: T, b: R)
 }

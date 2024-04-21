@@ -43,7 +43,7 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>> exten
     {
         checkPermission(Permission.CREATE_INSTANT_INVITE);
 
-        return new InviteActionImpl(this.getJDA(), this.getId());
+        return new InviteActionImpl(this.jDA, this.getId());
     }
 
     @Nonnull
@@ -54,7 +54,7 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>> exten
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
-        JDAImpl jda = (JDAImpl) getJDA();
+        JDAImpl jda = (JDAImpl) jDA;
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
             EntityBuilder entityBuilder = jda.getEntityBuilder();

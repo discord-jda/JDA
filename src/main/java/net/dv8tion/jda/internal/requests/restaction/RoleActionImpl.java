@@ -176,7 +176,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
         if (mentionable != null)
             object.put("mentionable", mentionable);
         if (icon != null)
-            object.put("icon", icon.getEncoding());
+            object.put("icon", icon.encoding);
         if (emoji != null)
             object.put("unicode_emoji", emoji);
 
@@ -186,12 +186,12 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Override
     protected void handleSuccess(Response response, Request<Role> request)
     {
-        request.onSuccess(api.getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
+        request.onSuccess(api.getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.idLong));
     }
 
     private void checkPermission(Permission permission)
     {
-        if (!guild.getSelfMember().hasPermission(permission))
+        if (!guild.selfMember.hasPermission(permission))
             throw new InsufficientPermissionException(guild, permission);
     }
 }

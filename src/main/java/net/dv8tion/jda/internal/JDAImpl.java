@@ -110,7 +110,7 @@ public class JDAImpl implements JDA
     protected final ChannelCacheViewImpl<Channel> channelCache = new ChannelCacheViewImpl<>(Channel.class);
     protected final ArrayDeque<Long> privateChannelLRU = new ArrayDeque<>();
 
-    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
+    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.guild.name);
 
     protected final PresenceImpl presence;
     protected final Thread shutdownHook;
@@ -192,7 +192,7 @@ public class JDAImpl implements JDA
 
     public boolean isIntent(GatewayIntent intent)
     {
-        int raw = intent.getRawValue();
+        int raw = intent.rawValue;
         return (client.getGatewayIntents() & raw) == raw;
     }
 
@@ -228,7 +228,7 @@ public class JDAImpl implements JDA
     {
         try
         {
-            return member.getUser().equals(getSelfUser()) // always cache self
+            return member.user.equals(getSelfUser()) // always cache self
                 || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
         }
         catch (Exception e)
@@ -318,8 +318,8 @@ public class JDAImpl implements JDA
             if (shardInfo != null)
             {
                 contextMap.put("jda.shard", shardInfo.getShardString());
-                contextMap.put("jda.shard.id", String.valueOf(shardInfo.getShardId()));
-                contextMap.put("jda.shard.total", String.valueOf(shardInfo.getShardTotal()));
+                contextMap.put("jda.shard.id", String.valueOf(shardInfo.shardId));
+                contextMap.put("jda.shard.total", String.valueOf(shardInfo.shardTotal));
             }
             // set MDC metadata for build thread
             previousContext = MDC.getCopyOfContextMap();
@@ -340,7 +340,7 @@ public class JDAImpl implements JDA
         if (shutdownHook != null)
             Runtime.getRuntime().addShutdownHook(shutdownHook);
 
-        return shardInfo == null ? -1 : shardInfo.getShardTotal();
+        return shardInfo == null ? -1 : shardInfo.shardTotal;
     }
 
     public String getGateway()
@@ -394,7 +394,7 @@ public class JDAImpl implements JDA
                 if (response.isOk())
                     request.onSuccess(response.getObject());
                 else if (response.isRateLimit())
-                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
+                    request.onFailure(new RateLimitedException(request.route, response.retryAfter));
                 else if (response.code == 401)
                     request.onSuccess(null);
                 else
@@ -484,7 +484,7 @@ public class JDAImpl implements JDA
     @Override
     public boolean unloadUser(long userId)
     {
-        if (userId == selfUser.getIdLong())
+        if (userId == selfUser.idLong)
             return false;
         User user = getUserById(userId);
         if (user == null)
@@ -515,7 +515,7 @@ public class JDAImpl implements JDA
         {
             EnumSet<Status> endCondition = EnumSet.of(status, failOn);
             Status current = getStatus();
-            while (!current.isInit()                      // In case of disconnects during startup
+            while (!current.isInit                      // In case of disconnects during startup
                  || current.ordinal() < status.ordinal()) // If we missed the status (e.g. LOGGING_IN -> CONNECTED happened while waiting for lock)
             {
                 if (current == Status.SHUTDOWN)
@@ -629,7 +629,7 @@ public class JDAImpl implements JDA
         return new DeferredRestAction<>(this, User.class,
                 () -> isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null,
                 () -> {
-                    if (id == getSelfUser().getIdLong())
+                    if (id == getSelfUser().idLong)
                         return new CompletedRestAction<>(this, getSelfUser());
                     Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
                     return new RestActionImpl<>(this, route,
@@ -834,7 +834,7 @@ public class JDAImpl implements JDA
     @Override
     public CacheRestAction<PrivateChannel> openPrivateChannelById(long userId)
     {
-        if (selfUser != null && userId == selfUser.getIdLong())
+        if (selfUser != null && userId == selfUser.idLong)
             throw new UnsupportedOperationException("Cannot open private channel with yourself!");
         return new DeferredRestAction<>(this, PrivateChannel.class, () -> {
             User user = getUserById(userId);
@@ -1132,7 +1132,7 @@ public class JDAImpl implements JDA
         DataObject object = DataObject.empty();
         object.put("name", name);
         if (icon != null)
-            object.put("icon", icon.getEncoding());
+            object.put("icon", icon.encoding);
 
         return new RestActionImpl<>(this, route, object);
     }
@@ -1297,7 +1297,7 @@ public class JDAImpl implements JDA
     {
         try (UnlockHook hook = userCache.writeLock())
         {
-            userCache.getMap().put(selfUser.getIdLong(), selfUser);
+            userCache.getMap().put(selfUser.idLong, selfUser);
         }
         this.selfUser = selfUser;
     }

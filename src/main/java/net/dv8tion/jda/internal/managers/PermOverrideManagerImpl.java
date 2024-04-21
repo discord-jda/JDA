@@ -47,13 +47,13 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
      */
     public PermOverrideManagerImpl(PermissionOverride override)
     {
-        super(override.getJDA(),
+        super(override.jDA,
               Route.Channels.MODIFY_PERM_OVERRIDE.compile(
-                  override.getChannel().getId(), override.getId()));
+                  override.channel.getId(), override.getId()));
         this.override = override;
-        this.role = override.isRoleOverride();
-        this.allowed = override.getAllowedRaw();
-        this.denied = override.getDeniedRaw();
+        this.role = override.isRoleOverride;
+        this.allowed = override.allowedRaw;
+        this.denied = override.deniedRaw;
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -61,17 +61,17 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     private void setupValues()
     {
         if (!shouldUpdate(ALLOWED))
-            this.allowed = getPermissionOverride().getAllowedRaw();
+            this.allowed = getPermissionOverride().allowedRaw;
         if (!shouldUpdate(DENIED))
-            this.denied = getPermissionOverride().getDeniedRaw();
+            this.denied = getPermissionOverride().deniedRaw;
     }
 
     @Nonnull
     @Override
     public PermissionOverride getPermissionOverride()
     {
-        IPermissionContainerMixin<?> channel = (IPermissionContainerMixin<?>) override.getChannel();
-        PermissionOverride realOverride = channel.getPermissionOverrideMap().get(override.getIdLong());
+        IPermissionContainerMixin<?> channel = (IPermissionContainerMixin<?>) override.channel;
+        PermissionOverride realOverride = channel.getPermissionOverrideMap().get(override.idLong);
         if (realOverride != null)
             override = realOverride;
         return override;
@@ -172,7 +172,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Override
     protected boolean checkPermissions()
     {
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
         IPermissionContainer channel = getChannel();
         Checks.checkAccess(selfMember, channel);
         if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))

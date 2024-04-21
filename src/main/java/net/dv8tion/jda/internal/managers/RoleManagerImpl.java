@@ -55,8 +55,8 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
      */
     public RoleManagerImpl(Role role)
     {
-        super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
-        JDA api = role.getJDA();
+        super(role.jDA, Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
+        JDA api = role.jDA;
         this.role = role;
         if (isPermissionChecksEnabled())
             checkPermissions();
@@ -66,7 +66,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     public Role getRole()
     {
-        Role realRole = role.getGuild().getRoleById(role.getIdLong());
+        Role realRole = role.getGuild().getRoleById(role.idLong);
         if (realRole != null)
             role = realRole;
         return role;
@@ -124,7 +124,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @CheckReturnValue
     public RoleManagerImpl setPermissions(long perms)
     {
-        long selfPermissions = PermissionUtil.getEffectivePermission(getGuild().getSelfMember());
+        long selfPermissions = PermissionUtil.getEffectivePermission(getGuild().selfMember);
         setupPermissions();
         long missingPerms = perms;         // include permissions we want to set to
         missingPerms &= ~selfPermissions;  // exclude permissions we have
@@ -216,7 +216,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject object = DataObject.empty().put("name", getRole().getName());
+        DataObject object = DataObject.empty().put("name", getRole().name);
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(PERMISSION))
@@ -229,7 +229,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
             object.put("color", color == Role.DEFAULT_COLOR_RAW ? 0 : color & 0xFFFFFF);
         if (shouldUpdate(ICON))
         {
-            object.put("icon", icon == null ? null : icon.getEncoding());
+            object.put("icon", icon == null ? null : icon.encoding);
             object.put("unicode_emoji", emoji);
         }
         reset();
@@ -239,7 +239,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     protected boolean checkPermissions()
     {
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
         if (!selfMember.hasPermission(Permission.MANAGE_ROLES))
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_ROLES);
         if (!selfMember.canInteract(getRole()))
@@ -250,6 +250,6 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     private void setupPermissions()
     {
         if (!shouldUpdate(PERMISSION))
-            this.permissions = getRole().getPermissionsRaw();
+            this.permissions = getRole().permissionsRaw;
     }
 }

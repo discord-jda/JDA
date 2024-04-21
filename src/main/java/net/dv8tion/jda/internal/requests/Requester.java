@@ -107,7 +107,7 @@ public class Requester
 
     public <T> void request(Request<T> apiRequest)
     {
-        if (rateLimiter.isStopped())
+        if (rateLimiter.isStopped)
             throw new RejectedExecutionException("The Requester has been stopped! No new requests can be requested!");
 
         if (apiRequest.shouldQueue())
@@ -199,7 +199,7 @@ public class Requester
                     break;
 
                 LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
-                        apiRequest.getRoute().getMethod(),
+                        apiRequest.route.getMethod(),
                         url, code, attempt + 1);
                 try
                 {
@@ -285,20 +285,20 @@ public class Requester
 
     private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder)
     {
-        String method = apiRequest.getRoute().getMethod().toString();
-        RequestBody body = apiRequest.getBody();
+        String method = apiRequest.route.getMethod().toString();
+        RequestBody body = apiRequest.body;
 
         if (body == null && HttpMethod.requiresRequestBody(method))
             body = EMPTY_BODY;
 
         builder.method(method, body);
 
-        if (apiRequest.getRawBody() != null)
+        if (apiRequest.rawBody != null)
         {
             LOG.trace("Sending request on route {}/{} with body\n{}",
                 method,
-                apiRequest.getRoute().getCompiledRoute(),
-                apiRequest.getRawBody()
+                apiRequest.route.getCompiledRoute(),
+                    apiRequest.rawBody
             );
         }
     }
@@ -312,9 +312,9 @@ public class Requester
 
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing
-        if (apiRequest.getHeaders() != null)
+        if (apiRequest.headers != null)
         {
-            for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
+            for (Entry<String, String> header : apiRequest.headers.entrySet())
                 builder.header(header.getKey(), header.getValue());
         }
     }
@@ -370,7 +370,7 @@ public class Requester
         @Override
         public Route.CompiledRoute getRoute()
         {
-            return request.getRoute();
+            return request.route;
         }
 
         @Nonnull

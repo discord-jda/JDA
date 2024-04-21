@@ -241,9 +241,9 @@ public abstract class AbstractMentions implements Mentions
             case USER:
                 TLongObjectMap<IMentionable> set = new TLongObjectHashMap<>();
                 for (User u : getUsers())
-                    set.put(u.getIdLong(), u);
+                    set.put(u.idLong, u);
                 for (Member m : getMembers())
-                    set.put(m.getIdLong(), m);
+                    set.put(m.idLong, m);
                 mentions.addAll(set.valueCollection());
                 break;
             case ROLE:
@@ -315,7 +315,7 @@ public abstract class AbstractMentions implements Mentions
     protected  <T, A, C extends Collection<T>> C processMentions(Message.MentionType type, boolean distinct, Function<Matcher, ? extends T> mapping, Collector<? super T, A, C> collector)
     {
         A accumulator = collector.supplier().get();
-        Matcher matcher = type.getPattern().matcher(content);
+        Matcher matcher = type.pattern.matcher(content);
         Set<T> unique = distinct ? new HashSet<>() : null;
         while (matcher.find())
         {
@@ -370,7 +370,7 @@ public abstract class AbstractMentions implements Mentions
             member = (Member) mentionable;
         else if (guild != null && mentionable instanceof User)
             member = guild.getMember((User) mentionable);
-        return member != null && CollectionUtils.containsAny(getRoles(), member.getRoles());
+        return member != null && CollectionUtils.containsAny(getRoles(), member.roles);
     }
 
     protected boolean isSlashCommandMentioned(IMentionable mentionable)
@@ -379,7 +379,7 @@ public abstract class AbstractMentions implements Mentions
         {
             final ICommandReference reference = (ICommandReference) mentionable;
             for (SlashCommandReference r : getSlashCommands())
-                if (r.getFullCommandName().equals(reference.getFullCommandName()) && r.getIdLong() == reference.getIdLong())
+                if (r.getFullCommandName().equals(reference.fullCommandName) && r.getIdLong() == reference.idLong)
                     return true;
         }
         return false;

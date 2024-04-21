@@ -74,7 +74,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
     @Override
     public JDA getJDA()
     {
-        return action.getJDA();
+        return action.jDA;
     }
 
     @Nonnull

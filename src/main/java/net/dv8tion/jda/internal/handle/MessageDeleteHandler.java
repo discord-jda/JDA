@@ -63,7 +63,7 @@ public class MessageDeleteHandler extends SocketHandler
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null)
                 {
-                    WebSocketClient.LOG.debug("Dropping MESSAGE_DELETE for unexpected channel of type {}", actual.getType());
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_DELETE for unexpected channel of type {}", actual.type);
                     return null;
                 }
             }
@@ -73,7 +73,7 @@ public class MessageDeleteHandler extends SocketHandler
             return null;
         }
 
-        if (channel.getType().isThread())
+        if (channel.type.isThread())
         {
             ThreadChannelImpl gThread = (ThreadChannelImpl) channel;
 

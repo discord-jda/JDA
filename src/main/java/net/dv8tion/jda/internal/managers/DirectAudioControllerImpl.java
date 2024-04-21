@@ -92,6 +92,6 @@ public class DirectAudioControllerImpl implements DirectAudioController
         Checks.notNull(guild, "Guild");
         JDAImpl jda = getJDA();
         WebSocketClient client = jda.getClient();
-        client.updateAudioConnection(guild.getIdLong(), channel);
+        client.updateAudioConnection(guild.idLong, channel);
     }
 }

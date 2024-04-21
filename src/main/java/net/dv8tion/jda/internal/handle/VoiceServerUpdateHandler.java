@@ -43,7 +43,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         if (guild == null)
             throw new IllegalArgumentException("Attempted to start audio connection with Guild that doesn't exist!");
 
-        getJDA().getDirectAudioController().update(guild, guild.getSelfMember().getVoiceState().getChannel());
+        getJDA().getDirectAudioController().update(guild, guild.selfMember.voiceState.channel);
 
         if (content.isNull("endpoint"))
         {
@@ -56,7 +56,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         //Strip the port from the endpoint.
         String endpoint = content.getString("endpoint").replace(":80", "");
         String token = content.getString("token");
-        String sessionId = guild.getSelfMember().getVoiceState().getSessionId();
+        String sessionId = guild.selfMember.voiceState.sessionId;
         if (sessionId == null)
             throw new IllegalArgumentException("Attempted to create audio connection without having a session ID. Did VOICE_STATE_UPDATED fail?");
 
@@ -80,7 +80,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         MiscUtil.locked(audioManager.CONNECTION_LOCK, () ->
         {
             //Synchronized to prevent attempts to close while setting up initial objects.
-            AudioChannel target = guild.getSelfMember().getVoiceState().getChannel();
+            AudioChannel target = guild.selfMember.voiceState.channel;
             if (target == null)
             {
                 WebSocketClient.LOG.warn("Ignoring VOICE_SERVER_UPDATE for unknown channel");

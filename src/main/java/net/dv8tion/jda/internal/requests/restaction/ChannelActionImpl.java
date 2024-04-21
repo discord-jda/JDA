@@ -163,7 +163,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     {
         if (category != null)
         {
-            Checks.check(category.getGuild().equals(guild), "Category is not from same guild!");
+            Checks.check(category.guild.equals(guild), "Category is not from same guild!");
             if (type == ChannelType.CATEGORY)
                 throw new UnsupportedOperationException("Cannot set a parent Category on a Category");
         }
@@ -246,7 +246,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Checks.checkSupportedChannelTypes(EnumSet.of(ChannelType.FORUM), type, "Default Layout");
         Checks.notNull(layout, "layout");
         Checks.check(layout != ForumChannel.Layout.UNKNOWN, "Layout type cannot be UNKNOWN.");
-        this.defaultLayout = layout.getKey();
+        this.defaultLayout = layout.key;
         return this;
     }
 
@@ -311,7 +311,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (parent == null)
             throw new IllegalStateException("Cannot sync overrides without parent category! Use setParent(category) first!");
         clearPermissionOverrides();
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
         boolean canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
         //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
         // That is why we explicitly exclude it here!
@@ -319,32 +319,32 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         long botPerms = PermissionUtil.getEffectivePermission(selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
         parent.getRolePermissionOverrides().forEach(override -> {
-            long allow = override.getAllowedRaw();
-            long deny = override.getDeniedRaw();
+            long allow = override.allowedRaw;
+            long deny = override.deniedRaw;
             if (!canSetRoles)
             {
                 allow &= botPerms;
                 deny &= botPerms;
             }
-            addRolePermissionOverride(override.getIdLong(), allow, deny);
+            addRolePermissionOverride(override.idLong, allow, deny);
         });
 
         parent.getMemberPermissionOverrides().forEach(override -> {
-            long allow = override.getAllowedRaw();
-            long deny = override.getDeniedRaw();
+            long allow = override.allowedRaw;
+            long deny = override.deniedRaw;
             if (!canSetRoles)
             {
                 allow &= botPerms;
                 deny &= botPerms;
             }
-            addMemberPermissionOverride(override.getIdLong(), allow, deny);
+            addMemberPermissionOverride(override.idLong, allow, deny);
         });
         return this;
     }
 
     private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny)
     {
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
         boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR);
         if (!canSetRoles && parent != null) // You can also set MANAGE_ROLES if you have it on the category (apparently?)
             canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
@@ -422,7 +422,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
         //All channel types
         object.put("name", name);
-        object.put("type", type.getId());
+        object.put("type", type.id);
         object.put("permission_overwrites", DataArray.fromCollection(overrides.valueCollection()));
         if (position != null)
             object.put("position", position);
@@ -445,7 +445,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (defaultReactionEmoji instanceof CustomEmoji)
             object.put("default_reaction_emoji", DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
         else if (defaultReactionEmoji instanceof UnicodeEmoji)
-            object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
+            object.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.name));
         if (availableTags != null)
             object.put("available_tags", DataArray.fromCollection(availableTags));
         if (defaultSortOrder != null)
@@ -463,7 +463,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (bitrate != null)
             object.put("bitrate", bitrate);
         if (region != null)
-            object.put("rtc_region", region.getKey());
+            object.put("rtc_region", region.key);
 
         return getRequestBody(object);
     }

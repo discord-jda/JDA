@@ -131,14 +131,14 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
                     .stream()
                     .map(this.guild::getRoleById)
                     .filter(Objects::nonNull)
-                    .forEach(role -> resolved.put(role.getIdLong(), role))
+                    .forEach(role -> resolved.put(role.idLong, role))
             );
             resolveJson.optObject("channels").ifPresent(channels ->
                 channels.keys().forEach(id -> {
                     ISnowflake channelObj = jda.getGuildChannelById(id);
                     DataObject channelJson = channels.getObject(id);
                     if (channelObj != null)
-                        resolved.put(channelObj.getIdLong(), channelObj);
+                        resolved.put(channelObj.idLong, channelObj);
                     else if (ChannelType.fromId(channelJson.getInt("type")).isThread())
                         resolved.put(Long.parseUnsignedLong(id), api.getEntityBuilder().createThreadChannel(guild, channelJson, guild.getIdLong(), false));
                 })

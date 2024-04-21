@@ -36,7 +36,7 @@ public interface ChannelMixin<T extends ChannelMixin<T>> extends
     default RestAction<Void> delete()
     {
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new RestActionImpl<>(getJDA(), route);
+        return new RestActionImpl<>(jDA, route);
     }
 
 

@@ -103,7 +103,7 @@ public class GuildStickersUpdateHandler extends SocketHandler
                 handleReplace(guild, oldSticker, sticker);
             }
             for (GuildSticker e : oldStickers)
-                stickersMap.remove(e.getIdLong());
+                stickersMap.remove(e.idLong);
         }
         //cleanup old stickers that don't exist anymore
         for (GuildSticker e : oldStickers)

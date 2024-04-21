@@ -13,39 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils
 
-package net.dv8tion.jda.api.utils;
-
-import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.internal.utils.Checks;
-
-import javax.annotation.Nonnull;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.TimeZone;
+import net.dv8tion.jda.api.entities.ISnowflake
+import net.dv8tion.jda.internal.utils.Checks
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import javax.annotation.Nonnull
 
 /**
  * Utility for various time related features of the API.
  */
-public class TimeUtil
-{
-    public static final long DISCORD_EPOCH = 1420070400000L;
-    public static final long TIMESTAMP_OFFSET = 22;
-    private static final DateTimeFormatter dtFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
+object TimeUtil {
+    const val DISCORD_EPOCH = 1420070400000L
+    const val TIMESTAMP_OFFSET: Long = 22
+    private val dtFormatter = DateTimeFormatter.RFC_1123_DATE_TIME
 
     /**
      * Converts the provided epoch millisecond timestamp to a Discord Snowflake.
-     * <br>This can be used as a marker/pivot for {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} creation.
+     * <br></br>This can be used as a marker/pivot for [MessageHistory][net.dv8tion.jda.api.entities.MessageHistory] creation.
      *
      * @param  millisTimestamp
-     *         The epoch millis to convert
+     * The epoch millis to convert
      *
      * @return Shifted epoch millis for Discord
      */
-    public static long getDiscordTimestamp(long millisTimestamp)
-    {
-        return (millisTimestamp - DISCORD_EPOCH) << TIMESTAMP_OFFSET;
+    @JvmStatic
+    fun getDiscordTimestamp(millisTimestamp: Long): Long {
+        return millisTimestamp - DISCORD_EPOCH shl TIMESTAMP_OFFSET.toInt()
     }
 
     /**
@@ -53,17 +49,17 @@ public class TimeUtil
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
      *
      * @param  entityId
-     *         The id of the JDA entity where the creation-time should be determined for
+     * The id of the JDA entity where the creation-time should be determined for
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
+    @JvmStatic
     @Nonnull
-    public static OffsetDateTime getTimeCreated(long entityId)
-    {
-        long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
-        Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        gmt.setTimeInMillis(timestamp);
-        return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId());
+    fun getTimeCreated(entityId: Long): OffsetDateTime {
+        val timestamp = (entityId ushr TIMESTAMP_OFFSET.toInt()) + DISCORD_EPOCH
+        val gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"))
+        gmt.setTimeInMillis(timestamp)
+        return OffsetDateTime.ofInstant(gmt.toInstant(), gmt.getTimeZone().toZoneId())
     }
 
     /**
@@ -71,31 +67,29 @@ public class TimeUtil
      * This returns the creation-time of the actual entity on Discords side, not inside JDA.
      *
      * @param  entity
-     *         The JDA entity where the creation-time should be determined for
+     * The JDA entity where the creation-time should be determined for
      *
      * @throws IllegalArgumentException
-     *         If the provided entity is {@code null}
+     * If the provided entity is `null`
      *
      * @return The creation time of the JDA entity as OffsetDateTime
      */
     @Nonnull
-    public static OffsetDateTime getTimeCreated(@Nonnull ISnowflake entity)
-    {
-        Checks.notNull(entity, "Entity");
-        return getTimeCreated(entity.getIdLong());
+    fun getTimeCreated(@Nonnull entity: ISnowflake): OffsetDateTime {
+        Checks.notNull(entity, "Entity")
+        return getTimeCreated(entity.idLong)
     }
 
     /**
      * Returns a prettier String-representation of a OffsetDateTime object
      *
      * @param  time
-     *         The OffsetDateTime object to format
+     * The OffsetDateTime object to format
      *
      * @return The String of the formatted OffsetDateTime
      */
     @Nonnull
-    public static String getDateTimeString(@Nonnull OffsetDateTime time)
-    {
-        return time.format(dtFormatter);
+    fun getDateTimeString(@Nonnull time: OffsetDateTime): String {
+        return time.format(dtFormatter)
     }
 }

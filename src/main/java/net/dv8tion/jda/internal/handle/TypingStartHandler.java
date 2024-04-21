@@ -65,7 +65,7 @@ public class TypingStartHandler extends SocketHandler
         User user;
         MemberImpl member = null;
         if (channel instanceof PrivateChannel)
-            user = ((PrivateChannel) channel).getUser();
+            user = ((PrivateChannel) channel).user;
         else
             user = getJDA().getUsersView().get(userId);
         if (!content.isNull("member"))

@@ -162,7 +162,7 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     @Override
     protected boolean checkPermissions()
     {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!getGuild().selfMember.hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_SERVER);
         return super.checkPermissions();
     }

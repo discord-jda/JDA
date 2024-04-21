@@ -169,7 +169,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         if (this.unique != null)
             object.put("unique", this.unique);
         if (this.targetType != null)
-            object.put("target_type", targetType.getId());
+            object.put("target_type", targetType.id);
         if (this.targetUser != null)
             object.put("target_user_id", targetUser);
         if (this.targetApplication != null)

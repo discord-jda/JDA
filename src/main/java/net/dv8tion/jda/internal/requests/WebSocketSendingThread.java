@@ -212,7 +212,7 @@ class WebSocketSendingThread implements Runnable
             queuedAudioConnections.remove(guildId);
             return;
         }
-        ConnectionStage stage = audioRequest.getStage();
+        ConnectionStage stage = audioRequest.stage;
         AudioManager audioManager = guild.getAudioManager();
         DataObject packet;
         switch (stage)
@@ -223,7 +223,7 @@ class WebSocketSendingThread implements Runnable
                 break;
             default:
             case CONNECT:
-                packet = newVoiceOpen(audioManager, channelId, guild.getIdLong());
+                packet = newVoiceOpen(audioManager, channelId, guild.idLong);
         }
         LOG.debug("Sending voice request {}", packet);
         if (send(packet))
@@ -231,12 +231,12 @@ class WebSocketSendingThread implements Runnable
             //If we didn't get RateLimited, Next request attempt will be 10 seconds from now
             // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
             // in 10 seconds we will attempt again in case we did not receive an update
-            audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 10000);
+            audioRequest.nextAttemptEpoch = System.currentTimeMillis() + 10000;
             //If we are already in the correct state according to voice state
             // we will not receive a VOICE_STATE_UPDATE that would remove it
             // thus we update it here
-            final GuildVoiceState voiceState = guild.getSelfMember().getVoiceState();
-            client.updateAudioConnection0(guild.getIdLong(), voiceState.getChannel());
+            final GuildVoiceState voiceState = guild.selfMember.voiceState;
+            client.updateAudioConnection0(guild.idLong, voiceState.channel);
         }
     }
 
@@ -277,7 +277,7 @@ class WebSocketSendingThread implements Runnable
             .put("d", DataObject.empty()
                 .put("guild_id", guild)
                 .put("channel_id", channel)
-                .put("self_mute", manager.isSelfMuted())
-                .put("self_deaf", manager.isSelfDeafened()));
+                .put("self_mute", manager.isSelfMuted)
+                .put("self_deaf", manager.isSelfDeafened));
     }
 }

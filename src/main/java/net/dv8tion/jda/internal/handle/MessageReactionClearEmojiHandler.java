@@ -56,7 +56,7 @@ public class MessageReactionClearEmojiHandler extends SocketHandler
             GuildChannel actual = guild.getGuildChannelById(channelId);
             if (actual != null)
             {
-                WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION_REMOVE_EMOJI for unexpected channel of type {}", actual.getType());
+                WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION_REMOVE_EMOJI for unexpected channel of type {}", actual.type);
                 return null;
             }
 

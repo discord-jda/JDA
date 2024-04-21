@@ -60,7 +60,7 @@ public class MemberChunkManager
     {
         MiscUtil.locked(lock, () -> {
             if (timeoutHandle == null)
-                timeoutHandle = client.getJDA().getGatewayPool().scheduleAtFixedRate(new TimeoutHandler(), 5, 5, TimeUnit.SECONDS);
+                timeoutHandle = client.getJDA().gatewayPool.scheduleAtFixedRate(new TimeoutHandler(), 5, 5, TimeUnit.SECONDS);
         });
     }
 

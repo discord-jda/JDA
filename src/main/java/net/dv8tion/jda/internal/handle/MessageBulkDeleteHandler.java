@@ -87,8 +87,8 @@ public class MessageBulkDeleteHandler extends SocketHandler
                 return null;
             }
 
-            if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
-                return channel.getGuild().getIdLong();
+            if (getJDA().getGuildSetupController().isLocked(channel.guild.getIdLong()))
+                return channel.guild.getIdLong();
 
             DataArray array = content.getArray("ids");
             List<String> messages = array.stream(DataArray::getString).collect(Collectors.toList());

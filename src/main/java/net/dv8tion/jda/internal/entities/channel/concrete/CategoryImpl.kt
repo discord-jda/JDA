@@ -13,178 +13,125 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.internal.entities.channel.concrete
 
-package net.dv8tion.jda.internal.entities.channel.concrete;
+import gnu.trove.map.TLongObjectMap
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.*
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager
+import net.dv8tion.jda.api.requests.restaction.ChannelAction
+import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction
+import net.dv8tion.jda.api.utils.MiscUtil.newLongMap
+import net.dv8tion.jda.internal.entities.GuildImpl
+import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPositionableChannelMixin
+import net.dv8tion.jda.internal.managers.channel.concrete.CategoryManagerImpl
+import net.dv8tion.jda.internal.utils.Checks
+import net.dv8tion.jda.internal.utils.PermissionUtil
+import javax.annotation.Nonnull
 
-import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.*;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPositionableChannelMixin;
-import net.dv8tion.jda.internal.managers.channel.concrete.CategoryManagerImpl;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
+class CategoryImpl(id: Long, guild: GuildImpl?) : AbstractGuildChannelImpl<CategoryImpl?>(id, guild), Category,
+    IPositionableChannelMixin<CategoryImpl?>, IPermissionContainerMixin<CategoryImpl?> {
+    private val overrides = newLongMap<PermissionOverride>()
+    override var positionRaw = 0
+        private set
 
-import javax.annotation.Nonnull;
+    @get:Nonnull
+    override val type: ChannelType
+        get() = ChannelType.CATEGORY
 
-public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> implements
-        Category,
-        IPositionableChannelMixin<CategoryImpl>,
-        IPermissionContainerMixin<CategoryImpl>
-{
-    private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
-
-    private int position;
-
-    public CategoryImpl(long id, GuildImpl guild)
-    {
-        super(id, guild);
+    @Nonnull
+    override fun createTextChannel(@Nonnull name: String?): ChannelAction<TextChannel?>? {
+        val action: ChannelAction<TextChannel?> = getGuild().createTextChannel(name, this)
+        return trySync(action)
     }
 
     @Nonnull
-    @Override
-    public ChannelType getType()
-    {
-        return ChannelType.CATEGORY;
-    }
-
-    @Override
-    public int getPositionRaw()
-    {
-        return position;
+    override fun createNewsChannel(@Nonnull name: String?): ChannelAction<NewsChannel?>? {
+        val action: ChannelAction<NewsChannel?> = getGuild().createNewsChannel(name, this)
+        return trySync(action)
     }
 
     @Nonnull
-    @Override
-    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
-    {
-        ChannelAction<TextChannel> action = getGuild().createTextChannel(name, this);
-        return trySync(action);
+    override fun createVoiceChannel(@Nonnull name: String?): ChannelAction<VoiceChannel?>? {
+        val action: ChannelAction<VoiceChannel?> = getGuild().createVoiceChannel(name, this)
+        return trySync(action)
     }
 
     @Nonnull
-    @Override
-    public ChannelAction<NewsChannel> createNewsChannel(@Nonnull String name)
-    {
-        ChannelAction<NewsChannel> action = getGuild().createNewsChannel(name, this);
-        return trySync(action);
+    override fun createStageChannel(@Nonnull name: String?): ChannelAction<StageChannel?>? {
+        val action: ChannelAction<StageChannel?> = getGuild().createStageChannel(name, this)
+        return trySync(action)
     }
 
     @Nonnull
-    @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
-    {
-        ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
-        return trySync(action);
+    override fun createForumChannel(@Nonnull name: String?): ChannelAction<ForumChannel?>? {
+        val action: ChannelAction<ForumChannel?> = getGuild().createForumChannel(name, this)
+        return trySync(action)
     }
 
     @Nonnull
-    @Override
-    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
-    {
-        ChannelAction<StageChannel> action = getGuild().createStageChannel(name, this);
-        return trySync(action);
+    override fun createMediaChannel(@Nonnull name: String?): ChannelAction<MediaChannel?>? {
+        val action: ChannelAction<MediaChannel?> = getGuild().createMediaChannel(name, this)
+        return trySync(action)
     }
 
     @Nonnull
-    @Override
-    public ChannelAction<ForumChannel> createForumChannel(@Nonnull String name)
-    {
-        ChannelAction<ForumChannel> action = getGuild().createForumChannel(name, this);
-        return trySync(action);
+    override fun modifyTextChannelPositions(): CategoryOrderAction? {
+        return getGuild().modifyTextChannelPositions(this)
     }
 
     @Nonnull
-    @Override
-    public ChannelAction<MediaChannel> createMediaChannel(@Nonnull String name)
-    {
-        ChannelAction<MediaChannel> action = getGuild().createMediaChannel(name, this);
-        return trySync(action);
+    override fun modifyVoiceChannelPositions(): CategoryOrderAction? {
+        return getGuild().modifyVoiceChannelPositions(this)
     }
 
     @Nonnull
-    @Override
-    public CategoryOrderAction modifyTextChannelPositions()
-    {
-        return getGuild().modifyTextChannelPositions(this);
-    }
-
-    @Nonnull
-    @Override
-    public CategoryOrderAction modifyVoiceChannelPositions()
-    {
-        return getGuild().modifyVoiceChannelPositions(this);
-    }
-
-    @Nonnull
-    @Override
-    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        ChannelAction<Category> action = guild.createCategory(name);
-        if (guild.equals(getGuild()))
-        {
-            for (PermissionOverride o : overrides.valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+    override fun createCopy(@Nonnull guild: Guild?): ChannelAction<Category?>? {
+        Checks.notNull(guild, "Guild")
+        val action: ChannelAction<Category?> = guild.createCategory(name)
+        if (guild == getGuild()) {
+            for (o in overrides.valueCollection()) {
+                if (o.isMemberOverride) action.addMemberPermissionOverride(
+                    o.idLong,
+                    o.allowedRaw,
+                    o.deniedRaw
+                ) else action.addRolePermissionOverride(o.idLong, o.allowedRaw, o.deniedRaw)
             }
         }
-        return action;
+        return action
     }
 
     @Nonnull
-    @Override
-    public ChannelAction<Category> createCopy()
-    {
-        return createCopy(getGuild());
+    override fun createCopy(): ChannelAction<Category?>? {
+        return createCopy(getGuild())
     }
 
-    @Nonnull
-    @Override
-    public CategoryManager getManager()
-    {
-        return new CategoryManagerImpl(this);
+    @get:Nonnull
+    override val manager: CategoryManager
+        get() = CategoryManagerImpl(this)
+
+    override fun getPermissionOverrideMap(): TLongObjectMap<PermissionOverride> {
+        return overrides
     }
 
-    @Override
-    public TLongObjectMap<PermissionOverride> getPermissionOverrideMap()
-    {
-        return overrides;
+    override fun setPosition(position: Int): CategoryImpl {
+        positionRaw = position
+        return this
     }
 
-    @Override
-    public CategoryImpl setPosition(int position)
-    {
-        this.position = position;
-        return this;
-    }
-
-    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
-    {
-        Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.canSync(this))
-        {
-            long botPerms = PermissionUtil.getEffectivePermission(this, selfMember);
-            for (PermissionOverride override : getPermissionOverrides())
-            {
-                long perms = override.getDeniedRaw() | override.getAllowedRaw();
-                if ((perms & ~botPerms) != 0)
-                    return action;
+    private fun <T : GuildChannel?> trySync(action: ChannelAction<T>): ChannelAction<T>? {
+        val selfMember: Member = getGuild().getSelfMember()
+        if (!selfMember.canSync(this)) {
+            val botPerms = PermissionUtil.getEffectivePermission(this, selfMember)
+            for (override in getPermissionOverrides()) {
+                val perms = override.deniedRaw or override.allowedRaw
+                if (perms and botPerms.inv() != 0L) return action
             }
         }
-        return action.syncPermissionOverrides();
+        return action.syncPermissionOverrides()
     }
 }

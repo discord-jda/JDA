@@ -35,7 +35,7 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
 
     public StageInstanceManagerImpl(StageInstance instance)
     {
-        super(instance.getChannel().getJDA(), Route.StageInstances.UPDATE_INSTANCE.compile(instance.getChannel().getId()));
+        super(instance.channel.jDA, Route.StageInstances.UPDATE_INSTANCE.compile(instance.channel.getId()));
         this.instance = instance;
     }
 
@@ -82,7 +82,7 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
         if (shouldUpdate(TOPIC) && topic != null)
             body.put("topic", topic);
         if (shouldUpdate(PRIVACY_LEVEL))
-            body.put("privacy_level", privacyLevel.getKey());
+            body.put("privacy_level", privacyLevel.key);
         return getRequestBody(body);
     }
 }

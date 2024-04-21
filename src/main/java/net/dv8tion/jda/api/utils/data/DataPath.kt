@@ -13,1194 +13,1377 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils.data
 
-package net.dv8tion.jda.api.utils.data;
-
-import net.dv8tion.jda.api.exceptions.ParsingException;
-import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.Contract;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.nio.charset.StandardCharsets;
-import java.util.function.BiFunction;
-import java.util.regex.Pattern;
+import net.dv8tion.jda.api.exceptions.ParsingException
+import net.dv8tion.jda.internal.utils.Checks
+import org.jetbrains.annotations.Contract
+import java.nio.charset.StandardCharsets
+import java.util.function.BiFunction
+import java.util.regex.Pattern
+import javax.annotation.Nonnull
+import kotlin.math.min
 
 /**
- * This utility class can be used to access nested values within {@link DataObject DataObjects} and {@link DataArray DataArrays}.
+ * This utility class can be used to access nested values within [DataObjects][DataObject] and [DataArrays][DataArray].
  *
- * <p><b>Path Expression Grammar</b><br>
+ *
+ * **Path Expression Grammar**<br></br>
  *
  * The syntax for paths is given by this grammar:
  *
- * <pre>{@code
- * <name-syntax>  ::= /[^.\[\]]+/;
+ * <pre>`<name-syntax>  ::= /[^.\[\]]+/;
  * <index-syntax> ::= "[" <number> "]";
  * <name>         ::= <name-syntax> | <name-syntax> "?";
  * <index>        ::= <index-syntax> | <index-syntax> "?";
  * <element>      ::= <name> ( <index> )*;
  * <path-start>   ::= <element> | <index> ( <index> )*;
  * <path>         ::= <path-start> ( "." <element> )*;
- * }</pre>
+`</pre> *
  *
- * <p><b>Examples</b><br>
+ *
+ * **Examples**<br></br>
  * Given a JSON object such as:
- * <pre>{@code
- * {
- *     "array": [{
- *         "foo": "bar",
- *     }]
+ * <pre>`{
+ * "array": [{
+ * "foo": "bar",
+ * }]
  * }
- * }</pre>
+`</pre> *
  *
- * The content of {@code "foo"} can be accessed using the code:
- * <pre>{@code String foo = DataPath.getString(root, "array[0].foo")}</pre>
+ * The content of `"foo"` can be accessed using the code:
+ * <pre>`String foo = DataPath.getString(root, "array[0].foo")`</pre>
  *
- * <p>With the safe-access operator {@code "?"}, you can also allow missing values within your path:
- * <pre>{@code String foo = DataPath.getString(root, "array[1]?.foo", "default")}</pre>
- * This will result in {@code foo == "default"}, since the array element 1 is marked as optional, and missing in the actual object.
+ *
+ * With the safe-access operator `"?"`, you can also allow missing values within your path:
+ * <pre>`String foo = DataPath.getString(root, "array[1]?.foo", "default")`</pre>
+ * This will result in `foo == "default"`, since the array element 1 is marked as optional, and missing in the actual object.
  */
-public class DataPath
-{
-    private static final Pattern INDEX_EXPRESSION = Pattern.compile("^\\[\\d+].*");
-    private static final Pattern NAME_EXPRESSION = Pattern.compile("^[^\\[.].*");
+object DataPath {
+    private val INDEX_EXPRESSION = Pattern.compile("^\\[\\d+].*")
+    private val NAME_EXPRESSION = Pattern.compile("^[^\\[.].*")
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
      *
      * @param  <T>
-     *         The result type
+     * The result type
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      * @param  fromObject
-     *         Object relative resolver of the value, this is used for the final reference and resolves the value.
-     *         The first parameter is the {@link DataObject} where you get the value from, and the second is the field name.
-     *         An example would be {@code (obj, name) -> obj.getString(name)} or as a method reference {@code DataObject::getString}.
+     * Object relative resolver of the value, this is used for the final reference and resolves the value.
+     * The first parameter is the [DataObject] where you get the value from, and the second is the field name.
+     * An example would be `(obj, name) -> obj.getString(name)` or as a method reference `DataObject::getString`.
      * @param  fromArray
-     *         Array relative resolver of the value, this is used for the final reference and resolves the value.
-     *         The first parameter is the {@link DataArray} where you get the value from, and the second is the field index.
-     *         An example would be {@code (array, index) -> obj.getString(index)} or as a method reference {@code DataArray::getString}.
+     * Array relative resolver of the value, this is used for the final reference and resolves the value.
+     * The first parameter is the [DataArray] where you get the value from, and the second is the field index.
+     * An example would be `(array, index) -> obj.getString(index)` or as a method reference `DataArray::getString`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The value at the provided path, using the provided resolver functions.
-     *         Possibly null, if the path ends with a "?" operator, or the resolver function returns null.
-     */
-    public static <T> T get(@Nonnull DataObject root, @Nonnull String path, @Nonnull BiFunction<DataObject, String, ? extends T> fromObject, @Nonnull BiFunction<DataArray, Integer, ? extends T> fromArray)
-    {
-        Checks.notEmpty(path, "Path");
-        Checks.matches(path, NAME_EXPRESSION, "Path");
-        Checks.notNull(root, "DataObject");
-        Checks.notNull(fromObject, "Object Resolver");
-        Checks.notNull(fromArray, "Array Resolver");
-        return getUnchecked(root, path, fromObject, fromArray);
+     * Possibly null, if the path ends with a "?" operator, or the resolver function returns null.
+    </T> */
+    operator fun <T> get(
+        @Nonnull root: DataObject?,
+        @Nonnull path: String,
+        @Nonnull fromObject: BiFunction<DataObject?, String, out T>,
+        @Nonnull fromArray: BiFunction<DataArray?, Int, out T>
+    ): T {
+        Checks.notEmpty(path, "Path")
+        Checks.matches(path, NAME_EXPRESSION, "Path")
+        Checks.notNull(root, "DataObject")
+        Checks.notNull(fromObject, "Object Resolver")
+        Checks.notNull(fromArray, "Array Resolver")
+        return getUnchecked(root, path, fromObject, fromArray)
     }
 
-    private static <T> T getUnchecked(DataObject root, String path, BiFunction<DataObject, String, ? extends T> fromObject, BiFunction<DataArray, Integer, ? extends T> fromArray)
-    {
-        String[] parts = path.split("\\.", 2);
-        String current = parts[0];
-        String child = parts.length > 1 ? parts[1] : null;
+    private fun <T> getUnchecked(
+        root: DataObject?,
+        path: String,
+        fromObject: BiFunction<DataObject?, String, out T>,
+        fromArray: BiFunction<DataArray?, Int, out T>
+    ): T? {
+        var path = path
+        val parts = path.split("\\.".toRegex(), limit = 2).toTypedArray()
+        var current = parts[0]
+        val child = if (parts.size > 1) parts[1] else null
 
         // if key is array according to index in path
-        if (current.indexOf('[') > -1)
-        {
-            int arrayIndex = current.indexOf('[');
-            String key = current.substring(0, arrayIndex);
-            path = path.substring(arrayIndex);
+        if (current.indexOf('[') > -1) {
+            val arrayIndex = current.indexOf('[')
+            var key = current.substring(0, arrayIndex)
+            path = path.substring(arrayIndex)
 
             // isOptional
-            if (key.endsWith("?"))
-            {
-                key = key.substring(0, key.length() - 1);
-                if (root.isNull(key))
-                    return null;
+            if (key.endsWith("?")) {
+                key = key.substring(0, key.length - 1)
+                if (root!!.isNull(key)) return null
             }
-
-            return getUnchecked(root.getArray(key), path, fromObject, fromArray);
+            return getUnchecked(root!!.getArray(key), path, fromObject, fromArray)
         }
-
-        boolean isOptional = current.endsWith("?");
-        if (isOptional)
-            current = current.substring(0, current.length() - 1);
-
-        if (child == null)
-        {
-            if (isOptional && root.isNull(current))
-                return null;
-            return fromObject.apply(root, current);
+        val isOptional = current.endsWith("?")
+        if (isOptional) current = current.substring(0, current.length - 1)
+        if (child == null) {
+            return if (isOptional && root!!.isNull(current)) null else fromObject.apply(root, current)
         }
-
-        if (isOptional && root.isNull(current))
-            return null;
-
-        return getUnchecked(root.getObject(current), child, fromObject, fromArray);
+        return if (isOptional && root!!.isNull(current)) null else getUnchecked(
+            root!!.getObject(current),
+            child,
+            fromObject,
+            fromArray
+        )
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
      *
      * @param  <T>
-     *         The result type
+     * The result type
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      * @param  fromObject
-     *         Object relative resolver of the value, this is used for the final reference and resolves the value.
-     *         The first parameter is the {@link DataObject} where you get the value from, and the second is the field name.
-     *         An example would be {@code (obj, name) -> obj.getString(name)} or as a method reference {@code DataObject::getString}.
+     * Object relative resolver of the value, this is used for the final reference and resolves the value.
+     * The first parameter is the [DataObject] where you get the value from, and the second is the field name.
+     * An example would be `(obj, name) -> obj.getString(name)` or as a method reference `DataObject::getString`.
      * @param  fromArray
-     *         Array relative resolver of the value, this is used for the final reference and resolves the value.
-     *         The first parameter is the {@link DataArray} where you get the value from, and the second is the field index.
-     *         An example would be {@code (array, index) -> obj.getString(index)} or as a method reference {@code DataArray::getString}.
+     * Array relative resolver of the value, this is used for the final reference and resolves the value.
+     * The first parameter is the [DataArray] where you get the value from, and the second is the field index.
+     * An example would be `(array, index) -> obj.getString(index)` or as a method reference `DataArray::getString`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The value at the provided path, using the provided resolver functions.
-     *         Possibly null, if the path ends with a "?" operator, or the resolver function returns null.
-     */
-    public static <T> T get(@Nonnull DataArray root, @Nonnull String path, @Nonnull BiFunction<DataObject, String, ? extends T> fromObject, @Nonnull BiFunction<DataArray, Integer, ? extends T> fromArray)
-    {
-        Checks.notNull(root, "DataArray");
-        Checks.notEmpty(path, "Path");
-        Checks.matches(path, INDEX_EXPRESSION, "Path");
-        Checks.notNull(fromObject, "Object Resolver");
-        Checks.notNull(fromArray, "Array Resolver");
-        return getUnchecked(root, path, fromObject, fromArray);
+     * Possibly null, if the path ends with a "?" operator, or the resolver function returns null.
+    </T> */
+    operator fun <T> get(
+        @Nonnull root: DataArray?,
+        @Nonnull path: String,
+        @Nonnull fromObject: BiFunction<DataObject?, String, out T>,
+        @Nonnull fromArray: BiFunction<DataArray?, Int, out T>
+    ): T {
+        Checks.notNull(root, "DataArray")
+        Checks.notEmpty(path, "Path")
+        Checks.matches(path, INDEX_EXPRESSION, "Path")
+        Checks.notNull(fromObject, "Object Resolver")
+        Checks.notNull(fromArray, "Array Resolver")
+        return getUnchecked(root, path, fromObject, fromArray)
     }
 
-    private static <T> T getUnchecked(DataArray root, String path, BiFunction<DataObject, String, ? extends T> fromObject, BiFunction<DataArray, Integer, ? extends T> fromArray)
-    {
-        byte[] chars = path.getBytes(StandardCharsets.UTF_8);
-        int offset = 0;
+    private fun <T> getUnchecked(
+        root: DataArray?,
+        path: String,
+        fromObject: BiFunction<DataObject?, String, out T>,
+        fromArray: BiFunction<DataArray?, Int, out T>
+    ): T? {
+        var root = root
+        val chars = path.toByteArray(StandardCharsets.UTF_8)
+        var offset = 0
 
         // This is just to prevent infinite loop if some strange thing happens, should be impossible
-        for (int i = 0; i < chars.length; i++)
-        {
-            int end = indexOf(chars, offset + 1, ']');
-            int index = Integer.parseInt(path.substring(offset + 1, end));
-
-            offset = Math.min(chars.length, end + 1);
-            boolean optional = offset != chars.length && chars[offset] == '?';
-
-            boolean isMissing = root.length() <= index || root.isNull(index);
-            if (optional)
-            {
-                offset++;
-                if (isMissing)
-                    return null;
+        for (i in chars.indices) {
+            val end = indexOf(chars, offset + 1, ']')
+            val index = path.substring(offset + 1, end).toInt()
+            offset = min(chars.size.toDouble(), (end + 1).toDouble()).toInt()
+            val optional = offset != chars.size && chars[offset] == '?'.code.toByte()
+            val isMissing = root!!.length() <= index || root.isNull(index)
+            if (optional) {
+                offset++
+                if (isMissing) return null
             }
-
-            if (offset == chars.length)
-                return fromArray.apply(root, index);
-
-            if (chars[offset] == '[')
-                root = root.getArray(index);
-            else
-                return getUnchecked(root.getObject(index), path.substring(offset + 1), fromObject, fromArray);
+            if (offset == chars.size) return fromArray.apply(root, index)
+            root = if (chars[offset] == '['.code.toByte()) root.getArray(index) else return getUnchecked(
+                root.getObject(index), path.substring(offset + 1), fromObject, fromArray
+            )
         }
-
-        throw new ParsingException("Array path nesting seems to be way too deep, we went " + chars.length + " arrays deep. Path: " + path);
+        throw ParsingException("Array path nesting seems to be way too deep, we went " + chars.size + " arrays deep. Path: " + path)
     }
 
-    private static int indexOf(byte[] chars, int offset, char c)
-    {
-        byte b = (byte) c;
-        for (int i = offset; i < chars.length; i++)
-            if (chars[i] == b)
-                return i;
-        return -1;
+    private fun indexOf(chars: ByteArray, offset: Int, c: Char): Int {
+        val b = c.code.toByte()
+        for (i in offset until chars.size) if (chars[i] == b) return i
+        return -1
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The boolean value at the given path, if declared as optional this returns false when the value is missing.
      */
-    public static boolean getBoolean(@Nonnull DataObject root, @Nonnull String path)
-    {
-        Boolean bool = get(root, path, DataObject::getBoolean, DataArray::getBoolean);
-        return bool != null && bool;
+    fun getBoolean(@Nonnull root: DataObject?, @Nonnull path: String): Boolean {
+        val bool = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getBoolean(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getBoolean(
+                index
+            )
+        }
+        return bool != null && bool
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The boolean value at the given path, if declared as optional this returns the provided fallback when the value is missing.
      */
-    public static boolean getBoolean(@Nonnull DataObject root, @Nonnull String path, boolean fallback)
-    {
-        Boolean bool = get(root, path, (obj, key) -> obj.getBoolean(key, fallback), (arr, index) -> arr.getBoolean(index, fallback));
-        return bool != null ? bool : fallback;
+    fun getBoolean(@Nonnull root: DataObject?, @Nonnull path: String, fallback: Boolean): Boolean {
+        val bool = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getBoolean(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getBoolean(index, fallback) }
+        return bool ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The boolean value at the given path, if declared as optional this returns false when the value is missing.
      */
-    public static boolean getBoolean(@Nonnull DataArray root, @Nonnull String path)
-    {
-        Boolean bool = get(root, path, DataObject::getBoolean, DataArray::getBoolean);
-        return bool != null && bool;
+    fun getBoolean(@Nonnull root: DataArray?, @Nonnull path: String): Boolean {
+        val bool = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getBoolean(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getBoolean(
+                index
+            )
+        }
+        return bool != null && bool
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The boolean value at the given path, if declared as optional this returns the provided fallback when the value is missing.
      */
-    public static boolean getBoolean(@Nonnull DataArray root, @Nonnull String path, boolean fallback)
-    {
-        Boolean bool = get(root, path, (obj, key) -> obj.getBoolean(key, fallback), (arr, index) -> arr.getBoolean(index, fallback));
-        return bool != null ? bool : fallback;
+    @JvmStatic
+    fun getBoolean(@Nonnull root: DataArray?, @Nonnull path: String, fallback: Boolean): Boolean {
+        val bool = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getBoolean(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getBoolean(index, fallback) }
+        return bool ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Integer#parseInt(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Integer.parseInt].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The int value at the given path
      */
-    public static int getInt(@Nonnull DataObject root, @Nonnull String path)
-    {
-        Integer integer = get(root, path, DataObject::getInt, DataArray::getInt);
-        if (integer == null)
-            pathError(path, "int");
-        return integer;
+    @JvmStatic
+    fun getInt(@Nonnull root: DataObject?, @Nonnull path: String): Int {
+        val integer = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getInt(key) }) { obj: DataArray?, index: Int -> obj!!.getInt(index) }
+        if (integer == null) pathError(path, "int")
+        return integer
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Integer#parseInt(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Integer.parseInt].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The int value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static int getInt(@Nonnull DataObject root, @Nonnull String path, int fallback)
-    {
-        Integer integer = get(root, path, (obj, key) -> obj.getInt(key, fallback), (arr, index) -> arr.getInt(index, fallback));
-        return integer == null ? fallback : integer;
+    fun getInt(@Nonnull root: DataObject?, @Nonnull path: String, fallback: Int): Int {
+        val integer = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getInt(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getInt(index, fallback) }
+        return integer ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Integer#parseInt(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Integer.parseInt].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The int value at the given path
      */
-    public static int getInt(@Nonnull DataArray root, @Nonnull String path)
-    {
-        Integer integer = get(root, path, DataObject::getInt, DataArray::getInt);
-        if (integer == null)
-            pathError(path, "int");
-        return integer;
+    @JvmStatic
+    fun getInt(@Nonnull root: DataArray?, @Nonnull path: String): Int {
+        val integer = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getInt(key) }) { obj: DataArray?, index: Int -> obj!!.getInt(index) }
+        if (integer == null) pathError(path, "int")
+        return integer
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Integer#parseInt(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Integer.parseInt].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The int value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static int getInt(@Nonnull DataArray root, @Nonnull String path, int fallback)
-    {
-        Integer integer = get(root, path, (obj, key) -> obj.getInt(key, fallback), (arr, index) -> arr.getInt(index, fallback));
-        return integer == null ? fallback : integer;
+    fun getInt(@Nonnull root: DataArray?, @Nonnull path: String, fallback: Int): Int {
+        val integer = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getInt(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getInt(index, fallback) }
+        return integer ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Integer#parseUnsignedInt(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Integer.parseUnsignedInt].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The unsigned int value at the given path
      */
-    public static int getUnsignedInt(@Nonnull DataObject root, @Nonnull String path)
-    {
-        Integer integer = get(root, path, DataObject::getUnsignedInt, DataArray::getUnsignedInt);
-        if (integer == null)
-            pathError(path, "unsigned int");
-        return integer;
+    fun getUnsignedInt(@Nonnull root: DataObject?, @Nonnull path: String): Int {
+        val integer = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getUnsignedInt(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getUnsignedInt(
+                index
+            )
+        }
+        if (integer == null) pathError(path, "unsigned int")
+        return integer
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Integer#parseUnsignedInt(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Integer.parseUnsignedInt].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The unsigned int value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static int getUnsignedInt(@Nonnull DataObject root, @Nonnull String path, int fallback)
-    {
-        Integer integer = get(root, path, (obj, key) -> obj.getUnsignedInt(key, fallback), (arr, index) -> arr.getUnsignedInt(index, fallback));
-        return integer == null ? fallback : integer;
+    fun getUnsignedInt(@Nonnull root: DataObject?, @Nonnull path: String, fallback: Int): Int {
+        val integer = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getUnsignedInt(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getUnsignedInt(index, fallback) }
+        return integer ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Integer#parseUnsignedInt(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Integer.parseUnsignedInt].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The unsigned int value at the given path
      */
-    public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path)
-    {
-        Integer integer = get(root, path, DataObject::getUnsignedInt, DataArray::getUnsignedInt);
-        if (integer == null)
-            pathError(path, "unsigned int");
-        return integer;
+    @JvmStatic
+    fun getUnsignedInt(@Nonnull root: DataArray?, @Nonnull path: String): Int {
+        val integer = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getUnsignedInt(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getUnsignedInt(
+                index
+            )
+        }
+        if (integer == null) pathError(path, "unsigned int")
+        return integer
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Integer#parseUnsignedInt(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Integer.parseUnsignedInt].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The unsigned int value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static int getUnsignedInt(@Nonnull DataArray root, @Nonnull String path, int fallback)
-    {
-        Integer integer = get(root, path, (obj, key) -> obj.getUnsignedInt(key, fallback), (arr, index) -> arr.getUnsignedInt(index, fallback));
-        return integer == null ? fallback : integer;
+    @JvmStatic
+    fun getUnsignedInt(@Nonnull root: DataArray?, @Nonnull path: String, fallback: Int): Int {
+        val integer = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getUnsignedInt(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getUnsignedInt(index, fallback) }
+        return integer ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Long#parseLong(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Long.parseLong].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The long value at the given path
      */
-    public static long getLong(@Nonnull DataObject root, @Nonnull String path)
-    {
-        Long longValue = get(root, path, DataObject::getLong, DataArray::getLong);
-        if (longValue == null)
-            pathError(path, "long");
-        return longValue;
+    @JvmStatic
+    fun getLong(@Nonnull root: DataObject?, @Nonnull path: String): Long {
+        val longValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getLong(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getLong(
+                index
+            )
+        }
+        if (longValue == null) pathError(path, "long")
+        return longValue
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Long#parseLong(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Long.parseLong].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The long value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static long getLong(@Nonnull DataObject root, @Nonnull String path, long fallback)
-    {
-        Long longValue = get(root, path, (obj, key) -> obj.getLong(key, fallback), (arr, index) -> arr.getLong(index, fallback));
-        return longValue == null ? fallback : longValue;
+    @JvmStatic
+    fun getLong(@Nonnull root: DataObject?, @Nonnull path: String, fallback: Long): Long {
+        val longValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getLong(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getLong(index, fallback) }
+        return longValue ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Long#parseLong(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Long.parseLong].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The long value at the given path
      */
-    public static long getLong(@Nonnull DataArray root, @Nonnull String path)
-    {
-        Long longValue = get(root, path, DataObject::getLong, DataArray::getLong);
-        if (longValue == null)
-            pathError(path, "long");
-        return longValue;
+    fun getLong(@Nonnull root: DataArray?, @Nonnull path: String): Long {
+        val longValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getLong(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getLong(
+                index
+            )
+        }
+        if (longValue == null) pathError(path, "long")
+        return longValue
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Long#parseLong(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Long.parseLong].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The long value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static long getLong(@Nonnull DataArray root, @Nonnull String path, long fallback)
-    {
-        Long longValue = get(root, path, (obj, key) -> obj.getLong(key, fallback), (arr, index) -> arr.getLong(index, fallback));
-        return longValue == null ? fallback : longValue;
+    fun getLong(@Nonnull root: DataArray?, @Nonnull path: String, fallback: Long): Long {
+        val longValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getLong(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getLong(index, fallback) }
+        return longValue ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Long#parseUnsignedLong(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Long.parseUnsignedLong].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The unsigned long value at the given path
      */
-    public static long getUnsignedLong(@Nonnull DataObject root, @Nonnull String path)
-    {
-        Long longValue = get(root, path, DataObject::getUnsignedLong, DataArray::getUnsignedLong);
-        if (longValue == null)
-            throw pathError(path, "unsigned long");
-        return longValue;
+    fun getUnsignedLong(
+        @Nonnull root: DataObject?,
+        @Nonnull path: String
+    ): Long {
+        return get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getUnsignedLong(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getUnsignedLong(
+                index
+            )
+        }
+            ?: throw pathError(path, "unsigned long")
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Long#parseUnsignedLong(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Long.parseUnsignedLong].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The unsigned long value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static long getUnsignedLong(@Nonnull DataObject root, @Nonnull String path, long fallback)
-    {
-        Long longValue = get(root, path, (obj, key) -> obj.getUnsignedLong(key, fallback), (arr, index) -> arr.getUnsignedLong(index, fallback));
-        return longValue == null ? fallback : longValue;
+    fun getUnsignedLong(@Nonnull root: DataObject?, @Nonnull path: String, fallback: Long): Long {
+        val longValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getUnsignedLong(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getUnsignedLong(index, fallback) }
+        return longValue ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Long#parseUnsignedLong(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Long.parseUnsignedLong].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The unsigned long value at the given path
      */
-    public static long getUnsignedLong(@Nonnull DataArray root, @Nonnull String path)
-    {
-        Long longValue = get(root, path, DataObject::getUnsignedLong, DataArray::getUnsignedLong);
-        if (longValue == null)
-            throw pathError(path, "unsigned long");
-        return longValue;
+    fun getUnsignedLong(
+        @Nonnull root: DataArray?,
+        @Nonnull path: String
+    ): Long {
+        return get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getUnsignedLong(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getUnsignedLong(
+                index
+            )
+        }
+            ?: throw pathError(path, "unsigned long")
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Long#parseUnsignedLong(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Long.parseUnsignedLong].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The unsigned long value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static long getUnsignedLong(@Nonnull DataArray root, @Nonnull String path, long fallback)
-    {
-        Long longValue = get(root, path, (obj, key) -> obj.getUnsignedLong(key, fallback), (arr, index) -> arr.getUnsignedLong(index, fallback));
-        return longValue == null ? fallback : longValue;
+    fun getUnsignedLong(@Nonnull root: DataArray?, @Nonnull path: String, fallback: Long): Long {
+        val longValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getUnsignedLong(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getUnsignedLong(index, fallback) }
+        return longValue ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Double#parseDouble(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Double.parseDouble].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The double value at the given path
      */
-    public static double getDouble(@Nonnull DataObject root, @Nonnull String path)
-    {
-        Double doubleValue = get(root, path, DataObject::getDouble, DataArray::getDouble);
-        if (doubleValue == null)
-            pathError(path, "double");
-        return doubleValue;
+    fun getDouble(@Nonnull root: DataObject?, @Nonnull path: String): Double {
+        val doubleValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getDouble(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getDouble(
+                index
+            )
+        }
+        if (doubleValue == null) pathError(path, "double")
+        return doubleValue
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Double#parseDouble(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     * <br></br>If the resulting value is a string, this will parse the string using [Double.parseDouble].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The double value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static double getDouble(@Nonnull DataObject root, @Nonnull String path, double fallback)
-    {
-        Double doubleValue = get(root, path, (obj, key) -> obj.getDouble(key, fallback), (arr, index) -> arr.getDouble(index, fallback));
-        return doubleValue == null ? fallback : doubleValue;
+    fun getDouble(@Nonnull root: DataObject?, @Nonnull path: String, fallback: Double): Double {
+        val doubleValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getDouble(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getDouble(index, fallback) }
+        return doubleValue ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Double#parseDouble(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Double.parseDouble].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The double value at the given path
      */
-    public static double getDouble(@Nonnull DataArray root, @Nonnull String path)
-    {
-        Double doubleValue = get(root, path, DataObject::getDouble, DataArray::getDouble);
-        if (doubleValue == null)
-            pathError(path, "double");
-        return doubleValue;
+    @JvmStatic
+    fun getDouble(@Nonnull root: DataArray?, @Nonnull path: String): Double {
+        val doubleValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getDouble(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getDouble(
+                index
+            )
+        }
+        if (doubleValue == null) pathError(path, "double")
+        return doubleValue
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     * <br>If the resulting value is a string, this will parse the string using {@link Double#parseDouble(String)}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     * <br></br>If the resulting value is a string, this will parse the string using [Double.parseDouble].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The double value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
-    public static double getDouble(@Nonnull DataArray root, @Nonnull String path, double fallback)
-    {
-        Double doubleValue = get(root, path, (obj, key) -> obj.getDouble(key, fallback), (arr, index) -> arr.getDouble(index, fallback));
-        return doubleValue == null ? fallback : doubleValue;
+    @JvmStatic
+    fun getDouble(@Nonnull root: DataArray?, @Nonnull path: String, fallback: Double): Double {
+        val doubleValue = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getDouble(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getDouble(index, fallback) }
+        return doubleValue ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
+     *
+     * @return The String value at the given path
+     */
+    @JvmStatic
+    @Nonnull
+    fun getString(@Nonnull root: DataObject?, @Nonnull path: String): String? {
+        val string = get<String?>(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getString(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getString(
+                index
+            )
+        }
+        if (string == null) pathError(path, "String")
+        return string
+    }
+
+    /**
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
+     *
+     * @param  root
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
+     * @param  path
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
+     *
+     * @throws ParsingException
+     * If the path is invalid or resolving fails due to missing elements
+     * @throws IndexOutOfBoundsException
+     * If any of the elements in the path refer to an array index that is out of bounds
+     * @throws IllegalArgumentException
+     * If null is provided or the path is empty
+     *
+     * @return The String value at the given path, returning the fallback if the path resolves to an optional value that is missing.
+     */
+    @JvmStatic
+    @Contract("_, _, !null -> !null")
+    fun getString(@Nonnull root: DataObject?, @Nonnull path: String, fallback: String?): String? {
+        val string = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getString(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getString(index, fallback) }
+        return string ?: fallback
+    }
+
+    /**
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
+     *
+     * @param  root
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
+     * @param  path
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
+     *
+     * @throws ParsingException
+     * If the path is invalid or resolving fails due to missing elements
+     * @throws IndexOutOfBoundsException
+     * If any of the elements in the path refer to an array index that is out of bounds
+     * @throws IllegalArgumentException
+     * If null is provided or the path is empty
      *
      * @return The String value at the given path
      */
     @Nonnull
-    public static String getString(@Nonnull DataObject root, @Nonnull String path)
-    {
-        String string = get(root, path, DataObject::getString, DataArray::getString);
-        if (string == null)
-            pathError(path, "String");
-        return string;
+    fun getString(@Nonnull root: DataArray?, @Nonnull path: String): String? {
+        val string = get<String?>(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getString(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getString(
+                index
+            )
+        }
+        if (string == null) pathError(path, "String")
+        return string
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The String value at the given path, returning the fallback if the path resolves to an optional value that is missing.
      */
     @Contract("_, _, !null -> !null")
-    public static String getString(@Nonnull DataObject root, @Nonnull String path, @Nullable String fallback)
-    {
-        String string = get(root, path, (obj, key) -> obj.getString(key, fallback), (arr, index) -> arr.getString(index, fallback));
-        return string == null ? fallback : string;
+    fun getString(@Nonnull root: DataArray?, @Nonnull path: String, fallback: String?): String? {
+        val string = get(
+            root,
+            path,
+            { obj: DataObject?, key: String ->
+                obj!!.getString(
+                    key,
+                    fallback
+                )
+            }) { arr: DataArray?, index: Int -> arr!!.getString(index, fallback) }
+        return string ?: fallback
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
-     *
-     * @return The String value at the given path
-     */
-    @Nonnull
-    public static String getString(@Nonnull DataArray root, @Nonnull String path)
-    {
-        String string = get(root, path, DataObject::getString, DataArray::getString);
-        if (string == null)
-            pathError(path, "String");
-        return string;
-    }
-
-    /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
-     *
-     * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
-     * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
-     *
-     * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
-     * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
-     * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
-     *
-     * @return The String value at the given path, returning the fallback if the path resolves to an optional value that is missing.
-     */
-    @Contract("_, _, !null -> !null")
-    public static String getString(@Nonnull DataArray root, @Nonnull String path, @Nullable String fallback)
-    {
-        String string = get(root, path, (obj, key) -> obj.getString(key, fallback), (arr, index) -> arr.getString(index, fallback));
-        return string == null ? fallback : string;
-    }
-
-    /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
-     *
-     * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
-     * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
-     *
-     * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
-     * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
-     * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The DataObject at the given path
      */
     @Nonnull
-    public static DataObject getObject(@Nonnull DataObject root, @Nonnull String path)
-    {
-        DataObject obj = optObject(root, path);
-        if (obj == null)
-            pathError(path, "Object");
-        return obj;
+    fun getObject(@Nonnull root: DataObject?, @Nonnull path: String): DataObject? {
+        val obj = optObject(root, path)
+        if (obj == null) pathError(path, "Object")
+        return obj
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The DataObject at the given path, or null if the path resolves to an optional value that is missing.
      */
-    @Nullable
-    public static DataObject optObject(@Nonnull DataObject root, @Nonnull String path)
-    {
-        if (!path.endsWith("?"))
-            path += "?";
-        return get(root, path, DataObject::getObject, DataArray::getObject);
+    fun optObject(@Nonnull root: DataObject?, @Nonnull path: String): DataObject? {
+        var path = path
+        if (!path.endsWith("?")) path += "?"
+        return get<DataObject?>(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getObject(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getObject(
+                index
+            )
+        }
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The DataObject at the given path
      */
+    @JvmStatic
     @Nonnull
-    public static DataObject getObject(@Nonnull DataArray root, @Nonnull String path)
-    {
-        DataObject obj = optObject(root, path);
-        if (obj == null)
-            pathError(path, "Object");
-        return obj;
+    fun getObject(@Nonnull root: DataArray?, @Nonnull path: String): DataObject? {
+        val obj = optObject(root, path)
+        if (obj == null) pathError(path, "Object")
+        return obj
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
      * @return The DataObject at the given path, or null if the path resolves to an optional value that is missing.
      */
-    @Nullable
-    public static DataObject optObject(@Nonnull DataArray root, @Nonnull String path)
-    {
-        if (!path.endsWith("?"))
-            path += "?";
-        return get(root, path, DataObject::getObject, DataArray::getObject);
+    fun optObject(@Nonnull root: DataArray?, @Nonnull path: String): DataObject? {
+        var path = path
+        if (!path.endsWith("?")) path += "?"
+        return get<DataObject?>(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getObject(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getObject(
+                index
+            )
+        }
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
-     * @return The {@link DataArray} at the given path
+     * @return The [DataArray] at the given path
      */
     @Nonnull
-    public static DataArray getArray(@Nonnull DataObject root, @Nonnull String path)
-    {
-        DataArray array = optArray(root, path);
-        if (array == null)
-            pathError(path, "Array");
-        return array;
+    fun getArray(@Nonnull root: DataObject?, @Nonnull path: String): DataArray? {
+        val array = optArray(root, path)
+        if (array == null) pathError(path, "Array")
+        return array
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataObject}.
+     * Parses the given `path` and finds the appropriate value within this [DataObject].
      *
      * @param  root
-     *         The root data object, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data object, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with a name element, such as {@code "foo"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with a name element, such as `"foo"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
-     * @return The {@link DataArray} at the given path, or null if the path resolves to an optional value that is missing.
+     * @return The [DataArray] at the given path, or null if the path resolves to an optional value that is missing.
      */
-    @Nullable
-    public static DataArray optArray(@Nonnull DataObject root, @Nonnull String path)
-    {
-        if (!path.endsWith("?"))
-            path += "?";
-        return get(root, path, DataObject::getArray, DataArray::getArray);
+    fun optArray(@Nonnull root: DataObject?, @Nonnull path: String): DataArray? {
+        var path = path
+        if (!path.endsWith("?")) path += "?"
+        return get<DataArray?>(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getArray(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getArray(
+                index
+            )
+        }
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
-     * @return The {@link DataArray} at the given path
+     * @return The [DataArray] at the given path
      */
     @Nonnull
-    public static DataArray getArray(@Nonnull DataArray root, @Nonnull String path)
-    {
-        DataArray array = optArray(root, path);
-        if (array == null)
-            pathError(path, "Array");
-        return array;
+    fun getArray(@Nonnull root: DataArray?, @Nonnull path: String): DataArray? {
+        val array = optArray(root, path)
+        if (array == null) pathError(path, "Array")
+        return array
     }
 
     /**
-     * Parses the given {@code path} and finds the appropriate value within this {@link DataArray}.
+     * Parses the given `path` and finds the appropriate value within this [DataArray].
      *
      * @param  root
-     *         The root data array, which is the top level accessor.
-     *         <br>The very first element in the path corresponds to a field of that name within this root object.
+     * The root data array, which is the top level accessor.
+     * <br></br>The very first element in the path corresponds to a field of that name within this root object.
      * @param  path
-     *         The path of the value, in accordance with the described grammar by {@link DataPath}.
-     *         This must start with an index element, such as {@code "[0]"}.
+     * The path of the value, in accordance with the described grammar by [DataPath].
+     * This must start with an index element, such as `"[0]"`.
      *
      * @throws ParsingException
-     *         If the path is invalid or resolving fails due to missing elements
+     * If the path is invalid or resolving fails due to missing elements
      * @throws IndexOutOfBoundsException
-     *         If any of the elements in the path refer to an array index that is out of bounds
+     * If any of the elements in the path refer to an array index that is out of bounds
      * @throws IllegalArgumentException
-     *         If null is provided or the path is empty
+     * If null is provided or the path is empty
      *
-     * @return The {@link DataArray} at the given path, or null if the path resolves to an optional value that is missing.
+     * @return The [DataArray] at the given path, or null if the path resolves to an optional value that is missing.
      */
-    @Nullable
-    public static DataArray optArray(@Nonnull DataArray root, @Nonnull String path)
-    {
-        if (!path.endsWith("?"))
-            path += "?";
-        return get(root, path, DataObject::getArray, DataArray::getArray);
+    fun optArray(@Nonnull root: DataArray?, @Nonnull path: String): DataArray? {
+        var path = path
+        if (!path.endsWith("?")) path += "?"
+        return get<DataArray?>(
+            root,
+            path,
+            { obj: DataObject?, key: String -> obj!!.getArray(key) }) { obj: DataArray?, index: Int ->
+            obj!!.getArray(
+                index
+            )
+        }
     }
 
-    private static ParsingException pathError(String path, String type)
-    {
-        throw new ParsingException("Could not resolve value of type " + type + " at path \"" + path + "\"");
+    private fun pathError(path: String, type: String): ParsingException {
+        throw ParsingException("Could not resolve value of type $type at path \"$path\"")
     }
 }

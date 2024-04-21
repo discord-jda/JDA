@@ -118,7 +118,7 @@ public class ButtonImpl implements Button
         DataObject json = DataObject.empty();
         json.put("type", 2);
         json.put("label", label);
-        json.put("style", style.getKey());
+        json.put("style", style.key);
         json.put("disabled", disabled);
         if (emoji != null)
             json.put("emoji", emoji);

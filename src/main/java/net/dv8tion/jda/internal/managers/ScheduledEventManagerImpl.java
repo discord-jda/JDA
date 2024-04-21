@@ -48,7 +48,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
 
     public ScheduledEventManagerImpl(ScheduledEvent event)
     {
-        super(event.getJDA(), Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(event.getGuild().getId(), event.getId()));
+        super(event.getJDA(), Route.Guilds.MODIFY_SCHEDULED_EVENT.compile(event.guild.getId(), event.getId()));
         this.event = event;
         if (isPermissionChecksEnabled())
             checkPermissions();
@@ -58,7 +58,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     @Override
     public ScheduledEvent getScheduledEvent()
     {
-        ScheduledEvent realEvent = event.getGuild().getScheduledEventById(event.getIdLong());
+        ScheduledEvent realEvent = event.guild.getScheduledEventById(event.idLong);
         if (realEvent != null)
             event = realEvent;
         return event;
@@ -100,18 +100,18 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     public ScheduledEventManager setLocation(@Nonnull GuildChannel channel)
     {
         Checks.notNull(channel, "Channel");
-        if (!channel.getGuild().equals(event.getGuild()))
+        if (!channel.guild.equals(event.guild))
         {
             throw new IllegalArgumentException("Invalid parameter: Channel has to be from the same guild as the scheduled event!");
         }
         else if (channel instanceof StageChannel)
         {
-            this.channelId = channel.getIdLong();
+            this.channelId = channel.idLong;
             this.entityType = ScheduledEvent.Type.STAGE_INSTANCE;
         }
         else if (channel instanceof VoiceChannel)
         {
-            this.channelId = channel.getIdLong();
+            this.channelId = channel.idLong;
             this.entityType = ScheduledEvent.Type.VOICE;
         }
         else
@@ -166,7 +166,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     {
         Checks.notNull(status, "Status");
         Checks.check(status != ScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
-        Checks.check(status != ScheduledEvent.Status.SCHEDULED && getScheduledEvent().getStatus() != ScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
+        Checks.check(status != ScheduledEvent.Status.SCHEDULED && getScheduledEvent().status != ScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
         this.status = status;
         set |= STATUS;
         return this;
@@ -183,7 +183,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
             object.put("description", description);
         if (shouldUpdate(LOCATION))
         {
-            object.put("entity_type", entityType.getKey());
+            object.put("entity_type", entityType.key);
             switch (entityType)
             {
             case STAGE_INSTANCE:
@@ -204,9 +204,9 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
         if (shouldUpdate(END_TIME))
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
         if (shouldUpdate(IMAGE))
-            object.put("image", image != null ? image.getEncoding() : null);
+            object.put("image", image != null ? image.encoding : null);
         if (shouldUpdate(STATUS))
-            object.put("status", status.getKey());
+            object.put("status", status.key);
 
         return getRequestBody(object);
     }
@@ -215,18 +215,18 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     {
         if (shouldUpdate(LOCATION))
         {
-            Checks.check(getScheduledEvent().getStatus() == ScheduledEvent.Status.SCHEDULED || (entityType == ScheduledEvent.Type.EXTERNAL && getScheduledEvent().getType() == ScheduledEvent.Type.EXTERNAL), "Cannot update location type or location channel of non-scheduled event.");
-            if (entityType == ScheduledEvent.Type.EXTERNAL && endTime == null && getScheduledEvent().getEndTime() == null)
+            Checks.check(getScheduledEvent().status == ScheduledEvent.Status.SCHEDULED || (entityType == ScheduledEvent.Type.EXTERNAL && getScheduledEvent().type == ScheduledEvent.Type.EXTERNAL), "Cannot update location type or location channel of non-scheduled event.");
+            if (entityType == ScheduledEvent.Type.EXTERNAL && endTime == null && getScheduledEvent().endTime == null)
                 throw new IllegalStateException("Missing required parameter: End Time");
         }
 
         if (shouldUpdate(START_TIME))
         {
-            Checks.check(getScheduledEvent().getStatus() == ScheduledEvent.Status.SCHEDULED, "Cannot update start time of non-scheduled event!");
-            Checks.check((endTime == null && getScheduledEvent().getEndTime() == null) || (endTime == null ? getScheduledEvent().getEndTime() : endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
+            Checks.check(getScheduledEvent().status == ScheduledEvent.Status.SCHEDULED, "Cannot update start time of non-scheduled event!");
+            Checks.check((endTime == null && getScheduledEvent().endTime == null) || (endTime == null ? getScheduledEvent().endTime : endTime).isAfter(startTime), "Cannot schedule event to end before starting!");
         }
 
         if (shouldUpdate(END_TIME))
-            Checks.check((startTime == null ? getScheduledEvent().getStartTime() : startTime).isBefore(endTime), "Cannot schedule event to end before starting!");
+            Checks.check((startTime == null ? getScheduledEvent().startTime : startTime).isBefore(endTime), "Cannot schedule event to end before starting!");
     }
 }

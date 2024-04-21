@@ -93,6 +93,6 @@ public class CommandAutoCompleteInteractionImpl extends InteractionImpl implemen
     @Override
     public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
     {
-        return new AutoCompleteCallbackActionImpl(this, focused.getType()).addChoices(choices);
+        return new AutoCompleteCallbackActionImpl(this, focused.type).addChoices(choices);
     }
 }

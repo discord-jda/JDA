@@ -71,7 +71,7 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
     public DataObject toData()
     {
         return super.toData()
-                .put("type", Type.STRING_SELECT.getKey())
+                .put("type", Type.STRING_SELECT.key)
                 .put("options", DataArray.fromCollection(options));
     }
 
@@ -89,11 +89,11 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
         if (!(obj instanceof StringSelectMenu))
             return false;
         StringSelectMenu other = (StringSelectMenu) obj;
-        return Objects.equals(id, other.getId())
-                && Objects.equals(placeholder, other.getPlaceholder())
-                && minValues == other.getMinValues()
-                && maxValues == other.getMaxValues()
-                && disabled == other.isDisabled()
-                && Objects.equals(options, other.getOptions());
+        return Objects.equals(id, other.id)
+                && Objects.equals(placeholder, other.placeholder)
+                && minValues == other.minValues
+                && maxValues == other.maxValues
+                && disabled == other.isDisabled
+                && Objects.equals(options, other.options);
     }
 }

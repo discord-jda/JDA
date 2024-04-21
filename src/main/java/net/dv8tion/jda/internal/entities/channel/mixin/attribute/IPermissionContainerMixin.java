@@ -41,10 +41,10 @@ public interface IPermissionContainerMixin<T extends IPermissionContainerMixin<T
     default PermissionOverride getPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
     {
         Checks.notNull(permissionHolder, "Permission Holder");
-        Checks.check(permissionHolder.getGuild().equals(getGuild()), "Provided permission holder is not from the same guild as this channel!");
+        Checks.check(permissionHolder.guild.equals(guild), "Provided permission holder is not from the same guild as this channel!");
 
         TLongObjectMap<PermissionOverride> overrides = getPermissionOverrideMap();
-        return overrides.get(permissionHolder.getIdLong());
+        return overrides.get(permissionHolder.idLong);
     }
 
     @Nonnull
@@ -61,12 +61,12 @@ public interface IPermissionContainerMixin<T extends IPermissionContainerMixin<T
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(permissionHolder, "PermissionHolder");
-        Checks.check(permissionHolder.getGuild().equals(getGuild()), "Provided permission holder is not from the same guild as this channel!");
+        Checks.check(permissionHolder.guild.equals(guild), "Provided permission holder is not from the same guild as this channel!");
 
         PermissionOverride override = getPermissionOverride(permissionHolder);
         if (override != null)
-            return override.getManager();
-        return new PermissionOverrideActionImpl(getJDA(), this, permissionHolder);
+            return override.manager;
+        return new PermissionOverrideActionImpl(jDA, this, permissionHolder);
     }
 
 

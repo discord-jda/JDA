@@ -45,7 +45,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
 
-        Checks.checkAccess(getGuild().getSelfMember(), this);
+        Checks.checkAccess(guild.getSelfMember(), this);
         if (isPrivate)
             checkPermission(Permission.CREATE_PRIVATE_THREADS);
         else
@@ -53,7 +53,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
 
         ChannelType threadType = isPrivate
             ? ChannelType.GUILD_PRIVATE_THREAD
-            : getType() == ChannelType.TEXT
+            : type == ChannelType.TEXT
                 ? ChannelType.GUILD_PUBLIC_THREAD
                 : ChannelType.GUILD_NEWS_THREAD;
 
@@ -69,7 +69,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
 
-        Checks.checkAccess(getGuild().getSelfMember(), this);
+        Checks.checkAccess(guild.getSelfMember(), this);
         checkPermission(Permission.CREATE_PUBLIC_THREADS);
 
         return new ThreadChannelActionImpl(this, name, Long.toUnsignedString(messageId));
@@ -79,34 +79,34 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
     @Override
     default ThreadChannelPaginationAction retrieveArchivedPublicThreadChannels()
     {
-        Checks.checkAccess(getGuild().getSelfMember(), this);
+        Checks.checkAccess(guild.getSelfMember(), this);
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_PUBLIC_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, false);
+        return new ThreadChannelPaginationActionImpl(jDA, route, this, false);
     }
 
     @Nonnull
     @Override
     default ThreadChannelPaginationAction retrieveArchivedPrivateThreadChannels()
     {
-        Checks.checkAccess(getGuild().getSelfMember(), this);
+        Checks.checkAccess(guild.getSelfMember(), this);
         checkPermission(Permission.MESSAGE_HISTORY);
         checkPermission(Permission.MANAGE_THREADS);
 
         Route.CompiledRoute route = Route.Channels.LIST_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, false);
+        return new ThreadChannelPaginationActionImpl(jDA, route, this, false);
     }
 
     @Nonnull
     @Override
     default ThreadChannelPaginationAction retrieveArchivedPrivateJoinedThreadChannels()
     {
-        Checks.checkAccess(getGuild().getSelfMember(), this);
+        Checks.checkAccess(guild.getSelfMember(), this);
         checkPermission(Permission.MESSAGE_HISTORY);
 
         Route.CompiledRoute route = Route.Channels.LIST_JOINED_PRIVATE_ARCHIVED_THREADS.compile(getId());
-        return new ThreadChannelPaginationActionImpl(getJDA(), route, this, true);
+        return new ThreadChannelPaginationActionImpl(jDA, route, this, true);
     }
 
     T setDefaultThreadSlowmode(int slowmode);

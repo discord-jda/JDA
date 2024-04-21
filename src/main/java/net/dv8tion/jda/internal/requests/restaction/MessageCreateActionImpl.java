@@ -61,7 +61,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
 
     public MessageCreateActionImpl(MessageChannel channel)
     {
-        super(channel.getJDA(), Route.Messages.SEND_MESSAGE.compile(channel.getId()));
+        super(channel.jDA, Route.Messages.SEND_MESSAGE.compile(channel.getId()));
         this.channel = channel;
     }
 
@@ -101,7 +101,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
                 );
             }
 
-            return getMultipartBody(data.getFiles(), json);
+            return getMultipartBody(data.files, json);
         }
     }
 
@@ -147,7 +147,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         if (stickers == null || stickers.isEmpty())
             return this;
 
-        if (!channel.getType().isGuild())
+        if (!channel.type.isGuild)
             throw new IllegalStateException("Cannot send stickers in direct messages!");
 
         GuildChannel guildChannel = (GuildChannel) channel;
@@ -160,9 +160,9 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
             if (sticker instanceof GuildSticker)
             {
                 GuildSticker guildSticker = (GuildSticker) sticker;
-                Checks.check(guildSticker.isAvailable(),
+                Checks.check(guildSticker.isAvailable,
                         "Cannot use unavailable sticker. The guild may have lost the boost level required to use this sticker!");
-                Checks.check(guildSticker.getGuildIdLong() == guildChannel.getGuild().getIdLong(),
+                Checks.check(guildSticker.guildIdLong == guildChannel.guild.getIdLong(),
                         "Sticker must be from the same guild. Cross-guild sticker posting is not supported!");
             }
         }

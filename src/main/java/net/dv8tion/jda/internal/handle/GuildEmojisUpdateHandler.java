@@ -115,7 +115,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
                 handleReplace(oldEmoji, emoji);
             }
             for (RichCustomEmoji e : oldEmojis)
-                emojiMap.remove(e.getIdLong());
+                emojiMap.remove(e.idLong);
         }
         //cleanup old emojis that don't exist anymore
         for (RichCustomEmoji e : oldEmojis)
@@ -141,20 +141,20 @@ public class GuildEmojisUpdateHandler extends SocketHandler
     {
         if (oldEmoji == null || newEmoji == null) return;
 
-        if (!Objects.equals(oldEmoji.getName(), newEmoji.getName()))
+        if (!Objects.equals(oldEmoji.name, newEmoji.name))
         {
             getJDA().handleEvent(
                 new EmojiUpdateNameEvent(
                     getJDA(), responseNumber,
-                    newEmoji, oldEmoji.getName()));
+                    newEmoji, oldEmoji.name));
         }
 
-        if (!CollectionUtils.isEqualCollection(oldEmoji.getRoles(), newEmoji.getRoles()))
+        if (!CollectionUtils.isEqualCollection(oldEmoji.roles, newEmoji.roles))
         {
             getJDA().handleEvent(
                 new EmojiUpdateRolesEvent(
                     getJDA(), responseNumber,
-                    newEmoji, oldEmoji.getRoles()));
+                    newEmoji, oldEmoji.roles));
         }
 
     }

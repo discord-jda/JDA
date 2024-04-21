@@ -142,7 +142,7 @@ public class MessageMentionsImpl extends AbstractMentions
         if (!mention.getBoolean("is_member"))
             return jda.getEntityBuilder().createUser(mention);
         Member member = matchMember(matcher);
-        return member == null ? null : member.getUser();
+        return member == null ? null : member.user;
     }
 
     @Override
@@ -177,6 +177,6 @@ public class MessageMentionsImpl extends AbstractMentions
     @Override
     protected boolean isUserMentioned(IMentionable mentionable)
     {
-        return userMentionMap.containsKey(mentionable.getIdLong());
+        return userMentionMap.containsKey(mentionable.idLong);
     }
 }

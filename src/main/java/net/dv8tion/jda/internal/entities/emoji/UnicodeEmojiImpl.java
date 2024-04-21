@@ -76,7 +76,7 @@ public class UnicodeEmojiImpl implements UnicodeEmoji, EmojiUnion
             return true;
         if (!(obj instanceof UnicodeEmoji))
             return false;
-        return name.equals(((UnicodeEmoji) obj).getName());
+        return name.equals(((UnicodeEmoji) obj).name);
     }
 
     @Override

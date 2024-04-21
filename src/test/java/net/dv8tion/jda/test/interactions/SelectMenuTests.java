@@ -37,7 +37,7 @@ public class SelectMenuTests
         EntitySelectMenu menu = builder.build();
         DataObject value = menu.toData().getArray("default_values").getObject(0);
 
-        assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.role("1234"));
+        assertThat(menu.defaultValues).containsExactly(DefaultValue.role("1234"));
         assertThat(value.getString("type")).isEqualTo("role");
         assertThat(value.getString("id")).isEqualTo("1234");
 
@@ -47,7 +47,7 @@ public class SelectMenuTests
         menu = builder.build();
         value = menu.toData().getArray("default_values").getObject(0);
 
-        assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.user("1234"));
+        assertThat(menu.defaultValues).containsExactly(DefaultValue.user("1234"));
         assertThat(value.getString("type")).isEqualTo("user");
         assertThat(value.getString("id")).isEqualTo("1234");
 
@@ -57,7 +57,7 @@ public class SelectMenuTests
         menu = builder.build();
         value = menu.toData().getArray("default_values").getObject(0);
 
-        assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.channel("1234"));
+        assertThat(menu.defaultValues).containsExactly(DefaultValue.channel("1234"));
         assertThat(value.getString("type")).isEqualTo("channel");
         assertThat(value.getString("id")).isEqualTo("1234");
     }

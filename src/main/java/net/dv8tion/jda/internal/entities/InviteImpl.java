@@ -112,16 +112,16 @@ public class InviteImpl implements Invite
         if (this.type != Invite.InviteType.GUILD)
             throw new IllegalStateException("Only guild invites can be expanded");
 
-        final net.dv8tion.jda.api.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
+        final net.dv8tion.jda.api.entities.Guild guild = this.api.getGuildById(this.guild.idLong);
 
         if (guild == null)
             throw new UnsupportedOperationException("You're not in the guild this invite points to");
 
-        final Member member = guild.getSelfMember();
+        final Member member = guild.selfMember;
 
         Route.CompiledRoute route;
 
-        final GuildChannel channel = guild.getChannelById(GuildChannel.class, this.channel.getIdLong());
+        final GuildChannel channel = guild.getChannelById(GuildChannel.class, this.channel.idLong);
         if (channel == null)
             throw new UnsupportedOperationException("Cannot expand invite without known channel. Channel ID: " + this.channel.getId());
 
@@ -165,7 +165,7 @@ public class InviteImpl implements Invite
     @Override
     public TargetType getTargetType()
     {
-        return target == null ? TargetType.NONE : target.getType();
+        return target == null ? TargetType.NONE : target.type;
     }
 
     @Override
@@ -300,7 +300,7 @@ public class InviteImpl implements Invite
 
         public ChannelImpl(final GuildChannel channel)
         {
-            this(channel.getIdLong(), channel.getName(), channel.getType());
+            this(channel.idLong, channel.name, channel.type);
         }
 
         @Override
@@ -359,8 +359,8 @@ public class InviteImpl implements Invite
 
         public GuildImpl(final net.dv8tion.jda.api.entities.Guild guild)
         {
-            this(guild.getIdLong(), guild.getIconId(), guild.getName(), guild.getSplashId(),
-                 guild.getVerificationLevel(), -1, -1, guild.getFeatures(), null);
+            this(guild.idLong, guild.iconId, guild.name, guild.splashId,
+                 guild.getVerificationLevel(), -1, -1, guild.features, null);
         }
 
         @Override
@@ -528,7 +528,7 @@ public class InviteImpl implements Invite
         @Override
         public long getIdLong()
         {
-            return getTargetEntity().getIdLong();
+            return getTargetEntity().idLong;
         }
 
         @Nullable

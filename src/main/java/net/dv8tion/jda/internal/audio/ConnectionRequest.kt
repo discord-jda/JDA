@@ -13,82 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.internal.audio
 
-package net.dv8tion.jda.internal.audio;
+import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
+import net.dv8tion.jda.internal.utils.EntityString
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
-import net.dv8tion.jda.internal.utils.EntityString;
+class ConnectionRequest {
+    val guildIdLong: Long
+    @JvmField
+    var nextAttemptEpoch: Long = 0
+    @JvmField
+    var stage: ConnectionStage
+    var channelId: Long = 0
+        protected set
 
-public class ConnectionRequest
-{
-    protected final long guildId;
-    protected long nextAttemptEpoch;
-    protected ConnectionStage stage;
-    protected long channelId;
-
-    public ConnectionRequest(Guild guild)
-    {
-        this.stage = ConnectionStage.DISCONNECT;
-        this.guildId = guild.getIdLong();
+    constructor(guild: Guild) {
+        stage = ConnectionStage.DISCONNECT
+        guildIdLong = guild.idLong
     }
 
-    public ConnectionRequest(AudioChannel channel, ConnectionStage stage)
-    {
-        this.channelId = channel.getIdLong();
-        this.guildId = channel.getGuild().getIdLong();
-        this.stage = stage;
-        this.nextAttemptEpoch = System.currentTimeMillis();
+    constructor(channel: AudioChannel, stage: ConnectionStage) {
+        channelId = channel.idLong
+        guildIdLong = channel.guild.getIdLong()
+        this.stage = stage
+        nextAttemptEpoch = System.currentTimeMillis()
     }
 
-    public void setStage(ConnectionStage stage)
-    {
-        this.stage = stage;
+    fun setChannel(channel: AudioChannel) {
+        channelId = channel.idLong
     }
 
-    public void setChannel(AudioChannel channel)
-    {
-        this.channelId = channel.getIdLong();
+    fun getChannel(api: JDA): AudioChannel? {
+        return api.getGuildChannelById(channelId) as AudioChannel?
     }
 
-    public void setNextAttemptEpoch(long epochMillis)
-    {
-        this.nextAttemptEpoch = epochMillis;
-    }
-
-    public AudioChannel getChannel(JDA api)
-    {
-        return (AudioChannel) api.getGuildChannelById(channelId);
-    }
-
-    public long getChannelId()
-    {
-        return channelId;
-    }
-
-    public ConnectionStage getStage()
-    {
-        return stage;
-    }
-
-    public long getNextAttemptEpoch()
-    {
-        return nextAttemptEpoch;
-    }
-
-    public long getGuildIdLong()
-    {
-        return guildId;
-    }
-
-    @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setType(stage)
-                .addMetadata("guildId", Long.toUnsignedString(guildId))
-                .addMetadata("channelId", Long.toUnsignedString(channelId))
-                .toString();
+    public override fun toString(): String {
+        return EntityString(this)
+            .setType(stage)
+            .addMetadata("guildId", java.lang.Long.toUnsignedString(guildIdLong))
+            .addMetadata("channelId", java.lang.Long.toUnsignedString(channelId))
+            .toString()
     }
 }

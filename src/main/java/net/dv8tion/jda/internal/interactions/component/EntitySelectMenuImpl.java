@@ -102,7 +102,7 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
     @Override
     public DataObject toData()
     {
-        DataObject json = super.toData().put("type", type.getKey());
+        DataObject json = super.toData().put("type", type.key);
         if (type == Type.CHANNEL_SELECT && !channelTypes.isEmpty())
             json.put("channel_types", DataArray.fromCollection(channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
         if (!defaultValues.isEmpty())
@@ -124,13 +124,13 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         if (!(obj instanceof EntitySelectMenu))
             return false;
         EntitySelectMenu other = (EntitySelectMenu) obj;
-        return Objects.equals(id, other.getId())
-                && Objects.equals(placeholder, other.getPlaceholder())
-                && minValues == other.getMinValues()
-                && maxValues == other.getMaxValues()
-                && disabled == other.isDisabled()
-                && type == other.getType()
-                && channelTypes.equals(other.getChannelTypes())
-                && defaultValues.equals(other.getDefaultValues());
+        return Objects.equals(id, other.id)
+                && Objects.equals(placeholder, other.placeholder)
+                && minValues == other.minValues
+                && maxValues == other.maxValues
+                && disabled == other.isDisabled
+                && type == other.type
+                && channelTypes.equals(other.channelTypes)
+                && defaultValues.equals(other.defaultValues);
     }
 }

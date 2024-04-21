@@ -71,7 +71,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
     {
         try (UnlockHook hook = writeLock())
         {
-            return (C) getMap(element.getType()).put(element.getIdLong(), element);
+            return (C) getMap(element.type).put(element.idLong, element);
         }
     }
 
@@ -88,7 +88,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
 
     public <C extends T> C remove(C channel)
     {
-        return remove(channel.getType(), channel.getIdLong());
+        return remove(channel.type, channel.idLong);
     }
 
     public <C extends T> void removeIf(Class<C> typeFilter, Predicate<? super C> predicate)
@@ -192,7 +192,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
         Checks.notEmpty(name, "Name");
         return applyStream(stream ->
             stream
-                .filter((channel) -> Helpers.equals(channel.getName(), name, ignoreCase))
+                .filter((channel) -> Helpers.equals(channel.name, name, ignoreCase))
                 .collect(Helpers.toUnmodifiableList())
         );
     }
@@ -339,7 +339,7 @@ public class ChannelCacheViewImpl<T extends Channel> extends ReadWriteLockCache<
             Checks.notEmpty(name, "Name");
             return applyStream(stream ->
                 stream
-                    .filter(channel -> Helpers.equals(channel.getName(), name, ignoreCase))
+                    .filter(channel -> Helpers.equals(channel.name, name, ignoreCase))
                     .collect(Helpers.toUnmodifiableList())
             );
         }

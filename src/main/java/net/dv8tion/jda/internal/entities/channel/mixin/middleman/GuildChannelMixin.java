@@ -43,14 +43,14 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
         checkCanManage();
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<>(jDA, route);
     }
 
     // ---- Helpers ---
     default boolean hasPermission(Permission permission)
     {
-        IPermissionContainer permChannel = getPermissionContainer();
-        return getGuild().getSelfMember().hasPermission(permChannel, permission);
+        IPermissionContainer permChannel = permissionContainer;
+        return guild.getSelfMember().hasPermission(permChannel, permission);
     }
 
     default void checkPermission(Permission permission) { checkPermission(permission, null); }

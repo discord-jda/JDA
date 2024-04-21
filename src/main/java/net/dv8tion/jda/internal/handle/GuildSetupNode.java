@@ -438,7 +438,7 @@ public class GuildSetupNode
 
             if (mng.isConnected())
             {
-                final long channelId = mng.getConnectedChannel().getIdLong();
+                final long channelId = mng.getConnectedChannel().idLong;
 
                 final VoiceChannel channel = api.getVoiceChannelById(channelId);
                 if (channel != null)

@@ -172,7 +172,7 @@ public class ReceivedMessage implements Message
         if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
         {
             SelfUser selfUser = api.getSelfUser();
-            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild())
+            if (!Objects.equals(selfUser, author) && !mentions.users.contains(selfUser) && isFromGuild())
             {
                 didContentIntentWarning = true;
                 JDAImpl.LOG.warn(
@@ -257,7 +257,7 @@ public class ReceivedMessage implements Message
         {
             boolean missingReaction = reactions.stream()
                     .map(MessageReaction::getEmoji)
-                    .noneMatch(r -> r.getAsReactionCode().equals(emoji.getAsReactionCode()));
+                    .noneMatch(r -> r.getAsReactionCode().equals(emoji.asReactionCode));
 
             if (missingReaction && emoji instanceof RichCustomEmoji)
             {
@@ -268,7 +268,7 @@ public class ReceivedMessage implements Message
             return getChannel().addReactionById(getId(), emoji);
         }
 
-        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        String encoded = EncodingUtil.encodeReaction(emoji.asReactionCode);
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getChannelId(), getId(), encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -301,7 +301,7 @@ public class ReceivedMessage implements Message
         if (channel instanceof GuildMessageChannel)
             return ((GuildMessageChannel) channel).clearReactionsById(getId(), emoji);
 
-        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        String encoded = EncodingUtil.encodeReaction(emoji.asReactionCode);
         Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getChannelId(), getId(), encoded);
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -316,7 +316,7 @@ public class ReceivedMessage implements Message
         if (hasChannel())
             return getChannel().removeReactionById(getId(), emoji);
 
-        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        String encoded = EncodingUtil.encodeReaction(emoji.asReactionCode);
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getChannelId(), getId(), encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -340,7 +340,7 @@ public class ReceivedMessage implements Message
         if (channel instanceof GuildMessageChannel)
             return ((GuildMessageChannel) channel).removeReactionById(getIdLong(), emoji, user);
 
-        String encoded = EncodingUtil.encodeReaction(emoji.getAsReactionCode());
+        String encoded = EncodingUtil.encodeReaction(emoji.asReactionCode);
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getChannelId(), getId(), encoded, user.getId());
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -355,7 +355,7 @@ public class ReceivedMessage implements Message
         if (hasChannel())
             return getChannel().retrieveReactionUsersById(id, emoji);
 
-        return new ReactionPaginationActionImpl(this, emoji.getAsReactionCode());
+        return new ReactionPaginationActionImpl(this, emoji.asReactionCode);
     }
 
     @Nullable
@@ -363,9 +363,9 @@ public class ReceivedMessage implements Message
     public MessageReaction getReaction(@Nonnull Emoji emoji)
     {
         Checks.notNull(emoji, "Emoji");
-        String code = emoji.getAsReactionCode();
+        String code = emoji.asReactionCode;
         return this.reactions.stream()
-                .filter(r -> code.equals(r.getEmoji().getAsReactionCode()))
+                .filter(r -> code.equals(r.emoji.asReactionCode))
                 .findFirst().orElse(null);
     }
 
@@ -456,26 +456,26 @@ public class ReceivedMessage implements Message
             if (altContent != null)
                 return altContent;
             String tmp = getContentRaw();
-            for (User user : mentions.getUsers())
+            for (User user : mentions.users)
             {
                 String name;
                 if (hasGuild() && getGuild().isMember(user))
-                    name = getGuild().getMember(user).getEffectiveName();
+                    name = getGuild().getMember(user).effectiveName;
                 else
-                    name = user.getName();
+                    name = user.name;
                 tmp = tmp.replaceAll("<@!?" + Pattern.quote(user.getId()) + '>', '@' + Matcher.quoteReplacement(name));
             }
-            for (CustomEmoji emoji : mentions.getCustomEmojis())
+            for (CustomEmoji emoji : mentions.customEmojis)
             {
-                tmp = tmp.replace(emoji.getAsMention(), ":" + emoji.getName() + ":");
+                tmp = tmp.replace(emoji.getAsMention(), ":" + emoji.name + ":");
             }
-            for (GuildChannel mentionedChannel : mentions.getChannels())
+            for (GuildChannel mentionedChannel : mentions.channels)
             {
-                tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
+                tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.name);
             }
-            for (Role mentionedRole : mentions.getRoles())
+            for (Role mentionedRole : mentions.roles)
             {
-                tmp = tmp.replace(mentionedRole.getAsMention(), '@' + mentionedRole.getName());
+                tmp = tmp.replace(mentionedRole.asMention, '@' + mentionedRole.name);
             }
             return altContent = tmp;
         }
@@ -529,7 +529,7 @@ public class ReceivedMessage implements Message
     @Override
     public ChannelType getChannelType()
     {
-        return channel == null ? ChannelType.UNKNOWN : getChannel().getType();
+        return channel == null ? ChannelType.UNKNOWN : getChannel().type;
     }
 
     @Nonnull
@@ -555,7 +555,7 @@ public class ReceivedMessage implements Message
     {
         Channel channel = this.channel;
         if (channel instanceof ThreadChannel)
-            channel = ((ThreadChannel) channel).getParentChannel();
+            channel = ((ThreadChannel) channel).parentChannel;
 
         return channel instanceof ICategorizableChannel
             ? ((ICategorizableChannel) channel).getParentCategory()
@@ -581,7 +581,7 @@ public class ReceivedMessage implements Message
         if (guild == null)
         {
             ChannelType channelType = getChannelType();
-            if (channelType == ChannelType.UNKNOWN || channelType.isGuild())
+            if (channelType == ChannelType.UNKNOWN || channelType.isGuild)
                 throw new IllegalStateException("This message instance does not provide a guild instance! Use getGuildId() instead.");
             else
                 throw new IllegalStateException("This message was not sent in a guild");
@@ -776,7 +776,7 @@ public class ReceivedMessage implements Message
 
         if (isWebhookRequest())
         {
-            Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
+            Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.token, getId());
             final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
             action.setErrorMapper(getUnknownWebhookErrorMapper());
             return action;
@@ -794,7 +794,7 @@ public class ReceivedMessage implements Message
         if (channel instanceof GuildMessageChannel && !isSelfAuthored)
         {
             GuildMessageChannel gChan = (GuildMessageChannel) channel;
-            Member sMember = getGuild().getSelfMember();
+            Member sMember = getGuild().selfMember;
             Checks.checkAccess(sMember, gChan);
             if (!sMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
@@ -813,7 +813,7 @@ public class ReceivedMessage implements Message
         Route.CompiledRoute route;
         if (isWebhookRequest())
         {
-            route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), getId());
+            route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.token, getId());
         }
         else
         {
@@ -828,7 +828,7 @@ public class ReceivedMessage implements Message
                 if (hasChannel())
                 {
                     GuildMessageChannel gChan = getGuildChannel();
-                    if (!getGuild().getSelfMember().hasPermission(gChan, Permission.MESSAGE_MANAGE))
+                    if (!getGuild().selfMember.hasPermission(gChan, Permission.MESSAGE_MANAGE))
                         throw new InsufficientPermissionException(gChan, Permission.MESSAGE_MANAGE);
                 }
             }
@@ -837,7 +837,7 @@ public class ReceivedMessage implements Message
         }
 
         int newFlags = flags;
-        int suppressionValue = MessageFlag.EMBEDS_SUPPRESSED.getValue();
+        int suppressionValue = MessageFlag.EMBEDS_SUPPRESSED.value;
         if (suppressed)
             newFlags |= suppressionValue;
         else
@@ -870,8 +870,8 @@ public class ReceivedMessage implements Message
         if (!(channel instanceof NewsChannel))
             throw new IllegalStateException("This message was not sent in a news channel");
         NewsChannel newsChannel = (NewsChannel) channel;
-        Checks.checkAccess(getGuild().getSelfMember(), newsChannel);
-        if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
+        Checks.checkAccess(getGuild().selfMember, newsChannel);
+        if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().selfMember.hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
             throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
         return newsChannel.crosspostMessageById(getId());
     }
@@ -879,7 +879,7 @@ public class ReceivedMessage implements Message
     @Override
     public boolean isSuppressedEmbeds()
     {
-        return (this.flags & MessageFlag.EMBEDS_SUPPRESSED.getValue()) > 0;
+        return (this.flags & MessageFlag.EMBEDS_SUPPRESSED.value) > 0;
     }
 
     @Nonnull
@@ -898,13 +898,13 @@ public class ReceivedMessage implements Message
     @Override
     public boolean isEphemeral()
     {
-        return (this.flags & MessageFlag.EPHEMERAL.getValue()) != 0;
+        return (this.flags & MessageFlag.EPHEMERAL.value) != 0;
     }
 
     @Override
     public boolean isSuppressedNotifications()
     {
-        return (this.flags & MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
+        return (this.flags & MessageFlag.NOTIFICATIONS_SUPPRESSED.value) != 0;
     }
 
     @Nullable
@@ -942,7 +942,7 @@ public class ReceivedMessage implements Message
     public String toString()
     {
         return new EntityString(this)
-                .addMetadata("author", author.getDiscriminator().equals("0000") ? author.getName() : author.getAsTag())
+                .addMetadata("author", author.getDiscriminator().equals("0000") ? author.name : author.getAsTag())
                 .addMetadata("content", String.format("%.20s ...", this))
                 .toString();
     }
@@ -1004,7 +1004,7 @@ public class ReceivedMessage implements Message
         {
             if (webhook instanceof InteractionHookImpl
                     && !((InteractionHookImpl) webhook).isAck()
-                    && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+                    && exception.errorResponse == ErrorResponse.UNKNOWN_WEBHOOK)
                 return new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration", exception);
             else
                 return null;

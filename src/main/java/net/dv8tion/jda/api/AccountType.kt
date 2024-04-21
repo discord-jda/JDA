@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package net.dv8tion.jda.api;
+package net.dv8tion.jda.api
 
 /**
  * Represents the type of account that is logged in.
- * <br>Used to differentiate between Bots and Client accounts.
+ * <br></br>Used to differentiate between Bots and Client accounts.
  */
-public enum AccountType
-{
-    /** An OAuth2 Bot which was created by an application */
+enum class AccountType {
+    /** An OAuth2 Bot which was created by an application  */
     BOT
 }

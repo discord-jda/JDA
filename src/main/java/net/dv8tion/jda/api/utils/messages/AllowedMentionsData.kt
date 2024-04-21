@@ -13,161 +13,119 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils.messages
 
-package net.dv8tion.jda.api.utils.messages;
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Message.MentionType
+import net.dv8tion.jda.api.utils.data.DataArray
+import net.dv8tion.jda.api.utils.data.DataObject
+import net.dv8tion.jda.api.utils.data.SerializableData
+import net.dv8tion.jda.internal.utils.Checks
+import net.dv8tion.jda.internal.utils.Helpers
+import java.util.*
+import javax.annotation.Nonnull
 
-import net.dv8tion.jda.api.entities.IMentionable;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
+class AllowedMentionsData : SerializableData {
+    private var mentionParse: EnumSet<MentionType>? = defaultMentions
+    private val mentionUsers: MutableSet<String?> = HashSet()
+    private val mentionRoles: MutableSet<String?> = HashSet()
+    var isMentionRepliedUser = isDefaultMentionRepliedUser
+        private set
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.*;
-
-class AllowedMentionsData implements SerializableData
-{
-    private static EnumSet<Message.MentionType> defaultParse = EnumSet.allOf(Message.MentionType.class);
-    private static boolean defaultMentionRepliedUser = true;
-
-    private EnumSet<Message.MentionType> mentionParse = getDefaultMentions();
-    private final Set<String> mentionUsers = new HashSet<>();
-    private final Set<String> mentionRoles = new HashSet<>();
-    private boolean mentionRepliedUser = defaultMentionRepliedUser;
-
-    public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
-        defaultParse = allowedMentions == null
-                ? EnumSet.allOf(Message.MentionType.class) // Default to all mentions enabled
-                : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
+    fun clear() {
+        mentionParse = defaultMentions
+        mentionUsers.clear()
+        mentionRoles.clear()
+        isMentionRepliedUser = isDefaultMentionRepliedUser
     }
 
-    @Nonnull
-    public static EnumSet<Message.MentionType> getDefaultMentions()
-    {
-        return defaultParse.clone();
+    fun copy(): AllowedMentionsData {
+        val copy = AllowedMentionsData()
+        copy.mentionParse = mentionParse
+        copy.mentionUsers.addAll(mentionUsers)
+        copy.mentionRoles.addAll(mentionRoles)
+        copy.isMentionRepliedUser = isMentionRepliedUser
+        return copy
     }
 
-    public static void setDefaultMentionRepliedUser(boolean mention)
-    {
-        defaultMentionRepliedUser = mention;
+    fun mentionRepliedUser(mention: Boolean) {
+        isMentionRepliedUser = mention
     }
 
-    public static boolean isDefaultMentionRepliedUser()
-    {
-        return defaultMentionRepliedUser;
-    }
-
-    public void clear()
-    {
-        mentionParse = getDefaultMentions();
-        mentionUsers.clear();
-        mentionRoles.clear();
-        mentionRepliedUser = defaultMentionRepliedUser;
-    }
-
-    public AllowedMentionsData copy()
-    {
-        AllowedMentionsData copy = new AllowedMentionsData();
-        copy.mentionParse = mentionParse;
-        copy.mentionUsers.addAll(mentionUsers);
-        copy.mentionRoles.addAll(mentionRoles);
-        copy.mentionRepliedUser = mentionRepliedUser;
-        return copy;
-    }
-
-    public void mentionRepliedUser(boolean mention)
-    {
-        mentionRepliedUser = mention;
-    }
-
-    public void setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
-        this.mentionParse = allowedMentions == null
-                ? EnumSet.allOf(Message.MentionType.class)
-                : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
-    }
-
-    public void mention(@Nonnull Collection<? extends IMentionable> mentions)
-    {
-        Checks.noneNull(mentions, "Mentionables");
-        for (IMentionable mentionable : mentions)
-        {
-            if (mentionable instanceof UserSnowflake)
-                mentionUsers.add(mentionable.getId());
-            else if (mentionable instanceof Role)
-                mentionRoles.add(mentionable.getId());
+    fun mention(@Nonnull mentions: Collection<IMentionable?>) {
+        Checks.noneNull(mentions, "Mentionables")
+        for (mentionable in mentions) {
+            if (mentionable is UserSnowflake) mentionUsers.add(mentionable.id) else if (mentionable is Role) mentionRoles.add(
+                mentionable.id
+            )
         }
     }
 
-    public void mentionUsers(@Nonnull Collection<String> userIds)
-    {
-        Checks.noneNull(userIds, "User Id");
-        mentionUsers.addAll(userIds);
+    fun mentionUsers(@Nonnull userIds: Collection<String?>?) {
+        Checks.noneNull(userIds, "User Id")
+        mentionUsers.addAll(userIds!!)
     }
 
-    public void mentionRoles(@Nonnull Collection<String> roleIds)
-    {
-        Checks.noneNull(roleIds, "Role Id");
-        mentionRoles.addAll(roleIds);
+    fun mentionRoles(@Nonnull roleIds: Collection<String?>?) {
+        Checks.noneNull(roleIds, "Role Id")
+        mentionRoles.addAll(roleIds!!)
     }
 
-    @Nonnull
-    public Set<String> getMentionedUsers()
-    {
-        return Collections.unmodifiableSet(new HashSet<>(mentionUsers));
-    }
+    @get:Nonnull
+    val mentionedUsers: Set<String?>
+        get() = Collections.unmodifiableSet(HashSet(mentionUsers))
 
-    @Nonnull
-    public Set<String> getMentionedRoles()
-    {
-        return Collections.unmodifiableSet(new HashSet<>(mentionRoles));
-    }
+    @get:Nonnull
+    val mentionedRoles: Set<String?>
+        get() = Collections.unmodifiableSet(HashSet(mentionRoles))
 
-    @Nonnull
-    public EnumSet<Message.MentionType> getAllowedMentions()
-    {
-        return mentionParse.clone();
-    }
-
-    public boolean isMentionRepliedUser()
-    {
-        return mentionRepliedUser;
-    }
+    @get:Nonnull
+    var allowedMentions: Collection<MentionType?>?
+        get() = mentionParse!!.clone()
+        set(allowedMentions) {
+            mentionParse = if (allowedMentions == null) EnumSet.allOf(MentionType::class.java) else Helpers.copyEnumSet(
+                MentionType::class.java, allowedMentions
+            )
+        }
 
     @Nonnull
-    @Override
-    public DataObject toData()
-    {
-        DataObject allowedMentionsObj = DataObject.empty();
-        DataArray parsable = DataArray.empty();
-        if (mentionParse != null)
-        {
+    override fun toData(): DataObject {
+        val allowedMentionsObj = DataObject.empty()
+        val parsable = DataArray.empty()
+        if (mentionParse != null) {
             // Add parsing options
-            mentionParse.stream()
-                    .map(Message.MentionType::getParseKey)
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .forEach(parsable::add);
+            mentionParse!!.stream()
+                .map<Any>(MentionType::getParseKey)
+                .filter { obj: Any? -> Objects.nonNull(obj) }
+                .distinct()
+                .forEach { value: Any? -> parsable.add(value) }
         }
-        if (!mentionUsers.isEmpty())
-        {
+        if (!mentionUsers.isEmpty()) {
             // Whitelist certain users
-            parsable.remove(Message.MentionType.USER.getParseKey());
-            allowedMentionsObj.put("users", DataArray.fromCollection(mentionUsers));
+            parsable.remove(MentionType.USER.parseKey)
+            allowedMentionsObj.put("users", DataArray.fromCollection(mentionUsers))
         }
-        if (!mentionRoles.isEmpty())
-        {
+        if (!mentionRoles.isEmpty()) {
             // Whitelist certain roles
-            parsable.remove(Message.MentionType.ROLE.getParseKey());
-            allowedMentionsObj.put("roles", DataArray.fromCollection(mentionRoles));
+            parsable.remove(MentionType.ROLE.parseKey)
+            allowedMentionsObj.put("roles", DataArray.fromCollection(mentionRoles))
         }
-        allowedMentionsObj.put("replied_user", mentionRepliedUser);
-        return allowedMentionsObj.put("parse", parsable);
+        allowedMentionsObj.put("replied_user", isMentionRepliedUser)
+        return allowedMentionsObj.put("parse", parsable)
+    }
+
+    companion object {
+        private var defaultParse = EnumSet.allOf(MentionType::class.java)
+        var isDefaultMentionRepliedUser = true
+
+        @get:Nonnull
+        var defaultMentions: Collection<MentionType>?
+            get() = defaultParse.clone()
+            set(allowedMentions) {
+                defaultParse = if (allowedMentions == null) EnumSet.allOf(
+                    MentionType::class.java
+                ) // Default to all mentions enabled
+                else Helpers.copyEnumSet(MentionType::class.java, allowedMentions)
+            }
     }
 }

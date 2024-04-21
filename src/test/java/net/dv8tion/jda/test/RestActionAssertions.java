@@ -79,7 +79,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
     public RestActionAssertions hasBodyEqualTo(@Nonnull DataObject expected)
     {
         return checkAssertions(request -> {
-            Object body = request.getRawBody();
+            Object body = request.rawBody;
             assertThat(body)
                 .isNotNull()
                 .isInstanceOf(DataObject.class);
@@ -99,7 +99,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
     public RestActionAssertions hasMethod(@Nonnull Method method)
     {
         return checkAssertions(request ->
-            assertThat(request.getRoute().getMethod())
+            assertThat(request.route.getMethod())
                 .as("RestAction should send request using expected HTTP Method")
                 .isEqualTo(method)
         );
@@ -110,7 +110,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
     public RestActionAssertions hasCompiledRoute(@Nonnull String route)
     {
         return checkAssertions(request ->
-            assertThat(request.getRoute().getCompiledRoute())
+            assertThat(request.route.getCompiledRoute())
                 .as("RestAction should send request using expected REST endpoint")
                 .isEqualTo(route)
         );
@@ -129,7 +129,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
 
         return checkAssertions(request -> {
             Map<String, String> actualQuery = new LinkedHashMap<>();
-            String[] query = request.getRoute().getCompiledRoute().split("[?&=]");
+            String[] query = request.route.getCompiledRoute().split("[?&=]");
 
             for (int i = 1; i < query.length; i += 2)
                 actualQuery.put(query[i], query[i + 1]);
@@ -144,7 +144,7 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
     public RestActionAssertions hasAuditReason(@Nonnull String reason)
     {
         return checkAssertions(request ->
-            assertThat(request.getHeaders())
+            assertThat(request.headers)
                 .as("RestAction should set header")
                 .contains(new AbstractMap.SimpleEntry<>("X-Audit-Log-Reason", reason))
         );

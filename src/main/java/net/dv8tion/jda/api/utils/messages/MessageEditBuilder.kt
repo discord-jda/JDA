@@ -13,317 +13,260 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils.messages
 
-package net.dv8tion.jda.api.utils.messages;
-
-import net.dv8tion.jda.api.entities.IMentionable;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.IOUtil;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Message.MentionType
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.utils.AttachedFile
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.internal.utils.Checks
+import net.dv8tion.jda.internal.utils.Helpers
+import net.dv8tion.jda.internal.utils.IOUtil
+import java.util.*
+import java.util.function.Consumer
+import java.util.function.Function
+import java.util.function.Predicate
+import java.util.stream.Collectors
+import javax.annotation.Nonnull
 
 /**
- * Builder specialized for building a {@link MessageEditData}.
+ * Builder specialized for building a [MessageEditData].
  *
- * <p>These are used to edit messages and allow configuration that either {@link #setReplace(boolean) replaces} the message or only updates specific fields.
+ *
+ * These are used to edit messages and allow configuration that either [replaces][.setReplace] the message or only updates specific fields.
  *
  * @see MessageCreateBuilder
  */
-@SuppressWarnings("ResultOfMethodCallIgnored")
-public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, MessageEditBuilder> implements MessageEditRequest<MessageEditBuilder>
-{
-    protected static final int CONTENT       = 1;
-    protected static final int EMBEDS        = 1 << 1;
-    protected static final int COMPONENTS    = 1 << 2;
-    protected static final int ATTACHMENTS   = 1 << 3;
-    protected static final int MENTIONS      = 1 << 4;
-    protected static final int FLAGS         = 1 << 5;
-
-    private boolean replace = false;
-    private int configuredFields = 0;
-
-    private final List<AttachedFile> attachments = new ArrayList<>(10);
-
-    public MessageEditBuilder() {}
-
-    /**
-     * Factory method to start a builder from an existing instance of {@link MessageEditData}.
-     * <br>Equivalent to {@code new MessageEditBuilder().applyData(data)}.
-     * 
-     * @param  data
-     *         The message edit data to apply
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     * 
-     * @return A new MessageEditBuilder instance with the applied data
-     * 
-     * @see    #applyData(MessageEditData)
-     */
+class MessageEditBuilder() : AbstractMessageBuilder<MessageEditData, MessageEditBuilder?>(),
+    MessageEditRequest<MessageEditBuilder> {
+    override var isReplace: Boolean = false
+        private set
+    private var configuredFields: Int = 0
+    private override val attachments: MutableList<AttachedFile?> = ArrayList(10)
     @Nonnull
-    public static MessageEditBuilder from(@Nonnull MessageEditData data)
-    {
-        return new MessageEditBuilder().applyData(data);
-    }
-
-    /**
-     * Factory method to start a builder from an existing instance of {@link MessageCreateData}.
-     * <br>Equivalent to {@code new MessageEditBuilder().applyCreateData(data)}.
-     *
-     * <p>This will set the request to be {@link #setReplace(boolean) replacing}.
-     *
-     * @param  data
-     *         The message create data to apply
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return A new MessageEditBuilder instance with the applied data
-     * 
-     * @see    #applyCreateData(MessageCreateData) 
-     */
-    @Nonnull
-    public static MessageEditBuilder fromCreateData(@Nonnull MessageCreateData data)
-    {
-        return new MessageEditBuilder().applyCreateData(data);
-    }
-
-    /**
-     * Factory method to start a builder from an existing instance of {@link Message}.
-     * <br>Equivalent to {@code new MessageEditBuilder().applyMessage(data)}.
-     *
-     * <p>This will set the request to be {@link #setReplace(boolean) replacing}.
-     *
-     * @param  message
-     *         The message to apply
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or the message is a system message
-     *
-     * @return A new MessageEditBuilder instance with the applied data
-     *
-     * @see    #applyMessage(Message)
-     */
-    @Nonnull
-    public static MessageEditBuilder fromMessage(@Nonnull Message message)
-    {
-        return new MessageEditBuilder().applyMessage(message);
+    public override fun mentionRepliedUser(mention: Boolean): MessageEditBuilder? {
+        super.mentionRepliedUser(mention)
+        configuredFields = configuredFields or MENTIONS
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder mentionRepliedUser(boolean mention)
-    {
-        super.mentionRepliedUser(mention);
-        configuredFields |= MENTIONS;
-        return this;
+    public override fun setAllowedMentions(allowedMentions: Collection<MentionType?>?): MessageEditBuilder? {
+        super.setAllowedMentions(allowedMentions)
+        configuredFields = configuredFields or MENTIONS
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
-        super.setAllowedMentions(allowedMentions);
-        configuredFields |= MENTIONS;
-        return this;
+    public override fun mention(@Nonnull mentions: Collection<IMentionable?>): MessageEditBuilder? {
+        super.mention(mentions)
+        configuredFields = configuredFields or MENTIONS
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder mention(@Nonnull Collection<? extends IMentionable> mentions)
-    {
-        super.mention(mentions);
-        configuredFields |= MENTIONS;
-        return this;
+    public override fun mentionUsers(@Nonnull userIds: Collection<String?>?): MessageEditBuilder? {
+        super.mentionUsers(userIds)
+        configuredFields = configuredFields or MENTIONS
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder mentionUsers(@Nonnull Collection<String> userIds)
-    {
-        super.mentionUsers(userIds);
-        configuredFields |= MENTIONS;
-        return this;
+    public override fun mentionRoles(@Nonnull roleIds: Collection<String?>?): MessageEditBuilder? {
+        super.mentionRoles(roleIds)
+        configuredFields = configuredFields or MENTIONS
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder mentionRoles(@Nonnull Collection<String> roleIds)
-    {
-        super.mentionRoles(roleIds);
-        configuredFields |= MENTIONS;
-        return this;
+    public override fun setAttachments(attachments: Collection<AttachedFile?>?): MessageEditBuilder {
+        this.attachments.clear()
+        configuredFields = configuredFields or ATTACHMENTS
+        if (attachments != null) this.attachments.addAll(attachments)
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder setAttachments(@Nullable Collection<? extends AttachedFile> attachments)
-    {
-        this.attachments.clear();
-        configuredFields |= ATTACHMENTS;
-        if (attachments != null)
-            this.attachments.addAll(attachments);
-        return this;
+    public override fun getAttachments(): List<AttachedFile?>? {
+        return Collections.unmodifiableList(attachments)
     }
 
     @Nonnull
-    @Override
-    public List<? extends AttachedFile> getAttachments()
-    {
-        return Collections.unmodifiableList(attachments);
+    public override fun setReplace(isReplace: Boolean): MessageEditBuilder {
+        this.isReplace = isReplace
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder setReplace(boolean isReplace)
-    {
-        this.replace = isReplace;
-        return this;
-    }
-
-    @Override
-    public boolean isReplace()
-    {
-        return replace;
+    public override fun setContent(content: String?): MessageEditBuilder? {
+        super.setContent(content)
+        configuredFields = configuredFields or CONTENT
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder setContent(@Nullable String content)
-    {
-        super.setContent(content);
-        configuredFields |= CONTENT;
-        return this;
+    public override fun setEmbeds(@Nonnull embeds: Collection<MessageEmbed?>?): MessageEditBuilder? {
+        super.setEmbeds(embeds)
+        configuredFields = configuredFields or EMBEDS
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
-        super.setEmbeds(embeds);
-        configuredFields |= EMBEDS;
-        return this;
+    public override fun setComponents(@Nonnull components: Collection<LayoutComponent?>): MessageEditBuilder? {
+        super.setComponents(components)
+        configuredFields = configuredFields or COMPONENTS
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder setComponents(@Nonnull Collection<? extends LayoutComponent> components)
-    {
-        super.setComponents(components);
-        configuredFields |= COMPONENTS;
-        return this;
+    public override fun setSuppressEmbeds(suppress: Boolean): MessageEditBuilder? {
+        super.setSuppressEmbeds(suppress)
+        configuredFields = configuredFields or FLAGS
+        return this
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder setSuppressEmbeds(boolean suppress)
-    {
-        super.setSuppressEmbeds(suppress);
-        configuredFields |= FLAGS;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditBuilder applyData(@Nonnull MessageEditData data)
-    {
-        Checks.notNull(data, "Data");
-        this.configuredFields |= data.getConfiguredFields();
-        this.replace |= data.isReplace();
-
-        if (data.isSet(CONTENT))
-            this.setContent(data.getContent());
-        if (data.isSet(EMBEDS))
-            this.setEmbeds(data.getEmbeds());
-        if (data.isSet(COMPONENTS))
-        {
-            final List<LayoutComponent> layoutComponents = data.getComponents().stream()
-                    .map(LayoutComponent::createCopy)
-                    .collect(Collectors.toList());
-            this.setComponents(layoutComponents);
+    public override fun applyData(@Nonnull data: MessageEditData): MessageEditBuilder {
+        Checks.notNull(data, "Data")
+        configuredFields = configuredFields or data.getConfiguredFields()
+        isReplace = isReplace or data.isReplace()
+        if (data.isSet(CONTENT)) setContent(data.getContent())
+        if (data.isSet(EMBEDS)) this.setEmbeds(data.getEmbeds())
+        if (data.isSet(COMPONENTS)) {
+            val layoutComponents: List<LayoutComponent?> = data.getComponents().stream()
+                .map(Function({ obj: LayoutComponent? -> obj!!.createCopy() }))
+                .collect(Collectors.toList())
+            this.setComponents(layoutComponents)
         }
-        if (data.isSet(ATTACHMENTS))
-            this.setAttachments(data.getAttachments());
-        if (data.isSet(MENTIONS))
-            this.mentions = data.mentions.copy();
-        if (data.isSet(FLAGS))
-            this.messageFlags = data.getFlags();
-
-        return this;
+        if (data.isSet(ATTACHMENTS)) this.setAttachments(data.getAttachments())
+        if (data.isSet(MENTIONS)) mentions = data.mentions!!.copy()
+        if (data.isSet(FLAGS)) messageFlags = data.getFlags()
+        return this
     }
 
-    @Override
-    public boolean isEmpty()
-    {
-        return !replace && configuredFields == 0;
-    }
+    override val isEmpty: Boolean
+        get() {
+            return !isReplace && configuredFields == 0
+        }
+    override val isValid: Boolean
+        get() {
+            if (isSet(EMBEDS) && embeds.size > Message.MAX_EMBED_COUNT) return false
+            if (isSet(COMPONENTS) && components.size > Message.MAX_COMPONENT_COUNT) return false
+            return !isSet(CONTENT) || Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH
+        }
 
-    @Override
-    public boolean isValid()
-    {
-        if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT)
-            return false;
-        if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
-            return false;
-        return !isSet(CONTENT) || Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH;
-    }
-
-    private boolean isSet(int flag)
-    {
-        return replace || (configuredFields & flag) != 0;
+    private fun isSet(flag: Int): Boolean {
+        return isReplace || (configuredFields and flag) != 0
     }
 
     @Nonnull
-    @Override
-    public MessageEditData build()
-    {
+    public override fun build(): MessageEditData {
         // Copy to prevent modifying data after building
-        String content = this.content.toString().trim();
-        List<MessageEmbed> embeds = new ArrayList<>(this.embeds);
-        List<AttachedFile> attachments = new ArrayList<>(this.attachments);
-        List<LayoutComponent> components = new ArrayList<>(this.components);
-        AllowedMentionsData mentions = this.mentions.copy();
-
-        int length = isSet(CONTENT) ? Helpers.codePointLength(content) : 0;
-        if (length > Message.MAX_CONTENT_LENGTH)
-            throw new IllegalStateException("Message content is too long! Max length is " + Message.MAX_CONTENT_LENGTH + " characters, provided " + length);
-
-        if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT)
-            throw new IllegalStateException("Cannot build message with over " + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
-
-        if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
-            throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
-
-        return new MessageEditData(configuredFields, messageFlags, replace, content, embeds, attachments, components, mentions);
+        val content: String = content.toString().trim({ it <= ' ' })
+        val embeds: List<MessageEmbed?> = ArrayList(embeds)
+        val attachments: List<AttachedFile?> = ArrayList(attachments)
+        val components: List<LayoutComponent?> = ArrayList(components)
+        val mentions: AllowedMentionsData? = mentions.copy()
+        val length: Int = if (isSet(CONTENT)) Helpers.codePointLength(content) else 0
+        if (length > Message.MAX_CONTENT_LENGTH) throw IllegalStateException("Message content is too long! Max length is " + Message.MAX_CONTENT_LENGTH + " characters, provided " + length)
+        if (isSet(EMBEDS) && embeds.size > Message.MAX_EMBED_COUNT) throw IllegalStateException("Cannot build message with over " + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size)
+        if (isSet(COMPONENTS) && components.size > Message.MAX_COMPONENT_COUNT) throw IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size)
+        return MessageEditData(
+            configuredFields,
+            messageFlags,
+            isReplace,
+            content,
+            embeds,
+            attachments,
+            components,
+            mentions
+        )
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder clear()
-    {
-        this.configuredFields = 0;
-        this.attachments.clear();
-        return super.clear();
+    public override fun clear(): MessageEditBuilder? {
+        configuredFields = 0
+        attachments.clear()
+        return super.clear()
     }
 
     @Nonnull
-    @Override
-    public MessageEditBuilder closeFiles()
-    {
-        attachments.forEach(IOUtil::silentClose);
-        attachments.removeIf(FileUpload.class::isInstance);
-        return this;
+    public override fun closeFiles(): MessageEditBuilder? {
+        attachments.forEach(Consumer({ closeable: AttachedFile? -> IOUtil.silentClose(closeable) }))
+        attachments.removeIf(Predicate({ obj: AttachedFile? -> FileUpload::class.java.isInstance(obj) }))
+        return this
+    }
+
+    companion object {
+        val CONTENT: Int = 1
+        val EMBEDS: Int = 1 shl 1
+        val COMPONENTS: Int = 1 shl 2
+        val ATTACHMENTS: Int = 1 shl 3
+        val MENTIONS: Int = 1 shl 4
+        val FLAGS: Int = 1 shl 5
+
+        /**
+         * Factory method to start a builder from an existing instance of [MessageEditData].
+         * <br></br>Equivalent to `new MessageEditBuilder().applyData(data)`.
+         *
+         * @param  data
+         * The message edit data to apply
+         *
+         * @throws IllegalArgumentException
+         * If null is provided
+         *
+         * @return A new MessageEditBuilder instance with the applied data
+         *
+         * @see .applyData
+         */
+        @Nonnull
+        fun from(@Nonnull data: MessageEditData): MessageEditBuilder {
+            return MessageEditBuilder().applyData(data)
+        }
+
+        /**
+         * Factory method to start a builder from an existing instance of [MessageCreateData].
+         * <br></br>Equivalent to `new MessageEditBuilder().applyCreateData(data)`.
+         *
+         *
+         * This will set the request to be [replacing][.setReplace].
+         *
+         * @param  data
+         * The message create data to apply
+         *
+         * @throws IllegalArgumentException
+         * If null is provided
+         *
+         * @return A new MessageEditBuilder instance with the applied data
+         *
+         * @see .applyCreateData
+         */
+        @Nonnull
+        fun fromCreateData(@Nonnull data: MessageCreateData?): MessageEditBuilder? {
+            return MessageEditBuilder().applyCreateData(data)
+        }
+
+        /**
+         * Factory method to start a builder from an existing instance of [Message].
+         * <br></br>Equivalent to `new MessageEditBuilder().applyMessage(data)`.
+         *
+         *
+         * This will set the request to be [replacing][.setReplace].
+         *
+         * @param  message
+         * The message to apply
+         *
+         * @throws IllegalArgumentException
+         * If null is provided or the message is a system message
+         *
+         * @return A new MessageEditBuilder instance with the applied data
+         *
+         * @see .applyMessage
+         */
+        @Nonnull
+        fun fromMessage(@Nonnull message: Message?): MessageEditBuilder {
+            return MessageEditBuilder().applyMessage((message)!!)
+        }
     }
 }

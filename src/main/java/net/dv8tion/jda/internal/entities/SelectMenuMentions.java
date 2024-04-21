@@ -233,7 +233,7 @@ public class SelectMenuMentions implements Mentions
                 List<User> users = getUsers();
                 mentions.addAll(members);
                 users.stream()
-                     .filter(u -> members.stream().noneMatch(m -> m.getIdLong() == u.getIdLong()))
+                     .filter(u -> members.stream().noneMatch(m -> m.idLong == u.idLong))
                      .forEach(mentions::add);
                 break;
             case ROLE:
@@ -272,14 +272,14 @@ public class SelectMenuMentions implements Mentions
             case ROLE:
                 if (mentionable instanceof Member)
                 {
-                    boolean mentioned = ((Member) mentionable).getRoles().stream().anyMatch(role -> isMentioned(role, Message.MentionType.ROLE));
+                    boolean mentioned = ((Member) mentionable).roles.stream().anyMatch(role -> isMentioned(role, Message.MentionType.ROLE));
                     if (mentioned)
                         return true;
                 }
                 else if (mentionable instanceof User)
                 {
                     boolean mentioned = getMembers().stream()
-                            .filter(it -> it.getIdLong() == mentionable.getIdLong())
+                            .filter(it -> it.idLong == mentionable.idLong)
                             .findFirst()
                             .map(member -> isMentioned(member, Message.MentionType.ROLE))
                             .orElse(false);

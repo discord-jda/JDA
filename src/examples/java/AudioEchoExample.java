@@ -68,9 +68,9 @@ public class AudioEchoExample extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        Message message = event.getMessage();
-        User author = message.getAuthor();
-        String content = message.getContentRaw();
+        Message message = event.message;
+        User author = message.author;
+        String content = message.contentRaw;
         Guild guild = event.getGuild();
 
         // Ignore message if bot
@@ -104,8 +104,8 @@ public class AudioEchoExample extends ListenerAdapter
     {
         // Note: None of these can be null due to our configuration with the JDABuilder!
         Member member = event.getMember();                              // Member is the context of the user for the specific guild, containing voice state and roles
-        GuildVoiceState voiceState = member.getVoiceState();            // Check the current voice state of the user
-        AudioChannel channel = voiceState.getChannel();                 // Use the channel the user is currently connected to
+        GuildVoiceState voiceState = member.voiceState;            // Check the current voice state of the user
+        AudioChannel channel = voiceState.channel;                 // Use the channel the user is currently connected to
         if (channel != null)
         {
             connectTo(channel);                                         // Join the channel of the user
@@ -162,7 +162,7 @@ public class AudioEchoExample extends ListenerAdapter
      */
     private void onConnecting(AudioChannel channel, MessageChannel messageChannel)
     {
-        messageChannel.sendMessage("Connecting to " + channel.getName()).queue(); // never forget to queue()!
+        messageChannel.sendMessage("Connecting to " + channel.name).queue(); // never forget to queue()!
     }
 
     /**
@@ -186,7 +186,7 @@ public class AudioEchoExample extends ListenerAdapter
      */
     private void connectTo(AudioChannel channel)
     {
-        Guild guild = channel.getGuild();
+        Guild guild = channel.guild;
         // Get an audio manager for this guild, this will be created upon first use for each guild
         AudioManager audioManager = guild.getAudioManager();
         // Create our Send/Receive handler for the audio connection
@@ -195,9 +195,9 @@ public class AudioEchoExample extends ListenerAdapter
         // The order of the following instructions does not matter!
 
         // Set the sending handler to our echo system
-        audioManager.setSendingHandler(handler);
+        audioManager.sendingHandler = handler;
         // Set the receiving handler to the same echo system, otherwise we can't echo anything
-        audioManager.setReceivingHandler(handler);
+        audioManager.receivingHandler = handler;
         // Connect to the voice channel
         audioManager.openAudioConnection(channel);
     }

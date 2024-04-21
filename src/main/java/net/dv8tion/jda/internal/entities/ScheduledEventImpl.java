@@ -164,7 +164,7 @@ public class ScheduledEventImpl implements ScheduledEvent
     public AuditableRestAction<Void> delete()
     {
         Guild guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_EVENTS))
+        if (!guild.selfMember.hasPermission(Permission.MANAGE_EVENTS))
             throw new InsufficientPermissionException(guild, Permission.MANAGE_EVENTS);
 
         Route.CompiledRoute route = Route.Guilds.DELETE_SCHEDULED_EVENT.compile(guild.getId(), getId());
@@ -248,11 +248,11 @@ public class ScheduledEventImpl implements ScheduledEvent
     public int compareTo(@Nonnull ScheduledEvent scheduledEvent)
     {
         Checks.notNull(scheduledEvent, "Scheduled Event");
-        Checks.check(this.getGuild().equals(scheduledEvent.getGuild()), "Cannot compare two Scheduled Events belonging to seperate guilds!");
+        Checks.check(this.getGuild().equals(scheduledEvent.guild), "Cannot compare two Scheduled Events belonging to seperate guilds!");
 
-        int startTimeComparison = OffsetDateTime.timeLineOrder().compare(this.getStartTime(), scheduledEvent.getStartTime());
+        int startTimeComparison = OffsetDateTime.timeLineOrder().compare(this.getStartTime(), scheduledEvent.startTime);
         if (startTimeComparison == 0)
-            return Long.compare(this.getIdLong(), scheduledEvent.getIdLong());
+            return Long.compare(this.getIdLong(), scheduledEvent.idLong);
         else
             return startTimeComparison;
     }

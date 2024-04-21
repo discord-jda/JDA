@@ -140,10 +140,10 @@ public class WebhookMessageCreateActionImpl<T>
     {
         try (MessageCreateData data = builder.build())
         {
-            List<FileUpload> files = data.getFiles();
+            List<FileUpload> files = data.files;
             DataObject json = data.toData();
             if (ephemeral)
-                json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.getValue());
+                json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.value);
 
             if (username != null)
                 json.put("username", username);
@@ -152,7 +152,7 @@ public class WebhookMessageCreateActionImpl<T>
 
             if (threadId == null && threadMetadata != null)
             {
-                json.put("thread_name", threadMetadata.getName());
+                json.put("thread_name", threadMetadata.name);
                 List<ForumTagSnowflake> tags = threadMetadata.getAppliedTags();
                 if (!tags.isEmpty())
                     json.put("applied_tags", tags.stream().map(ForumTagSnowflake::getId).collect(Helpers.toDataArray()));

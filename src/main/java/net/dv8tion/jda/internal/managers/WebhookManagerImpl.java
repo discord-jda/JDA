@@ -123,7 +123,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     public WebhookManagerImpl setChannel(@Nonnull TextChannel channel)
     {
         Checks.notNull(channel, "Channel");
-        Checks.check(channel.getGuild().equals(getGuild()), "Channel is not from the same guild");
+        Checks.check(channel.guild.equals(getGuild()), "Channel is not from the same guild");
         this.channel = channel.getId();
         set |= CHANNEL;
         return this;
@@ -138,7 +138,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
         if (shouldUpdate(CHANNEL))
             data.put("channel_id", channel);
         if (shouldUpdate(AVATAR))
-            data.put("avatar", avatar == null ? null : avatar.getEncoding());
+            data.put("avatar", avatar == null ? null : avatar.encoding);
 
         return getRequestBody(data);
     }
@@ -146,7 +146,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     @Override
     protected boolean checkPermissions()
     {
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
         GuildChannel guildChannel = getChannel();
         Checks.checkAccess(selfMember, guildChannel);
         if (!selfMember.hasPermission(guildChannel, Permission.MANAGE_WEBHOOKS))

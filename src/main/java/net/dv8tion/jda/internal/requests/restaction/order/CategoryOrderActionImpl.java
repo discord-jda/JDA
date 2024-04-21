@@ -43,7 +43,7 @@ public class CategoryOrderActionImpl
      */
     public CategoryOrderActionImpl(Category category, int bucket)
     {
-        super(category.getGuild(), bucket, getChannelsOfType(category, bucket));
+        super(category.guild, bucket, getChannelsOfType(category, bucket));
         this.category = category;
     }
 
@@ -67,7 +67,7 @@ public class CategoryOrderActionImpl
     private static Collection<GuildChannel> getChannelsOfType(Category category, int bucket)
     {
         Checks.notNull(category, "Category");
-        return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), bucket).stream()
+        return ChannelOrderActionImpl.getChannelsOfType(category.guild, bucket).stream()
              .filter(ICategorizableChannel.class::isInstance)
              .map(ICategorizableChannel.class::cast)
              .filter(it -> category.equals(it.getParentCategory()))

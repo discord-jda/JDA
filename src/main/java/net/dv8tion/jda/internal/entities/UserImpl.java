@@ -138,7 +138,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
             return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
             {
                 PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
-                UserImpl.this.privateChannelId = priv.getIdLong();
+                UserImpl.this.privateChannelId = priv.idLong;
                 return priv;
             });
         });
@@ -234,7 +234,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
     public UserImpl setPrivateChannel(PrivateChannel privateChannel)
     {
         if (privateChannel != null)
-            this.privateChannelId = privateChannel.getIdLong();
+            this.privateChannelId = privateChannel.idLong;
         return this;
     }
 

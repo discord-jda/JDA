@@ -74,7 +74,7 @@ public class AudioManagerImpl implements AudioManager
     {
         Checks.notNull(channel, "Provided AudioChannel");
 
-        if (!getGuild().equals(channel.getGuild()))
+        if (!getGuild().equals(channel.guild))
             throw new IllegalArgumentException("The provided AudioChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a AudioChannel from the proper Guild");
         final Member self = getGuild().getSelfMember();
@@ -82,24 +82,24 @@ public class AudioManagerImpl implements AudioManager
         //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
         //If we are already connected to this AudioChannel, then do nothing.
-        if (audioConnection != null && channel.equals(audioConnection.getChannel()))
+        if (audioConnection != null && channel.equals(audioConnection.channel))
             return;
 
         checkChannel(channel, self);
 
         getJDA().getDirectAudioController().connect(channel);
         if (audioConnection != null)
-            audioConnection.setChannel(channel);
+            audioConnection.channel = channel;
     }
 
     private void checkChannel(AudioChannel channel, Member self)
     {
-        EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), self));
+        EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.permissionContainer, self));
         if (!perms.contains(Permission.VOICE_CONNECT))
             throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
 
         // if userLimit is 0 if no limit is set!
-        final int userLimit = channel instanceof VoiceChannel ? ((VoiceChannel) channel).getUserLimit() : 0;
+        final int userLimit = channel instanceof VoiceChannel ? ((VoiceChannel) channel).userLimit : 0;
         if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR))
         {
             // Check if we can actually join this channel
@@ -108,7 +108,7 @@ public class AudioManagerImpl implements AudioManager
             // - If we don't have voice move others permissions
             // VOICE_MOVE_OTHERS allows access because you would be able to move people out to
             // open up a slot anyway
-            if (userLimit <= channel.getMembers().size()
+            if (userLimit <= channel.members.size()
                 && !perms.contains(Permission.VOICE_MOVE_OTHERS))
             {
                 throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS,
@@ -177,7 +177,7 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public AudioChannelUnion getConnectedChannel()
     {
-        return audioConnection == null ? null : (AudioChannelUnion) audioConnection.getChannel();
+        return audioConnection == null ? null : (AudioChannelUnion) audioConnection.channel;
     }
 
     @Override
@@ -229,13 +229,13 @@ public class AudioManagerImpl implements AudioManager
     @Override
     public void setConnectionListener(ConnectionListener listener)
     {
-        this.connectionListener.setListener(listener);
+        this.connectionListener.listener = listener;
     }
 
     @Override
     public ConnectionListener getConnectionListener()
     {
-        return connectionListener.getListener();
+        return connectionListener.listener;
     }
 
     @Nonnull
@@ -321,7 +321,7 @@ public class AudioManagerImpl implements AudioManager
     public void setConnectedChannel(AudioChannel channel)
     {
         if (audioConnection != null)
-            audioConnection.setChannel(channel);
+            audioConnection.channel = channel;
     }
 
     public void setQueueTimeout(long queueTimeout)

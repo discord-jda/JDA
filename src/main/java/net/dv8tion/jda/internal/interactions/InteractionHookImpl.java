@@ -58,16 +58,16 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     public InteractionHookImpl(@Nonnull DeferrableInteractionImpl interaction, @Nonnull JDA api)
     {
-        super(api.getSelfUser().getApplicationIdLong(), interaction.getToken(), api);
+        super(api.getSelfUser().applicationIdLong, interaction.getToken(), api);
         this.interaction = interaction;
         this.token = interaction.getToken();
         // 10 second timeout for our failure
-        this.timeoutHandle = api.getGatewayPool().schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
+        this.timeoutHandle = api.gatewayPool.schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
     }
 
     public InteractionHookImpl(@Nonnull JDA api, @Nonnull String token)
     {
-        super(api.getSelfUser().getApplicationIdLong(), token, api);
+        super(api.getSelfUser().applicationIdLong, token, api);
         this.interaction = null;
         this.token = token;
         this.timeoutHandle = null;

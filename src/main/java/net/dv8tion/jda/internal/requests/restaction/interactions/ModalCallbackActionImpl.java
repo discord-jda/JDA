@@ -41,7 +41,7 @@ public class ModalCallbackActionImpl extends InteractionCallbackImpl<Void> imple
     protected RequestBody finalizeData()
     {
         return getRequestBody(DataObject.empty()
-                .put("type", InteractionCallbackAction.ResponseType.MODAL.getRaw())
+                .put("type", ResponseType.MODAL.raw)
                 .put("data", modal));
     }
 

@@ -51,7 +51,7 @@ public class AuditLogPaginationActionImpl
     public AuditLogPaginationActionImpl(Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
-        if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
+        if (!guild.selfMember.hasPermission(Permission.VIEW_AUDIT_LOGS))
             throw new InsufficientPermissionException(guild, Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
         super.order(PaginationOrder.BACKWARD);
@@ -93,7 +93,7 @@ public class AuditLogPaginationActionImpl
         Route.CompiledRoute route = super.finalizeRoute();
 
         if (type != null)
-            route = route.withQueryParams("action_type", String.valueOf(type.getKey()));
+            route = route.withQueryParams("action_type", String.valueOf(type.key));
 
         if (userId != null)
             route = route.withQueryParams("user_id", userId);

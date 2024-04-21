@@ -56,7 +56,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
 
         final long userId = content.getObject("user").getUnsignedLong("id");
-        if (userId == getJDA().getSelfUser().getIdLong())
+        if (userId == getJDA().getSelfUser().idLong)
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
@@ -112,7 +112,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
         try (UnlockHook hook = userView.writeLock())
         {
-            if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
+            if (userId != getJDA().getSelfUser().idLong // don't remove selfUser from cache
                     && getJDA().getGuildsView().stream()
                                .noneMatch(g -> g.getMemberById(userId) != null))
             {

@@ -54,7 +54,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
 
     public ForumPostActionImpl(IPostContainer channel, String name, MessageCreateBuilder builder)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD.compile(channel.getId()));
+        super(channel.jDA, Route.Channels.CREATE_THREAD.compile(channel.getId()));
         this.builder = builder;
         this.channel = channel;
         setName(name);
@@ -85,7 +85,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
     @Override
     public Guild getGuild()
     {
-        return channel.getGuild();
+        return channel.guild;
     }
 
     @Nonnull
@@ -103,7 +103,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
         Checks.check(tags.size() <= ForumChannel.MAX_POST_TAGS, "Provided more than %d tags.", ForumChannel.MAX_POST_TAGS);
         Checks.check(!channel.isTagRequired() || !tags.isEmpty(), "This forum requires at least one tag per post! See ForumChannel#isRequireTag()");
         this.appliedTags.clear();
-        tags.forEach(t -> this.appliedTags.add(t.getIdLong()));
+        tags.forEach(t -> this.appliedTags.add(t.idLong));
         return this;
     }
 
@@ -148,12 +148,12 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
             json.put("message", message);
             json.put("name", name);
             if (autoArchiveDuration != null)
-                json.put("auto_archive_duration", autoArchiveDuration.getMinutes());
+                json.put("auto_archive_duration", autoArchiveDuration.minutes);
             if (!appliedTags.isEmpty())
                 json.put("applied_tags", appliedTags.toArray());
             else if (getChannel().isTagRequired())
                 throw new IllegalStateException("Cannot create posts without a tag in this forum. Apply at least one tag!");
-            return getMultipartBody(message.getFiles(), json);
+            return getMultipartBody(message.files, json);
         }
     }
 
@@ -164,7 +164,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
 
         EntityBuilder entityBuilder = api.getEntityBuilder();
 
-        ThreadChannel thread = entityBuilder.createThreadChannel(json, getGuild().getIdLong());
+        ThreadChannel thread = entityBuilder.createThreadChannel(json, getGuild().idLong);
         Message message = entityBuilder.createMessageWithChannel(json.getObject("message"), thread, false);
 
         request.onSuccess(new ForumPost(message, thread));

@@ -60,19 +60,19 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
         DataObject json = DataObject.empty();
         if (builder.isEmpty())
         {
-            json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
+            json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.raw);
             if (flags != 0)
                 json.put("data", DataObject.empty().put("flags", flags));
             return getRequestBody(json);
         }
 
-        json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
+        json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.raw);
         try (MessageCreateData data = builder.build())
         {
             DataObject msg = data.toData();
             msg.put("flags", msg.getInt("flags", 0) | flags);
             json.put("data",msg);
-            return getMultipartBody(data.getFiles(), json);
+            return getMultipartBody(data.files, json);
         }
     }
 
@@ -80,7 +80,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
     @Override
     public ReplyCallbackActionImpl setEphemeral(boolean ephemeral)
     {
-        int flag = EPHEMERAL.getValue();
+        int flag = EPHEMERAL.value;
         if (ephemeral)
             this.flags |= flag;
         else

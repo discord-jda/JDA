@@ -85,18 +85,18 @@ class ChannelCacheViewTest
     private static <T extends Channel> T mockChannel(Class<T> clazz, ChannelType type, String name, Class<? extends Channel>... extraInterfaces)
     {
         T mock = extraInterfaces.length > 0 ? mock(clazz, withSettings().extraInterfaces(extraInterfaces)) : mock(clazz);
-        when(mock.getType())
+        when(mock.type)
             .thenReturn(type);
         when(mock.toString())
             .thenReturn(name);
-        when(mock.getName())
+        when(mock.name)
             .thenReturn(name);
-        when(mock.getIdLong())
+        when(mock.idLong)
             .thenReturn(type.ordinal() + (counter++));
         if (IPositionableChannel.class.isAssignableFrom(clazz))
         {
             IPositionableChannel positionable = (IPositionableChannel) mock;
-            when(positionable.getPositionRaw())
+            when(positionable.positionRaw)
                 .thenReturn(type.ordinal() + (int) (counter++));
         }
         if (GuildChannel.class.isAssignableFrom(clazz))
@@ -135,9 +135,9 @@ class ChannelCacheViewTest
             {
                 Category category = mockChannel(ChannelType.CATEGORY, "CATEGORY parent of " + type);
                 ICategorizableChannel channel = mockChannel(type, type + " with parent");
-                long categoryId = category.getIdLong();
+                long categoryId = category.idLong;
 
-                when(channel.getParentCategoryIdLong())
+                when(channel.parentCategoryIdLong)
                     .thenReturn(categoryId);
                 when(channel.getParentCategory())
                     .thenReturn(category);
@@ -151,12 +151,12 @@ class ChannelCacheViewTest
             else if (ThreadChannel.class.isAssignableFrom(channelType))
             {
                 IThreadContainerUnion parent = getThreadContainer(type);
-                ChannelType containerType = parent.getType();
+                ChannelType containerType = parent.type;
                 when(parent.toString())
                         .thenReturn(containerType + " parent of " + type);
 
                 ThreadChannel thread = mockChannel(type, type.name());
-                when(thread.getParentChannel())
+                when(thread.parentChannel)
                     .thenReturn(parent);
 
                 view.put(parent);

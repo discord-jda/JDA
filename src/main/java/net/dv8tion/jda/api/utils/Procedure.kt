@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils
 
-package net.dv8tion.jda.api.utils;
-
-import javax.annotation.Nonnull;
+import javax.annotation.Nonnull
 
 /**
  * Iteration procedure accepting one argument and returning whether to continue iteration.
  *
  * @param <T> The type of the argument
- */
-@FunctionalInterface
-public interface Procedure<T>
-{
-    boolean execute(@Nonnull T value);
+</T> */
+fun interface Procedure<T> {
+    fun execute(@Nonnull value: T): Boolean
 }

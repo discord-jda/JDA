@@ -82,8 +82,8 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
     {
         DataObject json = DataObject.empty();
         if (isEmpty())
-            return getRequestBody(json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw()));
-        json.put("type", ResponseType.MESSAGE_UPDATE.getRaw());
+            return getRequestBody(json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.raw));
+        json.put("type", ResponseType.MESSAGE_UPDATE.raw);
         try (MessageEditData data = builder.build())
         {
             json.put("data", data);

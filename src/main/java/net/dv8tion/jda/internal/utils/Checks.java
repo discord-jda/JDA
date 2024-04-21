@@ -229,7 +229,7 @@ public class Checks
 
     public static void checkDuplicateIds(Stream<? extends LayoutComponent> layouts)
     {
-        Stream<String> stream = layouts.flatMap(row -> row.getComponents().stream())
+        Stream<String> stream = layouts.flatMap(row -> row.components.stream())
                 .filter(ActionComponent.class::isInstance)
                 .map(ActionComponent.class::cast)
                 .map(ActionComponent::getId)
@@ -264,7 +264,7 @@ public class Checks
     private static void handleComponent(Component component, Predicate<Component> predicate, StringBuilder sb, String path)
     {
         if (!predicate.test(component))
-            sb.append(" - ").append(path).append(" - <").append(component.getType()).append(">\n");
+            sb.append(" - ").append(path).append(" - <").append(component.type).append(">\n");
 
         if (component instanceof LayoutComponent)
         {

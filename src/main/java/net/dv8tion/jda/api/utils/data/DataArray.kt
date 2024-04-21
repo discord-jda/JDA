@@ -13,229 +13,71 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils.data
 
-package net.dv8tion.jda.api.utils.data;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import net.dv8tion.jda.api.exceptions.ParsingException;
-import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
-import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.Contract;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.type.CollectionType
+import net.dv8tion.jda.api.exceptions.ParsingException
+import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder
+import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder.unpackList
+import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder.pack
+import net.dv8tion.jda.internal.utils.Checks
+import net.dv8tion.jda.internal.utils.Helpers
+import org.jetbrains.annotations.Contract
+import org.slf4j.LoggerFactory
+import java.io.*
+import java.nio.ByteBuffer
+import java.time.OffsetDateTime
+import java.time.format.DateTimeParseException
+import java.util.*
+import java.util.function.BiFunction
+import java.util.function.Function
+import java.util.function.UnaryOperator
+import java.util.stream.IntStream
+import java.util.stream.Stream
+import javax.annotation.Nonnull
 
 /**
  * Represents a list of values used in communication with the Discord API.
  *
- * <p>Throws {@link java.lang.IndexOutOfBoundsException}
+ *
+ * Throws [java.lang.IndexOutOfBoundsException]
  * if provided with index out of bounds.
  *
- * <p>This class is not Thread-Safe
+ *
+ * This class is not Thread-Safe
  */
-public class DataArray implements Iterable<Object>, SerializableArray
-{
-    private static final Logger log = LoggerFactory.getLogger(DataObject.class);
-    private static final ObjectMapper mapper;
-    private static final SimpleModule module;
-    private static final CollectionType listType;
-
-    static
-    {
-        mapper = new ObjectMapper();
-        module = new SimpleModule();
-        module.addAbstractTypeMapping(Map.class, HashMap.class);
-        module.addAbstractTypeMapping(List.class, ArrayList.class);
-        mapper.registerModule(module);
-        listType = mapper.getTypeFactory().constructRawCollectionType(ArrayList.class);
-    }
-
-    protected final List<Object> data;
-
-    protected DataArray(List<Object> data)
-    {
-        this.data = data;
-    }
-
-    /**
-     * Creates a new empty DataArray, ready to be populated with values.
-     *
-     * @return An empty DataArray instance
-     *
-     * @see    #add(Object)
-     */
-    @Nonnull
-    public static DataArray empty()
-    {
-        return new DataArray(new ArrayList<>());
-    }
-
-    /**
-     * Creates a new DataArray and populates it with the contents
-     * of the provided collection.
-     *
-     * @param  col
-     *         The {@link java.util.Collection}
-     *
-     * @return A new DataArray populated with the contents of the collection
-     */
-    @Nonnull
-    public static DataArray fromCollection(@Nonnull Collection<?> col)
-    {
-        return empty().addAll(col);
-    }
-
-    /**
-     * Parses a JSON Array into a DataArray instance.
-     *
-     * @param  json
-     *         The correctly formatted JSON Array
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the provided JSON is incorrectly formatted
-     *
-     * @return A new DataArray instance for the provided array
-     */
-    @Nonnull
-    public static DataArray fromJson(@Nonnull String json)
-    {
-        try
-        {
-            return new DataArray(mapper.readValue(json, listType));
-        }
-        catch (IOException e)
-        {
-            throw new ParsingException(e);
-        }
-    }
-
-    /**
-     * Parses a JSON Array into a DataArray instance.
-     *
-     * @param  json
-     *         The correctly formatted JSON Array
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the provided JSON is incorrectly formatted or an I/O error occurred
-     *
-     * @return A new DataArray instance for the provided array
-     */
-    @Nonnull
-    public static DataArray fromJson(@Nonnull InputStream json)
-    {
-        try
-        {
-            return new DataArray(mapper.readValue(json, listType));
-        }
-        catch (IOException e)
-        {
-            throw new ParsingException(e);
-        }
-    }
-
-    /**
-     * Parses a JSON Array into a DataArray instance.
-     *
-     * @param  json
-     *         The correctly formatted JSON Array
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the provided JSON is incorrectly formatted or an I/O error occurred
-     *
-     * @return A new DataArray instance for the provided array
-     */
-    @Nonnull
-    public static DataArray fromJson(@Nonnull Reader json)
-    {
-        try
-        {
-            return new DataArray(mapper.readValue(json, listType));
-        }
-        catch (IOException e)
-        {
-            throw new ParsingException(e);
-        }
-    }
-
-    /**
-     * Parses using {@link ExTermDecoder}.
-     * The provided data must start with the correct version header (131).
-     *
-     * @param  data
-     *         The data to decode
-     *
-     * @throws IllegalArgumentException
-     *         If the provided data is null
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the provided ETF payload is incorrectly formatted or an I/O error occurred
-     *
-     * @return A DataArray instance for the provided payload
-     *
-     * @since  4.2.1
-     */
-    @Nonnull
-    public static DataArray fromETF(@Nonnull byte[] data)
-    {
-        Checks.notNull(data, "Data");
-        try
-        {
-            List<Object> list = ExTermDecoder.unpackList(ByteBuffer.wrap(data));
-            return new DataArray(list);
-        }
-        catch (Exception ex)
-        {
-            log.error("Failed to parse ETF data {}", Arrays.toString(data), ex);
-            throw new ParsingException(ex);
-        }
-    }
-
+class DataArray(val data: MutableList<Any>?) : Iterable<Any?>, SerializableArray {
     /**
      * Whether the value at the specified index is null.
      *
      * @param  index
-     *         The index to check
+     * The index to check
      *
      * @return True, if the value at the index is null
      */
-    public boolean isNull(int index)
-    {
-        return index >= length() || data.get(index) == null;
+    fun isNull(index: Int): Boolean {
+        return index >= length() || data!![index] == null
     }
 
     /**
      * Whether the value at the specified index is of the specified type.
      *
      * @param  index
-     *         The index to check
+     * The index to check
      * @param  type
-     *         The type to check
+     * The type to check
      *
      * @return True, if the type check is successful
      *
-     * @see    net.dv8tion.jda.api.utils.data.DataType#isType(Object) DataType.isType(Object)
+     * @see net.dv8tion.jda.api.utils.data.DataType.isType
      */
-    public boolean isType(int index, @Nonnull DataType type)
-    {
-        return type.isType(data.get(index));
+    fun isType(index: Int, @Nonnull type: DataType): Boolean {
+        return type.isType(data!![index])
     }
 
     /**
@@ -243,493 +85,453 @@ public class DataArray implements Iterable<Object>, SerializableArray
      *
      * @return The length of the array
      */
-    public int length()
-    {
-        return data.size();
+    fun length(): Int {
+        return data!!.size
     }
 
-    /**
-     * Whether this array is empty
-     *
-     * @return True, if this array is empty
-     */
-    public boolean isEmpty()
-    {
-        return data.isEmpty();
-    }
+    val isEmpty: Boolean
+        /**
+         * Whether this array is empty
+         *
+         * @return True, if this array is empty
+         */
+        get() = data!!.isEmpty()
 
     /**
      * Resolves the value at the specified index to a DataObject
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type or missing
+     * If the value is of the wrong type or missing
      *
      * @return The resolved DataObject
      */
     @Nonnull
-    @SuppressWarnings("unchecked")
-    public DataObject getObject(int index)
-    {
-        Map<String, Object> child = null;
-        try
-        {
-            child = (Map<String, Object>) get(Map.class, index);
+    fun getObject(index: Int): DataObject {
+        var child: Map<String, Any?>? = null
+        try {
+            child = get<Map<*, *>>(MutableMap::class.java, index) as Map<String, Any?>?
+        } catch (ex: ClassCastException) {
+            log.error("Unable to extract child data", ex)
         }
-        catch (ClassCastException ex)
-        {
-            log.error("Unable to extract child data", ex);
-        }
-        if (child == null)
-            throw valueError(index, "DataObject");
-        return new DataObject(child);
+        if (child == null) throw valueError(index, "DataObject")
+        return DataObject(child)
     }
 
     /**
      * Resolves the value at the specified index to a DataArray
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type or null
+     * If the value is of the wrong type or null
      *
      * @return The resolved DataArray
      */
     @Nonnull
-    @SuppressWarnings("unchecked")
-    public DataArray getArray(int index)
-    {
-        List<Object> child = null;
-        try
-        {
-            child = (List<Object>) get(List.class, index);
+    fun getArray(index: Int): DataArray {
+        var child: MutableList<Any>? = null
+        try {
+            child = get(MutableList::class.java, index) as MutableList<Any>?
+        } catch (ex: ClassCastException) {
+            log.error("Unable to extract child data", ex)
         }
-        catch (ClassCastException ex)
-        {
-            log.error("Unable to extract child data", ex);
-        }
-        if (child == null)
-            throw valueError(index, "DataArray");
-        return new DataArray(child);
+        if (child == null) throw valueError(index, "DataArray")
+        return DataArray(child)
     }
 
     /**
      * Resolves the value at the specified index to a String.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type or null
+     * If the value is of the wrong type or null
      *
      * @return The resolved String
      */
     @Nonnull
-    public String getString(int index)
-    {
-        String value = get(String.class, index, UnaryOperator.identity(), String::valueOf);
-        if (value == null)
-            throw valueError(index, "String");
-        return value;
+    fun getString(index: Int): String {
+        return get(
+            String::class.java,
+            index,
+            UnaryOperator.identity()
+        ) { obj: Number? -> java.lang.String.valueOf(obj) }
+            ?: throw valueError(index, "String")
     }
 
     /**
      * Resolves the value at the specified index to a String.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      * @param  defaultValue
-     *         Alternative value to use when the value associated with the index is null
+     * Alternative value to use when the value associated with the index is null
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved String
      */
     @Contract("_, !null -> !null")
-    public String getString(int index, @Nullable String defaultValue)
-    {
-        String value = get(String.class, index, UnaryOperator.identity(), String::valueOf);
-        return value == null ? defaultValue : value;
+    fun getString(index: Int, defaultValue: String?): String? {
+        val value =
+            get(String::class.java, index, UnaryOperator.identity()) { obj: Number? -> java.lang.String.valueOf(obj) }
+        return value ?: defaultValue
     }
 
     /**
      * Resolves the value at the specified index to a boolean.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return True, if the value is present and set to true. Otherwise false.
      */
-    public boolean getBoolean(int index)
-    {
-        return getBoolean(index, false);
+    fun getBoolean(index: Int): Boolean {
+        return getBoolean(index, false)
     }
 
     /**
      * Resolves the value at the specified index to a boolean.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      * @param  defaultValue
-     *         Alternative value to use when the value associated with the index is null
+     * Alternative value to use when the value associated with the index is null
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return True, if the value is present and set to true. False, if it is set to false. Otherwise defaultValue.
      */
-    public boolean getBoolean(int index, boolean defaultValue)
-    {
-        Boolean value = get(Boolean.class, index, Boolean::parseBoolean, null);
-        return value == null ? defaultValue : value;
+    fun getBoolean(index: Int, defaultValue: Boolean): Boolean {
+        val value = get(Boolean::class.java, index, { s: String -> s.toBoolean() }, null)
+        return value ?: defaultValue
     }
 
     /**
      * Resolves the value at the specified index to an int.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved int value
      */
-    public int getInt(int index)
-    {
-        Integer value = get(Integer.class, index, Integer::parseInt, Number::intValue);
-        if (value == null)
-            throw valueError(index, "int");
-        return value;
+    fun getInt(index: Int): Int {
+        return get(Int::class.java, index, { s: String -> s.toInt() }) { obj: Number -> obj.toInt() }!!
+            ?: throw valueError(index, "int")
     }
 
     /**
      * Resolves the value at the specified index to an int.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      * @param  defaultValue
-     *         Alternative value to use when the value associated with the index is null
+     * Alternative value to use when the value associated with the index is null
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved int value
      */
-    public int getInt(int index, int defaultValue)
-    {
-        Integer value = get(Integer.class, index, Integer::parseInt, Number::intValue);
-        return value == null ? defaultValue : value;
+    fun getInt(index: Int, defaultValue: Int): Int {
+        val value = get(Int::class.java, index, { s: String -> s.toInt() }) { obj: Number -> obj.toInt() }
+        return value ?: defaultValue
     }
 
     /**
      * Resolves the value at the specified index to an unsigned int.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved unsigned int value
      */
-    public int getUnsignedInt(int index)
-    {
-        Integer value = get(Integer.class, index, Integer::parseUnsignedInt, Number::intValue);
-        if (value == null)
-            throw valueError(index, "unsigned int");
-        return value;
+    fun getUnsignedInt(index: Int): Int {
+        return get(
+            Int::class.java,
+            index,
+            { s: String? -> Integer.parseUnsignedInt(s) }) { obj: Number -> obj.toInt() }!!
+            ?: throw valueError(index, "unsigned int")
     }
 
     /**
      * Resolves the value at the specified index to an unsigned int.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      * @param  defaultValue
-     *         Alternative value to use when the value associated with the index is null
+     * Alternative value to use when the value associated with the index is null
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved unsigned int value
      */
-    public int getUnsignedInt(int index, int defaultValue)
-    {
-        Integer value = get(Integer.class, index, Integer::parseUnsignedInt, Number::intValue);
-        return value == null ? defaultValue : value;
+    fun getUnsignedInt(index: Int, defaultValue: Int): Int {
+        val value =
+            get(Int::class.java, index, { s: String? -> Integer.parseUnsignedInt(s) }) { obj: Number -> obj.toInt() }
+        return value ?: defaultValue
     }
 
     /**
      * Resolves the value at the specified index to a long.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved long value
      */
-    public long getLong(int index)
-    {
-        Long value = get(Long.class, index, Long::parseLong, Number::longValue);
-        if (value == null)
-            throw valueError(index, "long");
-        return value;
+    fun getLong(index: Int): Long {
+        return get(Long::class.java, index, { s: String -> s.toLong() }) { obj: Number -> obj.toLong() }!!
+            ?: throw valueError(index, "long")
     }
 
     /**
      * Resolves the value at the specified index to a long.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      * @param  defaultValue
-     *         Alternative value to use when the value associated with the index is null
+     * Alternative value to use when the value associated with the index is null
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved long value
      */
-    public long getLong(int index, long defaultValue)
-    {
-        Long value = get(Long.class, index, Long::parseLong, Number::longValue);
-        return value == null ? defaultValue : value;
+    fun getLong(index: Int, defaultValue: Long): Long {
+        val value = get(Long::class.java, index, { s: String -> s.toLong() }) { obj: Number -> obj.toLong() }
+        return value ?: defaultValue
     }
 
     /**
      * Resolves the value at the specified index to an unsigned long.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved unsigned long value
      */
-    public long getUnsignedLong(int index)
-    {
-        Long value = get(Long.class, index, Long::parseUnsignedLong, Number::longValue);
-        if (value == null)
-            throw valueError(index, "unsigned long");
-        return value;
+    fun getUnsignedLong(index: Int): Long {
+        return get(
+            Long::class.java,
+            index,
+            { s: String? -> java.lang.Long.parseUnsignedLong(s) }) { obj: Number -> obj.toLong() }!!
+            ?: throw valueError(index, "unsigned long")
     }
 
     /**
-     * Resolves the value at the specified index to an {@link OffsetDateTime}.
-     * <br><b>Note:</b> This method should be used on ISO8601 timestamps
+     * Resolves the value at the specified index to an [OffsetDateTime].
+     * <br></br>**Note:** This method should be used on ISO8601 timestamps
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is missing, null, or not a valid ISO8601 timestamp
+     * If the value is missing, null, or not a valid ISO8601 timestamp
      *
-     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
+     * @return Possibly-null [OffsetDateTime] object representing the timestamp
      */
     @Nonnull
-    public OffsetDateTime getOffsetDateTime(int index)
-    {
-        OffsetDateTime value = getOffsetDateTime(index, null);
-        if(value == null)
-            throw valueError(index, "OffsetDateTime");
-        return value;
+    fun getOffsetDateTime(index: Int): OffsetDateTime {
+        return getOffsetDateTime(index, null) ?: throw valueError(index, "OffsetDateTime")
     }
+
     /**
-     * Resolves the value at the specified index to an {@link OffsetDateTime}.
-     * <br><b>Note:</b> This method should only be used on ISO8601 timestamps
+     * Resolves the value at the specified index to an [OffsetDateTime].
+     * <br></br>**Note:** This method should only be used on ISO8601 timestamps
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      * @param  defaultValue
-     *         Alternative value to use when no value or null value is associated with the key
+     * Alternative value to use when no value or null value is associated with the key
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is not a valid ISO8601 timestamp
+     * If the value is not a valid ISO8601 timestamp
      *
-     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp
+     * @return Possibly-null [OffsetDateTime] object representing the timestamp
      */
     @Contract("_, !null -> !null")
-    public OffsetDateTime getOffsetDateTime(int index, @Nullable OffsetDateTime defaultValue)
-    {
-        OffsetDateTime value;
-        try
-        {
-            value = get(OffsetDateTime.class, index, OffsetDateTime::parse, null);
+    fun getOffsetDateTime(index: Int, defaultValue: OffsetDateTime?): OffsetDateTime? {
+        val value: OffsetDateTime?
+        value = try {
+            get(OffsetDateTime::class.java, index, { text: String? -> OffsetDateTime.parse(text) }, null)
+        } catch (e: DateTimeParseException) {
+            val reason =
+                "Cannot parse value for index %d into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestamp"
+            throw ParsingException(String.format(reason, index, e.parsedString))
         }
-        catch (DateTimeParseException e)
-        {
-            String reason = "Cannot parse value for index %d into an OffsetDateTime object. Try double checking that %s is a valid ISO8601 timestamp";
-            throw new ParsingException(String.format(reason, index, e.getParsedString()));
-        }
-        return value == null ? defaultValue : value;
+        return value ?: defaultValue
     }
 
     /**
      * Resolves the value at the specified index to an unsigned long.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      * @param  defaultValue
-     *         Alternative value to use when the value associated with the index is null
+     * Alternative value to use when the value associated with the index is null
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved unsigned long value
      */
-    public long getUnsignedLong(int index, long defaultValue)
-    {
-        Long value = get(Long.class, index, Long::parseUnsignedLong, Number::longValue);
-        return value == null ? defaultValue : value;
+    fun getUnsignedLong(index: Int, defaultValue: Long): Long {
+        val value = get(
+            Long::class.java,
+            index,
+            { s: String? -> java.lang.Long.parseUnsignedLong(s) }) { obj: Number -> obj.toLong() }
+        return value ?: defaultValue
     }
 
     /**
      * Resolves the value at the specified index to a double.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved double value
      */
-    public double getDouble(int index)
-    {
-        Double value = get(Double.class, index, Double::parseDouble, Number::doubleValue);
-        if (value == null)
-            throw valueError(index, "double");
-        return value;
+    fun getDouble(index: Int): Double {
+        return get(Double::class.java, index, { s: String -> s.toDouble() }) { obj: Number -> obj.toDouble() }!!
+            ?: throw valueError(index, "double")
     }
 
     /**
      * Resolves the value at the specified index to a double.
      *
      * @param  index
-     *         The index to resolve
+     * The index to resolve
      * @param  defaultValue
-     *         Alternative value to use when the value associated with the index is null
+     * Alternative value to use when the value associated with the index is null
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the value is of the wrong type
+     * If the value is of the wrong type
      *
      * @return The resolved double value
      */
-    public double getDouble(int index, double defaultValue)
-    {
-        Double value = get(Double.class, index, Double::parseDouble, Number::doubleValue);
-        return value == null ? defaultValue : value;
+    fun getDouble(index: Int, defaultValue: Double): Double {
+        val value = get(Double::class.java, index, { s: String -> s.toDouble() }) { obj: Number -> obj.toDouble() }
+        return value ?: defaultValue
     }
 
     /**
      * Appends the provided value to the end of the array.
      *
      * @param  value
-     *         The value to append
+     * The value to append
      *
      * @return A DataArray with the value inserted at the end
      */
     @Nonnull
-    public DataArray add(@Nullable Object value)
-    {
-        if (value instanceof SerializableData)
-            data.add(((SerializableData) value).toData().data);
-        else if (value instanceof SerializableArray)
-            data.add(((SerializableArray) value).toDataArray().data);
-        else
-            data.add(value);
-        return this;
+    fun add(value: Any?): DataArray {
+        if (value is SerializableData) data!!.add(value.toData().data!!) else if (value is SerializableArray) data!!.add(
+            value.toDataArray().data!!
+        ) else data!!.add(value!!)
+        return this
     }
 
     /**
      * Appends the provided values to the end of the array.
      *
      * @param  values
-     *         The values to append
+     * The values to append
      *
      * @return A DataArray with the values inserted at the end
      */
     @Nonnull
-    public DataArray addAll(@Nonnull Collection<?> values)
-    {
-        values.forEach(this::add);
-        return this;
+    fun addAll(@Nonnull values: Collection<*>?): DataArray {
+        values!!.forEach { value: Any? -> add(value) }
+        return this
     }
 
     /**
      * Appends the provided values to the end of the array.
      *
      * @param  array
-     *         The values to append
+     * The values to append
      *
      * @return A DataArray with the values inserted at the end
      */
     @Nonnull
-    public DataArray addAll(@Nonnull DataArray array)
-    {
-        return addAll(array.data);
+    fun addAll(@Nonnull array: DataArray): DataArray {
+        return addAll(array.data)
     }
 
     /**
      * Inserts the specified value at the provided index.
      *
      * @param  index
-     *         The target index
+     * The target index
      * @param  value
-     *         The value to insert
+     * The value to insert
      *
      * @return A DataArray with the value inserted at the specified index
      */
     @Nonnull
-    public DataArray insert(int index, @Nullable Object value)
-    {
-        if (value instanceof SerializableData)
-            data.add(index, ((SerializableData) value).toData().data);
-        else if (value instanceof SerializableArray)
-            data.add(index, ((SerializableArray) value).toDataArray().data);
-        else
-            data.add(index, value);
-        return this;
+    fun insert(index: Int, value: Any?): DataArray {
+        if (value is SerializableData) data!!.add(
+            index,
+            value.toData().data!!
+        ) else if (value is SerializableArray) data!!.add(index, value.toDataArray().data!!) else data!!.add(
+            index,
+            value!!
+        )
+        return this
     }
 
     /**
      * Removes the value at the specified index.
      *
      * @param  index
-     *         The target index to remove
+     * The target index to remove
      *
      * @return A DataArray with the value removed
      */
     @Nonnull
-    public DataArray remove(int index)
-    {
-        data.remove(index);
-        return this;
+    fun remove(index: Int): DataArray {
+        data!!.removeAt(index)
+        return this
     }
 
     /**
      * Removes the specified value.
      *
      * @param  value
-     *         The value to remove
+     * The value to remove
      *
      * @return A DataArray with the value removed
      */
     @Nonnull
-    public DataArray remove(@Nullable Object value)
-    {
-        data.remove(value);
-        return this;
+    fun remove(value: Any?): DataArray {
+        data!!.remove(value!!)
+        return this
     }
 
     /**
@@ -738,17 +540,13 @@ public class DataArray implements Iterable<Object>, SerializableArray
      * @return byte array containing the JSON representation of this object
      */
     @Nonnull
-    public byte[] toJson()
-    {
-        try
-        {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            mapper.writeValue(outputStream, data);
-            return outputStream.toByteArray();
-        }
-        catch (IOException e)
-        {
-            throw new UncheckedIOException(e);
+    fun toJson(): ByteArray {
+        return try {
+            val outputStream = ByteArrayOutputStream()
+            mapper!!.writeValue(outputStream, data)
+            outputStream.toByteArray()
+        } catch (e: IOException) {
+            throw UncheckedIOException(e)
         }
     }
 
@@ -760,120 +558,229 @@ public class DataArray implements Iterable<Object>, SerializableArray
      * @since  4.2.1
      */
     @Nonnull
-    public byte[] toETF()
-    {
-        ByteBuffer buffer = ExTermEncoder.pack(data);
-        return Arrays.copyOfRange(buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
+    fun toETF(): ByteArray {
+        val buffer = pack(data)
+        return Arrays.copyOfRange(buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit())
     }
 
-    @Override
-    public String toString()
-    {
-        try
-        {
-            return mapper.writeValueAsString(data);
-        }
-        catch (JsonProcessingException e)
-        {
-            throw new ParsingException(e);
+    override fun toString(): String {
+        return try {
+            mapper!!.writeValueAsString(data)
+        } catch (e: JsonProcessingException) {
+            throw ParsingException(e)
         }
     }
 
     @Nonnull
-    public String toPrettyString()
-    {
-        try
-        {
-            return mapper.writer(new DefaultPrettyPrinter())
-                    .with(SerializationFeature.INDENT_OUTPUT)
-                    .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
-                    .writeValueAsString(data);
-        }
-        catch (JsonProcessingException e)
-        {
-            throw new ParsingException(e);
+    fun toPrettyString(): String {
+        return try {
+            mapper!!.writer(DefaultPrettyPrinter())
+                .with(SerializationFeature.INDENT_OUTPUT)
+                .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+                .writeValueAsString(data)
+        } catch (e: JsonProcessingException) {
+            throw ParsingException(e)
         }
     }
 
     /**
-     * Converts this DataArray to a {@link java.util.List}.
+     * Converts this DataArray to a [java.util.List].
      *
      * @return The resulting list
      */
     @Nonnull
-    public List<Object> toList()
-    {
-        return data;
+    fun toList(): List<Any>? {
+        return data
     }
 
-    private ParsingException valueError(int index, String expectedType)
-    {
-        return new ParsingException("Unable to resolve value at " + index + " to type " + expectedType + ": " + data.get(index));
+    private fun valueError(index: Int, expectedType: String): ParsingException {
+        return ParsingException("Unable to resolve value at " + index + " to type " + expectedType + ": " + data!![index])
     }
 
-    @Nullable
-    private <T> T get(@Nonnull Class<T> type, int index)
-    {
-        return get(type, index, null, null);
+    private operator fun <T> get(@Nonnull type: Class<T>, index: Int): T? {
+        return get(type, index, null, null)
     }
 
-    @Nullable
-    private <T> T get(@Nonnull Class<T> type, int index, @Nullable Function<String, T> stringMapper, @Nullable Function<Number, T> numberMapper)
-    {
-        if (index < 0)
-            throw new IndexOutOfBoundsException("Index out of range: " + index);
-        Object value = index < data.size() ? data.get(index) : null;
-        if (value == null)
-            return null;
-        if (type.isInstance(value))
-            return type.cast(value);
-        if (type == String.class)
-            return type.cast(value.toString());
+    private operator fun <T> get(
+        @Nonnull type: Class<T>,
+        index: Int,
+        stringMapper: Function<String, T>?,
+        numberMapper: Function<Number, T>?
+    ): T? {
+        if (index < 0) throw IndexOutOfBoundsException("Index out of range: $index")
+        val value = (if (index < data!!.size) data[index] else null) ?: return null
+        if (type.isInstance(value)) return type.cast(value)
+        if (type == String::class.java) return type.cast(value.toString())
         // attempt type coercion
-        if (stringMapper != null && value instanceof String)
-            return stringMapper.apply((String) value);
-        else if (numberMapper != null && value instanceof Number)
-            return numberMapper.apply((Number) value);
-
-        throw new ParsingException(Helpers.format("Cannot parse value for index %d into type %s: %s instance of %s",
-                                                      index, type.getSimpleName(), value, value.getClass().getSimpleName()));
+        if (stringMapper != null && value is String) return stringMapper.apply(value) else if (numberMapper != null && value is Number) return numberMapper.apply(
+            value
+        )
+        throw ParsingException(
+            Helpers.format(
+                "Cannot parse value for index %d into type %s: %s instance of %s",
+                index, type.getSimpleName(), value, value.javaClass.getSimpleName()
+            )
+        )
     }
 
     @Nonnull
-    @Override
-    public Iterator<Object> iterator()
-    {
-        return data.iterator();
+    override fun iterator(): MutableIterator<Any> {
+        return data!!.iterator()
     }
 
     @Nonnull
-    public <T> Stream<T> stream(BiFunction<? super DataArray, Integer, ? extends T> mapper)
-    {
+    fun <T> stream(mapper: BiFunction<in DataArray?, Int?, out T>): Stream<T> {
         return IntStream.range(0, length())
-                .mapToObj(index -> mapper.apply(this, index));
+            .mapToObj { index: Int -> mapper.apply(this, index) }
     }
 
     @Nonnull
-    @Override
-    public DataArray toDataArray()
-    {
-        return this;
+    override fun toDataArray(): DataArray {
+        return this
     }
 
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o)
-            return true;
-        if (!(o instanceof DataArray))
-            return false;
-        DataArray objects = (DataArray) o;
-        return Objects.equals(data, objects.data);
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o !is DataArray) return false
+        return data == o.data
     }
 
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(data);
+    override fun hashCode(): Int {
+        return Objects.hash(data)
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(DataObject::class.java)
+        private val mapper: ObjectMapper? = null
+        private val module: SimpleModule? = null
+        private val listType: CollectionType? = null
+
+        init {
+            mapper = ObjectMapper()
+            module = SimpleModule()
+            module.addAbstractTypeMapping<Map<*, *>>(MutableMap::class.java, HashMap::class.java)
+            module.addAbstractTypeMapping<List<*>>(MutableList::class.java, ArrayList::class.java)
+            mapper.registerModule(module)
+            listType = mapper.getTypeFactory().constructRawCollectionType(ArrayList::class.java)
+        }
+
+        /**
+         * Creates a new empty DataArray, ready to be populated with values.
+         *
+         * @return An empty DataArray instance
+         *
+         * @see .add
+         */
+        @JvmStatic
+        @Nonnull
+        fun empty(): DataArray {
+            return DataArray(ArrayList())
+        }
+
+        /**
+         * Creates a new DataArray and populates it with the contents
+         * of the provided collection.
+         *
+         * @param  col
+         * The [java.util.Collection]
+         *
+         * @return A new DataArray populated with the contents of the collection
+         */
+        @Nonnull
+        fun fromCollection(@Nonnull col: Collection<*>?): DataArray {
+            return empty().addAll(col)
+        }
+
+        /**
+         * Parses a JSON Array into a DataArray instance.
+         *
+         * @param  json
+         * The correctly formatted JSON Array
+         *
+         * @throws net.dv8tion.jda.api.exceptions.ParsingException
+         * If the provided JSON is incorrectly formatted
+         *
+         * @return A new DataArray instance for the provided array
+         */
+        @JvmStatic
+        @Nonnull
+        fun fromJson(@Nonnull json: String?): DataArray {
+            return try {
+                DataArray(mapper!!.readValue(json, listType))
+            } catch (e: IOException) {
+                throw ParsingException(e)
+            }
+        }
+
+        /**
+         * Parses a JSON Array into a DataArray instance.
+         *
+         * @param  json
+         * The correctly formatted JSON Array
+         *
+         * @throws net.dv8tion.jda.api.exceptions.ParsingException
+         * If the provided JSON is incorrectly formatted or an I/O error occurred
+         *
+         * @return A new DataArray instance for the provided array
+         */
+        @JvmStatic
+        @Nonnull
+        fun fromJson(@Nonnull json: InputStream?): DataArray {
+            return try {
+                DataArray(mapper!!.readValue(json, listType))
+            } catch (e: IOException) {
+                throw ParsingException(e)
+            }
+        }
+
+        /**
+         * Parses a JSON Array into a DataArray instance.
+         *
+         * @param  json
+         * The correctly formatted JSON Array
+         *
+         * @throws net.dv8tion.jda.api.exceptions.ParsingException
+         * If the provided JSON is incorrectly formatted or an I/O error occurred
+         *
+         * @return A new DataArray instance for the provided array
+         */
+        @JvmStatic
+        @Nonnull
+        fun fromJson(@Nonnull json: Reader?): DataArray {
+            return try {
+                DataArray(mapper!!.readValue(json, listType))
+            } catch (e: IOException) {
+                throw ParsingException(e)
+            }
+        }
+
+        /**
+         * Parses using [ExTermDecoder].
+         * The provided data must start with the correct version header (131).
+         *
+         * @param  data
+         * The data to decode
+         *
+         * @throws IllegalArgumentException
+         * If the provided data is null
+         * @throws net.dv8tion.jda.api.exceptions.ParsingException
+         * If the provided ETF payload is incorrectly formatted or an I/O error occurred
+         *
+         * @return A DataArray instance for the provided payload
+         *
+         * @since  4.2.1
+         */
+        @JvmStatic
+        @Nonnull
+        fun fromETF(@Nonnull data: ByteArray): DataArray {
+            Checks.notNull(data, "Data")
+            return try {
+                val list = unpackList(ByteBuffer.wrap(data))
+                DataArray(list)
+            } catch (ex: Exception) {
+                log.error("Failed to parse ETF data {}", data.contentToString(), ex)
+                throw ParsingException(ex)
+            }
+        }
     }
 }

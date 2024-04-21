@@ -53,7 +53,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
     @Override
     public JDA getJDA()
     {
-        return action1.getJDA();
+        return action1.jDA;
     }
 
     @Nonnull

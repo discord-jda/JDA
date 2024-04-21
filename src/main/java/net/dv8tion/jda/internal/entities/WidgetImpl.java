@@ -391,7 +391,7 @@ public class WidgetImpl implements Widget
             if (!(obj instanceof Member))
                 return false;
             Member oMember = (Member) obj;
-            return this == oMember || (this.id == oMember.getIdLong() && this.widget.getIdLong() == oMember.getWidget().getIdLong());
+            return this == oMember || (this.id == oMember.idLong && this.widget.getIdLong() == oMember.widget.idLong);
         }
 
         @Override
@@ -468,7 +468,7 @@ public class WidgetImpl implements Widget
             if (!(obj instanceof VoiceChannel))
                 return false;
             VoiceChannel oVChannel = (VoiceChannel) obj;
-            return this == oVChannel || this.id == oVChannel.getIdLong();
+            return this == oVChannel || this.id == oVChannel.idLong;
         }
 
         @Override
@@ -587,14 +587,14 @@ public class WidgetImpl implements Widget
             if (!(obj instanceof VoiceState))
                 return false;
             VoiceState oState = (VoiceState) obj;
-            return this == oState || (this.member.equals(oState.getMember()) && this.widget.equals(oState.getWidget()));
+            return this == oState || (this.member.equals(oState.member) && this.widget.equals(oState.widget));
         }
 
         @Override
         public String toString() {
             return new EntityString(this)
-                    .setName(widget.getName())
-                    .addMetadata("memberName", member.getEffectiveName())
+                    .setName(widget.name)
+                    .addMetadata("memberName", member.effectiveName)
                     .toString();
         }
     }

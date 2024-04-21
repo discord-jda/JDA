@@ -43,14 +43,14 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
     @Override
     public StandardSticker asStandardSticker()
     {
-        throw new IllegalStateException("Cannot convert sticker of type " + getType() + " to StandardSticker!");
+        throw new IllegalStateException("Cannot convert sticker of type " + type + " to StandardSticker!");
     }
 
     @Nonnull
     @Override
     public GuildSticker asGuildSticker()
     {
-        throw new IllegalStateException("Cannot convert sticker of type " + getType() + " to GuildSticker!");
+        throw new IllegalStateException("Cannot convert sticker of type " + type + " to GuildSticker!");
     }
 
     @Nonnull
@@ -84,7 +84,7 @@ public abstract class RichStickerImpl extends StickerItemImpl implements RichSti
     public String toString()
     {
         return new EntityString(this)
-                .setType(getType())
+                .setType(type)
                 .setName(name)
                 .toString();
     }

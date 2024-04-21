@@ -66,17 +66,17 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         Checks.notNull(emoji, "Emoji");
         Checks.notNull(user, "User");
 
-        if (!getJDA().getSelfUser().equals(user))
+        if (!jDA.getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
 
         String targetUser;
-        if (user.equals(getJDA().getSelfUser()))
+        if (user.equals(jDA.getSelfUser()))
             targetUser = "@me";
         else
             targetUser = user.getId();
 
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, emoji.getAsReactionCode(), targetUser);
-        return new RestActionImpl<>(getJDA(), route);
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, emoji.asReactionCode, targetUser);
+        return new RestActionImpl<>(jDA, route);
     }
 
     @Nonnull
@@ -88,7 +88,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         checkPermission(Permission.MESSAGE_MANAGE);
 
         final Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
-        return new RestActionImpl<>(getJDA(), route);
+        return new RestActionImpl<>(jDA, route);
     }
 
     @Nonnull
@@ -100,8 +100,8 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
         checkPermission(Permission.MESSAGE_MANAGE);
 
-        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getId(), messageId, emoji.getAsReactionCode());
-        return new RestActionImpl<>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getId(), messageId, emoji.asReactionCode);
+        return new RestActionImpl<>(jDA, route);
     }
 
     @Nonnull
@@ -123,7 +123,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
     default void checkCanSendMessage()
     {
-        if (getType().isThread())
+        if (type.isThread())
             checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
         else
             checkPermission(Permission.MESSAGE_SEND);

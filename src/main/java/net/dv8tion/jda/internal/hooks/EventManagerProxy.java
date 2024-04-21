@@ -97,6 +97,6 @@ public class EventManagerProxy implements IEventManager
     @Override
     public List<Object> getRegisteredListeners()
     {
-        return subject.getRegisteredListeners();
+        return subject.registeredListeners;
     }
 }

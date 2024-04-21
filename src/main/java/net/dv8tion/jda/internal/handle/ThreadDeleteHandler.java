@@ -50,7 +50,7 @@ public class ThreadDeleteHandler extends SocketHandler
             return null;
         }
 
-        channelsView.remove(thread.getType(), threadId);
+        channelsView.remove(thread.type, threadId);
         guild.getChannelView().remove(thread);
 
         getJDA().handleEvent(

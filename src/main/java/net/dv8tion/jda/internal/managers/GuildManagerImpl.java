@@ -65,7 +65,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     public Guild getGuild()
     {
-        Guild realGuild = api.getGuildById(guild.getIdLong());
+        Guild realGuild = api.getGuildById(guild.idLong);
         if (realGuild != null)
             guild = realGuild;
         return guild;
@@ -164,7 +164,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @CheckReturnValue
     public GuildManagerImpl setAfkChannel(VoiceChannel afkChannel)
     {
-        Checks.check(afkChannel == null || afkChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        Checks.check(afkChannel == null || afkChannel.guild.equals(getGuild()), "Channel must be from the same guild");
         this.afkChannel = afkChannel == null ? null : afkChannel.getId();
         set |= AFK_CHANNEL;
         return this;
@@ -175,7 +175,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @CheckReturnValue
     public GuildManagerImpl setSystemChannel(TextChannel systemChannel)
     {
-        Checks.check(systemChannel == null || systemChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        Checks.check(systemChannel == null || systemChannel.guild.equals(getGuild()), "Channel must be from the same guild");
         this.systemChannel = systemChannel == null ? null : systemChannel.getId();
         set |= SYSTEM_CHANNEL;
         return this;
@@ -186,7 +186,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @CheckReturnValue
     public GuildManagerImpl setRulesChannel(TextChannel rulesChannel)
     {
-        Checks.check(rulesChannel == null || rulesChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        Checks.check(rulesChannel == null || rulesChannel.guild.equals(getGuild()), "Channel must be from the same guild");
         this.rulesChannel = rulesChannel == null ? null : rulesChannel.getId();
         set |= RULES_CHANNEL;
         return this;
@@ -197,7 +197,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @CheckReturnValue
     public GuildManagerImpl setCommunityUpdatesChannel(TextChannel communityUpdatesChannel)
     {
-        Checks.check(communityUpdatesChannel == null || communityUpdatesChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        Checks.check(communityUpdatesChannel == null || communityUpdatesChannel.guild.equals(getGuild()), "Channel must be from the same guild");
         this.communityUpdatesChannel = communityUpdatesChannel == null ? null : communityUpdatesChannel.getId();
         set |= COMMUNITY_UPDATES_CHANNEL;
         return this;
@@ -321,7 +321,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     {
         Checks.noneNull(changed, "Features");
         if (this.features == null)
-            this.features = new HashSet<>(getGuild().getFeatures());
+            this.features = new HashSet<>(getGuild().features);
         changed.stream()
                .map(String::toUpperCase)
                .forEach(op);
@@ -332,15 +332,15 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject body = DataObject.empty().put("name", getGuild().getName());
+        DataObject body = DataObject.empty().put("name", getGuild().name);
         if (shouldUpdate(NAME))
             body.put("name", name);
         if (shouldUpdate(AFK_TIMEOUT))
             body.put("afk_timeout", afkTimeout);
         if (shouldUpdate(ICON))
-            body.put("icon", icon == null ? null : icon.getEncoding());
+            body.put("icon", icon == null ? null : icon.encoding);
         if (shouldUpdate(SPLASH))
-            body.put("splash", splash == null ? null : splash.getEncoding());
+            body.put("splash", splash == null ? null : splash.encoding);
         if (shouldUpdate(AFK_CHANNEL))
             body.put("afk_channel_id", afkChannel);
         if (shouldUpdate(SYSTEM_CHANNEL))
@@ -358,7 +358,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         if (shouldUpdate(EXPLICIT_CONTENT_LEVEL))
             body.put("explicit_content_filter", explicitContentLevel);
         if (shouldUpdate(BANNER))
-            body.put("banner", banner == null ? null : banner.getEncoding());
+            body.put("banner", banner == null ? null : banner.encoding);
         if (shouldUpdate(DESCRIPTION))
             body.put("description", description);
         if (shouldUpdate(BOOST_PROGRESS_BAR_ENABLED))
@@ -373,14 +373,14 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     protected boolean checkPermissions()
     {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!getGuild().selfMember.hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_SERVER);
         return super.checkPermissions();
     }
 
     private void checkFeature(String feature)
     {
-        if (!getGuild().getFeatures().contains(feature))
+        if (!getGuild().features.contains(feature))
             throw new IllegalStateException("This guild doesn't have the " + feature + " feature enabled");
     }
 }

@@ -13,90 +13,65 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils
 
-package net.dv8tion.jda.api.utils;
-
-import net.dv8tion.jda.api.utils.cache.CacheView;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import org.slf4j.Logger;
-
-import javax.annotation.Nonnull;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.concurrent.locks.Lock;
+import net.dv8tion.jda.internal.utils.JDALogger
+import java.util.concurrent.locks.Lock
+import javax.annotation.Nonnull
 
 /**
- * Simple implementation of a {@link ClosableIterator} that uses a lock.
- * <br>Close is an idempotent function and can be performed multiple times without effects beyond first invocation.
- * <br>This is deployed by {@link CacheView#lockedIterator()} to allow read-only access
+ * Simple implementation of a [ClosableIterator] that uses a lock.
+ * <br></br>Close is an idempotent function and can be performed multiple times without effects beyond first invocation.
+ * <br></br>This is deployed by [CacheView.lockedIterator] to allow read-only access
  * to the underlying structure without the need to clone it, unlike the normal iterator.
  *
- * <p>This closes automatically when {@link #hasNext()} returns {@code false} but
- * its recommended to only be used within a {@code try-with-resources} block for safety.
  *
- * <p><b>Example</b><br>
+ * This closes automatically when [.hasNext] returns `false` but
+ * its recommended to only be used within a `try-with-resources` block for safety.
+ *
+ *
+ * **Example**<br></br>
  * This can handle any exceptions thrown while iterating and ensures the lock is released correctly.
- * <pre>{@code
- * try (ClosableIterator<T> it = cacheView.lockedIterator()) {
- *     while (it.hasNext()) {
- *         consume(it.next());
- *     }
+ * <pre>`try (ClosableIterator<T> it = cacheView.lockedIterator()) {
+ * while (it.hasNext()) {
+ * consume(it.next());
  * }
- * }</pre>
+ * }
+`</pre> *
  *
  * @param <T>
- *        The element type for this iterator
+ * The element type for this iterator
  *
  * @since  4.0.0
- */
-public class LockIterator<T> implements ClosableIterator<T>
-{
-    private final static Logger log = JDALogger.getLog(ClosableIterator.class);
-    private final Iterator<? extends T> it;
-    private Lock lock;
-
-    public LockIterator(@Nonnull Iterator<? extends T> it, Lock lock)
-    {
-        this.it = it;
-        this.lock = lock;
+</T> */
+class LockIterator<T>(@param:Nonnull private val it: Iterator<T>, private var lock: Lock?) : ClosableIterator<T> {
+    override fun close() {
+        if (lock != null) lock!!.unlock()
+        lock = null
     }
 
-    @Override
-    public void close()
-    {
-        if (lock != null)
-            lock.unlock();
-        lock = null;
-    }
-
-    @Override
-    public boolean hasNext()
-    {
-        if (lock == null)
-            return false;
-        boolean hasNext = it.hasNext();
-        if (!hasNext)
-            close();
-        return hasNext;
+    override fun hasNext(): Boolean {
+        if (lock == null) return false
+        val hasNext = it.hasNext()
+        if (!hasNext) close()
+        return hasNext
     }
 
     @Nonnull
-    @Override
-    public T next()
-    {
-        if (lock == null)
-            throw new NoSuchElementException();
-        return it.next();
+    override fun next(): T {
+        if (lock == null) throw NoSuchElementException()
+        return it.next()
     }
 
-    @Override
-    @Deprecated //Deprecated in Java 9 because the finalization system is being changed/removed
-    protected void finalize()
-    {
-        if (lock != null)
-        {
-            log.error("Finalizing without closing, performing force close on lock");
-            close();
+    @Deprecated("") //Deprecated in Java 9 because the finalization system is being changed/removed
+    protected fun finalize() {
+        if (lock != null) {
+            log.error("Finalizing without closing, performing force close on lock")
+            close()
         }
+    }
+
+    companion object {
+        private val log = JDALogger.getLog(ClosableIterator::class.java)
     }
 }

@@ -41,10 +41,10 @@ public class PermOverrideData implements SerializableData
 
     public PermOverrideData(PermissionOverride override)
     {
-        this.id = override.getIdLong();
-        this.type = override.isMemberOverride() ? MEMBER_TYPE : ROLE_TYPE;
-        this.allow = override.getAllowedRaw();
-        this.deny = override.getDeniedRaw();
+        this.id = override.idLong;
+        this.type = override.isMemberOverride ? MEMBER_TYPE : ROLE_TYPE;
+        this.allow = override.allowedRaw;
+        this.deny = override.deniedRaw;
     }
 
     @Nonnull

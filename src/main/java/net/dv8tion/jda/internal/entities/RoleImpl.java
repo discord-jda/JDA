@@ -143,7 +143,7 @@ public class RoleImpl implements Role
     @Override
     public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
     {
-        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.permissionContainer, this));
     }
 
     @Nonnull
@@ -157,7 +157,7 @@ public class RoleImpl implements Role
     @Override
     public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
     {
-        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.permissionContainer, this));
     }
 
     @Override
@@ -181,7 +181,7 @@ public class RoleImpl implements Role
     @Override
     public boolean hasPermission(@Nonnull Permission... permissions)
     {
-        long effectivePerms = rawPermissions | getGuild().getPublicRole().getPermissionsRaw();
+        long effectivePerms = rawPermissions | getGuild().getPublicRole().permissionsRaw;
         for (Permission perm : permissions)
         {
             final long rawValue = perm.getRawValue();
@@ -202,7 +202,7 @@ public class RoleImpl implements Role
     @Override
     public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
-        long effectivePerms = PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
+        long effectivePerms = PermissionUtil.getEffectivePermission(channel.permissionContainer, this);
         for (Permission perm : permissions)
         {
             final long rawValue = perm.getRawValue();
@@ -225,8 +225,8 @@ public class RoleImpl implements Role
     {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
-        Checks.check(targetChannel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
-        Checks.check(syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(targetChannel.guild.equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(syncSource.guild.equals(getGuild()), "Channels must be from the same guild!");
         long rolePerms = PermissionUtil.getEffectivePermission(targetChannel, this);
         if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
             return false; // Role can't manage permissions at all!
@@ -238,15 +238,15 @@ public class RoleImpl implements Role
             return true;
 
         TLongObjectMap<PermissionOverride> existingOverrides = ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
-        for (PermissionOverride override : syncSource.getPermissionOverrides())
+        for (PermissionOverride override : syncSource.permissionOverrides)
         {
-            PermissionOverride existing = existingOverrides.get(override.getIdLong());
-            long allow = override.getAllowedRaw();
-            long deny = override.getDeniedRaw();
+            PermissionOverride existing = existingOverrides.get(override.idLong);
+            long allow = override.allowedRaw;
+            long deny = override.deniedRaw;
             if (existing != null)
             {
-                allow ^= existing.getAllowedRaw();
-                deny ^= existing.getDeniedRaw();
+                allow ^= existing.allowedRaw;
+                deny ^= existing.deniedRaw;
             }
             // If any permissions changed that the role doesn't have in the channel, the role can't sync it :(
             if (((allow | deny) & ~rolePerms) != 0)
@@ -259,7 +259,7 @@ public class RoleImpl implements Role
     public boolean canSync(@Nonnull IPermissionContainer channel)
     {
         Checks.notNull(channel, "Channel");
-        Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(channel.guild.equals(getGuild()), "Channels must be from the same guild!");
         long rolePerms = PermissionUtil.getEffectivePermission(channel, this);
         if ((rolePerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
             return false; // Role can't manage permissions at all!
@@ -279,7 +279,7 @@ public class RoleImpl implements Role
     @Override
     public Guild getGuild()
     {
-        Guild realGuild = api.getGuildById(guild.getIdLong());
+        Guild realGuild = api.getGuildById(guild.idLong);
         if (realGuild != null)
             guild = realGuild;
         return guild;
@@ -296,7 +296,7 @@ public class RoleImpl implements Role
                     .setMentionable(mentionable)
                     .setName(name)
                     .setPermissions(rawPermissions)
-                    .setIcon(icon == null ? null : icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
+                    .setIcon(icon == null ? null : icon.emoji); // we can only copy the emoji as we don't have access to the Icon instance
     }
 
     @Nonnull
@@ -311,9 +311,9 @@ public class RoleImpl implements Role
     public AuditableRestAction<Void> delete()
     {
         Guild guild = getGuild();
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+        if (!guild.selfMember.hasPermission(Permission.MANAGE_ROLES))
             throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
-        if(!PermissionUtil.canInteract(guild.getSelfMember(), this))
+        if(!PermissionUtil.canInteract(guild.selfMember, this))
             throw new HierarchyException("Can't delete role >= highest self-role");
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
@@ -364,7 +364,7 @@ public class RoleImpl implements Role
         if (!(o instanceof Role))
             return false;
         Role oRole = (Role) o;
-        return this.getIdLong() == oRole.getIdLong();
+        return this.getIdLong() == oRole.idLong;
     }
 
     @Override
@@ -390,11 +390,11 @@ public class RoleImpl implements Role
             throw new IllegalArgumentException("Cannot compare different role implementations");
         RoleImpl impl = (RoleImpl) r;
 
-        if (this.guild.getIdLong() != impl.guild.getIdLong())
+        if (this.guild.idLong != impl.guild.idLong)
             throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
 
-        if (this.getPositionRaw() != r.getPositionRaw())
-            return this.getPositionRaw() - r.getPositionRaw();
+        if (this.getPositionRaw() != r.positionRaw)
+            return this.getPositionRaw() - r.positionRaw;
 
         OffsetDateTime thisTime = this.getTimeCreated();
         OffsetDateTime rTime = r.getTimeCreated();

@@ -13,798 +13,630 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.internal.audio
 
-package net.dv8tion.jda.internal.audio;
+import com.iwebpp.crypto.TweetNaclFast.SecretBox
+import com.neovisionaries.ws.client.*
+import com.sun.jna.ptr.PointerByReference
+import gnu.trove.map.TIntLongMap
+import gnu.trove.map.TIntObjectMap
+import gnu.trove.map.hash.TIntLongHashMap
+import gnu.trove.map.hash.TIntObjectHashMap
+import net.dv8tion.jda.api.audio.*
+import net.dv8tion.jda.api.audio.AudioNatives.ensureOpus
+import net.dv8tion.jda.api.audio.factory.IAudioSendSystem
+import net.dv8tion.jda.api.audio.factory.IPacketProvider
+import net.dv8tion.jda.api.audio.hooks.ConnectionStatus
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel
+import net.dv8tion.jda.api.events.ExceptionEvent
+import net.dv8tion.jda.api.utils.MiscUtil.locked
+import net.dv8tion.jda.api.utils.data.DataObject.Companion.empty
+import net.dv8tion.jda.internal.JDAImpl
+import net.dv8tion.jda.internal.managers.AudioManagerImpl
+import net.dv8tion.jda.internal.utils.IOUtil
+import net.dv8tion.jda.internal.utils.JDALogger
+import tomp2p.opuswrapper.Opus
+import java.net.*
+import java.nio.Buffer
+import java.nio.ByteBuffer
+import java.nio.IntBuffer
+import java.nio.ShortBuffer
+import java.util.*
+import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.locks.ReentrantLock
+import java.util.function.Consumer
+import javax.annotation.Nonnull
+import kotlin.concurrent.Volatile
 
-import com.iwebpp.crypto.TweetNaclFast;
-import com.neovisionaries.ws.client.WebSocket;
-import com.sun.jna.ptr.PointerByReference;
-import gnu.trove.map.TIntLongMap;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.hash.TIntLongHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import net.dv8tion.jda.api.audio.*;
-import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
-import net.dv8tion.jda.api.audio.factory.IAudioSendSystem;
-import net.dv8tion.jda.api.audio.factory.IPacketProvider;
-import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
-import net.dv8tion.jda.api.events.ExceptionEvent;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.managers.AudioManagerImpl;
-import net.dv8tion.jda.internal.utils.IOUtil;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import org.slf4j.Logger;
-import tomp2p.opuswrapper.Opus;
+class AudioConnection(
+    manager: AudioManagerImpl,
+    endpoint: String?,
+    sessionId: String?,
+    token: String?,
+    @JvmField var channel: AudioChannel
+) {
+    @Volatile
+    var udpSocket: DatagramSocket? = null
+    private val ssrcMap: TIntLongMap = TIntLongHashMap()
+    private val opusDecoders: TIntObjectMap<Decoder> = TIntObjectHashMap()
+    private val combinedQueue = HashMap<User, Queue<AudioData>>()
+    private val threadIdentifier: String
+    private val webSocket: AudioWebSocket
+    val jDA: JDAImpl?
+    val readyLock = ReentrantLock()
+    val readyCondvar = readyLock.newCondition()
+    private var opusEncoder: PointerByReference? = null
+    private var combinedAudioExecutor: ScheduledExecutorService? = null
+    private var sendSystem: IAudioSendSystem? = null
+    private var receiveThread: Thread? = null
+    private var queueTimeout: Long = 0
+    private var shutdown = false
 
-import javax.annotation.Nonnull;
-import java.net.*;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+    @Volatile
+    private var sendHandler: AudioSendHandler? = null
 
-public class AudioConnection
-{
-    public static final Logger LOG = JDALogger.getLog(AudioConnection.class);
+    @Volatile
+    private var receiveHandler: AudioReceiveHandler? = null
 
-    public static final long MAX_UINT_32 = 4294967295L;
+    @Volatile
+    private var couldReceive = false
 
-    private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE});
-    private static boolean printedError = false;
+    @Volatile
+    private var speakingMode = SpeakingMode.VOICE.raw
 
-    protected volatile DatagramSocket udpSocket;
-
-    private final TIntLongMap ssrcMap = new TIntLongHashMap();
-    private final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
-    private final HashMap<User, Queue<AudioData>> combinedQueue = new HashMap<>();
-    private final String threadIdentifier;
-    private final AudioWebSocket webSocket;
-    private final JDAImpl api;
-
-    protected final ReentrantLock readyLock = new ReentrantLock();
-    protected final Condition readyCondvar = readyLock.newCondition();
-
-    private AudioChannel channel;
-    private PointerByReference opusEncoder;
-    private ScheduledExecutorService combinedAudioExecutor;
-    private IAudioSendSystem sendSystem;
-    private Thread receiveThread;
-    private long queueTimeout;
-    private boolean shutdown = false;
-
-    private volatile AudioSendHandler sendHandler = null;
-    private volatile AudioReceiveHandler receiveHandler = null;
-
-    private volatile boolean couldReceive = false;
-    private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
-
-    public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token, AudioChannel channel)
-    {
-        this.api = (JDAImpl) channel.getJDA();
-        this.channel = channel;
-        final JDAImpl api = (JDAImpl) channel.getJDA();
-        this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
-        this.webSocket = new AudioWebSocket(this, manager.getListenerProxy(), endpoint, channel.getGuild(), sessionId, token, manager.isAutoReconnect());
+    init {
+        jDA = channel.jDA as JDAImpl?
+        val api = channel.jDA as JDAImpl?
+        threadIdentifier = api!!.identifierString + " AudioConnection Guild: " + channel.guild.getId()
+        webSocket = AudioWebSocket(
+            this,
+            manager.listenerProxy,
+            endpoint,
+            channel.guild,
+            sessionId,
+            token,
+            manager.isAutoReconnect
+        )
     }
 
     /* Used by AudioManagerImpl */
-
-    public void startConnection()
-    {
-        webSocket.startConnection();
+    fun startConnection() {
+        webSocket.startConnection()
     }
 
-    public ConnectionStatus getConnectionStatus()
-    {
-        return webSocket.getConnectionStatus();
+    val connectionStatus: ConnectionStatus?
+        get() = webSocket.connectionStatus
+
+    fun setAutoReconnect(shouldReconnect: Boolean) {
+        webSocket.setAutoReconnect(shouldReconnect)
     }
 
-    public void setAutoReconnect(boolean shouldReconnect)
-    {
-        webSocket.setAutoReconnect(shouldReconnect);
+    @Deprecated("")
+    fun setSpeakingDelay(millis: Int) {
     }
 
-    @Deprecated
-    public void setSpeakingDelay(int millis)
-    {
+    fun setSendingHandler(handler: AudioSendHandler?) {
+        sendHandler = handler
+        if (webSocket.isReady) setupSendSystem()
     }
 
-    public void setSendingHandler(AudioSendHandler handler)
-    {
-        this.sendHandler = handler;
-        if (webSocket.isReady())
-            setupSendSystem();
+    fun setReceivingHandler(handler: AudioReceiveHandler?) {
+        receiveHandler = handler
+        if (webSocket.isReady) setupReceiveSystem()
     }
 
-    public void setReceivingHandler(AudioReceiveHandler handler)
-    {
-        this.receiveHandler = handler;
-        if (webSocket.isReady())
-            setupReceiveSystem();
+    fun setSpeakingMode(mode: EnumSet<SpeakingMode?>?) {
+        val raw: Int = SpeakingMode.getRaw(mode)
+        if (raw != speakingMode && webSocket.isReady) setSpeaking(raw)
+        speakingMode = raw
     }
 
-    public void setSpeakingMode(EnumSet<SpeakingMode> mode)
-    {
-        int raw = SpeakingMode.getRaw(mode);
-        if (raw != this.speakingMode && webSocket.isReady())
-            setSpeaking(raw);
-        this.speakingMode = raw;
+    fun setQueueTimeout(queueTimeout: Long) {
+        this.queueTimeout = queueTimeout
     }
 
-    public void setQueueTimeout(long queueTimeout)
-    {
-        this.queueTimeout = queueTimeout;
+    val guild: Guild
+        get() = channel.guild
+
+    fun close(closeStatus: ConnectionStatus?) {
+        shutdown()
+        webSocket.close(closeStatus)
     }
 
-    public AudioChannel getChannel()
-    {
-        return channel;
-    }
-
-    public void setChannel(AudioChannel channel)
-    {
-        this.channel = channel;
-    }
-
-    public JDAImpl getJDA()
-    {
-        return api;
-    }
-
-    public Guild getGuild()
-    {
-        return getChannel().getGuild();
-    }
-
-    public void close(ConnectionStatus closeStatus)
-    {
-        shutdown();
-        webSocket.close(closeStatus);
-    }
-
-    public synchronized void shutdown()
-    {
-        shutdown = true;
-        if (sendSystem != null)
-        {
-            sendSystem.shutdown();
-            sendSystem = null;
+    @Synchronized
+    fun shutdown() {
+        shutdown = true
+        if (sendSystem != null) {
+            sendSystem!!.shutdown()
+            sendSystem = null
         }
-        if (receiveThread != null)
-        {
-            receiveThread.interrupt();
-            receiveThread = null;
+        if (receiveThread != null) {
+            receiveThread!!.interrupt()
+            receiveThread = null
         }
-        if (combinedAudioExecutor != null)
-        {
-            combinedAudioExecutor.shutdownNow();
-            combinedAudioExecutor = null;
+        if (combinedAudioExecutor != null) {
+            combinedAudioExecutor!!.shutdownNow()
+            combinedAudioExecutor = null
         }
-        if (opusEncoder != null)
-        {
-            Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
-            opusEncoder = null;
+        if (opusEncoder != null) {
+            Opus.INSTANCE.opus_encoder_destroy(opusEncoder)
+            opusEncoder = null
         }
-
-        opusDecoders.valueCollection().forEach(Decoder::close);
-        opusDecoders.clear();
-
-        MiscUtil.locked(readyLock, readyCondvar::signalAll);
+        opusDecoders.valueCollection().forEach(Consumer { obj: Decoder -> obj.close() })
+        opusDecoders.clear()
+        locked(readyLock) { readyCondvar.signalAll() }
     }
 
-    public WebSocket getWebSocket()
-    {
-        return webSocket.socket;
+    fun getWebSocket(): WebSocket? {
+        return webSocket.socket
     }
 
     /* Used by AudioWebSocket */
-
-    protected void prepareReady()
-    {
-        Thread readyThread = new Thread(() ->
-        {
-            getJDA().setContext();
-
-            boolean ready = MiscUtil.locked(readyLock, () -> {
-                final long timeout = getGuild().getAudioManager().getConnectTimeout();
-                while (!webSocket.isReady())
-                {
-                    try
-                    {
-                        boolean activated = readyCondvar.await(timeout, TimeUnit.MILLISECONDS);
-                        if (!activated)
-                        {
-                            webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
-                            shutdown = true;
+    fun prepareReady() {
+        val readyThread = Thread {
+            jDA!!.setContext()
+            val ready = locked<Boolean>(readyLock) {
+                val timeout: Long = guild.getAudioManager().getConnectTimeout()
+                while (!webSocket.isReady) {
+                    try {
+                        val activated = readyCondvar.await(timeout, TimeUnit.MILLISECONDS)
+                        if (!activated) {
+                            webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT)
+                            shutdown = true
                         }
-                        if (shutdown)
-                            return false;
-                    }
-                    catch (InterruptedException e)
-                    {
-                        LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
-                        return false;
+                        if (shutdown) return@locked false
+                    } catch (e: InterruptedException) {
+                        LOG.error("AudioConnection ready thread got interrupted while sleeping", e)
+                        return@locked false
                     }
                 }
-
-                return true;
-            });
-
-            if (ready)
-            {
-                setupSendSystem();
-                setupReceiveSystem();
+                true
             }
-        });
-        readyThread.setUncaughtExceptionHandler((thread, throwable) ->
-        {
-            LOG.error("Uncaught exception in Audio ready-thread", throwable);
-            JDAImpl api = getJDA();
-            api.handleEvent(new ExceptionEvent(api, throwable, true));
-        });
-        readyThread.setDaemon(true);
-        readyThread.setName(threadIdentifier + " Ready Thread");
-        readyThread.start();
-    }
-
-    protected void removeUserSSRC(long userId)
-    {
-        final AtomicInteger ssrcRef = new AtomicInteger(0);
-        final boolean modified = ssrcMap.retainEntries((ssrc, id) ->
-        {
-            final boolean isEntry = id == userId;
-            if (isEntry)
-                ssrcRef.set(ssrc);
-            // if isEntry == true we don't want to retain it
-            return !isEntry;
-        });
-        if (!modified)
-            return;
-        final Decoder decoder = opusDecoders.remove(ssrcRef.get());
-        if (decoder != null) // cleanup decoder
-            decoder.close();
-    }
-
-    protected void updateUserSSRC(int ssrc, long userId)
-    {
-        if (ssrcMap.containsKey(ssrc))
-        {
-            long previousId = ssrcMap.get(ssrc);
-            if (previousId != userId)
-            {
-                //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
-                //Log for now and see if any user report the error.
-                LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform devs.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
-                      channel.getId(), ssrc, previousId, userId);
+            if (ready) {
+                setupSendSystem()
+                setupReceiveSystem()
             }
         }
-        else
-        {
-            ssrcMap.put(ssrc, userId);
+        readyThread.setUncaughtExceptionHandler { thread: Thread?, throwable: Throwable? ->
+            LOG.error("Uncaught exception in Audio ready-thread", throwable)
+            val api = jDA
+            api!!.handleEvent(ExceptionEvent(api, throwable!!, true))
+        }
+        readyThread.setDaemon(true)
+        readyThread.setName("$threadIdentifier Ready Thread")
+        readyThread.start()
+    }
+
+    fun removeUserSSRC(userId: Long) {
+        val ssrcRef = AtomicInteger(0)
+        val modified = ssrcMap.retainEntries { ssrc: Int, id: Long ->
+            val isEntry = id == userId
+            if (isEntry) ssrcRef.set(ssrc)
+            !isEntry
+        }
+        if (!modified) return
+        val decoder = opusDecoders.remove(ssrcRef.get())
+        decoder?.close()
+    }
+
+    fun updateUserSSRC(ssrc: Int, userId: Long) {
+        if (ssrcMap.containsKey(ssrc)) {
+            val previousId = ssrcMap[ssrc]
+            if (previousId != userId) {
+                //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
+                //Log for now and see if any user report the error.
+                LOG.error(
+                    "Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform devs.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
+                    channel.id, ssrc, previousId, userId
+                )
+            }
+        } else {
+            ssrcMap.put(ssrc, userId)
 
             //Only create a decoder if we are actively handling received audio.
-            if (receiveThread != null && AudioNatives.ensureOpus())
-                opusDecoders.put(ssrc, new Decoder(ssrc));
+            if (receiveThread != null && ensureOpus()) opusDecoders.put(ssrc, Decoder(ssrc))
         }
     }
 
     /* Internals */
-
-    private synchronized void setupSendSystem()
-    {
-        if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
-        {
-            setSpeaking(speakingMode);
-            IAudioSendFactory factory = getJDA().getAudioSendFactory();
-            sendSystem = factory.createSendSystem(new PacketProvider(new TweetNaclFast.SecretBox(webSocket.getSecretKey())));
-            sendSystem.setContextMap(getJDA().getContextMap());
-            sendSystem.start();
-        }
-        else if (sendHandler == null && sendSystem != null)
-        {
-            sendSystem.shutdown();
-            sendSystem = null;
-
-            if (opusEncoder != null)
-            {
-                Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
-                opusEncoder = null;
+    @Synchronized
+    private fun setupSendSystem() {
+        if (udpSocket != null && !udpSocket!!.isClosed && sendHandler != null && sendSystem == null) {
+            setSpeaking(speakingMode)
+            val factory = jDA!!.audioSendFactory
+            sendSystem = factory.createSendSystem(PacketProvider(SecretBox(webSocket.secretKey)))
+            sendSystem!!.setContextMap(jDA.contextMap)
+            sendSystem!!.start()
+        } else if (sendHandler == null && sendSystem != null) {
+            sendSystem!!.shutdown()
+            sendSystem = null
+            if (opusEncoder != null) {
+                Opus.INSTANCE.opus_encoder_destroy(opusEncoder)
+                opusEncoder = null
             }
         }
     }
 
-    private synchronized void setupReceiveSystem()
-    {
-        if (udpSocket != null && !udpSocket.isClosed() && receiveHandler != null && receiveThread == null)
-        {
-            setupReceiveThread();
-        }
-        else if (receiveHandler == null && receiveThread != null)
-        {
-            receiveThread.interrupt();
-            receiveThread = null;
-
-            if (combinedAudioExecutor != null)
-            {
-                combinedAudioExecutor.shutdownNow();
-                combinedAudioExecutor = null;
+    @Synchronized
+    private fun setupReceiveSystem() {
+        if (udpSocket != null && !udpSocket!!.isClosed && receiveHandler != null && receiveThread == null) {
+            setupReceiveThread()
+        } else if (receiveHandler == null && receiveThread != null) {
+            receiveThread!!.interrupt()
+            receiveThread = null
+            if (combinedAudioExecutor != null) {
+                combinedAudioExecutor!!.shutdownNow()
+                combinedAudioExecutor = null
             }
-
-            opusDecoders.valueCollection().forEach(Decoder::close);
-            opusDecoders.clear();
-        }
-        else if (receiveHandler != null && !receiveHandler.canReceiveCombined() && combinedAudioExecutor != null)
-        {
-            combinedAudioExecutor.shutdownNow();
-            combinedAudioExecutor = null;
+            opusDecoders.valueCollection().forEach(Consumer { obj: Decoder -> obj.close() })
+            opusDecoders.clear()
+        } else if (receiveHandler != null && !receiveHandler!!.canReceiveCombined() && combinedAudioExecutor != null) {
+            combinedAudioExecutor!!.shutdownNow()
+            combinedAudioExecutor = null
         }
     }
 
-    private synchronized void setupReceiveThread()
-    {
-        if (receiveThread == null)
-        {
-            receiveThread = new Thread(() ->
-            {
-                getJDA().setContext();
-                try
-                {
-                    udpSocket.setSoTimeout(1000);
+    @Synchronized
+    private fun setupReceiveThread() {
+        if (receiveThread == null) {
+            receiveThread = Thread {
+                jDA!!.setContext()
+                try {
+                    udpSocket!!.soTimeout = 1000
+                } catch (e: SocketException) {
+                    LOG.error("Couldn't set SO_TIMEOUT for UDP socket", e)
                 }
-                catch (SocketException e)
-                {
-                    LOG.error("Couldn't set SO_TIMEOUT for UDP socket", e);
-                }
-                while (!udpSocket.isClosed() && !Thread.currentThread().isInterrupted())
-                {
-                    DatagramPacket receivedPacket = new DatagramPacket(new byte[1920], 1920);
-                    try
-                    {
-                        udpSocket.receive(receivedPacket);
-
-                        boolean shouldDecode = receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined());
-                        boolean canReceive = receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined() || receiveHandler.canReceiveEncoded());
-                        if (canReceive && webSocket.getSecretKey() != null)
-                        {
-                            couldReceive = true;
-                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(webSocket.encryption, receivedPacket, webSocket.getSecretKey());
-                            if (decryptedPacket == null)
-                                continue;
-
-                            int ssrc = decryptedPacket.getSSRC();
-                            final long userId = ssrcMap.get(ssrc);
-                            Decoder decoder = opusDecoders.get(ssrc);
-                            if (userId == ssrcMap.getNoEntryValue())
-                            {
-                                ByteBuffer audio = decryptedPacket.getEncodedAudio();
+                while (!udpSocket!!.isClosed && !Thread.currentThread().isInterrupted) {
+                    val receivedPacket = DatagramPacket(ByteArray(1920), 1920)
+                    try {
+                        udpSocket!!.receive(receivedPacket)
+                        val shouldDecode =
+                            receiveHandler != null && (receiveHandler!!.canReceiveUser() || receiveHandler!!.canReceiveCombined())
+                        val canReceive =
+                            receiveHandler != null && (receiveHandler!!.canReceiveUser() || receiveHandler!!.canReceiveCombined() || receiveHandler!!.canReceiveEncoded())
+                        if (canReceive && webSocket.secretKey != null) {
+                            couldReceive = true
+                            val decryptedPacket: AudioPacket = AudioPacket.Companion.decryptAudioPacket(
+                                webSocket.encryption,
+                                receivedPacket,
+                                webSocket.secretKey
+                            )
+                                ?: continue
+                            val ssrc = decryptedPacket.ssrc
+                            val userId = ssrcMap[ssrc]
+                            var decoder = opusDecoders[ssrc]
+                            if (userId == ssrcMap.noEntryValue) {
+                                val audio = decryptedPacket.encodedAudio
 
                                 //If the bytes are silence, then this was caused by a User joining the voice channel,
                                 // and as such, we haven't yet received information to pair the SSRC with the UserId.
-                                if (!audio.equals(silenceBytes))
-                                    LOG.debug("Received audio data with an unknown SSRC id. Ignoring");
-
-                                continue;
+                                if (audio != silenceBytes) LOG.debug("Received audio data with an unknown SSRC id. Ignoring")
+                                continue
                             }
-                            if (decoder == null)
-                            {
-                                if (AudioNatives.ensureOpus())
-                                {
-                                    opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
-                                }
-                                else if (!receiveHandler.canReceiveEncoded())
-                                {
-                                    LOG.error("Unable to decode audio due to missing opus binaries!");
-                                    break;
+                            if (decoder == null) {
+                                if (ensureOpus()) {
+                                    opusDecoders.put(ssrc, Decoder(ssrc).also { decoder = it })
+                                } else if (!receiveHandler!!.canReceiveEncoded()) {
+                                    LOG.error("Unable to decode audio due to missing opus binaries!")
+                                    break
                                 }
                             }
-                            OpusPacket opusPacket = new OpusPacket(decryptedPacket, userId, decoder);
-                            if (receiveHandler.canReceiveEncoded())
-                                receiveHandler.handleEncodedAudio(opusPacket);
-                            if (!shouldDecode || !opusPacket.canDecode())
-                                continue;
-
-                            User user = getJDA().getUserById(userId);
-                            if (user == null)
-                            {
-                                LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
-                                continue;
+                            val opusPacket = OpusPacket(decryptedPacket, userId, decoder)
+                            if (receiveHandler!!.canReceiveEncoded()) receiveHandler!!.handleEncodedAudio(opusPacket)
+                            if (!shouldDecode || !opusPacket.canDecode()) continue
+                            val user = jDA.getUserById(userId)
+                            if (user == null) {
+                                LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!")
+                                continue
                             }
-                            short[] decodedAudio = opusPacket.decode();
+                            val decodedAudio = opusPacket.decode()
+                                ?: //decoder error logged in method
+                                continue
                             //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
-                            if (decodedAudio == null)
-                            {
-                                //decoder error logged in method
-                                continue;
+                            if (receiveHandler!!.canReceiveUser()) {
+                                receiveHandler!!.handleUserAudio(UserAudio(user, decodedAudio))
                             }
-                            if (receiveHandler.canReceiveUser())
-                            {
-                                receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
-                            }
-                            if (receiveHandler.canReceiveCombined() && receiveHandler.includeUserInCombinedAudio(user))
-                            {
-                                Queue<AudioData> queue = combinedQueue.get(user);
-                                if (queue == null)
-                                {
-                                    queue = new ConcurrentLinkedQueue<>();
-                                    combinedQueue.put(user, queue);
+                            if (receiveHandler!!.canReceiveCombined() && receiveHandler!!.includeUserInCombinedAudio(
+                                    user
+                                )
+                            ) {
+                                var queue = combinedQueue[user]
+                                if (queue == null) {
+                                    queue = ConcurrentLinkedQueue()
+                                    combinedQueue[user] = queue
                                 }
-                                queue.add(new AudioData(decodedAudio));
+                                queue.add(AudioData(decodedAudio))
                             }
+                        } else {
+                            couldReceive = false
                         }
-                        else
-                        {
-                            couldReceive = false;
-                        }
-                    }
-                    catch (SocketTimeoutException e)
-                    {
+                    } catch (e: SocketTimeoutException) {
                         //Ignore. We set a low timeout so that we wont block forever so we can properly shutdown the loop.
-                    }
-                    catch (SocketException e)
-                    {
+                    } catch (e: SocketException) {
                         //The socket was closed while we were listening for the next packet.
                         //This is expected. Ignore the exception. The thread will exit during the next while
                         // iteration because the udpSocket.isClosed() will return true.
-                    }
-                    catch (Exception e)
-                    {
-                        LOG.error("There was some random exception while waiting for udp packets", e);
+                    } catch (e: Exception) {
+                        LOG.error("There was some random exception while waiting for udp packets", e)
                     }
                 }
-            });
-            receiveThread.setUncaughtExceptionHandler((thread, throwable) ->
-            {
-                LOG.error("There was some uncaught exception in the audio receive thread", throwable);
-                JDAImpl api = getJDA();
-                api.handleEvent(new ExceptionEvent(api, throwable, true));
-            });
-            receiveThread.setDaemon(true);
-            receiveThread.setName(threadIdentifier + " Receiving Thread");
-            receiveThread.start();
+            }
+            receiveThread!!.setUncaughtExceptionHandler { thread: Thread?, throwable: Throwable? ->
+                LOG.error("There was some uncaught exception in the audio receive thread", throwable)
+                val api = jDA
+                api!!.handleEvent(ExceptionEvent(api, throwable!!, true))
+            }
+            receiveThread!!.setDaemon(true)
+            receiveThread!!.setName("$threadIdentifier Receiving Thread")
+            receiveThread!!.start()
         }
-
-        if (receiveHandler.canReceiveCombined())
-        {
-            setupCombinedExecutor();
+        if (receiveHandler!!.canReceiveCombined()) {
+            setupCombinedExecutor()
         }
     }
 
-    private synchronized void setupCombinedExecutor()
-    {
-        if (combinedAudioExecutor == null)
-        {
-            combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor((task) ->
-            {
-                final Thread t = new Thread(task, threadIdentifier + " Combined Thread");
-                t.setDaemon(true);
-                t.setUncaughtExceptionHandler((thread, throwable) ->
-                {
-                    LOG.error("I have no idea how, but there was an uncaught exception in the combinedAudioExecutor", throwable);
-                    JDAImpl api = getJDA();
-                    api.handleEvent(new ExceptionEvent(api, throwable, true));
-                });
-                return t;
-            });
-            combinedAudioExecutor.scheduleAtFixedRate(() ->
-            {
-                getJDA().setContext();
-                try
-                {
-                    List<User> users = new LinkedList<>();
-                    List<short[]> audioParts = new LinkedList<>();
-                    if (receiveHandler != null && receiveHandler.canReceiveCombined())
-                    {
-                        long currentTime = System.currentTimeMillis();
-                        for (Map.Entry<User, Queue<AudioData>> entry : combinedQueue.entrySet())
-                        {
-                            User user = entry.getKey();
-                            Queue<AudioData> queue = entry.getValue();
-
-                            if (queue.isEmpty())
-                                continue;
-
-                            AudioData audioData = queue.poll();
+    @Synchronized
+    private fun setupCombinedExecutor() {
+        if (combinedAudioExecutor == null) {
+            combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor { task: Runnable? ->
+                val t = Thread(task, "$threadIdentifier Combined Thread")
+                t.setDaemon(true)
+                t.setUncaughtExceptionHandler { thread: Thread?, throwable: Throwable? ->
+                    LOG.error(
+                        "I have no idea how, but there was an uncaught exception in the combinedAudioExecutor",
+                        throwable
+                    )
+                    val api = jDA
+                    api!!.handleEvent(ExceptionEvent(api, throwable!!, true))
+                }
+                t
+            }
+            combinedAudioExecutor.scheduleAtFixedRate(Runnable {
+                jDA!!.setContext()
+                try {
+                    val users: MutableList<User> = LinkedList()
+                    val audioParts: MutableList<ShortArray> = LinkedList()
+                    if (receiveHandler != null && receiveHandler!!.canReceiveCombined()) {
+                        val currentTime = System.currentTimeMillis()
+                        for ((user, queue) in combinedQueue) {
+                            if (queue.isEmpty()) continue
+                            var audioData = queue.poll()
                             //Make sure the audio packet is younger than 100ms
-                            while (audioData != null && currentTime - audioData.time > queueTimeout)
-                            {
-                                audioData = queue.poll();
+                            while (audioData != null && currentTime - audioData.time > queueTimeout) {
+                                audioData = queue.poll()
                             }
 
                             //If none of the audio packets were younger than 100ms, then there is nothing to add.
-                            if (audioData == null)
-                            {
-                                continue;
+                            if (audioData == null) {
+                                continue
                             }
-                            users.add(user);
-                            audioParts.add(audioData.data);
+                            users.add(user)
+                            audioParts.add(audioData.data)
                         }
-
-                        if (!audioParts.isEmpty())
-                        {
-                            int audioLength = audioParts.stream().mapToInt(it -> it.length).max().getAsInt();
-                            short[] mix = new short[1920];  //960 PCM samples for each channel
-                            int sample;
-                            for (int i = 0; i < audioLength; i++)
-                            {
-                                sample = 0;
-                                for (Iterator<short[]> iterator = audioParts.iterator(); iterator.hasNext(); )
-                                {
-                                    short[] audio = iterator.next();
-                                    if (i < audio.length)
-                                        sample += audio[i];
-                                    else
-                                        iterator.remove();
+                        if (!audioParts.isEmpty()) {
+                            val audioLength =
+                                audioParts.stream().mapToInt { it: ShortArray -> it.size }.max().getAsInt()
+                            val mix = ShortArray(1920) //960 PCM samples for each channel
+                            var sample: Int
+                            for (i in 0 until audioLength) {
+                                sample = 0
+                                val iterator = audioParts.iterator()
+                                while (iterator.hasNext()) {
+                                    val audio = iterator.next()
+                                    if (i < audio.size) sample += audio[i].toInt() else iterator.remove()
                                 }
-                                if (sample > Short.MAX_VALUE)
-                                    mix[i] = Short.MAX_VALUE;
-                                else if (sample < Short.MIN_VALUE)
-                                    mix[i] = Short.MIN_VALUE;
-                                else
-                                    mix[i] = (short) sample;
+                                if (sample > Short.MAX_VALUE) mix[i] =
+                                    Short.MAX_VALUE else if (sample < Short.MIN_VALUE) mix[i] =
+                                    Short.MIN_VALUE else mix[i] = sample.toShort()
                             }
-                            receiveHandler.handleCombinedAudio(new CombinedAudio(users, mix));
-                        }
-                        else
-                        {
+                            receiveHandler!!.handleCombinedAudio(CombinedAudio(users, mix))
+                        } else {
                             //No audio to mix, provide 20 MS of silence. (960 PCM samples for each channel)
-                            receiveHandler.handleCombinedAudio(new CombinedAudio(Collections.emptyList(), new short[1920]));
+                            receiveHandler!!.handleCombinedAudio(CombinedAudio(emptyList(), ShortArray(1920)))
                         }
                     }
+                } catch (e: Exception) {
+                    LOG.error("There was some unexpected exception in the combinedAudioExecutor!", e)
                 }
-                catch (Exception e)
-                {
-                    LOG.error("There was some unexpected exception in the combinedAudioExecutor!", e);
-                }
-            }, 0, 20, TimeUnit.MILLISECONDS);
+            }, 0, 20, TimeUnit.MILLISECONDS)
         }
     }
 
-    private ByteBuffer encodeToOpus(ByteBuffer rawAudio)
-    {
-        ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
-        ByteBuffer encoded = ByteBuffer.allocate(4096);
-        for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2)
-        {
-            int firstByte =  (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
-            int secondByte = (0x000000FF & rawAudio.get(i + 1));
+    private fun encodeToOpus(rawAudio: ByteBuffer): ByteBuffer? {
+        val nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2)
+        val encoded = ByteBuffer.allocate(4096)
+        var i = rawAudio.position()
+        while (i < rawAudio.limit()) {
+            val firstByte =
+                0x000000FF and rawAudio[i].toInt() //Promotes to int and handles the fact that it was unsigned.
+            val secondByte = 0x000000FF and rawAudio[i + 1].toInt()
 
             //Combines the 2 bytes into a short. Opus deals with unsigned shorts, not bytes.
-            short toShort = (short) ((firstByte << 8) | secondByte);
-
-            nonEncodedBuffer.put(toShort);
+            val toShort = (firstByte shl 8 or secondByte).toShort()
+            nonEncodedBuffer.put(toShort)
+            i += 2
         }
-        ((Buffer) nonEncodedBuffer).flip();
-
-        int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
-        if (result <= 0)
-        {
-            LOG.error("Received error code from opus_encode(...): {}", result);
-            return null;
+        (nonEncodedBuffer as Buffer).flip()
+        val result = Opus.INSTANCE.opus_encode(
+            opusEncoder,
+            nonEncodedBuffer,
+            OpusPacket.OPUS_FRAME_SIZE,
+            encoded,
+            encoded.capacity()
+        )
+        if (result <= 0) {
+            LOG.error("Received error code from opus_encode(...): {}", result)
+            return null
         }
-
-        ((Buffer) encoded).position(0).limit(result);
-        return encoded;
+        (encoded as Buffer).position(0).limit(result)
+        return encoded
     }
 
-    private void setSpeaking(int raw)
-    {
-        DataObject obj = DataObject.empty()
-                .put("speaking", raw)
-                .put("ssrc", webSocket.getSSRC())
-                .put("delay", 0);
-        webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
+    private fun setSpeaking(raw: Int) {
+        val obj = empty()
+            .put("speaking", raw)
+            .put("ssrc", webSocket.ssrc)
+            .put("delay", 0)
+        webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj)
     }
 
-
-    @Override
-    @SuppressWarnings("deprecation") /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */
-    protected void finalize()
-    {
-        shutdown();
+    @Suppress("deprecation")
+    /* If this was in JDK9 we would be using java.lang.ref.Cleaner instead! */ protected fun finalize() {
+        shutdown()
     }
 
-    private class PacketProvider implements IPacketProvider
-    {
-        private final TweetNaclFast.SecretBox boxer;
-        private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
-        private char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
-        private int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
-        private long nonce = 0;
-        private ByteBuffer buffer = ByteBuffer.allocate(512);
-        private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
+    private inner class PacketProvider(private val boxer: SecretBox) : IPacketProvider {
+        private val nonceBuffer = ByteArray(SecretBox.nonceLength)
+        private var seq = 0 //Sequence of audio packets. Used to determine the order of the packets.
+            .toChar()
+        private var timestamp = 0 //Used to sync up our packets within the same timeframe of other people talking.
+        private var nonce: Long = 0
+        private var buffer = ByteBuffer.allocate(512)
+        private var encryptionBuffer = ByteBuffer.allocate(512)
 
-        public PacketProvider(TweetNaclFast.SecretBox boxer)
-        {
-            this.boxer = boxer;
-        }
+        @get:Nonnull
+        override val identifier: String
+            get() = threadIdentifier
 
-        @Nonnull
-        @Override
-        public String getIdentifier()
-        {
-            return threadIdentifier;
-        }
+        @get:Nonnull
+        override val connectedChannel: AudioChannel
+            get() = channel
 
         @Nonnull
-        @Override
-        public AudioChannel getConnectedChannel()
-        {
-            return getChannel();
+        override fun getUdpSocket(): DatagramSocket {
+            return udpSocket!!
         }
 
-        @Nonnull
-        @Override
-        public DatagramSocket getUdpSocket()
-        {
-            return udpSocket;
+        @get:Nonnull
+        override val socketAddress: InetSocketAddress?
+            get() = webSocket.address
+
+        override fun getNextPacket(unused: Boolean): DatagramPacket? {
+            val buffer = getNextPacketRaw(unused)
+            return buffer?.let { getDatagramPacket(it) }
         }
 
-        @Nonnull
-        @Override
-        public InetSocketAddress getSocketAddress()
-        {
-            return webSocket.getAddress();
-        }
-
-        @Override
-        public DatagramPacket getNextPacket(boolean unused)
-        {
-            ByteBuffer buffer = getNextPacketRaw(unused);
-            return buffer == null ? null : getDatagramPacket(buffer);
-        }
-
-        @Override
-        public ByteBuffer getNextPacketRaw(boolean unused)
-        {
-            ByteBuffer nextPacket = null;
-            try
-            {
-                if (sendHandler != null && sendHandler.canProvide())
-                {
-                    ByteBuffer rawAudio = sendHandler.provide20MsAudio();
-                    if (rawAudio != null && !rawAudio.hasArray())
-                    {
+        override fun getNextPacketRaw(unused: Boolean): ByteBuffer? {
+            var nextPacket: ByteBuffer? = null
+            try {
+                if (sendHandler != null && sendHandler!!.canProvide()) {
+                    var rawAudio = sendHandler!!.provide20MsAudio()
+                    if (rawAudio != null && !rawAudio.hasArray()) {
                         // we can't use the boxer without an array so encryption would not work
-                        LOG.error("AudioSendHandler provided ByteBuffer without a backing array! This is unsupported.");
+                        LOG.error("AudioSendHandler provided ByteBuffer without a backing array! This is unsupported.")
                     }
-
-                    if (rawAudio != null && rawAudio.hasRemaining() && rawAudio.hasArray())
-                    {
-                        if (!sendHandler.isOpus())
-                        {
-                            rawAudio = encodeAudio(rawAudio);
-                            if (rawAudio == null)
-                                return null;
+                    if (rawAudio != null && rawAudio.hasRemaining() && rawAudio.hasArray()) {
+                        if (!sendHandler!!.isOpus) {
+                            rawAudio = encodeAudio(rawAudio)
+                            if (rawAudio == null) return null
                         }
-
-                        nextPacket = getPacketData(rawAudio);
-
-                        if (seq + 1 > Character.MAX_VALUE)
-                            seq = 0;
-                        else
-                            seq++;
+                        nextPacket = getPacketData(rawAudio)
+                        if (seq.code + 1 > Character.MAX_VALUE.code) seq = 0.toChar() else seq++
                     }
                 }
+            } catch (e: Exception) {
+                LOG.error("There was an error while getting next audio packet", e)
             }
-            catch (Exception e)
-            {
-                LOG.error("There was an error while getting next audio packet", e);
-            }
-
-            if (nextPacket != null)
-                timestamp += OpusPacket.OPUS_FRAME_SIZE;
-
-            return nextPacket;
+            if (nextPacket != null) timestamp += OpusPacket.OPUS_FRAME_SIZE
+            return nextPacket
         }
 
-        private ByteBuffer encodeAudio(ByteBuffer rawAudio)
-        {
-            if (opusEncoder == null)
-            {
-                if (!AudioNatives.ensureOpus())
-                {
-                    if (!printedError)
-                        LOG.error("Unable to process PCM audio without opus binaries!");
-                    printedError = true;
-                    return null;
+        private fun encodeAudio(rawAudio: ByteBuffer): ByteBuffer? {
+            if (opusEncoder == null) {
+                if (!ensureOpus()) {
+                    if (!printedError) LOG.error("Unable to process PCM audio without opus binaries!")
+                    printedError = true
+                    return null
                 }
-                IntBuffer error = IntBuffer.allocate(1);
-                opusEncoder = Opus.INSTANCE.opus_encoder_create(OpusPacket.OPUS_SAMPLE_RATE, OpusPacket.OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
-                if (error.get() != Opus.OPUS_OK && opusEncoder == null)
-                {
-                    LOG.error("Received error status from opus_encoder_create(...): {}", error.get());
-                    return null;
+                val error = IntBuffer.allocate(1)
+                opusEncoder = Opus.INSTANCE.opus_encoder_create(
+                    OpusPacket.OPUS_SAMPLE_RATE,
+                    OpusPacket.OPUS_CHANNEL_COUNT,
+                    Opus.OPUS_APPLICATION_AUDIO,
+                    error
+                )
+                if (error.get() != Opus.OPUS_OK && opusEncoder == null) {
+                    LOG.error("Received error status from opus_encoder_create(...): {}", error.get())
+                    return null
                 }
             }
-            return encodeToOpus(rawAudio);
+            return encodeToOpus(rawAudio)
         }
 
-        private DatagramPacket getDatagramPacket(ByteBuffer b)
-        {
-            byte[] data = b.array();
-            int offset = b.arrayOffset() + b.position();
-            int length = b.remaining();
-            return new DatagramPacket(data, offset, length, webSocket.getAddress());
+        private fun getDatagramPacket(b: ByteBuffer): DatagramPacket {
+            val data = b.array()
+            val offset = b.arrayOffset() + b.position()
+            val length = b.remaining()
+            return DatagramPacket(data, offset, length, webSocket.address)
         }
 
-        private ByteBuffer getPacketData(ByteBuffer rawAudio)
-        {
-            ensureEncryptionBuffer(rawAudio);
-            AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
-            int nlen;
-            switch (webSocket.encryption)
-            {
-                case XSALSA20_POLY1305:
-                    nlen = 0;
-                    break;
-                case XSALSA20_POLY1305_LITE:
-                    if (nonce >= MAX_UINT_32)
-                        loadNextNonce(nonce = 0);
-                    else
-                        loadNextNonce(++nonce);
-                    nlen = 4;
-                    break;
-                case XSALSA20_POLY1305_SUFFIX:
-                    ThreadLocalRandom.current().nextBytes(nonceBuffer);
-                    nlen = TweetNaclFast.SecretBox.nonceLength;
-                    break;
-                default:
-                    throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
+        private fun getPacketData(rawAudio: ByteBuffer): ByteBuffer {
+            ensureEncryptionBuffer(rawAudio)
+            val packet = AudioPacket(encryptionBuffer, seq, timestamp, webSocket.ssrc, rawAudio)
+            val nlen: Int
+            when (webSocket.encryption) {
+                AudioEncryption.XSALSA20_POLY1305 -> nlen = 0
+                AudioEncryption.XSALSA20_POLY1305_LITE -> {
+                    if (nonce >= MAX_UINT_32) loadNextNonce(
+                        0.also { nonce = it.toLong() }.toLong()
+                    ) else loadNextNonce(++nonce)
+                    nlen = 4
+                }
+
+                AudioEncryption.XSALSA20_POLY1305_SUFFIX -> {
+                    ThreadLocalRandom.current().nextBytes(nonceBuffer)
+                    nlen = SecretBox.nonceLength
+                }
+
+                else -> throw IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!")
             }
-            return buffer = packet.asEncryptedPacket(boxer, buffer, nonceBuffer, nlen);
+            return packet.asEncryptedPacket(boxer, buffer, nonceBuffer, nlen).also { buffer = it }
         }
 
-        private void ensureEncryptionBuffer(ByteBuffer data)
-        {
-            ((Buffer) encryptionBuffer).clear();
-            int currentCapacity = encryptionBuffer.remaining();
-            int requiredCapacity = AudioPacket.RTP_HEADER_BYTE_LENGTH + data.remaining();
-            if (currentCapacity < requiredCapacity)
-                encryptionBuffer = ByteBuffer.allocate(requiredCapacity);
+        private fun ensureEncryptionBuffer(data: ByteBuffer) {
+            (encryptionBuffer as Buffer).clear()
+            val currentCapacity = encryptionBuffer.remaining()
+            val requiredCapacity: Int = AudioPacket.Companion.RTP_HEADER_BYTE_LENGTH + data.remaining()
+            if (currentCapacity < requiredCapacity) encryptionBuffer = ByteBuffer.allocate(requiredCapacity)
         }
 
-        private void loadNextNonce(long nonce)
-        {
-            IOUtil.setIntBigEndian(nonceBuffer, 0, (int) nonce);
+        private fun loadNextNonce(nonce: Long) {
+            IOUtil.setIntBigEndian(nonceBuffer, 0, nonce.toInt())
         }
 
-        @Override
-        public void onConnectionError(@Nonnull ConnectionStatus status)
-        {
-            LOG.warn("IAudioSendSystem reported a connection error of: {}", status);
-            LOG.warn("Shutting down AudioConnection.");
-            webSocket.close(status);
+        override fun onConnectionError(@Nonnull status: ConnectionStatus?) {
+            LOG.warn("IAudioSendSystem reported a connection error of: {}", status)
+            LOG.warn("Shutting down AudioConnection.")
+            webSocket.close(status)
         }
 
-        @Override
-        public void onConnectionLost()
-        {
-            LOG.warn("Closing AudioConnection due to inability to send audio packets.");
-            LOG.warn("Cannot send audio packet because JDA cannot navigate the route to Discord.\n" +
-                "Are you sure you have internet connection? It is likely that you've lost connection.");
-            webSocket.close(ConnectionStatus.ERROR_LOST_CONNECTION);
+        override fun onConnectionLost() {
+            LOG.warn("Closing AudioConnection due to inability to send audio packets.")
+            LOG.warn(
+                """
+    Cannot send audio packet because JDA cannot navigate the route to Discord.
+    Are you sure you have internet connection? It is likely that you've lost connection.
+    """.trimIndent()
+            )
+            webSocket.close(ConnectionStatus.ERROR_LOST_CONNECTION)
         }
     }
 
-    private static class AudioData
-    {
-        private final long time;
-        private final short[] data;
+    private class AudioData(val data: ShortArray) {
+        val time: Long
 
-        public AudioData(short[] data)
-        {
-            this.time = System.currentTimeMillis();
-            this.data = data;
+        init {
+            time = System.currentTimeMillis()
         }
+    }
+
+    companion object {
+        val LOG = JDALogger.getLog(AudioConnection::class.java)
+        const val MAX_UINT_32 = 4294967295L
+        private val silenceBytes = ByteBuffer.wrap(byteArrayOf(0xF8.toByte(), 0xFF.toByte(), 0xFE.toByte()))
+        private var printedError = false
     }
 }

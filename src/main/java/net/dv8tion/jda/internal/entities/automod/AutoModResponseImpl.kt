@@ -13,127 +13,82 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.internal.entities.automod
 
-package net.dv8tion.jda.internal.entities.automod;
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.automod.AutoModResponse
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.utils.data.DataObject
+import net.dv8tion.jda.api.utils.data.DataObject.Companion.empty
+import java.time.Duration
+import javax.annotation.Nonnull
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.automod.AutoModResponse;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
-import net.dv8tion.jda.api.utils.data.DataObject;
+class AutoModResponseImpl : AutoModResponse {
+    @get:Nonnull
+    override val type: AutoModResponse.Type
+    override val channel: GuildMessageChannel?
+    override val customMessage: String?
+    private override val timeoutDuration: Long
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.time.Duration;
-
-public class AutoModResponseImpl implements AutoModResponse
-{
-    private final Type type;
-    private final GuildMessageChannel channel;
-    private final String customMessage;
-    private final long timeoutDuration;
-
-    public AutoModResponseImpl(Type type)
-    {
-        this.type = type;
-        this.channel = null;
-        this.customMessage = null;
-        this.timeoutDuration = 0;
+    constructor(type: AutoModResponse.Type) {
+        this.type = type
+        channel = null
+        customMessage = null
+        timeoutDuration = 0
     }
 
-    public AutoModResponseImpl(Type type, GuildMessageChannel channel)
-    {
-        this.type = type;
-        this.channel = channel;
-        this.customMessage = null;
-        this.timeoutDuration = 0;
+    constructor(type: AutoModResponse.Type, channel: GuildMessageChannel?) {
+        this.type = type
+        this.channel = channel
+        customMessage = null
+        timeoutDuration = 0
     }
 
-    public AutoModResponseImpl(Type type, String customMessage)
-    {
-        this.type = type;
-        this.customMessage = customMessage;
-        this.channel = null;
-        this.timeoutDuration = 0;
+    constructor(type: AutoModResponse.Type, customMessage: String?) {
+        this.type = type
+        this.customMessage = customMessage
+        channel = null
+        timeoutDuration = 0
     }
 
-    public AutoModResponseImpl(Type type, Duration duration)
-    {
-        this.type = type;
-        this.timeoutDuration = duration.getSeconds();
-        this.customMessage = null;
-        this.channel = null;
+    constructor(type: AutoModResponse.Type, duration: Duration) {
+        this.type = type
+        timeoutDuration = duration.seconds
+        customMessage = null
+        channel = null
     }
 
-    public AutoModResponseImpl(Guild guild, DataObject json)
-    {
-        this.type = AutoModResponse.Type.fromKey(json.getInt("type", -1));
-        this.channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id", 0L));
-        this.customMessage = json.getString("custom_message", null);
-        this.timeoutDuration = json.getUnsignedLong("duration_seconds", 0L);
+    constructor(guild: Guild, json: DataObject) {
+        type = AutoModResponse.Type.fromKey(json.getInt("type", -1))
+        channel = guild.getChannelById(GuildMessageChannel::class.java, json.getUnsignedLong("channel_id", 0L))
+        customMessage = json.getString("custom_message", null)
+        timeoutDuration = json.getUnsignedLong("duration_seconds", 0L)
+    }
+
+    override fun getTimeoutDuration(): Duration? {
+        return if (timeoutDuration == 0L) null else Duration.ofSeconds(timeoutDuration)
     }
 
     @Nonnull
-    @Override
-    public Type getType()
-    {
-        return type;
+    override fun toData(): DataObject {
+        val action = empty()
+        action.put("type", type.key)
+        if (type == AutoModResponse.Type.BLOCK_MESSAGE && customMessage == null) return action
+        val metadata = empty()
+        if (customMessage != null) metadata.put("custom_message", customMessage)
+        if (channel != null) metadata.put("channel_id", channel.id)
+        if (timeoutDuration > 0) metadata.put("duration_seconds", timeoutDuration)
+        action.put("metadata", metadata)
+        return action
     }
 
-    @Nullable
-    @Override
-    public GuildMessageChannel getChannel()
-    {
-        return channel;
+    override fun hashCode(): Int {
+        return type.hashCode()
     }
 
-    @Nullable
-    @Override
-    public String getCustomMessage()
-    {
-        return customMessage;
-    }
-
-    @Nullable
-    @Override
-    public Duration getTimeoutDuration()
-    {
-        return timeoutDuration == 0 ? null : Duration.ofSeconds(timeoutDuration);
-    }
-
-    @Nonnull
-    @Override
-    public DataObject toData()
-    {
-        DataObject action = DataObject.empty();
-        action.put("type", type.getKey());
-        if (type == Type.BLOCK_MESSAGE && customMessage == null)
-            return action;
-
-        DataObject metadata = DataObject.empty();
-        if (customMessage != null)
-            metadata.put("custom_message", customMessage);
-        if (channel != null)
-            metadata.put("channel_id", channel.getId());
-        if (timeoutDuration > 0)
-            metadata.put("duration_seconds", timeoutDuration);
-        action.put("metadata", metadata);
-        return action;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return type.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof AutoModResponseImpl))
-            return false;
-        AutoModResponseImpl o = (AutoModResponseImpl) obj;
-        return type == o.type;
+    override fun equals(obj: Any?): Boolean {
+        if (this === obj) return true
+        if (obj !is AutoModResponseImpl) return false
+        return type == obj.type
     }
 }

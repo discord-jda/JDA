@@ -110,7 +110,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return;
         vState.setSessionId(sessionId); //Cant really see a reason for an event for this
         VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
-        boolean isSelf = guild.getSelfMember().equals(member);
+        boolean isSelf = guild.selfMember.equals(member);
 
         boolean wasMute = vState.isMuted();
         boolean wasDeaf = vState.isDeafened();

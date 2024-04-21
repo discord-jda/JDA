@@ -54,21 +54,21 @@ public class ReactionPaginationActionImpl
 
     public ReactionPaginationActionImpl(Message message, String code)
     {
-        super(message.getJDA(), Route.Messages.GET_REACTION_USERS.compile(message.getChannelId(), message.getId(), code), 1, 100, 100);
+        super(message.jDA, Route.Messages.GET_REACTION_USERS.compile(message.getChannelId(), message.getId(), code), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
     public ReactionPaginationActionImpl(MessageChannel channel, String messageId, String code)
     {
-        super(channel.getJDA(), Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code), 1, 100, 100);
+        super(channel.jDA, Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
     protected static String getCode(MessageReaction reaction)
     {
-        return reaction.getEmoji().getAsReactionCode();
+        return reaction.emoji.asReactionCode;
     }
 
     @Nonnull
@@ -102,7 +102,7 @@ public class ReactionPaginationActionImpl
                 if (useCache)
                     cached.add(user);
                 last = user;
-                lastKey = last.getIdLong();
+                lastKey = last.idLong;
             }
             catch (ParsingException | NullPointerException e)
             {
@@ -116,6 +116,6 @@ public class ReactionPaginationActionImpl
     @Override
     protected long getKey(User it)
     {
-        return it.getIdLong();
+        return it.idLong;
     }
 }

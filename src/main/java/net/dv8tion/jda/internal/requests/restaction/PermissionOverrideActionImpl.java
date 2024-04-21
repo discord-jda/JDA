@@ -59,11 +59,11 @@ public class PermissionOverrideActionImpl
 
     public PermissionOverrideActionImpl(PermissionOverride override)
     {
-        super(override.getJDA(), Route.Channels.MODIFY_PERM_OVERRIDE.compile(override.getChannel().getId(), override.getId()));
-        this.channel = (IPermissionContainerMixin<?>) override.getChannel();
-        this.permissionHolder = override.getPermissionHolder();
-        this.isRole = override.isRoleOverride();
-        this.id = override.getIdLong();
+        super(override.jDA, Route.Channels.MODIFY_PERM_OVERRIDE.compile(override.channel.getId(), override.getId()));
+        this.channel = (IPermissionContainerMixin<?>) override.channel;
+        this.permissionHolder = override.permissionHolder;
+        this.isRole = override.isRoleOverride;
+        this.id = override.idLong;
     }
 
     public PermissionOverrideActionImpl(JDA api, GuildChannel channel, IPermissionHolder permissionHolder)
@@ -72,7 +72,7 @@ public class PermissionOverrideActionImpl
         this.channel = (IPermissionContainerMixin<?>) channel;
         this.permissionHolder = permissionHolder;
         this.isRole = permissionHolder instanceof Role;
-        this.id = permissionHolder.getIdLong();
+        this.id = permissionHolder.idLong;
     }
 
     // Whether to keep original value of the current override or not - by default we override the value
@@ -87,7 +87,7 @@ public class PermissionOverrideActionImpl
     {
         return () -> {
 
-            Member selfMember = getGuild().getSelfMember();
+            Member selfMember = getGuild().selfMember;
             Checks.checkAccess(selfMember, channel);
             if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
                 throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
@@ -230,7 +230,7 @@ public class PermissionOverrideActionImpl
 
     protected void checkPermissions(long changed)
     {
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
         if (changed != 0 && !selfMember.hasPermission(Permission.ADMINISTRATOR))
         {
             long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
@@ -270,13 +270,13 @@ public class PermissionOverrideActionImpl
     private long getOriginalDeny()
     {
         PermissionOverride override = channel.getPermissionOverrideMap().get(id);
-        return override == null ? 0 : override.getDeniedRaw();
+        return override == null ? 0 : override.deniedRaw;
     }
 
     private long getOriginalAllow()
     {
         PermissionOverride override = channel.getPermissionOverrideMap().get(id);
-        return override == null ? 0 : override.getAllowedRaw();
+        return override == null ? 0 : override.allowedRaw;
     }
 
     @Override
@@ -293,7 +293,7 @@ public class PermissionOverrideActionImpl
     @Override
     protected void handleSuccess(Response response, Request<PermissionOverride> request)
     {
-        DataObject object = (DataObject) request.getRawBody();
+        DataObject object = (DataObject) request.rawBody;
         PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isRole());
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));

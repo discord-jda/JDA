@@ -37,6 +37,7 @@ plugins {
     id("io.codearte.nexus-staging") version "0.30.0"
     id("de.marcphilipp.nexus-publish") version "0.4.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    kotlin("jvm") version "1.9.23"
 }
 
 val javaVersion = JavaVersion.current()
@@ -75,8 +76,6 @@ project.group = "net.dv8tion"
 val archivesBaseName = "JDA"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 configure<SourceSetContainer> {
@@ -135,6 +134,7 @@ dependencies {
     testImplementation(libs.reflections)
     testImplementation(libs.mockito)
     testImplementation(libs.assertj)
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 val compileJava: JavaCompile by tasks

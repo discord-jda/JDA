@@ -13,405 +13,388 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils.messages
 
-package net.dv8tion.jda.api.utils.messages;
-
-import net.dv8tion.jda.api.entities.EmbedType;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.internal.utils.Checks;
-
-import javax.annotation.Nonnull;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.ActionRow.Companion.of
+import net.dv8tion.jda.api.interactions.components.ItemComponent
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.utils.AttachedFile
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.internal.utils.Checks
+import java.util.*
+import java.util.function.Function
+import java.util.stream.Collectors
+import javax.annotation.Nonnull
 
 /**
  * Specialized abstraction of setters and accumulators for creating messages throughout the API.
  *
  * @param <R>
- *        The return type for method chaining convenience
+ * The return type for method chaining convenience
  *
- * @see   MessageCreateBuilder
- * @see   MessageCreateData
- * @see   net.dv8tion.jda.api.requests.restaction.MessageCreateAction MessageCreateAction
- */
-public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends MessageRequest<R>
-{
+ * @see MessageCreateBuilder
+ *
+ * @see MessageCreateData
+ *
+ * @see net.dv8tion.jda.api.requests.restaction.MessageCreateAction MessageCreateAction
+</R> */
+open interface MessageCreateRequest<R : MessageCreateRequest<R>?> : MessageRequest<R> {
     /**
      * Appends the content to the currently set content of this request.
-     * <br>Use {@link #setContent(String)} instead, to replace the content entirely.
+     * <br></br>Use [.setContent] instead, to replace the content entirely.
      *
-     * <p><b>Example</b><br>
-     * Sending a message with the content {@code "Hello World!"}:
-     * <pre>{@code
-     * channel.sendMessage("Hello ").addContent("World!").queue();
-     * }</pre>
+     *
+     * **Example**<br></br>
+     * Sending a message with the content `"Hello World!"`:
+     * <pre>`channel.sendMessage("Hello ").addContent("World!").queue();
+    `</pre> *
      *
      * @param  content
-     *         The content to append
+     * The content to append
      *
      * @throws IllegalArgumentException
-     *         If the provided content is {@code null} or the accumulated content is longer than {@value Message#MAX_CONTENT_LENGTH} characters
+     * If the provided content is `null` or the accumulated content is longer than {@value Message#MAX_CONTENT_LENGTH} characters
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R addContent(@Nonnull String content);
+    fun addContent(@Nonnull content: String?): R
 
     /**
-     * Appends the provided {@link MessageEmbed MessageEmbeds} to the request.
-     * <br>Use {@link #setEmbeds(Collection)} instead, to replace the embeds entirely.
+     * Appends the provided [MessageEmbeds][MessageEmbed] to the request.
+     * <br></br>Use [.setEmbeds] instead, to replace the embeds entirely.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Sending a message with multiple embeds:
-     * <pre>{@code
-     * channel.sendMessageEmbeds(embed1).addEmbeds(embed2).queue();
-     * }</pre>
+     * <pre>`channel.sendMessageEmbeds(embed1).addEmbeds(embed2).queue();
+    `</pre> *
      *
      * @param  embeds
-     *         The embeds to add
+     * The embeds to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided or the accumulated embed list is longer than {@value Message#MAX_EMBED_COUNT}
+     * If null is provided or the accumulated embed list is longer than {@value Message#MAX_EMBED_COUNT}
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    fun addEmbeds(@Nonnull embeds: Collection<MessageEmbed?>): R
 
     /**
-     * Appends the provided {@link MessageEmbed MessageEmbeds} to the request.
-     * <br>Use {@link #setEmbeds(Collection)} instead, to replace the embeds entirely.
+     * Appends the provided [MessageEmbeds][MessageEmbed] to the request.
+     * <br></br>Use [.setEmbeds] instead, to replace the embeds entirely.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Sending a message with multiple embeds:
-     * <pre>{@code
-     * channel.sendMessageEmbeds(embed1).addEmbeds(embed2).queue();
-     * }</pre>
+     * <pre>`channel.sendMessageEmbeds(embed1).addEmbeds(embed2).queue();
+    `</pre> *
      *
      * @param  embeds
-     *         The embeds to add
+     * The embeds to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided or the accumulated embed list is longer than {@value  Message#MAX_EMBED_COUNT}
+     * If null is provided or the accumulated embed list is longer than {@value  Message#MAX_EMBED_COUNT}
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R addEmbeds(@Nonnull MessageEmbed... embeds)
-    {
-        return addEmbeds(Arrays.asList(embeds));
+    fun addEmbeds(@Nonnull vararg embeds: MessageEmbed?): R {
+        return addEmbeds(Arrays.asList(*embeds))
     }
 
     /**
-     * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
+     * Appends the provided [LayoutComponents][LayoutComponent] to the request.
+     * <br></br>Use [.setComponents] instead, to replace the components entirely.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addComponents(ActionRow.of(button1, button2))
-     *        .queue();
-     * }</pre>
+     * <pre>`channel.sendMessageComponents(ActionRow.of(selectMenu))
+     * .addComponents(ActionRow.of(button1, button2))
+     * .queue();
+    `</pre> *
      *
      * @param  components
-     *         The layout components to add
+     * The layout components to add
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *         </ul>
+     *
+     *  * If `null` is provided
+     *  * If any of the components is not [message compatible][LayoutComponent.isMessageCompatible]
+     *  * If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}
+     *
      *
      * @return The same instance for chaining
      *
-     * @see    ActionRow
+     * @see ActionRow
      */
     @Nonnull
-    R addComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    fun addComponents(@Nonnull components: Collection<LayoutComponent?>): R
 
     /**
-     * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
+     * Appends the provided [LayoutComponents][LayoutComponent] to the request.
+     * <br></br>Use [.setComponents] instead, to replace the components entirely.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addComponents(ActionRow.of(button1, button2))
-     *        .queue();
-     * }</pre>
+     * <pre>`channel.sendMessageComponents(ActionRow.of(selectMenu))
+     * .addComponents(ActionRow.of(button1, button2))
+     * .queue();
+    `</pre> *
      *
      * @param  components
-     *         The layout components to add
+     * The layout components to add
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *         </ul>
+     *
+     *  * If `null` is provided
+     *  * If any of the components is not [message compatible][LayoutComponent.isMessageCompatible]
+     *  * If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}
+     *
      *
      * @return The same instance for chaining
      *
-     * @see    ActionRow
+     * @see ActionRow
      */
     @Nonnull
-    default R addComponents(@Nonnull LayoutComponent... components)
-    {
-        return addComponents(Arrays.asList(components));
+    fun addComponents(@Nonnull vararg components: LayoutComponent?): R {
+        return addComponents(Arrays.asList(*components))
     }
 
     /**
-     * Appends a single {@link ActionRow} to the request.
-     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
+     * Appends a single [ActionRow] to the request.
+     * <br></br>Use [.setComponents] instead, to replace the components entirely.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addActionRow(button1, button2)
-     *        .queue();
-     * }</pre>
+     * <pre>`channel.sendMessageComponents(ActionRow.of(selectMenu))
+     * .addActionRow(button1, button2)
+     * .queue();
+    `</pre> *
      *
      * @param  components
-     *         The {@link ItemComponent components} to add to the action row, must not be empty
+     * The [components][ItemComponent] to add to the action row, must not be empty
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(Collection)} throws an exception</li>
-     *         </ul>
+     *
+     *  * If `null` is provided
+     *  * If any of the components is not [message compatible][ItemComponent.isMessageCompatible]
+     *  * If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}
+     *  * In all the same cases as [ActionRow.of] throws an exception
+     *
      *
      * @return The same instance for chaining
      *
-     * @see    ActionRow#of(Collection)
+     * @see ActionRow.of
      */
     @Nonnull
-    default R addActionRow(@Nonnull Collection<? extends ItemComponent> components)
-    {
-        return addComponents(ActionRow.of(components));
+    fun addActionRow(@Nonnull components: Collection<ItemComponent?>?): R {
+        return addComponents(of(components))
     }
 
     /**
-     * Appends a single {@link ActionRow} to the request.
-     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
+     * Appends a single [ActionRow] to the request.
+     * <br></br>Use [.setComponents] instead, to replace the components entirely.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addActionRow(button1, button2)
-     *        .queue();
-     * }</pre>
+     * <pre>`channel.sendMessageComponents(ActionRow.of(selectMenu))
+     * .addActionRow(button1, button2)
+     * .queue();
+    `</pre> *
      *
      * @param  components
-     *         The {@link ItemComponent components} to add to the action row, must not be empty
+     * The [components][ItemComponent] to add to the action row, must not be empty
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
-     *         </ul>
+     *
+     *  * If `null` is provided
+     *  * If any of the components is not [message compatible][ItemComponent.isMessageCompatible]
+     *  * If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}
+     *  * In all the same cases as [ActionRow.of] throws an exception
+     *
      *
      * @return The same instance for chaining
      *
-     * @see    ActionRow#of(ItemComponent...)
+     * @see ActionRow.of
      */
     @Nonnull
-    default R addActionRow(@Nonnull ItemComponent... components)
-    {
-        return addComponents(ActionRow.of(components));
+    fun addActionRow(@Nonnull vararg components: ItemComponent?): R {
+        return addComponents(of(*components))
     }
 
     /**
-     * Appends the provided {@link FileUpload FileUploads} to the request.
-     * <br>Use {@link #setFiles(Collection)} instead, to replace the file attachments entirely.
+     * Appends the provided [FileUploads][FileUpload] to the request.
+     * <br></br>Use [.setFiles] instead, to replace the file attachments entirely.
      *
-     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     *
+     * **Resource Handling Note:** Once the request is handed off to the requester, for example when you call [RestAction.queue],
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
-     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
-     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
+     * For instance, if an exception occurs after using [FileUpload.fromData], before calling [RestAction.queue].
+     * You can safely use a try-with-resources to handle this, since [FileUpload.close] becomes ineffective once the request is handed off.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Sending a message with multiple files:
-     * <pre>{@code
-     * channel.sendFiles(file1).addFiles(file2).queue();
-     * }</pre>
+     * <pre>`channel.sendFiles(file1).addFiles(file2).queue();
+    `</pre> *
      *
      * @param  files
-     *         The files to add
+     * The files to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R addFiles(@Nonnull Collection<? extends FileUpload> files);
+    fun addFiles(@Nonnull files: Collection<FileUpload?>?): R
 
     /**
-     * Appends the provided {@link FileUpload FileUploads} to the request.
-     * <br>Use {@link #setFiles(Collection)} instead, to replace the file attachments entirely.
+     * Appends the provided [FileUploads][FileUpload] to the request.
+     * <br></br>Use [.setFiles] instead, to replace the file attachments entirely.
      *
-     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     *
+     * **Resource Handling Note:** Once the request is handed off to the requester, for example when you call [RestAction.queue],
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
-     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
-     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
+     * For instance, if an exception occurs after using [FileUpload.fromData], before calling [RestAction.queue].
+     * You can safely use a try-with-resources to handle this, since [FileUpload.close] becomes ineffective once the request is handed off.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Sending a message with multiple files:
-     * <pre>{@code
-     * channel.sendFiles(file1).addFiles(file2).queue();
-     * }</pre>
+     * <pre>`channel.sendFiles(file1).addFiles(file2).queue();
+    `</pre> *
      *
      * @param  files
-     *         The files to add
+     * The files to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R addFiles(@Nonnull FileUpload... files)
-    {
-        return addFiles(Arrays.asList(files));
+    fun addFiles(@Nonnull vararg files: FileUpload?): R {
+        return addFiles(Arrays.asList(*files))
     }
 
-    @Nonnull
-    @Override
-    List<FileUpload> getAttachments();
+    @get:Nonnull
+    abstract override val attachments: List<AttachedFile?>?
 
     /**
-     * Whether the message should use <em>Text-to-Speech</em> (TTS).
+     * Whether the message should use *Text-to-Speech* (TTS).
      *
-     * <p>Requires {@link net.dv8tion.jda.api.Permission#MESSAGE_TTS Permission.MESSAGE_TTS} to be enabled.
+     *
+     * Requires [Permission.MESSAGE_TTS][net.dv8tion.jda.api.Permission.MESSAGE_TTS] to be enabled.
      *
      * @param  tts
-     *         True, if the message should use TTS
+     * True, if the message should use TTS
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R setTTS(boolean tts);
+    fun setTTS(tts: Boolean): R
 
     /**
      * Set whether this message should trigger push/desktop notifications to other users.
-     * <br>When a message is suppressed, it will not trigger push/desktop notifications.
+     * <br></br>When a message is suppressed, it will not trigger push/desktop notifications.
      *
      * @param  suppressed
-     *         True, if this message should not trigger push/desktop notifications
+     * True, if this message should not trigger push/desktop notifications
      *
      * @return The same reply action, for chaining convenience
      */
     @Nonnull
-    R setSuppressedNotifications(boolean suppressed);
+    fun setSuppressedNotifications(suppressed: Boolean): R
 
     /**
-     * Applies the provided {@link MessageCreateData} to this request.
+     * Applies the provided [MessageCreateData] to this request.
      *
      * @param  data
-     *         The message create data to apply
+     * The message create data to apply
      *
      * @throws IllegalArgumentException
-     *         If the data is null
+     * If the data is null
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R applyData(@Nonnull MessageCreateData data)
-    {
-        Checks.notNull(data, "MessageCreateData");
-
-        final List<LayoutComponent> layoutComponents = data.getComponents().stream()
-                .map(LayoutComponent::createCopy)
-                .collect(Collectors.toList());
+    fun applyData(@Nonnull data: MessageCreateData): R? {
+        Checks.notNull(data, "MessageCreateData")
+        val layoutComponents: List<LayoutComponent?> = data.getComponents().stream()
+            .map(Function({ obj: LayoutComponent? -> obj!!.createCopy() }))
+            .collect(Collectors.toList())
         return setContent(data.getContent())
-                .setAllowedMentions(data.getAllowedMentions())
-                .mentionUsers(data.getMentionedUsers())
-                .mentionRoles(data.getMentionedRoles())
-                .mentionRepliedUser(data.isMentionRepliedUser())
-                .setEmbeds(data.getEmbeds())
-                .setTTS(data.isTTS())
-                .setSuppressEmbeds(data.isSuppressEmbeds())
-                .setSuppressedNotifications(data.isSuppressedNotifications())
-                .setComponents(layoutComponents)
-                .setFiles(data.getFiles());
+            .setAllowedMentions(data.getAllowedMentions())
+            .mentionUsers(data.getMentionedUsers())
+            .mentionRoles(data.getMentionedRoles())
+            .mentionRepliedUser(data.isMentionRepliedUser())
+            .setEmbeds(data.getEmbeds())
+            .setTTS(data.isTTS())
+            .setSuppressEmbeds(data.isSuppressEmbeds())
+            .setSuppressedNotifications(data.isSuppressedNotifications())
+            .setComponents(layoutComponents)
+            .setFiles(data.getFiles())
     }
 
     @Nonnull
-    default R applyMessage(@Nonnull Message message)
-    {
-        Checks.notNull(message, "Message");
-        Checks.check(!message.getType().isSystem(), "Cannot copy a system message");
-        List<MessageEmbed> embeds = message.getEmbeds()
-                .stream()
-                .filter(e -> e.getType() == EmbedType.RICH)
-                .collect(Collectors.toList());
-        return setContent(message.getContentRaw())
-                .setEmbeds(embeds)
-                .setTTS(message.isTTS())
-                .setSuppressedNotifications(message.isSuppressedNotifications())
-                .setComponents(message.getActionRows());
+    public override fun applyMessage(@Nonnull message: Message): R {
+        Checks.notNull(message, "Message")
+        Checks.check(!message.type!!.isSystem(), "Cannot copy a system message")
+        val embeds: List<MessageEmbed?> = message.embeds
+            .stream()
+            .filter({ e -> e!!.type === EmbedType.RICH })
+            .collect(Collectors.toList())
+        return setContent(message.contentRaw)
+            .setEmbeds(embeds)
+            .setTTS(message.isTTS)
+            .setSuppressedNotifications(message.isSuppressedNotifications)
+            .setComponents((message.actionRows)!!)
     }
 
     /**
-     * Applies the provided {@link MessageEditData} to this request.
-     * <br>This will only set fields which were explicitly set on the {@link MessageEditBuilder},
-     * unless it was configured to be {@link MessageEditRequest#setReplace(boolean) replacing}.
+     * Applies the provided [MessageEditData] to this request.
+     * <br></br>This will only set fields which were explicitly set on the [MessageEditBuilder],
+     * unless it was configured to be [replacing][MessageEditRequest.setReplace].
      *
-     * <p>This will <b>not</b> copy the message's attachments, only any configured {@link FileUpload FileUploads}.
+     *
+     * This will **not** copy the message's attachments, only any configured [FileUploads][FileUpload].
      * To copy attachments, you must download them explicitly instead.
      *
      * @param  data
-     *         The message create data to apply
+     * The message create data to apply
      *
      * @throws IllegalArgumentException
-     *         If the data is null
+     * If the data is null
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
-    default R applyEditData(@Nonnull MessageEditData data)
-    {
-        Checks.notNull(data, "MessageEditData");
-        if (data.isSet(MessageEditBuilder.CONTENT))
-            setContent(data.getContent());
-        if (data.isSet(MessageEditBuilder.EMBEDS))
-            setEmbeds(data.getEmbeds());
-        if (data.isSet(MessageEditBuilder.COMPONENTS))
-        {
-            final List<LayoutComponent> layoutComponents = data.getComponents().stream()
-                    .map(LayoutComponent::createCopy)
-                    .collect(Collectors.toList());
-            setComponents(layoutComponents);
+    fun applyEditData(@Nonnull data: MessageEditData): R {
+        Checks.notNull(data, "MessageEditData")
+        if (data.isSet(MessageEditBuilder.Companion.CONTENT)) setContent(data.getContent())
+        if (data.isSet(MessageEditBuilder.Companion.EMBEDS)) setEmbeds(data.getEmbeds())
+        if (data.isSet(MessageEditBuilder.Companion.COMPONENTS)) {
+            val layoutComponents: List<LayoutComponent?> = data.getComponents().stream()
+                .map(Function({ obj: LayoutComponent? -> obj!!.createCopy() }))
+                .collect(Collectors.toList())
+            setComponents(layoutComponents)
         }
-        if (data.isSet(MessageEditBuilder.ATTACHMENTS))
-            setFiles(data.getFiles());
-        if (data.isSet(MessageEditBuilder.MENTIONS))
-        {
-            setAllowedMentions(data.getAllowedMentions());
-            mentionUsers(data.getMentionedUsers());
-            mentionRoles(data.getMentionedRoles());
-            mentionRepliedUser(data.isMentionRepliedUser());
+        if (data.isSet(MessageEditBuilder.Companion.ATTACHMENTS)) setFiles(data.getFiles())
+        if (data.isSet(MessageEditBuilder.Companion.MENTIONS)) {
+            setAllowedMentions(data.getAllowedMentions())
+            mentionUsers(data.getMentionedUsers())
+            mentionRoles(data.getMentionedRoles())
+            mentionRepliedUser(data.isMentionRepliedUser())
         }
-
-        return (R) this;
+        return this as R
     }
 }

@@ -48,7 +48,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     public PermissionOverrideImpl(IPermissionContainer channel, long id, boolean isRole)
     {
         this.isRole = isRole;
-        this.api = (JDAImpl) channel.getJDA();
+        this.api = (JDAImpl) channel.jDA;
         this.channel = channel;
         this.id = id;
     }
@@ -121,7 +121,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public IPermissionContainerUnion getChannel()
     {
-        IPermissionContainer realChannel = api.getChannelById(IPermissionContainer.class, channel.getIdLong());
+        IPermissionContainer realChannel = api.getChannelById(IPermissionContainer.class, channel.idLong);
         if (realChannel != null)
             channel = realChannel;
 
@@ -132,7 +132,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public Guild getGuild()
     {
-        return getChannel().getGuild();
+        return getChannel().guild;
     }
 
     @Override
@@ -191,13 +191,13 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!(o instanceof PermissionOverrideImpl))
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
-        return id == oPerm.id && this.channel.getIdLong() == oPerm.channel.getIdLong();
+        return id == oPerm.id && this.channel.idLong == oPerm.channel.idLong;
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, channel.getIdLong());
+        return Objects.hash(id, channel.idLong);
     }
 
     @Override
@@ -211,7 +211,7 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     private void checkPermissions()
     {
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
         IPermissionContainer channel = getChannel();
         Checks.checkAccess(selfMember, channel);
         if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))

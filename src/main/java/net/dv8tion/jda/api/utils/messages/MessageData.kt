@@ -13,110 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils.messages
 
-package net.dv8tion.jda.api.utils.messages;
-
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.utils.AttachedFile;
-
-import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import net.dv8tion.jda.api.entities.Message.MentionType
+import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.utils.AttachedFile
+import java.util.*
+import javax.annotation.Nonnull
 
 /**
  * Represents data relevant to all message requests.
  */
-public interface MessageData
-{
-    /**
-     * The configured message content, this is the opposite for {@link MessageRequest#setContent(String)} and only returns what was set using that setter.
-     *
-     * <p>For message edit requests, this will not be the current content of the message.
-     *
-     * @return The currently configured content, or an empty string if none was set yet
-     *
-     * @see    MessageRequest#setContent(String)
-     */
-    @Nonnull
-    String getContent();
+open interface MessageData {
+    @get:Nonnull
+    val content: String
 
-    /**
-     * The configured message embeds, this is the opposite of {@link MessageRequest#setEmbeds(Collection)} and only returns what was set using that setter.
-     *
-     * <p>For message edit requests, this will not be the current embeds of the message.
-     *
-     * @return The currently configured embeds, or an empty list if none were set yet
-     *
-     * @see    MessageRequest#setEmbeds(Collection)
-     */
-    @Nonnull
-    List<MessageEmbed> getEmbeds();
+    @get:Nonnull
+    val embeds: List<MessageEmbed?>
 
-    /**
-     * The configured message components, this is the opposite of {@link MessageRequest#setComponents(Collection)} and only returns what was set using that setter.
-     *
-     * <p>For message edit requests, this will not be the current components of the message.
-     *
-     * @return The currently configured components, or an empty list if none were set yet
-     *
-     * @see    MessageRequest#setEmbeds(Collection)
-     */
-    @Nonnull
-    List<LayoutComponent> getComponents();
+    @get:Nonnull
+    val components: List<LayoutComponent?>
 
     // Returns attachment interface for abstraction purposes, however you can only abstract the setter to allow FileUploads
-
-    /**
-     * The configured message attachments as {@link AttachedFile}, this is the opposite of {@link MessageRequest#setFiles(Collection)} and only returns what was set using that setter.
-     *
-     * <p>For message edit requests, this will not be the current file attachments of the message.
-     *
-     * @return The currently configured attachments, or an empty list if none were set yet
-     *
-     * @see    MessageRequest#setFiles(Collection)
-     */
-    @Nonnull
-    List<? extends AttachedFile> getAttachments();
+    @JvmField
+    @get:Nonnull
+    val attachments: List<AttachedFile?>?
 
     /**
      * Whether embeds will be suppressed on this message.
      *
      * @return True, if embeds are suppressed
      */
-    boolean isSuppressEmbeds();
+    val isSuppressEmbeds: Boolean
 
-    /**
-     * The IDs for users which are allowed to be mentioned, or an empty list.
-     *
-     * @return The user IDs which are mention whitelisted
-     */
-    @Nonnull
-    Set<String> getMentionedUsers();
+    @get:Nonnull
+    val mentionedUsers: Set<String?>?
 
-    /**
-     * The IDs for roles which are allowed to be mentioned, or an empty list.
-     *
-     * @return The role IDs which are mention whitelisted
-     */
-    @Nonnull
-    Set<String> getMentionedRoles();
+    @get:Nonnull
+    val mentionedRoles: Set<String?>?
 
-    /**
-     * The mention types which are whitelisted.
-     *
-     * @return The mention types which can be mentioned by this message
-     */
-    @Nonnull
-    EnumSet<Message.MentionType> getAllowedMentions();
+    @get:Nonnull
+    val allowedMentions: EnumSet<MentionType?>?
 
     /**
      * Whether this message would mention a user, if it is sent as a reply.
      *
      * @return True, if this would mention with the reply
      */
-    boolean isMentionRepliedUser();
+    val isMentionRepliedUser: Boolean
 }

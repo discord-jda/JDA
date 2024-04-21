@@ -72,13 +72,13 @@ public class LocalizationMapper
     public void localizeCommand(CommandData commandData, DataArray optionArray)
     {
         final TranslationContext ctx = new TranslationContext();
-        ctx.withKey(commandData.getName(), () ->
+        ctx.withKey(commandData.name, () ->
         {
-            ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
-            if (commandData.getType() == Command.Type.SLASH)
+            ctx.trySetTranslation(commandData.nameLocalizations, "name");
+            if (commandData.type == Command.Type.SLASH)
             {
                 final SlashCommandData slashCommandData = (SlashCommandData) commandData;
-                ctx.trySetTranslation(slashCommandData.getDescriptionLocalizations(), "description");
+                ctx.trySetTranslation(slashCommandData.descriptionLocalizations, "description");
                 localizeOptionArray(optionArray, ctx);
             }
         });
@@ -174,7 +174,7 @@ public class LocalizationMapper
                 {
                     Checks.check(locale != DiscordLocale.UNKNOWN, "Localization function returned a map with an 'UNKNOWN' DiscordLocale");
 
-                    localizationMap.put(locale.getLocale(), localizedValue);
+                    localizationMap.put(locale.locale, localizedValue);
                 });
             }
             catch (Exception e)

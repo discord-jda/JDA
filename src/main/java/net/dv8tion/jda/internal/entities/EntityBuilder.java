@@ -237,7 +237,7 @@ public class EntityBuilder
                               guildObj.getId(), object);
                     continue;
                 }
-                if (object.getInt("type", -1) != Sticker.Type.GUILD.getId())
+                if (object.getInt("type", -1) != Sticker.Type.GUILD.id)
                 {
                     LOG.error("Received GUILD_CREATE with sticker that had an unexpected type. GuildId: {} Type: {} JSON: {}",
                               guildObj.getId(), object.getInt("type", -1), object);
@@ -245,7 +245,7 @@ public class EntityBuilder
                 }
 
                 RichSticker sticker = createRichSticker(object);
-                stickerMap.put(sticker.getIdLong(), (GuildSticker) sticker);
+                stickerMap.put(sticker.idLong, (GuildSticker) sticker);
             }
         }
     }
@@ -327,8 +327,8 @@ public class EntityBuilder
             {
                 DataObject obj = roleArray.getObject(i);
                 Role role = createRole(guildObj, obj, guildId);
-                map.put(role.getIdLong(), role);
-                if (role.getIdLong() == guildObj.getIdLong())
+                map.put(role.idLong, role);
+                if (role.idLong == guildObj.getIdLong())
                     guildObj.setPublicRole(role);
             }
         }
@@ -362,7 +362,7 @@ public class EntityBuilder
             LOG.error("Guild is missing a SelfMember. GuildId: {}", guildId);
             LOG.debug("Guild is missing a SelfMember. GuildId: {} JSON: \n{}", guildId, guildJson);
             // This is actually a gateway request
-            guildObj.retrieveMembersByIds(api.getSelfUser().getIdLong()).onSuccess(m -> {
+            guildObj.retrieveMembersByIds(api.getSelfUser().idLong).onSuccess(m -> {
                 if (m.isEmpty())
                     LOG.warn("Was unable to recover SelfMember for guild with id {}. This guild might be corrupted!", guildId);
                 else
@@ -1350,7 +1350,7 @@ public class EntityBuilder
             CacheView.SimpleCacheView<ThreadMember> view = channel.getThreadMemberView();
             try (UnlockHook lock = view.writeLock())
             {
-                view.getMap().put(selfThreadMember.getIdLong(), selfThreadMember);
+                view.getMap().put(selfThreadMember.idLong, selfThreadMember);
             }
         }
 
@@ -1657,7 +1657,7 @@ public class EntityBuilder
     {
         // Use channel directly if message is from a known guild channel
         if (channel instanceof GuildMessageChannel)
-            return createMessage0(json, channel, (GuildImpl) ((GuildMessageChannel) channel).getGuild(), modifyCache);
+            return createMessage0(json, channel, (GuildImpl) ((GuildMessageChannel) channel).guild, modifyCache);
         // Try to resolve private channel recipient if needed
         if (channel instanceof PrivateChannel)
             return createMessageWithLookup(json, null, modifyCache);
@@ -1722,7 +1722,7 @@ public class EntityBuilder
         final long authorId = author.getLong("id");
         final long channelId = jsonObject.getUnsignedLong("channel_id");
         final long guildId = channel instanceof GuildChannel
-                ? ((GuildChannel) channel).getGuild().getIdLong()
+                ? ((GuildChannel) channel).guild.getIdLong()
                 : jsonObject.getUnsignedLong("guild_id", 0L);
         MemberImpl member = null;
 
@@ -1779,7 +1779,7 @@ public class EntityBuilder
         else if (channel instanceof PrivateChannel)
         {
             //Assume private channel
-            if (authorId == getJDA().getSelfUser().getIdLong())
+            if (authorId == getJDA().getSelfUser().idLong)
             {
                 user = getJDA().getSelfUser();
             }
@@ -1789,7 +1789,7 @@ public class EntityBuilder
                 // because when the bot receives a message in a private channel that was _not authored by the bot_ then
                 // the message had to have come from the user, so that means that we had all the information to build
                 // the channel properly (or fill-in the missing user info of an existing partial channel)
-                user = ((PrivateChannel) channel).getUser();
+                user = ((PrivateChannel) channel).user;
             }
         }
         else
@@ -2139,17 +2139,17 @@ public class EntityBuilder
         int type = override.getInt("type");
         final long id = override.getLong("id");
         boolean role = type == 0;
-        if (role && chan.getGuild().getRoleById(id) == null)
+        if (role && chan.guild.getRoleById(id) == null)
             throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
         if (!role && type != 1)
             throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
-        if (!role && id != api.getSelfUser().getIdLong() && !api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES))
+        if (!role && id != api.getSelfUser().idLong && !api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES))
             return null;
 
         long allow = override.getLong("allow");
         long deny = override.getLong("deny");
         // Don't cache empty @everyone overrides, they ruin our sync check
-        if (id == chan.getGuild().getIdLong() && (allow | deny) == 0L)
+        if (id == chan.guild.getIdLong() && (allow | deny) == 0L)
             return null;
 
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getPermissionOverrideMap().get(id);
@@ -2206,7 +2206,7 @@ public class EntityBuilder
             }
         }
 
-        Member ownerMember = owner == null || channel == null ? null : channel.getGuild().getMember(owner);
+        Member ownerMember = owner == null || channel == null ? null : channel.guild.getMember(owner);
         WebhookImpl webhook = new WebhookImpl(channel, getJDA(), id, type)
                 .setToken(token)
                 .setOwner(ownerMember, owner)
@@ -2259,7 +2259,7 @@ public class EntityBuilder
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }
-        else if (channelType.isGuild())
+        else if (channelType.isGuild)
         {
             type = Invite.InviteType.GUILD;
 

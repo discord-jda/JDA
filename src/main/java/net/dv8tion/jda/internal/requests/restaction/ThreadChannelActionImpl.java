@@ -46,8 +46,8 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, ChannelType type)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD.compile(channel.getId()));
-        this.guild = channel.getGuild();
+        super(channel.jDA, Route.Channels.CREATE_THREAD.compile(channel.getId()));
+        this.guild = channel.guild;
         this.type = type;
         this.parentMessageId = null;
 
@@ -56,9 +56,9 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, String parentMessageId)
     {
-        super(channel.getJDA(), Route.Channels.CREATE_THREAD_FROM_MESSAGE.compile(channel.getId(), parentMessageId));
-        this.guild = channel.getGuild();
-        this.type = channel.getType() == ChannelType.TEXT ? ChannelType.GUILD_PUBLIC_THREAD : ChannelType.GUILD_NEWS_THREAD;
+        super(channel.jDA, Route.Channels.CREATE_THREAD_FROM_MESSAGE.compile(channel.getId(), parentMessageId));
+        this.guild = channel.guild;
+        this.type = channel.type == ChannelType.TEXT ? ChannelType.GUILD_PUBLIC_THREAD : ChannelType.GUILD_NEWS_THREAD;
         this.parentMessageId = parentMessageId;
 
         this.name = name;
@@ -146,10 +146,10 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
         //The type is selected by discord itself if we are using a parent message, so don't send it.
         if (parentMessageId == null)
-            object.put("type", type.getId());
+            object.put("type", type.id);
 
         if (autoArchiveDuration != null)
-            object.put("auto_archive_duration", autoArchiveDuration.getMinutes());
+            object.put("auto_archive_duration", autoArchiveDuration.minutes);
         if (invitable != null)
             object.put("invitable", invitable);
 
@@ -159,7 +159,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
     @Override
     protected void handleSuccess(Response response, Request<ThreadChannel> request)
     {
-        ThreadChannel channel = api.getEntityBuilder().createThreadChannel(response.getObject(), guild.getIdLong());
+        ThreadChannel channel = api.getEntityBuilder().createThreadChannel(response.getObject(), guild.idLong);
         request.onSuccess(channel);
     }
 }

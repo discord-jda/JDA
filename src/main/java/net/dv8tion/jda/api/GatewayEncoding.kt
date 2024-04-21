@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package net.dv8tion.jda.api;
+package net.dv8tion.jda.api
 
 /**
  * Encoding mode used by the gateway for incoming and outgoing payloads.
  */
-public enum GatewayEncoding
-{
+enum class GatewayEncoding {
     /**
      * Standard JSON format. This format uses a human-readable string encoding.
      *
-     * @see <a href="https://www.json.org/json-en.html" target="_blank">JSON Specification</a>
+     * @see [JSON Specification](https://www.json.org/json-en.html)
      */
     JSON,
+
     /**
      * Erlang External Term Format (binary). This is an optimized format which encodes all payloads
      * in a binary stream.
      *
      * @since 4.2.1
      *
-     * @see <a href="https://erlang.org/doc/apps/erts/erl_ext_dist.html" target="_blank">Erlang -- External Term Format</a>
+     * @see [Erlang -- External Term Format](https://erlang.org/doc/apps/erts/erl_ext_dist.html)
      */
     ETF
 }

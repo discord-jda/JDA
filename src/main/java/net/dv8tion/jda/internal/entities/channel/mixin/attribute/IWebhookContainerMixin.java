@@ -52,7 +52,7 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> ext
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
-        JDAImpl jda = (JDAImpl) getJDA();
+        JDAImpl jda = (JDAImpl) jDA;
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
             DataArray array = response.getArray();
@@ -86,7 +86,7 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> ext
 
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
-        return new WebhookActionImpl(getJDA(), this, name);
+        return new WebhookActionImpl(jDA, this, name);
     }
 
     @Nonnull
@@ -98,6 +98,6 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> ext
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<>(jDA, route);
     }
 }

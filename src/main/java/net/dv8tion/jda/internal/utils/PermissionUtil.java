@@ -54,12 +54,12 @@ public class PermissionUtil
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided members must both be Member objects of the same Guild!");
-        if(issuer.isOwner())
+        if(issuer.isOwner)
             return true;
-        if(target.isOwner())
+        if(target.isOwner)
             return false;
-        List<Role> issuerRoles = issuer.getRoles();
-        List<Role> targetRoles = target.getRoles();
+        List<Role> issuerRoles = issuer.roles;
+        List<Role> targetRoles = target.roles;
         return !issuerRoles.isEmpty() && (targetRoles.isEmpty() || canInteract(issuerRoles.get(0), targetRoles.get(0)));
     }
 
@@ -86,9 +86,9 @@ public class PermissionUtil
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided Member issuer and Role target must be from the same Guild!");
-        if(issuer.isOwner())
+        if(issuer.isOwner)
             return true;
-        List<Role> issuerRoles = issuer.getRoles();
+        List<Role> issuerRoles = issuer.roles;
         return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
     }
 
@@ -141,11 +141,11 @@ public class PermissionUtil
         Checks.notNull(issuer, "Issuer Member");
         Checks.notNull(emoji,  "Target Emoji");
 
-        if (!issuer.getGuild().equals(emoji.getGuild()))
+        if (!issuer.getGuild().equals(emoji.guild))
             throw new IllegalArgumentException("The issuer and target are not in the same Guild");
 
-        return emoji.getRoles().isEmpty() // emoji restricted to roles -> check if the issuer has them
-            || CollectionUtils.containsAny(issuer.getRoles(), emoji.getRoles());
+        return emoji.roles.isEmpty() // emoji restricted to roles -> check if the issuer has them
+            || CollectionUtils.containsAny(issuer.roles, emoji.roles);
     }
 
     /**
@@ -173,20 +173,20 @@ public class PermissionUtil
         Checks.notNull(emoji,   "Target Emoji");
         Checks.notNull(channel, "Target Channel");
 
-        if (emoji.getGuild() == null || !emoji.getGuild().isMember(issuer))
+        if (emoji.guild == null || !emoji.guild.isMember(issuer))
             return false; // cannot use an emoji if you're not in its guild
-        Member member = emoji.getGuild().getMemberById(issuer.getIdLong());
+        Member member = emoji.guild.getMemberById(issuer.idLong);
         if (!canInteract(member, emoji))
             return false;
         // external means it is available outside of its own guild - works for bots or if its managed
         // currently we cannot check whether other users have nitro, we assume no here
-        final boolean external = emoji.isManaged() || (issuer.isBot() && botOverride);
-        switch (channel.getType())
+        final boolean external = emoji.isManaged || (issuer.isBot() && botOverride);
+        switch (channel.type)
         {
             case TEXT:
                 TextChannel text = (TextChannel) channel;
-                member = text.getGuild().getMemberById(issuer.getIdLong());
-                return emoji.getGuild().equals(text.getGuild()) // within the same guild
+                member = text.guild.getMemberById(issuer.idLong);
+                return emoji.guild.equals(text.guild) // within the same guild
                     || (external && member != null && member.hasPermission(text, Permission.MESSAGE_EXT_EMOJI)); // in different guild
             default:
                 return external; // In Group or Private it only needs to be external
@@ -275,7 +275,7 @@ public class PermissionUtil
         Checks.notNull(member, "Member");
         Checks.notNull(permissions, "Permissions");
 
-        GuildImpl guild = (GuildImpl) channel.getGuild();
+        GuildImpl guild = (GuildImpl) channel.guild;
         checkGuild(guild, member.getGuild(), "Member");
 
         long effectivePerms = getEffectivePermission(channel, member);
@@ -304,13 +304,13 @@ public class PermissionUtil
     {
         Checks.notNull(member, "Member");
 
-        if (member.isOwner())
+        if (member.isOwner)
             return Permission.ALL_PERMISSIONS;
         //Default to binary OR of all global permissions in this guild
-        long permission = member.getGuild().getPublicRole().getPermissionsRaw();
-        for (Role role : member.getRoles())
+        long permission = member.getGuild().getPublicRole().permissionsRaw;
+        for (Role role : member.roles)
         {
-            permission |= role.getPermissionsRaw();
+            permission |= role.permissionsRaw;
             if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
                 return Permission.ALL_PERMISSIONS;
         }
@@ -344,9 +344,9 @@ public class PermissionUtil
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
 
-        Checks.check(channel.getGuild().equals(member.getGuild()), "Provided channel and provided member are not of the same guild!");
+        Checks.check(channel.guild.equals(member.getGuild()), "Provided channel and provided member are not of the same guild!");
 
-        if (member.isOwner())
+        if (member.isOwner)
         {
             // Owner effectively has all permissions
             return Permission.ALL_PERMISSIONS;
@@ -374,7 +374,7 @@ public class PermissionUtil
         //When the permission to view the channel or to connect to the channel is not applied it is not granted
         // This means that we have no access to this channel at all
         // See https://github.com/discord/discord-api-docs/issues/1522
-        final boolean hasConnect = !channel.getType().isAudio() || isApplied(permission, connectChannel);
+        final boolean hasConnect = !channel.type.isAudio() || isApplied(permission, connectChannel);
         final boolean hasAccess = isApplied(permission, viewChannel) && hasConnect;
 
         // See https://discord.com/developers/docs/topics/permissions#permissions-for-timed-out-members
@@ -407,7 +407,7 @@ public class PermissionUtil
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
 
-        Guild guild = channel.getGuild();
+        Guild guild = channel.guild;
         if (!guild.equals(role.getGuild()))
             throw new IllegalArgumentException("Provided channel and role are not of the same guild!");
 
@@ -443,10 +443,10 @@ public class PermissionUtil
         Checks.notNull(member, "Member");
 
         final Guild guild = member.getGuild();
-        long permission = guild.getPublicRole().getPermissionsRaw();
+        long permission = guild.getPublicRole().permissionsRaw;
 
-        for (Role role : member.getRoles())
-            permission |= role.getPermissionsRaw();
+        for (Role role : member.roles)
+            permission |= role.permissionsRaw;
 
         return permission;
     }
@@ -514,7 +514,7 @@ public class PermissionUtil
         Checks.notNull(member, "Member");
 
         final Guild guild = member.getGuild();
-        checkGuild(channel.getGuild(), guild, "Member");
+        checkGuild(channel.guild, guild, "Member");
 
         long permission = includeRoles ? getExplicitPermission(member) : 0L;
 
@@ -584,48 +584,48 @@ public class PermissionUtil
     {
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
-        IPermissionContainer permsChannel = channel.getPermissionContainer();
+        IPermissionContainer permsChannel = channel.permissionContainer;
 
         final Guild guild = role.getGuild();
-        checkGuild(channel.getGuild(), guild, "Role");
+        checkGuild(channel.guild, guild, "Role");
 
-        long permission = includeRoles ? role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw() : 0;
+        long permission = includeRoles ? role.permissionsRaw | guild.getPublicRole().permissionsRaw : 0;
         PermissionOverride override = permsChannel.getPermissionOverride(guild.getPublicRole());
         if (override != null)
-            permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
-        if (role.isPublicRole())
+            permission = apply(permission, override.allowedRaw, override.deniedRaw);
+        if (role.isPublicRole)
             return permission;
 
         override = permsChannel.getPermissionOverride(role);
 
         return override == null
             ? permission
-            : apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
+            : apply(permission, override.allowedRaw, override.deniedRaw);
     }
 
     private static void getExplicitOverrides(GuildChannel channel, Member member, AtomicLong allow, AtomicLong deny)
     {
-        IPermissionContainer permsChannel = channel.getPermissionContainer();
+        IPermissionContainer permsChannel = channel.permissionContainer;
         PermissionOverride override = permsChannel.getPermissionOverride(member.getGuild().getPublicRole());
         long allowRaw = 0;
         long denyRaw = 0;
         if (override != null)
         {
-            denyRaw = override.getDeniedRaw();
-            allowRaw = override.getAllowedRaw();
+            denyRaw = override.deniedRaw;
+            allowRaw = override.allowedRaw;
         }
 
         long allowRole = 0;
         long denyRole = 0;
         // create temporary bit containers for role cascade
-        for (Role role : member.getRoles())
+        for (Role role : member.roles)
         {
             override = permsChannel.getPermissionOverride(role);
             if (override != null)
             {
                 // important to update role cascade not others
-                denyRole |= override.getDeniedRaw();
-                allowRole |= override.getAllowedRaw();
+                denyRole |= override.deniedRaw;
+                allowRole |= override.allowedRaw;
             }
         }
         // Override the raw values of public role then apply role cascade
@@ -636,8 +636,8 @@ public class PermissionUtil
         if (override != null)
         {
             // finally override the role cascade with member overrides
-            final long oDeny = override.getDeniedRaw();
-            final long oAllow = override.getAllowedRaw();
+            final long oDeny = override.deniedRaw;
+            final long oAllow = override.allowedRaw;
             allowRaw = (allowRaw & ~oDeny) | oAllow;
             denyRaw = (denyRaw & ~oAllow) | oDeny;
             // this time we need to exclude new allowed bits from old denied ones and OR the new denied bits as final overrides

@@ -41,7 +41,7 @@ public class ThreadMemberPaginationActionImpl
 
     public ThreadMemberPaginationActionImpl(ThreadChannel channel)
     {
-        super(channel.getJDA(), Route.Channels.LIST_THREAD_MEMBERS.compile(channel.getId()).withQueryParams("with_member", "true"), 1, 100, 100);
+        super(channel.jDA, Route.Channels.LIST_THREAD_MEMBERS.compile(channel.getId()).withQueryParams("with_member", "true"), 1, 100, 100);
         this.channel = (ThreadChannelImpl) channel;
         this.order = PaginationOrder.FORWARD;
     }
@@ -63,7 +63,7 @@ public class ThreadMemberPaginationActionImpl
     @Override
     protected long getKey(ThreadMember it)
     {
-        return it.getIdLong();
+        return it.idLong;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ThreadMemberPaginationActionImpl
         if (!members.isEmpty())
         {
             last = members.get(members.size() - 1);
-            lastKey = last.getIdLong();
+            lastKey = last.idLong;
         }
         request.onSuccess(members);
     }

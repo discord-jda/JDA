@@ -102,7 +102,7 @@ public class MessageReactionHandler extends SocketHandler
                 // update internal references
                 api.getEntityBuilder().updateMemberCache(member);
             }
-            if (member == null && add && guild.isLoaded())
+            if (member == null && add && guild.isLoaded)
             {
                 WebSocketClient.LOG.debug("Dropping reaction event for unknown member {}", content);
                 return null;
@@ -136,7 +136,7 @@ public class MessageReactionHandler extends SocketHandler
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null)
                 {
-                    WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION event for unexpected channel of type {}", actual.getType());
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION event for unexpected channel of type {}", actual.type);
                     return null;
                 }
             }
@@ -166,9 +166,9 @@ public class MessageReactionHandler extends SocketHandler
 
         MessageReaction reaction = new MessageReaction(api, channel, rEmoji, channelId, messageId, self, null);
 
-        if (channel.getType() == ChannelType.PRIVATE)
+        if (channel.type == ChannelType.PRIVATE)
         {
-            api.usedPrivateChannel(reaction.getChannel().getIdLong());
+            api.usedPrivateChannel(reaction.getChannel().idLong);
             PrivateChannelImpl priv = (PrivateChannelImpl) channel;
             //try to add the user here if we need to, as we have their ID
             if (priv.getUser() == null && user != null)

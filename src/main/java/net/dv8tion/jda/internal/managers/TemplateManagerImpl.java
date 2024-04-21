@@ -47,7 +47,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
      */
     public TemplateManagerImpl(Template template)
     {
-        super(template.getJDA(), Route.Templates.MODIFY_TEMPLATE.compile(template.getGuild().getId(), template.getCode()));
+        super(template.getJDA(), Route.Templates.MODIFY_TEMPLATE.compile(template.guild.getId(), template.code));
         this.template = template;
         this.api = template.getJDA();
         if (isPermissionChecksEnabled())
@@ -127,11 +127,11 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Override
     protected boolean checkPermissions()
     {
-        final Guild guild = api.getGuildById(template.getGuild().getIdLong());
+        final Guild guild = api.getGuildById(template.guild.getIdLong());
 
         if (guild == null)
             return true;
-        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+        if (!guild.selfMember.hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(guild, Permission.MANAGE_SERVER);
         return super.checkPermissions();
     }

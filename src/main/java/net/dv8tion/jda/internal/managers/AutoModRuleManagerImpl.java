@@ -82,7 +82,7 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
         this.responses = new EnumMap<>(AutoModResponse.Type.class);
         for (AutoModResponse response : responses)
         {
-            AutoModResponse.Type type = response.getType();
+            AutoModResponse.Type type = response.type;
             Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot add response with unknown response type!");
             this.responses.put(type, response);
         }
@@ -110,7 +110,7 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
         Checks.noneNull(channels, "Channels");
         Checks.check(channels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot have more than %d exempt channels!", AutoModRule.MAX_EXEMPT_CHANNELS);
         for (GuildChannel channel : channels)
-            Checks.check(channel.getGuild().equals(guild), "Channel %s is not from the same guild as this rule!", channel);
+            Checks.check(channel.guild.equals(guild), "Channel %s is not from the same guild as this rule!", channel);
         this.exemptChannels = new ArrayList<>(channels);
         set |= EXEMPT_CHANNELS;
         return this;
@@ -121,7 +121,7 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
     public AutoModRuleManager setTriggerConfig(@Nonnull TriggerConfig config)
     {
         Checks.notNull(config, "TriggerConfig");
-        Checks.check(config.getType() != AutoModTriggerType.UNKNOWN, "Unknown trigger type!");
+        Checks.check(config.type != AutoModTriggerType.UNKNOWN, "Unknown trigger type!");
         this.triggerConfig = config;
         set |= TRIGGER_METADATA;
         return this;
@@ -144,7 +144,7 @@ public class AutoModRuleManagerImpl extends ManagerBase<AutoModRuleManager> impl
             body.put("exempt_channels", DataArray.fromCollection(exemptChannels.stream().map(GuildChannel::getId).collect(Collectors.toList())));
         if (shouldUpdate(TRIGGER_METADATA))
         {
-            body.put("trigger_type", triggerConfig.getType().getKey());
+            body.put("trigger_type", triggerConfig.type.getKey());
             body.put("trigger_metadata", triggerConfig.toData());
         }
 

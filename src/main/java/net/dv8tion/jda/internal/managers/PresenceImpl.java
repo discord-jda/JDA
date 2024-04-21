@@ -176,31 +176,31 @@ public class PresenceImpl implements Presence
               .put("activities", DataArray.fromCollection(activity == null // this is done so that nested DataObject is converted to a Map
                       ? Collections.emptyList()
                       : Collections.singletonList(activity)))
-              .put("status", getStatus().getKey());
+              .put("status", getStatus().key);
     }
 
     public static DataObject getGameJson(Activity activity)
     {
-        if (activity == null || activity.getName() == null || activity.getType() == null)
+        if (activity == null || activity.name == null || activity.type == null)
             return null;
         DataObject gameObj = DataObject.empty();
 
-        if (activity.getType() == Activity.ActivityType.CUSTOM_STATUS)
+        if (activity.type == Activity.ActivityType.CUSTOM_STATUS)
         {
             gameObj.put("name", "Custom Status");
-            gameObj.put("state", activity.getName());
+            gameObj.put("state", activity.name);
         }
         else
         {
-            gameObj.put("name", activity.getName());
-            String state = activity.getState();
+            gameObj.put("name", activity.name);
+            String state = activity.state;
             if (state != null)
                 gameObj.put("state", state);
         }
 
-        gameObj.put("type", activity.getType().getKey());
-        if (activity.getUrl() != null)
-            gameObj.put("url", activity.getUrl());
+        gameObj.put("type", activity.type.key);
+        if (activity.url != null)
+            gameObj.put("url", activity.url);
 
         return gameObj;
     }

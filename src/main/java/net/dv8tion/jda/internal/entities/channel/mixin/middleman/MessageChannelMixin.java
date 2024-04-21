@@ -62,10 +62,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
         {
             for (Message m : messages)
             {
-                if (m.getAuthor().equals(getJDA().getSelfUser()))
+                if (m.author.equals(jDA.getSelfUser()))
                     continue;
 
-                if (getType() == ChannelType.PRIVATE)
+                if (type == ChannelType.PRIVATE)
                     throw new IllegalStateException("Cannot delete messages of other users in a private channel");
                 else
                     throw new InsufficientPermissionException((GuildChannel) this, Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
@@ -374,6 +374,6 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
     {
         DataObject body = DataObject.empty().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, body);
+        return new RestActionImpl<>(jDA, route, body);
     }
 }

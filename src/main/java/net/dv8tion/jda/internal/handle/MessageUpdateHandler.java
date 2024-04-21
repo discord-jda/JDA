@@ -107,7 +107,7 @@ public class MessageUpdateHandler extends SocketHandler
                         GuildChannel actual = guild.getGuildChannelById(channelId);
                         if (actual != null)
                         {
-                            WebSocketClient.LOG.debug("Dropping MESSAGE_UPDATE for unexpected channel of type {}", actual.getType());
+                            WebSocketClient.LOG.debug("Dropping MESSAGE_UPDATE for unexpected channel of type {}", actual.type);
                             return null;
                         }
                     }
@@ -128,8 +128,8 @@ public class MessageUpdateHandler extends SocketHandler
             }
         }
 
-        if (message.getChannelType() == ChannelType.PRIVATE)
-            getJDA().usedPrivateChannel(message.getChannel().getIdLong());
+        if (message.channelType == ChannelType.PRIVATE)
+            getJDA().usedPrivateChannel(message.channel.idLong);
 
         getJDA().handleEvent(
                 new MessageUpdateEvent(

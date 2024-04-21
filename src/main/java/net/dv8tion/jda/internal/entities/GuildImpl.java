@@ -157,7 +157,7 @@ public class GuildImpl implements Guild
         ChannelCacheViewImpl<Channel> channelsView = getJDA().getChannelsView();
         try (UnlockHook hook = channelsView.writeLock())
         {
-            getChannels().forEach(channel -> channelsView.remove(channel.getType(), channel.getIdLong()));
+            getChannels().forEach(channel -> channelsView.remove(channel.type, channel.idLong));
         }
 
         // Clear audio connection
@@ -179,7 +179,7 @@ public class GuildImpl implements Guild
         SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
         try (UnlockHook hook = userView.writeLock())
         {
-            long selfId = getJDA().getSelfUser().getIdLong();
+            long selfId = getJDA().getSelfUser().idLong;
             memberIds.forEach(memberId -> {
                 if (memberId == selfId)
                     return true; // don't remove selfUser from cache
@@ -192,22 +192,22 @@ public class GuildImpl implements Guild
 
     public void uncacheChannel(GuildChannel channel, boolean keepThreads)
     {
-        long id = channel.getIdLong();
+        long id = channel.idLong;
 
         // Enforce idempotence by checking the channel was in cache
         // If the channel was not in cache, there is no reason to cleanup anything else.
         // This idempotency makes sure that new cache is never affected by old cache
-        if (channelCache.remove(channel.getType(), id) == null)
+        if (channelCache.remove(channel.type, id) == null)
             return;
 
-        api.getChannelsView().remove(channel.getType(), id);
+        api.getChannelsView().remove(channel.type, id);
 
         if (!keepThreads && channel instanceof IThreadContainer)
         {
             // Remove dangling threads
             SortedChannelCacheViewImpl<GuildChannel> localView = this.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = api.getChannelsView();
-            Predicate<ThreadChannel> predicate = thread -> channel.equals(thread.getParentChannel());
+            Predicate<ThreadChannel> predicate = thread -> channel.equals(thread.parentChannel);
 
             try (UnlockHook hook1 = localView.writeLock(); UnlockHook hook2 = globalView.writeLock())
             {
@@ -437,7 +437,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean unloadMember(long userId)
     {
-        if (userId == api.getSelfUser().getIdLong())
+        if (userId == api.getSelfUser().idLong)
             return false;
         MemberImpl member = (MemberImpl) getMemberById(userId);
         if (member == null)
@@ -536,7 +536,7 @@ public class GuildImpl implements Guild
     public List<Member> getBoosters()
     {
         return memberCache.applyStream((members) ->
-            members.filter(m -> m.getTimeBoosted() != null)
+            members.filter(m -> m.timeBoosted != null)
                    .sorted(Comparator.comparing(Member::getTimeBoosted))
                    .collect(Helpers.toUnmodifiableList()));
     }
@@ -686,7 +686,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isMember(@Nonnull UserSnowflake user)
     {
-        return memberCache.get(user.getIdLong()) != null;
+        return memberCache.get(user.idLong) != null;
     }
 
     @Nonnull
@@ -703,7 +703,7 @@ public class GuildImpl implements Guild
     public Member getMember(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
-        return getMemberById(user.getIdLong());
+        return getMemberById(user.idLong);
     }
 
     @Nonnull
@@ -824,7 +824,7 @@ public class GuildImpl implements Guild
         if (includeHidden)
         {
             return channelCache.applyStream(stream ->
-                stream.filter(it -> !it.getType().isThread())
+                stream.filter(it -> !it.type.isThread())
                       .sorted()
                       .collect(Helpers.toUnmodifiableList())
             );
@@ -847,7 +847,7 @@ public class GuildImpl implements Guild
         channelCache.ofType(ICategorizableChannel.class).forEachUnordered(channel ->
         {
             // Hide threads and inaccessible channels
-            if (channel.getType().isThread() || !self.hasPermission(channel, Permission.VIEW_CHANNEL)) return;
+            if (channel.type.isThread() || !self.hasPermission(channel, Permission.VIEW_CHANNEL)) return;
 
             Category category = channel.getParentCategory();
             channels.add(channel);
@@ -893,7 +893,7 @@ public class GuildImpl implements Guild
             RichCustomEmoji emoji = getEmojiById(id);
             if (emoji != null)
             {
-                if (emoji.getOwner() != null || !getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+                if (emoji.owner != null || !getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
                     return emoji;
             }
             return null;
@@ -954,7 +954,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(sticker, "Sticker");
         if (sticker instanceof GuildSticker)
-            Checks.check(((GuildSticker) sticker).getGuildIdLong() == id, "Cannot edit a sticker from another guild!");
+            Checks.check(((GuildSticker) sticker).guildIdLong == id, "Cannot edit a sticker from another guild!");
         Checks.check(!(sticker instanceof StandardSticker), "Cannot edit a standard sticker.");
         return new GuildStickerManagerImpl(this, id, sticker);
     }
@@ -1043,7 +1043,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> leave()
     {
-        if (getSelfMember().isOwner())
+        if (getSelfMember().isOwner)
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
@@ -1054,7 +1054,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete()
     {
-        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
+        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled)
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
 
         return delete(null);
@@ -1064,11 +1064,11 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete(String mfaCode)
     {
-        if (!getSelfMember().isOwner())
+        if (!getSelfMember().isOwner)
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
         DataObject mfaBody = null;
-        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
+        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled)
         {
             Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
             mfaBody = DataObject.empty().put("code", mfaCode);
@@ -1127,7 +1127,7 @@ public class GuildImpl implements Guild
             pendingRequestToSpeak = null;
         }
 
-        AudioChannel channel = getSelfMember().getVoiceState().getChannel();
+        AudioChannel channel = getSelfMember().voiceState.channel;
         if (channel instanceof StageChannel)
         {
             CompletableFuture<Void> future = ((StageChannel) channel).cancelRequestToSpeak().submit();
@@ -1213,7 +1213,7 @@ public class GuildImpl implements Guild
         return new DeferredRestAction<>(jda, Member.class,
                 () -> getMemberById(id),
                 () -> {
-                    if (id == jda.getSelfUser().getIdLong())
+                    if (id == jda.getSelfUser().idLong)
                         return new CompletedRestAction<>(jda, getSelfMember());
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
                     return new RestActionImpl<>(jda, route, (resp, req) -> {
@@ -1430,12 +1430,12 @@ public class GuildImpl implements Guild
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
         if (audioChannel != null)
-            checkGuild(audioChannel.getGuild(), "AudioChannel");
+            checkGuild(audioChannel.guild, "AudioChannel");
 
-        GuildVoiceState vState = member.getVoiceState();
+        GuildVoiceState vState = member.voiceState;
         if (vState == null)
             throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
-        AudioChannel channel = vState.getChannel();
+        AudioChannel channel = vState.channel;
         if (channel == null)
             throw new IllegalStateException("You cannot move a Member who isn't in an AudioChannel!");
 
@@ -1451,7 +1451,7 @@ public class GuildImpl implements Guild
                                                       "for the destination AudioChannel, so the move cannot be done.");
 
         DataObject body = DataObject.empty().put("channel_id", audioChannel == null ? null : audioChannel.getId());
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.user.getId());
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
@@ -1481,10 +1481,10 @@ public class GuildImpl implements Guild
             if (member.equals(getSelfMember()))
                 route = Route.Guilds.MODIFY_SELF.compile(getId());
             else
-                route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
+                route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.user.getId());
 
             return new AuditableRestActionImpl<Void>(jda, route, body);
-        }).setCacheCheck(() -> !Objects.equals(nickname, member.getNickname()));
+        }).setCacheCheck(() -> !Objects.equals(nickname, member.nickname));
     }
 
     @Nonnull
@@ -1519,7 +1519,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.KICK_MEMBERS);
-        checkOwner(user.getIdLong(), "kick");
+        checkOwner(user.idLong, "kick");
         checkPosition(user);
 
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), user.getId());
@@ -1535,7 +1535,7 @@ public class GuildImpl implements Guild
         Checks.notNegative(duration, "Deletion Timeframe");
         Checks.check(unit.toDays(duration) <= 7, "Deletion timeframe must not be larger than 7 days");
         checkPermission(Permission.BAN_MEMBERS);
-        checkOwner(user.getIdLong(), "ban");
+        checkOwner(user.idLong, "ban");
         checkPosition(user);
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), user.getId());
@@ -1561,7 +1561,7 @@ public class GuildImpl implements Guild
 
         for (UserSnowflake user : users)
         {
-            checkOwner(user.getIdLong(), "ban");
+            checkOwner(user.idLong, "ban");
             checkPosition(user);
         }
 
@@ -1606,7 +1606,7 @@ public class GuildImpl implements Guild
         Checks.check(date.isAfter(OffsetDateTime.now()), "Cannot put a member in time out with date in the past. Provided: %s", date);
         Checks.check(date.isBefore(OffsetDateTime.now().plusDays(Member.MAX_TIME_OUT_LENGTH)), "Cannot put a member in time out for more than 28 days. Provided: %s", date);
         checkPermission(Permission.MODERATE_MEMBERS);
-        checkOwner(user.getIdLong(), "time out");
+        checkOwner(user.idLong, "time out");
         checkPosition(user);
 
         return timeoutUntilById0(user.getId(), date);
@@ -1638,12 +1638,12 @@ public class GuildImpl implements Guild
         Member member = resolveMember(user);
         if (member != null)
         {
-            GuildVoiceState voiceState = member.getVoiceState();
+            GuildVoiceState voiceState = member.voiceState;
             if (voiceState != null)
             {
-                if (voiceState.getChannel() == null)
+                if (voiceState.channel == null)
                     throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
-                if (voiceState.isGuildDeafened() == deafen)
+                if (voiceState.isGuildDeafened == deafen)
                     return new CompletedRestAction<>(getJDA(), null);
             }
         }
@@ -1663,12 +1663,12 @@ public class GuildImpl implements Guild
         Member member = resolveMember(user);
         if (member != null)
         {
-            GuildVoiceState voiceState = member.getVoiceState();
+            GuildVoiceState voiceState = member.voiceState;
             if (voiceState != null)
             {
-                if (voiceState.getChannel() == null)
+                if (voiceState.channel == null)
                     throw new IllegalStateException("Can only mute members who are currently in a voice channel");
-                if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
+                if (voiceState.isGuildMuted == mute && (mute || !voiceState.isSuppressed))
                     return new CompletedRestAction<>(getJDA(), null);
             }
         }
@@ -1746,7 +1746,7 @@ public class GuildImpl implements Guild
              "Cannot add the PublicRole of a Guild to a Member. All members have this role by default!");
 
         // Return an empty rest action if there were no changes
-        final List<Role> memberRoles = member.getRoles();
+        final List<Role> memberRoles = member.roles;
         if (Helpers.deepEqualsUnordered(roles, memberRoles))
             return new CompletedRestAction<>(getJDA(), null);
 
@@ -1756,7 +1756,7 @@ public class GuildImpl implements Guild
             if (!roles.contains(r))
             {
                 checkPosition(r);
-                Checks.check(!r.isManaged(), "Cannot remove managed role from member. Role: %s", r);
+                Checks.check(!r.isManaged, "Cannot remove managed role from member. Role: %s", r);
             }
         }
 
@@ -1766,13 +1766,13 @@ public class GuildImpl implements Guild
             if (!memberRoles.contains(r))
             {
                 checkPosition(r);
-                Checks.check(!r.isManaged(), "Cannot add managed role to member. Role: %s", r);
+                Checks.check(!r.isManaged, "Cannot add managed role to member. Role: %s", r);
             }
         }
 
         DataObject body = DataObject.empty()
             .put("roles", roles.stream().map(Role::getId).collect(Collectors.toSet()));
-        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
+        Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.user.getId());
 
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
@@ -1783,15 +1783,15 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(newOwner, "Member");
         checkGuild(newOwner.getGuild(), "Member");
-        if (!getSelfMember().isOwner())
+        if (!getSelfMember().isOwner)
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
 
         Checks.check(!getSelfMember().equals(newOwner),
                      "The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
 
-        Checks.check(!newOwner.getUser().isBot(), "Cannot transfer ownership of a Guild to a Bot!");
+        Checks.check(!newOwner.user.isBot(), "Cannot transfer ownership of a Guild to a Bot!");
 
-        DataObject body = DataObject.empty().put("owner_id", newOwner.getUser().getId());
+        DataObject body = DataObject.empty().put("owner_id", newOwner.user.getId());
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
@@ -1874,7 +1874,7 @@ public class GuildImpl implements Guild
 
         DataObject body = DataObject.empty();
         body.put("name", name);
-        body.put("image", icon.getEncoding());
+        body.put("image", icon.encoding);
         if (roles.length > 0) // making sure none of the provided roles are null before mapping them to the snowflake id
             body.put("roles", Stream.of(roles).filter(Objects::nonNull).map(ISnowflake::getId).collect(Collectors.toSet()));
 
@@ -1956,21 +1956,21 @@ public class GuildImpl implements Guild
     @Override
     public ChannelOrderAction modifyCategoryPositions()
     {
-        return new ChannelOrderActionImpl(this, ChannelType.CATEGORY.getSortBucket());
+        return new ChannelOrderActionImpl(this, ChannelType.CATEGORY.sortBucket);
     }
 
     @Nonnull
     @Override
     public ChannelOrderAction modifyTextChannelPositions()
     {
-        return new ChannelOrderActionImpl(this, ChannelType.TEXT.getSortBucket());
+        return new ChannelOrderActionImpl(this, ChannelType.TEXT.sortBucket);
     }
 
     @Nonnull
     @Override
     public ChannelOrderAction modifyVoiceChannelPositions()
     {
-        return new ChannelOrderActionImpl(this, ChannelType.VOICE.getSortBucket());
+        return new ChannelOrderActionImpl(this, ChannelType.VOICE.sortBucket);
     }
 
     @Nonnull
@@ -1978,8 +1978,8 @@ public class GuildImpl implements Guild
     public CategoryOrderAction modifyTextChannelPositions(@Nonnull Category category)
     {
         Checks.notNull(category, "Category");
-        checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderActionImpl(category, ChannelType.TEXT.getSortBucket());
+        checkGuild(category.guild, "Category");
+        return new CategoryOrderActionImpl(category, ChannelType.TEXT.sortBucket);
     }
 
     @Nonnull
@@ -1987,8 +1987,8 @@ public class GuildImpl implements Guild
     public CategoryOrderAction modifyVoiceChannelPositions(@Nonnull Category category)
     {
         Checks.notNull(category, "Category");
-        checkGuild(category.getGuild(), "Category");
-        return new CategoryOrderActionImpl(category, ChannelType.VOICE.getSortBucket());
+        checkGuild(category.guild, "Category");
+        return new CategoryOrderActionImpl(category, ChannelType.VOICE.sortBucket);
     }
 
     @Nonnull
@@ -2039,7 +2039,7 @@ public class GuildImpl implements Guild
             Checks.notNull(role, "Role in roles to " + type);
             checkGuild(role.getGuild(), "Role: " + role);
             checkPosition(role);
-            Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
+            Checks.check(!role.isManaged, "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
     }
 
@@ -2047,7 +2047,7 @@ public class GuildImpl implements Guild
     {
         if (parent != null)
         {
-            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            Checks.check(parent.guild.equals(this), "Category is not from the same guild!");
             if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
                 throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
         }
@@ -2065,7 +2065,7 @@ public class GuildImpl implements Guild
 
     private Member resolveMember(UserSnowflake user)
     {
-        Member member = getMemberById(user.getIdLong());
+        Member member = getMemberById(user.idLong);
         if (member == null && user instanceof Member)
         {
             member = (Member) user;
@@ -2085,7 +2085,7 @@ public class GuildImpl implements Guild
     {
         if (!isRequestToSpeakPending())
             return;
-        AudioChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
+        AudioChannel connectedChannel = getSelfMember().voiceState.channel;
         if (!(connectedChannel instanceof StageChannel))
             return;
         StageChannel stage = (StageChannel) connectedChannel;
@@ -2109,7 +2109,7 @@ public class GuildImpl implements Guild
     public GuildImpl setOwner(Member owner)
     {
         // Only cache owner if user cache is enabled
-        if (owner != null && getMemberById(owner.getIdLong()) != null)
+        if (owner != null && getMemberById(owner.idLong) != null)
             this.owner = owner;
         return this;
     }

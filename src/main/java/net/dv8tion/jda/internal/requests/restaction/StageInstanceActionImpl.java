@@ -40,7 +40,7 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
 
     public StageInstanceActionImpl(StageChannel channel)
     {
-        super(channel.getJDA(), Route.StageInstances.CREATE_INSTANCE.compile());
+        super(channel.jDA, Route.StageInstances.CREATE_INSTANCE.compile());
         this.channel = channel;
     }
 
@@ -93,14 +93,14 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
         DataObject body = DataObject.empty();
         body.put("channel_id", channel.getId());
         body.put("topic", topic);
-        body.put("privacy_level", level.getKey());
+        body.put("privacy_level", level.key);
         return getRequestBody(body);
     }
 
     @Override
     protected void handleSuccess(Response response, Request<StageInstance> request)
     {
-        StageInstance instance = api.getEntityBuilder().createStageInstance((GuildImpl) channel.getGuild(), response.getObject());
+        StageInstance instance = api.getEntityBuilder().createStageInstance((GuildImpl) channel.guild, response.getObject());
         request.onSuccess(instance);
     }
 }

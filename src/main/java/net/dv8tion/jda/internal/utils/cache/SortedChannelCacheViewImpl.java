@@ -150,7 +150,7 @@ public class SortedChannelCacheViewImpl<T extends Channel & Comparable<? super T
             Checks.notEmpty(name, "Name");
             return applyStream(stream ->
                 stream
-                    .filter(it -> Helpers.equals(name, it.getName(), ignoreCase))
+                    .filter(it -> Helpers.equals(name, it.name, ignoreCase))
                     .sorted()
                     .collect(Helpers.toUnmodifiableList())
             );

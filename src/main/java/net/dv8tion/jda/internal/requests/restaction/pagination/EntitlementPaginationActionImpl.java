@@ -64,7 +64,7 @@ public class EntitlementPaginationActionImpl
         if (user == null)
             userId = 0;
         else
-            userId = user.getIdLong();
+            userId = user.idLong;
         return this;
     }
 
@@ -169,7 +169,7 @@ public class EntitlementPaginationActionImpl
             if (useCache)
                 cached.addAll(entitlements);
             last = entitlements.get(entitlements.size() - 1);
-            lastKey = last.getIdLong();
+            lastKey = last.idLong;
         }
 
         request.onSuccess(entitlements);
@@ -178,6 +178,6 @@ public class EntitlementPaginationActionImpl
     @Override
     protected long getKey(Entitlement it)
     {
-        return it.getIdLong();
+        return it.idLong;
     }
 }

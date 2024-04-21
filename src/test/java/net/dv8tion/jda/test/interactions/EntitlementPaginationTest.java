@@ -59,7 +59,7 @@ public class EntitlementPaginationTest extends IntegrationTest
     @BeforeEach
     void setupSelfUser()
     {
-        when(selfUser.getApplicationIdLong()).thenReturn(Constants.BUTLER_USER_ID);
+        when(selfUser.applicationIdLong).thenReturn(Constants.BUTLER_USER_ID);
         when(jda.getSelfUser()).thenReturn(selfUser);
 
         action = new EntitlementPaginationActionImpl(jda);

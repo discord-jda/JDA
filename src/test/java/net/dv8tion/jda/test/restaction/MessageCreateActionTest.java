@@ -64,7 +64,7 @@ public class MessageCreateActionTest extends IntegrationTest
     void setupChannel()
     {
         when(channel.getId()).thenReturn(FIXED_CHANNEL_ID);
-        when(channel.getJDA()).thenReturn(jda);
+        when(channel.jDA).thenReturn(jda);
     }
 
     @Test

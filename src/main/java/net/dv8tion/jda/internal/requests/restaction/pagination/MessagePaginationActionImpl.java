@@ -45,12 +45,12 @@ public class MessagePaginationActionImpl
 
     public MessagePaginationActionImpl(MessageChannel channel)
     {
-        super(channel.getJDA(), Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
+        super(channel.jDA, Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()), 1, 100, 100);
 
         if (channel instanceof GuildChannel)
         {
             GuildChannel guildChannel = (GuildChannel) channel;
-            Member selfMember = guildChannel.getGuild().getSelfMember();
+            Member selfMember = guildChannel.guild.getSelfMember();
             Checks.checkAccess(selfMember, guildChannel);
             if (!selfMember.hasPermission(guildChannel, Permission.MESSAGE_HISTORY))
                 throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_HISTORY);
@@ -100,7 +100,7 @@ public class MessagePaginationActionImpl
         if (!messages.isEmpty())
         {
             last = messages.get(messages.size() - 1);
-            lastKey = last.getIdLong();
+            lastKey = last.idLong;
         }
 
         request.onSuccess(messages);
@@ -109,6 +109,6 @@ public class MessagePaginationActionImpl
     @Override
     protected long getKey(Message it)
     {
-        return it.getIdLong();
+        return it.idLong;
     }
 }

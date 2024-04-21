@@ -54,7 +54,7 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
 
     public WebhookImpl(IWebhookContainer channel, long id, WebhookType type)
     {
-        this(channel, channel.getJDA(), id, type);
+        this(channel, channel.jDA, id, type);
     }
 
     public WebhookImpl(IWebhookContainer channel, JDA api, long id, WebhookType type)
@@ -90,7 +90,7 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
     {
         if (channel == null)
             throw new IllegalStateException("Cannot provide guild for this Webhook instance because it does not belong to this shard");
-        return getChannel().getGuild();
+        return getChannel().guild;
     }
 
     @Nonnull
@@ -127,7 +127,7 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
     @Override
     public String getName()
     {
-        return user.getName();
+        return user.name;
     }
 
     @Nonnull
@@ -156,7 +156,7 @@ public class WebhookImpl extends AbstractWebhookClient<Message> implements Webho
         if (token != null)
             return delete(token);
 
-        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
+        if (!getGuild().selfMember.hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(getId());

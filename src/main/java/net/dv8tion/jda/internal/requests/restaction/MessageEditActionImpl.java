@@ -58,9 +58,9 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
 
     public MessageEditActionImpl(@Nonnull MessageChannel channel, @Nonnull String messageId)
     {
-        super(channel.getJDA(), Route.Messages.EDIT_MESSAGE.compile(channel.getId(), messageId));
+        super(channel.jDA, Route.Messages.EDIT_MESSAGE.compile(channel.getId(), messageId));
         this.channel = channel;
-        this.guild = channel instanceof GuildChannel ? ((GuildChannel) channel).getGuild() : null;
+        this.guild = channel instanceof GuildChannel ? ((GuildChannel) channel).guild : null;
         this.messageId = messageId;
     }
 
@@ -80,7 +80,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     protected Route.CompiledRoute finalizeRoute()
     {
         if (webhook != null && (!(webhook instanceof InteractionHook) || !((InteractionHook) webhook).isExpired()))
-            return Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), messageId);
+            return Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.token, messageId);
 
         return super.finalizeRoute();
     }

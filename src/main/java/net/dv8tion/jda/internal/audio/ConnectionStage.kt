@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.internal.audio
 
-package net.dv8tion.jda.internal.audio;
-
-public enum ConnectionStage
-{
-    CONNECT, RECONNECT, DISCONNECT
+enum class ConnectionStage {
+    CONNECT,
+    RECONNECT,
+    DISCONNECT
 }

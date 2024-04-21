@@ -379,7 +379,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         route = route.withQueryParams("limit", limit);
 
         if (localLastKey != 0)
-            route = route.withQueryParams(order.getKey(), getPaginationLastEvaluatedKey(localLastKey, this.last));
+            route = route.withQueryParams(order.key, getPaginationLastEvaluatedKey(localLastKey, this.last));
         else if (order == PaginationOrder.FORWARD)
             route = route.withQueryParams("after", getPaginationLastEvaluatedKey(0, this.last));
 

@@ -88,7 +88,7 @@ public class MessageCreateHandler extends SocketHandler
                         GuildChannel actual = guild.getGuildChannelById(channelId);
                         if (actual != null)
                         {
-                            WebSocketClient.LOG.debug("Dropping MESSAGE_CREATE for unexpected channel of type {}", actual.getType());
+                            WebSocketClient.LOG.debug("Dropping MESSAGE_CREATE for unexpected channel of type {}", actual.type);
                             return null;
                         }
                     }
@@ -114,13 +114,13 @@ public class MessageCreateHandler extends SocketHandler
             }
         }
 
-        MessageChannel channel = message.getChannel();
-        ChannelType channelType = channel.getType();
+        MessageChannel channel = message.channel;
+        ChannelType channelType = channel.type;
 
         //Update the variable that tracks the latest message received in the channel
-        ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(message.getIdLong());
+        ((MessageChannelMixin<?>) channel).setLatestMessageIdLong(message.idLong);
 
-        if (channelType.isGuild())
+        if (channelType.isGuild)
         {
             if (channelType.isThread())
             {
@@ -132,7 +132,7 @@ public class MessageCreateHandler extends SocketHandler
         }
         else
         {
-            api.usedPrivateChannel(channel.getIdLong());
+            api.usedPrivateChannel(channel.idLong);
         }
 
         jda.handleEvent(new MessageReceivedEvent( jda, responseNumber, message));

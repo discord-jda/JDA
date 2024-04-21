@@ -13,295 +13,252 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils
 
-package net.dv8tion.jda.api.utils;
-
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EntityString;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import net.dv8tion.jda.internal.utils.Checks
+import net.dv8tion.jda.internal.utils.EntityString
+import java.util.function.Consumer
+import java.util.function.Function
+import java.util.function.Predicate
+import java.util.function.Supplier
+import javax.annotation.CheckReturnValue
+import javax.annotation.Nonnull
 
 /**
  * Represents a computation or task result.
- * <br>This result may be a {@link #getFailure() failure} or {@link #get() success}.
+ * <br></br>This result may be a [failure][.getFailure] or [success][.get].
  *
- * <p>This is a <b>value type</b> and does not implement {@link #equals(Object)} or {@link #hashCode()}!
+ *
+ * This is a **value type** and does not implement [.equals] or [.hashCode]!
  *
  * @param <T>
- *        The success type
+ * The success type
  *
  * @since  4.2.1
- */
-public class Result<T>
-{
-    private final T value;
-    private final Throwable error;
-
-    private Result(T value, Throwable error)
-    {
-        this.value = value;
-        this.error = error;
-    }
-
-    /**
-     * Creates a successful result.
-     *
-     * @param  value
-     *         The success value
-     * @param  <E>
-     *         The success type
-     *
-     * @return Result
-     */
-    @Nonnull
-    @CheckReturnValue
-    public static <E> Result<E> success(@Nullable E value)
-    {
-        return new Result<>(value, null);
-    }
-
-    /**
-     * Creates a failure result.
-     *
-     * @param  error
-     *         The failure throwable
-     * @param  <E>
-     *         The success type
-     *
-     * @throws IllegalArgumentException
-     *         If the provided error is null
-     *
-     * @return Result
-     */
-    @Nonnull
-    @CheckReturnValue
-    public static <E> Result<E> failure(@Nonnull Throwable error)
-    {
-        Checks.notNull(error, "Error");
-        return new Result<>(null, error);
-    }
-
-    /**
-     * Creates a result instance from the provided supplier.
-     * <br>If the supplier throws an exception, a failure result is returned.
-     *
-     * @param  supplier
-     *         The supplier
-     * @param  <E>
-     *         The success type
-     *
-     * @throws IllegalArgumentException
-     *         If the supplier is null
-     *
-     * @return Result instance with the supplied value or exception failure
-     */
-    @Nonnull
-    @CheckReturnValue
-    public static <E> Result<E> defer(@Nonnull Supplier<? extends E> supplier)
-    {
-        Checks.notNull(supplier, "Supplier");
-        try
-        {
-            return Result.success(supplier.get());
-        }
-        catch (Exception ex)
-        {
-            return Result.failure(ex);
-        }
-    }
-
-    /**
-     * True if this result is a failure.
-     * <br>Use {@link #getFailure()} or {@link #expect(Predicate)} to handle failures.
-     *
-     * @return True, if this is a failure result
-     */
-    public boolean isFailure()
-    {
-        return error != null;
-    }
-
-    /**
-     * True if this result is a success.
-     * <br>Use {@link #get()} or {@link #map(Function)} to handle success values.
-     *
-     * @return True, if this is a successful result
-     */
-    public boolean isSuccess()
-    {
-        return error == null;
-    }
+</T> */
+class Result<T> private constructor(private val value: T, private val error: Throwable?) {
+    val isFailure: Boolean
+        /**
+         * True if this result is a failure.
+         * <br></br>Use [.getFailure] or [.expect] to handle failures.
+         *
+         * @return True, if this is a failure result
+         */
+        get() = error != null
+    val isSuccess: Boolean
+        /**
+         * True if this result is a success.
+         * <br></br>Use [.get] or [.map] to handle success values.
+         *
+         * @return True, if this is a successful result
+         */
+        get() = error == null
 
     /**
      * Passive error handler.
-     * <br>This will apply the provided callback if {@link #isFailure()} is true
+     * <br></br>This will apply the provided callback if [.isFailure] is true
      * and return the same result for further chaining.
      *
      * @param  callback
-     *         The passive callback
+     * The passive callback
      *
      * @throws IllegalArgumentException
-     *         If the callback is null
+     * If the callback is null
      *
      * @return The same result instance
      */
     @Nonnull
-    public Result<T> onFailure(@Nonnull Consumer<? super Throwable> callback)
-    {
-        Checks.notNull(callback, "Callback");
-        if (isFailure())
-            callback.accept(error);
-        return this;
+    fun onFailure(@Nonnull callback: Consumer<in Throwable?>): Result<T> {
+        Checks.notNull(callback, "Callback")
+        if (isFailure) callback.accept(error)
+        return this
     }
 
     /**
      * Passive success handler.
-     * <br>This will apply the provided callback if {@link #isSuccess()} is true
+     * <br></br>This will apply the provided callback if [.isSuccess] is true
      * and return the same result for further chaining.
      *
      * @param  callback
-     *         The passive callback
+     * The passive callback
      *
      * @throws IllegalArgumentException
-     *         If the callback is null
+     * If the callback is null
      *
      * @return The same result instance
      */
     @Nonnull
-    public Result<T> onSuccess(@Nonnull Consumer<? super T> callback)
-    {
-        Checks.notNull(callback, "Callback");
-        if (isSuccess())
-            callback.accept(value);
-        return this;
+    fun onSuccess(@Nonnull callback: Consumer<in T>): Result<T> {
+        Checks.notNull(callback, "Callback")
+        if (isSuccess) callback.accept(value)
+        return this
     }
 
     /**
      * Composite function to convert a result value to another value.
-     * <br>This will only apply the function is {@link #isSuccess()} is true.
+     * <br></br>This will only apply the function is [.isSuccess] is true.
      *
      * @param  function
-     *         The conversion function
+     * The conversion function
      * @param  <U>
-     *         The result type
+     * The result type
      *
      * @throws IllegalArgumentException
-     *         If the provided function is null
+     * If the provided function is null
      *
      * @return The mapped result
      *
-     * @see    #flatMap(Function)
-     */
+     * @see .flatMap
+    </U> */
     @Nonnull
     @CheckReturnValue
-    @SuppressWarnings("unchecked")
-    public <U> Result<U> map(@Nonnull Function<? super T, ? extends U> function)
-    {
-        Checks.notNull(function, "Function");
-        if (isSuccess())
-            return Result.defer(() -> function.apply(value));
-        return (Result<U>) this;
+    fun <U> map(@Nonnull function: Function<in T, out U>): Result<U> {
+        Checks.notNull(function, "Function")
+        return if (isSuccess) defer {
+            function.apply(
+                value
+            )
+        } else this as Result<U>
     }
 
     /**
      * Composite function to convert a result value to another result.
-     * <br>This will only apply the function is {@link #isSuccess()} is true.
+     * <br></br>This will only apply the function is [.isSuccess] is true.
      *
      * @param  function
-     *         The conversion function
+     * The conversion function
      * @param  <U>
-     *         The result type
+     * The result type
      *
      * @throws IllegalArgumentException
-     *         If the provided function is null
+     * If the provided function is null
      *
      * @return The mapped result
-     */
+    </U> */
     @Nonnull
     @CheckReturnValue
-    @SuppressWarnings("unchecked")
-    public <U> Result<U> flatMap(@Nonnull Function<? super T, ? extends Result<U>> function)
-    {
-        Checks.notNull(function, "Function");
-        try
-        {
-            if (isSuccess())
-                return function.apply(value);
+    fun <U> flatMap(@Nonnull function: Function<in T, out Result<U>?>): Result<U>? {
+        Checks.notNull(function, "Function")
+        try {
+            if (isSuccess) return function.apply(value)
+        } catch (ex: Exception) {
+            return failure(ex)
         }
-        catch (Exception ex)
-        {
-            return Result.failure(ex);
-        }
-        return (Result<U>) this;
+        return this as Result<U>
     }
 
     /**
      * Unwraps the success value of this result.
-     * <br>This only works if {@link #isSuccess()} is true and throws otherwise.
+     * <br></br>This only works if [.isSuccess] is true and throws otherwise.
      *
      * @throws IllegalStateException
-     *         If the result is not successful
+     * If the result is not successful
      *
      * @return The result value
      */
-    public T get()
-    {
-        if (isFailure())
-            throw new IllegalStateException(error);
-        return value;
+    fun get(): T {
+        if (isFailure) throw IllegalStateException(error)
+        return value
     }
 
     /**
      * Unwraps the error for this result.
-     * <br>This will be {@code null} if {@link #isFailure()} is false.
+     * <br></br>This will be `null` if [.isFailure] is false.
      *
      * @return The error or null
      */
-    @Nullable
-    public Throwable getFailure()
-    {
-        return error;
+    fun getFailure(): Throwable? {
+        return error
     }
 
     /**
      * Throws the wrapped exception if the provided predicate returns true.
-     * <br>This will never provide a null error to the predicate.
+     * <br></br>This will never provide a null error to the predicate.
      * A successful result will never throw.
      *
      * @param  predicate
-     *         The test predicate
+     * The test predicate
      *
      * @throws IllegalArgumentException
-     *         If the provided predicate is null
+     * If the provided predicate is null
      * @throws IllegalStateException
-     *         If the predicate returns true, the {@link Throwable#getCause() cause} will be the wrapped exception
+     * If the predicate returns true, the [cause][Throwable.getCause] will be the wrapped exception
      *
      * @return The same result instance
      */
     @Nonnull
-    public Result<T> expect(@Nonnull Predicate<? super Throwable> predicate)
-    {
-        Checks.notNull(predicate, "Predicate");
-        if (isFailure() && predicate.test(error))
-            throw new IllegalStateException(error);
-        return this;
+    fun expect(@Nonnull predicate: Predicate<in Throwable?>): Result<T> {
+        Checks.notNull(predicate, "Predicate")
+        if (isFailure && predicate.test(error)) throw IllegalStateException(error)
+        return this
     }
 
-    @Override
-    public String toString()
-    {
-        final EntityString entityString = new EntityString(this);
-        if (isSuccess())
-            entityString.addMetadata("success", value);
-        else
-            entityString.addMetadata("error", error);
+    override fun toString(): String {
+        val entityString = EntityString(this)
+        if (isSuccess) entityString.addMetadata("success", value) else entityString.addMetadata("error", error)
+        return entityString.toString()
+    }
 
-        return entityString.toString();
+    companion object {
+        /**
+         * Creates a successful result.
+         *
+         * @param  value
+         * The success value
+         * @param  <E>
+         * The success type
+         *
+         * @return Result
+        </E> */
+        @Nonnull
+        @CheckReturnValue
+        fun <E> success(value: E?): Result<E?> {
+            return Result(value, null)
+        }
+
+        /**
+         * Creates a failure result.
+         *
+         * @param  error
+         * The failure throwable
+         * @param  <E>
+         * The success type
+         *
+         * @throws IllegalArgumentException
+         * If the provided error is null
+         *
+         * @return Result
+        </E> */
+        @Nonnull
+        @CheckReturnValue
+        fun <E> failure(@Nonnull error: Throwable?): Result<E?> {
+            Checks.notNull(error, "Error")
+            return Result(null, error)
+        }
+
+        /**
+         * Creates a result instance from the provided supplier.
+         * <br></br>If the supplier throws an exception, a failure result is returned.
+         *
+         * @param  supplier
+         * The supplier
+         * @param  <E>
+         * The success type
+         *
+         * @throws IllegalArgumentException
+         * If the supplier is null
+         *
+         * @return Result instance with the supplied value or exception failure
+        </E> */
+        @Nonnull
+        @CheckReturnValue
+        fun <E> defer(@Nonnull supplier: Supplier<out E>): Result<E> {
+            Checks.notNull(supplier, "Supplier")
+            return try {
+                success<E>(supplier.get())
+            } catch (ex: Exception) {
+                failure(ex)
+            }
+        }
     }
 }

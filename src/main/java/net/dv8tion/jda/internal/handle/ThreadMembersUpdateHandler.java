@@ -95,7 +95,7 @@ public class ThreadMembersUpdateHandler extends SocketHandler
         {
             for (ThreadMember threadMember : addedThreadMembers)
             {
-                view.getMap().put(threadMember.getIdLong(), threadMember);
+                view.getMap().put(threadMember.idLong, threadMember);
             }
         }
 

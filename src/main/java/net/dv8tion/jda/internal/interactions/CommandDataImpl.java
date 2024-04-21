@@ -100,7 +100,7 @@ public class CommandDataImpl implements SlashCommandData
         if (localizationMapper != null) localizationMapper.localizeCommand(this, options);
 
         DataObject json = DataObject.empty()
-                .put("type", type.getId())
+                .put("type", type.id)
                 .put("name", name)
                 .put("nsfw", nsfw)
                 .put("options", options)
@@ -212,8 +212,8 @@ public class CommandDataImpl implements SlashCommandData
         boolean allowRequired = this.allowRequired;
         for (OptionData option : options)
         {
-            Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand with addOptions(...). Use addSubcommands(...) instead!");
-            Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
+            Checks.check(option.type != OptionType.SUB_COMMAND, "Cannot add a subcommand with addOptions(...). Use addSubcommands(...) instead!");
+            Checks.check(option.type != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
             Checks.check(allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
             allowRequired = option.isRequired(); // prevent adding required options after non-required options
         }

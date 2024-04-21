@@ -73,18 +73,18 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
         setName(name);
         setStartTime(startTime);
         Checks.notNull(channel, "Channel");
-        if (!channel.getGuild().equals(guild))
+        if (!channel.guild.equals(guild))
         {
             throw new IllegalArgumentException("Invalid parameter: Channel has to be from the same guild as the scheduled event!");
         }
         else if (channel instanceof StageChannel)
         {
-            this.channelId = channel.getIdLong();
+            this.channelId = channel.idLong;
             this.entityType = ScheduledEvent.Type.STAGE_INSTANCE;
         }
         else if (channel instanceof VoiceChannel)
         {
-            this.channelId = channel.getIdLong();
+            this.channelId = channel.idLong;
             this.entityType = ScheduledEvent.Type.VOICE;
         }
         else
@@ -185,7 +185,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
     protected RequestBody finalizeData()
     {
         DataObject object = DataObject.empty();
-        object.put("entity_type", entityType.getKey());
+        object.put("entity_type", entityType.key);
         object.put("privacy_level", 2);
         object.put("name", name);
         object.put("scheduled_start_time", startTime.format(DateTimeFormatter.ISO_DATE_TIME));
@@ -206,7 +206,7 @@ public class ScheduledEventActionImpl extends AuditableRestActionImpl<ScheduledE
         if (description != null)
             object.put("description", description);
         if (image != null)
-            object.put("image", image.getEncoding());
+            object.put("image", image.encoding);
         if (endTime != null)
             object.put("scheduled_end_time", endTime.format(DateTimeFormatter.ISO_DATE_TIME));
 

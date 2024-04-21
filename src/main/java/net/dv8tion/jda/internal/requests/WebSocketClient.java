@@ -381,7 +381,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             );
             if (compression != Compression.NONE)
             {
-                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compression.getKey());
+                gatewayUrl = IOUtil.addQuery(gatewayUrl, "compress", compression.key);
                 switch (compression)
                 {
                     case ZLIB:
@@ -508,7 +508,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
 
         // null is considered -reconnectable- as we do not know the close-code meaning
-        boolean closeCodeIsReconnect = closeCode == null || closeCode.isReconnect();
+        boolean closeCodeIsReconnect = closeCode == null || closeCode.isReconnect;
         if (!shouldReconnect || !closeCodeIsReconnect || executor.isShutdown()) //we should not reconnect
         {
             if (ratelimitThread != null)
@@ -769,8 +769,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             payload
                 .put("shard", DataArray.empty()
-                    .add(shardInfo.getShardId())
-                    .add(shardInfo.getShardTotal()));
+                    .add(shardInfo.shardId)
+                    .add(shardInfo.shardTotal));
         }
         send(identify, true);
         handleIdentifyRateLimit = true;
@@ -1159,7 +1159,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         locked("There was an error queueing the audio reconnect", () ->
         {
-            final long guildId = channel.getGuild().getIdLong();
+            final long guildId = channel.guild.getIdLong();
             ConnectionRequest request = queuedAudioConnections.get(guildId);
 
             if (request == null)
@@ -1171,7 +1171,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             else
             {
                 // If there is a request we change it to reconnect, no matter what it is
-                request.setStage(ConnectionStage.RECONNECT);
+                request.stage = ConnectionStage.RECONNECT;
             }
             // in all cases, update to this channel
             request.setChannel(channel);
@@ -1182,7 +1182,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         locked("There was an error queueing the audio connect", () ->
         {
-            final long guildId = channel.getGuild().getIdLong();
+            final long guildId = channel.guild.getIdLong();
             ConnectionRequest request = queuedAudioConnections.get(guildId);
 
             if (request == null)
@@ -1191,10 +1191,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 request = new ConnectionRequest(channel, ConnectionStage.CONNECT);
                 queuedAudioConnections.put(guildId, request);
             }
-            else if (request.getStage() == ConnectionStage.DISCONNECT)
+            else if (request.stage == ConnectionStage.DISCONNECT)
             {
                 // if planned to disconnect, we want to reconnect
-                request.setStage(ConnectionStage.RECONNECT);
+                request.stage = ConnectionStage.RECONNECT;
             }
 
             // in all cases, update to this channel
@@ -1206,7 +1206,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         locked("There was an error queueing the audio disconnect", () ->
         {
-            final long guildId = guild.getIdLong();
+            final long guildId = guild.idLong;
             ConnectionRequest request = queuedAudioConnections.get(guildId);
 
             if (request == null)
@@ -1217,7 +1217,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             else
             {
                 // If we have a request, change to DISCONNECT
-                request.setStage(ConnectionStage.DISCONNECT);
+                request.stage = ConnectionStage.DISCONNECT;
             }
         });
     }
@@ -1243,7 +1243,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         if (request == null)
             return null;
-        ConnectionStage requestStage = request.getStage();
+        ConnectionStage requestStage = request.stage;
         if (connectedChannel == null)
         {
             //If we got an update that DISCONNECT happened
@@ -1255,8 +1255,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case DISCONNECT:
                     return queuedAudioConnections.remove(guildId);
                 case RECONNECT:
-                    request.setStage(ConnectionStage.CONNECT);
-                    request.setNextAttemptEpoch(System.currentTimeMillis());
+                    request.stage = ConnectionStage.CONNECT;
+                    request.nextAttemptEpoch = System.currentTimeMillis();
                 default:
                     return null;
             }
@@ -1265,7 +1265,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //If the removeRequest was related to a channel that isn't the currently queued
             // request, then don't remove it.
-            if (request.getChannelId() == connectedChannel.getIdLong())
+            if (request.getChannelId() == connectedChannel.idLong)
                 return queuedAudioConnections.remove(guildId);
         }
         //If the channel is not the one we are looking for!
@@ -1287,7 +1287,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         AtomicReference<ConnectionRequest> request = new AtomicReference<>();
         queuedAudioConnections.retainEntries((guildId, audioRequest) -> // we use this because it locks the mutex
         {
-            if (audioRequest.getNextAttemptEpoch() < now)
+            if (audioRequest.nextAttemptEpoch < now)
             {
                 // Check if the guild is ready
                 Guild guild = api.getGuildById(guildId);
@@ -1305,7 +1305,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
 
                 ConnectionListener listener = guild.getAudioManager().getConnectionListener();
-                if (audioRequest.getStage() != ConnectionStage.DISCONNECT)
+                if (audioRequest.stage != ConnectionStage.DISCONNECT)
                 {
                     // Check if we can connect to the target channel
                     AudioChannel channel = (AudioChannel) guild.getGuildChannelById(audioRequest.getChannelId());
@@ -1316,7 +1316,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         return false;
                     }
 
-                    if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
+                    if (!guild.selfMember.hasPermission(channel, Permission.VOICE_CONNECT))
                     {
                         if (listener != null)
                             listener.onStatusChange(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);

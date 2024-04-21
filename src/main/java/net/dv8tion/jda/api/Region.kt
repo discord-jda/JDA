@@ -13,20 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api;
+package net.dv8tion.jda.api
 
-import net.dv8tion.jda.internal.utils.EntityString;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.dv8tion.jda.internal.utils.EntityString
+import javax.annotation.Nonnull
 
 /**
  * Represents the Regions used for Audio connections.
- * <br>This is used by {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel AudioChannels} to define where the audio server that hosts the
- * {@link net.dv8tion.jda.api.entities.channel.middleman.AudioChannel} is located.
+ * <br></br>This is used by [AudioChannels][net.dv8tion.jda.api.entities.channel.middleman.AudioChannel] to define where the audio server that hosts the
+ * [net.dv8tion.jda.api.entities.channel.middleman.AudioChannel] is located.
  */
-public enum Region
-{
+enum class Region(
+    /**
+     * The Region key as defined by Discord.
+     *
+     * @return The key (internal name) of this region
+     */
+    @JvmField @get:Nonnull val key: String,
+    /**
+     * The human readable region name.
+     *
+     * @return The name of this region
+     */
+    @get:Nonnull override val name: String,
+    /**
+     * The unicode flag representative of this Region.
+     *
+     * @return Possibly-null unicode for the region's flag
+     */
+    val emoji: String?,
+    /**
+     * Whether or not this Region is a VIP region.
+     * <br></br>VIP regions have special perks like higher bitrate in VoiceChannels and priority during times
+     * of high Discord usage.
+     *
+     * @return True if this region is a VIP audio region.
+     */
+    val isVip: Boolean
+) {
     BRAZIL("brazil", "Brazil", "\uD83C\uDDE7\uD83C\uDDF7", false),
     HONG_KONG("hongkong", "Hong Kong", "\uD83C\uDDED\uD83C\uDDF0", false),
     INDIA("india", "India", "\uD83C\uDDEE\uD83C\uDDF3", false),
@@ -42,7 +66,6 @@ public enum Region
     US_EAST("us-east", "US East", "\uD83C\uDDFA\uD83C\uDDF8", false),
     US_SOUTH("us-south", "US South", "\uD83C\uDDFA\uD83C\uDDF8", false),
     US_WEST("us-west", "US West", "\uD83C\uDDFA\uD83C\uDDF8", false),
-
     VIP_BRAZIL("vip-brazil", "Brazil (VIP)", "\uD83C\uDDE7\uD83C\uDDF7", true),
     VIP_HONG_KONG("vip-hongkong", "Hong Kong (VIP)", "\uD83C\uDDED\uD83C\uDDF0", true),
     VIP_INDIA("vip-india", "India (VIP)", "\uD83C\uDDEE\uD83C\uDDF3", true),
@@ -58,96 +81,34 @@ public enum Region
     VIP_US_EAST("vip-us-east", "US East (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
     VIP_US_SOUTH("vip-us-south", "US South (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
     VIP_US_WEST("vip-us-west", "US West (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
-
     UNKNOWN("", "Unknown Region", null, false),
-
     AUTOMATIC("automatic", "Automatic", null, false);
 
-    private final String key;
-    private final String name;
-    private final String emoji;
-    private final boolean vip;
-
-    Region(String key, String name, String emoji, boolean vip)
-    {
-        this.key = key;
-        this.name = name;
-        this.emoji = emoji;
-        this.vip = vip;
+    override fun toString(): String {
+        return EntityString(this)
+            .setType(this)
+            .toString()
     }
 
-    /**
-     * The human readable region name.
-     *
-     * @return The name of this region
-     */
-    @Nonnull
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * The Region key as defined by Discord.
-     *
-     * @return The key (internal name) of this region
-     */
-    @Nonnull
-    public String getKey()
-    {
-        return key;
-    }
-
-    /**
-     * The unicode flag representative of this Region.
-     *
-     * @return Possibly-null unicode for the region's flag
-     */
-    @Nullable
-    public String getEmoji()
-    {
-        return emoji;
-    }
-
-    /**
-     * Whether or not this Region is a VIP region.
-     * <br>VIP regions have special perks like higher bitrate in VoiceChannels and priority during times
-     * of high Discord usage.
-     *
-     * @return True if this region is a VIP audio region.
-     */
-    public boolean isVip()
-    {
-        return vip;
-    }
-
-    /**
-     * Retrieves the {@link net.dv8tion.jda.api.Region Region} based on the provided key.
-     *
-     * @param  key
-     *         The key relating to the {@link net.dv8tion.jda.api.Region Region} we wish to retrieve.
-     *
-     * @return The {@link net.dv8tion.jda.api.Region Region} matching the key. If there is no match,
-     *         returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN}.
-     */
-    @Nonnull
-    public static Region fromKey(@Nullable String key)
-    {
-        for (Region region : values())
-        {
-            if (region.getKey().equals(key))
-            {
-                return region;
+    companion object {
+        /**
+         * Retrieves the [Region][net.dv8tion.jda.api.Region] based on the provided key.
+         *
+         * @param  key
+         * The key relating to the [Region][net.dv8tion.jda.api.Region] we wish to retrieve.
+         *
+         * @return The [Region][net.dv8tion.jda.api.Region] matching the key. If there is no match,
+         * returns [UNKNOWN][net.dv8tion.jda.api.Region.UNKNOWN].
+         */
+        @JvmStatic
+        @Nonnull
+        fun fromKey(key: String?): Region {
+            for (region in entries) {
+                if (region.key == key) {
+                    return region
+                }
             }
+            return UNKNOWN
         }
-        return UNKNOWN;
-    }
-
-    @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setType(this)
-                .toString();
     }
 }

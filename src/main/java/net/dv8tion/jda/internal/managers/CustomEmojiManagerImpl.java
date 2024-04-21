@@ -147,7 +147,7 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager> impl
     @Override
     protected boolean checkPermissions()
     {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+        if (!getGuild().selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_GUILD_EXPRESSIONS);
         return super.checkPermissions();
     }

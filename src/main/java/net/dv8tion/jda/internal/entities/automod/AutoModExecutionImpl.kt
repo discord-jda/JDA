@@ -13,114 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.internal.entities.automod
 
-package net.dv8tion.jda.internal.entities.automod;
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.automod.AutoModExecution
+import net.dv8tion.jda.api.entities.automod.AutoModResponse
+import net.dv8tion.jda.api.entities.automod.AutoModTriggerType
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion
+import net.dv8tion.jda.api.utils.data.DataObject
+import javax.annotation.Nonnull
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.automod.AutoModExecution;
-import net.dv8tion.jda.api.entities.automod.AutoModResponse;
-import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
-import net.dv8tion.jda.api.utils.data.DataObject;
+class AutoModExecutionImpl(@get:Nonnull override val guild: Guild, json: DataObject) : AutoModExecution {
+    private override val channel: GuildMessageChannel
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+    @get:Nonnull
+    override val response: AutoModResponse
 
-public class AutoModExecutionImpl implements AutoModExecution
-{
-    private final Guild guild;
-    private final GuildMessageChannel channel;
-    private final AutoModResponse response;
-    private final AutoModTriggerType type;
-    private final long userId, ruleId, messageId, alertMessageId;
-    private final String content, matchedContent, matchedKeyword;
+    @get:Nonnull
+    override val triggerType: AutoModTriggerType
+    override val userIdLong: Long
+    override val ruleIdLong: Long
+    override val messageIdLong: Long
+    override val alertMessageIdLong: Long
 
-    public AutoModExecutionImpl(Guild guild, DataObject json)
-    {
-        this.guild = guild;
-        this.channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id", 0L));
-        this.response = new AutoModResponseImpl(guild, json.getObject("action"));
-        this.type = AutoModTriggerType.fromKey(json.getInt("rule_trigger_type", -1));
-        this.userId = json.getUnsignedLong("user_id");
-        this.ruleId = json.getUnsignedLong("rule_id");
-        this.messageId = json.getUnsignedLong("message_id", 0L);
-        this.alertMessageId = json.getUnsignedLong("alert_system_message_id", 0L);
-        this.content = json.getString("content", "");
-        this.matchedContent = json.getString("matched_content", null);
-        this.matchedKeyword = json.getString("matched_keyword", null);
+    @get:Nonnull
+    override val content: String?
+    override val matchedContent: String?
+    override val matchedKeyword: String?
+
+    init {
+        channel = guild.getChannelById(GuildMessageChannel::class.java, json.getUnsignedLong("channel_id", 0L))!!
+        response = AutoModResponseImpl(guild, json.getObject("action"))
+        triggerType = AutoModTriggerType.fromKey(json.getInt("rule_trigger_type", -1))
+        userIdLong = json.getUnsignedLong("user_id")
+        ruleIdLong = json.getUnsignedLong("rule_id")
+        messageIdLong = json.getUnsignedLong("message_id", 0L)
+        alertMessageIdLong = json.getUnsignedLong("alert_system_message_id", 0L)
+        content = json.getString("content", "")
+        matchedContent = json.getString("matched_content", null)
+        matchedKeyword = json.getString("matched_keyword", null)
     }
 
-    @Nonnull
-    @Override
-    public Guild getGuild()
-    {
-        return guild;
-    }
-
-    @Nullable
-    @Override
-    public GuildMessageChannelUnion getChannel()
-    {
-        return (GuildMessageChannelUnion) channel;
-    }
-
-    @Nonnull
-    @Override
-    public AutoModResponse getResponse()
-    {
-        return response;
-    }
-
-    @Nonnull
-    @Override
-    public AutoModTriggerType getTriggerType()
-    {
-        return type;
-    }
-
-    @Override
-    public long getUserIdLong()
-    {
-        return userId;
-    }
-
-    @Override
-    public long getRuleIdLong()
-    {
-        return ruleId;
-    }
-
-    @Override
-    public long getMessageIdLong()
-    {
-        return messageId;
-    }
-
-    @Override
-    public long getAlertMessageIdLong()
-    {
-        return alertMessageId;
-    }
-
-    @Nonnull
-    @Override
-    public String getContent()
-    {
-        return content;
-    }
-
-    @Nullable
-    @Override
-    public String getMatchedContent()
-    {
-        return matchedContent;
-    }
-
-    @Nullable
-    @Override
-    public String getMatchedKeyword()
-    {
-        return matchedKeyword;
+    fun getChannel(): GuildMessageChannelUnion? {
+        return channel as GuildMessageChannelUnion
     }
 }

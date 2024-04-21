@@ -39,7 +39,7 @@ public class ThreadMemberImpl implements ThreadMember
 
     public ThreadMemberImpl(Member member, ThreadChannelImpl thread)
     {
-        this.api = member.getJDA();
+        this.api = member.jDA;
         this.member = member;
         this.thread = thread;
     }
@@ -69,7 +69,7 @@ public class ThreadMemberImpl implements ThreadMember
     @Override
     public User getUser()
     {
-        return member.getUser();
+        return member.user;
     }
 
     @Nonnull
@@ -90,13 +90,13 @@ public class ThreadMemberImpl implements ThreadMember
     @Override
     public String getAsMention()
     {
-        return member.getAsMention();
+        return member.asMention;
     }
 
     @Override
     public long getIdLong()
     {
-        return member.getIdLong();
+        return member.idLong;
     }
 
     // ===== Setters =======

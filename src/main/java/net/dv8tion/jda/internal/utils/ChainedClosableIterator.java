@@ -85,7 +85,7 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
             while (generator.hasNext())
             {
                 view = generator.next();
-                if (!view.isEmpty())
+                if (!view.isEmpty)
                     break;
                 view = null;
             }

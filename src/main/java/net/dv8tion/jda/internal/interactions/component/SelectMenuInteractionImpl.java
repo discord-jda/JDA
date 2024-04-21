@@ -38,7 +38,7 @@ public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu> extends
                     .flatMap(row -> row.getComponents().stream())
                     .filter(type::isInstance)
                     .map(type::cast)
-                    .filter(c -> customId.equals(c.getId()))
+                    .filter(c -> customId.equals(c.id))
                     .findFirst()
                     .orElse(null);
         }
@@ -59,6 +59,6 @@ public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu> extends
     @Override
     public Component.Type getComponentType()
     {
-        return menu.getType();
+        return menu.type;
     }
 }

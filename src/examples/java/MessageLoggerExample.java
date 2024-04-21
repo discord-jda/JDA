@@ -136,17 +136,17 @@ public class MessageLoggerExample extends ListenerAdapter
         // This is a special class called a "union", which allows you to perform specialization to more concrete types such as TextChannel or NewsChannel
         MessageChannelUnion channel = event.getChannel();
         // The actual message sent by the user, this can also be a message the bot sent itself, since you *do* receive your own messages after all
-        Message message = event.getMessage();
+        Message message = event.message;
 
         // Check whether the message was sent in a guild / server
         if (event.isFromGuild())
         {
             // This is a message from a server
             System.out.printf("[%s] [%#s] %#s: %s\n",
-                event.getGuild().getName(), // The name of the server the user sent the message in, this is generally referred to as "guild" in the API
+                    event.getGuild().name, // The name of the server the user sent the message in, this is generally referred to as "guild" in the API
                 channel, // The %#s makes use of the channel name and displays as something like #general
                 author,  // The %#s makes use of User#getAsTag which results in something like minn or Minn#1337
-                message.getContentDisplay() // This removes any unwanted mention syntax and converts it to a readable string
+                    message.contentDisplay // This removes any unwanted mention syntax and converts it to a readable string
             );
         }
         else
@@ -154,23 +154,21 @@ public class MessageLoggerExample extends ListenerAdapter
             // This is a message from a private channel
             System.out.printf("[direct] %#s: %s\n",
                 author, // same as above
-                message.getContentDisplay()
+                    message.contentDisplay
             );
         }
 
         // Using specialization, you can check concrete types of the channel union
 
-        if (channel.getType() == ChannelType.TEXT)
+        if (channel.type == ChannelType.TEXT)
         {
-            System.out.println("The channel topic is " + channel.asTextChannel().getTopic());
+            System.out.println("The channel topic is " + channel.asTextChannel().topic);
         }
 
-        if (channel.getType().isThread())
+        if (channel.type.isThread())
         {
             System.out.println("This thread is part of channel #" +
-                channel.asThreadChannel()  // Cast the channel union to thread
-                       .getParentChannel() // Get the parent of that thread, which is the channel it was created in (like forum or text channel)
-                       .getName()          // And then print out the name of that channel
+                    channel.asThreadChannel().parentChannel.name          // And then print out the name of that channel
             );
         }
     }

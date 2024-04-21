@@ -88,12 +88,12 @@ public class RoleOrderActionImpl
     @Override
     protected RequestBody finalizeData()
     {
-        final Member self = guild.getSelfMember();
-        final boolean isOwner = self.isOwner();
+        final Member self = guild.selfMember;
+        final boolean isOwner = self.isOwner;
 
         if (!isOwner)
         {
-            if (self.getRoles().isEmpty())
+            if (self.roles.isEmpty())
                 throw new IllegalStateException("Cannot move roles above your highest role unless you are the guild owner");
             if (!self.hasPermission(Permission.MANAGE_ROLES))
                 throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
@@ -110,7 +110,7 @@ public class RoleOrderActionImpl
         for (int i = 0; i < ordering.size(); i++)
         {
             Role role = ordering.get(i);
-            final int initialPos = role.getPosition();
+            final int initialPos = role.position;
             if (initialPos != i && !isOwner && !self.canInteract(role))
                 // If the current role was moved, we are not owner and we can't interact with the role then throw a PermissionException
                 throw new IllegalStateException("Cannot change order: One of the roles could not be moved due to hierarchical power!");

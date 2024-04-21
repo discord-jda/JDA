@@ -88,7 +88,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
         int newSlash = 0, newUser = 0, newMessage = 0;
         for (CommandData command : commands)
         {
-            switch (command.getType())
+            switch (command.type)
             {
             case SLASH:
                 newSlash++;
@@ -110,7 +110,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
                 "Cannot have more than %d message context commands!", Commands.MAX_MESSAGE_COMMANDS);
 
         Checks.checkUnique(
-            Stream.concat(commands.stream(), this.commands.stream()).map(c -> c.getType() + " " + c.getName()),
+            Stream.concat(commands.stream(), this.commands.stream()).map(c -> c.type + " " + c.name),
             "Cannot have multiple commands of the same type with identical names. " +
             "Name: \"%s\" with type %s appeared %d times!",
             (count, value) -> {

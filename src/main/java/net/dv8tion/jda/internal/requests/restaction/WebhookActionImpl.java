@@ -105,7 +105,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     {
         DataObject object = DataObject.empty();
         object.put("name",   name);
-        object.put("avatar", avatar != null ? avatar.getEncoding() : null);
+        object.put("avatar", avatar != null ? avatar.encoding : null);
 
         return getRequestBody(object);
     }

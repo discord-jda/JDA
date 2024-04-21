@@ -108,7 +108,7 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
     @Override
     default List<? extends AttachedFile> getAttachments()
     {
-        return getBuilder().getAttachments();
+        return getBuilder().attachments;
     }
 
     @Nonnull

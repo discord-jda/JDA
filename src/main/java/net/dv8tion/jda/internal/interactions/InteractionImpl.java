@@ -72,11 +72,11 @@ public class InteractionImpl implements Interaction
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
             jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
-            user = member.getUser();
+            user = member.user;
 
             GuildChannel channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
             if (channel == null && ChannelType.fromId(channelJson.getInt("type")).isThread())
-                channel = api.getEntityBuilder().createThreadChannel((GuildImpl) guild, channelJson, guild.getIdLong(), false);
+                channel = api.getEntityBuilder().createThreadChannel((GuildImpl) guild, channelJson, guild.idLong, false);
             if (channel == null)
                 throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: " + channelJson.getInt("type"));
             this.channel = channel;
@@ -99,7 +99,7 @@ public class InteractionImpl implements Interaction
             }
             this.channel = channel;
 
-            User user = channel.getUser();
+            User user = channel.user;
             if (user == null)
             {
                 user = jda.getEntityBuilder().createUser(data.getObject("user"));

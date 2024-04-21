@@ -63,7 +63,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
                 GuildChannel actual = guild.getGuildChannelById(channelId);
                 if (actual != null)
                 {
-                    WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION_REMOVE_ALL for unexpected channel of type {}", actual.getType());
+                    WebSocketClient.LOG.debug("Dropping MESSAGE_REACTION_REMOVE_ALL for unexpected channel of type {}", actual.type);
                     return null;
                 }
             }

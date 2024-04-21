@@ -55,7 +55,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     public GuildVoiceStateImpl(Member member)
     {
-        this.api = member.getJDA();
+        this.api = member.jDA;
         this.guild = member.getGuild();
         this.member = member;
     }
@@ -115,7 +115,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         if (!(connectedChannel instanceof StageChannel) || suppress == isSuppressed())
             return new CompletedRestAction<>(api, null);
 
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
         boolean isSelf = selfMember.equals(member);
         if (!isSelf && !selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
@@ -133,7 +133,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     {
         if (!(connectedChannel instanceof StageChannel))
             return new CompletedRestAction<>(api, null);
-        if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
+        if (!getGuild().selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
 
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), getId());
@@ -196,7 +196,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public Guild getGuild()
     {
-        Guild realGuild = api.getGuildById(guild.getIdLong());
+        Guild realGuild = api.getGuildById(guild.idLong);
         if (realGuild != null)
             guild = realGuild;
         return guild;
@@ -206,7 +206,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public Member getMember()
     {
-        Member realMember = getGuild().getMemberById(member.getIdLong());
+        Member realMember = getGuild().getMemberById(member.idLong);
         if (realMember != null)
             member = realMember;
         return member;
@@ -221,7 +221,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public long getIdLong()
     {
-        return member.getIdLong();
+        return member.idLong;
     }
 
     @Override
@@ -238,7 +238,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         if (!(obj instanceof GuildVoiceState))
             return false;
         GuildVoiceState oStatus = (GuildVoiceState) obj;
-        return member.equals(oStatus.getMember());
+        return member.equals(oStatus.member);
     }
 
     @Override

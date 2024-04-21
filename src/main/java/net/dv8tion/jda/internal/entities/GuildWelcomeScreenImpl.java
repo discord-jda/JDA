@@ -139,9 +139,9 @@ public class GuildWelcomeScreenImpl implements GuildWelcomeScreen
             data.put("description", description);
             if (emoji != null)
             {
-                if (emoji.getType() == Emoji.Type.CUSTOM)
+                if (emoji.type == Emoji.Type.CUSTOM)
                     data.put("emoji_id", ((CustomEmoji) emoji).getId());
-                data.put("emoji_name", emoji.getName());
+                data.put("emoji_name", emoji.name);
             }
 
             return data;

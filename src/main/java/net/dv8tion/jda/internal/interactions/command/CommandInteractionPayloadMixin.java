@@ -32,46 +32,46 @@ public interface CommandInteractionPayloadMixin extends CommandInteractionPayloa
     @Override
     default Command.Type getCommandType()
     {
-        return getCommandPayload().getCommandType();
+        return getCommandPayload().commandType;
     }
 
     @Nonnull
     @Override
     default String getName()
     {
-        return getCommandPayload().getName();
+        return getCommandPayload().name;
     }
 
     @Nullable
     @Override
     default String getSubcommandName()
     {
-        return getCommandPayload().getSubcommandName();
+        return getCommandPayload().subcommandName;
     }
 
     @Nullable
     @Override
     default String getSubcommandGroup()
     {
-        return getCommandPayload().getSubcommandGroup();
+        return getCommandPayload().subcommandGroup;
     }
 
     @Override
     default long getCommandIdLong()
     {
-        return getCommandPayload().getCommandIdLong();
+        return getCommandPayload().commandIdLong;
     }
 
     @Nonnull
     @Override
     default List<OptionMapping> getOptions()
     {
-        return getCommandPayload().getOptions();
+        return getCommandPayload().options;
     }
 
     @Override
     default boolean isGuildCommand()
     {
-        return getCommandPayload().isGuildCommand();
+        return getCommandPayload().isGuildCommand;
     }
 }

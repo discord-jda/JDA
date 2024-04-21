@@ -13,95 +13,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.internal.entities.channel.concrete
 
-package net.dv8tion.jda.internal.entities.channel.concrete;
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion
+import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager
+import net.dv8tion.jda.api.requests.restaction.ChannelAction
+import net.dv8tion.jda.api.requests.restaction.StageInstanceAction.setTopic
+import net.dv8tion.jda.internal.entities.GuildImpl
+import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildMessageChannelImpl
+import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin
+import net.dv8tion.jda.internal.managers.channel.concrete.TextChannelManagerImpl
+import net.dv8tion.jda.internal.utils.Checks
+import net.dv8tion.jda.internal.utils.Helpers
+import java.util.function.Predicate
+import javax.annotation.Nonnull
 
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
-import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildMessageChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
-import net.dv8tion.jda.internal.managers.channel.concrete.TextChannelManagerImpl;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
+class TextChannelImpl(id: Long, guild: GuildImpl?) :
+    AbstractStandardGuildMessageChannelImpl<TextChannelImpl?>(id, guild), TextChannel, DefaultGuildChannelUnion,
+    ISlowmodeChannelMixin<TextChannelImpl?> {
+    override var slowmode = 0
+        private set
 
-import javax.annotation.Nonnull;
-import java.util.List;
+    @get:Nonnull
+    override val type: ChannelType
+        get() = ChannelType.TEXT
 
-public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<TextChannelImpl> implements
-        TextChannel,
-        DefaultGuildChannelUnion,
-        ISlowmodeChannelMixin<TextChannelImpl>
-{
-    private int slowmode;
-
-    public TextChannelImpl(long id, GuildImpl guild)
-    {
-        super(id, guild);
-    }
-
-    @Nonnull
-    @Override
-    public ChannelType getType()
-    {
-        return ChannelType.TEXT;
-    }
+    @get:Nonnull
+    override val members: List<Member>
+        get() = getGuild().getMembersView().stream()
+            .filter(Predicate<Member> { m: Member -> m.hasPermission(this, Permission.VIEW_CHANNEL) })
+            .collect<List<Member>, Any>(Helpers.toUnmodifiableList<Member>())
 
     @Nonnull
-    @Override
-    public List<Member> getMembers()
-    {
-        return getGuild().getMembersView().stream()
-            .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
-            .collect(Helpers.toUnmodifiableList());
-    }
-
-    @Override
-    public int getSlowmode()
-    {
-        return slowmode;
-    }
-
-    @Nonnull
-    @Override
-    public ChannelAction<TextChannel> createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        ChannelAction<TextChannel> action = guild.createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
-        if (guild.equals(getGuild()))
-        {
-            Category parent = getParentCategory();
-            if (parent != null)
-                action.setParent(parent);
-            for (PermissionOverride o : overrides.valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
+    override fun createCopy(@Nonnull guild: Guild?): ChannelAction<TextChannel?>? {
+        Checks.notNull(guild, "Guild")
+        val action: ChannelAction<TextChannel?> =
+            guild.createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode)
+        if (guild == getGuild()) {
+            val parent = parentCategory
+            if (parent != null) action.setParent(parent)
+            for (o in overrides.valueCollection()) {
+                if (o.isMemberOverride) action.addMemberPermissionOverride(
+                    o.idLong,
+                    o.allowedRaw,
+                    o.deniedRaw
+                ) else action.addRolePermissionOverride(o.idLong, o.allowedRaw, o.deniedRaw)
             }
         }
-        return action;
+        return action
     }
 
-    @Nonnull
-    @Override
-    public TextChannelManager getManager()
-    {
-        return new TextChannelManagerImpl(this);
-    }
+    @get:Nonnull
+    override val manager: TextChannelManager
+        get() = TextChannelManagerImpl(this)
 
-    public TextChannelImpl setSlowmode(int slowmode)
-    {
-        this.slowmode = slowmode;
-        return this;
+    override fun setSlowmode(slowmode: Int): TextChannelImpl {
+        this.slowmode = slowmode
+        return this
     }
 }

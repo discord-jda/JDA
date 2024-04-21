@@ -13,346 +13,264 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.internal.entities.automod
 
-package net.dv8tion.jda.internal.entities.automod;
+import gnu.trove.list.TLongList
+import gnu.trove.list.array.TLongArrayList
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.automod.AutoModEventType
+import net.dv8tion.jda.api.entities.automod.AutoModResponse
+import net.dv8tion.jda.api.entities.automod.AutoModRule
+import net.dv8tion.jda.api.entities.automod.AutoModRule.KeywordPreset
+import net.dv8tion.jda.api.entities.automod.AutoModTriggerType
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.utils.data.DataArray
+import net.dv8tion.jda.api.utils.data.DataObject
+import net.dv8tion.jda.internal.utils.EntityString
+import net.dv8tion.jda.internal.utils.Helpers
+import java.util.*
+import java.util.function.Supplier
+import java.util.stream.Collectors
+import javax.annotation.Nonnull
 
-import gnu.trove.list.TLongList;
-import gnu.trove.list.array.TLongArrayList;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.automod.AutoModEventType;
-import net.dv8tion.jda.api.entities.automod.AutoModResponse;
-import net.dv8tion.jda.api.entities.automod.AutoModRule;
-import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
+class AutoModRuleImpl(private override var guild: Guild, override val idLong: Long) : AutoModRule {
+    override var creatorIdLong: Long = 0
+        private set
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
+    @get:Nonnull
+    override var name = ""
+        private set
 
-public class AutoModRuleImpl implements AutoModRule
-{
-    private final long id;
-    private Guild guild;
-    private long ownerId;
-    private String name = "";
-    private AutoModEventType eventType = AutoModEventType.UNKNOWN;
-    private AutoModTriggerType triggerType = AutoModTriggerType.UNKNOWN;
-    private boolean enabled = false;
-    private TLongList exemptRoles = new TLongArrayList();
-    private TLongList exemptChannels = new TLongArrayList();
-    private List<AutoModResponse> actions = Collections.emptyList();
-    private List<String> filteredKeywords = Collections.emptyList();
-    private List<String> filteredRegex = Collections.emptyList();
-    private EnumSet<KeywordPreset> filteredPresets = EnumSet.noneOf(KeywordPreset.class);
-    private List<String> allowlist = Collections.emptyList();
-    private int mentionLimit = -1;
-    private boolean isMentionRaidProtectionEnabled = false;
+    @get:Nonnull
+    override var eventType = AutoModEventType.UNKNOWN
+        private set
 
-    public AutoModRuleImpl(Guild guild, long id)
-    {
-        this.id = id;
-        this.guild = guild;
-    }
+    @get:Nonnull
+    override var triggerType = AutoModTriggerType.UNKNOWN
+        private set
+    override var isEnabled = false
+        private set
+    private override var exemptRoles: TLongList = TLongArrayList()
+    private override var exemptChannels: TLongList = TLongArrayList()
 
-    @Override
-    public long getIdLong()
-    {
-        return id;
+    @get:Nonnull
+    override var actions = emptyList<AutoModResponse>()
+        private set
+
+    @get:Nonnull
+    override var filteredKeywords = emptyList<String>()
+        private set
+
+    @get:Nonnull
+    override var filteredRegex = emptyList<String>()
+        private set
+    private override var filteredPresets = EnumSet.noneOf(KeywordPreset::class.java)
+
+    @get:Nonnull
+    override var allowlist = emptyList<String>()
+        private set
+    override var mentionLimit = -1
+        private set
+    override var isMentionRaidProtectionEnabled = false
+        private set
+
+    @Nonnull
+    override fun getGuild(): Guild {
+        val realGuild: Guild = guild.getJDA().getGuildById(guild.idLong)
+        if (realGuild != null) guild = realGuild
+        return guild
     }
 
     @Nonnull
-    @Override
-    public Guild getGuild()
-    {
-        Guild realGuild = guild.getJDA().getGuildById(guild.getIdLong());
-        if (realGuild != null)
-            guild = realGuild;
-        return guild;
-    }
-
-    @Override
-    public long getCreatorIdLong()
-    {
-        return ownerId;
-    }
-
-    @Nonnull
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Nonnull
-    @Override
-    public AutoModEventType getEventType()
-    {
-        return eventType;
-    }
-
-    @Nonnull
-    @Override
-    public AutoModTriggerType getTriggerType()
-    {
-        return triggerType;
-    }
-
-    @Override
-    public boolean isEnabled()
-    {
-        return enabled;
-    }
-
-    @Nonnull
-    @Override
-    public List<Role> getExemptRoles()
-    {
-        List<Role> roles = new ArrayList<>(exemptRoles.size());
-        for (int i = 0; i < exemptRoles.size(); i++)
-        {
-            long roleId = exemptRoles.get(i);
-            Role role = guild.getRoleById(roleId);
-            if (role != null)
-                roles.add(role);
+    override fun getExemptRoles(): List<Role> {
+        val roles: MutableList<Role> = ArrayList(exemptRoles.size())
+        for (i in 0 until exemptRoles.size()) {
+            val roleId = exemptRoles[i]
+            val role: Role = guild.getRoleById(roleId)
+            if (role != null) roles.add(role)
         }
-        return Collections.unmodifiableList(roles);
+        return Collections.unmodifiableList(roles)
     }
 
     @Nonnull
-    @Override
-    public List<GuildChannel> getExemptChannels()
-    {
-        List<GuildChannel> channels = new ArrayList<>(exemptChannels.size());
-        for (int i = 0; i < exemptChannels.size(); i++)
-        {
-            long channelId = exemptChannels.get(i);
-            GuildChannel channel = guild.getGuildChannelById(channelId);
-            if (channel != null)
-                channels.add(channel);
+    override fun getExemptChannels(): List<GuildChannel> {
+        val channels: MutableList<GuildChannel> = ArrayList(exemptChannels.size())
+        for (i in 0 until exemptChannels.size()) {
+            val channelId = exemptChannels[i]
+            val channel = guild.getGuildChannelById(channelId)
+            if (channel != null) channels.add(channel)
         }
-        return Collections.unmodifiableList(channels);
+        return Collections.unmodifiableList(channels)
     }
 
     @Nonnull
-    @Override
-    public List<AutoModResponse> getActions()
-    {
-        return actions;
+    override fun getFilteredPresets(): EnumSet<KeywordPreset> {
+        return Helpers.copyEnumSet(KeywordPreset::class.java, filteredPresets)
     }
 
-    @Nonnull
-    @Override
-    public List<String> getFilteredKeywords()
-    {
-        return filteredKeywords;
+    fun setName(name: String): AutoModRuleImpl {
+        this.name = name
+        return this
     }
 
-    @Nonnull
-    @Override
-    public List<String> getFilteredRegex()
-    {
-        return filteredRegex;
+    fun setEnabled(enabled: Boolean): AutoModRuleImpl {
+        isEnabled = enabled
+        return this
     }
 
-    @Nonnull
-    @Override
-    public EnumSet<KeywordPreset> getFilteredPresets()
-    {
-        return Helpers.copyEnumSet(KeywordPreset.class, filteredPresets);
+    fun setOwnerId(ownerId: Long): AutoModRuleImpl {
+        creatorIdLong = ownerId
+        return this
     }
 
-    @Nonnull
-    @Override
-    public List<String> getAllowlist()
-    {
-        return allowlist;
+    fun setEventType(eventType: AutoModEventType): AutoModRuleImpl {
+        this.eventType = eventType
+        return this
     }
 
-    @Override
-    public int getMentionLimit()
-    {
-        return mentionLimit;
+    fun setTriggerType(triggerType: AutoModTriggerType): AutoModRuleImpl {
+        this.triggerType = triggerType
+        return this
     }
 
-    @Override
-    public boolean isMentionRaidProtectionEnabled()
-    {
-        return isMentionRaidProtectionEnabled;
+    fun setExemptRoles(exemptRoles: TLongList): AutoModRuleImpl {
+        this.exemptRoles = exemptRoles
+        return this
     }
 
-    public AutoModRuleImpl setName(String name)
-    {
-        this.name = name;
-        return this;
+    fun setExemptChannels(exemptChannels: TLongList): AutoModRuleImpl {
+        this.exemptChannels = exemptChannels
+        return this
     }
 
-    public AutoModRuleImpl setEnabled(boolean enabled)
-    {
-        this.enabled = enabled;
-        return this;
+    fun setActions(actions: List<AutoModResponse>): AutoModRuleImpl {
+        this.actions = actions
+        return this
     }
 
-    public AutoModRuleImpl setOwnerId(long ownerId)
-    {
-        this.ownerId = ownerId;
-        return this;
+    fun setFilteredKeywords(filteredKeywords: List<String>): AutoModRuleImpl {
+        this.filteredKeywords = filteredKeywords
+        return this
     }
 
-    public AutoModRuleImpl setEventType(AutoModEventType eventType)
-    {
-        this.eventType = eventType;
-        return this;
+    fun setFilteredRegex(filteredRegex: List<String>): AutoModRuleImpl {
+        this.filteredRegex = filteredRegex
+        return this
     }
 
-    public AutoModRuleImpl setTriggerType(AutoModTriggerType triggerType)
-    {
-        this.triggerType = triggerType;
-        return this;
+    fun setFilteredPresets(filteredPresets: EnumSet<KeywordPreset>): AutoModRuleImpl {
+        this.filteredPresets = filteredPresets
+        return this
     }
 
-    public AutoModRuleImpl setExemptRoles(TLongList exemptRoles)
-    {
-        this.exemptRoles = exemptRoles;
-        return this;
+    fun setAllowlist(allowlist: List<String>): AutoModRuleImpl {
+        this.allowlist = allowlist
+        return this
     }
 
-    public AutoModRuleImpl setExemptChannels(TLongList exemptChannels)
-    {
-        this.exemptChannels = exemptChannels;
-        return this;
+    fun setMentionLimit(mentionLimit: Int): AutoModRuleImpl {
+        this.mentionLimit = mentionLimit
+        return this
     }
 
-    public AutoModRuleImpl setActions(List<AutoModResponse> actions)
-    {
-        this.actions = actions;
-        return this;
+    fun setMentionRaidProtectionEnabled(mentionRaidProtectionEnabled: Boolean): AutoModRuleImpl {
+        isMentionRaidProtectionEnabled = mentionRaidProtectionEnabled
+        return this
     }
 
-    public AutoModRuleImpl setFilteredKeywords(List<String> filteredKeywords)
-    {
-        this.filteredKeywords = filteredKeywords;
-        return this;
+    override fun hashCode(): Int {
+        return java.lang.Long.hashCode(idLong)
     }
 
-    public AutoModRuleImpl setFilteredRegex(List<String> filteredRegex)
-    {
-        this.filteredRegex = filteredRegex;
-        return this;
+    override fun equals(obj: Any?): Boolean {
+        if (obj === this) return true
+        if (obj !is AutoModRuleImpl) return false
+        return idLong == obj.idLong
     }
 
-    public AutoModRuleImpl setFilteredPresets(EnumSet<KeywordPreset> filteredPresets)
-    {
-        this.filteredPresets = filteredPresets;
-        return this;
+    override fun toString(): String {
+        return EntityString(this)
+            .setType(triggerType)
+            .setName(name)
+            .addMetadata("id", idLong)
+            .toString()
     }
 
-    public AutoModRuleImpl setAllowlist(List<String> allowlist)
-    {
-        this.allowlist = allowlist;
-        return this;
-    }
-
-    public AutoModRuleImpl setMentionLimit(int mentionLimit)
-    {
-        this.mentionLimit = mentionLimit;
-        return this;
-    }
-
-    public AutoModRuleImpl setMentionRaidProtectionEnabled(boolean mentionRaidProtectionEnabled)
-    {
-        isMentionRaidProtectionEnabled = mentionRaidProtectionEnabled;
-        return this;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Long.hashCode(id);
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == this)
-            return true;
-        if (!(obj instanceof AutoModRuleImpl))
-            return false;
-        AutoModRuleImpl oRule = (AutoModRuleImpl) obj;
-        return this.id == oRule.id;
-    }
-
-    @Override
-    public String toString()
-    {
-        return new EntityString(this)
-                .setType(triggerType)
-                .setName(name)
-                .addMetadata("id", getId())
-                .toString();
-    }
-
-    public static AutoModRuleImpl fromData(Guild guild, DataObject data)
-    {
-        long id = data.getUnsignedLong("id");
-        AutoModRuleImpl rule = new AutoModRuleImpl(guild, id);
-
-        rule.setName(data.getString("name"))
-            .setEnabled(data.getBoolean("enabled", true))
-            .setOwnerId(data.getUnsignedLong("creator_id", 0L))
-            .setEventType(AutoModEventType.fromKey(data.getInt("event_type", -1)))
-            .setTriggerType(AutoModTriggerType.fromKey(data.getInt("trigger_type", -1)));
-
-        data.optArray("exempt_roles").ifPresent(array -> rule.setExemptRoles(parseList(array)));
-        data.optArray("exempt_channels").ifPresent(array -> rule.setExemptChannels(parseList(array)));
-
-        data.optArray("actions").ifPresent(array ->
-            rule.setActions(array.stream(DataArray::getObject)
-                .map(obj -> new AutoModResponseImpl(guild, obj))
-                .collect(Helpers.toUnmodifiableList()))
-        );
-
-        data.optObject("trigger_metadata").ifPresent(metadata -> {
-            // Only for KEYWORD type
-            metadata.optArray("keyword_filter").ifPresent(array ->
-                rule.setFilteredKeywords(array.stream(DataArray::getString)
+    companion object {
+        @JvmStatic
+        fun fromData(guild: Guild, data: DataObject): AutoModRuleImpl {
+            val id = data.getUnsignedLong("id")
+            val rule = AutoModRuleImpl(guild, id)
+            rule.setName(data.getString("name"))
+                .setEnabled(data.getBoolean("enabled", true))
+                .setOwnerId(data.getUnsignedLong("creator_id", 0L))
+                .setEventType(AutoModEventType.fromKey(data.getInt("event_type", -1)))
+                .setTriggerType(AutoModTriggerType.fromKey(data.getInt("trigger_type", -1)))
+            data.optArray("exempt_roles").ifPresent { array: DataArray -> rule.setExemptRoles(parseList(array)) }
+            data.optArray("exempt_channels").ifPresent { array: DataArray -> rule.setExemptChannels(parseList(array)) }
+            data.optArray("actions").ifPresent { array: DataArray ->
+                rule.setActions(array.stream { obj: DataArray?, index: Int? ->
+                    obj!!.getObject(
+                        index!!
+                    )
+                }
+                    .map { obj: DataObject -> AutoModResponseImpl(guild, obj) }
                     .collect(Helpers.toUnmodifiableList()))
-            );
-            metadata.optArray("regex_patterns").ifPresent(array ->
-                rule.setFilteredRegex(array.stream(DataArray::getString)
-                    .collect(Helpers.toUnmodifiableList()))
-            );
-            // Both KEYWORD and KEYWORD_PRESET
-            metadata.optArray("allow_list").ifPresent(array ->
-                    rule.setAllowlist(array.stream(DataArray::getString)
-                            .collect(Helpers.toUnmodifiableList()))
-            );
-            // Only KEYWORD_PRESET
-            metadata.optArray("presets").ifPresent(array ->
-                rule.setFilteredPresets(array.stream(DataArray::getInt)
-                    .map(KeywordPreset::fromKey)
-                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(KeywordPreset.class))))
-            );
-            // Only for MENTION type
-            rule.setMentionLimit(metadata.getInt("mention_total_limit", 0));
-            rule.setMentionRaidProtectionEnabled(metadata.getBoolean("mention_raid_protection_enabled"));
-        });
+            }
+            data.optObject("trigger_metadata").ifPresent { metadata: DataObject ->
+                // Only for KEYWORD type
+                metadata.optArray("keyword_filter").ifPresent { array: DataArray ->
+                    rule.setFilteredKeywords(array.stream { obj: DataArray?, index: Int? ->
+                        obj!!.getString(
+                            index!!
+                        )
+                    }
+                        .collect(Helpers.toUnmodifiableList()))
+                }
+                metadata.optArray("regex_patterns").ifPresent { array: DataArray ->
+                    rule.setFilteredRegex(array.stream { obj: DataArray?, index: Int? ->
+                        obj!!.getString(
+                            index!!
+                        )
+                    }
+                        .collect(Helpers.toUnmodifiableList()))
+                }
+                // Both KEYWORD and KEYWORD_PRESET
+                metadata.optArray("allow_list").ifPresent { array: DataArray ->
+                    rule.setAllowlist(array.stream { obj: DataArray?, index: Int? ->
+                        obj!!.getString(
+                            index!!
+                        )
+                    }
+                        .collect(Helpers.toUnmodifiableList()))
+                }
+                // Only KEYWORD_PRESET
+                metadata.optArray("presets").ifPresent { array: DataArray ->
+                    rule.setFilteredPresets(
+                        array.stream { obj: DataArray?, index: Int? ->
+                            obj!!.getInt(
+                                index!!
+                            )
+                        }
+                            .map { obj: Int? -> KeywordPreset.fromKey() }
+                            .collect(
+                                Collectors.toCollection(
+                                    Supplier { EnumSet.noneOf(KeywordPreset::class.java) })
+                            )
+                    )
+                }
+                // Only for MENTION type
+                rule.setMentionLimit(metadata.getInt("mention_total_limit", 0))
+                rule.setMentionRaidProtectionEnabled(metadata.getBoolean("mention_raid_protection_enabled"))
+            }
+            return rule
+        }
 
-        return rule;
-    }
-
-    private static TLongList parseList(DataArray array)
-    {
-        TLongList list = new TLongArrayList(array.length());
-        for (int i = 0; i < array.length(); i++)
-            list.add(array.getUnsignedLong(i));
-        return list;
+        private fun parseList(array: DataArray): TLongList {
+            val list: TLongList = TLongArrayList(array.length())
+            for (i in 0 until array.length()) list.add(array.getUnsignedLong(i))
+            return list
+        }
     }
 }

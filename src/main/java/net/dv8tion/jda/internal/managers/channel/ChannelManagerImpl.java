@@ -93,9 +93,9 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     public ChannelManagerImpl(T channel)
     {
-        super(channel.getJDA(), Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
+        super(channel.jDA, Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         this.channel = channel;
-        this.type = channel.getType();
+        this.type = channel.type;
         this.flags = channel.getFlags();
 
         if (isPermissionChecksEnabled())
@@ -108,7 +108,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @Override
     public T getChannel()
     {
-        T realChannel = (T) api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        T realChannel = (T) api.getGuildChannelById(channel.type, channel.idLong);
         if (realChannel != null)
             channel = realChannel;
         return channel;
@@ -123,7 +123,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if ((fields & NAME) == NAME)
             this.name = null;
         if ((fields & TYPE) == TYPE)
-            this.type = this.channel.getType();
+            this.type = this.channel.type;
         if ((fields & PARENT) == PARENT)
             this.parent = null;
         if ((fields & TOPIC) == TOPIC)
@@ -188,7 +188,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     {
         super.reset();
         this.name = null;
-        this.type = this.channel.getType();
+        this.type = this.channel.type;
         this.parent = null;
         this.topic = null;
         this.region = null;
@@ -239,8 +239,8 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
 
         Checks.notNull(permHolder, "PermissionHolder");
-        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        final long id = permHolder.getIdLong();
+        Checks.check(permHolder.guild.equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        final long id = permHolder.idLong;
         final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
         putPermissionOverride(new PermOverrideData(type, id, allow, deny));
         return (M) this;
@@ -264,7 +264,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     private void checkCanPutPermissions(long allow, long deny)
     {
-        Member selfMember = getGuild().getSelfMember();
+        Member selfMember = getGuild().selfMember;
 
         if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
         {
@@ -307,15 +307,15 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         }
 
         Checks.notNull(permHolder, "PermissionHolder");
-        Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        return (M) removePermissionOverride(permHolder.getIdLong());
+        Checks.check(permHolder.guild.equals(getGuild()), "PermissionHolder is not from the same Guild!");
+        return (M) removePermissionOverride(permHolder.idLong);
     }
 
     @Nonnull
     @CheckReturnValue
     public M removePermissionOverride(final long id)
     {
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
+        if (isPermissionChecksEnabled() && !getGuild().selfMember.hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         withLock(lock, (lock) ->
         {
@@ -334,7 +334,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
 
         Checks.notNull(syncSource, "SyncSource");
-        Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
+        Checks.check(getGuild().equals(syncSource.guild), "Sync only works for channels of same guild");
 
         IPermissionContainer permChannel = (IPermissionContainer) channel;
         if (syncSource.equals(getChannel()))
@@ -342,7 +342,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         if (isPermissionChecksEnabled())
         {
-            Member selfMember = getGuild().getSelfMember();
+            Member selfMember = getGuild().selfMember;
             if (!selfMember.hasPermission(permChannel, Permission.MANAGE_PERMISSIONS))
                 throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
@@ -360,13 +360,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             this.overridesAdd.clear();
 
             //set all current overrides to-be-removed
-            permChannel.getPermissionOverrides()
+            permChannel.permissionOverrides
                 .stream()
                 .mapToLong(PermissionOverride::getIdLong)
                 .forEach(overridesRem::add);
 
             //re-add all perm-overrides of syncSource
-            syncSource.getPermissionOverrides().forEach(override -> {
+            syncSource.permissionOverrides.forEach(override -> {
                 int type = override.isRoleOverride() ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
                 long id = override.getIdLong();
 
@@ -401,13 +401,13 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
         if (this.type != ChannelType.TEXT && this.type != ChannelType.NEWS)
             throw new UnsupportedOperationException("Can only set ChannelType for TextChannel and NewsChannels");
-        if (type == ChannelType.NEWS && !getGuild().getFeatures().contains("NEWS"))
+        if (type == ChannelType.NEWS && !getGuild().features.contains("NEWS"))
             throw new IllegalStateException("Can only set ChannelType to NEWS for guilds with NEWS feature");
 
         this.type = type;
 
         //If we've just set the type to be what the channel type already is, then treat it as a reset, not a set.
-        if (this.type == this.channel.getType())
+        if (this.type == this.channel.type)
             reset(TYPE);
         else
             set |= TYPE;
@@ -427,7 +427,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         Checks.notNull(region, "Region");
         if (!type.isAudio())
             throw new IllegalStateException("Can only change region on audio channels!");
-        this.region = region == Region.AUTOMATIC ? null : region.getKey();
+        this.region = region == Region.AUTOMATIC ? null : region.key;
         set |= REGION;
         return (M) this;
     }
@@ -439,7 +439,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (type == ChannelType.CATEGORY)
             throw new IllegalStateException("Cannot set the parent of a category");
 
-        Checks.check(category == null || category.getGuild().equals(getGuild()), "Category is not from the same guild");
+        Checks.check(category == null || category.guild.equals(getGuild()), "Category is not from the same guild");
 
         this.parent = category == null ? null : category.getId();
         set |= PARENT;
@@ -497,7 +497,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @CheckReturnValue
     public M setDefaultThreadSlowmode(int slowmode)
     {
-        Checks.check(channel instanceof IThreadContainer, "Cannot set default thread slowmode on channels of type %s!", channel.getType());
+        Checks.check(channel instanceof IThreadContainer, "Cannot set default thread slowmode on channels of type %s!", channel.type);
         Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
         this.defaultThreadSlowmode = slowmode;
         set |= DEFAULT_THREAD_SLOWMODE;
@@ -556,7 +556,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             if (!thread.isOwner())
                 checkPermission(Permission.MANAGE_THREADS, "Cannot unarchive a thread without MANAGE_THREADS if not the thread owner");
 
-            if (thread.isLocked())
+            if (thread.isLocked)
                 checkPermission(Permission.MANAGE_THREADS, "Cannot unarchive a thread that is locked without MANAGE_THREADS");
         }
 
@@ -648,7 +648,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         Checks.noneNull(tags, "Applied Tags");
         Checks.check(tags.size() <= IPostContainer.MAX_POST_TAGS, "Cannot apply more than %d tags to a post thread!", ForumChannel.MAX_POST_TAGS);
         ThreadChannel thread = (ThreadChannel) getChannel();
-        IThreadContainerUnion parentChannel = thread.getParentChannel();
+        IThreadContainerUnion parentChannel = thread.parentChannel;
         if (!(parentChannel instanceof IPostContainer))
             throw new IllegalStateException("Cannot apply tags to threads outside of forum/media channels.");
         if (tags.isEmpty() && parentChannel.asForumChannel().isTagRequired())
@@ -674,7 +674,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         Checks.notNull(layout, "layout");
         if (layout == ForumChannel.Layout.UNKNOWN)
             throw new IllegalStateException("Layout type cannot be UNKNOWN.");
-        this.defaultLayout = layout.getKey();
+        this.defaultLayout = layout.key;
         set |= DEFAULT_LAYOUT;
         return (M) this;
     }
@@ -698,7 +698,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (shouldUpdate(NAME))
             frame.put("name", name);
         if (shouldUpdate(TYPE))
-            frame.put("type", type.getId());
+            frame.put("type", type.id);
         if (shouldUpdate(POSITION))
             frame.put("position", position);
         if (shouldUpdate(TOPIC))
@@ -718,7 +718,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
         if (shouldUpdate(REGION))
             frame.put("rtc_region", region);
         if (shouldUpdate(AUTO_ARCHIVE_DURATION))
-            frame.put("auto_archive_duration", autoArchiveDuration.getMinutes());
+            frame.put("auto_archive_duration", autoArchiveDuration.minutes);
         if (shouldUpdate(ARCHIVED))
             frame.put("archived", archived);
         if (shouldUpdate(LOCKED))
@@ -736,7 +736,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
             if (defaultReactionEmoji instanceof CustomEmoji)
                 frame.put("default_reaction_emoji", DataObject.empty().put("emoji_id", ((CustomEmoji) defaultReactionEmoji).getId()));
             else if (defaultReactionEmoji instanceof UnicodeEmoji)
-                frame.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.getName()));
+                frame.put("default_reaction_emoji", DataObject.empty().put("emoji_name", defaultReactionEmoji.name));
             else
                 frame.put("default_reaction_emoji", null);
         }
@@ -758,7 +758,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @Override
     protected boolean checkPermissions()
     {
-        final Member selfMember = getGuild().getSelfMember();
+        final Member selfMember = getGuild().selfMember;
 
         Checks.checkAccess(selfMember, channel);
         ((GuildChannelMixin<?>) channel).checkCanManage();
@@ -768,7 +768,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
 
     protected void checkPermission(Permission permission, String errMessage)
     {
-        if (!getGuild().getSelfMember().hasPermission(getChannel(), permission))
+        if (!getGuild().selfMember.hasPermission(getChannel(), permission))
             throw new InsufficientPermissionException(getChannel(), permission, errMessage);
     }
 

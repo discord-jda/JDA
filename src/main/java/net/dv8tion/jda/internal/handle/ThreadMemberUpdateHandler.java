@@ -51,7 +51,7 @@ public class ThreadMemberUpdateHandler extends SocketHandler
         // for ThreadChannels that get unarchived.
         //Details available at: https://discord.com/developers/docs/topics/threads#unarchiving-a-thread
         long userId = content.getLong("user_id");
-        if (userId != getJDA().getSelfUser().getIdLong())
+        if (userId != getJDA().getSelfUser().idLong)
         {
             JDAImpl.LOG.warn("Received a THREAD_MEMBER_UPDATE for a user that isn't the current bot user. " +
                     "This validates assumptions that THREAD_MEMBER_UPDATE would ONLY be for the current bot user. " +
@@ -68,7 +68,7 @@ public class ThreadMemberUpdateHandler extends SocketHandler
             if (threadMember == null)
             {
                 threadMember = api.getEntityBuilder().createThreadMember(thread, thread.getGuild().getSelfMember(), content);
-                view.getMap().put(threadMember.getIdLong(), threadMember);
+                view.getMap().put(threadMember.idLong, threadMember);
             }
         }
 

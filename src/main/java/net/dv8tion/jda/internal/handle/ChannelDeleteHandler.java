@@ -38,7 +38,7 @@ public class ChannelDeleteHandler extends SocketHandler
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
         long guildId = 0;
-        if (type.isGuild())
+        if (type.isGuild)
         {
             guildId = content.getLong("guild_id");
             if (getJDA().getGuildSetupController().isLocked(guildId))
@@ -74,8 +74,8 @@ public class ChannelDeleteHandler extends SocketHandler
         // There is no delete event for the deletion of scheduled events in this case, so we do this to keep the cache in sync.
         String location = Long.toUnsignedString(channelId);
         guild.getScheduledEventsView().stream()
-                .filter(scheduledEvent -> scheduledEvent.getType().isChannel() && scheduledEvent.getLocation().equals(location))
-                .forEach(scheduledEvent -> guild.getScheduledEventsView().remove(scheduledEvent.getIdLong()));
+                .filter(scheduledEvent -> scheduledEvent.type.isChannel() && scheduledEvent.location.equals(location))
+                .forEach(scheduledEvent -> guild.getScheduledEventsView().remove(scheduledEvent.idLong));
 
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
         return null;

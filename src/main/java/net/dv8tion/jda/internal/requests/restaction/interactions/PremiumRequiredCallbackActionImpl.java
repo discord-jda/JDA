@@ -38,7 +38,7 @@ public class PremiumRequiredCallbackActionImpl extends InteractionCallbackImpl<V
     protected RequestBody finalizeData()
     {
         return getRequestBody(DataObject.empty()
-                .put("type", InteractionCallbackAction.ResponseType.PREMIUM_REQUIRED.getRaw())
+                .put("type", ResponseType.PREMIUM_REQUIRED.raw)
                 .put("data", DataObject.empty()));
     }
 

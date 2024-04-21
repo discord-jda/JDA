@@ -118,11 +118,11 @@ public class ActivityTest
                 .put("name", "Games")
         );
 
-        assertThat(activity.isRich()).isFalse();
-        assertThat(activity.getType()).isEqualTo(Activity.ActivityType.PLAYING);
-        assertThat(activity.getName()).isEqualTo("Games");
-        assertThat(activity.getState()).isNull();
-        assertThat(activity.getUrl()).isNull();
+        assertThat(activity.isRich).isFalse();
+        assertThat(activity.type).isEqualTo(Activity.ActivityType.PLAYING);
+        assertThat(activity.name).isEqualTo("Games");
+        assertThat(activity.state).isNull();
+        assertThat(activity.url).isNull();
     }
 
     @Test
@@ -135,11 +135,11 @@ public class ActivityTest
                 .put("state", "Active")
         );
 
-        assertThat(activity.isRich()).isFalse();
-        assertThat(activity.getType()).isEqualTo(Activity.ActivityType.PLAYING);
-        assertThat(activity.getName()).isEqualTo("Games");;
-        assertThat(activity.getState()).isEqualTo("Active");
-        assertThat(activity.getUrl()).isNull();
+        assertThat(activity.isRich).isFalse();
+        assertThat(activity.type).isEqualTo(Activity.ActivityType.PLAYING);
+        assertThat(activity.name).isEqualTo("Games");;
+        assertThat(activity.state).isEqualTo("Active");
+        assertThat(activity.url).isNull();
 
         activity = EntityBuilder.createActivity(
             DataObject.empty()
@@ -166,28 +166,28 @@ public class ActivityTest
         assertThat(rich).isNotNull();
         assertThat(rich).isEqualTo(activity);
 
-        assertThat(rich.getType()).isEqualTo(Activity.ActivityType.PLAYING);
-        assertThat(rich.getName()).isEqualTo("The Best Game Ever");
-        assertThat(rich.getState()).isEqualTo("In a Group");
+        assertThat(rich.type).isEqualTo(Activity.ActivityType.PLAYING);
+        assertThat(rich.name).isEqualTo("The Best Game Ever");
+        assertThat(rich.state).isEqualTo("In a Group");
 
-        assertThat(rich.getParty()).isNotNull();
-        assertThat(rich.getParty().getId()).isEqualTo("1234");
-        assertThat(rich.getParty().getSize()).isEqualTo(3);
-        assertThat(rich.getParty().getMax()).isEqualTo(6);
+        assertThat(rich.party).isNotNull();
+        assertThat(rich.party.getId()).isEqualTo("1234");
+        assertThat(rich.party.size).isEqualTo(3);
+        assertThat(rich.party.max).isEqualTo(6);
 
-        assertThat(rich.getTimestamps()).isNotNull();
-        assertThat(rich.getTimestamps().getStart()).isEqualTo(1507665886);
-        assertThat(rich.getTimestamps().getEnd()).isEqualTo(1507666000);
+        assertThat(rich.timestamps).isNotNull();
+        assertThat(rich.timestamps.start).isEqualTo(1507665886);
+        assertThat(rich.timestamps.end).isEqualTo(1507666000);
 
-        assertThat(rich.getLargeImage()).isNotNull();
-        assertThat(rich.getLargeImage().getKey()).isEqualTo("canary-large");
-        assertThat(rich.getLargeImage().getText()).isNull();
+        assertThat(rich.largeImage).isNotNull();
+        assertThat(rich.largeImage.key).isEqualTo("canary-large");
+        assertThat(rich.largeImage.getText()).isNull();
 
-        assertThat(rich.getSmallImage()).isNotNull();
-        assertThat(rich.getSmallImage().getKey()).isEqualTo("ptb-large");
-        assertThat(rich.getSmallImage().getText()).isEqualTo("Small icon");
+        assertThat(rich.smallImage).isNotNull();
+        assertThat(rich.smallImage.key).isEqualTo("ptb-large");
+        assertThat(rich.smallImage.getText()).isEqualTo("Small icon");
 
-        assertThat(rich.getSessionId()).isEqualTo("4b2fdce12f639de8bfa7e3591b71a0d679d7c93f");
-        assertThat(rich.getSyncId()).isEqualTo("e7eb30d2ee025ed05c71ea495f770b76454ee4e0");
+        assertThat(rich.sessionId).isEqualTo("4b2fdce12f639de8bfa7e3591b71a0d679d7c93f");
+        assertThat(rich.syncId).isEqualTo("e7eb30d2ee025ed05c71ea495f770b76454ee4e0");
     }
 }

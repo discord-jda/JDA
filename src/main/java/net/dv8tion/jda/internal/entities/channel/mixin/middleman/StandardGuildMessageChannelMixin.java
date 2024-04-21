@@ -39,7 +39,7 @@ public interface StandardGuildMessageChannelMixin<T extends StandardGuildMessage
     @Override
     default boolean canTalk(@Nonnull Member member)
     {
-        if (!getGuild().equals(member.getGuild()))
+        if (!guild.equals(member.getGuild()))
             throw new IllegalArgumentException("Provided Member is not from the Guild that this channel is part of.");
 
         return member.hasPermission(this, Permission.VIEW_CHANNEL, Permission.MESSAGE_SEND);

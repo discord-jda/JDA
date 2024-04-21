@@ -98,7 +98,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     {
         if (owner != null)
         {
-            User realOwner = jda.getUserById(owner.getIdLong());
+            User realOwner = jda.getUserById(owner.idLong);
             if (realOwner != null)
                 owner = realOwner;
         }
@@ -110,7 +110,7 @@ public class GuildStickerImpl extends RichStickerImpl implements GuildSticker
     public CacheRestAction<User> retrieveOwner()
     {
         Guild g = getGuild();
-        if (g != null && !g.getSelfMember().hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+        if (g != null && !g.selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
             throw new InsufficientPermissionException(g, Permission.MANAGE_GUILD_EXPRESSIONS);
         return new DeferredRestAction<>(jda, User.class, this::getOwner,
             () -> {

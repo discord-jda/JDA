@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api;
+package net.dv8tion.jda.api
 
 /**
  * Contains information to this specific build of JDA.
  */
-public class JDAInfo
-{
-    public static final int DISCORD_GATEWAY_VERSION = 10;
-    public static final int DISCORD_REST_VERSION = 10;
-    public static final int AUDIO_GATEWAY_VERSION = 4;
-    public static final String GITHUB = "https://github.com/discord-jda/JDA";
-    public static final String VERSION_MAJOR = "@versionMajor@";
-    public static final String VERSION_MINOR = "@versionMinor@";
-    public static final String VERSION_REVISION = "@versionRevision@";
-    public static final String VERSION_CLASSIFIER = "!@versionClassifier@!";
-    public static final String COMMIT_HASH = "@commitHash@";
-    public static final String VERSION = String.format("%s.%s.%s%s%s", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION,
-            VERSION_CLASSIFIER == null ? "" : "-" + VERSION_CLASSIFIER,
-            COMMIT_HASH == null ? "" : "_" + COMMIT_HASH);
+object JDAInfo {
+    @JvmField
+    val DISCORD_GATEWAY_VERSION: Int = 10
+    val DISCORD_REST_VERSION: Int = 10
+    @JvmField
+    val AUDIO_GATEWAY_VERSION: Int = 4
+    val GITHUB: String = "https://github.com/discord-jda/JDA"
+    val VERSION_MAJOR: String = "@versionMajor@"
+    val VERSION_MINOR: String = "@versionMinor@"
+    val VERSION_REVISION: String = "@versionRevision@"
+    val VERSION_CLASSIFIER: String? = "!@versionClassifier@!"
+    val COMMIT_HASH: String? = "@commitHash@"
+    @JvmField
+    val VERSION: String = String.format(
+        "%s.%s.%s%s%s", VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION,
+        if (VERSION_CLASSIFIER == null) "" else "-" + VERSION_CLASSIFIER,
+        if (COMMIT_HASH == null) "" else "_" + COMMIT_HASH
+    )
 }

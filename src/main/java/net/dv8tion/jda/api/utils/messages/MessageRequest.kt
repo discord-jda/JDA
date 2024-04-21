@@ -13,683 +13,680 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils.messages
 
-package net.dv8tion.jda.api.utils.messages;
-
-import net.dv8tion.jda.api.entities.IMentionable;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.internal.utils.Checks;
-
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Message.MentionType
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.ActionRow.Companion.of
+import net.dv8tion.jda.api.interactions.components.ItemComponent
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.internal.utils.Checks
+import java.util.*
+import javax.annotation.CheckReturnValue
+import javax.annotation.Nonnull
 
 /**
  * Abstraction of the common setters used for messages in the API.
- * <br>These setters can both be applied to {@link MessageEditRequest edit requests} and {@link MessageCreateRequest create requests} for messages in various parts of the API.
+ * <br></br>These setters can both be applied to [edit requests][MessageEditRequest] and [create requests][MessageCreateRequest] for messages in various parts of the API.
  *
  * @param <R>
- *        Return type used for chaining method calls
+ * Return type used for chaining method calls
  *
- * @see   MessageCreateRequest
- * @see   MessageEditRequest
- * @see   AbstractMessageBuilder
- * @see   MessageCreateBuilder
- * @see   MessageEditBuilder
- */
-public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
-{
-    /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed by default.
-     * This just sets the default for all RestActions and can be overridden on a per-action basis using {@link #setAllowedMentions(Collection)}.
-     * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
-     * while still showing up as mention tag.
-     *
-     * <p>If {@code null} is provided to this method, then all Types will be pingable
-     * (unless whitelisting via one of the {@code mention*} methods is used).
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * // Disable EVERYONE and HERE mentions by default (to avoid mass ping)
-     * EnumSet<Message.MentionType> deny = EnumSet.of(Message.MentionType.EVERYONE, Message.MentionType.HERE);
-     * MessageRequest.setDefaultMentions(EnumSet.complementOf(deny));
-     * }</pre>
-     *
-     * @param  allowedMentions
-     *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
-     */
-    static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
-        AllowedMentionsData.setDefaultMentions(allowedMentions);
-    }
-
-    /**
-     * Returns the default {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} previously set by
-     * {@link #setDefaultMentions(Collection) AllowedMentions.setDefaultMentions(Collection)}.
-     *
-     * @return Default mentions set by AllowedMentions.setDefaultMentions(Collection)
-     */
-    @Nonnull
-    static EnumSet<Message.MentionType> getDefaultMentions()
-    {
-        return AllowedMentionsData.getDefaultMentions();
-    }
-
-    /**
-     * Sets the default value for {@link #mentionRepliedUser(boolean)}
-     *
-     * <p>Default: <b>true</b>
-     *
-     * @param mention
-     *        True, if replies should mention by default
-     */
-    static void setDefaultMentionRepliedUser(boolean mention)
-    {
-        AllowedMentionsData.setDefaultMentionRepliedUser(mention);
-    }
-
-    /**
-     * Returns the default mention behavior for replies.
-     * <br>If this is {@code true} then all replies will mention the author of the target message by default.
-     * You can specify this individually with {@link #mentionRepliedUser(boolean)} for each message.
-     *
-     * <p>Default: <b>true</b>
-     *
-     * @return True, if replies mention by default
-     */
-    static boolean isDefaultMentionRepliedUser()
-    {
-        return AllowedMentionsData.isDefaultMentionRepliedUser();
-    }
-
+ * @see MessageCreateRequest
+ *
+ * @see MessageEditRequest
+ *
+ * @see AbstractMessageBuilder
+ *
+ * @see MessageCreateBuilder
+ *
+ * @see MessageEditBuilder
+</R> */
+open interface MessageRequest<R : MessageRequest<R>?> : MessageData {
     /**
      * The message content, which shows above embeds and attachments.
      *
      * @param  content
-     *         The content (up to {@value Message#MAX_CONTENT_LENGTH} characters)
+     * The content (up to {@value Message#MAX_CONTENT_LENGTH} characters)
      *
      * @throws IllegalArgumentException
-     *         If the content is longer than {@value Message#MAX_CONTENT_LENGTH} characters
+     * If the content is longer than {@value Message#MAX_CONTENT_LENGTH} characters
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R setContent(@Nullable String content);
+    fun setContent(content: String?): R?
 
     /**
-     * The {@link MessageEmbed MessageEmbeds} that should be attached to the message.
-     * <br>You can use {@link Collections#emptyList()} to remove all embeds from the message.
+     * The [MessageEmbeds][MessageEmbed] that should be attached to the message.
+     * <br></br>You can use [Collections.emptyList] to remove all embeds from the message.
      *
-     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS} in the channel.
+     *
+     * This requires [Permission.MESSAGE_EMBED_LINKS][net.dv8tion.jda.api.Permission.MESSAGE_EMBED_LINKS] in the channel.
      *
      * @param  embeds
-     *         The embeds to attach to the message (up to {@value Message#MAX_EMBED_COUNT})
+     * The embeds to attach to the message (up to {@value Message#MAX_EMBED_COUNT})
      *
      * @throws IllegalArgumentException
-     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
+     * If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return The same instance for chaining
      *
-     * @see    Collections#emptyList()
+     * @see Collections.emptyList
      */
     @Nonnull
-    R setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    fun setEmbeds(@Nonnull embeds: Collection<MessageEmbed?>?): R?
 
     /**
-     * The {@link MessageEmbed MessageEmbeds} that should be attached to the message.
-     * <br>You can use {@code new MessageEmbed[0]} to remove all embeds from the message.
+     * The [MessageEmbeds][MessageEmbed] that should be attached to the message.
+     * <br></br>You can use `new MessageEmbed[0]` to remove all embeds from the message.
      *
-     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS} in the channel.
+     *
+     * This requires [Permission.MESSAGE_EMBED_LINKS][net.dv8tion.jda.api.Permission.MESSAGE_EMBED_LINKS] in the channel.
      *
      * @param  embeds
-     *         The embeds to attach to the message (up to {@value Message#MAX_EMBED_COUNT})
+     * The embeds to attach to the message (up to {@value Message#MAX_EMBED_COUNT})
      *
      * @throws IllegalArgumentException
-     *         If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
+     * If null or more than {@value Message#MAX_EMBED_COUNT} embeds are provided
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setEmbeds(@Nonnull MessageEmbed... embeds)
-    {
-        return setEmbeds(Arrays.asList(embeds));
+    fun setEmbeds(@Nonnull vararg embeds: MessageEmbed?): R? {
+        return setEmbeds(Arrays.asList(*embeds))
     }
 
     /**
-     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
-     * <br>You can use {@link Collections#emptyList()} to remove all components from the message.
+     * The [LayoutComponents][LayoutComponent] that should be attached to the message.
+     * <br></br>You can use [Collections.emptyList] to remove all components from the message.
      *
-     * <p>The most commonly used layout is {@link ActionRow}.
      *
-     * <p><b>Example: Set action rows</b><br>
-     * <pre>{@code
-     * final List<LayoutComponent> list = new ArrayList<>();
+     * The most commonly used layout is [ActionRow].
+     *
+     *
+     * **Example: Set action rows**<br></br>
+     * <pre>`final List<LayoutComponent> list = new ArrayList<>();
      * list.add(ActionRow.of(selectMenu); // first row
      * list.add(ActionRow.of(button1, button2)); // second row (shows below the first)
      *
      * channel.sendMessage("Content is still required")
-     *   .setComponents(list)
-     *   .queue();
-     * }</pre>
+     * .setComponents(list)
+     * .queue();
+    `</pre> *
      *
-     * <p><b>Example: Remove action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *    .setComponents(Collections.emptyList())
-     *    .queue();
-     * }</pre>
+     *
+     * **Example: Remove action rows**<br></br>
+     * <pre>`channel.sendMessage("Content is still required")
+     * .setComponents(Collections.emptyList())
+     * .queue();
+    `</pre> *
      *
      * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     * The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
+     *
+     *  * If `null` is provided
+     *  * If any component is not [message compatible][LayoutComponent.isMessageCompatible]
+     *  * If more than {@value Message#MAX_COMPONENT_COUNT} components are provided
+     *
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R setComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    fun setComponents(@Nonnull components: Collection<LayoutComponent?>): R?
 
     /**
-     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
-     * <br>You can call this method without anything to remove all components from the message.
+     * The [LayoutComponents][LayoutComponent] that should be attached to the message.
+     * <br></br>You can call this method without anything to remove all components from the message.
      *
-     * <p>The most commonly used layout is {@link ActionRow}.
      *
-     * <p><b>Example: Set action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
-     *     ActionRow.of(button1, button2)) // second row (shows below the first)
-     *   .queue();
-     * }</pre>
+     * The most commonly used layout is [ActionRow].
      *
-     * <p><b>Example: Remove action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents()
-     *   .queue();
-     * }</pre>
+     *
+     * **Example: Set action rows**<br></br>
+     * <pre>`channel.sendMessage("Content is still required")
+     * .setComponents(
+     * ActionRow.of(selectMenu) // first row
+     * ActionRow.of(button1, button2)) // second row (shows below the first)
+     * .queue();
+    `</pre> *
+     *
+     *
+     * **Example: Remove action rows**<br></br>
+     * <pre>`channel.sendMessage("Content is still required")
+     * .setComponents()
+     * .queue();
+    `</pre> *
      *
      * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     * The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
+     *
+     *  * If `null` is provided
+     *  * If any component is not [message compatible][LayoutComponent.isMessageCompatible]
+     *  * If more than {@value Message#MAX_COMPONENT_COUNT} components are provided
+     *
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setComponents(@Nonnull LayoutComponent... components)
-    {
-        return setComponents(Arrays.asList(components));
+    fun setComponents(@Nonnull vararg components: LayoutComponent?): R? {
+        return setComponents(Arrays.asList(*components))
     }
 
     /**
-     * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setComponents(LayoutComponent...)} instead.
+     * Convenience method to set the components of a message to a single [ActionRow] of components.
+     * <br></br>To remove components, you should use [.setComponents] instead.
      *
-     * <p><b>Example</b><br>
      *
-     * <pre>{@code
-     * final List<ItemComponent> list = new ArrayList<>();
+     * **Example**<br></br>
+     *
+     * <pre>`final List<ItemComponent> list = new ArrayList<>();
      * list.add(button1);
      * list.add(button2);
      *
      * channel.sendMessage("Content is still required")
-     *   .setActionRow(list)
-     *   .queue();
-     * }</pre>
+     * .setActionRow(list)
+     * .queue();
+    `</pre> *
      *
      * is equivalent to:
      *
-     * <pre>{@code
-     * final List<LayoutComponent> list = new ArrayList<>();
+     * <pre>`final List<LayoutComponent> list = new ArrayList<>();
      * list.add(ActionRow.of(button1, button2));
      *
      * channel.sendMessage("Content is still required")
-     *   .setComponents(list)
-     *   .queue();
-     * }</pre><br>
+     * .setComponents(list)
+     * .queue();
+    `</pre> * <br></br>
      *
      * @param  components
-     *         The {@link ItemComponent ItemComponents} for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     * The [ItemComponents][ItemComponent] for the message (up to {@value Message#MAX_COMPONENT_COUNT})
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
-     *         </ul>
+     *
+     *  * If `null` is provided
+     *  * If any component is not [message compatible][ItemComponent.isMessageCompatible]
+     *  * In all the same cases as [ActionRow.of] throws an exception
+     *
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setActionRow(@Nonnull Collection<? extends ItemComponent> components)
-    {
-        return setComponents(ActionRow.of(components));
+    fun setActionRow(@Nonnull components: Collection<ItemComponent?>?): R {
+        return setComponents(of(components))
     }
 
     /**
-     * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setComponents(LayoutComponent...)} instead.
+     * Convenience method to set the components of a message to a single [ActionRow] of components.
+     * <br></br>To remove components, you should use [.setComponents] instead.
      *
-     * <p><b>Example</b><br>
      *
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setActionRow(button1, button2)
-     *   .queue();
-     * }</pre>
+     * **Example**<br></br>
+     *
+     * <pre>`channel.sendMessage("Content is still required")
+     * .setActionRow(button1, button2)
+     * .queue();
+    `</pre> *
      *
      * is equivalent to:
      *
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(ActionRow.of(button1, button2))
-     *   .queue();
-     * }</pre><br>
+     * <pre>`channel.sendMessage("Content is still required")
+     * .setComponents(ActionRow.of(button1, button2))
+     * .queue();
+    `</pre> * <br></br>
      *
      * @param  components
-     *         The {@link ItemComponent ItemComponents} for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     * The [ItemComponents][ItemComponent] for the message (up to {@value Message#MAX_COMPONENT_COUNT})
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
-     *         </ul>
+     *
+     *  * If `null` is provided
+     *  * If any component is not [message compatible][ItemComponent.isMessageCompatible]
+     *  * In all the same cases as [ActionRow.of] throws an exception
+     *
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setActionRow(@Nonnull ItemComponent... components)
-    {
-        return setComponents(ActionRow.of(components));
+    fun setActionRow(@Nonnull vararg components: ItemComponent?): R {
+        return setComponents(of(*components))
     }
 
     /**
      * Set whether embeds should be suppressed on this message.
-     * <br>This also includes rich embeds added via {@link #setEmbeds(MessageEmbed...)}.
+     * <br></br>This also includes rich embeds added via [.setEmbeds].
      *
-     * <p>Default: false
+     *
+     * Default: false
      *
      * @param  suppress
-     *         True, if all embeds should be suppressed
+     * True, if all embeds should be suppressed
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R setSuppressEmbeds(boolean suppress);
+    fun setSuppressEmbeds(suppress: Boolean): R?
 
     /**
-     * The {@link FileUpload FileUploads} that should be attached to the message.
-     * <br>This will replace all the existing attachments on the message, if this is an edit request.
-     * You can use {@link MessageEditRequest#setAttachments(Collection)} to keep existing attachments, instead of this method.
+     * The [FileUploads][FileUpload] that should be attached to the message.
+     * <br></br>This will replace all the existing attachments on the message, if this is an edit request.
+     * You can use [MessageEditRequest.setAttachments] to keep existing attachments, instead of this method.
      *
-     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     *
+     * **Resource Handling Note:** Once the request is handed off to the requester, for example when you call [RestAction.queue],
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
-     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
-     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
+     * For instance, if an exception occurs after using [FileUpload.fromData], before calling [RestAction.queue].
+     * You can safely use a try-with-resources to handle this, since [FileUpload.close] becomes ineffective once the request is handed off.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Create an embed with a custom image, uploaded alongside the message:
-     * <pre>{@code
-     * MessageEmbed embed = new EmbedBuilder()
-     *         .setDescription("Image of a cute cat")
-     *         .setImage("attachment://cat.png") // here "cat.png" is the name used in the FileUpload.fromData factory method
-     *         .build();
+     * <pre>`MessageEmbed embed = new EmbedBuilder()
+     * .setDescription("Image of a cute cat")
+     * .setImage("attachment://cat.png") // here "cat.png" is the name used in the FileUpload.fromData factory method
+     * .build();
      *
      * // The name here will be "cat.png" to discord, what the file is called on your computer is irrelevant and only used to read the data of the image.
      * FileUpload file = FileUpload.fromData(new File("mycat-final-copy.png"), "cat.png"); // Opens the file called "cat.png" and provides the data used for sending
      *
      * channel.sendMessageEmbeds(embed)
-     *        .setFiles(file)
-     *        .queue();
-     * }</pre>
+     * .setFiles(file)
+     * .queue();
+    `</pre> *
      *
      * @param  files
-     *         The {@link FileUpload FileUploads} to attach to the message,
-     *         null or an empty list will set the attachments to an empty list and remove them from the message
+     * The [FileUploads][FileUpload] to attach to the message,
+     * null or an empty list will set the attachments to an empty list and remove them from the message
      *
      * @throws IllegalArgumentException
-     *         If null is provided inside the collection
+     * If null is provided inside the collection
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R setFiles(@Nullable Collection<? extends FileUpload> files);
+    fun setFiles(files: Collection<FileUpload?>?): R
 
     /**
-     * The {@link FileUpload FileUploads} that should be attached to the message.
-     * <br>This will replace all the existing attachments on the message, if this is an edit request.
-     * You can use {@link MessageEditRequest#setAttachments(AttachedFile...)} to keep existing attachments, instead of this method.
+     * The [FileUploads][FileUpload] that should be attached to the message.
+     * <br></br>This will replace all the existing attachments on the message, if this is an edit request.
+     * You can use [MessageEditRequest.setAttachments] to keep existing attachments, instead of this method.
      *
-     * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
+     *
+     * **Resource Handling Note:** Once the request is handed off to the requester, for example when you call [RestAction.queue],
      * the requester will automatically clean up all opened files by itself. You are only responsible to close them yourself if it is never handed off properly.
-     * For instance, if an exception occurs after using {@link FileUpload#fromData(File)}, before calling {@link RestAction#queue()}.
-     * You can safely use a try-with-resources to handle this, since {@link FileUpload#close()} becomes ineffective once the request is handed off.
+     * For instance, if an exception occurs after using [FileUpload.fromData], before calling [RestAction.queue].
+     * You can safely use a try-with-resources to handle this, since [FileUpload.close] becomes ineffective once the request is handed off.
      *
-     * <p><b>Example</b><br>
+     *
+     * **Example**<br></br>
      * Create an embed with a custom image, uploaded alongside the message:
-     * <pre>{@code
-     * MessageEmbed embed = new EmbedBuilder()
-     *         .setDescription("Image of a cute cat")
-     *         .setImage("attachment://cat.png") // here "cat.png" is the name used in the FileUpload.fromData factory method
-     *         .build();
+     * <pre>`MessageEmbed embed = new EmbedBuilder()
+     * .setDescription("Image of a cute cat")
+     * .setImage("attachment://cat.png") // here "cat.png" is the name used in the FileUpload.fromData factory method
+     * .build();
      *
      * // The name here will be "cat.png" to discord, what the file is called on your computer is irrelevant and only used to read the data of the image.
      * FileUpload file = FileUpload.fromData(new File("mycat-final-copy.png"), "cat.png"); // Opens the file called "cat.png" and provides the data used for sending
      *
      * channel.sendMessageEmbeds(embed)
-     *        .setFiles(file)
-     *        .queue();
-     * }</pre>
+     * .setFiles(file)
+     * .queue();
+    `</pre> *
      *
      * @param  files
-     *         The {@link FileUpload FileUploads} to attach to the message,
-     *         null or an empty list will set the attachments to an empty list and remove them from the message
+     * The [FileUploads][FileUpload] to attach to the message,
+     * null or an empty list will set the attachments to an empty list and remove them from the message
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setFiles(@Nonnull FileUpload... files)
-    {
-        Checks.noneNull(files, "Files");
-        return setFiles(Arrays.asList(files));
+    fun setFiles(@Nonnull vararg files: FileUpload?): R {
+        Checks.noneNull(files, "Files")
+        return setFiles(Arrays.asList(*files))
     }
-
     // Allowed Mentions Methods
-
     /**
      * Whether to mention the used, when replying to a message.
-     * <br>This only matters in combination with {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) MessageCreateAction.setMessageReference(...)}!
+     * <br></br>This only matters in combination with [MessageCreateAction.setMessageReference(...)][net.dv8tion.jda.api.requests.restaction.MessageCreateAction.setMessageReference]!
      *
-     * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
+     *
+     * This is true by default but can be configured using [.setDefaultMentionRepliedUser]!
      *
      * @param  mention
-     *         True, to mention the author if the referenced message
+     * True, to mention the author if the referenced message
      *
      * @return The same instance for chaining
      */
     @Nonnull
     @CheckReturnValue
-    R mentionRepliedUser(boolean mention);
+    fun mentionRepliedUser(mention: Boolean): R?
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed.
-     * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
+     * Sets the [MentionTypes][net.dv8tion.jda.api.entities.Message.MentionType] that should be parsed.
+     * <br></br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or `@everyone`/`@here`,
      * while still showing up as mention tag.
      *
-     * <p>If {@code null} is provided to this method, then all Types will be mentionable
-     * (unless whitelisting via one of the {@code mention*} methods is used).
      *
-     * <p>Note: A default for this can be set using {@link #setDefaultMentions(Collection) AllowedMentions.setDefaultMentions(Collection)}.
+     * If `null` is provided to this method, then all Types will be mentionable
+     * (unless whitelisting via one of the `mention*` methods is used).
+     *
+     *
+     * Note: A default for this can be set using [AllowedMentions.setDefaultMentions(Collection)][.setDefaultMentions].
      *
      * @param  allowedMentions
-     *         MentionTypes that are allowed to being parsed and mentioned.
-     *         All other mention types will not be mentioned by this message.
-     *         You can pass {@code null} or {@code EnumSet.allOf(MentionType.class)} to allow all mentions.
+     * MentionTypes that are allowed to being parsed and mentioned.
+     * All other mention types will not be mentioned by this message.
+     * You can pass `null` or `EnumSet.allOf(MentionType.class)` to allow all mentions.
      *
      * @return The same instance for chaining
      */
     @Nonnull
     @CheckReturnValue
-    R setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions);
+    fun setAllowedMentions(allowedMentions: Collection<MentionType?>?): R?
 
     /**
-     * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
-     * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * Used to provide a whitelist for [Users][net.dv8tion.jda.api.entities.User], [Members][net.dv8tion.jda.api.entities.Member]
+     * and [Roles][net.dv8tion.jda.api.entities.Role] that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
+     * <br></br>On other types of [IMentionable][net.dv8tion.jda.api.entities.IMentionable], this does nothing.
      *
-     * <p><b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * **Note:** When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
+     * <br></br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * [.setDefaultMentions] or [.setAllowedMentions].
      *
      * @param  mentions
-     *         Users, Members and Roles that should be explicitly whitelisted to be pingable.
+     * Users, Members and Roles that should be explicitly whitelisted to be pingable.
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      *
-     * @see    #setAllowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
+     * @see .setAllowedMentions
+     * @see .setDefaultMentions
      */
     @Nonnull
     @CheckReturnValue
-    R mention(@Nonnull Collection<? extends IMentionable> mentions);
+    fun mention(@Nonnull mentions: Collection<IMentionable?>): R?
 
     /**
-     * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
-     * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * Used to provide a whitelist for [Users][net.dv8tion.jda.api.entities.User], [Members][net.dv8tion.jda.api.entities.Member]
+     * and [Roles][net.dv8tion.jda.api.entities.Role] that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
+     * <br></br>On other types of [IMentionable][net.dv8tion.jda.api.entities.IMentionable], this does nothing.
      *
-     * <p><b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * **Note:** When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
+     * <br></br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * [.setDefaultMentions] or [.setAllowedMentions].
      *
      * @param  mentions
-     *         Users, Members and Roles that should be explicitly whitelisted to be pingable.
+     * Users, Members and Roles that should be explicitly whitelisted to be pingable.
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      *
-     * @see    #setAllowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
+     * @see .setAllowedMentions
+     * @see .setDefaultMentions
      */
     @Nonnull
     @CheckReturnValue
-    default R mention(@Nonnull IMentionable... mentions)
-    {
-        Checks.notNull(mentions, "Mentions");
-        return mention(Arrays.asList(mentions));
+    fun mention(@Nonnull vararg mentions: IMentionable?): R? {
+        Checks.notNull(mentions, "Mentions")
+        return mention(Arrays.asList(*mentions))
     }
 
     /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
+     * Used to provide a whitelist of [Users][net.dv8tion.jda.api.entities.User] that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      *
-     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * **Note:** When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     * <br></br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * [.setDefaultMentions] or [.setAllowedMentions].
      *
      * @param  userIds
-     *         Ids of Users that should be explicitly whitelisted to be pingable.
+     * Ids of Users that should be explicitly whitelisted to be pingable.
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      *
-     * @see    #setAllowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
+     * @see .setAllowedMentions
+     * @see .setDefaultMentions
      */
     @Nonnull
     @CheckReturnValue
-    R mentionUsers(@Nonnull Collection<String> userIds);
+    fun mentionUsers(@Nonnull userIds: Collection<String?>?): R?
 
     /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
+     * Used to provide a whitelist of [Users][net.dv8tion.jda.api.entities.User] that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      *
-     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * **Note:** When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     * <br></br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * [.setDefaultMentions] or [.setAllowedMentions].
      *
      * @param  userIds
-     *         Ids of Users that should be explicitly whitelisted to be pingable.
+     * Ids of Users that should be explicitly whitelisted to be pingable.
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      *
-     * @see    #setAllowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
+     * @see .setAllowedMentions
+     * @see .setDefaultMentions
      */
     @Nonnull
     @CheckReturnValue
-    default R mentionUsers(@Nonnull String... userIds)
-    {
-        Checks.notNull(userIds, "User IDs");
-        return mentionUsers(Arrays.asList(userIds));
+    fun mentionUsers(@Nonnull vararg userIds: String?): R? {
+        Checks.notNull(userIds, "User IDs")
+        return mentionUsers(Arrays.asList(*userIds))
     }
 
     /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
+     * Used to provide a whitelist of [Users][net.dv8tion.jda.api.entities.User] that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      *
-     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * **Note:** When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     * <br></br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * [.setDefaultMentions] or [.setAllowedMentions].
      *
      * @param  userIds
-     *         Ids of Users that should be explicitly whitelisted to be pingable.
+     * Ids of Users that should be explicitly whitelisted to be pingable.
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      *
-     * @see    #setAllowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
+     * @see .setAllowedMentions
+     * @see .setDefaultMentions
      */
     @Nonnull
     @CheckReturnValue
-    default R mentionUsers(@Nonnull long... userIds)
-    {
-        Checks.notNull(userIds, "UserId array");
-        String[] stringIds = new String[userIds.length];
-        for (int i = 0; i < userIds.length; i++)
-            stringIds[i] = Long.toUnsignedString(userIds[i]);
-        return mentionUsers(stringIds);
+    fun mentionUsers(@Nonnull vararg userIds: Long): R? {
+        Checks.notNull(userIds, "UserId array")
+        val stringIds: Array<String?> = arrayOfNulls(userIds.size)
+        for (i in userIds.indices) stringIds.get(i) = java.lang.Long.toUnsignedString(userIds.get(i))
+        return mentionUsers(*stringIds)
     }
 
     /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * Used to provide a whitelist of [Roles][net.dv8tion.jda.api.entities.Role] that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      *
-     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * **Note:** When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     * <br></br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * [.setDefaultMentions] or [.setAllowedMentions].
      *
      * @param  roleIds
-     *         Ids of Roles that should be explicitly whitelisted to be pingable.
+     * Ids of Roles that should be explicitly whitelisted to be pingable.
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      *
-     * @see    #setAllowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
+     * @see .setAllowedMentions
+     * @see .setDefaultMentions
      */
     @Nonnull
     @CheckReturnValue
-    R mentionRoles(@Nonnull Collection<String> roleIds);
+    fun mentionRoles(@Nonnull roleIds: Collection<String?>?): R?
 
     /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * Used to provide a whitelist of [Roles][net.dv8tion.jda.api.entities.Role] that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      *
-     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * **Note:** When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     * <br></br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * [.setDefaultMentions] or [.setAllowedMentions].
      *
      * @param  roleIds
-     *         Ids of Roles that should be explicitly whitelisted to be pingable.
+     * Ids of Roles that should be explicitly whitelisted to be pingable.
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      *
-     * @see    #setAllowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
+     * @see .setAllowedMentions
+     * @see .setDefaultMentions
      */
     @Nonnull
     @CheckReturnValue
-    default R mentionRoles(@Nonnull String... roleIds)
-    {
-        Checks.notNull(roleIds, "Role IDs");
-        return mentionRoles(Arrays.asList(roleIds));
+    fun mentionRoles(@Nonnull vararg roleIds: String?): R? {
+        Checks.notNull(roleIds, "Role IDs")
+        return mentionRoles(Arrays.asList(*roleIds))
     }
 
     /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * Used to provide a whitelist of [Roles][net.dv8tion.jda.api.entities.Role] that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      *
-     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #setAllowedMentions(Collection)}.
+     *
+     * **Note:** When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     * <br></br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
+     * [.setDefaultMentions] or [.setAllowedMentions].
      *
      * @param  roleIds
-     *         Ids of Roles that should be explicitly whitelisted to be pingable.
+     * Ids of Roles that should be explicitly whitelisted to be pingable.
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     * If null is provided
      *
      * @return The same instance for chaining
      *
-     * @see    #setAllowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
+     * @see .setAllowedMentions
+     * @see .setDefaultMentions
      */
     @Nonnull
     @CheckReturnValue
-    default R mentionRoles(@Nonnull long... roleIds)
-    {
-        Checks.notNull(roleIds, "RoleId array");
-        String[] stringIds = new String[roleIds.length];
-        for (int i = 0; i < roleIds.length; i++)
-            stringIds[i] = Long.toUnsignedString(roleIds[i]);
-        return mentionRoles(stringIds);
+    fun mentionRoles(@Nonnull vararg roleIds: Long): R? {
+        Checks.notNull(roleIds, "RoleId array")
+        val stringIds: Array<String?> = arrayOfNulls(roleIds.size)
+        for (i in roleIds.indices) stringIds.get(i) = java.lang.Long.toUnsignedString(roleIds.get(i))
+        return mentionRoles(*stringIds)
     }
 
     /**
-     * Applies all the data of the provided {@link Message} and attempts to copy it.
-     * <br>This cannot copy the file attachments of the message, they must be manually downloaded and provided to {@link #setFiles(FileUpload...)}.
-     * <br>The {@link #setAllowedMentions(Collection) allowed mentions} are not updated to reflect the provided message, and might mention users that the message did not.
+     * Applies all the data of the provided [Message] and attempts to copy it.
+     * <br></br>This cannot copy the file attachments of the message, they must be manually downloaded and provided to [.setFiles].
+     * <br></br>The [allowed mentions][.setAllowedMentions] are not updated to reflect the provided message, and might mention users that the message did not.
      *
-     * <p>For edit requests, this will set {@link MessageEditRequest#setReplace(boolean)} to {@code true}, and replace the existing message completely.
+     *
+     * For edit requests, this will set [MessageEditRequest.setReplace] to `true`, and replace the existing message completely.
      *
      * @param  message
-     *         The message to copy the data from
+     * The message to copy the data from
      *
      * @throws IllegalArgumentException
-     *         If null is provided or the message is a system message
+     * If null is provided or the message is a system message
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R applyMessage(@Nonnull Message message);
+    fun applyMessage(@Nonnull message: Message): R
+
+    companion object {
+        @get:Nonnull
+        var defaultMentions: EnumSet<MentionType>?
+            /**
+             * Returns the default [MentionTypes][net.dv8tion.jda.api.entities.Message.MentionType] previously set by
+             * [AllowedMentions.setDefaultMentions(Collection)][.setDefaultMentions].
+             *
+             * @return Default mentions set by AllowedMentions.setDefaultMentions(Collection)
+             */
+            get() {
+                return AllowedMentionsData.Companion.getDefaultMentions()
+            }
+            /**
+             * Sets the [MentionTypes][net.dv8tion.jda.api.entities.Message.MentionType] that should be parsed by default.
+             * This just sets the default for all RestActions and can be overridden on a per-action basis using [.setAllowedMentions].
+             * <br></br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or `@everyone`/`@here`,
+             * while still showing up as mention tag.
+             *
+             *
+             * If `null` is provided to this method, then all Types will be pingable
+             * (unless whitelisting via one of the `mention*` methods is used).
+             *
+             *
+             * **Example**<br></br>
+             * <pre>`// Disable EVERYONE and HERE mentions by default (to avoid mass ping)
+             * EnumSet<Message.MentionType> deny = EnumSet.of(Message.MentionType.EVERYONE, Message.MentionType.HERE);
+             * MessageRequest.setDefaultMentions(EnumSet.complementOf(deny));
+            `</pre> *
+             *
+             * @param  allowedMentions
+             * MentionTypes that are allowed to being parsed and pinged. `null` to disable and allow all mentions.
+             */
+            set(allowedMentions) {
+                AllowedMentionsData.Companion.setDefaultMentions(allowedMentions)
+            }
+        var isDefaultMentionRepliedUser: Boolean
+            /**
+             * Returns the default mention behavior for replies.
+             * <br></br>If this is `true` then all replies will mention the author of the target message by default.
+             * You can specify this individually with [.mentionRepliedUser] for each message.
+             *
+             *
+             * Default: **true**
+             *
+             * @return True, if replies mention by default
+             */
+            get() {
+                return AllowedMentionsData.Companion.isDefaultMentionRepliedUser()
+            }
+            /**
+             * Sets the default value for [.mentionRepliedUser]
+             *
+             *
+             * Default: **true**
+             *
+             * @param mention
+             * True, if replies should mention by default
+             */
+            set(mention) {
+                AllowedMentionsData.Companion.setDefaultMentionRepliedUser(mention)
+            }
+    }
 }

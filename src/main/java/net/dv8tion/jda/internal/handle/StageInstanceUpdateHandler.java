@@ -51,19 +51,19 @@ public class StageInstanceUpdateHandler extends SocketHandler
         StageChannel channel = getJDA().getStageChannelById(content.getUnsignedLong("channel_id"));
         if (channel == null)
             return null;
-        StageInstance oldInstance = channel.getStageInstance();
+        StageInstance oldInstance = channel.stageInstance;
         if (oldInstance == null)
             return null;
 
-        String oldTopic = oldInstance.getTopic();
-        StageInstance.PrivacyLevel oldLevel = oldInstance.getPrivacyLevel();
+        String oldTopic = oldInstance.topic;
+        StageInstance.PrivacyLevel oldLevel = oldInstance.privacyLevel;
         StageInstance newInstance = getJDA().getEntityBuilder().createStageInstance(guild, content);
         if (newInstance == null)
             return null;
 
-        if (!Objects.equals(oldTopic, newInstance.getTopic()))
+        if (!Objects.equals(oldTopic, newInstance.topic))
             getJDA().handleEvent(new StageInstanceUpdateTopicEvent(getJDA(), responseNumber, newInstance, oldTopic));
-        if (oldLevel != newInstance.getPrivacyLevel())
+        if (oldLevel != newInstance.privacyLevel)
             getJDA().handleEvent(new StageInstanceUpdatePrivacyLevelEvent(getJDA(), responseNumber, newInstance, oldLevel));
         return null;
     }

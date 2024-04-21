@@ -73,8 +73,8 @@ public class CommandImpl implements Command
         this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
-        this.guildId = guild != null ? guild.getIdLong() : 0L;
-        this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
+        this.guildId = guild != null ? guild.idLong : 0L;
+        this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().applicationIdLong);
         this.options = parseOptions(json, OPTION_TEST, Command.Option::new);
         this.groups = parseOptions(json, GROUP_TEST, (DataObject o) -> new SubcommandGroup(this, o));
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, (DataObject o) -> new Subcommand(this, o));
@@ -261,7 +261,7 @@ public class CommandImpl implements Command
             return true;
         if (!(obj instanceof Command))
             return false;
-        return id == ((Command) obj).getIdLong();
+        return id == ((Command) obj).idLong;
     }
 
     @Override
@@ -272,7 +272,7 @@ public class CommandImpl implements Command
 
     private void checkSelfUser(String s)
     {
-        if (applicationId != api.getSelfUser().getApplicationIdLong())
+        if (applicationId != api.getSelfUser().applicationIdLong)
             throw new IllegalStateException(s);
     }
 }

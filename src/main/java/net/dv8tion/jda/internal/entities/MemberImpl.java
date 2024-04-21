@@ -78,7 +78,7 @@ public class MemberImpl implements Member
     public User getUser()
     {
         // Load user from cache if one exists, ideally two members with the same id should wrap the same user object
-        User realUser = getJDA().getUserById(user.getIdLong());
+        User realUser = getJDA().getUserById(user.idLong);
         if (realUser != null)
             this.user = realUser;
         return user;
@@ -219,7 +219,7 @@ public class MemberImpl implements Member
     {
         for (Role r : getRoles())
         {
-            final int colorRaw = r.getColorRaw();
+            final int colorRaw = r.colorRaw;
             if (colorRaw != Role.DEFAULT_COLOR_RAW)
                 return colorRaw;
         }
@@ -244,10 +244,10 @@ public class MemberImpl implements Member
     public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
     {
         Checks.notNull(channel, "Channel");
-        if (!getGuild().equals(channel.getGuild()))
+        if (!getGuild().equals(channel.guild))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
 
-        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel.permissionContainer, this));
     }
 
     @Nonnull
@@ -261,7 +261,7 @@ public class MemberImpl implements Member
     @Override
     public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
     {
-        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.getPermissionContainer(), this));
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel.permissionContainer, this));
     }
 
     @Override
@@ -281,7 +281,7 @@ public class MemberImpl implements Member
     @Override
     public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
-        return PermissionUtil.checkPermission(channel.getPermissionContainer(), this, permissions);
+        return PermissionUtil.checkPermission(channel.permissionContainer, this, permissions);
     }
 
     @Override
@@ -297,8 +297,8 @@ public class MemberImpl implements Member
     {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
-        Checks.check(targetChannel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
-        Checks.check(syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(targetChannel.guild.equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(syncSource.guild.equals(getGuild()), "Channels must be from the same guild!");
         long userPerms = PermissionUtil.getEffectivePermission(targetChannel, this);
         if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
             return false; // We can't manage permissions at all!
@@ -310,15 +310,15 @@ public class MemberImpl implements Member
             return true;
 
         TLongObjectMap<PermissionOverride> existingOverrides = ((IPermissionContainerMixin<?>) targetChannel).getPermissionOverrideMap();
-        for (PermissionOverride override : syncSource.getPermissionOverrides())
+        for (PermissionOverride override : syncSource.permissionOverrides)
         {
-            PermissionOverride existing = existingOverrides.get(override.getIdLong());
-            long allow = override.getAllowedRaw();
-            long deny = override.getDeniedRaw();
+            PermissionOverride existing = existingOverrides.get(override.idLong);
+            long allow = override.allowedRaw;
+            long deny = override.deniedRaw;
             if (existing != null)
             {
-                allow ^= existing.getAllowedRaw();
-                deny ^= existing.getDeniedRaw();
+                allow ^= existing.allowedRaw;
+                deny ^= existing.deniedRaw;
             }
             // If any permissions changed that the user doesn't have in the channel, they can't sync it :(
             if (((allow | deny) & ~userPerms) != 0)
@@ -331,7 +331,7 @@ public class MemberImpl implements Member
     public boolean canSync(@Nonnull IPermissionContainer channel)
     {
         Checks.notNull(channel, "Channel");
-        Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(channel.guild.equals(getGuild()), "Channels must be from the same guild!");
         long userPerms = PermissionUtil.getEffectivePermission(channel, this);
         if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
             return false; // We can't manage permissions at all!
@@ -362,7 +362,7 @@ public class MemberImpl implements Member
     @Override
     public boolean isOwner()
     {
-        return this.user.getIdLong() == getGuild().getOwnerIdLong();
+        return this.user.idLong == getGuild().getOwnerIdLong();
     }
 
     @Override
@@ -374,7 +374,7 @@ public class MemberImpl implements Member
     @Override
     public long getIdLong()
     {
-        return user.getIdLong();
+        return user.idLong;
     }
 
     @Nonnull
@@ -398,7 +398,7 @@ public class MemberImpl implements Member
     @Override
     public String getDefaultAvatarId()
     {
-        return user.getDefaultAvatarId();
+        return user.defaultAvatarId;
     }
 
     public MemberImpl setNickname(String nickname)
@@ -467,14 +467,14 @@ public class MemberImpl implements Member
             return false;
 
         MemberImpl oMember = (MemberImpl) o;
-        return oMember.user.getIdLong() == user.getIdLong()
+        return oMember.user.idLong == user.idLong
             && oMember.guild.getIdLong() == guild.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(guild.getIdLong(), user.getIdLong());
+        return Objects.hash(guild.getIdLong(), user.idLong);
     }
 
     @Override

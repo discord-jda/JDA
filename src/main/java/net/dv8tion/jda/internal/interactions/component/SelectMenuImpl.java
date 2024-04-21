@@ -99,7 +99,7 @@ public abstract class SelectMenuImpl implements SelectMenu
     public String toString()
     {
         return new EntityString(SelectMenu.class)
-                .setType(getType())
+                .setType(type)
                 .addMetadata("id", id)
                 .addMetadata("placeholder", placeholder)
                 .toString();

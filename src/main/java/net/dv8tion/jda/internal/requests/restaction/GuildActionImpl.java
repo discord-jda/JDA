@@ -211,7 +211,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         if (!channels.isEmpty())
             object.put("channels", DataArray.fromCollection(channels));
         if (icon != null)
-            object.put("icon", icon.getEncoding());
+            object.put("icon", icon.encoding);
         if (verificationLevel != null)
             object.put("verification_level", verificationLevel.getKey());
         if (notificationLevel != null)

@@ -39,11 +39,11 @@ public interface ICategorizableChannelMixin<T extends ICategorizableChannelMixin
         // Check that each override matches with the parent override
         for (PermissionOverride override : parentOverrides.valueCollection())
         {
-            PermissionOverride ourOverride = overrides.get(override.getIdLong());
+            PermissionOverride ourOverride = overrides.get(override.idLong);
             if (ourOverride == null) // this means we don't have the parent override => not synced
                 return false;
             // Permissions are different => not synced
-            if (ourOverride.getAllowedRaw() != override.getAllowedRaw() || ourOverride.getDeniedRaw() != override.getDeniedRaw())
+            if (ourOverride.allowedRaw != override.allowedRaw || ourOverride.deniedRaw != override.deniedRaw)
                 return false;
         }
 

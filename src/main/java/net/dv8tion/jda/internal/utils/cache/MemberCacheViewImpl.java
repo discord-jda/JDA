@@ -49,7 +49,7 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         List<Member> members = new ArrayList<>();
         forEach(member ->
         {
-            final String nick = member.getUser().getName();
+            final String nick = member.user.name;
             if (equals(ignoreCase, nick, name))
                 members.add(member);
         });
@@ -65,7 +65,7 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         List<Member> members = new ArrayList<>();
         forEach(member ->
         {
-            final String nick = member.getNickname();
+            final String nick = member.nickname;
             if (nick == null)
             {
                 if (name == null)
@@ -95,14 +95,14 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         if (isEmpty())
             return Collections.emptyList();
 
-        List<Role> rolesWithoutPublicRole = roles.stream().filter(role -> !role.isPublicRole()).collect(Collectors.toList());
+        List<Role> rolesWithoutPublicRole = roles.stream().filter(role -> !role.isPublicRole).collect(Collectors.toList());
         if (rolesWithoutPublicRole.isEmpty())
             return asList();
 
         List<Member> members = new ArrayList<>();
         forEach(member ->
         {
-            if (member.getRoles().containsAll(rolesWithoutPublicRole))
+            if (member.roles.containsAll(rolesWithoutPublicRole))
                 members.add(member);
         });
         return members;

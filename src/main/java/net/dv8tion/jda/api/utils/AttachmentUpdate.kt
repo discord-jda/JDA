@@ -13,125 +13,91 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.dv8tion.jda.api.utils
 
-package net.dv8tion.jda.api.utils;
-
-import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EntityString;
-import okhttp3.MultipartBody;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.dv8tion.jda.api.entities.ISnowflake
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.utils.data.DataObject
+import net.dv8tion.jda.api.utils.data.DataObject.Companion.empty
+import net.dv8tion.jda.internal.utils.Checks
+import net.dv8tion.jda.internal.utils.EntityString
+import javax.annotation.Nonnull
 
 /**
  * Represents existing message attachment.
- * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+ * <br></br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
  */
-public class AttachmentUpdate implements AttachedFile, ISnowflake
-{
-    private final long id;
-    private final String name;
-
-    protected AttachmentUpdate(long id, String name)
-    {
-        this.id = id;
-        this.name = name;
-    }
-
-    /**
-     * Creates an {@link AttachmentUpdate} with the given attachment id.
-     * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
-     *
-     * @param  id
-     *         The id of the attachment to retain
-     *
-     * @return {@link AttachmentUpdate}
-     */
-    @Nonnull
-    public static AttachmentUpdate fromAttachment(long id)
-    {
-        return new AttachmentUpdate(id, null);
-    }
-
-    /**
-     * Creates an {@link AttachmentUpdate} with the given attachment id.
-     * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
-     *
-     * @param  id
-     *         The id of the attachment to retain
-     *
-     * @throws IllegalArgumentException
-     *         If the id is not a valid snowflake
-     *
-     * @return {@link AttachmentUpdate}
-     */
-    @Nonnull
-    public static AttachmentUpdate fromAttachment(@Nonnull String id)
-    {
-        return fromAttachment(MiscUtil.parseSnowflake(id));
-    }
-
-    /**
-     * Creates an {@link AttachmentUpdate} with the given attachment.
-     * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
-     *
-     * @param  attachment
-     *         The attachment to retain
-     *
-     * @return {@link AttachmentUpdate}
-     */
-    @Nonnull
-    public static AttachmentUpdate fromAttachment(@Nonnull Message.Attachment attachment)
-    {
-        Checks.notNull(attachment, "Attachment");
-        return new AttachmentUpdate(attachment.getIdLong(), attachment.getFileName());
-    }
-
+class AttachmentUpdate protected constructor(
+    override val idLong: Long,
     /**
      * The existing attachment filename.
      *
-     * @return The filename, or {@code null} if not provided
+     * @return The filename, or `null` if not provided
      */
-    @Nullable
-    public String getName()
-    {
-        return name;
-    }
+    val name: String?
+) : AttachedFile, ISnowflake {
 
-    @Override
-    public long getIdLong()
-    {
-        return id;
-    }
-
-    @Override
-    public void addPart(@Nonnull MultipartBody.Builder builder, int index) {}
-
+    override fun addPart(@Nonnull builder: Builder, index: Int) {}
     @Nonnull
-    @Override
-    public DataObject toAttachmentData(int index)
-    {
-        DataObject object = DataObject.empty().put("id", getId());
-        if (name != null)
-            object.put("filename", name);
-        return object;
+    override fun toAttachmentData(index: Int): DataObject {
+        val `object` = empty().put("id", idLong)
+        if (name != null) `object`.put("filename", name)
+        return `object`
     }
 
-    @Override
-    public void close() {}
+    override fun close() {}
+    override fun forceClose() {}
+    override fun toString(): String {
+        val entityString = EntityString("AttachedFile").setType("Attachment")
+        if (name != null) entityString.setName(name)
+        return entityString.toString()
+    }
 
-    @Override
-    public void forceClose() {}
+    companion object {
+        /**
+         * Creates an [AttachmentUpdate] with the given attachment id.
+         * <br></br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+         *
+         * @param  id
+         * The id of the attachment to retain
+         *
+         * @return [AttachmentUpdate]
+         */
+        @Nonnull
+        fun fromAttachment(id: Long): AttachmentUpdate {
+            return AttachmentUpdate(id, null)
+        }
 
-    @Override
-    public String toString()
-    {
-        final EntityString entityString = new EntityString("AttachedFile").setType("Attachment");
-        if (name != null)
-            entityString.setName(name);
-        return entityString.toString();
+        /**
+         * Creates an [AttachmentUpdate] with the given attachment id.
+         * <br></br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+         *
+         * @param  id
+         * The id of the attachment to retain
+         *
+         * @throws IllegalArgumentException
+         * If the id is not a valid snowflake
+         *
+         * @return [AttachmentUpdate]
+         */
+        @Nonnull
+        fun fromAttachment(@Nonnull id: String): AttachmentUpdate {
+            return fromAttachment(MiscUtil.parseSnowflake(id))
+        }
+
+        /**
+         * Creates an [AttachmentUpdate] with the given attachment.
+         * <br></br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+         *
+         * @param  attachment
+         * The attachment to retain
+         *
+         * @return [AttachmentUpdate]
+         */
+        @Nonnull
+        fun fromAttachment(@Nonnull attachment: Message.Attachment): AttachmentUpdate {
+            Checks.notNull(attachment, "Attachment")
+            return AttachmentUpdate(attachment.getIdLong(), attachment.fileName)
+        }
     }
 }

@@ -37,7 +37,7 @@ public class DelayRestAction<T> extends RestActionOperator<T, T>
         super(action);
         this.unit = unit;
         this.delay = delay;
-        this.scheduler = scheduler == null ? action.getJDA().getRateLimitPool() : scheduler;
+        this.scheduler = scheduler == null ? action.jDA.getRateLimitPool() : scheduler;
     }
 
     @Override

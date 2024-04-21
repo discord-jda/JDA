@@ -88,9 +88,9 @@ public class ChannelOrderActionImpl
 
         Checks.notNull(channels, "Channels to order");
         Checks.notEmpty(channels, "Channels to order");
-        Checks.check(channels.stream().allMatch(c -> guild.equals(c.getGuild())),
+        Checks.check(channels.stream().allMatch(c -> guild.equals(c.guild)),
             "One or more channels are not from the correct guild");
-        Checks.check(channels.stream().allMatch(c -> c.getType().getSortBucket() == bucket),
+        Checks.check(channels.stream().allMatch(c -> c.type.sortBucket == bucket),
             "One or more channels did not match the expected bucket " + bucket);
 
         this.guild = guild;
@@ -117,12 +117,12 @@ public class ChannelOrderActionImpl
     {
         GuildChannel channel = getSelectedEntity();
         if (!(channel instanceof ICategorizableChannel) && category != null)
-            throw new IllegalStateException("Cannot move channel of type " + channel.getType() + " to category!");
+            throw new IllegalStateException("Cannot move channel of type " + channel.type + " to category!");
         if (category != null)
-            Checks.check(category.getGuild().equals(getGuild()), "Category is not from the same guild!");
+            Checks.check(category.guild.equals(getGuild()), "Category is not from the same guild!");
 
-        long id = channel.getIdLong();
-        parent.put(id, category == null ? 0 : category.getIdLong());
+        long id = channel.idLong;
+        parent.put(id, category == null ? 0 : category.idLong);
         if (syncPermissions)
             lockPermissions.add(id);
         else
@@ -133,7 +133,7 @@ public class ChannelOrderActionImpl
     @Override
     protected RequestBody finalizeData()
     {
-        final Member self = guild.getSelfMember();
+        final Member self = guild.selfMember;
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(guild, Permission.MANAGE_CHANNEL);
         DataArray array = DataArray.empty();
@@ -143,11 +143,11 @@ public class ChannelOrderActionImpl
             DataObject json = DataObject.empty()
                     .put("id", chan.getId())
                     .put("position", i);
-            if (parent.containsKey(chan.getIdLong()))
+            if (parent.containsKey(chan.idLong))
             {
-                long parentId = parent.get(chan.getIdLong());
+                long parentId = parent.get(chan.idLong);
                 json.put("parent_id", parentId == 0 ? null : parentId);
-                json.put("lock_permissions", lockPermissions.contains(chan.getIdLong()));
+                json.put("lock_permissions", lockPermissions.contains(chan.idLong));
             }
             array.add(json);
         }
@@ -158,14 +158,14 @@ public class ChannelOrderActionImpl
     @Override
     protected void validateInput(GuildChannel entity)
     {
-        Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
+        Checks.check(entity.guild.equals(guild), "Provided channel is not from this Guild!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
     protected static Collection<GuildChannel> getChannelsOfType(Guild guild, int bucket)
     {
         return guild.getChannels().stream()
-            .filter(it -> it.getType().getSortBucket() == bucket)
+            .filter(it -> it.type.sortBucket == bucket)
             .sorted()
             .collect(Collectors.toList());
     }

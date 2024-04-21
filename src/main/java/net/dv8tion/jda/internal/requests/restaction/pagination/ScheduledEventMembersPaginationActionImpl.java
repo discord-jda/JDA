@@ -40,8 +40,8 @@ public class ScheduledEventMembersPaginationActionImpl extends PaginationActionI
 
     public ScheduledEventMembersPaginationActionImpl(ScheduledEvent event)
     {
-        super(event.getGuild().getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.getGuild().getId(), event.getId()).withQueryParams("with_member", "true"), 1, 100, 100);
-        this.guild = event.getGuild();
+        super(event.guild.getJDA(), Route.Guilds.GET_SCHEDULED_EVENT_USERS.compile(event.guild.getId(), event.getId()).withQueryParams("with_member", "true"), 1, 100, 100);
+        this.guild = event.guild;
     }
 
     @Nonnull
@@ -83,7 +83,7 @@ public class ScheduledEventMembersPaginationActionImpl extends PaginationActionI
         if (!members.isEmpty())
         {
             last = members.get(members.size() - 1);
-            lastKey = last.getIdLong();
+            lastKey = last.idLong;
         }
         request.onSuccess(members);
     }
@@ -91,6 +91,6 @@ public class ScheduledEventMembersPaginationActionImpl extends PaginationActionI
     @Override
     protected long getKey(Member it)
     {
-        return it.getIdLong();
+        return it.idLong;
     }
 }

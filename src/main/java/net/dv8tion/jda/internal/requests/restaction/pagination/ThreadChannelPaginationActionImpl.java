@@ -71,7 +71,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
             return OffsetDateTime.now(ZoneOffset.UTC).toString();
 
         // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
-        return last.getTimeArchiveInfoLastModified().toString();
+        return last.timeArchiveInfoLastModified.toString();
     }
 
     @Override
@@ -102,13 +102,13 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
 
                 try
                 {
-                    ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().getIdLong());
+                    ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().idLong);
                     list.add(thread);
 
                     if (this.useCache)
                         this.cached.add(thread);
                     this.last = thread;
-                    this.lastKey = last.getIdLong();
+                    this.lastKey = last.idLong;
                 }
                 catch (Exception e)
                 {
@@ -130,6 +130,6 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
     @Override
     protected long getKey(ThreadChannel it)
     {
-        return it.getIdLong();
+        return it.idLong;
     }
 }

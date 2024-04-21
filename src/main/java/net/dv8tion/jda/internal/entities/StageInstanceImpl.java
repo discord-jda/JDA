@@ -55,14 +55,14 @@ public class StageInstanceImpl implements StageInstance
     @Override
     public Guild getGuild()
     {
-        return getChannel().getGuild();
+        return getChannel().guild;
     }
 
     @Nonnull
     @Override
     public StageChannel getChannel()
     {
-        StageChannel real = channel.getJDA().getStageChannelById(channel.getIdLong());
+        StageChannel real = channel.jDA.getStageChannelById(channel.idLong);
         if (real != null)
             channel = real;
         return channel;
@@ -88,7 +88,7 @@ public class StageInstanceImpl implements StageInstance
     {
         checkPermissions();
         Route.CompiledRoute route = Route.StageInstances.DELETE_INSTANCE.compile(channel.getId());
-        return new RestActionImpl<>(channel.getJDA(), route);
+        return new RestActionImpl<>(channel.jDA, route);
     }
 
     @Nonnull
@@ -121,7 +121,7 @@ public class StageInstanceImpl implements StageInstance
 
     private void checkPermissions()
     {
-        EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(getChannel());
+        EnumSet<Permission> permissions = getGuild().selfMember.getPermissions(getChannel());
         EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
         for (Permission perm : required)
         {
