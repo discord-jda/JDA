@@ -373,6 +373,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setSuppressEmbeds(data.isSuppressEmbeds())
                 .setSuppressedNotifications(data.isSuppressedNotifications())
                 .setComponents(layoutComponents)
+                .setPoll(data.getPoll())
                 .setFiles(data.getFiles());
     }
 
@@ -389,7 +390,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setEmbeds(embeds)
                 .setTTS(message.isTTS())
                 .setSuppressedNotifications(message.isSuppressedNotifications())
-                .setComponents(message.getActionRows());
+                .setComponents(message.getActionRows())
+                .setPoll(message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
     }
 
     /**

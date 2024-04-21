@@ -80,6 +80,24 @@ public class MessagePollData implements SerializableData
         return new MessagePollBuilder(title);
     }
 
+    /**
+     * Converts a {@link MessagePoll} to a sendable MessagePollData instance.
+     * <br>This does not support {@link MessagePollBuilder#setDuration(Duration) duration}, which cannot be derived from an active poll.
+     *
+     * @param  poll
+     *         The poll to copy
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return MessagePollData instance
+     */
+    @Nonnull
+    public static MessagePollData from(@Nonnull MessagePoll poll)
+    {
+        return new MessagePollBuilder(poll).build();
+    }
+
     @NotNull
     @Override
     public DataObject toData()
