@@ -262,6 +262,9 @@ public class Route
 
         public static final Route GET_MESSAGE =     new Route(GET,  "channels/{channel_id}/messages/{message_id}");
         public static final Route DELETE_MESSAGES = new Route(POST, "channels/{channel_id}/messages/bulk-delete");
+
+        public static final Route END_POLL =               new Route(POST, "channels/{channel_id}/polls/{message_id}/expire");
+        public static final Route GET_POLL_ANSWER_VOTERS = new Route(GET,  "channels/{channel_id}/polls/{message_id}/answers/{answer_id}");
     }
 
     public static class Invites

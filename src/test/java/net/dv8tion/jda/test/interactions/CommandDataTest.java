@@ -27,12 +27,14 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.test.PrettyRepresentation;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.dv8tion.jda.test.ChecksHelper.assertStringChecks;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -175,50 +177,51 @@ public class CommandDataTest
     @Test
     void testNameChecks()
     {
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new CommandDataImpl("invalid name", "Valid description"))
-            .withMessage("Name must match regex ^[\\w-]+$. Provided: \"invalid name\"");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new CommandDataImpl("invalidName", "Valid description"))
-            .withMessage("Name must be lowercase only! Provided: \"invalidName\"");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new CommandDataImpl("valid_name", ""))
-            .withMessage("Description may not be empty");
+        assertStringChecks("Name", input -> new CommandDataImpl(input, "Valid description"))
+            .checksNotNull()
+            .checksRange(1, 32)
+            .checksLowercaseOnly()
+            .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
 
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new SubcommandData("invalid name", "Valid description"))
-            .withMessage("Name must match regex ^[\\w-]+$. Provided: \"invalid name\"");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new SubcommandData("invalidName", "Valid description"))
-            .withMessage("Name must be lowercase only! Provided: \"invalidName\"");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new SubcommandData("valid_name", ""))
-            .withMessage("Description may not be empty");
+        assertStringChecks("Name", input -> new SubcommandData(input, "Valid description"))
+            .checksNotNull()
+            .checksRange(1, 32)
+            .checksLowercaseOnly()
+            .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
 
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new SubcommandGroupData("invalid name", "Valid description"))
-            .withMessage("Name must match regex ^[\\w-]+$. Provided: \"invalid name\"");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new SubcommandGroupData("invalidName", "Valid description"))
-            .withMessage("Name must be lowercase only! Provided: \"invalidName\"");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> new SubcommandGroupData("valid_name", ""))
-            .withMessage("Description may not be empty");
+        assertStringChecks("Name", input -> new SubcommandGroupData(input, "Valid description"))
+            .checksNotNull()
+            .checksRange(1, 32)
+            .checksLowercaseOnly()
+            .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
+
+        assertStringChecks("Description", input -> new CommandDataImpl("valid_name", input))
+            .checksNotNull()
+            .checksRange(1, 100);
+
+        assertStringChecks("Description", input -> new SubcommandData("valid_name", input))
+            .checksNotNull()
+            .checksRange(1, 100);
+
+        assertStringChecks("Description", input -> new SubcommandGroupData("valid_name", input))
+            .checksNotNull()
+            .checksRange(1, 100);
     }
 
     @Test
     void testChoices()
     {
         OptionData stringOption = new OptionData(OptionType.STRING, "choice", "Option with choices!");
+
+        assertStringChecks("Value", value -> stringOption.addChoice("valid_name", value))
+            .checksNotEmpty();
+
         assertThatIllegalArgumentException()
             .isThrownBy(() -> stringOption.addChoice("invalid name", 0))
             .withMessage("Cannot add long choice for OptionType.STRING");
         assertThatIllegalArgumentException()
             .isThrownBy(() -> stringOption.addChoice("invalidName", 0.0))
             .withMessage("Cannot add double choice for OptionType.STRING");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> stringOption.addChoice("valid_name", ""))
-            .withMessage("Value may not be empty");
 
         OptionData intOption = new OptionData(OptionType.INTEGER, "choice", "Option with choices!");
         List<Command.Choice> choices = new ArrayList<>();

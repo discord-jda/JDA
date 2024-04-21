@@ -67,14 +67,13 @@ public class SubcommandData implements SerializableData
     protected void checkName(@Nonnull String name)
     {
         Checks.inRange(name, 1, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
     }
 
     protected void checkDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        Checks.inRange(description, 1, 100, "Description");
     }
 
     /**

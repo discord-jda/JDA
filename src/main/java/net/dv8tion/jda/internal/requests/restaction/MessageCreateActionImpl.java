@@ -79,7 +79,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         {
             if (!stickers.isEmpty())
                 return getRequestBody(DataObject.empty().put("sticker_ids", stickers));
-            throw new IllegalStateException("Cannot build empty messages! Must provide at least one of: content, embed, file, or stickers");
+            throw new IllegalStateException("Cannot build empty messages! Must provide at least one of: content, embed, file, poll, or stickers");
         }
 
         try (MessageCreateData data = builder.build())

@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -44,19 +45,21 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     private final List<FileUpload> files;
     private final List<LayoutComponent> components;
     private final AllowedMentionsData mentions;
+    private final MessagePollData poll;
     private final boolean tts;
     private final int flags;
 
     protected MessageCreateData(
             String content,
             List<MessageEmbed> embeds, List<FileUpload> files, List<LayoutComponent> components,
-            AllowedMentionsData mentions, boolean tts, int flags)
+            AllowedMentionsData mentions, MessagePollData poll, boolean tts, int flags)
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
         this.files = Collections.unmodifiableList(files);
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
+        this.poll = poll;
         this.tts = tts;
         this.flags = flags;
     }
@@ -237,6 +240,17 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
         return getFiles();
     }
 
+    /**
+     * The poll to send with the message
+     *
+     * @return The poll, or null if no poll is sent
+     */
+    @Nullable
+    public MessagePollData getPoll()
+    {
+        return poll;
+    }
+
     @Override
     public boolean isSuppressEmbeds()
     {
@@ -316,6 +330,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     {
         DataObject json = DataObject.empty();
         json.put("content", content);
+        json.put("poll", poll);
         json.put("embeds", DataArray.fromCollection(embeds));
         json.put("components", DataArray.fromCollection(components));
         json.put("tts", tts);

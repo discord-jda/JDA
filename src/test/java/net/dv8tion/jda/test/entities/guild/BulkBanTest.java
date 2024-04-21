@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
+import static net.dv8tion.jda.test.ChecksHelper.assertDurationChecks;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -70,6 +71,10 @@ public class BulkBanTest extends AbstractGuildTest
     {
         hasPermission(true);
 
+        assertDurationChecks("Deletion timeframe", duration -> guild.ban(Collections.emptyList(), duration))
+            .checksNotNegative()
+            .throwsFor(Duration.ofDays(100), "Deletion timeframe must not be larger than 7 days. Provided: 8640000 seconds");
+
         Set<UserSnowflake> users = Collections.singleton(null);
 
         assertThatIllegalArgumentException()
@@ -78,12 +83,7 @@ public class BulkBanTest extends AbstractGuildTest
         assertThatIllegalArgumentException()
             .isThrownBy(() -> guild.ban(null, null).queue())
             .withMessage("Users may not be null");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> guild.ban(Collections.emptyList(), Duration.ofSeconds(-1)).queue())
-            .withMessage("Deletion time cannot be negative");
-        assertThatIllegalArgumentException()
-            .isThrownBy(() -> guild.ban(Collections.emptyList(), Duration.ofDays(100)).queue())
-            .withMessage("Deletion timeframe must not be larger than 7 days. Provided: 8640000 seconds");
+
         assertThatIllegalArgumentException()
             .isThrownBy(() ->
                 guild.ban(
