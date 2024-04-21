@@ -1028,9 +1028,6 @@ public interface MessageChannel extends Channel, Formattable
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#POLL_ALREADY_EXPIRED POLL_ALREADY_EXPIRED}
-     *     <br>If the poll has already expired</li>
-     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
      *     <br>If the poll was sent by another user</li>
      *
@@ -1067,9 +1064,6 @@ public interface MessageChannel extends Channel, Formattable
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#POLL_ALREADY_EXPIRED POLL_ALREADY_EXPIRED}
-     *     <br>If the poll has already expired</li>
-     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
      *     <br>If the poll was sent by another user</li>
      *
