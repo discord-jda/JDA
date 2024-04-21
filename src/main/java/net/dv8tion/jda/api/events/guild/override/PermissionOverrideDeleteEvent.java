@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.events.guild.override;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
@@ -26,6 +27,15 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link PermissionOverride} in a {@link IPermissionContainer guild channel} has been deleted.
  *
  * <p>Can be used to retrieve the old override.
+ *
+ * <p><b>Note:</b> This event will also be fired when the {@link net.dv8tion.jda.api.entities.Guild#getPublicRole() @everyone} override
+ * previously had allowed/denied permissions, but has been cleared.
+ *
+ * <p><b>Requirements</b><br>
+ *
+ * <p>These events require {@link CacheFlag#MEMBER_OVERRIDES} to be enabled for member overrides,
+ * unless the member is the {@link net.dv8tion.jda.api.entities.Guild#getSelfMember() self member}.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this by default!
  */
 public class PermissionOverrideDeleteEvent extends GenericPermissionOverrideEvent
 {

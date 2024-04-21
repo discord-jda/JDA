@@ -33,8 +33,7 @@ import javax.annotation.Nonnull;
  * <p><b>Requirements</b><br>
  *
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#SCHEDULED_EVENTS SCHEDULED_EVENTS} intent and {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
- * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
- * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this by default!
  *
  * <p>This class may be used to check if a gateway event is related to a {@link ScheduledEvent}
  * as all gateway events in the {@link net.dv8tion.jda.api.events.guild.scheduledevent} package extend this class.
