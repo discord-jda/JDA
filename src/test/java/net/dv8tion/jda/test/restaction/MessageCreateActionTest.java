@@ -17,12 +17,20 @@
 package net.dv8tion.jda.test.restaction;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
+import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.test.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.requests.Method.POST;
@@ -99,9 +108,7 @@ public class MessageCreateActionTest extends IntegrationTest
     void testEmbedOnly()
     {
         MessageCreateAction action = new MessageCreateActionImpl(channel)
-            .setEmbeds(new EmbedBuilder()
-                .setDescription("test description")
-                .build());
+            .setEmbeds(Data.getTestEmbed());
 
         assertThatRequestFrom(action)
             .hasMethod(POST)
@@ -116,13 +123,7 @@ public class MessageCreateActionTest extends IntegrationTest
     void testPollOnly()
     {
         MessageCreateAction action = new MessageCreateActionImpl(channel)
-            .setPoll(new MessagePollBuilder("Test poll")
-                .setDuration(3, TimeUnit.DAYS)
-                .setMultiAnswer(true)
-                .addAnswer("Test answer 1")
-                .addAnswer("Test answer 2", Emoji.fromUnicode("🤔"))
-                .addAnswer("Test answer 3", Emoji.fromCustom("minn", 821355005788684298L, true))
-                .build());
+            .setPoll(Data.getTestPoll());
 
         assertThatRequestFrom(action)
             .hasMethod(POST)
@@ -138,6 +139,25 @@ public class MessageCreateActionTest extends IntegrationTest
                         .add(pollAnswer(1, "Test answer 1", null))
                         .add(pollAnswer(2, "Test answer 2", emoji("🤔")))
                         .add(pollAnswer(3, "Test answer 3", emoji("minn", 821355005788684298L, true))))))
+            .whenQueueCalled();
+    }
+
+    @Test
+    void testFullFromBuilder()
+    {
+        MessageCreateData data = new MessageCreateBuilder()
+                .setTTS(true)
+                .setSuppressedNotifications(true)
+                .setAllowedMentions(EnumSet.noneOf(Message.MentionType.class))
+                .setContent("test content")
+                .setEmbeds(Data.getTestEmbed())
+                .setFiles(FileUpload.fromData(new byte[0], "test.png"))
+                .setComponents(ActionRow.of(Button.primary("test", "Test Button")))
+                .setPoll(Data.getTestPoll())
+                .build();
+
+        assertThatRequestFrom(new MessageCreateActionImpl(channel).applyData(data))
+            .hasBodyEqualTo(data.toData().put("enforce_nonce", true))
             .whenQueueCalled();
     }
 
@@ -169,6 +189,24 @@ public class MessageCreateActionTest extends IntegrationTest
                     .put("name", name)
                     .put("id", id)
                     .put("animated", animated);
+        }
+
+        static MessageEmbed getTestEmbed()
+        {
+            return new EmbedBuilder()
+                    .setDescription("test description")
+                    .build();
+        }
+
+        static MessagePollData getTestPoll()
+        {
+            return new MessagePollBuilder("Test poll")
+                    .setDuration(3, TimeUnit.DAYS)
+                    .setMultiAnswer(true)
+                    .addAnswer("Test answer 1")
+                    .addAnswer("Test answer 2", Emoji.fromUnicode("🤔"))
+                    .addAnswer("Test answer 3", Emoji.fromCustom("minn", 821355005788684298L, true))
+                    .build();
         }
     }
 }

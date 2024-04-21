@@ -56,6 +56,25 @@ public class MessagePollBuilder
     }
 
     /**
+     * Creates a new builder, initialized by the provided {@link MessagePoll} instance.
+     *
+     * @param poll
+     *        The poll to copy from
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     */
+    public MessagePollBuilder(@Nonnull MessagePoll poll)
+    {
+        Checks.notNull(poll, "Poll");
+        this.title = poll.getQuestion().getText();
+        this.isMultiAnswer = poll.isMultiAnswer();
+        this.layout = poll.getLayout();
+        for (MessagePoll.Answer answer : poll.getAnswers())
+            addAnswer(answer.getText(), answer.getEmoji());
+    }
+
+    /**
      * They poll layout.
      *
      * @param  layout
