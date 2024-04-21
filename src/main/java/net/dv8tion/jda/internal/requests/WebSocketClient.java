@@ -1361,6 +1361,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("CHANNEL_CREATE",                         new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                         new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                         new ChannelUpdateHandler(api));
+        handlers.put("ENTITLEMENT_CREATE",                     new EntitlementCreateHandler(api));
+        handlers.put("ENTITLEMENT_UPDATE",                     new EntitlementUpdateHandler(api));
+        handlers.put("ENTITLEMENT_DELETE",                     new EntitlementDeleteHandler(api));
         handlers.put("GUILD_AUDIT_LOG_ENTRY_CREATE",           new GuildAuditLogEntryCreateHandler(api));
         handlers.put("GUILD_BAN_ADD",                          new GuildBanHandler(api, true));
         handlers.put("GUILD_BAN_REMOVE",                       new GuildBanHandler(api, false));
@@ -1392,6 +1395,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("MESSAGE_REACTION_REMOVE",                new MessageReactionHandler(api, false));
         handlers.put("MESSAGE_REACTION_REMOVE_ALL",            new MessageReactionBulkRemoveHandler(api));
         handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",          new MessageReactionClearEmojiHandler(api));
+        handlers.put("MESSAGE_POLL_VOTE_ADD",                  new MessagePollVoteHandler(api, true));
+        handlers.put("MESSAGE_POLL_VOTE_REMOVE",               new MessagePollVoteHandler(api, false));
         handlers.put("MESSAGE_UPDATE",                         new MessageUpdateHandler(api));
         handlers.put("PRESENCE_UPDATE",                        new PresenceUpdateHandler(api));
         handlers.put("READY",                                  new ReadyHandler(api));

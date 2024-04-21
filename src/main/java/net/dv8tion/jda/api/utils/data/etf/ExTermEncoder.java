@@ -88,16 +88,15 @@ public class ExTermEncoder
         if (value instanceof Byte)
             return packSmallInt(buffer, (byte) value);
         if (value instanceof Integer || value instanceof Short)
-            return packInt(buffer, (int) value);
+            return packInt(buffer, ((Number) value).intValue());
         if (value instanceof Long)
             return packLong(buffer, (long) value);
         if (value instanceof Float || value instanceof Double)
-            return packFloat(buffer, (double) value);
+            return packFloat(buffer, ((Number) value).doubleValue());
         if (value instanceof Boolean)
             return packAtom(buffer, String.valueOf(value));
         if (value == null)
             return packAtom(buffer, "nil");
-        // imagine we had templates :O
         if (value instanceof long[])
             return packArray(buffer, (long[]) value);
         if (value instanceof int[])

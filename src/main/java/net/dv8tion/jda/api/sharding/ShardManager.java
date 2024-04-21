@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
  * @since  3.4
  * @author Aljoscha Grebe
  */
-public interface ShardManager extends IGuildChannelContainer
+public interface ShardManager extends IGuildChannelContainer<Channel>
 {
     /**
      * Adds all provided listeners to the event-listeners that will be used to handle events.
@@ -969,7 +969,7 @@ public interface ShardManager extends IGuildChannelContainer
 
     /**
      * Restarts all shards, shutting old ones down first.
-     * 
+     *
      * <p>As all shards need to connect to discord again this will take equally long as the startup of a new ShardManager
      * (using the 5000ms + backoff as delay between starting new JDA instances).
      *

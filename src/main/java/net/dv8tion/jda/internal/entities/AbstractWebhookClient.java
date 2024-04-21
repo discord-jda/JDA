@@ -29,11 +29,11 @@ import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageDeleteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -91,7 +91,7 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessageComponents(@NotNull Collection<? extends LayoutComponent> components)
+    public WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
     {
         return sendRequest().setComponents(components);
     }
@@ -101,6 +101,14 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
     public WebhookMessageCreateAction<T> sendMessage(@Nonnull MessageCreateData message)
     {
         return sendRequest().applyData(message);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageCreateAction<T> sendMessagePoll(@Nonnull MessagePollData poll)
+    {
+        Checks.notNull(poll, "Message Poll");
+        return sendRequest().setPoll(poll);
     }
 
     @Nonnull

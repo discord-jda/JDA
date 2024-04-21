@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.FileProxy;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -655,12 +656,14 @@ public class MessageEmbed implements SerializableData
     public static class VideoInfo
     {
         protected final String url;
+        protected final String proxyUrl;
         protected final int width;
         protected final int height;
 
-        public VideoInfo(String url, int width, int height)
+        public VideoInfo(String url, String proxyUrl, int width, int height)
         {
             this.url = url;
+            this.proxyUrl = proxyUrl;
             this.width = width;
             this.height = height;
         }
@@ -674,6 +677,32 @@ public class MessageEmbed implements SerializableData
         public String getUrl()
         {
             return url;
+        }
+
+        /**
+         * The url of the video, proxied by Discord
+         * <br>This url is used to access the video through Discord instead of directly to prevent ip scraping.
+         *
+         * @return Possibly-null String containing the proxied video url.
+         */
+        @Nullable
+        public String getProxyUrl()
+        {
+            return proxyUrl;
+        }
+
+        /**
+         * Returns a {@link FileProxy} for this embed video.
+         *
+         * @return Possibly-null {@link FileProxy} of this embed video
+         *
+         * @see    #getProxyUrl()
+         */
+        @Nullable
+        public FileProxy getProxy()
+        {
+            final String proxyUrl = getProxyUrl();
+            return proxyUrl == null ? null : new FileProxy(proxyUrl);
         }
 
         /**

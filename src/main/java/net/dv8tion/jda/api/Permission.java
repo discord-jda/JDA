@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -33,19 +31,17 @@ public enum Permission
     // General Server / Channel Permissions
     MANAGE_CHANNEL(                      4, true,  true,  "Manage Channels"),
     MANAGE_SERVER(                       5, true,  false, "Manage Server"),
-    VIEW_AUDIT_LOGS(                     7, true,  false, "View Audit Logs"),
-    VIEW_CHANNEL(                       10, true,  true,  "View Channel(s)"),
+    VIEW_AUDIT_LOGS(                     7, true,  false, "View Audit Log"),
+    VIEW_CHANNEL(                       10, true,  true,  "View Channels"),
     VIEW_GUILD_INSIGHTS(                19, true,  false, "View Server Insights"),
     MANAGE_ROLES(                       28, true,  false, "Manage Roles"),
     MANAGE_PERMISSIONS(                 28, false, true,  "Manage Permissions"),
     MANAGE_WEBHOOKS(                    29, true,  true,  "Manage Webhooks"),
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("MANAGE_GUILD_EXPRESSIONS")
-    MANAGE_EMOJIS_AND_STICKERS(         30, true,  false, "Manage Emojis and Stickers"),
-    MANAGE_GUILD_EXPRESSIONS(           30, true,  false, "Manage Emojis, Stickers, and Soundboards"),
+    MANAGE_GUILD_EXPRESSIONS(           30, true,  false, "Manage Expressions"),
     MANAGE_EVENTS(                      33, true,  true,  "Manage Events"),
     VIEW_CREATOR_MONETIZATION_ANALYTICS(41, true,  false, "View Creator Analytics"),
+    CREATE_GUILD_EXPRESSIONS(           43, true,  false, "Create Expressions"),
+    CREATE_SCHEDULED_EVENTS(            44, true,  false, "Create Events"),
 
     // Membership Permissions
     CREATE_INSTANT_INVITE(0, true, true,  "Create Instant Invite"),
@@ -68,6 +64,7 @@ public enum Permission
     USE_APPLICATION_COMMANDS(    31, true, true, "Use Application Commands"),
     MESSAGE_EXT_STICKER(         37, true, true, "Use External Stickers"),
     MESSAGE_ATTACH_VOICE_MESSAGE(46, true, true, "Send Voice Messages"),
+    MESSAGE_SEND_POLLS(          49, true, true, "Create Polls"),
 
     // Thread Permissions
     MANAGE_THREADS(          34, true, true, "Manage Threads"),

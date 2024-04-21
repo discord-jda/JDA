@@ -87,8 +87,7 @@ public class CommandDataImpl implements SlashCommandData
     public void checkDescription(@Nonnull String description)
     {
         checkType(Command.Type.SLASH, "set description");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+        Checks.inRange(description, 1, MAX_DESCRIPTION_LENGTH, "Description");
     }
 
     @Nonnull
