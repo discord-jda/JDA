@@ -557,9 +557,9 @@ public class EntityBuilder
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
             if (voiceState != null)
             {
-                AudioChannelMixin<?> connectedChannel = (AudioChannelMixin<?>) voiceState.getChannel();
-                if (connectedChannel != null)
-                    connectedChannel.getConnectedMembersMap().remove(member.getIdLong());
+                AudioChannel connectedChannel = voiceState.getChannel();
+                if (connectedChannel instanceof AudioChannelMixin)
+                    ((AudioChannelMixin<?>) connectedChannel).getConnectedMembersMap().remove(member.getIdLong());
                 voiceState.setConnectedChannel(null);
             }
 
