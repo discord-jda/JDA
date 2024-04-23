@@ -1091,6 +1091,48 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
+    public void onConnectError(WebSocket websocket, WebSocketException exception) throws Exception
+    {
+        this.onError(websocket, exception);
+    }
+
+    @Override
+    public void onFrameError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame) throws Exception
+    {
+        this.onError(websocket, cause);
+    }
+
+    @Override
+    public void onMessageError(WebSocket websocket, WebSocketException cause, List<WebSocketFrame> frames) throws Exception
+    {
+        this.onError(websocket, cause);
+    }
+
+    @Override
+    public void onMessageDecompressionError(WebSocket websocket, WebSocketException cause, byte[] compressed) throws Exception
+    {
+        this.onError(websocket, cause);
+    }
+
+    @Override
+    public void onTextMessageError(WebSocket websocket, WebSocketException cause, byte[] data) throws Exception
+    {
+        this.onError(websocket, cause);
+    }
+
+    @Override
+    public void onSendError(WebSocket websocket, WebSocketException cause, WebSocketFrame frame) throws Exception
+    {
+        this.onError(websocket, cause);
+    }
+
+    @Override
+    public void onUnexpectedError(WebSocket websocket, WebSocketException cause) throws Exception
+    {
+        this.onError(websocket, cause);
+    }
+
+    @Override
     public void onError(WebSocket websocket, WebSocketException cause) throws Exception
     {
         if (cause.getCause() instanceof SocketTimeoutException)
