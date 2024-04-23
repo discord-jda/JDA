@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,6 +36,7 @@ import java.util.Collection;
  *
  * <p>Identifier: {@code emoji}
  */
+@RequiredCacheFlags(always = CacheFlag.FORUM_TAGS)
 public class ForumTagUpdateEmojiEvent extends GenericForumTagUpdateEvent<EmojiUnion>
 {
     public static final String IDENTIFIER = "emoji";

@@ -19,6 +19,10 @@ package net.dv8tion.jda.api.events.user.update;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
@@ -45,6 +49,9 @@ import javax.annotation.Nonnull;
  * or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ONLINE_STATUS CacheFlag.ONLINE_STATUS} to be enabled, depending on the type.
  * You can enable the cache flag with {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) enableCache(CacheFlag.ACTIVITY, CacheFlag.ONLINE_STATUS)}.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_PRESENCES)
+@RequiredCacheFlags(sometimes = {CacheFlag.ACTIVITY, CacheFlag.ONLINE_STATUS})
+@RequiresCachedMember
 public interface GenericUserPresenceEvent extends GenericEvent
 {
     /**

@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.events.message.poll;
 
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -34,6 +36,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_POLLS DIRECT_MESSAGE_POLLS} to work in private channels</li>
  * </ul>
  */
+@RequiredIntents(sometimes = {GatewayIntent.GUILD_MESSAGE_POLLS, GatewayIntent.DIRECT_MESSAGE_POLLS})
 public class MessagePollVoteRemoveEvent extends GenericMessagePollVoteEvent
 {
     public MessagePollVoteRemoveEvent(@Nonnull MessageChannel channel, long responseNumber, long messageId, long userId, long answerId)

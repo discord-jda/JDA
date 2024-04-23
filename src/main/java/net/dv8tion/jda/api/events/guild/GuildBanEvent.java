@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.guild;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -33,6 +35,7 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
  */
+@RequiredIntents(always = GatewayIntent.GUILD_MODERATION)
 public class GuildBanEvent extends GenericGuildEvent
 {
     private final User user;

@@ -20,7 +20,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -45,6 +50,9 @@ import java.time.OffsetDateTime;
  * member was updated and gives us the updated member object. In order to fire specific events like these we
  * need to have the old member cached to compare against.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_VOICE_STATES)
+@RequiredCacheFlags(always = CacheFlag.VOICE_STATE)
+@RequiresCachedMember
 public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
 {
     private final OffsetDateTime oldTime, newTime;

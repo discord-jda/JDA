@@ -19,6 +19,9 @@ package net.dv8tion.jda.api.events.guild.member.update;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -45,6 +48,8 @@ import javax.annotation.Nonnull;
  * @since  4.2.1
  */
 @Incubating
+@RequiredIntents(always = GatewayIntent.GUILD_MEMBERS)
+@RequiresCachedMember
 public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "pending";
