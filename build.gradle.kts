@@ -146,6 +146,7 @@ dependencies {
     testImplementation(libs.mockito)
     testImplementation(libs.assertj)
     testImplementation(libs.commons.lang3)
+    testImplementation(libs.logback.classic)
 }
 
 
