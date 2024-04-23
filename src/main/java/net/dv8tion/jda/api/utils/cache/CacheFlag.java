@@ -21,10 +21,16 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 
 /**
@@ -136,5 +142,49 @@ public enum CacheFlag
     public static EnumSet<CacheFlag> getPrivileged()
     {
         return EnumSet.copyOf(privileged);
+    }
+
+    /**
+     * Parse the required cache flags from the provided {@link GenericEvent Event Types}.
+     *
+     * @param  events
+     *         The event types
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required cache flags
+     */
+    @Nonnull
+    @SafeVarargs
+    public static EnumSet<CacheFlag> fromEvents(@Nonnull Class<? extends GenericEvent>... events)
+    {
+        Checks.noneNull(events, "Event");
+        return fromEvents(Arrays.asList(events));
+    }
+
+    /**
+     * Parse the required cache flags from the provided {@link GenericEvent Event Types}.
+     *
+     * @param  events
+     *         The event types
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required cache flags
+     */
+    @Nonnull
+    public static EnumSet<CacheFlag> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events)
+    {
+        Checks.noneNull(events, "Events");
+        EnumSet<CacheFlag> flags = EnumSet.noneOf(CacheFlag.class);
+        for (Class<? extends GenericEvent> event : events)
+        {
+            final RequiredCacheFlags requiredCacheFlags = event.getDeclaredAnnotation(RequiredCacheFlags.class);
+            if (requiredCacheFlags != null)
+                Collections.addAll(flags, requiredCacheFlags.always());
+        }
+        return flags;
     }
 }
