@@ -183,24 +183,6 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
     }
 
     @Nonnull
-    @Override
-    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
-    {
-        checkCanAccessChannel();
-        checkCanSendMessage();
-        return MessageChannelUnion.super.sendMessageComponents(components);
-    }
-
-    @Nonnull
-    @Override
-    default MessageCreateAction sendMessageComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
-    {
-        checkCanAccessChannel();
-        checkCanSendMessage();
-        return MessageChannelUnion.super.sendMessageComponents(component, other);
-    }
-
-    @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessage(@Nonnull MessageCreateData msg)
     {
