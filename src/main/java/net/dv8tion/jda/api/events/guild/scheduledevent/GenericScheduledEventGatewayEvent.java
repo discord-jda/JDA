@@ -17,7 +17,10 @@ package net.dv8tion.jda.api.events.guild.scheduledevent;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
@@ -38,6 +41,8 @@ import javax.annotation.Nonnull;
  * <p>This class may be used to check if a gateway event is related to a {@link ScheduledEvent}
  * as all gateway events in the {@link net.dv8tion.jda.api.events.guild.scheduledevent} package extend this class.
  */
+@RequiredIntents(always = GatewayIntent.SCHEDULED_EVENTS)
+@RequiredCacheFlags(always = CacheFlag.SCHEDULED_EVENTS)
 public abstract class GenericScheduledEventGatewayEvent extends GenericGuildEvent
 {
     protected final ScheduledEvent scheduledEvent;

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
@@ -42,6 +43,7 @@ import java.util.EnumSet;
  * unless the member is the {@link net.dv8tion.jda.api.entities.Guild#getSelfMember() self member}.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this by default!
  */
+@RequiredCacheFlags(always = CacheFlag.MEMBER_OVERRIDES)
 public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEvent
 {
     private final long oldAllow, oldDeny;

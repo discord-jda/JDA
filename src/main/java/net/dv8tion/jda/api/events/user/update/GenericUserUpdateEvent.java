@@ -19,7 +19,10 @@ package net.dv8tion.jda.api.events.user.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.UpdateEvent;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
 import net.dv8tion.jda.api.events.user.GenericUserEvent;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,6 +45,8 @@ import javax.annotation.Nullable;
  * @param <T>
  *        The type of the updated value
  */
+@RequiredIntents(always = GatewayIntent.GUILD_MEMBERS)
+@RequiresCachedMember
 public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent implements UpdateEvent<User, T>
 {
     protected final T previous;

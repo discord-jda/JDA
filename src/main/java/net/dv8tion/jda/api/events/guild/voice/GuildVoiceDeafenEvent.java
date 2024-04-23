@@ -18,6 +18,11 @@ package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
@@ -40,6 +45,9 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_VOICE_STATES)
+@RequiredCacheFlags(always = CacheFlag.VOICE_STATE)
+@RequiresCachedMember
 public class GuildVoiceDeafenEvent extends GenericGuildVoiceEvent
 {
     protected final boolean deafened;

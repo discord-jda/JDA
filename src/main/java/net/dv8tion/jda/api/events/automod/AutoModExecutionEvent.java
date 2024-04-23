@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.automod.AutoModExecution;
 import net.dv8tion.jda.api.entities.automod.AutoModResponse;
@@ -24,6 +25,8 @@ import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiredPermissions;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
@@ -37,6 +40,8 @@ import javax.annotation.Nullable;
  * <br>This event will only fire for guilds where the bot has the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
  * Additionally, access to {@link #getContent()} and {@link #getMatchedContent()} requires the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent to be enabled.
  */
+@RequiredIntents(sometimes = {GatewayIntent.MESSAGE_CONTENT, GatewayIntent.AUTO_MODERATION_EXECUTION})
+@RequiredPermissions(always = Permission.MANAGE_SERVER)
 public class AutoModExecutionEvent extends Event implements AutoModExecution
 {
     private final AutoModExecution execution;
