@@ -2083,7 +2083,7 @@ public class EntityBuilder extends AbstractEntityBuilder
     {
         final long id = content.getLong("id");
         final int type = content.getInt("type");
-        final long userId = content.getLong("user_id");
+        final User user = createUser(content.getObject("user"));
         final IntegrationOwners integrationOwners = new IntegrationOwnersImpl(content.getObject("authorizing_integration_owners"));
         final Long originalResponseMessageId = content.isNull("original_response_message_id") ? null : content.getLong("original_response_message_id");
         final Long interactedMessageId = content.isNull("interacted_message_id") ? null : content.getLong("interacted_message_id");
@@ -2091,7 +2091,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                 .map(this::createMessageInteractionMetadata)
                 .orElse(null);
 
-        return new Message.InteractionMetadata(id, type, UserSnowflake.fromId(userId), integrationOwners, originalResponseMessageId, interactedMessageId, triggeringInteraction);
+        return new Message.InteractionMetadata(id, type, user, integrationOwners, originalResponseMessageId, interactedMessageId, triggeringInteraction);
     }
 
     public MessageSnapshot createMessageSnapshot(MessageReference messageReference, DataObject jsonObject)

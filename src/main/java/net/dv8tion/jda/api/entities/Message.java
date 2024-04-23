@@ -2938,17 +2938,17 @@ public interface Message extends ISnowflake, Formattable
     {
         private final long id;
         private final int type;
-        private final UserSnowflake userId;
+        private final User user;
         private final IntegrationOwners integrationOwners;
         private final Long originalResponseMessageId;
         private final Long interactedMessageId;
         private final InteractionMetadata triggeringInteraction;
 
-        public InteractionMetadata(long id, int type, UserSnowflake userId, IntegrationOwners integrationOwners, Long originalResponseMessageId, Long interactedMessageId, InteractionMetadata triggeringInteraction)
+        public InteractionMetadata(long id, int type, User user, IntegrationOwners integrationOwners, Long originalResponseMessageId, Long interactedMessageId, InteractionMetadata triggeringInteraction)
         {
             this.id = id;
             this.type = type;
-            this.userId = userId;
+            this.user = user;
             this.integrationOwners = integrationOwners;
             this.originalResponseMessageId = originalResponseMessageId;
             this.interactedMessageId = interactedMessageId;
@@ -2984,14 +2984,14 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * The id of the user who caused this interaction.
+         * The {@link User} who caused this interaction.
          *
-         * @return The {@link UserSnowflake}
+         * @return The {@link User}
          */
         @Nonnull
-        public UserSnowflake getUserId()
+        public User getUser()
         {
-            return userId;
+            return user;
         }
 
         /**
