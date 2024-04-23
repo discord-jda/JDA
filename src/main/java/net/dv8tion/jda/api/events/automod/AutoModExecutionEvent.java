@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
  * <br>This event will only fire for guilds where the bot has the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
  * Additionally, access to {@link #getContent()} and {@link #getMatchedContent()} requires the {@link GatewayIntent#MESSAGE_CONTENT MESSAGE_CONTENT} intent to be enabled.
  */
-@RequiredIntents(sometimes = {GatewayIntent.MESSAGE_CONTENT, GatewayIntent.AUTO_MODERATION_EXECUTION})
+@RequiredIntents(always = GatewayIntent.AUTO_MODERATION_EXECUTION, sometimes = GatewayIntent.MESSAGE_CONTENT)
 @RequiredPermissions(always = Permission.MANAGE_SERVER)
 public class AutoModExecutionEvent extends Event implements AutoModExecution
 {
