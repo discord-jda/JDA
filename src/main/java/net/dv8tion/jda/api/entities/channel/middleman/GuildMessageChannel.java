@@ -63,7 +63,10 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         If this channel is a thread, and the bot isn't in the guild.
+     * @throws UnsupportedOperationException
+     *         if the bot isn't in the guild, and this channel isn't the current interaction's channel,
+     *         and the member isn't the current interaction's caller.
      *
      * @param  member
      *         The Member to check
