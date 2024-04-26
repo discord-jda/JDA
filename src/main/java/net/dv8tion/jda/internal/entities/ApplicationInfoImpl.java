@@ -286,7 +286,8 @@ public class ApplicationInfoImpl implements ApplicationInfo
     {
         private final InstallParameters installParameters;
 
-        IntegrationTypeConfigurationImpl(InstallParameters installParameters) {
+        IntegrationTypeConfigurationImpl(InstallParameters installParameters) 
+        {
             this.installParameters = installParameters;
         }
 
@@ -303,7 +304,8 @@ public class ApplicationInfoImpl implements ApplicationInfo
         private final List<String> scopes;
         private final Set<Permission> permissions;
 
-        InstallParametersImpl(List<String> scopes, Set<Permission> permissions) {
+        InstallParametersImpl(List<String> scopes, Set<Permission> permissions)
+        {
             this.scopes = Collections.unmodifiableList(scopes);
             this.permissions = Collections.unmodifiableSet(permissions);
         }

@@ -270,7 +270,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
                 return channelInteractionPermissions.getPermissions();
         }
 
-        throw new UnsupportedOperationException("Detached member permissions in can only be retrieved in the interaction channel, " +
+        throw new UnsupportedOperationException("Detached member permissions can only be retrieved in the interaction channel, " +
                 "and channels only contain the permissions of the interaction caller");
     }
 
@@ -326,7 +326,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Override
     public String getAsMention()
     {
-        return "<@" + user.getId() + '>';
+        return user.getAsMention();
     }
 
     @Nullable
