@@ -335,9 +335,9 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
     {
         if (o == this)
             return true;
-        if (!(o instanceof Role))
+        if (!(o instanceof RoleImpl))
             return false;
-        Role oRole = (Role) o;
+        RoleImpl oRole = (RoleImpl) o;
         return this.getIdLong() == oRole.getIdLong();
     }
 
