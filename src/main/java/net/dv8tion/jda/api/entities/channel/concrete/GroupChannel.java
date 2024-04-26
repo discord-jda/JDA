@@ -73,14 +73,16 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
         return iconUrl == null ? null : new ImageProxy(iconUrl);
     }
 
+    /**
+     * Returns the ID of the user which owns this {@link GroupChannel}.
+     *
+     * @return The ID of the user which owns this {@link GroupChannel}
+     */
     @Nonnull
     UserSnowflake getOwnerId();
 
     /**
      * Retrieves the {@link User} which owns this {@link GroupChannel}.
-     *
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
      *
      * @return A {@link RestAction} to retrieve the {@link User User} which owns this {@link GroupChannel}.
      */
