@@ -72,7 +72,7 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
     @Override
     public int getPosition()
     {
-        throw new DetachedEntityException("Can only get the raw position in a detached role");
+        throw new DetachedEntityException("Cannot get the position of a detached role, only the raw position is available");
     }
 
     @Override
