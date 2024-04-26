@@ -68,8 +68,10 @@ public interface IPermissionHolder extends ISnowflake
      *         If the channel is null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         if this is a role and the bot {@link Guild#isDetached() isn't in the guild}.
-     * @throws UnsupportedOperationException
-     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild}, and the channel isn't the current interaction's channel.
+     * @throws net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException
+     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild},
+     *         and the combination of Member and GuildChannel doesn't have permission data,
+     *         see {@link net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException MissingEntityInteractionPermissionsException}.
      *
      * @return Set of Permissions granted to this Permission Holder in the specified channel.
      */
@@ -104,8 +106,10 @@ public interface IPermissionHolder extends ISnowflake
      *         If the channel is null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         if this is a role and the bot {@link Guild#isDetached() isn't in the guild}.
-     * @throws UnsupportedOperationException
-     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild}, and the channel isn't the current interaction's channel.
+     * @throws net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException
+     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild},
+     *         and the combination of Member and GuildChannel doesn't have permission data,
+     *         see {@link net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException MissingEntityInteractionPermissionsException}.
      *
      * @return EnumSet of the explicitly granted permissions in the specified channel
      */
@@ -161,8 +165,10 @@ public interface IPermissionHolder extends ISnowflake
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         if this is a role and the bot {@link Guild#isDetached() isn't in the guild}.
-     * @throws UnsupportedOperationException
-     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild}, and the channel isn't the current interaction's channel.
+     * @throws net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException
+     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild},
+     *         and the combination of Member and GuildChannel doesn't have permission data,
+     *         see {@link net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException MissingEntityInteractionPermissionsException}.
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      *
@@ -183,8 +189,10 @@ public interface IPermissionHolder extends ISnowflake
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         if this is a role and the bot {@link Guild#isDetached() isn't in the guild}.
-     * @throws UnsupportedOperationException
-     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild}, and the channel isn't the current interaction's channel.
+     * @throws net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException
+     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild},
+     *         and the combination of Member and GuildChannel doesn't have permission data,
+     *         see {@link net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException MissingEntityInteractionPermissionsException}.
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
@@ -205,8 +213,10 @@ public interface IPermissionHolder extends ISnowflake
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         if this is a role and the bot {@link Guild#isDetached() isn't in the guild}.
-     * @throws UnsupportedOperationException
-     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild}, and the channel isn't the current interaction's channel.
+     * @throws net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException
+     *         if this is a member, the bot {@link Guild#isDetached() isn't in the guild},
+     *         and the combination of Member and GuildChannel doesn't have permission data,
+     *         see {@link net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException MissingEntityInteractionPermissionsException}.
      *
      * @return True, if the PermissionHolder has access
      */

@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.exceptions.MissingEntityInteractionPermissionsException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
@@ -270,8 +271,10 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
                 return channelInteractionPermissions.getPermissions();
         }
 
-        throw new UnsupportedOperationException("Detached member permissions can only be retrieved in the interaction channel, " +
-                "and channels only contain the permissions of the interaction caller");
+        throw new MissingEntityInteractionPermissionsException(
+                "Detached member permissions can only be retrieved in the interaction channel, " +
+                        "and channels only contain the permissions of the interaction caller"
+        );
     }
 
     @Override
