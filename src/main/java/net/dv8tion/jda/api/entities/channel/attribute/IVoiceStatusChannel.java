@@ -60,7 +60,7 @@ public interface IVoiceStatusChannel extends Channel
      *             <li>If the currently logged in account is <b>connected</b> and does not have the {@link Permission#VOICE_SET_STATUS VOICE_SET_STATUS} permission.</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction}
      */

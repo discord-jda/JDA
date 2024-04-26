@@ -108,7 +108,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This list does not include localization data. Use {@link #retrieveCommands(boolean)} to get localization data
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link List} of {@link Command}
      */
@@ -126,7 +126,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         {@code true} if the localization data (such as name and description) should be included
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link List} of {@link Command}
      */
@@ -144,7 +144,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The command id
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
@@ -165,7 +165,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The command id
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link Command}
      */
@@ -192,7 +192,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link Command}
      *         <br>The RestAction used to create or update the command
@@ -223,7 +223,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If null is provided or the name/description do not meet the requirements
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CommandCreateAction}
      */
@@ -261,7 +261,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * }</pre>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CommandListUpdateAction}
      *
@@ -283,7 +283,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CommandEditAction} used to edit the command
      */
@@ -301,7 +301,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The id of the command to edit
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CommandEditAction} used to edit the command
      */
@@ -324,7 +324,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -342,7 +342,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The id of the command that should be deleted
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -368,7 +368,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the id is not a valid snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link List} of {@link IntegrationPrivilege}
      */
@@ -391,7 +391,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the id is not a valid snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link List} of {@link IntegrationPrivilege}
      */
@@ -409,7 +409,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>Moderators of a guild can modify these privileges through the Integrations Menu
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link PrivilegeConfig}
      */
@@ -423,7 +423,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This will include deprecated voice regions by default.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
@@ -441,7 +441,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         Whether to include deprecated regions
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type {@link java.util.EnumSet EnumSet}
      */
@@ -455,7 +455,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link List} of {@link AutoModRule}
      */
@@ -474,7 +474,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link AutoModRule}
      */
@@ -491,7 +491,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link AutoModRule}
      */
@@ -519,7 +519,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If any of the configured {@link AutoModResponse AutoModResponses} is not supported by the {@link AutoModTriggerType}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction} - Type: {@link AutoModRule}
      */
@@ -535,7 +535,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The manager instance
      */
@@ -551,7 +551,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The manager instance
      */
@@ -573,7 +573,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction} - Type: {@link Void}
      */
@@ -590,7 +590,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction} - Type: {@link Void}
      */
@@ -617,7 +617,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#CREATE_INSTANT_INVITE Permission.CREATE_INSTANT_INVITE}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link MemberAction MemberAction}
      *
@@ -634,7 +634,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This will always be false if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return True, if members are loaded.
      */
@@ -665,7 +665,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * }</pre>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @see #unloadMember(long)
      * @see JDA#unloadUser(long)
@@ -684,7 +684,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The target user id
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return True, if the cache was changed
      *
@@ -700,7 +700,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is disabled, this will not be updated.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The expected member count for this guild
      */
@@ -712,7 +712,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * This value can be modified using {@link GuildManager#setName(String)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Never-null String containing the Guild's name.
      */
@@ -726,7 +726,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * The Guild icon can be modified using {@link GuildManager#setIcon(Icon)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null String containing the Guild's icon hash-id.
      */
@@ -740,7 +740,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * The Guild icon can be modified using {@link GuildManager#setIcon(Icon)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null String containing the Guild's icon URL.
      */
@@ -755,7 +755,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Returns an {@link ImageProxy} for this guild's icon.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link ImageProxy} of this guild's icon
      *
@@ -801,7 +801,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * The Guild splash can be modified using {@link GuildManager#setSplash(Icon)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null String containing the Guild's splash hash-id
      */
@@ -817,7 +817,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * The Guild splash can be modified using {@link GuildManager#setSplash(Icon)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null String containing the Guild's splash URL.
      */
@@ -832,7 +832,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Returns an {@link ImageProxy} for this guild's splash icon.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link ImageProxy} of this guild's splash icon
      *
@@ -850,7 +850,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The vanity code or null
      *
@@ -866,7 +866,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>The returned String will be the vanity invite link to this guild.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The vanity url or null
      *
@@ -898,7 +898,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link VanityInvite}
      *
@@ -915,7 +915,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>The description can be modified using {@link GuildManager#setDescription(String)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The description
      *
@@ -944,7 +944,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>The banner can be modified using {@link GuildManager#setBanner(Icon)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The guild banner id or null
      *
@@ -962,7 +962,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>The banner can be modified using {@link GuildManager#setBanner(Icon)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The guild banner url or null
      *
@@ -979,7 +979,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Returns an {@link ImageProxy} for this guild's banner image.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link ImageProxy} of this guild's banner image
      *
@@ -997,7 +997,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The boost tier.
      *
@@ -1010,7 +1010,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * The amount of boosts this server currently has.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The boost count
      *
@@ -1027,7 +1027,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of members who boost this guild
      */
@@ -1040,7 +1040,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This depends on the features of this guild that can be unlocked for partners or through boosting.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The maximum bitrate
      *
@@ -1057,7 +1057,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * This returns 8 MiB for Guilds without a Boost Tier or Guilds with Boost Tier 1, 50 MiB for Guilds with Boost Tier 2 and 100 MiB for Guilds with Boost Tier 3.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The maximum size for files that can be uploaded to this Guild
      *
@@ -1072,7 +1072,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * The maximum amount of custom emojis a guild can have based on the guilds boost tier.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The maximum amount of custom emojis
      */
@@ -1086,7 +1086,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * The maximum amount of members that can join this guild.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The maximum amount of members
      *
@@ -1102,7 +1102,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * If too many members are online the guild will become unavailable for others.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The maximum amount of connected members this guild can have
      *
@@ -1116,7 +1116,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Loads {@link MetaData} for this guild instance.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link MetaData}
      *
@@ -1135,7 +1135,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * This value can be modified using {@link GuildManager#setAfkChannel(VoiceChannel)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link VoiceChannel VoiceChannel} that is the AFK Channel.
      */
@@ -1150,7 +1150,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * This value can be modified using {@link GuildManager#setSystemChannel(TextChannel)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link TextChannel TextChannel} that is the system Channel.
      */
@@ -1162,7 +1162,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link TextChannel TextChannel} that is the rules channel
      *
@@ -1176,7 +1176,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link TextChannel TextChannel} that is the community updates channel
      *
@@ -1209,7 +1209,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null Member object for the Guild owner.
      *
@@ -1224,7 +1224,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This is useful for debugging purposes or as a shortcut.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The ID for the current owner
      *
@@ -1237,7 +1237,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This is useful for debugging purposes or as a shortcut.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The ID for the current owner
      *
@@ -1259,7 +1259,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * This value can be modified using {@link GuildManager#setAfkTimeout(net.dv8tion.jda.api.entities.Guild.Timeout)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Guild.Timeout Timeout} set for this Guild.
      */
@@ -1276,7 +1276,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The user to check
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return True - if this user is present and cached in this guild
      */
@@ -1287,7 +1287,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This is basically {@link net.dv8tion.jda.api.JDA#getSelfUser()} being provided to {@link #getMember(UserSnowflake)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The Member object of the currently logged in account.
      */
@@ -1301,7 +1301,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * This value can only be modified by Discord after reviewing the Guild.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The NSFWLevel of this guild.
      */
@@ -1322,7 +1322,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalArgumentException
      *         If the provided user is null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
      *
@@ -1345,7 +1345,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} with the related {@code userId}.
      *
@@ -1370,7 +1370,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The Discord id of the User for which a Member object is requested.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} with the related {@code userId}.
      *
@@ -1403,7 +1403,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalArgumentException
      *         If the provided tag is null or not in the described format
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
      *
@@ -1439,7 +1439,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalArgumentException
      *         If the provided arguments are null or not in the described format
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
      *
@@ -1465,7 +1465,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * versions of handling these values.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all <b>cached</b> members in this Guild.
      *
@@ -1494,7 +1494,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
      *
@@ -1524,7 +1524,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all Members with the same nickname as the nickname provided.
      *
@@ -1553,7 +1553,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all Members with the same effective name as the name provided.
      *
@@ -1580,7 +1580,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalArgumentException
      *         If a provided {@link Role Role} is from a different guild or null.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      *
@@ -1608,7 +1608,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalArgumentException
      *         If a provided {@link Role Role} is from a different guild or null.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
      *
@@ -1632,7 +1632,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.MemberCacheView MemberCacheView}
      *
@@ -1650,7 +1650,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link SortedSnowflakeCacheView}
      */
@@ -1673,7 +1673,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalArgumentException
      *         If the name is blank, empty or {@code null}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all ScheduledEvent names that match the provided name.
      */
@@ -1699,7 +1699,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link ScheduledEvent} with matching id.
      */
@@ -1722,7 +1722,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The id of the {@link ScheduledEvent}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link ScheduledEvent} with matching id.
      */
@@ -1745,7 +1745,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>This requires {@link CacheFlag#SCHEDULED_EVENTS} to be enabled.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable List of {@link ScheduledEvent ScheduledEvents}.
      */
@@ -1796,7 +1796,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * {@link ChannelCacheView#getElementById(ChannelType, long)} or {@link SortedChannelCacheView#ofType(Class)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link SortedChannelCacheView SortedChannelCacheView}
      */
@@ -1823,7 +1823,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ol>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of channels for this guild
      *
@@ -1856,7 +1856,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         Whether to include channels with denied {@link Permission#VIEW_CHANNEL View Channel Permission}
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of channels for this guild
      *
@@ -1878,7 +1878,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link Role Role} with matching id.
      */
@@ -1898,7 +1898,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The id of the {@link Role Role}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link Role Role} with matching id.
      */
@@ -1919,7 +1919,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * versions of handling these values.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of {@link Role Roles}.
      */
@@ -1941,7 +1941,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
@@ -1966,7 +1966,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The user id of the bot
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The bot role, or null if no role matches
      */
@@ -1996,7 +1996,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the userId is null or not a valid snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The bot role, or null if no role matches
      */
@@ -2022,7 +2022,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The bot role, or null if no role matches
      */
@@ -2044,7 +2044,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The bot role, or null if no role matches
      */
@@ -2064,7 +2064,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The boost role, or null if no role matches
      */
@@ -2084,7 +2084,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>Roles are sorted according to their position.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -2107,7 +2107,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An Emoji matching the specified id
      *
@@ -2133,7 +2133,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         the emoji id
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An emoji matching the specified id
      *
@@ -2159,7 +2159,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOJI CacheFlag.EMOJI} to be enabled!
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of {@link RichCustomEmoji Custom Emojis}.
      *
@@ -2187,7 +2187,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all Emojis that match the provided name.
      */
@@ -2226,7 +2226,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A Sticker matching the specified id
      *
@@ -2271,7 +2271,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER CacheFlag.STICKER} to be enabled!
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.sticker.GuildSticker GuildStickers}.
      *
@@ -2297,7 +2297,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all Stickers that match the provided name.
      */
@@ -2316,7 +2316,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#STICKER CacheFlag.STICKER} to be enabled!
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      *
@@ -2332,7 +2332,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS Permission.MANAGE_GUILD_EXPRESSIONS}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: List of {@link RichCustomEmoji}
      */
@@ -2360,7 +2360,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: {@link RichCustomEmoji}
      */
@@ -2385,7 +2385,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The emoji id
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: {@link RichCustomEmoji}
      */
@@ -2413,7 +2413,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The emoji reference to retrieve
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link RichCustomEmoji}
      */
@@ -2443,7 +2443,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This also includes {@link GuildSticker#isAvailable() unavailable} stickers.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: List of {@link GuildSticker}
      */
@@ -2467,7 +2467,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link GuildSticker}
      *         <br>On request, gets the sticker with id matching provided id from Discord.
@@ -2491,7 +2491,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link GuildStickerManager}
      */
@@ -2514,7 +2514,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.BanPaginationAction BanPaginationAction} of the guild's bans.
      */
@@ -2544,7 +2544,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Guild.Ban Ban}
      *         <br>An unmodifiable ban object for the user banned from this guild
@@ -2573,7 +2573,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided days are less than {@code 1} or more than {@code 30}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
@@ -2591,7 +2591,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>The ID of this Role is the Guild's ID thus it is equivalent to using {@link #getRoleById(long) getRoleById(getIdLong())}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The @everyone {@link Role Role}
      */
@@ -2607,7 +2607,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * has the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link StandardGuildChannel channel} representing the default channel for this guild
      */
@@ -2622,7 +2622,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The Manager of this Guild
      */
@@ -2634,7 +2634,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * Returns whether this Guild has its boost progress bar shown.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return True, if this Guild has its boost progress bar shown
      */
@@ -2670,7 +2670,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the currently logged in account
      *         does not have the permission {@link net.dv8tion.jda.api.Permission#VIEW_AUDIT_LOGS VIEW_AUDIT_LOGS}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditLogPaginationAction AuditLogPaginationAction}
      */
@@ -2686,7 +2686,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalStateException
      *         Thrown if the currently logged in account is the Owner of this Guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -2703,7 +2703,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalStateException
      *         If the currently logged in account has MFA enabled. ({@link net.dv8tion.jda.api.entities.SelfUser#isMfaEnabled()}).
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link java.lang.Void}
      */
@@ -2726,7 +2726,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code mfaCode} is {@code null} or empty when {@link SelfUser#isMfaEnabled()} is true.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link java.lang.Void}
      */
@@ -2744,7 +2744,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalStateException
      *         If {@link GatewayIntent#GUILD_VOICE_STATES} is disabled
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The AudioManager for this Guild.
      *
@@ -2770,7 +2770,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * }</pre>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} representing the request to speak.
      *         Calling {@link Task#get()} can result in deadlocks and should be avoided at all times.
@@ -2787,7 +2787,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>If there is no request to speak or the member is not currently connected to a {@link StageChannel}, this does nothing.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} representing the request to speak cancellation.
      *         Calling {@link Task#get()} can result in deadlocks and should be avoided at all times.
@@ -2816,7 +2816,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
@@ -2835,7 +2835,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.templates.Template Template}{@literal >}
      *         <br>The list of Template objects
@@ -2866,7 +2866,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided name is {@code null} or not between 1-100 characters long, or
      *         if the provided description is not between 0-120 characters long
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.templates.Template Template}
      *         <br>The created Template object
@@ -2885,7 +2885,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Webhook Webhook}{@literal >}
      *         <br>A list of all Webhooks in this Guild.
@@ -2910,7 +2910,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link GuildWelcomeScreen}
      *         <br>The welcome screen for this Guild.
@@ -3060,7 +3060,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalStateException
      *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} - Type: {@link List} of {@link Member}
      */
@@ -3089,7 +3089,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalStateException
      *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} - Type: {@link List} of {@link Member}
      */
@@ -3129,7 +3129,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalStateException
      *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} - Type: {@link List} of {@link Member}
      *
@@ -3174,7 +3174,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalStateException
      *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} - Type: {@link List} of {@link Member}
      *
@@ -3206,7 +3206,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalStateException
      *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} cancellable handle for this request
      */
@@ -3237,7 +3237,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link Member}
      *
@@ -3274,7 +3274,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return {@link RestAction} - Type: {@link Member}
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @see    #pruneMemberCache()
      * @see    #unloadMember(long)
@@ -3315,7 +3315,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws NumberFormatException
      *         If the provided id is not a snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link Member}
      *
@@ -3350,7 +3350,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The user id to load the member from
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link Member}
      *
@@ -3385,7 +3385,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the input is more than 100 IDs</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      */
@@ -3425,7 +3425,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the input is more than 100 IDs</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      */
@@ -3465,7 +3465,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the input is more than 100 IDs</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      */
@@ -3507,7 +3507,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the input is more than 100 IDs</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      */
@@ -3544,7 +3544,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the input is more than 100 users</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      */
@@ -3585,7 +3585,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the input is more than 100 IDs</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      */
@@ -3626,7 +3626,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the input is more than 100 IDs</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      */
@@ -3669,7 +3669,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the input is more than 100 IDs</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      */
@@ -3699,7 +3699,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the provided limit is not in the range of [1, 100]</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link Task} handle for the request
      *
@@ -3733,7 +3733,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The ID of the {@link ScheduledEvent}
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link ScheduledEvent}
      *
@@ -3763,7 +3763,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws NumberFormatException
      *         If the specified ID cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction} - Type: {@link ScheduledEvent}
      *
@@ -3819,7 +3819,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *                 {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT} for the destination AudioChannel.</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction}
      */
@@ -3862,7 +3862,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this account doesn't have {@link net.dv8tion.jda.api.Permission#VOICE_MOVE_OTHERS}
      *         in the AudioChannel that the Member is currently in.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction RestAction}
      */
@@ -3912,7 +3912,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -3950,7 +3950,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If any of the provided roles is not from this guild</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>The amount of Members that were pruned from the Guild.
@@ -3993,7 +3993,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If any of the provided roles is not from this guild</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>Provides the amount of Members that were pruned from the Guild, if wait is true.
@@ -4034,7 +4034,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the provided reason is longer than 512 characters</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -4079,7 +4079,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position. (See {@link Member#canInteract(Member)})
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -4143,7 +4143,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the provided user or time unit is {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction}
      *
@@ -4186,7 +4186,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the deletionTime is negative</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction} - Type: {@link BulkBanResponse}
      */
@@ -4229,7 +4229,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the deletionTimeframe is negative</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction} - Type: {@link BulkBanResponse}
      */
@@ -4263,7 +4263,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided user is null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4306,7 +4306,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4353,7 +4353,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>The provided {@code duration} results in a date that is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4399,7 +4399,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>The provided {@code temporal} is more than {@value Member#MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4428,7 +4428,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot remove the timeout from the other Member due to permission hierarchy position. (See {@link Member#canInteract(Member)})
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4470,7 +4470,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalStateException
      *         If the provided user is not currently connected to a voice channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4512,7 +4512,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalStateException
      *         If the provided user is not currently connected to a voice channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4559,7 +4559,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4606,7 +4606,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided roles are higher in the Guild's hierarchy
      *         and thus cannot be modified by the currently logged in account
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4678,7 +4678,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If any of the specified Roles is managed or is the {@code Public Role} of the Guild</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4735,7 +4735,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If any of the specified {@link Role Roles} is the {@code Public Role} of this Guild</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -4800,7 +4800,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If any of the specified {@link Role Roles} is the {@code Public Role} of this Guild</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -4835,7 +4835,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the specified Member already is the Guild owner</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -4865,7 +4865,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -4902,7 +4902,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -4933,7 +4933,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new NewsChannel before creating it
@@ -4970,7 +4970,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link net.dv8tion.jda.api.requests.restaction.ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new NewsChannel before creating it
@@ -5001,7 +5001,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
@@ -5038,7 +5038,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
@@ -5069,7 +5069,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new StageChannel before creating it
@@ -5106,7 +5106,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new StageChannel before creating it
@@ -5137,7 +5137,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new ForumChannel before creating it
@@ -5174,7 +5174,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new ForumChannel before creating it
@@ -5205,7 +5205,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new MediaChannel before creating it
@@ -5242,7 +5242,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters;
      *         or the provided parent is not in the same guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new MediaChannel before creating it
@@ -5273,7 +5273,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, blank, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new Category before creating it
@@ -5316,7 +5316,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
@@ -5354,7 +5354,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES} Permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.RoleAction RoleAction}
      *         <br>Creates a new role with previously selected field values
@@ -5390,7 +5390,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws java.lang.IllegalArgumentException
      *         If the specified role is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link Role Role}
@@ -5433,7 +5433,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} Permission
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link RichCustomEmoji}
      */
@@ -5471,7 +5471,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If anything is {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction} - Type: {@link GuildSticker}
      */
@@ -5511,7 +5511,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If anything is {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction} - Type: {@link GuildSticker}
      */
@@ -5539,7 +5539,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} in the guild.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link AuditableRestAction}
      */
@@ -5584,7 +5584,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the location is longer than 100 characters</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ScheduledEventAction}
      */
@@ -5647,7 +5647,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *             <li>If the channel is not from the same guild as the scheduled event</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ScheduledEventAction}
      */
@@ -5672,7 +5672,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction ChannelOrderAction} - Type: {@link Category Category}
      */
@@ -5697,7 +5697,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link TextChannel TextChannel}
      */
@@ -5722,7 +5722,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ChannelOrderAction ChannelOrderAction} - Type: {@link VoiceChannel VoiceChannel}
      */
@@ -5755,7 +5755,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         {@link TextChannel TextChannels} from.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction CategoryOrderAction} - Type: {@link TextChannel TextChannel}
      */
@@ -5788,7 +5788,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         {@link VoiceChannel VoiceChannels} from.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CategoryOrderAction CategoryOrderAction} - Type: {@link VoiceChannel VoiceChannels}
      */
@@ -5823,7 +5823,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RoleOrderAction}
      */
@@ -5858,7 +5858,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RoleOrderAction}
      */
@@ -5874,7 +5874,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The GuildWelcomeScreenManager for this guild's welcome screen
      */

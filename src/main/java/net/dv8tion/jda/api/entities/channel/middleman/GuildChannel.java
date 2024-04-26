@@ -59,7 +59,7 @@ public interface GuildChannel extends Channel, IDetachableEntity, Comparable<Gui
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The ChannelManager of this GuildChannel
      */
@@ -88,7 +88,7 @@ public interface GuildChannel extends Channel, IDetachableEntity, Comparable<Gui
      *         for the channel.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -103,7 +103,7 @@ public interface GuildChannel extends Channel, IDetachableEntity, Comparable<Gui
      * <p>This is usually the same channel, but for threads the parent channel is used instead.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The permission container
      */

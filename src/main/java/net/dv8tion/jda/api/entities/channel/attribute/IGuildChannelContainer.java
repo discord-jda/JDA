@@ -57,7 +57,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * out more specific types.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ChannelCacheView}
      */
@@ -81,7 +81,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws IllegalArgumentException
      *         If null is provided, or the id is not a valid snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The casted channel, if it exists and is assignable to the provided class, or null
      */
@@ -108,7 +108,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The casted channel, if it exists and is assignable to the provided class, or null
      */
@@ -147,7 +147,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided ID is not a snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The GuildChannel or null
      */
@@ -182,7 +182,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The ID of the channel
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The GuildChannel or null
      */
@@ -227,7 +227,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided ID is not a snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The GuildChannel or null
      */
@@ -267,7 +267,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The ID of the channel
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The GuildChannel or null
      */
@@ -294,7 +294,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -319,7 +319,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all StageChannel names that match the provided name.
      */
@@ -347,7 +347,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link StageChannel StageChannel} with matching id.
      */
@@ -372,7 +372,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The id of the {@link StageChannel StageChannel}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link StageChannel StageChannel} with matching id.
      */
@@ -399,7 +399,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of {@link StageChannel StageChannels}.
      */
@@ -427,7 +427,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -454,7 +454,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all ThreadChannel names that match the provided name.
      */
@@ -484,7 +484,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
      */
@@ -511,7 +511,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The id of the {@link ThreadChannel ThreadChannel}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
      */
@@ -539,7 +539,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of {@link ThreadChannel ThreadChannels}.
      */
@@ -566,7 +566,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -593,7 +593,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all categories matching the provided name
      */
@@ -621,7 +621,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link Category Category} for the provided ID.
      */
@@ -646,7 +646,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The snowflake ID of the wanted Category
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link Category Category} for the provided ID.
      */
@@ -673,7 +673,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable list of all {@link Category Categories} in this Guild.
      */
@@ -700,7 +700,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -725,7 +725,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all TextChannels names that match the provided name.
      */
@@ -753,7 +753,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link TextChannel TextChannel} with matching id.
      */
@@ -778,7 +778,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The id of the {@link TextChannel TextChannel}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link TextChannel TextChannel} with matching id.
      */
@@ -805,7 +805,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of all {@link TextChannel TextChannels} in this Guild.
      */
@@ -832,7 +832,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -857,7 +857,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all NewsChannels names that match the provided name.
      */
@@ -885,7 +885,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link NewsChannel NewsChannel} with matching id.
      */
@@ -910,7 +910,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The id of the {@link NewsChannel NewsChannel}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link NewsChannel NewsChannel} with matching id.
      */
@@ -937,7 +937,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of all {@link NewsChannel NewsChannels} in this Guild.
      */
@@ -964,7 +964,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -989,7 +989,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all VoiceChannel names that match the provided name.
      */
@@ -1017,7 +1017,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link VoiceChannel VoiceChannel} with matching id.
      */
@@ -1042,7 +1042,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The id of the {@link VoiceChannel VoiceChannel}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link VoiceChannel VoiceChannel} with matching id.
      */
@@ -1069,7 +1069,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of {@link VoiceChannel VoiceChannels}.
      */
@@ -1095,7 +1095,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link SnowflakeCacheView SnowflakeCacheView}
      */
@@ -1120,7 +1120,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all ForumChannel names that match the provided name.
      */
@@ -1148,7 +1148,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link ForumChannel} with matching id.
      */
@@ -1173,7 +1173,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The id of the {@link ForumChannel}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link ForumChannel} with matching id.
      */
@@ -1199,7 +1199,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of {@link ForumChannel}.
      */
@@ -1225,7 +1225,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link SnowflakeCacheView SnowflakeCacheView}
      */
@@ -1250,7 +1250,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-empty immutable list of all ForumChannel names that match the provided name.
      */
@@ -1278,7 +1278,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link MediaChannel} with matching id.
      */
@@ -1303,7 +1303,7 @@ public interface IGuildChannelContainer<C extends Channel>
      *         The id of the {@link MediaChannel}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Possibly-null {@link MediaChannel} with matching id.
      */
@@ -1329,7 +1329,7 @@ public interface IGuildChannelContainer<C extends Channel>
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return An immutable List of {@link MediaChannel}.
      */

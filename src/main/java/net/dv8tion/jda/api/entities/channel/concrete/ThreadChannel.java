@@ -105,7 +105,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * Whether the currently logged in member has joined this thread.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return true if the self member has joined this thread, false otherwise.
      */
@@ -157,7 +157,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * Gets the {@link IThreadContainer parent channel} of this thread.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The parent channel of this thread.
      *
@@ -173,7 +173,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws UnsupportedOperationException
      *         If the parent channel is not a {@link GuildMessageChannel}.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The parent channel of this thread, as a {@link GuildMessageChannelUnion}.
      */
@@ -191,7 +191,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * <br>This will be an empty list if the thread was not created in a {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannel}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable {@link List} of {@link net.dv8tion.jda.api.entities.channel.forums.ForumTag ForumTags} applied to this post
      */
@@ -233,7 +233,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws UnsupportedOperationException
      *         If the parent channel is not a {@link GuildMessageChannel GuildMessageChannel}.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      *         <br>The Message that started this thread
@@ -277,7 +277,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      */
@@ -291,7 +291,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * <p>If the current account is not a member of this thread, this will return null.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The self member of this thread, null if the current account is not a member of this thread.
      *
@@ -321,7 +321,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return List of all {@link ThreadMember members} of this thread. This list may be empty, but not null.
      *
@@ -344,7 +344,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the given member is null.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link ThreadMember} of this thread for the given member.
      *
@@ -371,7 +371,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the given user is null.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link ThreadMember} of this thread for the given member.
      *
@@ -398,7 +398,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the given id is null or empty.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link ThreadMember} of this thread for the given member.
      *
@@ -422,7 +422,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *        The member to get the {@link ThreadMember} for.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link ThreadMember} of this thread for the given member.
      *
@@ -443,7 +443,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
@@ -467,7 +467,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
@@ -493,7 +493,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws NumberFormatException
      *         If the provided id is not a snowflake
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
@@ -514,7 +514,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *         The user id to load the thread-member from
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link CacheRestAction} - Type: {@link ThreadMember}
      */
@@ -529,7 +529,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * in the <a href="https://discord.com/developers/applications" target="_blank">Application Dashboard</a>.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ThreadMemberPaginationAction}
      */
@@ -572,7 +572,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * using {@link #getOwnerIdLong() the owner'd ID}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The {@link Member} of the member who created this thread.
      *
@@ -594,7 +594,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * by {@link #getOwnerIdLong() their ID} instead.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return The owner of this thread as a {@link ThreadMember}.
      *
@@ -686,7 +686,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalStateException
      *         If this thread is archived.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -711,7 +711,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalStateException
      *         If this thread is archived.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -758,7 +758,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalStateException
      *         If this thread is archived.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -807,7 +807,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -852,7 +852,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the provided user is null.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -898,7 +898,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the provided member is null.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -940,7 +940,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      *         If the account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS} permission,
      *         and this is not a private thread channel this account owns.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -980,7 +980,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -1017,7 +1017,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the provided user is null.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */
@@ -1055,7 +1055,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
      * @throws IllegalArgumentException
      *         If the provided member is null.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      */

@@ -55,7 +55,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * <p>These threads can also represent posts in {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all ThreadChannel children.
      */
@@ -105,7 +105,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *             <li>If the bot does not have {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
@@ -161,7 +161,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *             <li>If the thread is not {@code private}, and the bot does not have {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
@@ -208,7 +208,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * @throws InsufficientPermissionException
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS} in this channel
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
@@ -257,7 +257,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * @throws InsufficientPermissionException
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#CREATE_PUBLIC_THREADS Permission.CREATE_PUBLIC_THREADS} in this channel
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
@@ -279,7 +279,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * @throws InsufficientPermissionException
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in this channel
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ThreadChannelPaginationAction} to iterate over all public archived ThreadChannels
      */
@@ -300,7 +300,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      *         or {@link net.dv8tion.jda.api.Permission#MANAGE_THREADS Permission.MANAGE_THREADS} in this channel
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ThreadChannelPaginationAction} to iterate over all private archived ThreadChannels
      */
@@ -319,7 +319,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * @throws InsufficientPermissionException
      *         If the bot does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in this channel
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return {@link ThreadChannelPaginationAction} to iterate over all joined private archived ThreadChannels
      */

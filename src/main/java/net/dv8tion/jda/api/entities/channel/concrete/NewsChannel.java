@@ -68,7 +68,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      *
@@ -98,7 +98,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         The target channel id
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      *
@@ -137,7 +137,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      * @throws IllegalArgumentException
      *         If null is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      *
@@ -192,7 +192,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
      *
@@ -243,7 +243,7 @@ public interface NewsChannel extends StandardGuildMessageChannel
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
      *

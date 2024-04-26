@@ -56,7 +56,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * <br>Includes all types of channels, except for threads.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all child channels
      */
@@ -79,7 +79,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * listed for this Category
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all child TextChannels
      */
@@ -99,7 +99,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * listed for this Category
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all child NewsChannels
      */
@@ -118,7 +118,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * All {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels} listed for this Category
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all child ForumChannels
      */
@@ -137,7 +137,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * All {@link net.dv8tion.jda.api.entities.channel.concrete.MediaChannel MediaChannels} listed for this Category
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all child ForumChannels
      */
@@ -157,7 +157,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * listed for this Category
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all child VoiceChannels
      */
@@ -177,7 +177,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * listed for this Category
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return Immutable list of all child StageChannel
      */
@@ -222,7 +222,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new TextChannel before creating it
@@ -261,7 +261,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new NewsChannel before creating it
@@ -300,7 +300,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new VoiceChannel before creating it
@@ -339,7 +339,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new StageChannel before creating it
@@ -378,7 +378,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new ForumChannel before creating it
@@ -417,7 +417,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, empty, or longer than {@value Channel#MAX_NAME_LENGTH} characters
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new MediaChannel before creating it
@@ -447,7 +447,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link TextChannel TextChannels}
@@ -478,7 +478,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot isn't in the guild.
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
      *         ordering the Category's {@link VoiceChannel VoiceChannels}
