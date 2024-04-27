@@ -450,7 +450,9 @@ public class EntityBuilder
             ? new User.Profile(id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
             : null;
 
-        User.AvatarDecoration avatarDecoration = user.optObject("avatar_decoration_data").map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id"))).orElse(null);
+        User.AvatarDecoration avatarDecoration = user.optObject("avatar_decoration_data")
+                .map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                .orElse(null);
 
         if (newUser)
         {
