@@ -5,6 +5,14 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
+ * designed to create a {@link Entitlement Entitlement}.
+ * This extension allows setting properties before executing the action.
+ *
+ * @see    net.dv8tion.jda.api.JDA
+ * @see    net.dv8tion.jda.api.JDA#createTestEntitlement(long, long, OwnerType)
+ */
 public interface TestEntitlementCreateAction extends RestAction<Entitlement>
 {
 

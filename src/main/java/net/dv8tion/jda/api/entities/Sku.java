@@ -8,6 +8,11 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 
+/**
+ * Represent premium offerings that can be made available to your application's users or guilds.
+ *
+ * @see <a href="https://discord.com/developers/docs/monetization/skus" target="_blank">Discord Docs about SKUs</a>
+ */
 public interface Sku extends ISnowflake
 {
 
