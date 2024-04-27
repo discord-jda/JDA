@@ -509,12 +509,24 @@ public interface User extends UserSnowflake
          *
          * @see User#DECORATION_AVATAR_URL
          */
-        @Nullable
+        @Nonnull
         public String getDecorationAvatarUrl()
         {
             return String.format(DECORATION_AVATAR_URL, decorationAvatarId);
         }
 
+        /**
+         * Returns an {@link ImageProxy} for this user's decoration avatar.
+         *
+         * @return Never-null {@link ImageProxy} of this user's decoration avatar
+         *
+         * @see    #getDecorationAvatarUrl()
+         */
+        @Nonnull
+        public ImageProxy getDecorationAvatar()
+        {
+            return new ImageProxy(getDecorationAvatarUrl());
+        }
     }
 
     /**
