@@ -89,9 +89,7 @@ public interface User extends UserSnowflake
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
     /** Template for {@link Profile#getBannerUrl()} */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
-    /**
-     * Template for {@link AvatarDecoration#getDecorationAvatarUrl()}
-     */
+    /** Template for {@link AvatarDecoration#getDecorationAvatarUrl()} */
     String DECORATION_AVATAR_URL = "https://cdn.discordapp.com/avatar-decoration-presets/%s.png";
 
     /** Used to keep consistency between color values used in the API */
