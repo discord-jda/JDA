@@ -468,7 +468,7 @@ public interface User extends UserSnowflake
     }
 
     /**
-     * Represents the information contained in a {@link User User}'s profile decoration.
+     * Represents the decoration avatar of a {@link User User}.
      */
     class AvatarDecoration {
 
