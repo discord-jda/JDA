@@ -468,14 +468,16 @@ public interface User extends UserSnowflake
     }
 
     /**
-     * Represents the decoration avatar of a {@link User User}.
+     * Represents the avatar decoration of a {@link User User}.
      */
-    class AvatarDecoration {
+    class AvatarDecoration
+    {
 
         private final String decorationAvatarId;
         private final String skuId;
 
-        public AvatarDecoration(String decorationAvatarId, String skuId) {
+        public AvatarDecoration(String decorationAvatarId, String skuId)
+        {
             this.decorationAvatarId = decorationAvatarId;
             this.skuId = skuId;
         }
@@ -486,7 +488,8 @@ public interface User extends UserSnowflake
          * @return The never-null SKU id of the {@link User User} decoration avatar.
          */
         @Nonnull
-        public String getSkuId() {
+        public String getSkuId()
+        {
             return skuId;
         }
 
@@ -496,7 +499,8 @@ public interface User extends UserSnowflake
          * @return The never-null avatar ID for this user's decoration avatar image.
          */
         @Nonnull
-        public String getDecorationAvatarId() {
+        public String getDecorationAvatarId()
+        {
             return decorationAvatarId;
         }
 
@@ -508,7 +512,8 @@ public interface User extends UserSnowflake
          * @see User#DECORATION_AVATAR_URL
          */
         @Nullable
-        public String getDecorationAvatarUrl() {
+        public String getDecorationAvatarUrl()
+        {
             return String.format(DECORATION_AVATAR_URL, decorationAvatarId);
         }
 
