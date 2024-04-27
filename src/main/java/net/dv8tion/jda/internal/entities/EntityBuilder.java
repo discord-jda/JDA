@@ -2605,7 +2605,22 @@ public class EntityBuilder
 
     public Entitlement createEntitlement(DataObject object)
     {
+        Entitlement.PaymentData paymentData = null;
+
+        if (!object.isNull("payment_data"))
+        {
+            DataObject paymentDataObject = object.getObject("payment_data");
+            paymentData = new Entitlement.PaymentData(
+                    paymentDataObject.getString("id"),
+                    paymentDataObject.getString("currency"),
+                    paymentDataObject.getInt("amount"),
+                    paymentDataObject.getInt("tax"),
+                    paymentDataObject.getBoolean("tax_inclusive")
+            );
+        }
+
         return new EntitlementImpl(
+                getJDA(),
                 object.getUnsignedLong("id"),
                 object.getUnsignedLong("sku_id"),
                 object.getUnsignedLong("application_id"),
@@ -2614,7 +2629,21 @@ public class EntityBuilder
                 Entitlement.EntitlementType.fromKey(object.getInt("type")),
                 object.getBoolean("deleted"),
                 object.getOffsetDateTime("starts_at", null),
-                object.getOffsetDateTime("ends_at", null)
+                object.getOffsetDateTime("ends_at", null),
+                object.getBoolean("consumed", false),
+                paymentData
+        );
+    }
+
+    public Sku createSKU(DataObject object) {
+        return new SkuImpl(
+                getJDA(),
+                object.getLong("id"),
+                Sku.SkuType.fromKey(object.getInt("type")),
+                object.getLong("application_id"),
+                object.getString("name"),
+                object.getString("slug"),
+                object.getInt("flags")
         );
     }
 

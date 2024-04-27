@@ -16,6 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
+
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -104,8 +109,6 @@ public interface Entitlement extends ISnowflake
 
     /**
      * The type of the Entitlement
-     * <br>The only possible type of Entitlement currently is {@link EntitlementType#APPLICATION_SUBSCRIPTION}
-     * <br>Discord doesn't currently support other types for entitlements.
      *
      * @return the {@link Entitlement Entitlement} type
      */
@@ -138,10 +141,68 @@ public interface Entitlement extends ISnowflake
     OffsetDateTime getTimeEnding();
 
     /**
+     * The payment data for this {@link Entitlement Entitlement}
+     *
+     * @return The payment data for this {@link Entitlement Entitlement}
+     */
+    @Nullable
+    PaymentData getPaymentData();
+
+    /**
+     * Whether the {@link Entitlement Entitlement} was consumed or not.
+     *
+     * @return True if the {@link Entitlement Entitlement} was consumed, False otherwise
+     */
+    boolean wasConsumed();
+
+    /**
+     * Consumes the {@link Entitlement Entitlement} if it has not already been consumed.
+     *
+     * @throws IllegalStateException
+     *        If the {@link Entitlement Entitlement} has already been consumed
+     *
+     * @return A {@link RestAction} that will consume the {@link Entitlement Entitlement}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> consume();
+
+    /**
      * Represents the type of this Entitlement
      */
     enum EntitlementType
     {
+        /**
+         * Entitlement was purchased by user
+         */
+        PURCHASE(1),
+        /**
+         * Entitlement for Discord Nitro subscription
+         */
+        PREMIUM_SUBSCRIPTION(2),
+        /**
+         * Entitlement was gifted by developer
+         */
+        DEVELOPER_GIFT(3),
+        /**
+         * Entitlement was purchased by a dev in application test mode
+         */
+        TEST_MODE_PURCHASE(4),
+        /**
+         * Entitlement was granted when the SKU was free
+         */
+        FREE_PURCHASE(5),
+        /**
+         * Entitlement was gifted by another user
+         */
+        USER_GIFT(6),
+        /**
+         * Entitlement was claimed by user for free as a Nitro Subscriber
+         */
+        PREMIUM_PURCHASE(7),
+        /**
+         * 	Entitlement was purchased as an app subscription
+         */
         APPLICATION_SUBSCRIPTION(8),
         /**
          * Placeholder for unsupported types.
@@ -183,6 +244,87 @@ public interface Entitlement extends ISnowflake
                     return type;
             }
             return UNKNOWN;
+        }
+    }
+
+    class PaymentData implements SerializableData
+    {
+
+        private final String id;
+        private final String currency;
+        private final int amount;
+        private final int tax;
+        private final boolean taxInclusive;
+
+        public PaymentData(String id, String currency, int amount, int tax, boolean taxInclusive) {
+            this.id = id;
+            this.currency = currency;
+            this.amount = amount;
+            this.tax = tax;
+            this.taxInclusive = taxInclusive;
+        }
+
+        /**
+         * 	unique ID of the payment
+         *
+         * @return The unique ID of the payment
+         */
+        public String getId()
+        {
+            return id;
+        }
+
+        /**
+         * The currency the payment was made in
+         *
+         * @return The currency the payment was made in
+         */
+        public String getCurrency()
+        {
+            return currency;
+        }
+
+        /**
+         * The amount paid
+         *
+         * @return The amount paid
+         */
+        public int getAmount()
+        {
+            return amount;
+        }
+
+        /**
+         * The amount of tax
+         *
+         * @return The amount of tax
+         */
+        public int getTax()
+        {
+            return tax;
+        }
+
+        /**
+         * Whether the amount is tax-inclusive
+         *
+         * @return True if the amount is tax-inclusive, False otherwise
+         */
+        public boolean isTaxInclusive()
+        {
+            return taxInclusive;
+        }
+
+        @Nonnull
+        @Override
+        public DataObject toData()
+        {
+            DataObject object = DataObject.empty();
+            object.put("id", id);
+            object.put("currency", currency);
+            object.put("amount", amount);
+            object.put("tax", tax);
+            object.put("tax_inclusive", taxInclusive);
+            return object;
         }
     }
 }

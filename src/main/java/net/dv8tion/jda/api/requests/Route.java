@@ -45,7 +45,12 @@ public class Route
         public static final Route GET_BOT_APPLICATION =             new Route(GET, "oauth2/applications/@me");
         public static final Route GET_ROLE_CONNECTION_METADATA =    new Route(GET, "applications/{application_id}/role-connections/metadata");
         public static final Route UPDATE_ROLE_CONNECTION_METADATA = new Route(PUT, "applications/{application_id}/role-connections/metadata");
+        public static final Route GET_SKUS =                        new Route(GET, "applications/{application_id}/skus");
         public static final Route GET_ENTITLEMENTS =                new Route(GET, "applications/{application_id}/entitlements");
+        public static final Route GET_ENTITLEMENT =                 new Route(GET, "applications/{application.id}/entitlements/{entitlement.id}");
+        public static final Route CONSUME_ENTITLEMENT =             new Route(POST, "/applications/{application.id}/entitlements/{entitlement.id}/consume");
+        public static final Route CREATE_TEST_ENTITLEMENT =         new Route(POST, "applications/{application.id}/entitlements");
+        public static final Route DELETE_TEST_ENTITLEMENT =         new Route(DELETE, "applications/{application.id}/entitlements/{entitlement.id}");
     }
 
     public static class Interactions
@@ -285,6 +290,11 @@ public class Route
         public static final Route DELETE_TEMPLATE =            new Route(DELETE, "guilds/{guild_id}/templates/{code}");
         public static final Route GET_GUILD_TEMPLATES =        new Route(GET,    "guilds/{guild_id}/templates");
         public static final Route CREATE_GUILD_FROM_TEMPLATE = new Route(POST,   "guilds/templates/{code}");
+    }
+
+    public static class Store {
+        public static final Route CREATE_PURCHASE_DISCOUNT =   new Route(GET,    "store/skus/{sku.id}/discounts/{user.id}");
+        public static final Route DELETE_PURCHASE_DISCOUNT =   new Route(PUT,    "store/skus/{sku.id}/discounts/{user.id}");
     }
 
     /**

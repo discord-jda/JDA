@@ -16,7 +16,11 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Entitlement;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,6 +28,7 @@ import java.time.OffsetDateTime;
 
 public class EntitlementImpl implements Entitlement
 {
+    private final JDA api;
     private long id;
     private long skuId;
     private long applicationId;
@@ -33,9 +38,12 @@ public class EntitlementImpl implements Entitlement
     private boolean deleted;
     private OffsetDateTime startsAt;
     private OffsetDateTime endsAt;
+    private final PaymentData paymentData;
+    private boolean consumed;
 
-    public EntitlementImpl(long id, long skuId, long applicationId, long userId, long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
+    public EntitlementImpl(JDA api, long id, long skuId, long applicationId, long userId, long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt, boolean consumed, PaymentData paymentData)
     {
+        this.api = api;
         this.id = id;
         this.skuId = skuId;
         this.applicationId = applicationId;
@@ -45,6 +53,8 @@ public class EntitlementImpl implements Entitlement
         this.deleted = deleted;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
+        this.consumed = consumed;
+        this.paymentData = paymentData;
     }
 
     @Override
@@ -102,5 +112,32 @@ public class EntitlementImpl implements Entitlement
     public OffsetDateTime getTimeEnding()
     {
         return endsAt;
+    }
+
+    @Nullable
+    @Override
+    public PaymentData getPaymentData()
+    {
+        return paymentData;
+    }
+
+    @Override
+    public boolean wasConsumed()
+    {
+        return consumed;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> consume()
+    {
+        if (consumed)
+            throw new IllegalStateException("This entitlement has already been consumed!");
+
+        Route.CompiledRoute route = Route.Applications.CONSUME_ENTITLEMENT.compile(getApplicationId(), getId());
+        return new RestActionImpl<>(api, route, (response, request) -> {
+            consumed = true;
+            return null;
+        });
     }
 }

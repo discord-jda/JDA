@@ -46,6 +46,7 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.TestEntitlementCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -1885,6 +1886,15 @@ public interface JDA extends IGuildChannelContainer<Channel>
     RestAction<ApplicationInfo> retrieveApplicationInfo();
 
     /**
+     * Retrieves the list of {@link Sku SKUs}.
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link Sku}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Sku>> retrieveSkus();
+
+    /**
      * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
      * which allows you to {@link Iterable iterate} over {@link Entitlement}s that are applicable to the logged in application.
      *
@@ -1893,6 +1903,47 @@ public interface JDA extends IGuildChannelContainer<Channel>
     @Nonnull
     @CheckReturnValue
     EntitlementPaginationAction retrieveEntitlements();
+
+    /**
+     * Retrieves an {@link Entitlement} by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to retrieve
+     *
+     * @return {@link EntitlementAction EntitlementAction}
+     *        <br>Allows to also get payment details for the entitlement
+     */
+    @Nonnull
+    @CheckReturnValue
+    EntitlementAction retrieveEntitlementById(long entitlementId);
+
+    /**
+     * Constructs a new {@link Entitlement Entitlement} with the skuId and the type.
+     * <br>Use the returned {@link GuildAction GuildAction} to provide
+     * further details in the future
+     * <br>Right now discord does not have more details to provide.
+     *
+     * @param  skuId
+     *         The id of the SKU the entitlement is for
+     *
+     * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
+     *         <br>Allows for setting various details for the resulting Entitlement
+     */
+    @Nonnull
+    @CheckReturnValue
+    TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, TestEntitlementCreateActionImpl.OwnerType ownerType);
+
+    /**
+     * Deletes a test entitlement by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to delete
+     *
+     * @return {@link RestAction} - Type: Void
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> deleteTestEntitlement(long entitlementId);
 
     /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
