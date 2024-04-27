@@ -450,6 +450,10 @@ public class EntityBuilder
             ? new User.Profile(id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
             : null;
 
+        User.AvatarDecoration avatarDecoration = user.isNull("avatar_decoration_data")
+                ? null
+                : new User.AvatarDecoration(user.getObject("avatar_decoration_data").getString("asset"), user.getObject("avatar_decoration_data").getString("sku_id"));
+
         if (newUser)
         {
             // Initial creation
@@ -457,6 +461,7 @@ public class EntityBuilder
                    .setGlobalName(user.getString("global_name", null))
                    .setDiscriminator(Short.parseShort(user.getString("discriminator", "0")))
                    .setAvatarId(user.getString("avatar", null))
+                   .setAvatarDecoration(avatarDecoration)
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0))
