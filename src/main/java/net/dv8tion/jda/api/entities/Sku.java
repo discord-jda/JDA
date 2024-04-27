@@ -1,9 +1,7 @@
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -76,41 +74,6 @@ public interface Sku extends ISnowflake
     {
         return SkuFlag.fromRaw(getFlagsRaw());
     }
-
-    /**
-     * Create a purchase discount for a user on the next purchase.
-     * <br> The discount will be automatically removed after the ttl expires or the user makes a purchase.
-     *
-     * @param userId
-     *        The id of the user to create the discount for
-     * @param percentOff
-     *        The percentage off the next purchase
-     * @param ttl
-     *        The time to live for the discount in seconds
-     *
-     * @throws IllegalArgumentException
-     *         If the percentOff is not between 1 and 100
-     *
-     * @throws IllegalArgumentException
-     *         If the ttl is not between 60 and 3600 seconds
-     *
-     * @return {@link RestAction} - Type: Void
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> createPurchaseDiscount(long userId, int percentOff, int ttl);
-
-    /**
-     * Delete the purchase discount for a user.
-     *
-     * @param userId
-     *        The id of the user to delete the discount for
-     *
-     * @return {@link RestAction} - Type: Void
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> deletePurchaseDiscount(long userId);
 
     enum SkuType
     {

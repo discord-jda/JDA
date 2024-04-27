@@ -292,11 +292,6 @@ public class Route
         public static final Route CREATE_GUILD_FROM_TEMPLATE = new Route(POST,   "guilds/templates/{code}");
     }
 
-    public static class Store {
-        public static final Route CREATE_PURCHASE_DISCOUNT =   new Route(GET,    "store/skus/{sku.id}/discounts/{user.id}");
-        public static final Route DELETE_PURCHASE_DISCOUNT =   new Route(PUT,    "store/skus/{sku.id}/discounts/{user.id}");
-    }
-
     /**
      * Create a route template for the given HTTP method.
      *
