@@ -74,6 +74,9 @@ public class SkuImpl implements Sku
     @Override
     public RestAction<Void> createPurchaseDiscount(long userId, int percentOff, int ttl)
     {
+        if (percentOff < 1 || percentOff > 100)
+            throw new IllegalArgumentException("Percent off must be between 1 and 100");
+
         if (ttl < 60 || ttl > 3600)
             throw new IllegalArgumentException("TTL must be between 60 and 3600 seconds");
 

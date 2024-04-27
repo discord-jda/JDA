@@ -89,6 +89,9 @@ public interface Sku extends ISnowflake
      *        The time to live for the discount in seconds
      *
      * @throws IllegalArgumentException
+     *         If the percentOff is not between 1 and 100
+     *
+     * @throws IllegalArgumentException
      *         If the ttl is not between 60 and 3600 seconds
      *
      * @return {@link RestAction} - Type: Void
