@@ -512,7 +512,7 @@ public interface User extends UserSnowflake
         @Nonnull
         public String getDecorationAvatarUrl()
         {
-            return String.format(DECORATION_AVATAR_URL, decorationAvatarId);
+            return Helpers.format(DECORATION_AVATAR_URL, decorationAvatarId);
         }
 
         /**
