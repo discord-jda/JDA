@@ -112,4 +112,20 @@ public interface IPostContainerManager<T extends IPostContainer, M extends IPost
     @Nonnull
     @CheckReturnValue
     M setDefaultSortOrder(@Nonnull SortOrder sortOrder);
+
+    /**
+     * Sets the <b><u>topic</u></b> of the selected {@link IPostContainer channel}.
+     *
+     * @param  topic
+     *         The new topic for the selected channel,
+     *         {@code null} or empty String to reset
+     *
+     * @throws IllegalArgumentException
+     *         If the provided topic is greater than {@value IPostContainer#MAX_POST_CONTAINER_TOPIC_LENGTH} in length.
+     *
+     * @return ChannelManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    M setTopic(@Nullable String topic);
 }
