@@ -46,7 +46,6 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.TestEntitlementCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -1940,7 +1939,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     @CheckReturnValue
-    TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, @Nonnull TestEntitlementCreateActionImpl.OwnerType ownerType);
+    TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, @Nonnull TestEntitlementCreateAction.OwnerType ownerType);
 
     /**
      * Deletes a test entitlement by its id.
