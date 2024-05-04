@@ -113,7 +113,7 @@ public class EntitlementImpl implements Entitlement
     }
 
     @Override
-    public boolean wasConsumed()
+    public boolean isConsumed()
     {
         return consumed;
     }

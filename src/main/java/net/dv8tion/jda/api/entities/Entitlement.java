@@ -143,7 +143,7 @@ public interface Entitlement extends ISnowflake
      *
      * @return True if the {@link Entitlement Entitlement} was consumed, False otherwise
      */
-    boolean wasConsumed();
+    boolean isConsumed();
 
     /**
      * Consumes the {@link Entitlement Entitlement} if it has not already been consumed.
