@@ -105,4 +105,11 @@ public class MarkdownUtilTest
         assertThat(maskedLink("Hello", "World)")).isEqualTo("[Hello](World%29)");
         assertThat(maskedLink("Hello]", "World)")).isEqualTo("[Hello\\]](World%29)");
     }
+    
+    @Test
+    void testSmallText()
+    {
+        assertThat(smallText("Hello World")).isEqualTo("-# Hello World");
+        assertThat(smallText("Hello World\nTest World")).isEqualTo("-# Hello World\n-# Test World");
+    }
 }

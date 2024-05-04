@@ -225,7 +225,8 @@ public final class MarkdownUtil
      * @return The resulting output.
      */
     @Nonnull
-    public static String smallText(@Nonnull String input){
+    public static String smallText(@Nonnull String input)
+    {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.SMALL_TEXT);
         return "-# " + sanitized.replace("\n", "\n-# ");
     }
