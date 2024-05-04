@@ -2,7 +2,9 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -21,8 +23,40 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      *
      * @param skuId
      *        The id of the SKU
+     *
+     * @throws IllegalArgumentException
+     *         If the provided skuId is not a valid snowflake
      */
-    void setSkuId(long skuId);
+    @CheckReturnValue
+    @Nonnull
+    default TestEntitlementCreateAction setSkuId(@Nonnull String skuId) {
+        return setSkuId(MiscUtil.parseSnowflake(skuId));
+    }
+
+    /**
+     * Set the SKU's id to create the entitlement in
+     *
+     * @param skuId
+     *        The id of the SKU
+     */
+    @CheckReturnValue
+    @Nonnull
+    TestEntitlementCreateAction setSkuId(long skuId);
+
+    /**
+     * Set the owner's id to create the entitlement for
+     *
+     * @param ownerId
+     *        The id of the owner - either guild id or user id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ownerId is not a valid snowflake
+     */
+    @CheckReturnValue
+    @Nonnull
+    default TestEntitlementCreateAction setOwnerId(@Nonnull String ownerId) {
+        return setOwnerId(MiscUtil.parseSnowflake(ownerId));
+    }
 
     /**
      * Set the owner's id to create the entitlement for
@@ -30,7 +64,9 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      * @param ownerId
      *        The id of the owner - either guild id or user id
      */
-    void setOwnerId(long ownerId);
+    @CheckReturnValue
+    @Nonnull
+    TestEntitlementCreateAction setOwnerId(long ownerId);
 
     /**
      * Set the owner type to create the entitlement for
@@ -38,7 +74,9 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      * @param type
      *        The type of the owner
      */
-    void setOwnerType(OwnerType type);
+    @CheckReturnValue
+    @Nonnull
+    TestEntitlementCreateAction setOwnerType(@Nonnull OwnerType type);
 
     enum OwnerType
     {

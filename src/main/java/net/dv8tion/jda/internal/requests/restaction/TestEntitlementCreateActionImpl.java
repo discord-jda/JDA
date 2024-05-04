@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import okhttp3.RequestBody;
 
+import javax.annotation.Nonnull;
+
 public class TestEntitlementCreateActionImpl extends RestActionImpl<Entitlement> implements TestEntitlementCreateAction
 {
 
@@ -22,22 +24,28 @@ public class TestEntitlementCreateActionImpl extends RestActionImpl<Entitlement>
         super(api, Route.Applications.CREATE_TEST_ENTITLEMENT.compile(api.getSelfUser().getApplicationId()));
     }
 
+    @Nonnull
     @Override
-    public void setSkuId(long skuId)
+    public TestEntitlementCreateAction setSkuId(long skuId)
     {
         this.skuId = skuId;
+        return this;
     }
 
+    @Nonnull
     @Override
-    public void setOwnerId(long ownerId)
+    public TestEntitlementCreateAction setOwnerId(long ownerId)
     {
         this.ownerId = ownerId;
+        return this;
     }
 
+    @Nonnull
     @Override
-    public void setOwnerType(OwnerType type)
+    public TestEntitlementCreateAction setOwnerType(@Nonnull OwnerType type)
     {
         this.type = type;
+        return this;
     }
 
     @Override
