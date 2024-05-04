@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.utils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.spi.SLF4JServiceProvider;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -53,23 +54,8 @@ public class JDALogger
         catch (ClassNotFoundException eStatic)
         {
             // there was no static logger binder (SLF4J pre-1.8.x)
-
-            try
-            {
-                Class<?> serviceProviderInterface = Class.forName("org.slf4j.spi.SLF4JServiceProvider");
-
-                // check if there is a service implementation for the service, indicating a provider for SLF4J 1.8.x+ is installed
-                tmp = ServiceLoader.load(serviceProviderInterface).iterator().hasNext();
-            }
-            catch (ClassNotFoundException eService)
-            {
-                // there was no service provider interface (SLF4J 1.8.x+)
-
-                //prints warning of missing implementation
-                LoggerFactory.getLogger(JDALogger.class);
-
-                tmp = false;
-            }
+            // check if there is a service implementation for the service, indicating a provider for SLF4J 1.8.x+ is installed
+            tmp = ServiceLoader.load(SLF4JServiceProvider.class).iterator().hasNext();
         }
 
         SLF4J_ENABLED = tmp;
