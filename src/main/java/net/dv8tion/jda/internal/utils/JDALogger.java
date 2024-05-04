@@ -28,7 +28,7 @@ import java.util.ServiceLoader;
 /**
  * This class serves as a LoggerFactory for JDA's internals.
  * <br>It will either return a Logger from a SLF4J implementation via {@link org.slf4j.LoggerFactory} if present,
- * or an instance of a custom {@link SimpleLogger} (From slf4j-simple).
+ * or an instance of a custom {@link FallbackLogger}.
  * <p>
  * It also has the utility method {@link #getLazyString(LazyEvaluation)} which is used to lazily construct Strings for Logging.
  */
@@ -83,7 +83,7 @@ public class JDALogger
      * Will get the {@link org.slf4j.Logger} with the given log-name
      * or create and cache a fallback logger if there is no SLF4J implementation present.
      * <p>
-     * The fallback logger will be an instance of a slightly modified version of SLF4Js SimpleLogger.
+     * The fallback logger uses a constant logging configuration and prints directly to {@link System#err}.
      *
      * @param  name
      *         The name of the Logger
@@ -96,7 +96,7 @@ public class JDALogger
         {
             if (SLF4J_ENABLED)
                 return LoggerFactory.getLogger(name);
-            return LOGS.computeIfAbsent(name, SimpleLogger::new);
+            return LOGS.computeIfAbsent(name, FallbackLogger::new);
         }
     }
 
@@ -104,7 +104,7 @@ public class JDALogger
      * Will get the {@link org.slf4j.Logger} for the given Class
      * or create and cache a fallback logger if there is no SLF4J implementation present.
      * <p>
-     * The fallback logger will be an instance of a slightly modified version of SLF4Js SimpleLogger.
+     * The fallback logger uses a constant logging configuration and prints directly to {@link System#err}.
      *
      * @param  clazz
      *         The class used for the Logger name
@@ -117,7 +117,7 @@ public class JDALogger
         {
             if (SLF4J_ENABLED)
                 return LoggerFactory.getLogger(clazz);
-            return LOGS.computeIfAbsent(clazz.getName(), (n) -> new SimpleLogger(clazz.getSimpleName()));
+            return LOGS.computeIfAbsent(clazz.getName(), (n) -> new FallbackLogger(clazz.getSimpleName()));
         }
     }
 
@@ -144,7 +144,7 @@ public class JDALogger
                 {
                     StringWriter sw = new StringWriter();
                     ex.printStackTrace(new PrintWriter(sw));
-                    return "Error while evaluating lazy String... " + sw.toString();
+                    return "Error while evaluating lazy String... " + sw;
                 }
             }
         };

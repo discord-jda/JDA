@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.utils.JDALogger;
 
 public class GuildBanHandler extends SocketHandler
 {
@@ -45,7 +44,7 @@ public class GuildBanHandler extends SocketHandler
         if (guild == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received Guild Member {} event for a Guild not yet cached.", JDALogger.getLazyString(() -> banned ? "Ban" : "Unban"));
+            EventCache.LOG.debug("Received Guild Member {} event for a Guild not yet cached.", banned ? "Ban" : "Unban");
             return null;
         }
 
