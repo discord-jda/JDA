@@ -3,7 +3,7 @@ rootProject.name = "JDA"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            version("jackson", "2.16.0")
+            version("jackson", "2.17.0")
             library("jackson-core",     "com.fasterxml.jackson.core", "jackson-core").versionRef("jackson")
             library("jackson-databind", "com.fasterxml.jackson.core", "jackson-databind").versionRef("jackson")
             bundle("jackson", listOf("jackson-core", "jackson-databind"))
@@ -22,7 +22,7 @@ dependencyResolutionManagement {
             library("junit",                 "org.junit.jupiter",        "junit-jupiter"       ).version("5.10.2")
             library("mockito",               "org.mockito",              "mockito-core"        ).version("5.11.0")
             library("reflections",           "org.reflections",          "reflections"         ).version("0.10.2")
-            library("slf4j",                 "org.slf4j",                "slf4j-api"           ).version("1.7.36")
+            library("slf4j",                 "org.slf4j",                "slf4j-api"           ).version("2.0.13")
         }
     }
 }
