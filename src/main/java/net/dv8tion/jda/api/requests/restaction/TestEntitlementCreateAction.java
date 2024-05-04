@@ -81,8 +81,7 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
     enum OwnerType
     {
         GUILD_SUBSCRIPTION(1),
-        USER_SUBSCRIPTION(2),
-        UNKNOWN(-1);
+        USER_SUBSCRIPTION(2);
 
         private final int key;
 
@@ -99,26 +98,6 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
         public int getKey()
         {
             return key;
-        }
-
-        /**
-         * Gets the OwnerType related to the provided key.
-         * <br>If an unknown key is provided, this returns {@link #UNKNOWN}
-         *
-         * @param  key
-         *         The Discord key referencing a OwnerType.
-         *
-         * @return The OwnerType that has the key provided, or {@link #UNKNOWN} for unknown key.
-         */
-        @Nonnull
-        public static OwnerType fromKey(int key)
-        {
-            for (OwnerType type : values())
-            {
-                if (type.getKey() == key)
-                    return type;
-            }
-            return UNKNOWN;
         }
     }
 }
