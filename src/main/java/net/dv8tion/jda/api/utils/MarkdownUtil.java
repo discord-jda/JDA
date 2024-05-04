@@ -214,4 +214,19 @@ public final class MarkdownUtil
     {
         return "[" + text.replace("]", "\\]") + "](" + url.replace(")", "%29") + ")";
     }
+
+    /**
+     * Applies small text formatting to the String.
+     * <br>The resulting String will be {@code "-# " + escaped(input).replace("\n", "\n-# ")}.
+     * 
+     * @param  input
+     *         The input to turn into small text.
+     * 
+     * @return The resulting output.
+     */
+    @Nonnull
+    public static String smallText(@Nonnull String input){
+        String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.SMALL_TEXT);
+        return "-# " + sanitized.replace("\n", "\n-# ");
+    }
 }
