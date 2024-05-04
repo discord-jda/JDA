@@ -39,6 +39,8 @@ public class JDALogger
 {
     /**
      * The name of the system property, which controls whether the fallback logger is disabled.
+     *
+     * <p>{@value}
      */
     public static final String DISABLE_FALLBACK_PROPERTY_NAME = "net.dv8tion.jda.disableFallbackLogger";
 
