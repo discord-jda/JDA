@@ -1901,6 +1901,24 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param  entitlementId
      *         The id of the entitlement to retrieve
      *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link EntitlementAction EntitlementAction}
+     *        <br>Allows to also get payment details for the entitlement
+     */
+    @Nonnull
+    @CheckReturnValue
+    default EntitlementAction retrieveEntitlementById(@Nonnull String entitlementId) {
+        return retrieveEntitlementById(MiscUtil.parseSnowflake(entitlementId));
+    }
+
+    /**
+     * Retrieves an {@link Entitlement} by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to retrieve
+     *
      * @return {@link EntitlementAction EntitlementAction}
      *        <br>Allows to also get payment details for the entitlement
      */
@@ -1923,6 +1941,23 @@ public interface JDA extends IGuildChannelContainer<Channel>
     @Nonnull
     @CheckReturnValue
     TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, TestEntitlementCreateActionImpl.OwnerType ownerType);
+
+    /**
+     * Deletes a test entitlement by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to delete
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: Void
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> deleteTestEntitlement(@Nonnull String entitlementId) {
+        return deleteTestEntitlement(MiscUtil.parseSnowflake(entitlementId));
+    }
 
     /**
      * Deletes a test entitlement by its id.
