@@ -1940,7 +1940,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     @CheckReturnValue
-    TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, TestEntitlementCreateActionImpl.OwnerType ownerType);
+    TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, @Nonnull TestEntitlementCreateActionImpl.OwnerType ownerType);
 
     /**
      * Deletes a test entitlement by its id.

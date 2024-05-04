@@ -1176,7 +1176,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, TestEntitlementCreateActionImpl.OwnerType ownerType)
+    public TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, @Nonnull TestEntitlementCreateActionImpl.OwnerType ownerType)
     {
         return new TestEntitlementCreateActionImpl(this, skuId, ownerId, ownerType);
     }
