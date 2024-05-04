@@ -1169,9 +1169,9 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public EntitlementAction retrieveEntitlementById(long entitlementId)
+    public RestAction<Entitlement> retrieveEntitlementById(long entitlementId)
     {
-        return new EntitlementActionImpl(this, entitlementId);
+        return new RestActionImpl<>(this, Route.Applications.GET_ENTITLEMENT.compile(getSelfUser().getApplicationId(), String.valueOf(entitlementId)));
     }
 
     @Nonnull

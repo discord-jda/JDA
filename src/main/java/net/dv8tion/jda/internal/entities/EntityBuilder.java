@@ -2605,20 +2605,6 @@ public class EntityBuilder
 
     public Entitlement createEntitlement(DataObject object)
     {
-        Entitlement.PaymentData paymentData = null;
-
-        if (!object.isNull("payment_data"))
-        {
-            DataObject paymentDataObject = object.getObject("payment_data");
-            paymentData = new Entitlement.PaymentData(
-                    paymentDataObject.getString("id"),
-                    paymentDataObject.getString("currency"),
-                    paymentDataObject.getInt("amount"),
-                    paymentDataObject.getInt("tax"),
-                    paymentDataObject.getBoolean("tax_inclusive")
-            );
-        }
-
         return new EntitlementImpl(
                 getJDA(),
                 object.getUnsignedLong("id"),
@@ -2630,8 +2616,7 @@ public class EntityBuilder
                 object.getBoolean("deleted"),
                 object.getOffsetDateTime("starts_at", null),
                 object.getOffsetDateTime("ends_at", null),
-                object.getBoolean("consumed", false),
-                paymentData
+                object.getBoolean("consumed", false)
         );
     }
 

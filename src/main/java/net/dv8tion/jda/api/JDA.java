@@ -1904,12 +1904,12 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
      *
-     * @return {@link EntitlementAction EntitlementAction}
-     *        <br>Allows to also get payment details for the entitlement
+     * @return {@link RestAction} - Type: {@link Entitlement}
+     *         <br>The entitlement with the provided id
      */
     @Nonnull
     @CheckReturnValue
-    default EntitlementAction retrieveEntitlementById(@Nonnull String entitlementId) {
+    default RestAction<Entitlement> retrieveEntitlementById(@Nonnull String entitlementId) {
         return retrieveEntitlementById(MiscUtil.parseSnowflake(entitlementId));
     }
 
@@ -1919,12 +1919,12 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param  entitlementId
      *         The id of the entitlement to retrieve
      *
-     * @return {@link EntitlementAction EntitlementAction}
-     *        <br>Allows to also get payment details for the entitlement
+     * @return {@link RestAction} - Type: {@link Entitlement}
+     *         <br>The entitlement with the provided id
      */
     @Nonnull
     @CheckReturnValue
-    EntitlementAction retrieveEntitlementById(long entitlementId);
+    RestAction<Entitlement> retrieveEntitlementById(long entitlementId);
 
     /**
      * Constructs a new {@link Entitlement Entitlement} with the skuId and the type.

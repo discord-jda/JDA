@@ -38,10 +38,9 @@ public class EntitlementImpl implements Entitlement
     private boolean deleted;
     private OffsetDateTime startsAt;
     private OffsetDateTime endsAt;
-    private final PaymentData paymentData;
     private boolean consumed;
 
-    public EntitlementImpl(JDA api, long id, long skuId, long applicationId, long userId, long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt, boolean consumed, PaymentData paymentData)
+    public EntitlementImpl(JDA api, long id, long skuId, long applicationId, long userId, long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt, boolean consumed)
     {
         this.api = api;
         this.id = id;
@@ -54,7 +53,6 @@ public class EntitlementImpl implements Entitlement
         this.startsAt = startsAt;
         this.endsAt = endsAt;
         this.consumed = consumed;
-        this.paymentData = paymentData;
     }
 
     @Override
@@ -112,13 +110,6 @@ public class EntitlementImpl implements Entitlement
     public OffsetDateTime getTimeEnding()
     {
         return endsAt;
-    }
-
-    @Nullable
-    @Override
-    public PaymentData getPaymentData()
-    {
-        return paymentData;
     }
 
     @Override

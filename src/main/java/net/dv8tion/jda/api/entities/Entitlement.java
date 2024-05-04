@@ -17,8 +17,6 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -141,14 +139,6 @@ public interface Entitlement extends ISnowflake
     OffsetDateTime getTimeEnding();
 
     /**
-     * The payment data for this {@link Entitlement Entitlement}
-     *
-     * @return The payment data for this {@link Entitlement Entitlement}
-     */
-    @Nullable
-    PaymentData getPaymentData();
-
-    /**
      * Whether the {@link Entitlement Entitlement} was consumed or not.
      *
      * @return True if the {@link Entitlement Entitlement} was consumed, False otherwise
@@ -244,87 +234,6 @@ public interface Entitlement extends ISnowflake
                     return type;
             }
             return UNKNOWN;
-        }
-    }
-
-    class PaymentData implements SerializableData
-    {
-
-        private final String id;
-        private final String currency;
-        private final int amount;
-        private final int tax;
-        private final boolean taxInclusive;
-
-        public PaymentData(String id, String currency, int amount, int tax, boolean taxInclusive) {
-            this.id = id;
-            this.currency = currency;
-            this.amount = amount;
-            this.tax = tax;
-            this.taxInclusive = taxInclusive;
-        }
-
-        /**
-         * 	unique ID of the payment
-         *
-         * @return The unique ID of the payment
-         */
-        public String getId()
-        {
-            return id;
-        }
-
-        /**
-         * The currency the payment was made in
-         *
-         * @return The currency the payment was made in
-         */
-        public String getCurrency()
-        {
-            return currency;
-        }
-
-        /**
-         * The amount paid
-         *
-         * @return The amount paid
-         */
-        public int getAmount()
-        {
-            return amount;
-        }
-
-        /**
-         * The amount of tax
-         *
-         * @return The amount of tax
-         */
-        public int getTax()
-        {
-            return tax;
-        }
-
-        /**
-         * Whether the amount is tax-inclusive
-         *
-         * @return True if the amount is tax-inclusive, False otherwise
-         */
-        public boolean isTaxInclusive()
-        {
-            return taxInclusive;
-        }
-
-        @Nonnull
-        @Override
-        public DataObject toData()
-        {
-            DataObject object = DataObject.empty();
-            object.put("id", id);
-            object.put("currency", currency);
-            object.put("amount", amount);
-            object.put("tax", tax);
-            object.put("tax_inclusive", taxInclusive);
-            return object;
         }
     }
 }
