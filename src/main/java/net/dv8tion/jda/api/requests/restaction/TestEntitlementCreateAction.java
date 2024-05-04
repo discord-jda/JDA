@@ -78,6 +78,9 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
     @Nonnull
     TestEntitlementCreateAction setOwnerType(@Nonnull OwnerType type);
 
+    /**
+     * The type of the owner for the entitlement
+     */
     enum OwnerType
     {
         GUILD_SUBSCRIPTION(1),
