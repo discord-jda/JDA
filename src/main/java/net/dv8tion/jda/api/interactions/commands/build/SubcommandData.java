@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -421,6 +422,7 @@ public class SubcommandData implements SerializableData
      * @return Immutable list of {@link OptionData}
      */
     @Nonnull
+    @Unmodifiable
     public List<OptionData> getOptions()
     {
         return Collections.unmodifiableList(options);

@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -57,6 +58,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child channels
      */
     @Nonnull
+    @Unmodifiable
     default List<GuildChannel> getChannels()
     {
         return getGuild()
@@ -76,6 +78,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child TextChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<TextChannel> getTextChannels()
     {
         return getGuild().getTextChannelCache().applyStream(stream ->
@@ -92,6 +95,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child NewsChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<NewsChannel> getNewsChannels()
     {
         return getGuild().getNewsChannelCache().applyStream(stream ->
@@ -107,6 +111,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child ForumChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<ForumChannel> getForumChannels()
     {
         return getGuild().getForumChannelCache().applyStream(stream ->
@@ -122,6 +127,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child ForumChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<MediaChannel> getMediaChannels()
     {
         return getGuild().getMediaChannelCache().applyStream(stream ->
@@ -138,6 +144,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child VoiceChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<VoiceChannel> getVoiceChannels()
     {
         return getGuild().getVoiceChannelCache().applyStream(stream ->
@@ -154,6 +161,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child StageChannel
      */
     @Nonnull
+    @Unmodifiable
     default List<StageChannel> getStageChannels()
     {
         return getGuild().getStageChannelCache().applyStream(stream ->
@@ -443,6 +451,7 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
 
     @Nonnull
     @Override
+    @Unmodifiable
     default List<Member> getMembers()
     {
         return getChannels().stream()

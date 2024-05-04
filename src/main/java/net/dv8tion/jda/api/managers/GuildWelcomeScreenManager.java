@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.managers;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildWelcomeScreen;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -141,6 +142,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      * @return An immutable list of the welcome channels to be set by the manager
      */
     @Nonnull
+    @Unmodifiable
     List<GuildWelcomeScreen.Channel> getWelcomeChannels();
 
     /**

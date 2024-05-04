@@ -68,6 +68,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -415,7 +416,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<AutoModRule>> retrieveAutoModRules();
+    RestAction<@Unmodifiable List<AutoModRule>> retrieveAutoModRules();
 
     /**
      * Retrieves the {@link AutoModRule} for the provided id.
@@ -692,6 +693,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features">List of Features</a>
      */
     @Nonnull
+    @Unmodifiable
     Set<String> getFeatures();
 
     /**
@@ -907,6 +909,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Immutable list of members who boost this guild
      */
     @Nonnull
+    @Unmodifiable
     List<Member> getBoosters();
 
     /**
@@ -1282,6 +1285,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #loadMembers()
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembers()
     {
         return getMemberCache().asList();
@@ -1311,6 +1315,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @Incubating
+    @Unmodifiable
     default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getMemberCache().getElementsByUsername(name, ignoreCase);
@@ -1334,6 +1339,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembersByNickname(@Nullable String nickname, boolean ignoreCase)
     {
         return getMemberCache().getElementsByNickname(nickname, ignoreCase);
@@ -1360,6 +1366,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembersByEffectiveName(@Nonnull String name, boolean ignoreCase)
     {
         return getMemberCache().getElementsByName(name, ignoreCase);
@@ -1384,6 +1391,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #findMembersWithRoles(Role...)
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembersWithRoles(@Nonnull Role... roles)
     {
         Checks.notNull(roles, "Roles");
@@ -1409,6 +1417,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #findMembersWithRoles(Collection)
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles)
     {
         Checks.noneNull(roles, "Roles");
@@ -1463,6 +1472,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable list of all ScheduledEvent names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
@@ -1526,6 +1536,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable List of {@link ScheduledEvent ScheduledEvents}.
      */
     @Nonnull
+    @Unmodifiable
     default List<ScheduledEvent> getScheduledEvents()
     {
         return getScheduledEventCache().asList();
@@ -1599,6 +1610,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #getChannels(boolean)
      */
     @Nonnull
+    @Unmodifiable
     default List<GuildChannel> getChannels()
     {
         return getChannels(true);
@@ -1628,6 +1640,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #getChannels()
      */
     @Nonnull
+    @Unmodifiable
     List<GuildChannel> getChannels(boolean includeHidden);
 
     /**
@@ -1680,6 +1693,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return An immutable List of {@link Role Roles}.
      */
     @Nonnull
+    @Unmodifiable
     default List<Role> getRoles()
     {
         return getRoleCache().asList();
@@ -1698,6 +1712,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
@@ -1893,6 +1908,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveEmojis()
      */
     @Nonnull
+    @Unmodifiable
     default List<RichCustomEmoji> getEmojis()
     {
         return getEmojiCache().asList();
@@ -1915,6 +1931,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable list of all Emojis that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase)
     {
         return getEmojiCache().getElementsByName(name, ignoreCase);
@@ -1995,6 +2012,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveStickers()
      */
     @Nonnull
+    @Unmodifiable
     default List<GuildSticker> getStickers()
     {
         return getStickerCache().asList();
@@ -2015,6 +2033,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable list of all Stickers that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<GuildSticker> getStickersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getStickerCache().getElementsByName(name, ignoreCase);
@@ -2044,7 +2063,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<RichCustomEmoji>> retrieveEmojis();
+    RestAction<@Unmodifiable List<RichCustomEmoji>> retrieveEmojis();
 
     /**
      * Retrieves a custom emoji together with its respective creator.
@@ -2144,7 +2163,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<GuildSticker>> retrieveStickers();
+    RestAction<@Unmodifiable List<GuildSticker>> retrieveStickers();
 
     /**
      * Attempts to retrieve a {@link GuildSticker} object for this guild based on the provided snowflake reference.
@@ -2480,7 +2499,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Invite>> retrieveInvites();
+    RestAction<@Unmodifiable List<Invite>> retrieveInvites();
 
     /**
      * Retrieves all {@link net.dv8tion.jda.api.entities.templates.Template Templates} for this guild.
@@ -2495,7 +2514,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Template>> retrieveTemplates();
+    RestAction<@Unmodifiable List<Template>> retrieveTemplates();
 
     /**
      * Used to create a new {@link net.dv8tion.jda.api.entities.templates.Template Template} for this Guild.
@@ -2543,7 +2562,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Webhook>> retrieveWebhooks();
+    RestAction<@Unmodifiable List<Webhook>> retrieveWebhooks();
 
     /**
      * Retrieves the {@link GuildWelcomeScreen welcome screen} for this Guild.
@@ -3247,7 +3266,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
 
     @Nonnull
     @CheckReturnValue
-    RestAction<List<ThreadChannel>> retrieveActiveThreads();
+    RestAction<@Unmodifiable List<ThreadChannel>> retrieveActiveThreads();
 
     /**
      * Retrieves a {@link ScheduledEvent} by its ID.

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -313,6 +314,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return Immutable list containing the tags of this bot's application
      */
     @Nonnull
+    @Unmodifiable
     List<String> getTags();
 
     /**
@@ -323,6 +325,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return Immutable list containing the OAuth2 redirect URIs of this bot's application
      */
     @Nonnull
+    @Unmodifiable
     List<String> getRedirectUris();
 
     /**
@@ -366,6 +369,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return Immutable list of scopes the default authorization URL is set up with.
      */
     @Nonnull
+    @Unmodifiable
     List<String> getScopes();
 
     /**

@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -226,6 +227,7 @@ public class TemplateGuild implements ISnowflake
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.templates.TemplateRole Roles}.
      */
     @Nonnull
+    @Unmodifiable
     public List<TemplateRole> getRoles()
     {
         return this.roles;
@@ -237,6 +239,7 @@ public class TemplateGuild implements ISnowflake
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.templates.TemplateChannel Channels}.
      */
     @Nonnull
+    @Unmodifiable
     public List<TemplateChannel> getChannels()
     {
         return this.channels;
