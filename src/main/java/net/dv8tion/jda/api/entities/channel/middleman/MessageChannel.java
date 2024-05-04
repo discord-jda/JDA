@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -54,6 +55,7 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePagination
 import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
@@ -2349,13 +2351,20 @@ public interface MessageChannel extends Channel, Formattable
         Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
-            LinkedList<Message> pinnedMessages = new LinkedList<>();
             EntityBuilder builder = jda.getEntityBuilder();
             DataArray pins = response.getArray();
+            List<Message> pinnedMessages = new ArrayList<>(pins.length());
 
             for (int i = 0; i < pins.length(); i++)
             {
-                pinnedMessages.add(builder.createMessageWithChannel(pins.getObject(i), MessageChannel.this, false));
+                try
+                {
+                    pinnedMessages.add(builder.createMessageWithChannel(pins.getObject(i), MessageChannel.this, false));
+                }
+                catch (ParsingException | NullPointerException e)
+                {
+                    JDALogger.getLog(getClass()).error("Failed to parse pinned message", e);
+                }
             }
 
             return Collections.unmodifiableList(pinnedMessages);
