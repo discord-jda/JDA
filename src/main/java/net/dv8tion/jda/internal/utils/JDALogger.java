@@ -19,12 +19,11 @@ package net.dv8tion.jda.internal.utils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.spi.SLF4JServiceProvider;
+import org.slf4j.helpers.NOPLoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
-import java.util.ServiceLoader;
 
 /**
  * This class serves as a LoggerFactory for JDA's internals.
@@ -36,34 +35,32 @@ import java.util.ServiceLoader;
 public class JDALogger
 {
     /**
-     * Marks whether or not a SLF4J <code>StaticLoggerBinder</code> (pre 1.8.x) or
+     * Marks whether a SLF4J <code>StaticLoggerBinder</code> (pre 1.8.x) or
      * <code>SLF4JServiceProvider</code> implementation (1.8.x+) was found. If false, JDA will use its fallback logger.
      * <br>This variable is initialized during static class initialization.
      */
     public static final boolean SLF4J_ENABLED;
+    private static boolean disableFallback;
+
     static
     {
-        boolean tmp = false;
-
-        try
-        {
-            Class.forName("org.slf4j.impl.StaticLoggerBinder");
-
-            tmp = true;
-        }
-        catch (ClassNotFoundException eStatic)
-        {
-            // there was no static logger binder (SLF4J pre-1.8.x)
-            // check if there is a service implementation for the service, indicating a provider for SLF4J 1.8.x+ is installed
-            tmp = ServiceLoader.load(SLF4JServiceProvider.class).iterator().hasNext();
-        }
-
-        SLF4J_ENABLED = tmp;
+        SLF4J_ENABLED = !(LoggerFactory.getILoggerFactory() instanceof NOPLoggerFactory);
     }
 
     private static final Map<String, Logger> LOGS = new CaseInsensitiveMap<>();
 
     private JDALogger() {}
+
+    /**
+     * Disables the automatic fallback logger that JDA uses when no SLF4J implementation is found.
+     *
+     * @param enabled
+     *        False, to disable the fallback logger
+     */
+    public static void setFallbackLoggerEnabled(boolean enabled)
+    {
+        disableFallback = !enabled;
+    }
 
     /**
      * Will get the {@link org.slf4j.Logger} with the given log-name
@@ -80,7 +77,7 @@ public class JDALogger
     {
         synchronized (LOGS)
         {
-            if (SLF4J_ENABLED)
+            if (SLF4J_ENABLED || disableFallback)
                 return LoggerFactory.getLogger(name);
             return LOGS.computeIfAbsent(name, FallbackLogger::new);
         }
@@ -101,7 +98,7 @@ public class JDALogger
     {
         synchronized (LOGS)
         {
-            if (SLF4J_ENABLED)
+            if (SLF4J_ENABLED || disableFallback)
                 return LoggerFactory.getLogger(clazz);
             return LOGS.computeIfAbsent(clazz.getName(), (n) -> new FallbackLogger(clazz.getSimpleName()));
         }
