@@ -127,9 +127,6 @@ public class EntitlementImpl implements Entitlement
             return new CompletedRestAction<>(api, null);
 
         Route.CompiledRoute route = Route.Applications.CONSUME_ENTITLEMENT.compile(getApplicationId(), getId());
-        return new RestActionImpl<>(api, route, (response, request) -> {
-            consumed = true;
-            return null;
-        });
+        return new RestActionImpl<>(api, route);
     }
 }
