@@ -1886,15 +1886,6 @@ public interface JDA extends IGuildChannelContainer<Channel>
     RestAction<ApplicationInfo> retrieveApplicationInfo();
 
     /**
-     * Retrieves the list of {@link Sku SKUs}.
-     *
-     * @return {@link RestAction} - Type: {@link List} of {@link Sku}
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<List<Sku>> retrieveSkus();
-
-    /**
      * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
      * which allows you to {@link Iterable iterate} over {@link Entitlement}s that are applicable to the logged in application.
      *

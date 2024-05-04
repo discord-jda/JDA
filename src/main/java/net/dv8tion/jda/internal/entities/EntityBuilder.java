@@ -2635,18 +2635,6 @@ public class EntityBuilder
         );
     }
 
-    public Sku createSKU(DataObject object) {
-        return new SkuImpl(
-                getJDA(),
-                object.getLong("id"),
-                Sku.SkuType.fromKey(object.getInt("type")),
-                object.getLong("application_id"),
-                object.getString("name"),
-                object.getString("slug"),
-                object.getInt("flags")
-        );
-    }
-
     private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
     {
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
