@@ -3264,6 +3264,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
     @CheckReturnValue
     Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
 
+    /**
+     * Retrieves the active threads in this guild.
+     *
+     * @return {@link RestAction} - List of {@link ThreadChannel}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<@Unmodifiable List<ThreadChannel>> retrieveActiveThreads();
