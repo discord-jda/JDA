@@ -148,9 +148,6 @@ public interface Entitlement extends ISnowflake
     /**
      * Consumes the {@link Entitlement Entitlement} if it has not already been consumed.
      *
-     * @throws IllegalStateException
-     *        If the {@link Entitlement Entitlement} has already been consumed
-     *
      * @return A {@link RestAction} that will consume the {@link Entitlement Entitlement}
      */
     @Nonnull

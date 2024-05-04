@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 
 import javax.annotation.Nonnull;
@@ -123,7 +124,7 @@ public class EntitlementImpl implements Entitlement
     public RestAction<Void> consume()
     {
         if (consumed)
-            throw new IllegalStateException("This entitlement has already been consumed!");
+            return new CompletedRestAction<>(api, null);
 
         Route.CompiledRoute route = Route.Applications.CONSUME_ENTITLEMENT.compile(getApplicationId(), getId());
         return new RestActionImpl<>(api, route, (response, request) -> {
