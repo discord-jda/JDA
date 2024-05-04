@@ -24,7 +24,7 @@ import org.slf4j.helpers.MessageFormatter;
 
 import java.time.LocalDateTime;
 
-class FallbackLogger extends LegacyAbstractLogger
+public class FallbackLogger extends LegacyAbstractLogger
 {
     private final String name;
 

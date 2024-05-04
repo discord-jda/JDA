@@ -16,13 +16,17 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLogger;
 import org.slf4j.spi.SLF4JServiceProvider;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -45,16 +49,52 @@ public class JDALogger
     public static final String DISABLE_FALLBACK_PROPERTY_NAME = "net.dv8tion.jda.disableFallbackLogger";
 
     /**
-     * Whether an implementation of {@link SLF4JServiceProvider}was found.
+     * Whether an implementation of {@link SLF4JServiceProvider} was found.
      * <br>If false, JDA will use its fallback logger.
      *
      * <p>The fallback logger can be disabled with {@link #setFallbackLoggerEnabled(boolean)}
      * or using the system property {@value #DISABLE_FALLBACK_PROPERTY_NAME}.
      */
-    public static final boolean SLF4J_ENABLED = ServiceLoader.load(SLF4JServiceProvider.class).iterator().hasNext();
+    public static final boolean SLF4J_ENABLED;
     private static boolean disableFallback = Boolean.getBoolean(DISABLE_FALLBACK_PROPERTY_NAME);
+    private static final MethodHandle fallbackLoggerConstructor;
 
-    private static final Map<String, Logger> LOGS = new CaseInsensitiveMap<>();
+    static
+    {
+        boolean hasLoggerImpl = false;
+        try
+        {
+            Class<?> provider = Class.forName("org.slf4j.spi.SLF4JServiceProvider");
+            hasLoggerImpl = ServiceLoader.load(provider).iterator().hasNext();
+        }
+        catch (ClassNotFoundException ignored)
+        {
+            disableFallback = true; // only works with SLF4J 2.0+
+        }
+
+        SLF4J_ENABLED = hasLoggerImpl;
+
+        // Dynamically load fallback logger to avoid static initializer errors
+
+        MethodHandle constructor = null;
+        try
+        {
+            MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+            Class<?> fallbackLoggerClass = Class.forName("net.dv8tion.jda.internal.utils.FallbackLogger");
+            constructor = lookup.findConstructor(fallbackLoggerClass, MethodType.methodType(void.class, String.class));
+        }
+        catch (
+            ClassNotFoundException |
+            ExceptionInInitializerError |
+            IllegalAccessException |
+            NoClassDefFoundError |
+            NoSuchMethodException ignored
+        ) {}
+
+        fallbackLoggerConstructor = constructor;
+    }
+
+    private static final Map<String, Logger> LOGS = new HashMap<>();
 
     private JDALogger() {}
 
@@ -86,8 +126,7 @@ public class JDALogger
         {
             if (SLF4J_ENABLED || disableFallback)
                 return LoggerFactory.getLogger(name);
-            printFallbackWarning();
-            return LOGS.computeIfAbsent(name, FallbackLogger::new);
+            return newFallbackLogger(name);
         }
     }
 
@@ -108,20 +147,41 @@ public class JDALogger
         {
             if (SLF4J_ENABLED || disableFallback)
                 return LoggerFactory.getLogger(clazz);
-            printFallbackWarning();
-            return LOGS.computeIfAbsent(clazz.getName(), (n) -> new FallbackLogger(clazz.getSimpleName()));
+            return newFallbackLogger(clazz.getSimpleName());
         }
     }
 
     private static void printFallbackWarning()
     {
-        if (LOGS.isEmpty())
+        Logger logger = newFallbackLogger(JDALogger.class.getSimpleName());
+        logger.warn("Using fallback logger due to missing SLF4J implementation.");
+        logger.warn("Please setup a logging framework to use JDA.");
+        logger.warn("You can use our logging setup guide https://jda.wiki/setup/logging/");
+        logger.warn("To disable the fallback logger, add the slf4j-nop dependency or use JDALogger.setFallbackLoggerEnabled(false)");
+    }
+
+    private static Logger newFallbackLogger(String name)
+    {
+        if (disableFallback || fallbackLoggerConstructor == null)
+            return NOPLogger.NOP_LOGGER;
+
+        try
         {
-            Logger logger = LOGS.computeIfAbsent(JDALogger.class.getSimpleName(), (n) -> new FallbackLogger(JDALogger.class.getSimpleName()));
-            logger.warn("Using fallback logger due to missing SLF4J implementation.");
-            logger.warn("Please setup a logging framework to use JDA.");
-            logger.warn("You can use our logging setup guide https://jda.wiki/setup/logging/");
-            logger.warn("To disable the fallback logger, add the slf4j-nop dependency or use JDALogger.setFallbackLoggerEnabled(false)");
+            synchronized (LOGS)
+            {
+                if (LOGS.containsKey(name))
+                    return LOGS.get(name);
+                Logger logger = (Logger) fallbackLoggerConstructor.invoke(name);
+                boolean isFirstFallback = LOGS.isEmpty();
+                LOGS.put(name, logger);
+                if (isFirstFallback)
+                    printFallbackWarning();
+                return logger;
+            }
+        }
+        catch (Throwable e)
+        {
+            throw new IllegalStateException("Failed to initialize fallback logger", e);
         }
     }
 
