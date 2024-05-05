@@ -1171,7 +1171,7 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<Entitlement> retrieveEntitlementById(long entitlementId)
     {
-        return new RestActionImpl<>(this, Route.Applications.GET_ENTITLEMENT.compile(getSelfUser().getApplicationId(), String.valueOf(entitlementId)));
+        return new RestActionImpl<>(this, Route.Applications.GET_ENTITLEMENT.compile(getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId)));
     }
 
     @Nonnull
@@ -1187,7 +1187,7 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<Void> deleteTestEntitlement(long entitlementId)
     {
-        Route.CompiledRoute route = Route.Applications.DELETE_TEST_ENTITLEMENT.compile(getSelfUser().getApplicationId(), String.valueOf(entitlementId));
+        Route.CompiledRoute route = Route.Applications.DELETE_TEST_ENTITLEMENT.compile(getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId));
         return new RestActionImpl<>(this, route);
     }
 
