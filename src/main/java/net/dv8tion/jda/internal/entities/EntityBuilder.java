@@ -486,6 +486,10 @@ public class EntityBuilder
         short newDiscriminator = Short.parseShort(user.getString("discriminator", "0"));
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
+        User.AvatarDecoration oldAvatarDecoration = userObj.getAvatarDecoration();
+        User.AvatarDecoration newAvatarDecoration = user.optObject("avatar_decoration_data")
+                .map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                .orElse(null);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
 
@@ -526,6 +530,15 @@ public class EntityBuilder
                 new UserUpdateAvatarEvent(
                     jda, responseNumber,
                     userObj, oldAvatar));
+        }
+
+        if (!Objects.equals(oldAvatarDecoration, newAvatarDecoration))
+        {
+            userObj.setAvatarDecoration(newAvatarDecoration);
+            jda.handleEvent(
+                new UserUpdateAvatarDecorationEvent(
+                    jda, responseNumber,
+                    userObj, oldAvatarDecoration));
         }
 
         if (oldFlags != newFlags)
