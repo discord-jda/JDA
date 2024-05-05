@@ -1939,6 +1939,32 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param ownerType
      *        The type of the owner of the entitlement
      *
+     * @throws IllegalArgumentException
+     *         If the provided skuId or ownerId is not a valid snowflake
+     *
+     * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
+     *         <br>Allows for setting various details for the resulting Entitlement
+     */
+    @Nonnull
+    @CheckReturnValue
+    default TestEntitlementCreateAction createTestEntitlement(@Nonnull String skuId, @Nonnull String ownerId, @Nonnull TestEntitlementCreateAction.OwnerType ownerType)
+    {
+        return createTestEntitlement(MiscUtil.parseSnowflake(skuId), MiscUtil.parseSnowflake(ownerId), ownerType);
+    }
+
+    /**
+     * Constructs a new {@link Entitlement Entitlement} with the skuId and the type.
+     * <br>Use the returned {@link TestEntitlementCreateAction TestEntitlementCreateAction} to provide more details.
+     *
+     * @param  skuId
+     *         The id of the SKU the entitlement is for
+     *
+     * @param ownerId
+     *        The id of the owner of the entitlement
+     *
+     * @param ownerType
+     *        The type of the owner of the entitlement
+     *
      * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
      *         <br>Allows for setting various details for the resulting Entitlement
      */
