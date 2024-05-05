@@ -39,6 +39,10 @@ public class TestEntitlementCreateActionImpl extends RestActionImpl<Entitlement>
     public TestEntitlementCreateActionImpl(JDA api, long skuId, long ownerId, OwnerType type)
     {
         super(api, Route.Applications.CREATE_TEST_ENTITLEMENT.compile(api.getSelfUser().getApplicationId()));
+
+        this.skuId = skuId;
+        this.ownerId = ownerId;
+        this.type = type;
     }
 
     @Nonnull
