@@ -985,6 +985,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 case "RESUMED":
                     reconnectTimeoutS = 2;
                     sentAuthInfo = true;
+                    traceMetadata = content.opt("_trace").map(String::valueOf).orElse(traceMetadata);
                     if (!processingReady)
                     {
                         initiating = false;
