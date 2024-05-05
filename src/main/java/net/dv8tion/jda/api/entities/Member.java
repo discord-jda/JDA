@@ -293,6 +293,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
         return avatarUrl == null ? null : new ImageProxy(avatarUrl);
     }
 
+    @Nullable
+    User.AvatarDecoration getAvatarDecoration();
+
     /**
      * The URL for the member's effective avatar image.
      * If they do not have a per guild avatar set, this will return the URL of

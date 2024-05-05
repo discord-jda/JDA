@@ -164,6 +164,7 @@ public abstract class ListenerAdapter implements EventListener
     @ForRemoval
     public void onUserUpdateDiscriminator(@Nonnull UserUpdateDiscriminatorEvent event) {}
     public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
+    public void onUserUpdateAvatarDecoration(@Nonnull UserUpdateAvatarDecorationEvent event) {}
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
     public void onUserUpdateActivityOrder(@Nonnull UserUpdateActivityOrderEvent event) {}
     public void onUserUpdateFlags(@Nonnull UserUpdateFlagsEvent event) {}
@@ -312,6 +313,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberUpdate(@Nonnull GuildMemberUpdateEvent event) {}
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {}
     public void onGuildMemberUpdateAvatar(@Nonnull GuildMemberUpdateAvatarEvent event) {}
+    public void onGuildMemberUpdateAvatarDecoration(@Nonnull GuildMemberUpdateAvatarDecorationEvent event) {}
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
     public void onGuildMemberUpdatePending(@Nonnull GuildMemberUpdatePendingEvent event) {}
     public void onGuildMemberUpdateFlags(@Nonnull GuildMemberUpdateFlagsEvent event) {}

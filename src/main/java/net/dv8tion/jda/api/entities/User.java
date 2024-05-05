@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -89,6 +90,8 @@ public interface User extends UserSnowflake
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
     /** Template for {@link Profile#getBannerUrl()} */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
+    /** Template for {@link AvatarDecoration#getDecorationAvatarUrl()} */
+    String DECORATION_AVATAR_URL = "https://cdn.discordapp.com/avatar-decoration-presets/%s.png";
 
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_ACCENT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
@@ -362,6 +365,14 @@ public interface User extends UserSnowflake
     int getFlagsRaw();
 
     /**
+     * Returns the possibly-null {@link AvatarDecoration} of this user. If the user has not set a decoration avatar, this will return null.
+     *
+     * @return The possibly-null avatar decoration of this user
+     */
+    @Nullable
+    AvatarDecoration getAvatarDecoration();
+
+    /**
      * Represents the information contained in a {@link User User}'s profile.
      *
      * @since 4.3.0
@@ -451,6 +462,79 @@ public interface User extends UserSnowflake
                     .addMetadata("userId", userId)
                     .addMetadata("bannerId", bannerId)
                     .addMetadata("accentColor", accentColor)
+                    .toString();
+        }
+    }
+
+    /**
+     * Represents the avatar decoration of a {@link User User}.
+     */
+    class AvatarDecoration
+    {
+
+        private final String decorationAvatarId;
+        private final String skuId;
+
+        public AvatarDecoration(String decorationAvatarId, String skuId)
+        {
+            this.decorationAvatarId = decorationAvatarId;
+            this.skuId = skuId;
+        }
+
+        /**
+         * The never-null SKU id of the {@link User User} decoration avatar.
+         *
+         * @return The never-null SKU id of the {@link User User} decoration avatar.
+         */
+        @Nonnull
+        public String getSkuId()
+        {
+            return skuId;
+        }
+
+        /**
+         * The never-null avatar ID for this user's decoration avatar image.
+         *
+         * @return The never-null avatar ID for this user's decoration avatar image.
+         */
+        @Nonnull
+        public String getDecorationAvatarId()
+        {
+            return decorationAvatarId;
+        }
+
+        /**
+         * The URL for the user's decoration avatar image.
+         *
+         * @return The never-null String containing the {@link User User} decoration avatar url.
+         *
+         * @see User#DECORATION_AVATAR_URL
+         */
+        @Nonnull
+        public String getDecorationAvatarUrl()
+        {
+            return Helpers.format(DECORATION_AVATAR_URL, decorationAvatarId);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this user's decoration avatar.
+         *
+         * @return Never-null {@link ImageProxy} of this user's decoration avatar
+         *
+         * @see    #getDecorationAvatarUrl()
+         */
+        @Nonnull
+        public ImageProxy getDecorationAvatar()
+        {
+            return new ImageProxy(getDecorationAvatarUrl());
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .addMetadata("decorationAvatarId", decorationAvatarId)
+                    .addMetadata("skuId", skuId)
                     .toString();
         }
     }

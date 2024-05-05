@@ -450,6 +450,10 @@ public class EntityBuilder
             ? new User.Profile(id, user.getString("banner", null), user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
             : null;
 
+        User.AvatarDecoration avatarDecoration = user.optObject("avatar_decoration_data")
+                .map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                .orElse(null);
+
         if (newUser)
         {
             // Initial creation
@@ -457,6 +461,7 @@ public class EntityBuilder
                    .setGlobalName(user.getString("global_name", null))
                    .setDiscriminator(Short.parseShort(user.getString("discriminator", "0")))
                    .setAvatarId(user.getString("avatar", null))
+                   .setAvatarDecoration(avatarDecoration)
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0))
@@ -481,6 +486,10 @@ public class EntityBuilder
         short newDiscriminator = Short.parseShort(user.getString("discriminator", "0"));
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
+        User.AvatarDecoration oldAvatarDecoration = userObj.getAvatarDecoration();
+        User.AvatarDecoration newAvatarDecoration = user.optObject("avatar_decoration_data")
+                .map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                .orElse(null);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
 
@@ -521,6 +530,15 @@ public class EntityBuilder
                 new UserUpdateAvatarEvent(
                     jda, responseNumber,
                     userObj, oldAvatar));
+        }
+
+        if (!Objects.equals(oldAvatarDecoration, newAvatarDecoration))
+        {
+            userObj.setAvatarDecoration(newAvatarDecoration);
+            jda.handleEvent(
+                new UserUpdateAvatarDecorationEvent(
+                    jda, responseNumber,
+                    userObj, oldAvatarDecoration));
         }
 
         if (oldFlags != newFlags)
@@ -614,6 +632,11 @@ public class EntityBuilder
             member.setAvatarId(memberJson.getString("avatar", null));
             if (!memberJson.isNull("flags"))
                 member.setFlags(memberJson.getInt("flags"));
+
+            User.AvatarDecoration avatarDecoration = memberJson.optObject("avatar_decoration_data")
+                    .map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                    .orElse(null);
+            member.setAvatarDecoration(avatarDecoration);
 
             long boostTimestamp = memberJson.isNull("premium_since")
                 ? 0
@@ -741,6 +764,22 @@ public class EntityBuilder
                     new GuildMemberUpdateBoostTimeEvent(
                         getJDA(), responseNumber,
                         member, oldTime));
+            }
+        }
+        if (content.hasKey("avatar_decoration_data"))
+        {
+            DataObject avatarDecorationData = content.getObject("avatar_decoration_data");
+            User.AvatarDecoration oldAvatarDecoration = member.getAvatarDecoration();
+            User.AvatarDecoration newAvatarDecoration = new User.AvatarDecoration(
+                avatarDecorationData.getString("asset"),
+                avatarDecorationData.getString("sku_id"));
+            if (!Objects.equals(oldAvatarDecoration, newAvatarDecoration))
+            {
+                member.setAvatarDecoration(newAvatarDecoration);
+                getJDA().handleEvent(
+                    new GuildMemberUpdateAvatarDecorationEvent(
+                        getJDA(), responseNumber,
+                        member, oldAvatarDecoration));
             }
         }
 
