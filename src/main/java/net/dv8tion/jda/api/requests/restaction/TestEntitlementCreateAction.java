@@ -42,6 +42,8 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      *
      * @throws IllegalArgumentException
      *         If the provided skuId is not a valid snowflake
+     *
+     * @return The current {@link TestEntitlementCreateAction} for chaining convenience
      */
     @CheckReturnValue
     @Nonnull
@@ -55,6 +57,8 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      *
      * @param skuId
      *        The id of the SKU
+     *
+     * @return The current {@link TestEntitlementCreateAction} for chaining convenience
      */
     @CheckReturnValue
     @Nonnull
@@ -68,6 +72,8 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      *
      * @throws IllegalArgumentException
      *         If the provided ownerId is not a valid snowflake
+     *
+     * @return The current {@link TestEntitlementCreateAction} for chaining convenience
      */
     @CheckReturnValue
     @Nonnull
@@ -81,6 +87,8 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      *
      * @param ownerId
      *        The id of the owner - either guild id or user id
+     *
+     * @return The current {@link TestEntitlementCreateAction} for chaining convenience
      */
     @CheckReturnValue
     @Nonnull
@@ -91,6 +99,8 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      *
      * @param type
      *        The type of the owner
+     *
+     * @return The current {@link TestEntitlementCreateAction} for chaining convenience
      */
     @CheckReturnValue
     @Nonnull

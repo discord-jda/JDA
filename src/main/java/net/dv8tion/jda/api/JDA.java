@@ -1928,12 +1928,16 @@ public interface JDA extends IGuildChannelContainer<Channel>
 
     /**
      * Constructs a new {@link Entitlement Entitlement} with the skuId and the type.
-     * <br>Use the returned {@link GuildAction GuildAction} to provide
-     * further details in the future
-     * <br>Right now discord does not have more details to provide.
+     * <br>Use the returned {@link TestEntitlementCreateAction TestEntitlementCreateAction} to provide more details.
      *
      * @param  skuId
      *         The id of the SKU the entitlement is for
+     *
+     * @param ownerId
+     *        The id of the owner of the entitlement
+     *
+     * @param ownerType
+     *        The type of the owner of the entitlement
      *
      * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
      *         <br>Allows for setting various details for the resulting Entitlement
