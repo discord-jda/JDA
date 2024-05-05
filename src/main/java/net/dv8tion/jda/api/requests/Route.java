@@ -46,10 +46,10 @@ public class Route
         public static final Route GET_ROLE_CONNECTION_METADATA =    new Route(GET, "applications/{application_id}/role-connections/metadata");
         public static final Route UPDATE_ROLE_CONNECTION_METADATA = new Route(PUT, "applications/{application_id}/role-connections/metadata");
         public static final Route GET_ENTITLEMENTS =                new Route(GET, "applications/{application_id}/entitlements");
-        public static final Route GET_ENTITLEMENT =                 new Route(GET, "applications/{application.id}/entitlements/{entitlement.id}");
-        public static final Route CONSUME_ENTITLEMENT =             new Route(POST, "/applications/{application.id}/entitlements/{entitlement.id}/consume");
-        public static final Route CREATE_TEST_ENTITLEMENT =         new Route(POST, "applications/{application.id}/entitlements");
-        public static final Route DELETE_TEST_ENTITLEMENT =         new Route(DELETE, "applications/{application.id}/entitlements/{entitlement.id}");
+        public static final Route GET_ENTITLEMENT =                 new Route(GET, "applications/{application_id}/entitlements/{entitlement_id}");
+        public static final Route CONSUME_ENTITLEMENT =             new Route(POST, "applications/{application_id}/entitlements/{entitlement_id}/consume");
+        public static final Route CREATE_TEST_ENTITLEMENT =         new Route(POST, "applications/{application_id}/entitlements");
+        public static final Route DELETE_TEST_ENTITLEMENT =         new Route(DELETE, "applications/{application_id}/entitlements/{entitlement_id}");
     }
 
     public static class Interactions
