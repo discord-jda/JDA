@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -526,6 +527,15 @@ public interface User extends UserSnowflake
         public ImageProxy getDecorationAvatar()
         {
             return new ImageProxy(getDecorationAvatarUrl());
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .addMetadata("decorationAvatarId", decorationAvatarId)
+                    .addMetadata("skuId", skuId)
+                    .toString();
         }
     }
 
