@@ -45,7 +45,8 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      */
     @CheckReturnValue
     @Nonnull
-    default TestEntitlementCreateAction setSkuId(@Nonnull String skuId) {
+    default TestEntitlementCreateAction setSkuId(@Nonnull String skuId)
+    {
         return setSkuId(MiscUtil.parseSnowflake(skuId));
     }
 
@@ -70,7 +71,8 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      */
     @CheckReturnValue
     @Nonnull
-    default TestEntitlementCreateAction setOwnerId(@Nonnull String ownerId) {
+    default TestEntitlementCreateAction setOwnerId(@Nonnull String ownerId)
+    {
         return setOwnerId(MiscUtil.parseSnowflake(ownerId));
     }
 

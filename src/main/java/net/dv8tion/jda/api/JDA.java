@@ -1908,7 +1908,8 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Entitlement> retrieveEntitlementById(@Nonnull String entitlementId) {
+    default RestAction<Entitlement> retrieveEntitlementById(@Nonnull String entitlementId)
+    {
         return retrieveEntitlementById(MiscUtil.parseSnowflake(entitlementId));
     }
 
@@ -1954,7 +1955,8 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteTestEntitlement(@Nonnull String entitlementId) {
+    default RestAction<Void> deleteTestEntitlement(@Nonnull String entitlementId)
+    {
         return deleteTestEntitlement(MiscUtil.parseSnowflake(entitlementId));
     }
 
