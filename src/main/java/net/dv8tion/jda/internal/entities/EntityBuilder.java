@@ -633,6 +633,11 @@ public class EntityBuilder
             if (!memberJson.isNull("flags"))
                 member.setFlags(memberJson.getInt("flags"));
 
+            User.AvatarDecoration avatarDecoration = memberJson.optObject("avatar_decoration_data")
+                    .map(o -> new User.AvatarDecoration(o.getString("asset"), o.getString("sku_id")))
+                    .orElse(null);
+            member.setAvatarDecoration(avatarDecoration);
+
             long boostTimestamp = memberJson.isNull("premium_since")
                 ? 0
                 : Helpers.toTimestamp(memberJson.getString("premium_since"));
@@ -759,6 +764,22 @@ public class EntityBuilder
                     new GuildMemberUpdateBoostTimeEvent(
                         getJDA(), responseNumber,
                         member, oldTime));
+            }
+        }
+        if (content.hasKey("avatar_decoration_data"))
+        {
+            DataObject avatarDecorationData = content.getObject("avatar_decoration_data");
+            User.AvatarDecoration oldAvatarDecoration = member.getAvatarDecoration();
+            User.AvatarDecoration newAvatarDecoration = new User.AvatarDecoration(
+                avatarDecorationData.getString("asset"),
+                avatarDecorationData.getString("sku_id"));
+            if (!Objects.equals(oldAvatarDecoration, newAvatarDecoration))
+            {
+                member.setAvatarDecoration(newAvatarDecoration);
+                getJDA().handleEvent(
+                    new GuildMemberUpdateAvatarDecorationEvent(
+                        getJDA(), responseNumber,
+                        member, oldAvatarDecoration));
             }
         }
 

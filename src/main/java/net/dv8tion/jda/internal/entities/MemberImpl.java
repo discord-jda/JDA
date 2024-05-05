@@ -53,6 +53,7 @@ public class MemberImpl implements Member
     private User user;
     private String nickname;
     private String avatarId;
+    private User.AvatarDecoration avatarDecoration;
     private long joinDate, boostDate, timeOutEnd;
     private boolean pending = false;
     private int flags;
@@ -188,6 +189,13 @@ public class MemberImpl implements Member
     public String getAvatarId()
     {
         return avatarId;
+    }
+
+    @Nullable
+    @Override
+    public User.AvatarDecoration getAvatarDecoration()
+    {
+        return avatarDecoration;
     }
 
     @Nonnull
@@ -440,6 +448,12 @@ public class MemberImpl implements Member
     public MemberImpl setFlags(int flags)
     {
         this.flags = flags;
+        return this;
+    }
+
+    public MemberImpl setAvatarDecoration(User.AvatarDecoration avatarDecoration)
+    {
+        this.avatarDecoration = avatarDecoration;
         return this;
     }
 
