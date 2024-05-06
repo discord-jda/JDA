@@ -147,7 +147,7 @@ public interface Entitlement extends ISnowflake
 
     /**
      * Consumes the {@link Entitlement Entitlement} if it has not already been consumed.
-     * <br>Only One-Time Purchase consumable {@link Entitlement Entitlement}s can be consumed.
+     * <br>Only One-Time Purchase consumable {@link Entitlement Entitlements} can be consumed.
      * <br>After the {@link Entitlement Entitlement} has been consumed, it will be marked as consumed.
      *
      * @return A {@link RestAction} that will consume the {@link Entitlement Entitlement}

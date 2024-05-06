@@ -1965,6 +1965,9 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param ownerType
      *        The type of the owner of the entitlement
      *
+     * @throws IllegalArgumentException
+     *         If the provided ownerType is null
+     *
      * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
      *         <br>Allows for setting various details for the resulting Entitlement
      */

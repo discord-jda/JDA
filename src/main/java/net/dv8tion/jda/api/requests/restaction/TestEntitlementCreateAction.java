@@ -100,6 +100,9 @@ public interface TestEntitlementCreateAction extends RestAction<Entitlement>
      * @param type
      *        The type of the owner
      *
+     * @throws IllegalArgumentException
+     *         If the provided type is null
+     *
      * @return The current {@link TestEntitlementCreateAction} for chaining convenience
      */
     @CheckReturnValue
