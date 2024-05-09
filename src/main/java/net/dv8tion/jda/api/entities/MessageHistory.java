@@ -36,6 +36,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
@@ -182,7 +183,7 @@ public class MessageHistory
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<List<Message>> retrievePast(int amount)
+    public RestAction<@Unmodifiable List<Message>> retrievePast(int amount)
     {
         if (amount > 100 || amount < 1)
             throw new IllegalArgumentException("Message retrieval limit is between 1 and 100 messages. No more, no less. Limit provided: " + amount);
@@ -260,7 +261,7 @@ public class MessageHistory
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<List<Message>> retrieveFuture(int amount)
+    public RestAction<@Unmodifiable List<Message>> retrieveFuture(int amount)
     {
         if (amount > 100 || amount < 1)
             throw new IllegalArgumentException("Message retrieval limit is between 1 and 100 messages. No more, no less. Limit provided: " + amount);
@@ -309,6 +310,7 @@ public class MessageHistory
      * @return An immutable List of Messages, sorted newest to oldest.
      */
     @Nonnull
+    @Unmodifiable
     public List<Message> getRetrievedHistory()
     {
         int size = size();

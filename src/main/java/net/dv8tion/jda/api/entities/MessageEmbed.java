@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -301,6 +302,7 @@ public class MessageEmbed implements SerializableData
      *         containing field information.
      */
     @Nonnull
+    @Unmodifiable
     public List<Field> getFields()
     {
         return fields;

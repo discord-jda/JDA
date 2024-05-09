@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -50,6 +49,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -933,6 +933,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Immutable list of all created AudioManager instances
      */
     @Nonnull
+    @Unmodifiable
     default List<AudioManager> getAudioManagers()
     {
         return getAudioManagerCache().asList();
@@ -966,6 +967,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Immutable list of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
      */
     @Nonnull
+    @Unmodifiable
     default List<User> getUsers()
     {
         return getUserCache().asList();
@@ -1031,14 +1033,9 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *         If the provided tag is null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
-     *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
-    @Deprecated
-    @ForRemoval
+    @Incubating
     default User getUserByTag(@Nonnull String tag)
     {
         Checks.notNull(tag, "Tag");
@@ -1070,14 +1067,9 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *         If the provided arguments are null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
-     *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
-    @Deprecated
-    @ForRemoval
+    @Incubating
     default User getUserByTag(@Nonnull String username, @Nonnull String discriminator)
     {
         Checks.notNull(username, "Username");
@@ -1112,6 +1104,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     @Incubating
+    @Unmodifiable
     default List<User> getUsersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getUserCache().getElementsByName(name, ignoreCase);
@@ -1128,6 +1121,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @see    Guild#isMember(UserSnowflake)
      */
     @Nonnull
+    @Unmodifiable
     List<Guild> getMutualGuilds(@Nonnull User... users);
 
     /**
@@ -1139,6 +1133,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      */
     @Nonnull
+    @Unmodifiable
     List<Guild> getMutualGuilds(@Nonnull Collection<User> users);
 
     /**
@@ -1229,6 +1224,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Possibly-empty immutable list of all the {@link Guild Guilds} that this account is connected to.
      */
     @Nonnull
+    @Unmodifiable
     default List<Guild> getGuilds()
     {
         return getGuildCache().asList();
@@ -1279,6 +1275,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Possibly-empty immutable list of all the {@link Guild Guilds} that all have the same name as the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<Guild> getGuildsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getGuildCache().getElementsByName(name, ignoreCase);
@@ -1330,6 +1327,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Immutable List of all visible Roles
      */
     @Nonnull
+    @Unmodifiable
     default List<Role> getRoles()
     {
         return getRoleCache().asList();
@@ -1383,10 +1381,12 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Immutable List of all Roles matching the parameters provided.
      */
     @Nonnull
+    @Unmodifiable
     default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
+
     /**
      * {@link SnowflakeCacheView} of
      * all cached {@link ScheduledEvent ScheduledEvents} visible to this JDA session.
@@ -1412,6 +1412,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Possibly-empty immutable list of all known {@link ScheduledEvent ScheduledEvents}.
      */
     @Nonnull
+    @Unmodifiable
     default List<ScheduledEvent> getScheduledEvents()
     {
         return getScheduledEventCache().asList();
@@ -1474,6 +1475,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *         same name as the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
@@ -1499,6 +1501,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return Possibly-empty list of all {@link PrivateChannel PrivateChannels}.
      */
     @Nonnull
+    @Unmodifiable
     default List<PrivateChannel> getPrivateChannels()
     {
         return getPrivateChannelCache().asList();
@@ -1634,6 +1637,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @return An immutable list of Custom Emojis (which may or may not be available to usage).
      */
     @Nonnull
+    @Unmodifiable
     default List<RichCustomEmoji> getEmojis()
     {
         return getEmojiCache().asList();
@@ -1696,6 +1700,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *         name as the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase)
     {
         return getEmojiCache().getElementsByName(name, ignoreCase);
@@ -1734,7 +1739,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<StickerPack>> retrieveNitroStickerPacks();
+    RestAction<@Unmodifiable List<StickerPack>> retrieveNitroStickerPacks();
 
     /**
      * The EventManager used by this JDA instance.

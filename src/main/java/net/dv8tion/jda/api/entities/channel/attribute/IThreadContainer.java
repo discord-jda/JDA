@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginatio
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -56,6 +57,7 @@ public interface IThreadContainer extends GuildChannel, IPermissionContainer
      * @return Immutable list of all ThreadChannel children.
      */
     @Nonnull
+    @Unmodifiable
     default List<ThreadChannel> getThreadChannels()
     {
         return getGuild().getThreadChannelCache().applyStream(stream ->

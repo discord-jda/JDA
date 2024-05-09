@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -36,6 +37,7 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
      * @return {@link List} of {@link SelectOption#getValue()}
      */
     @Nonnull
+    @Unmodifiable
     List<String> getValues();
 
     /**
@@ -45,6 +47,7 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
      * @return Immutable {@link List} of the selected options
      */
     @Nonnull
+    @Unmodifiable
     default List<SelectOption> getSelectedOptions()
     {
         StringSelectMenu menu = getComponent();

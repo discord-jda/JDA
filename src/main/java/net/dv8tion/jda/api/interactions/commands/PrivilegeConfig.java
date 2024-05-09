@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -78,6 +79,7 @@ public class PrivilegeConfig
      * @return Immutable List containing all IntegrationPrivileges that have been applied to this application in this guild.
      */
     @Nullable
+    @Unmodifiable
     public List<IntegrationPrivilege> getApplicationPrivileges()
     {
         return getCommandPrivileges(getJDA().getSelfUser().getApplicationId());
@@ -99,6 +101,7 @@ public class PrivilegeConfig
      * @return Immutable List containing all IntegrationPrivileges that have been applied to the command with the given id in this guild.
      */
     @Nullable
+    @Unmodifiable
     public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull String id)
     {
         Checks.notNull(id, "Id");
@@ -121,6 +124,7 @@ public class PrivilegeConfig
      * @return Immutable List containing all IntegrationPrivileges that have been applied to the command in this guild.
      */
     @Nullable
+    @Unmodifiable
     public List<IntegrationPrivilege> getCommandPrivileges(@Nonnull Command command)
     {
         Checks.notNull(command, "Command");

@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.ClassWalker;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -91,6 +92,7 @@ public class AnnotatedEventManager implements IEventManager
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(new ArrayList<>(listeners));

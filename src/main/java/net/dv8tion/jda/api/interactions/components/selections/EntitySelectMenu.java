@@ -31,6 +31,7 @@ import net.dv8tion.jda.internal.interactions.component.EntitySelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -123,6 +124,7 @@ public interface EntitySelectMenu extends SelectMenu
      * @return Immutable list of {@link DefaultValue default values}
      */
     @Nonnull
+    @Unmodifiable
     List<DefaultValue> getDefaultValues();
 
     /**

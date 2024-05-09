@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Procedure;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Blocking;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -82,7 +84,7 @@ import java.util.stream.StreamSupport;
  *
  * @since  3.1
  */
-public interface PaginationAction<T, M extends PaginationAction<T, M>> extends RestAction<List<T>>, Iterable<T>
+public interface PaginationAction<T, M extends PaginationAction<T, M>> extends RestAction<@Unmodifiable List<T>>, Iterable<T>
 {
     /**
      * Skips past the specified ID for successive requests.
@@ -234,6 +236,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @return Immutable {@link java.util.List List} containing all currently cached entities for this PaginationAction
      */
     @Nonnull
+    @Unmodifiable
     List<T> getCached();
 
     /**
@@ -653,9 +656,11 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      *         The {@link net.dv8tion.jda.api.utils.Procedure Procedure}
      *         which should return {@code true} to continue iterating
      */
+    @Blocking
     void forEachRemaining(@Nonnull final Procedure<? super T> action);
 
     @Override
+    @Blocking
     default Spliterator<T> spliterator()
     {
         return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.IMMUTABLE);
@@ -667,6 +672,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @return a sequential {@code Stream} over the elements in this PaginationAction
      */
     @Nonnull
+    @Blocking
     default Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);
@@ -679,6 +685,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      * @return a sequential {@code Stream} over the elements in this PaginationAction
      */
     @Nonnull
+    @Blocking
     default Stream<T> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
@@ -692,6 +699,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
      */
     @Nonnull
     @Override
+    @Blocking
     PaginationIterator<T> iterator();
 
     /**

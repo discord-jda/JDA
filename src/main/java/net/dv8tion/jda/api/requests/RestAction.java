@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.operator.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
+import org.jetbrains.annotations.Blocking;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -625,6 +626,7 @@ public interface RestAction<T>
      *
      * @return The response value
      */
+    @Blocking
     default T complete()
     {
         try
@@ -658,6 +660,7 @@ public interface RestAction<T>
      *
      * @return The response value
      */
+    @Blocking
     T complete(boolean shouldQueue) throws RateLimitedException;
 
     /**
@@ -1350,6 +1353,7 @@ public interface RestAction<T>
      *
      * @return The response value
      */
+    @Blocking
     default T completeAfter(long delay, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");

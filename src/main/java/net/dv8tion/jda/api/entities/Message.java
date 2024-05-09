@@ -69,6 +69,7 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -456,6 +457,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of invite codes
      */
     @Nonnull
+    @Unmodifiable
     List<String> getInvites();
 
     /**
@@ -658,6 +660,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
     @Nonnull
+    @Unmodifiable
     List<Attachment> getAttachments();
 
     /**
@@ -668,6 +671,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all given MessageEmbeds.
      */
     @Nonnull
+    @Unmodifiable
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -683,6 +687,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
+    @Unmodifiable
     List<LayoutComponent> getComponents();
 
     /**
@@ -734,6 +739,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
+    @Unmodifiable
     default List<ActionRow> getActionRows()
     {
         return getComponents()
@@ -751,6 +757,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons}
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtons()
     {
         return getComponents().stream()
@@ -797,6 +804,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons} with the specified label
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
     {
         Checks.notNull(label, "Label");
@@ -818,6 +826,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    MessageReaction
      */
     @Nonnull
+    @Unmodifiable
     List<MessageReaction> getReactions();
 
     /**
@@ -827,6 +836,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all StickerItems in this message.
      */
     @Nonnull
+    @Unmodifiable
     List<StickerItem> getStickers();
 
     /**
