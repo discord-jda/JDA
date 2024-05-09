@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.command.localization;
 
+import net.dv8tion.jda.api.exceptions.LocalizationException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.*;
@@ -155,7 +156,7 @@ public class LocalizationMapper
             }
             catch (Exception e)
             {
-                throw new RuntimeException("Unable to set translations from '" + localizationFunction.getClass().getName() + "' with key '" + key + "'", e);
+                throw new LocalizationException("Unable to set translations from '" + localizationFunction.getClass().getName() + "' with key '" + key + "'", e);
             }
         }
     }
