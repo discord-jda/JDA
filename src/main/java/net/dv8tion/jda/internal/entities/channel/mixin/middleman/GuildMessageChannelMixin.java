@@ -46,6 +46,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     @CheckReturnValue
     default RestAction<Void> deleteMessagesByIds(@Nonnull Collection<String> messageIds)
     {
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
 
         if (messageIds.size() < 2 || messageIds.size() > 100)
@@ -66,6 +67,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         Checks.notNull(emoji, "Emoji");
         Checks.notNull(user, "User");
 
+        checkCanAccess();
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
 
@@ -85,6 +87,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     {
         Checks.isSnowflake(messageId, "Message ID");
 
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_MANAGE);
 
         final Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
@@ -98,6 +101,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         Checks.notNull(messageId, "Message ID");
         Checks.notNull(emoji, "Emoji");
 
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_MANAGE);
 
         Route.CompiledRoute route = Route.Messages.CLEAR_EMOJI_REACTIONS.compile(getId(), messageId, emoji.getAsReactionCode());

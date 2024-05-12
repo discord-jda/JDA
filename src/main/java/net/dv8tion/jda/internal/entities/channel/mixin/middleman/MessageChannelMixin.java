@@ -41,6 +41,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
+import net.dv8tion.jda.internal.entities.channel.mixin.ChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,12 +52,14 @@ import java.util.concurrent.CompletableFuture;
 
 public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
         MessageChannel,
-        MessageChannelUnion
+        MessageChannelUnion,
+        ChannelMixin<T>
 {
     // ---- Default implementations of interface ----
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
     {
+        checkCanAccess();
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
 
@@ -80,6 +83,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
     @Nonnull
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds)
     {
+        checkCanAccess();
         if (messageIds == null || messageIds.length == 0)
             return Collections.emptyList();
 
@@ -207,6 +211,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
     @CheckReturnValue
     default AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId)
     {
+       checkCanAccess();
        //We don't know if this is a Message sent by us or another user, so we can't run checks for Permission.MESSAGE_MANAGE
        return MessageChannelUnion.super.deleteMessageById(messageId);
     }
@@ -263,6 +268,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
     @CheckReturnValue
     default RestAction<Void> sendTyping()
     {
+        checkCanAccess();
         return MessageChannelUnion.super.sendTyping();
     }
 
@@ -310,6 +316,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
     @CheckReturnValue
     default RestAction<List<Message>> retrievePinnedMessages()
     {
+        checkCanAccess();
         return MessageChannelUnion.super.retrievePinnedMessages();
     }
 

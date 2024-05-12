@@ -42,4 +42,7 @@ public interface ChannelMixin<T extends ChannelMixin<T>> extends
 
     // ---- State Accessors ----
     T setName(String name);
+
+    // ---- Hooks ----
+    void checkCanAccess();
 }

@@ -115,6 +115,9 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     }
 
     @Override
+    public void checkCanAccess() {}
+
+    @Override
     public void checkCanSendMessage() {
         checkBot();
     }
@@ -154,8 +157,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
         this.latestMessageId = latestMessageId;
         return this;
     }
-
-    // -- Object --
 
     @Override
     public int hashCode()
