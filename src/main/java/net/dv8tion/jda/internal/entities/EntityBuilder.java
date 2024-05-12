@@ -2606,6 +2606,7 @@ public class EntityBuilder
     public Entitlement createEntitlement(DataObject object)
     {
         return new EntitlementImpl(
+                getJDA(),
                 object.getUnsignedLong("id"),
                 object.getUnsignedLong("sku_id"),
                 object.getUnsignedLong("application_id"),
@@ -2614,7 +2615,8 @@ public class EntityBuilder
                 Entitlement.EntitlementType.fromKey(object.getInt("type")),
                 object.getBoolean("deleted"),
                 object.getOffsetDateTime("starts_at", null),
-                object.getOffsetDateTime("ends_at", null)
+                object.getOffsetDateTime("ends_at", null),
+                object.getBoolean("consumed", false)
         );
     }
 

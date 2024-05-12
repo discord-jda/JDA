@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.requests.RestAction;
+
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -104,8 +107,6 @@ public interface Entitlement extends ISnowflake
 
     /**
      * The type of the Entitlement
-     * <br>The only possible type of Entitlement currently is {@link EntitlementType#APPLICATION_SUBSCRIPTION}
-     * <br>Discord doesn't currently support other types for entitlements.
      *
      * @return the {@link Entitlement Entitlement} type
      */
@@ -138,10 +139,59 @@ public interface Entitlement extends ISnowflake
     OffsetDateTime getTimeEnding();
 
     /**
+     * Whether the {@link Entitlement Entitlement} was consumed or not.
+     *
+     * @return True if the {@link Entitlement Entitlement} was consumed, False otherwise
+     */
+    boolean isConsumed();
+
+    /**
+     * Consumes the {@link Entitlement Entitlement} if it has not already been consumed.
+     * <br>Only One-Time Purchase consumable {@link Entitlement Entitlements} can be consumed.
+     * <br>After the {@link Entitlement Entitlement} has been consumed, it will be marked as consumed.
+     *
+     * @return A {@link RestAction} that will consume the {@link Entitlement Entitlement}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> consume();
+
+    /**
      * Represents the type of this Entitlement
      */
     enum EntitlementType
     {
+        /**
+         * Entitlement was purchased by user
+         */
+        PURCHASE(1),
+        /**
+         * Entitlement for Discord Nitro subscription
+         */
+        PREMIUM_SUBSCRIPTION(2),
+        /**
+         * Entitlement was gifted by developer
+         */
+        DEVELOPER_GIFT(3),
+        /**
+         * Entitlement was purchased by a dev in application test mode
+         */
+        TEST_MODE_PURCHASE(4),
+        /**
+         * Entitlement was granted when the SKU was free
+         */
+        FREE_PURCHASE(5),
+        /**
+         * Entitlement was gifted by another user
+         */
+        USER_GIFT(6),
+        /**
+         * Entitlement was claimed by user for free as a Nitro Subscriber
+         */
+        PREMIUM_PURCHASE(7),
+        /**
+         * 	Entitlement was purchased as an app subscription
+         */
         APPLICATION_SUBSCRIPTION(8),
         /**
          * Placeholder for unsupported types.

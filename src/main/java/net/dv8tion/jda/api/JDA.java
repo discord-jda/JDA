@@ -1900,6 +1900,117 @@ public interface JDA extends IGuildChannelContainer<Channel>
     EntitlementPaginationAction retrieveEntitlements();
 
     /**
+     * Retrieves an {@link Entitlement} by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to retrieve
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link Entitlement}
+     *         <br>The entitlement with the provided id
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Entitlement> retrieveEntitlementById(@Nonnull String entitlementId)
+    {
+        return retrieveEntitlementById(MiscUtil.parseSnowflake(entitlementId));
+    }
+
+    /**
+     * Retrieves an {@link Entitlement} by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to retrieve
+     *
+     * @return {@link RestAction} - Type: {@link Entitlement}
+     *         <br>The entitlement with the provided id
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Entitlement> retrieveEntitlementById(long entitlementId);
+
+    /**
+     * Constructs a new {@link Entitlement Entitlement} with the skuId and the type.
+     * <br>Use the returned {@link TestEntitlementCreateAction TestEntitlementCreateAction} to provide more details.
+     *
+     * @param  skuId
+     *         The id of the SKU the entitlement is for
+     *
+     * @param ownerId
+     *        The id of the owner of the entitlement
+     *
+     * @param ownerType
+     *        The type of the owner of the entitlement
+     *
+     * @throws IllegalArgumentException
+     *         If the provided skuId or ownerId is not a valid snowflake
+     *
+     * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
+     *         <br>Allows for setting various details for the resulting Entitlement
+     */
+    @Nonnull
+    @CheckReturnValue
+    default TestEntitlementCreateAction createTestEntitlement(@Nonnull String skuId, @Nonnull String ownerId, @Nonnull TestEntitlementCreateAction.OwnerType ownerType)
+    {
+        return createTestEntitlement(MiscUtil.parseSnowflake(skuId), MiscUtil.parseSnowflake(ownerId), ownerType);
+    }
+
+    /**
+     * Constructs a new {@link Entitlement Entitlement} with the skuId and the type.
+     * <br>Use the returned {@link TestEntitlementCreateAction TestEntitlementCreateAction} to provide more details.
+     *
+     * @param  skuId
+     *         The id of the SKU the entitlement is for
+     *
+     * @param ownerId
+     *        The id of the owner of the entitlement
+     *
+     * @param ownerType
+     *        The type of the owner of the entitlement
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ownerType is null
+     *
+     * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
+     *         <br>Allows for setting various details for the resulting Entitlement
+     */
+    @Nonnull
+    @CheckReturnValue
+    TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, @Nonnull TestEntitlementCreateAction.OwnerType ownerType);
+
+    /**
+     * Deletes a test entitlement by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to delete
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: Void
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> deleteTestEntitlement(@Nonnull String entitlementId)
+    {
+        return deleteTestEntitlement(MiscUtil.parseSnowflake(entitlementId));
+    }
+
+    /**
+     * Deletes a test entitlement by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to delete
+     *
+     * @return {@link RestAction} - Type: Void
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> deleteTestEntitlement(long entitlementId);
+
+    /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
      * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
      *

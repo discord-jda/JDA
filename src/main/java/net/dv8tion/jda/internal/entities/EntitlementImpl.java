@@ -16,7 +16,12 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Entitlement;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,6 +29,7 @@ import java.time.OffsetDateTime;
 
 public class EntitlementImpl implements Entitlement
 {
+    private final JDA api;
     private long id;
     private long skuId;
     private long applicationId;
@@ -33,9 +39,11 @@ public class EntitlementImpl implements Entitlement
     private boolean deleted;
     private OffsetDateTime startsAt;
     private OffsetDateTime endsAt;
+    private boolean consumed;
 
-    public EntitlementImpl(long id, long skuId, long applicationId, long userId, long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt)
+    public EntitlementImpl(JDA api, long id, long skuId, long applicationId, long userId, long guildId, EntitlementType type, boolean deleted, @Nullable OffsetDateTime startsAt, @Nullable OffsetDateTime endsAt, boolean consumed)
     {
+        this.api = api;
         this.id = id;
         this.skuId = skuId;
         this.applicationId = applicationId;
@@ -45,6 +53,7 @@ public class EntitlementImpl implements Entitlement
         this.deleted = deleted;
         this.startsAt = startsAt;
         this.endsAt = endsAt;
+        this.consumed = consumed;
     }
 
     @Override
@@ -102,5 +111,22 @@ public class EntitlementImpl implements Entitlement
     public OffsetDateTime getTimeEnding()
     {
         return endsAt;
+    }
+
+    @Override
+    public boolean isConsumed()
+    {
+        return consumed;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> consume()
+    {
+        if (consumed)
+            return new CompletedRestAction<>(api, null);
+
+        Route.CompiledRoute route = Route.Applications.CONSUME_ENTITLEMENT.compile(getApplicationId(), getId());
+        return new RestActionImpl<>(api, route);
     }
 }

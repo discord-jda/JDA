@@ -48,10 +48,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.*;
-import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
-import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
-import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.*;
@@ -72,10 +69,7 @@ import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
-import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.CommandListUpdateActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.pagination.EntitlementPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.*;
@@ -1171,6 +1165,30 @@ public class JDAImpl implements JDA
     public EntitlementPaginationAction retrieveEntitlements()
     {
         return new EntitlementPaginationActionImpl(this);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Entitlement> retrieveEntitlementById(long entitlementId)
+    {
+        return new RestActionImpl<>(this, Route.Applications.GET_ENTITLEMENT.compile(getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId)));
+    }
+
+    @Nonnull
+    @Override
+    public TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, @Nonnull TestEntitlementCreateActionImpl.OwnerType ownerType)
+    {
+        Checks.notNull(ownerType, "ownerType");
+
+        return new TestEntitlementCreateActionImpl(this, skuId, ownerId, ownerType);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteTestEntitlement(long entitlementId)
+    {
+        Route.CompiledRoute route = Route.Applications.DELETE_TEST_ENTITLEMENT.compile(getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId));
+        return new RestActionImpl<>(this, route);
     }
 
     @Nonnull
