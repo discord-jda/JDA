@@ -115,9 +115,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     }
 
     @Override
-    public void checkCanAccessChannel() {}
-
-    @Override
     public void checkCanSendMessage() {
         checkBot();
     }

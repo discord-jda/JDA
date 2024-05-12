@@ -108,7 +108,6 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     @Override
     default MessageCreateAction sendStickers(@Nonnull Collection<? extends StickerSnowflake> stickers)
     {
-        checkCanAccessChannel();
         checkCanSendMessage();
         Checks.notEmpty(stickers, "Stickers");
         Checks.noneNull(stickers, "Stickers");
@@ -116,13 +115,10 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     }
 
     // ---- Default implementation of parent mixins hooks ----
-    default void checkCanAccessChannel()
-    {
-        checkPermission(Permission.VIEW_CHANNEL);
-    }
 
     default void checkCanSendMessage()
     {
+        checkCanAccess();
         if (getType().isThread())
             checkPermission(Permission.MESSAGE_SEND_IN_THREADS);
         else
@@ -131,32 +127,38 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
 
     default void checkCanSendMessageEmbeds()
     {
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
     }
 
     default void checkCanSendFiles()
     {
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
     default void checkCanViewHistory()
     {
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_HISTORY);
     }
 
     default void checkCanAddReactions()
     {
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_ADD_REACTION);
         checkPermission(Permission.MESSAGE_HISTORY, "You need MESSAGE_HISTORY to add reactions to a message");
     }
 
     default void checkCanRemoveReactions()
     {
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_HISTORY, "You need MESSAGE_HISTORY to remove reactions from a message");
     }
 
     default void checkCanControlMessagePins()
     {
+        checkCanAccess();
         checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
     }
 
