@@ -19,6 +19,10 @@ package net.dv8tion.jda.api.events.emoji.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -37,6 +41,8 @@ import java.util.List;
  *
  * <p>Identifier: {@code roles}
  */
+@RequiredIntents(always = GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+@RequiredCacheFlags(always = CacheFlag.EMOJI)
 public class EmojiUpdateRolesEvent extends GenericEmojiUpdateEvent<List<Role>>
 {
     public static final String IDENTIFIER = "roles";
