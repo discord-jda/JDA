@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.detached.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
 import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
@@ -244,5 +245,12 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder
         DetachedRoleImpl role = new DetachedRoleImpl(id, (DetachedGuildImpl) guild);
         configureRole(roleJson, role, id);
         return role;
+    }
+
+    public PrivateChannel createPrivateChannel(DataObject json, User user)
+    {
+        final PrivateChannelImpl channel = new PrivateChannelImpl(getJDA(), json.getUnsignedLong("id"), user);
+        configurePrivateChannel(json, channel);
+        return channel;
     }
 }

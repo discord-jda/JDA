@@ -1425,10 +1425,8 @@ public class EntityBuilder extends AbstractEntityBuilder
         final long channelId = json.getUnsignedLong("id");
         PrivateChannelImpl channel = (PrivateChannelImpl) api.getPrivateChannelById(channelId);
         if (channel == null)
-        {
-            channel = new PrivateChannelImpl(getJDA(), channelId, user)
-                    .setLatestMessageIdLong(json.getLong("last_message_id", 0));
-        }
+            channel = new PrivateChannelImpl(getJDA(), channelId, user);
+        configurePrivateChannel(json, channel);
         UserImpl recipient = user;
         if (channel.getUser() == null)
         {

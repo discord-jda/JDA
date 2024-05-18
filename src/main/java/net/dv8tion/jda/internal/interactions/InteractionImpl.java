@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
@@ -35,8 +34,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.InteractionEntityBuilder;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
-import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -108,30 +105,14 @@ public class InteractionImpl implements Interaction
         }
         else
         {
+            //(G)DMs
+            user = jda.getEntityBuilder().createUser(userObj);
             member = null;
-            long channelId = channelJson.getUnsignedLong("id");
             ChannelType type = ChannelType.fromId(channelJson.getInt("type"));
             if (type == ChannelType.PRIVATE) {
-                PrivateChannel channel = jda.getPrivateChannelById(channelId);
-                if (channel == null) {
-                    channel = jda.getEntityBuilder().createPrivateChannel(
-                            DataObject.empty()
-                                    .put("id", channelId)
-                                    .put("recipient", data.getObject("user"))
-                    );
-                }
-                this.channel = channel;
-
-                User user = channel.getUser();
-                if (user == null) {
-                    user = jda.getEntityBuilder().createUser(data.getObject("user"));
-                    ((PrivateChannelImpl) channel).setUser(user);
-                    ((UserImpl) user).setPrivateChannel(channel);
-                }
-                this.user = user;
+                this.channel = interactionEntityBuilder.createPrivateChannel(channelJson, user);
             } else if (type == ChannelType.GROUP) {
                 this.channel = interactionEntityBuilder.createGroupChannel(channelJson);
-                this.user = jda.getEntityBuilder().createUser(data.getObject("user"));
             } else {
                 throw new IllegalArgumentException("Received interaction in unexpected channel type! Type " + type + " is not supported yet!");
             }
