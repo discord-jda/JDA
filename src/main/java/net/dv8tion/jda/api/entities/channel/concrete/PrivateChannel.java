@@ -39,6 +39,7 @@ public interface PrivateChannel extends MessageChannel
      *     <li>A reaction is added</li>
      *     <li>A message is deleted</li>
      *     <li>This account sends a message to a user from another shard (not shard 0)</li>
+     *     <li>This account receives an interaction response, happens when using an user-installed interaction</li>
      * </ul>
      * The consequence of this is that for any message this bot receives from a guild or from other users, the user will not be null.
      *

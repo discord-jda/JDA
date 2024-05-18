@@ -1690,11 +1690,10 @@ public class EntityBuilder extends AbstractEntityBuilder
             }
             else
             {
-                //Note, while PrivateChannel.getUser() can produce null, this invocation of it WILL NOT produce null
-                // because when the bot receives a message in a private channel that was _not authored by the bot_ then
-                // the message had to have come from the user, so that means that we had all the information to build
-                // the channel properly (or fill-in the missing user info of an existing partial channel)
+                //PrivateChannel.getUser() can produce null, see docs
                 user = ((PrivateChannel) channel).getUser();
+                if (user == null)
+                    user = createUser(author);
             }
         }
         else
