@@ -83,9 +83,9 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder
     {
         return new DetachedGroupChannelImpl(api, channelData.getLong("id"))
                 .setLatestMessageIdLong(channelData.getLong("last_message_id", 0L))
-                .setName(channelData.getString("name"))
+                .setName(channelData.getString("name", ""))
                 .setOwnerId(channelData.getLong("owner_id"))
-                .setIcon(channelData.getString("icon"));
+                .setIcon(channelData.getString("icon", null));
     }
 
     public GuildChannel createGuildChannel(@Nonnull Guild guild, DataObject channelData)

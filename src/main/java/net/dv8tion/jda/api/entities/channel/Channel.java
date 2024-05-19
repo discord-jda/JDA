@@ -52,6 +52,9 @@ public interface Channel extends IMentionable
     /**
      * The human readable name of this channel.
      *
+     * <p>May be an empty string for {@link net.dv8tion.jda.api.entities.channel.concrete.GroupChannel GroupChannels}
+     * with no name (Group DMs with no name displays the recipients on the Discord client).
+     *
      * @return The name of this channel
      */
     @Nonnull
