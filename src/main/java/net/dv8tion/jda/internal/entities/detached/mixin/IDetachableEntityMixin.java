@@ -34,4 +34,10 @@ public interface IDetachableEntityMixin extends IDetachableEntity
     {
         return new DetachedEntityException();
     }
+
+    @Nonnull
+    default DetachedEntityException detachedRequiresChannelException()
+    {
+        return new DetachedEntityException("Getting/checking permissions requires a GuildChannel");
+    }
 }

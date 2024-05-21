@@ -222,7 +222,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Override
     public EnumSet<Permission> getPermissions()
     {
-        throw detachedException();
+        throw detachedRequiresChannelException();
     }
 
     @Nonnull
@@ -236,7 +236,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Override
     public EnumSet<Permission> getPermissionsExplicit()
     {
-        throw detachedException();
+        throw detachedRequiresChannelException();
     }
 
     @Nonnull
@@ -249,7 +249,7 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Override
     public boolean hasPermission(@Nonnull Permission... permissions)
     {
-        throw detachedException();
+        throw detachedRequiresChannelException();
     }
 
     @Override
