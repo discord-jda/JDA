@@ -38,7 +38,6 @@ import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
-import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -2997,15 +2996,7 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Returns the integration owners of this interaction, which depends on how the app was installed.
          *
-         * <p>This will be {@code null} if the command is installed <b>only</b> {@link IntegrationType#GUILD_INSTALL on guilds},
-         * regardless of if the command is on the global scope, or on a guild:
-         * <ul>
-         *     <li>❌ : Global command with {@link IntegrationType#GUILD_INSTALL} (and nothing else)</li>
-         *     <li>❌ : Guild command with {@link IntegrationType#GUILD_INSTALL} (and nothing else)</li>
-         *     <li>✔️ : Any other case</li>
-         * </ul>
-         *
-         * @return The integration owners of this interaction, or {@code null}
+         * @return The integration owners of this interaction
          */
         @Nonnull
         public IntegrationOwners getIntegrationOwners()
