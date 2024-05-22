@@ -73,9 +73,8 @@ public class InteractionImpl implements Interaction
         this.guild = data.optObject("guild").map(interactionEntityBuilder::getOrCreateGuild).orElse(null);
         this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
-        // Absent in guild-scoped commands
-        this.context = data.opt("context").map(o -> InteractionContextType.fromKey(String.valueOf(o))).orElse(null);
-        this.integrationOwners = data.optObject("authorizing_integration_owners").map(IntegrationOwnersImpl::new).orElse(null);
+        this.context = InteractionContextType.fromKey(data.getString("context"));
+        this.integrationOwners = new IntegrationOwnersImpl(data.getObject("authorizing_integration_owners"));
 
         DataObject channelJson = data.getObject("channel");
         if (guild instanceof GuildImpl)
@@ -194,7 +193,7 @@ public class InteractionImpl implements Interaction
         return context;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public IntegrationOwners getIntegrationOwners()
     {

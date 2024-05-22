@@ -264,17 +264,9 @@ public interface Interaction extends ISnowflake
     /**
      * Returns the integration owners of this interaction, which depends on how the app was installed.
      *
-     * <p>This will be {@code null} if the command is installed <b>only</b> {@link IntegrationType#GUILD_INSTALL on guilds},
-     * regardless of if the command is on the global scope, or on a guild:
-     * <ul>
-     *     <li>❌ : Global command with {@link IntegrationType#GUILD_INSTALL} (and nothing else)</li>
-     *     <li>❌ : Guild command with {@link IntegrationType#GUILD_INSTALL} (and nothing else)</li>
-     *     <li>✔️ : Any other case</li>
-     * </ul>
-     *
-     * @return The integration owners of this interaction, or {@code null}
+     * @return The integration owners of this interaction
      */
-    @Nullable
+    @Nonnull
     IntegrationOwners getIntegrationOwners();
 
     /**

@@ -118,7 +118,7 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
         return interaction.getContext();
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public IntegrationOwners getIntegrationOwners()
     {
