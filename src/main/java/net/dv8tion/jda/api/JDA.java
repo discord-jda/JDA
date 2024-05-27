@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -39,6 +40,7 @@ import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.Once;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
@@ -604,6 +606,37 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     List<Object> getRegisteredListeners();
+
+    /**
+     * Returns a reusable builder for a one-time event listener.
+     *
+     * <p><b>Example:</b>
+     *
+     * <p>Listening to a message from a channel and a user, after using a slash command:
+     * <pre>{@code
+     * jda.listenOnce(MessageReceivedEvent.class)
+     *     .filter(messageEvent -> messageEvent.getChannel().getIdLong() == event.getChannel().getIdLong())
+     *     .filter(messageEvent -> messageEvent.getAuthor().getIdLong() == event.getUser().getIdLong())
+     *     .timeout(Duration.ofSeconds(5), () -> {
+     *         event.getHook().sendMessage("Timeout!").queue();
+     *     })
+     *     .submit()
+     *     .onSuccess(messageEvent -> {
+     *         event.getHook().sendMessage("You sent: " + messageEvent.getMessage().getContentRaw()).queue();
+     *     });
+     * }</pre>
+     *
+     * @param  eventType
+     *         Type of the event to listen to
+     *
+     * @return The one-time event listener builder
+     *
+     * @throws IllegalArgumentException
+     *         If the provided event type is {@code null}
+     */
+    @Nonnull
+    @CheckReturnValue
+    <E extends GenericEvent> Once.Builder<E> listenOnce(@Nonnull Class<E> eventType);
 
     /**
      * Retrieves the list of global commands.
