@@ -614,16 +614,21 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *
      * <p>Listening to a message from a channel and a user, after using a slash command:
      * <pre>{@code
-     * jda.listenOnce(MessageReceivedEvent.class)
-     *     .filter(messageEvent -> messageEvent.getChannel().getIdLong() == event.getChannel().getIdLong())
-     *     .filter(messageEvent -> messageEvent.getAuthor().getIdLong() == event.getUser().getIdLong())
-     *     .timeout(Duration.ofSeconds(5), () -> {
-     *         event.getHook().sendMessage("Timeout!").queue();
-     *     })
-     *     .submit()
-     *     .onSuccess(messageEvent -> {
-     *         event.getHook().sendMessage("You sent: " + messageEvent.getMessage().getContentRaw()).queue();
-     *     });
+     * final Duration timeout = Duration.ofSeconds(5);
+     * event.reply("Reply in " + TimeFormat.RELATIVE.after(timeout) + " if you can!")
+     *         .setEphemeral(true)
+     *         .queue();
+     *
+     * event.getJDA().listenOnce(MessageReceivedEvent.class)
+     *         .filter(messageEvent -> messageEvent.getChannel().getIdLong() == event.getChannel().getIdLong())
+     *         .filter(messageEvent -> messageEvent.getAuthor().getIdLong() == event.getUser().getIdLong())
+     *         .timeout(timeout, () -> {
+     *             event.getHook().editOriginal("Timeout!").queue();
+     *         })
+     *         .submit()
+     *         .onSuccess(messageEvent -> {
+     *             event.getHook().editOriginal("You sent: " + messageEvent.getMessage().getContentRaw()).queue();
+     *         });
      * }</pre>
      *
      * @param  eventType
