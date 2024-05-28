@@ -82,13 +82,13 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
         DiscordLocale locale = DiscordLocale.from(content.getString("preferred_locale", "en-US"));
         VoiceChannel afkChannel = content.isNull("afk_channel_id")
-                ? null : guild.getVoiceChannelsView().get(content.getLong("afk_channel_id"));
+                ? null : guild.getChannelById(VoiceChannel.class, content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
-                ? null : guild.getTextChannelsView().get(content.getLong("system_channel_id"));
+                ? null : guild.getChannelById(TextChannel.class, content.getLong("system_channel_id"));
         TextChannel rulesChannel = content.isNull("rules_channel_id")
-                ? null : guild.getTextChannelsView().get(content.getLong("rules_channel_id"));
+                ? null : guild.getChannelById(TextChannel.class, content.getLong("rules_channel_id"));
         TextChannel communityUpdatesChannel = content.isNull("public_updates_channel_id")
-                ? null : guild.getTextChannelsView().get(content.getLong("public_updates_channel_id"));
+                ? null : guild.getChannelById(TextChannel.class, content.getLong("public_updates_channel_id"));
         Set<String> features;
         if (!content.isNull("features"))
         {

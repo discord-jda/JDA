@@ -47,6 +47,9 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final User owner;
     private final ApplicationTeam team;
     private final List<String> tags;
+    private final List<String> redirectUris;
+    private final String interactionsEndpointUrl;
+    private final String roleConnectionsVerificationUrl;
     private final String customAuthUrl;
     private final long defaultAuthUrlPerms;
     private final List<String> defaultAuthUrlScopes;
@@ -54,7 +57,8 @@ public class ApplicationInfoImpl implements ApplicationInfo
 
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id, long flags,
             boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team,
-            List<String> tags, String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
+            List<String> tags, List<String> redirectUris, String interactionsEndpointUrl, String roleConnectionsVerificationUrl,
+            String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
     {
         this.api = api;
         this.description = description;
@@ -69,6 +73,9 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.owner = owner;
         this.team = team;
         this.tags = Collections.unmodifiableList(tags);
+        this.redirectUris = Collections.unmodifiableList(redirectUris);
+        this.interactionsEndpointUrl = interactionsEndpointUrl;
+        this.roleConnectionsVerificationUrl = roleConnectionsVerificationUrl;
         this.customAuthUrl = customAuthUrl;
         this.defaultAuthUrlPerms = defaultAuthUrlPerms;
         this.defaultAuthUrlScopes = Collections.unmodifiableList(defaultAuthUrlScopes);
@@ -205,6 +212,27 @@ public class ApplicationInfoImpl implements ApplicationInfo
     public List<String> getTags()
     {
         return tags;
+    }
+
+    @Nonnull
+    @Override
+    public List<String> getRedirectUris()
+    {
+        return redirectUris;
+    }
+
+    @Nullable
+    @Override
+    public String getInteractionsEndpointUrl()
+    {
+        return interactionsEndpointUrl;
+    }
+
+    @Nullable
+    @Override
+    public String getRoleConnectionsVerificationUrl()
+    {
+        return roleConnectionsVerificationUrl;
     }
 
     @Nullable

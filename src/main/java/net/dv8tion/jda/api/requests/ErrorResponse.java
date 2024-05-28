@@ -164,6 +164,7 @@ public enum ErrorResponse
     SERVER_NOT_ENOUGH_BOOSTS(                 50101, "This server needs more boosts to perform this action"),
     MIXED_PREMIUM_ROLES_FOR_EMOJI(            50144, "Cannot mix subscription and non subscription roles for an emoji"),
     ILLEGAL_EMOJI_CONVERSION(                 50145, "Cannot convert between premium emoji and normal emoji"),
+    USER_MUST_BE_VERIFIED(                    50178, "The user account must first be verified"),
     MFA_NOT_ENABLED(                          60003, "MFA auth required but not enabled"),
     NO_USER_WITH_TAG_EXISTS(                  80004, "No users with DiscordTag exist"),
     REACTION_BLOCKED(                         90001, "Reaction Blocked"),
@@ -184,6 +185,13 @@ public enum ErrorResponse
     MESSAGE_BLOCKED_BY_AUTOMOD(               200000, "Message was blocked by automatic moderation"),
     TITLE_BLOCKED_BY_AUTOMOD(                 200001, "Title was blocked by automatic moderation"),
     MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER(   240000, "Message blocked by harmful links filter"),
+    FAILED_TO_BAN_USERS(                      500000, "Failed to ban users"),
+    POLL_VOTING_BLOCKED(                      520000, "Poll voting blocked"),
+    POLL_EXPIRED(                             520001, "Poll expired"),
+    POLL_INVALID_CHANNEL_TYPE(                520002, "Invalid channel type for poll creation"),
+    CANNOT_UPDATE_POLL_MESSAGE(               520003, "Cannot edit a poll message"),
+    POLL_WITH_UNUSABLE_EMOJI(                 520004, "Cannot use an emoji included with the poll"),
+    CANNOT_EXPIRE_MISSING_POLL(               520006, "Cannot expire a non-poll message"),
 
     SERVER_ERROR(                                 0, "Discord encountered an internal server error! Not good!");
 

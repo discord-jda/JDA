@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.managers.channel.attribute.IPostContainerManager;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -86,6 +87,7 @@ public interface IPostContainer extends IThreadContainer
      * @return Immutable {@link List} of {@link ForumTag}
      */
     @Nonnull
+    @Unmodifiable
     default List<ForumTag> getAvailableTags()
     {
         return getAvailableTagCache().asList();
@@ -111,6 +113,7 @@ public interface IPostContainer extends IThreadContainer
      * @return Immutable {@link List} of {@link ForumTag} with the given name
      */
     @Nonnull
+    @Unmodifiable
     default List<ForumTag> getAvailableTagsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getAvailableTagCache().getElementsByName(name, ignoreCase);

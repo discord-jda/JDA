@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
@@ -54,14 +55,14 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
     }
 
     /**
-     * Unique string/number used to identify messages using {@link Message#getNonce()} in events.
-     * <br>This can be useful to handle round-trip messages.
+     * Unique string/number used to identify messages using {@link Message#getNonce()} in {@link MessageReceivedEvent}.
      *
-     * <p>Discord also uses the nonce to dedupe messages for users, but this is not currently supported for bots.
-     * However, for future proofing, it is highly recommended to use a unique nonce for each message.
+     * <p>The nonce can be used for deduping messages and marking them for use with {@link MessageReceivedEvent}.
+     * JDA will automatically generate a unique nonce per message, it is not necessary to do this manually.
      *
      * @param  nonce
-     *         The nonce string to use
+     *         The nonce string to use, must be unique per message.
+     *         A unique nonce will be generated automatically if this is null.
      *
      * @throws IllegalArgumentException
      *         If the provided nonce is longer than {@value Message#MAX_NONCE_LENGTH} characters

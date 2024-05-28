@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.hooks;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -81,6 +82,7 @@ public class InterfacedEventManager implements IEventManager
 
     @Nonnull
     @Override
+    @Unmodifiable
     public List<Object> getRegisteredListeners()
     {
         return Collections.unmodifiableList(new ArrayList<>(listeners));

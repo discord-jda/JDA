@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -54,7 +55,7 @@ public interface IWebhookContainer extends GuildChannel
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Webhook>> retrieveWebhooks();
+    RestAction<@Unmodifiable List<Webhook>> retrieveWebhooks();
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Webhook Webhook}.

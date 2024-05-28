@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.entities.WebhookImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -240,6 +241,7 @@ public class AuditLogEntry implements ISnowflake
      * @return Possibly-empty, never-null immutable list of {@link AuditLogChange AuditLogChanges}
      */
     @Nonnull
+    @Unmodifiable
     public List<AuditLogChange> getChangesForKeys(@Nonnull AuditLogKey... keys)
     {
         Checks.notNull(keys, "Keys");
@@ -329,6 +331,7 @@ public class AuditLogEntry implements ISnowflake
      * @return Unmodifiable list of representative values
      */
     @Nonnull
+    @Unmodifiable
     public List<Object> getOptions(@Nonnull AuditLogOption... options)
     {
         Checks.notNull(options, "Options");

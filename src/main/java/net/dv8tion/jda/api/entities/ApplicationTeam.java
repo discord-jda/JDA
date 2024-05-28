@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -107,6 +108,7 @@ public interface ApplicationTeam extends ISnowflake
      * @return Immutable list of team members
      */
     @Nonnull
+    @Unmodifiable
     List<TeamMember> getMembers();
 
     /**

@@ -34,8 +34,6 @@ public interface IPositionableChannel extends GuildChannel
     @Nonnull
     IPositionableChannelManager<?, ?> getManager();
 
-    //TODO-v5: We should probably introduce getPositionInCategory (name pending) that returns index in Category#getChannels or -1
-
     /**
      * The position of this channel in the channel list of the guild.
      * <br>This does not account for thread channels, as they do not have positions.

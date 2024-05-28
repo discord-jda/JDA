@@ -29,8 +29,8 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -68,7 +68,7 @@ public class AutoModRuleImpl implements AutoModRule
         return id;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -84,21 +84,21 @@ public class AutoModRuleImpl implements AutoModRule
         return ownerId;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getName()
     {
         return name;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public AutoModEventType getEventType()
     {
         return eventType;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public AutoModTriggerType getTriggerType()
     {
@@ -111,7 +111,7 @@ public class AutoModRuleImpl implements AutoModRule
         return enabled;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<Role> getExemptRoles()
     {
@@ -126,7 +126,7 @@ public class AutoModRuleImpl implements AutoModRule
         return Collections.unmodifiableList(roles);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<GuildChannel> getExemptChannels()
     {
@@ -141,35 +141,35 @@ public class AutoModRuleImpl implements AutoModRule
         return Collections.unmodifiableList(channels);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<AutoModResponse> getActions()
     {
         return actions;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<String> getFilteredKeywords()
     {
         return filteredKeywords;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<String> getFilteredRegex()
     {
         return filteredRegex;
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public EnumSet<KeywordPreset> getFilteredPresets()
     {
         return Helpers.copyEnumSet(KeywordPreset.class, filteredPresets);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public List<String> getAllowlist()
     {

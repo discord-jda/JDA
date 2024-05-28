@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -72,6 +73,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @return Immutable List representing the current order
      */
     @Nonnull
+    @Unmodifiable
     List<T> getCurrentOrder();
 
     /**

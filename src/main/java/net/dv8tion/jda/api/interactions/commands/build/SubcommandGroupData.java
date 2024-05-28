@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -58,12 +59,10 @@ public class SubcommandGroupData implements SerializableData
      */
     public SubcommandGroupData(@Nonnull String name, @Nonnull String description)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(name, 32, "Name");
-        Checks.notLonger(description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.inRange(name, 1, 32, "Name");
         Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.inRange(description, 1, 100, "Description");
         this.name = name;
         this.description = description;
     }
@@ -305,6 +304,7 @@ public class SubcommandGroupData implements SerializableData
      * @return Immutable list of {@link SubcommandData}
      */
     @Nonnull
+    @Unmodifiable
     public List<SubcommandData> getSubcommands()
     {
         return Collections.unmodifiableList(subcommands);

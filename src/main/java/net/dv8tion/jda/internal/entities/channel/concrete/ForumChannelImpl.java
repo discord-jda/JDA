@@ -40,14 +40,13 @@ import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildCh
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.managers.channel.concrete.ForumChannelManagerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
         implements ForumChannel,
@@ -89,10 +88,10 @@ public class ForumChannelImpl extends AbstractGuildChannelImpl<ForumChannelImpl>
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(getGuild().getMembers()
+        return getGuild().getMembers()
                 .stream()
                 .filter(m -> m.hasPermission(this, Permission.VIEW_CHANNEL))
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull

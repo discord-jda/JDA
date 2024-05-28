@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -69,12 +71,13 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
      * @return Immutable {@link List} copy of {@link ActionComponent ActionComponents} in this layout
      */
     @Nonnull
+    @Unmodifiable
     default List<ActionComponent> getActionComponents()
     {
         return getComponents().stream()
                 .filter(ActionComponent.class::isInstance)
                 .map(ActionComponent.class::cast)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -83,13 +86,13 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
      * @return Immutable {@link List} of {@link Button Buttons}
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtons()
     {
-        return Collections.unmodifiableList(
-            getComponents().stream()
+        return getComponents().stream()
                 .filter(Button.class::isInstance)
                 .map(Button.class::cast)
-                    .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**

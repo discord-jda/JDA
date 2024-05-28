@@ -34,6 +34,7 @@ import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -151,6 +152,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @return Immutable list of command options
      */
     @Nonnull
+    @Unmodifiable
     List<Option> getOptions();
 
     /**
@@ -159,6 +161,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @return Immutable list of subcommands
      */
     @Nonnull
+    @Unmodifiable
     List<Subcommand> getSubcommands();
 
     /**
@@ -167,6 +170,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @return Immutable list of subcommand groups
      */
     @Nonnull
+    @Unmodifiable
     List<SubcommandGroup> getSubcommandGroups();
 
     /**
@@ -739,6 +743,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return Immutable {@link Set} of {@link ChannelType}
          */
         @Nonnull
+        @Unmodifiable
         public Set<ChannelType> getChannelTypes()
         {
             return channelTypes;
@@ -803,6 +808,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return Immutable {@link List} of {@link Choice}
          */
         @Nonnull
+        @Unmodifiable
         public List<Choice> getChoices()
         {
             return choices;
@@ -932,6 +938,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return Immutable list of Options
          */
         @Nonnull
+        @Unmodifiable
         public List<Option> getOptions()
         {
             return options;
@@ -1052,6 +1059,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return Immutable {@link List} of {@link Subcommand}
          */
         @Nonnull
+        @Unmodifiable
         public List<Subcommand> getSubcommands()
         {
             return subcommands;

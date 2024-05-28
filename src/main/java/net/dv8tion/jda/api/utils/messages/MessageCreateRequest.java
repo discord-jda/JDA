@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -298,6 +299,27 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     List<FileUpload> getAttachments();
 
     /**
+     * The poll attached to this message
+     *
+     * @return The attached poll, or null if no poll is present
+     */
+    @Nullable
+    MessagePollData getPoll();
+
+    /**
+     * Add a poll to this message.
+     *
+     * @param  poll
+     *         The poll to send
+     *
+     * @return The same instance for chaining
+     *
+     * @see    MessagePollBuilder
+     */
+    @Nonnull
+    R setPoll(@Nullable MessagePollData poll);
+
+    /**
      * Whether the message should use <em>Text-to-Speech</em> (TTS).
      *
      * <p>Requires {@link net.dv8tion.jda.api.Permission#MESSAGE_TTS Permission.MESSAGE_TTS} to be enabled.
@@ -351,6 +373,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setSuppressEmbeds(data.isSuppressEmbeds())
                 .setSuppressedNotifications(data.isSuppressedNotifications())
                 .setComponents(layoutComponents)
+                .setPoll(data.getPoll())
                 .setFiles(data.getFiles());
     }
 
@@ -367,7 +390,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setEmbeds(embeds)
                 .setTTS(message.isTTS())
                 .setSuppressedNotifications(message.isSuppressedNotifications())
-                .setComponents(message.getActionRows());
+                .setComponents(message.getActionRows())
+                .setPoll(message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
     }
 
     /**

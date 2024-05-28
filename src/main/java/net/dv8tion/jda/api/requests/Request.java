@@ -138,13 +138,24 @@ public class Request<T>
     {
         if (response.code == 429)
         {
-            onFailure(new RateLimitedException(route, response.retryAfter));
+            onRateLimited(response);
         }
         else
         {
-            onFailure(ErrorResponseException.create(
-                    ErrorResponse.fromJSON(response.optObject().orElse(null)), response));
+            onFailure(createErrorResponseException(response));
         }
+    }
+
+    public void onRateLimited(Response response)
+    {
+        onFailure(new RateLimitedException(route, response.retryAfter));
+    }
+
+    @Nonnull
+    public ErrorResponseException createErrorResponseException(@Nonnull Response response)
+    {
+        return ErrorResponseException.create(
+                ErrorResponse.fromJSON(response.optObject().orElse(null)), response);
     }
 
     public void onFailure(Throwable failException)

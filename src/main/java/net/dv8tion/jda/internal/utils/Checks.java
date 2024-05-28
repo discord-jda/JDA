@@ -25,9 +25,12 @@ import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import org.intellij.lang.annotations.PrintFormat;
 import org.jetbrains.annotations.Contract;
 
+import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -63,14 +66,14 @@ public class Checks
     }
 
     @Contract("false, _, _ -> fail")
-    public static void check(final boolean expression, final String message, final Object... args)
+    public static void check(final boolean expression, @PrintFormat final String message, final Object... args)
     {
         if (!expression)
             throw new IllegalArgumentException(String.format(message, args));
     }
 
     @Contract("false, _, _ -> fail")
-    public static void check(final boolean expression, final String message, final Object arg)
+    public static void check(final boolean expression, @PrintFormat final String message, final Object arg)
     {
         if (!expression)
             throw new IllegalArgumentException(String.format(message, arg));
@@ -209,6 +212,18 @@ public class Checks
     {
         if (n < 0)
             throw new IllegalArgumentException(name + " may not be negative");
+    }
+
+    public static void notLonger(final Duration duration, final Duration maxDuration, final TimeUnit resolutionUnit, final String name)
+    {
+        notNull(duration, name);
+        check(
+            duration.compareTo(maxDuration) <= 0,
+           "%s may not be longer than %s. Provided: %s",
+            name,
+            JDALogger.getLazyString(() -> Helpers.durationToString(maxDuration, resolutionUnit)),
+            JDALogger.getLazyString(() -> Helpers.durationToString(duration, resolutionUnit))
+        );
     }
 
     // Unique streams checks

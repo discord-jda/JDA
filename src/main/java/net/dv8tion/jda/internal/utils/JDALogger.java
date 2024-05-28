@@ -16,74 +16,104 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLogger;
+import org.slf4j.spi.SLF4JServiceProvider;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
 /**
  * This class serves as a LoggerFactory for JDA's internals.
  * <br>It will either return a Logger from a SLF4J implementation via {@link org.slf4j.LoggerFactory} if present,
- * or an instance of a custom {@link SimpleLogger} (From slf4j-simple).
+ * or an instance of a custom {@link FallbackLogger}.
  * <p>
  * It also has the utility method {@link #getLazyString(LazyEvaluation)} which is used to lazily construct Strings for Logging.
+ *
+ * @see #setFallbackLoggerEnabled(boolean)
  */
 public class JDALogger
 {
     /**
-     * Marks whether or not a SLF4J <code>StaticLoggerBinder</code> (pre 1.8.x) or
-     * <code>SLF4JServiceProvider</code> implementation (1.8.x+) was found. If false, JDA will use its fallback logger.
-     * <br>This variable is initialized during static class initialization.
+     * The name of the system property, which controls whether the fallback logger is disabled.
+     *
+     * <p>{@value}
+     */
+    public static final String DISABLE_FALLBACK_PROPERTY_NAME = "net.dv8tion.jda.disableFallbackLogger";
+
+    /**
+     * Whether an implementation of {@link SLF4JServiceProvider} was found.
+     * <br>If false, JDA will use its fallback logger.
+     *
+     * <p>The fallback logger can be disabled with {@link #setFallbackLoggerEnabled(boolean)}
+     * or using the system property {@value #DISABLE_FALLBACK_PROPERTY_NAME}.
      */
     public static final boolean SLF4J_ENABLED;
+    private static boolean disableFallback = Boolean.getBoolean(DISABLE_FALLBACK_PROPERTY_NAME);
+    private static final MethodHandle fallbackLoggerConstructor;
+
     static
     {
-        boolean tmp = false;
-
+        boolean hasLoggerImpl = false;
         try
         {
-            Class.forName("org.slf4j.impl.StaticLoggerBinder");
-
-            tmp = true;
+            Class<?> provider = Class.forName("org.slf4j.spi.SLF4JServiceProvider");
+            hasLoggerImpl = ServiceLoader.load(provider).iterator().hasNext();
         }
-        catch (ClassNotFoundException eStatic)
+        catch (ClassNotFoundException ignored)
         {
-            // there was no static logger binder (SLF4J pre-1.8.x)
-
-            try
-            {
-                Class<?> serviceProviderInterface = Class.forName("org.slf4j.spi.SLF4JServiceProvider");
-
-                // check if there is a service implementation for the service, indicating a provider for SLF4J 1.8.x+ is installed
-                tmp = ServiceLoader.load(serviceProviderInterface).iterator().hasNext();
-            }
-            catch (ClassNotFoundException eService)
-            {
-                // there was no service provider interface (SLF4J 1.8.x+)
-
-                //prints warning of missing implementation
-                LoggerFactory.getLogger(JDALogger.class);
-
-                tmp = false;
-            }
+            disableFallback = true; // only works with SLF4J 2.0+
         }
 
-        SLF4J_ENABLED = tmp;
+        SLF4J_ENABLED = hasLoggerImpl;
+
+        // Dynamically load fallback logger to avoid static initializer errors
+
+        MethodHandle constructor = null;
+        try
+        {
+            MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+            Class<?> fallbackLoggerClass = Class.forName("net.dv8tion.jda.internal.utils.FallbackLogger");
+            constructor = lookup.findConstructor(fallbackLoggerClass, MethodType.methodType(void.class, String.class));
+        }
+        catch (
+            ClassNotFoundException |
+            ExceptionInInitializerError |
+            IllegalAccessException |
+            NoClassDefFoundError |
+            NoSuchMethodException ignored
+        ) {}
+
+        fallbackLoggerConstructor = constructor;
     }
 
-    private static final Map<String, Logger> LOGS = new CaseInsensitiveMap<>();
+    private static final Map<String, Logger> LOGS = new HashMap<>();
 
     private JDALogger() {}
+
+    /**
+     * Disables the automatic fallback logger that JDA uses when no SLF4J implementation is found.
+     *
+     * @param enabled
+     *        False, to disable the fallback logger
+     */
+    public static void setFallbackLoggerEnabled(boolean enabled)
+    {
+        disableFallback = !enabled;
+    }
 
     /**
      * Will get the {@link org.slf4j.Logger} with the given log-name
      * or create and cache a fallback logger if there is no SLF4J implementation present.
      * <p>
-     * The fallback logger will be an instance of a slightly modified version of SLF4Js SimpleLogger.
+     * The fallback logger uses a constant logging configuration and prints directly to {@link System#err}.
      *
      * @param  name
      *         The name of the Logger
@@ -94,9 +124,9 @@ public class JDALogger
     {
         synchronized (LOGS)
         {
-            if (SLF4J_ENABLED)
+            if (SLF4J_ENABLED || disableFallback)
                 return LoggerFactory.getLogger(name);
-            return LOGS.computeIfAbsent(name, SimpleLogger::new);
+            return newFallbackLogger(name);
         }
     }
 
@@ -104,7 +134,7 @@ public class JDALogger
      * Will get the {@link org.slf4j.Logger} for the given Class
      * or create and cache a fallback logger if there is no SLF4J implementation present.
      * <p>
-     * The fallback logger will be an instance of a slightly modified version of SLF4Js SimpleLogger.
+     * The fallback logger uses a constant logging configuration and prints directly to {@link System#err}.
      *
      * @param  clazz
      *         The class used for the Logger name
@@ -115,9 +145,43 @@ public class JDALogger
     {
         synchronized (LOGS)
         {
-            if (SLF4J_ENABLED)
+            if (SLF4J_ENABLED || disableFallback)
                 return LoggerFactory.getLogger(clazz);
-            return LOGS.computeIfAbsent(clazz.getName(), (n) -> new SimpleLogger(clazz.getSimpleName()));
+            return newFallbackLogger(clazz.getSimpleName());
+        }
+    }
+
+    private static void printFallbackWarning()
+    {
+        Logger logger = newFallbackLogger(JDALogger.class.getSimpleName());
+        logger.warn("Using fallback logger due to missing SLF4J implementation.");
+        logger.warn("Please setup a logging framework to use JDA.");
+        logger.warn("You can use our logging setup guide https://jda.wiki/setup/logging/");
+        logger.warn("To disable the fallback logger, add the slf4j-nop dependency or use JDALogger.setFallbackLoggerEnabled(false)");
+    }
+
+    private static Logger newFallbackLogger(String name)
+    {
+        if (disableFallback || fallbackLoggerConstructor == null)
+            return NOPLogger.NOP_LOGGER;
+
+        try
+        {
+            synchronized (LOGS)
+            {
+                if (LOGS.containsKey(name))
+                    return LOGS.get(name);
+                Logger logger = (Logger) fallbackLoggerConstructor.invoke(name);
+                boolean isFirstFallback = LOGS.isEmpty();
+                LOGS.put(name, logger);
+                if (isFirstFallback)
+                    printFallbackWarning();
+                return logger;
+            }
+        }
+        catch (Throwable e)
+        {
+            throw new IllegalStateException("Failed to initialize fallback logger", e);
         }
     }
 
@@ -144,7 +208,7 @@ public class JDALogger
                 {
                     StringWriter sw = new StringWriter();
                     ex.printStackTrace(new PrintWriter(sw));
-                    return "Error while evaluating lazy String... " + sw.toString();
+                    return "Error while evaluating lazy String... " + sw;
                 }
             }
         };

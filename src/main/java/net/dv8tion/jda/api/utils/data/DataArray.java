@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
@@ -218,7 +218,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
      */
     public boolean isNull(int index)
     {
-        return data.get(index) == null;
+        return index >= length() || data.get(index) == null;
     }
 
     /**
@@ -782,12 +782,12 @@ public class DataArray implements Iterable<Object>, SerializableArray
     @Nonnull
     public String toPrettyString()
     {
-        DefaultPrettyPrinter.Indenter indent = new DefaultIndenter("    ", DefaultIndenter.SYS_LF);
-        DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
-        printer.withObjectIndenter(indent).withArrayIndenter(indent);
         try
         {
-            return mapper.writer(printer).writeValueAsString(data);
+            return mapper.writer(new DefaultPrettyPrinter())
+                    .with(SerializationFeature.INDENT_OUTPUT)
+                    .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+                    .writeValueAsString(data);
         }
         catch (JsonProcessingException e)
         {
@@ -820,7 +820,9 @@ public class DataArray implements Iterable<Object>, SerializableArray
     @Nullable
     private <T> T get(@Nonnull Class<T> type, int index, @Nullable Function<String, T> stringMapper, @Nullable Function<Number, T> numberMapper)
     {
-        Object value = data.get(index);
+        if (index < 0)
+            throw new IndexOutOfBoundsException("Index out of range: " + index);
+        Object value = index < data.size() ? data.get(index) : null;
         if (value == null)
             return null;
         if (type.isInstance(value))
@@ -856,5 +858,22 @@ public class DataArray implements Iterable<Object>, SerializableArray
     public DataArray toDataArray()
     {
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+            return true;
+        if (!(o instanceof DataArray))
+            return false;
+        DataArray objects = (DataArray) o;
+        return Objects.equals(data, objects.data);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(data);
     }
 }

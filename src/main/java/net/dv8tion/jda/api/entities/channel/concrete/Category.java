@@ -21,29 +21,23 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.attribute.ICopyableChannel;
-import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
-import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
-import net.dv8tion.jda.api.entities.channel.attribute.IPositionableChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.CategoryManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
+import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represents a channel category in the official Discord API.
  * <br>Categories are used to keep order in a Guild by dividing the channels into groups.
- *
- * @since 3.4.0
  *
  * @see   Guild#getCategoryCache()
  * @see   Guild#getCategories()
@@ -64,18 +58,17 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child channels
      */
     @Nonnull
+    @Unmodifiable
     default List<GuildChannel> getChannels()
     {
-        List<GuildChannel> channels = new ArrayList<>();
-        channels.addAll(getTextChannels());
-        channels.addAll(getVoiceChannels());
-        channels.addAll(getStageChannels());
-        channels.addAll(getNewsChannels());
-        channels.addAll(getForumChannels());
-        channels.addAll(getMediaChannels());
-        Collections.sort(channels);
-
-        return Collections.unmodifiableList(channels);
+        return getGuild()
+                .getChannelCache()
+                .ofType(ICategorizableChannel.class)
+                .applyStream(stream -> stream
+                    .filter(it -> this.equals(it.getParentCategory()))
+                    .sorted()
+                    .collect(Helpers.toUnmodifiableList())
+                );
     }
 
     /**
@@ -85,13 +78,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child TextChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<TextChannel> getTextChannels()
     {
-        return Collections.unmodifiableList(getGuild().getTextChannelCache().applyStream(stream ->
+        return getGuild().getTextChannelCache().applyStream(stream ->
             stream.filter(channel -> equals(channel.getParentCategory()))
                   .sorted()
-                  .collect(Collectors.toList())
-        ));
+                  .collect(Helpers.toUnmodifiableList())
+        );
     }
 
     /**
@@ -101,13 +95,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child NewsChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<NewsChannel> getNewsChannels()
     {
-        return Collections.unmodifiableList(getGuild().getNewsChannelCache().applyStream(stream ->
+        return getGuild().getNewsChannelCache().applyStream(stream ->
             stream.filter(channel -> equals(channel.getParentCategory()))
                   .sorted()
-                  .collect(Collectors.toList())
-        ));
+                  .collect(Helpers.toUnmodifiableList())
+        );
     }
 
     /**
@@ -116,13 +111,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child ForumChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<ForumChannel> getForumChannels()
     {
-        return Collections.unmodifiableList(getGuild().getForumChannelCache().applyStream(stream ->
+        return getGuild().getForumChannelCache().applyStream(stream ->
             stream.filter(channel -> equals(channel.getParentCategory()))
                   .sorted()
-                  .collect(Collectors.toList())
-        ));
+                  .collect(Helpers.toUnmodifiableList())
+        );
     }
 
     /**
@@ -131,13 +127,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child ForumChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<MediaChannel> getMediaChannels()
     {
-        return Collections.unmodifiableList(getGuild().getMediaChannelCache().applyStream(stream ->
+        return getGuild().getMediaChannelCache().applyStream(stream ->
                 stream.filter(channel -> equals(channel.getParentCategory()))
                         .sorted()
-                        .collect(Collectors.toList())
-        ));
+                        .collect(Helpers.toUnmodifiableList())
+        );
     }
 
     /**
@@ -147,13 +144,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child VoiceChannels
      */
     @Nonnull
+    @Unmodifiable
     default List<VoiceChannel> getVoiceChannels()
     {
-        return Collections.unmodifiableList(getGuild().getVoiceChannelCache().applyStream(stream ->
+        return getGuild().getVoiceChannelCache().applyStream(stream ->
             stream.filter(channel -> equals(channel.getParentCategory()))
                   .sorted()
-                  .collect(Collectors.toList())
-        ));
+                  .collect(Helpers.toUnmodifiableList())
+        );
     }
 
     /**
@@ -163,13 +161,14 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
      * @return Immutable list of all child StageChannel
      */
     @Nonnull
+    @Unmodifiable
     default List<StageChannel> getStageChannels()
     {
-        return Collections.unmodifiableList(getGuild().getStageChannelCache().applyStream(stream ->
+        return getGuild().getStageChannelCache().applyStream(stream ->
             stream.filter(channel -> equals(channel.getParentCategory()))
                   .sorted()
-                  .collect(Collectors.toList())
-        ));
+                  .collect(Helpers.toUnmodifiableList())
+        );
     }
 
     /**
@@ -452,15 +451,16 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
 
     @Nonnull
     @Override
+    @Unmodifiable
     default List<Member> getMembers()
     {
-        return Collections.unmodifiableList(getChannels().stream()
+        return getChannels().stream()
             .filter(IMemberContainer.class::isInstance)
             .map(IMemberContainer.class::cast)
             .map(IMemberContainer::getMembers)
             .flatMap(List::stream)
             .distinct()
-            .collect(Collectors.toList()));
+            .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull

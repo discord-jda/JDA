@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -313,7 +314,42 @@ public interface ApplicationInfo extends ISnowflake
      * @return Immutable list containing the tags of this bot's application
      */
     @Nonnull
+    @Unmodifiable
     List<String> getTags();
+
+    /**
+     * A {@link java.util.List} containing the OAuth2 redirect URIs of this bot's application.
+     *
+     * <p>This List is empty if no redirect URIs are set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * @return Immutable list containing the OAuth2 redirect URIs of this bot's application
+     */
+    @Nonnull
+    @Unmodifiable
+    List<String> getRedirectUris();
+
+    /**
+     * The interaction endpoint URL of this bot's application.
+     *
+     * <p>This returns {@code null} if no interaction endpoint URL is set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * <p>A non-null value means your bot will no longer receive {@link net.dv8tion.jda.api.interactions.Interaction interactions}
+     * through JDA, such as slash commands, components and modals.
+     *
+     * @return Interaction endpoint URL of this bot's application, or {@code null} if it has not been set
+     */
+    @Nullable
+    String getInteractionsEndpointUrl();
+
+    /**
+     * The role connections (linked roles) verification URL of this bot's application.
+     *
+     * <p>This returns {@code null} if no role connection verification URL is set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * @return Role connections verification URL of this bot's application, or {@code null} if it has not been set
+     */
+    @Nullable
+    String getRoleConnectionsVerificationUrl();
 
     /**
      * The custom Authorization URL of this bot's application.
@@ -333,6 +369,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return Immutable list of scopes the default authorization URL is set up with.
      */
     @Nonnull
+    @Unmodifiable
     List<String> getScopes();
 
     /**

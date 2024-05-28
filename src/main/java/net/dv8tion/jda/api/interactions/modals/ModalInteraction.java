@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,6 +56,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      * @see    #getValue(String)
      */
     @Nonnull
+    @Unmodifiable
     List<ModalMapping> getValues();
 
     /**

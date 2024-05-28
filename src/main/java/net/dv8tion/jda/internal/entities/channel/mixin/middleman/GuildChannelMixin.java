@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.entities.channel.mixin.ChannelMixin;
@@ -40,6 +41,7 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
     @CheckReturnValue
     default AuditableRestAction<Void> delete()
     {
+        checkCanAccess();
         checkCanManage();
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
@@ -69,5 +71,12 @@ public interface GuildChannelMixin<T extends GuildChannelMixin<T>> extends
     default void checkCanManage()
     {
         checkPermission(Permission.MANAGE_CHANNEL);
+    }
+
+    // Overridden by AudioChannelMixin
+    default void checkCanAccess()
+    {
+        if (!hasPermission(Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
     }
 }

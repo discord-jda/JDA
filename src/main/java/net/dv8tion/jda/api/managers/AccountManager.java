@@ -50,6 +50,8 @@ public interface AccountManager extends Manager<AccountManager>
     long NAME        = 1;
     /** Used to reset the avatar field */
     long AVATAR      = 1 << 1;
+    /** Used to reset the banner field */
+    long BANNER      = 1 << 2;
 
     /**
      * The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser} that will be
@@ -137,4 +139,17 @@ public interface AccountManager extends Manager<AccountManager>
     @Nonnull
     @CheckReturnValue
     AccountManager setAvatar(@Nullable Icon avatar);
+
+    /**
+     * Sets the banner for the currently logged in account
+     *
+     * @param  banner
+     *         An {@link net.dv8tion.jda.api.entities.Icon Icon} instance representing
+     *         the new banner for the current account, {@code null} to reset the banner to the default banner.
+     *
+     * @return AccountManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    AccountManager setBanner(@Nullable Icon banner);
 }

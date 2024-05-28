@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -249,6 +250,7 @@ public interface SlashCommandData extends CommandData
      * @return Immutable list of {@link SubcommandData}
      */
     @Nonnull
+    @Unmodifiable
     List<SubcommandData> getSubcommands();
 
     /**
@@ -257,6 +259,7 @@ public interface SlashCommandData extends CommandData
      * @return Immutable list of {@link SubcommandGroupData}
      */
     @Nonnull
+    @Unmodifiable
     List<SubcommandGroupData> getSubcommandGroups();
 
     /**
@@ -265,6 +268,7 @@ public interface SlashCommandData extends CommandData
      * @return Immutable list of {@link OptionData}
      */
     @Nonnull
+    @Unmodifiable
     List<OptionData> getOptions();
 
     /**

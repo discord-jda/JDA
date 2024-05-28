@@ -36,7 +36,7 @@ public class VoiceChannelStatusUpdateHandler extends SocketHandler
             return guildId;
 
         long id = content.getUnsignedLong("id");
-        VoiceChannelImpl channel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().getElementById(id);
+        VoiceChannelImpl channel = (VoiceChannelImpl) getJDA().getVoiceChannelById(id);
 
         if (channel == null)
         {

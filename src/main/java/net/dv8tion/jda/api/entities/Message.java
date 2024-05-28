@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
@@ -48,6 +49,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
@@ -55,15 +57,19 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
+import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -451,6 +457,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of invite codes
      */
     @Nonnull
+    @Unmodifiable
     List<String> getInvites();
 
     /**
@@ -653,6 +660,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
     @Nonnull
+    @Unmodifiable
     List<Attachment> getAttachments();
 
     /**
@@ -663,6 +671,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all given MessageEmbeds.
      */
     @Nonnull
+    @Unmodifiable
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -678,7 +687,45 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
+    @Unmodifiable
     List<LayoutComponent> getComponents();
+
+    /**
+     * The {@link MessagePoll} attached to this message.
+     *
+     * @return Possibly-null poll instance for this message
+     *
+     * @see    #endPoll()
+     */
+    @Nullable
+    MessagePoll getPoll();
+
+    /**
+     * End the poll attached to this message.
+     *
+     * @throws IllegalStateException
+     *         If this poll was not sent by the currently logged in account or no poll was attached to this message
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Message}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Message> endPoll();
+
+    /**
+     * Paginate the users who voted for a poll answer.
+     *
+     * @param  answerId
+     *         The id of the poll answer, usually the ordinal position of the answer (first is 1)
+     *
+     * @return {@link PollVotersPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PollVotersPaginationAction retrievePollVoters(long answerId)
+    {
+        return new PollVotersPaginationActionImpl(getJDA(), getChannelId(), getId(), answerId);
+    }
 
     /**
      * Rows of interactive components such as {@link Button Buttons}.
@@ -692,13 +739,14 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
+    @Unmodifiable
     default List<ActionRow> getActionRows()
     {
         return getComponents()
                 .stream()
                 .filter(ActionRow.class::isInstance)
                 .map(ActionRow.class::cast)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -709,12 +757,13 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons}
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtons()
     {
         return getComponents().stream()
                 .map(LayoutComponent::getButtons)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -755,6 +804,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons} with the specified label
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
     {
         Checks.notNull(label, "Label");
@@ -765,7 +815,7 @@ public interface Message extends ISnowflake, Formattable
             filter = b -> label.equals(b.getLabel());
         return getButtons().stream()
                 .filter(filter)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -776,6 +826,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    MessageReaction
      */
     @Nonnull
+    @Unmodifiable
     List<MessageReaction> getReactions();
 
     /**
@@ -785,6 +836,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all StickerItems in this message.
      */
     @Nonnull
+    @Unmodifiable
     List<StickerItem> getStickers();
 
     /**
@@ -1356,6 +1408,48 @@ public interface Message extends ISnowflake, Formattable
     default MessageCreateAction reply(@Nonnull MessageCreateData msg)
     {
         return getChannel().sendMessage(msg).setMessageReference(this);
+    }
+
+    /**
+     * Shortcut for {@code getChannel().sendMessagePoll(data).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#POLL_INVALID_CHANNEL_TYPE POLL_INVALID_CHANNEL_TYPE}
+     *     <br>This channel does not allow polls</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#POLL_WITH_UNUSABLE_EMOJI POLL_WITH_UNUSABLE_EMOJI}
+     *     <br>This poll uses an external emoji that the bot is not allowed to use</li>
+     * </ul>
+     *
+     * @param  poll
+     *         The poll to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessage(MessageCreateData)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessage(MessageCreateData)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyPoll(@Nonnull MessagePollData poll)
+    {
+        return getChannel().sendMessagePoll(poll).setMessageReference(this);
     }
 
     /**

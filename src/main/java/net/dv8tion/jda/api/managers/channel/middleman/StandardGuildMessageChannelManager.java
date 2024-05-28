@@ -52,8 +52,6 @@ public interface StandardGuildMessageChannelManager<T extends StandardGuildMessa
      *
      * @throws IllegalArgumentException
      *         If the provided topic is greater than {@value StandardGuildMessageChannel#MAX_TOPIC_LENGTH} in length.
-     *         For {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels},
-     *         this limit is {@value net.dv8tion.jda.api.entities.channel.concrete.ForumChannel#MAX_FORUM_TOPIC_LENGTH} instead.
      *
      * @return ChannelManager for chaining convenience
      */

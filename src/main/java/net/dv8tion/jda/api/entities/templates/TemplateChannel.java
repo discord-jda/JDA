@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities.templates;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -229,6 +230,7 @@ public class TemplateChannel implements ISnowflake
      *         for this {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel}.
      */
     @Nonnull
+    @Unmodifiable
     public List<TemplateChannel.PermissionOverride> getPermissionOverrides()
     {
         return this.permissionOverrides;

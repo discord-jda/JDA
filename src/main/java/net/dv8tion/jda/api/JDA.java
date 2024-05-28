@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -37,6 +36,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.*;
+import net.dv8tion.jda.api.requests.restaction.pagination.EntitlementPaginationAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -49,6 +49,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -71,7 +72,7 @@ import java.util.regex.Matcher;
  *
  * @see JDABuilder
  */
-public interface JDA extends IGuildChannelContainer
+public interface JDA extends IGuildChannelContainer<Channel>
 {
     /**
      * Represents the connection status of JDA and its Main WebSocket.
@@ -932,6 +933,7 @@ public interface JDA extends IGuildChannelContainer
      * @return Immutable list of all created AudioManager instances
      */
     @Nonnull
+    @Unmodifiable
     default List<AudioManager> getAudioManagers()
     {
         return getAudioManagerCache().asList();
@@ -965,6 +967,7 @@ public interface JDA extends IGuildChannelContainer
      * @return Immutable list of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
      */
     @Nonnull
+    @Unmodifiable
     default List<User> getUsers()
     {
         return getUserCache().asList();
@@ -1030,14 +1033,9 @@ public interface JDA extends IGuildChannelContainer
      *         If the provided tag is null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
-     *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
-    @Deprecated
-    @ForRemoval
+    @Incubating
     default User getUserByTag(@Nonnull String tag)
     {
         Checks.notNull(tag, "Tag");
@@ -1069,14 +1067,9 @@ public interface JDA extends IGuildChannelContainer
      *         If the provided arguments are null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.User} for the discord tag or null if no user has the provided tag
-     *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
-    @Deprecated
-    @ForRemoval
+    @Incubating
     default User getUserByTag(@Nonnull String username, @Nonnull String discriminator)
     {
         Checks.notNull(username, "Username");
@@ -1111,6 +1104,7 @@ public interface JDA extends IGuildChannelContainer
      */
     @Nonnull
     @Incubating
+    @Unmodifiable
     default List<User> getUsersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getUserCache().getElementsByName(name, ignoreCase);
@@ -1127,6 +1121,7 @@ public interface JDA extends IGuildChannelContainer
      * @see    Guild#isMember(UserSnowflake)
      */
     @Nonnull
+    @Unmodifiable
     List<Guild> getMutualGuilds(@Nonnull User... users);
 
     /**
@@ -1138,6 +1133,7 @@ public interface JDA extends IGuildChannelContainer
      * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      */
     @Nonnull
+    @Unmodifiable
     List<Guild> getMutualGuilds(@Nonnull Collection<User> users);
 
     /**
@@ -1228,6 +1224,7 @@ public interface JDA extends IGuildChannelContainer
      * @return Possibly-empty immutable list of all the {@link Guild Guilds} that this account is connected to.
      */
     @Nonnull
+    @Unmodifiable
     default List<Guild> getGuilds()
     {
         return getGuildCache().asList();
@@ -1278,6 +1275,7 @@ public interface JDA extends IGuildChannelContainer
      * @return Possibly-empty immutable list of all the {@link Guild Guilds} that all have the same name as the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<Guild> getGuildsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getGuildCache().getElementsByName(name, ignoreCase);
@@ -1329,6 +1327,7 @@ public interface JDA extends IGuildChannelContainer
      * @return Immutable List of all visible Roles
      */
     @Nonnull
+    @Unmodifiable
     default List<Role> getRoles()
     {
         return getRoleCache().asList();
@@ -1382,10 +1381,12 @@ public interface JDA extends IGuildChannelContainer
      * @return Immutable List of all Roles matching the parameters provided.
      */
     @Nonnull
+    @Unmodifiable
     default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
+
     /**
      * {@link SnowflakeCacheView} of
      * all cached {@link ScheduledEvent ScheduledEvents} visible to this JDA session.
@@ -1411,6 +1412,7 @@ public interface JDA extends IGuildChannelContainer
      * @return Possibly-empty immutable list of all known {@link ScheduledEvent ScheduledEvents}.
      */
     @Nonnull
+    @Unmodifiable
     default List<ScheduledEvent> getScheduledEvents()
     {
         return getScheduledEventCache().asList();
@@ -1473,20 +1475,10 @@ public interface JDA extends IGuildChannelContainer
      *         same name as the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
-    }
-
-    @Nullable
-    @Override
-    default <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
-    {
-        Checks.notNull(type, "Class");
-        Channel channel = getPrivateChannelById(id);
-        if (channel != null)
-            return type.isInstance(channel) ? type.cast(channel) : null;
-        return IGuildChannelContainer.super.getChannelById(type, id);
     }
 
     /**
@@ -1509,6 +1501,7 @@ public interface JDA extends IGuildChannelContainer
      * @return Possibly-empty list of all {@link PrivateChannel PrivateChannels}.
      */
     @Nonnull
+    @Unmodifiable
     default List<PrivateChannel> getPrivateChannels()
     {
         return getPrivateChannelCache().asList();
@@ -1644,6 +1637,7 @@ public interface JDA extends IGuildChannelContainer
      * @return An immutable list of Custom Emojis (which may or may not be available to usage).
      */
     @Nonnull
+    @Unmodifiable
     default List<RichCustomEmoji> getEmojis()
     {
         return getEmojiCache().asList();
@@ -1706,6 +1700,7 @@ public interface JDA extends IGuildChannelContainer
      *         name as the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase)
     {
         return getEmojiCache().getElementsByName(name, ignoreCase);
@@ -1744,7 +1739,7 @@ public interface JDA extends IGuildChannelContainer
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<StickerPack>> retrieveNitroStickerPacks();
+    RestAction<@Unmodifiable List<StickerPack>> retrieveNitroStickerPacks();
 
     /**
      * The EventManager used by this JDA instance.
@@ -1893,6 +1888,127 @@ public interface JDA extends IGuildChannelContainer
     @Nonnull
     @CheckReturnValue
     RestAction<ApplicationInfo> retrieveApplicationInfo();
+
+    /**
+     * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
+     * which allows you to {@link Iterable iterate} over {@link Entitlement}s that are applicable to the logged in application.
+     *
+     * @return {@link EntitlementPaginationAction EntitlementPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    EntitlementPaginationAction retrieveEntitlements();
+
+    /**
+     * Retrieves an {@link Entitlement} by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to retrieve
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link Entitlement}
+     *         <br>The entitlement with the provided id
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Entitlement> retrieveEntitlementById(@Nonnull String entitlementId)
+    {
+        return retrieveEntitlementById(MiscUtil.parseSnowflake(entitlementId));
+    }
+
+    /**
+     * Retrieves an {@link Entitlement} by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to retrieve
+     *
+     * @return {@link RestAction} - Type: {@link Entitlement}
+     *         <br>The entitlement with the provided id
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Entitlement> retrieveEntitlementById(long entitlementId);
+
+    /**
+     * Constructs a new {@link Entitlement Entitlement} with the skuId and the type.
+     * <br>Use the returned {@link TestEntitlementCreateAction TestEntitlementCreateAction} to provide more details.
+     *
+     * @param  skuId
+     *         The id of the SKU the entitlement is for
+     *
+     * @param ownerId
+     *        The id of the owner of the entitlement
+     *
+     * @param ownerType
+     *        The type of the owner of the entitlement
+     *
+     * @throws IllegalArgumentException
+     *         If the provided skuId or ownerId is not a valid snowflake
+     *
+     * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
+     *         <br>Allows for setting various details for the resulting Entitlement
+     */
+    @Nonnull
+    @CheckReturnValue
+    default TestEntitlementCreateAction createTestEntitlement(@Nonnull String skuId, @Nonnull String ownerId, @Nonnull TestEntitlementCreateAction.OwnerType ownerType)
+    {
+        return createTestEntitlement(MiscUtil.parseSnowflake(skuId), MiscUtil.parseSnowflake(ownerId), ownerType);
+    }
+
+    /**
+     * Constructs a new {@link Entitlement Entitlement} with the skuId and the type.
+     * <br>Use the returned {@link TestEntitlementCreateAction TestEntitlementCreateAction} to provide more details.
+     *
+     * @param  skuId
+     *         The id of the SKU the entitlement is for
+     *
+     * @param ownerId
+     *        The id of the owner of the entitlement
+     *
+     * @param ownerType
+     *        The type of the owner of the entitlement
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ownerType is null
+     *
+     * @return {@link TestEntitlementCreateAction TestEntitlementCreateAction}
+     *         <br>Allows for setting various details for the resulting Entitlement
+     */
+    @Nonnull
+    @CheckReturnValue
+    TestEntitlementCreateAction createTestEntitlement(long skuId, long ownerId, @Nonnull TestEntitlementCreateAction.OwnerType ownerType);
+
+    /**
+     * Deletes a test entitlement by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to delete
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: Void
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> deleteTestEntitlement(@Nonnull String entitlementId)
+    {
+        return deleteTestEntitlement(MiscUtil.parseSnowflake(entitlementId));
+    }
+
+    /**
+     * Deletes a test entitlement by its id.
+     *
+     * @param  entitlementId
+     *         The id of the entitlement to delete
+     *
+     * @return {@link RestAction} - Type: Void
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> deleteTestEntitlement(long entitlementId);
 
     /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
