@@ -135,6 +135,7 @@ public interface EntitySelectMenu extends SelectMenu
      */
     @Nonnull
     @CheckReturnValue
+    @Override
     default Builder createCopy()
     {
         //noinspection ConstantConditions
