@@ -3,6 +3,7 @@ package net.dv8tion.jda.api.utils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
@@ -89,6 +90,7 @@ public class Once<E extends GenericEvent> implements EventListener
     }
 
     @Override
+    @SubscribeEvent
     public void onEvent(@Nonnull GenericEvent event)
     {
         if (!eventType.isInstance(event))
