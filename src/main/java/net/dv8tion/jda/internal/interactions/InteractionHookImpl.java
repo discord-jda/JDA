@@ -77,11 +77,6 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         this.isReady = true;
     }
 
-    public boolean ack()
-    {
-        return interaction == null || interaction.ack();
-    }
-
     public boolean isAck()
     {
         return interaction == null || interaction.isAcknowledged();

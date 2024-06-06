@@ -81,19 +81,10 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
     // Here we intercept calls to queue/submit/complete to prevent double ack/reply scenarios with a better error message than discord provides //
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // This is an exception factory method that only returns an exception if we would have to throw it or fail in another way.
-    protected final IllegalStateException tryAck() // note that interaction.ack() is already synchronized so this is actually thread-safe!
-    {
-        // true => we already called this before => this will never succeed!
-        return interaction.ack()
-                ? new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!")
-                : null; // null indicates we were successful, no exception means we can't fail :)
-    }
-
     @Override
     public final void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
-        IllegalStateException exception = tryAck();
+        IllegalStateException exception = interaction.tryAck();
         if (exception != null)
         {
             if (failure != null)
@@ -110,7 +101,7 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
     @Override
     public final CompletableFuture<T> submit(boolean shouldQueue)
     {
-        IllegalStateException exception = tryAck();
+        IllegalStateException exception = interaction.tryAck();
         if (exception != null)
         {
             CompletableFuture<T> future = new CompletableFuture<>();
