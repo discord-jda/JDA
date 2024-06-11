@@ -19,9 +19,9 @@ package net.dv8tion.jda.api.exceptions;
 /**
  * Used to indicate where an interaction was first acknowledged at, for debugging purposes.
  */
-public class FirstAckException extends RuntimeException
+public class FirstAcknowledgementException extends RuntimeException
 {
-    public FirstAckException()
+    public FirstAcknowledgementException()
     {
         super("This is where the interaction was first acknowledged at");
     }

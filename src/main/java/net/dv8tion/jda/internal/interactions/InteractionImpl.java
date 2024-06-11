@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.exceptions.FirstAckException;
+import net.dv8tion.jda.api.exceptions.FirstAcknowledgementException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -156,7 +156,7 @@ public class InteractionImpl implements Interaction
         {
             // Store where the first ack was made, so we can use show it on the 2nd ack
             if (recordAckTraces)
-                firstAckTrace = new FirstAckException();
+                firstAckTrace = new FirstAcknowledgementException();
             isAck = true;
             return null;
         }
