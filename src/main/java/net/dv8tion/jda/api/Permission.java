@@ -65,6 +65,7 @@ public enum Permission
     MESSAGE_EXT_STICKER(         37, true, true, "Use External Stickers"),
     MESSAGE_ATTACH_VOICE_MESSAGE(46, true, true, "Send Voice Messages"),
     MESSAGE_SEND_POLLS(          49, true, true, "Create Polls"),
+    USE_EXTERNAL_APPLICATIONS(   50, true, true, "Use External Apps"),
 
     // Thread Permissions
     MANAGE_THREADS(          34, true, true, "Manage Threads"),
@@ -124,7 +125,7 @@ public enum Permission
     public static final long ALL_TEXT_PERMISSIONS
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS, MESSAGE_MANAGE,
                                 MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_EMOJI, MESSAGE_EXT_STICKER,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
+                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS, USE_EXTERNAL_APPLICATIONS,
                                 MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS,
                                 MESSAGE_SEND_IN_THREADS, MESSAGE_ATTACH_VOICE_MESSAGE, MESSAGE_SEND_POLLS);
 
