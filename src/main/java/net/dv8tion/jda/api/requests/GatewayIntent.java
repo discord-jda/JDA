@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api.requests;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -97,14 +94,6 @@ public enum GatewayIntent
      * <p>This will also update user information such as name/avatar.
      */
     GUILD_MEMBERS(1),
-    /**
-     * Ban events.
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0-beta.4")
-    @ReplaceWith("GUILD_MODERATION")
-    GUILD_BANS(2),
     /**
      * Moderation events, such as ban/unban/audit-log.
      */

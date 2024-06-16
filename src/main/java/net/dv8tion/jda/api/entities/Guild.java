@@ -1214,14 +1214,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
      *
      * @see    net.dv8tion.jda.api.JDA#getUserByTag(String)
-     *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
-    @Deprecated
-    @ForRemoval
     default Member getMemberByTag(@Nonnull String tag)
     {
         User user = getJDA().getUserByTag(tag);
@@ -1254,14 +1248,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
      *
      * @see    #getMemberByTag(String)
-     *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
-    @Deprecated
-    @ForRemoval
     default Member getMemberByTag(@Nonnull String username, @Nonnull String discriminator)
     {
         User user = getJDA().getUserByTag(username, discriminator);
