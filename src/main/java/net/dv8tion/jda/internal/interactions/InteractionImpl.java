@@ -70,7 +70,13 @@ public class InteractionImpl implements Interaction
         this.id = data.getUnsignedLong("id");
         this.token = data.getString("token");
         this.type = data.getInt("type");
-        this.guild = data.optObject("guild").map(interactionEntityBuilder::getOrCreateGuild).orElse(null);
+        this.guild = data.optObject("guild").map(guildJson ->
+                {
+                    if (!guildJson.hasKey("preferred_locale"))
+                        guildJson.put("preferred_locale", data.getString("guild_locale", "en-US"));
+                    return interactionEntityBuilder.getOrCreateGuild(guildJson);
+                }
+        ).orElse(null);
         this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
         this.context = InteractionContextType.fromKey(data.getString("context"));
