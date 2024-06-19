@@ -64,7 +64,18 @@ public class ErrorResponseException extends RuntimeException
         this.errorResponse = errorResponse;
         this.code = code;
         this.meaning = meaning;
-        this.schemaErrors = schemaErrors;
+        this.schemaErrors = Collections.unmodifiableList(schemaErrors);
+    }
+
+    private ErrorResponseException(String message, ErrorResponseException cause)
+    {
+        super(cause.code + ": " + message, cause);
+
+        this.response = cause.response;
+        this.errorResponse = cause.errorResponse;
+        this.code = cause.code;
+        this.meaning = cause.meaning;
+        this.schemaErrors = cause.schemaErrors;
     }
 
     /**
@@ -132,6 +143,11 @@ public class ErrorResponseException extends RuntimeException
     public List<SchemaError> getSchemaErrors()
     {
         return schemaErrors;
+    }
+
+    public static ErrorResponseException create(String message, ErrorResponseException cause)
+    {
+        return new ErrorResponseException(message, cause);
     }
 
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)

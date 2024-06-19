@@ -16,10 +16,8 @@
 
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -36,6 +34,39 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
     {
         super(interaction.getJDA(),  Route.Interactions.CALLBACK.compile(interaction.getId(), interaction.getToken()));
         this.interaction = interaction;
+        setErrorMapper(this::handleUnknownInteraction);
+    }
+
+    private Throwable handleUnknownInteraction(Response response, Request<?> request, ErrorResponseException exception)
+    {
+        // While this error response has existed since at least 2022 (https://github.com/discord/discord-api-docs/pull/4484),
+        // Discord does not always report this error correctly and instead sends a 'UNKNOWN_INTERACTION'.
+        // That's why we also have a similar exception at the end of this method.
+        if (exception.getErrorResponse() == ErrorResponse.INTERACTION_ALREADY_ACKNOWLEDGED)
+            return ErrorResponseException.create(
+                    "This interaction was acknowledged by another bot instance\n" +
+                            "Make sure that:\n" +
+                            "\t- Only one bot using the current token is logged on\n" +
+                            "\t- If you can't find an existing instance, try to reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot",
+                    exception
+            );
+
+        // Time synchronization issues prevent us from checking the exact nature of the issue,
+        // and storing a local Instant would be invalid in case the WS thread is blocked,
+        // as it will be created when the thread is released.
+        // Send a message for both issues instead.
+        if (exception.getErrorResponse() == ErrorResponse.UNKNOWN_INTERACTION)
+            return ErrorResponseException.create(
+                    "Failed to acknowledge this interaction, this can be due to 2 reasons:\n" +
+                            "1. This interaction took longer than 3 seconds to be acknowledged, see https://jda.wiki/using-jda/troubleshooting/#the-interaction-took-longer-than-3-seconds-to-be-acknowledged\n" +
+                            "2. This interaction could have been acknowledged by another bot instance\n" +
+                            "If your bot replied, or the three dots in a button disappeared without saying 'This interaction failed', or you see '[Bot] is thinking...' for more than 3 seconds, make sure that:\n" +
+                            "\t- Only one bot using the current token is logged on\n" +
+                            "\t- If you can't find an existing instance, try to reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getIdLong() + "/bot",
+                    exception
+            );
+
+        return null;
     }
 
     @Nonnull
