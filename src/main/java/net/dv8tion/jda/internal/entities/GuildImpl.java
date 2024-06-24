@@ -1548,7 +1548,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<UserSnowflake> users, @Nullable Duration deletionTime)
+    public AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<? extends UserSnowflake> users, @Nullable Duration deletionTime)
     {
         deletionTime = deletionTime == null ? Duration.ZERO : deletionTime;
         Checks.noneNull(users, "Users");
