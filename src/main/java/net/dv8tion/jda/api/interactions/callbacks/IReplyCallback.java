@@ -90,10 +90,12 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
      * <br>Limitations:
      * <ul>
-     *     <li>Cannot contain any files/attachments</li>
      *     <li>Cannot be reacted to</li>
-     *     <li>Cannot be retrieved</li>
+     *     <li>Cannot be {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(long) retrieved by ID}</li>
      * </ul>
+     *
+     * <b>Note:</b> Your message will always appear ephemeral
+     * if the guild has {@link net.dv8tion.jda.api.Permission#USE_EXTERNAL_APPLICATIONS Permission.USE_EXTERNAL_APPLICATIONS} disabled.
      *
      * @param  ephemeral
      *         True, if this message should only be visible to the interaction user

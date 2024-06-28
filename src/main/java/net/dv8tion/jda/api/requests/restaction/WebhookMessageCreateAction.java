@@ -47,13 +47,16 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
      * <br>Limitations:
      * <ul>
      *     <li>Cannot be reacted to</li>
-     *     <li>Cannot be retrieved</li>
+     *     <li>Cannot be {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(long) retrieved by ID}</li>
      * </ul>
      *
      * <p>This only works on {@link InteractionHook InteractionHooks}!
      * For a {@link IReplyCallback#deferReply() deferred reply}, this is not supported. When a reply is deferred,
      * the very first message sent through the {@link InteractionHook}, inherits the ephemeral state of the initial reply.
      * To send an ephemeral deferred reply, you must use {@link IReplyCallback#deferReply(boolean) deferReply(true)} instead.
+     *
+     * <p><b>Note:</b> Your message will always appear ephemeral
+     * if the guild has {@link net.dv8tion.jda.api.Permission#USE_EXTERNAL_APPLICATIONS Permission.USE_EXTERNAL_APPLICATIONS} disabled.
      *
      * @param  ephemeral
      *         True, if this message should be invisible for other users
