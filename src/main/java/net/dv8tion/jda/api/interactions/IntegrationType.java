@@ -23,16 +23,26 @@ import java.util.Set;
 
 /**
  * Represents how an app was installed, or where a command can be used.
+ *
+ * @see <a target="_blank" href="https://discord.com/developers/docs/interactions/application-commands#installation-context">Discord docs</a>
  */
 public enum IntegrationType
 {
     UNKNOWN("-1"),
     /**
-     * Indicates commands can be installed on the guild the application was invited in
+     * Indicates commands can be installed on the guild the application was invited in.
      */
     GUILD_INSTALL("0"),
     /**
-     * Indicates commands can be installed on the user inviting the application
+     * Indicates commands can be installed on the user inviting the application.
+     *
+     * <p>Enables using {@link InteractionContextType#GUILD} in guilds the bot isn't in,
+     * and {@link InteractionContextType#PRIVATE_CHANNEL}.
+     *
+     * <p><b>Requirements</b>
+     * <br>This requires the bot to be user-installable,
+     * see on <a target="_blank" href="https://discord.com/developers/applications">Your dashboard</a>,
+     * in the {@code Installation} section, and select the {@code User Install} authorization method.
      */
     USER_INSTALL("1");
 
@@ -43,7 +53,8 @@ public enum IntegrationType
 
     private final String key;
 
-    IntegrationType(String key) {
+    IntegrationType(String key)
+    {
         this.key = key;
     }
 
