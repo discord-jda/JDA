@@ -123,6 +123,18 @@ public interface Interaction extends ISnowflake
     }
 
     /**
+     * Whether this interaction comes from a command
+     * which can <b>only</b> be {@link IntegrationType#USER_INSTALL installed on a user}.
+     *
+     * @return True, if this interaction is installed only on a user
+     */
+    default boolean isUserInstalledInteractionOnly()
+    {
+        final IntegrationOwners owners = getIntegrationOwners();
+        return owners.getUserIntegration() != null && owners.getGuildIntegration() == null;
+    }
+
+    /**
      * The {@link ChannelType} for the channel this interaction came from.
      * <br>If {@link #getChannel()} is null, this returns {@link ChannelType#UNKNOWN}.
      *
