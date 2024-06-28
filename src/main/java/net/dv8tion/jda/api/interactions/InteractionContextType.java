@@ -22,13 +22,19 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Represents where commands can be used.
+ * Represents where commands can be used,
+ * think of it as 'Where can I use this command in the Discord client'.
+ *
+ * @see <a target="_blank" href="https://discord.com/developers/docs/interactions/application-commands#interaction-contexts">Discord docs</a>
  */
 public enum InteractionContextType
 {
     UNKNOWN("-1"),
     /**
      * Allows execution in a guild.
+     *
+     * <p><b>Note:</b> Using this command in guilds the bot isn't in
+     * requires the {@link IntegrationType#USER_INSTALL USER_INSTALL} installation context.
      */
     GUILD("0"),
     /**
@@ -38,6 +44,9 @@ public enum InteractionContextType
     /**
      * Allows execution in a private channel other than the bot DMs,
      * includes friend DMs and Group DMs.
+     *
+     * <p><b>Requirements</b>
+     * <br>This requires the {@link IntegrationType#USER_INSTALL USER_INSTALL} installation context.
      */
     PRIVATE_CHANNEL("2");
 
@@ -48,7 +57,8 @@ public enum InteractionContextType
 
     private final String key;
 
-    InteractionContextType(String key) {
+    InteractionContextType(String key)
+    {
         this.key = key;
     }
 
