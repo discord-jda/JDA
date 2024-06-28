@@ -80,6 +80,9 @@ public interface WebhookClient<T> extends ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
      *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
      *
@@ -108,6 +111,10 @@ public interface WebhookClient<T> extends ISnowflake
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups
+     *     in an interaction using only {@link net.dv8tion.jda.api.interactions.IntegrationType#USER_INSTALL IntegrationType.USER_INSTALL}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
@@ -139,6 +146,9 @@ public interface WebhookClient<T> extends ISnowflake
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
@@ -177,6 +187,9 @@ public interface WebhookClient<T> extends ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
      *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
      *
@@ -211,6 +224,9 @@ public interface WebhookClient<T> extends ISnowflake
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
@@ -258,6 +274,9 @@ public interface WebhookClient<T> extends ISnowflake
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
@@ -316,6 +335,9 @@ public interface WebhookClient<T> extends ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
      *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
      *
@@ -344,6 +366,9 @@ public interface WebhookClient<T> extends ISnowflake
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
@@ -407,6 +432,9 @@ public interface WebhookClient<T> extends ISnowflake
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
      *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
      *
@@ -463,6 +491,9 @@ public interface WebhookClient<T> extends ISnowflake
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
      *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
      *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
