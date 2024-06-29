@@ -3722,7 +3722,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<UserSnowflake> users, @Nullable Duration deletionTime);
+    AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<? extends UserSnowflake> users, @Nullable Duration deletionTime);
 
     /**
      * Bans up to 200 of the provided users.
@@ -3763,7 +3763,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<UserSnowflake> users, int deletionTimeframe, @Nonnull TimeUnit unit)
+    default AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<? extends UserSnowflake> users, int deletionTimeframe, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
         return ban(users, Duration.ofSeconds(unit.toSeconds(deletionTimeframe)));
