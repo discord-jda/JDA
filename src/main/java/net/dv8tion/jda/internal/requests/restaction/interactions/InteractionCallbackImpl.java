@@ -62,7 +62,7 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
                             "2. This interaction could have been acknowledged by another bot instance\n" +
                             "If your bot replied, or the three dots in a button disappeared without saying 'This interaction failed', or you see '[Bot] is thinking...' for more than 3 seconds, make sure that:\n" +
                             "\t- Only one bot using the current token is logged on\n" +
-                            "\t- If you can't find an existing instance, try to reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getIdLong() + "/bot",
+                            "\t- If you can't find an existing instance, try to reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot",
                     exception
             );
 
