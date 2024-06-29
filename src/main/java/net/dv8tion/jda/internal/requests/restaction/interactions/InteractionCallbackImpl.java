@@ -44,10 +44,12 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
         // That's why we also have a similar exception at the end of this method.
         if (exception.getErrorResponse() == ErrorResponse.INTERACTION_ALREADY_ACKNOWLEDGED)
             return ErrorResponseException.create(
-                    "This interaction was acknowledged by another bot instance\n" +
-                            "Make sure that:\n" +
-                            "\t- Only one bot using the current token is logged on\n" +
-                            "\t- If you can't find an existing instance, try to reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot",
+                    "This interaction was acknowledged by another process running for the same bot.\n" +
+                            "To resolve this, try stopping all current processes for the bot that could be responsible, or resetting your bot token.\n" +
+                            "You can reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot\n" +
+                            "You can also find processes by using 'jps -l' in your terminal, find the one which matches your main class/jar, then kill the process using the PID on the left:\n" +
+                            "\t- Windows: taskkill /F /PID <pid>\n" +
+                            "\t- Linux/Mac: kill -9 <pid>",
                     exception
             );
 
@@ -59,10 +61,13 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
             return ErrorResponseException.create(
                     "Failed to acknowledge this interaction, this can be due to 2 reasons:\n" +
                             "1. This interaction took longer than 3 seconds to be acknowledged, see https://jda.wiki/using-jda/troubleshooting/#the-interaction-took-longer-than-3-seconds-to-be-acknowledged\n" +
-                            "2. This interaction could have been acknowledged by another bot instance\n" +
-                            "If your bot replied, or the three dots in a button disappeared without saying 'This interaction failed', or you see '[Bot] is thinking...' for more than 3 seconds, make sure that:\n" +
-                            "\t- Only one bot using the current token is logged on\n" +
-                            "\t- If you can't find an existing instance, try to reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot",
+                            "2. This interaction could have been acknowledged by another process running for the same bot\n" +
+                            "You can confirm this by checking if your bot replied, or the three dots in a button disappeared without saying 'This interaction failed', or you see '[Bot] is thinking...' for more than 3 seconds.\n" +
+                            "To resolve this, try stopping all current processes for the bot that could be responsible, or resetting your bot token.\n" +
+                            "You can reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot\n" +
+                            "You can also find processes by using 'jps -l' in your terminal, find the one which matches your main class/jar, then kill the process using the PID on the left:\n" +
+                            "\t- Windows: taskkill /F /PID <pid>\n" +
+                            "\t- Linux/Mac: kill -9 <pid>",
                     exception
             );
 
