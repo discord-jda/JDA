@@ -16,13 +16,80 @@
 
 package net.dv8tion.jda.api.entities.channel.concrete;
 
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ImageProxy;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a Group DM channel.
  *
- * <p><b>This is currently unused.</b>
+ * <p>This is only used for user-installed apps.
  */
-public interface GroupChannel extends MessageChannel
+public interface GroupChannel extends MessageChannel, IDetachableEntity
 {
+    /** Template for {@link #getIconUrl()}. */
+    String ICON_URL = "https://cdn.discordapp.com/channel-icons/%s/%s.png";
+
+    /**
+     * The Discord hash-id of the group channel icon image.
+     * If no icon has been set, this returns {@code null}.
+     *
+     * @return Possibly-null String containing the group channel's icon hash-id.
+     */
+    @Nullable
+    String getIconId();
+
+    /**
+     * The URL of the group channel icon image.
+     * If no icon has been set, this returns {@code null}.
+     *
+     * @return Possibly-null String containing the group channel's icon URL.
+     */
+    @Nullable
+    default String getIconUrl()
+    {
+        String iconId = getIconId();
+        return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
+    }
+
+    /**
+     * Returns an {@link ImageProxy} for this group channel's icon.
+     *
+     * @return Possibly-null {@link ImageProxy} of this group channel's icon
+     *
+     * @see    #getIconUrl()
+     */
+    @Nullable
+    default ImageProxy getIcon()
+    {
+        final String iconUrl = getIconUrl();
+        return iconUrl == null ? null : new ImageProxy(iconUrl);
+    }
+
+    /**
+     * Returns the ID of the user which owns this {@link GroupChannel}.
+     *
+     * @return The ID of the user which owns this {@link GroupChannel}
+     */
+    @Nonnull
+    UserSnowflake getOwnerId();
+
+    /**
+     * Retrieves the {@link User} which owns this {@link GroupChannel}.
+     *
+     * @return A {@link RestAction} to retrieve the {@link User User} which owns this {@link GroupChannel}.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<User> retrieveOwner()
+    {
+        return getJDA().retrieveUserById(getOwnerId().getIdLong());
+    }
 }

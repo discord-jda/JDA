@@ -32,6 +32,7 @@ import org.apache.commons.collections4.BagUtils;
 import org.apache.commons.collections4.bag.HashBag;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,8 @@ public class SelectMenuMentions implements Mentions
 {
     private final DataObject resolved;
     private final JDAImpl jda;
-    private final GuildImpl guild;
+    private final InteractionEntityBuilder interactionEntityBuilder;
+    private final Guild guild;
     private final List<String> values;
 
     private List<User> cachedUsers;
@@ -47,9 +49,10 @@ public class SelectMenuMentions implements Mentions
     private List<Role> cachedRoles;
     private List<GuildChannel> cachedChannels;
 
-    public SelectMenuMentions(JDAImpl jda, GuildImpl guild, DataObject resolved, DataArray values)
+    public SelectMenuMentions(JDAImpl jda, InteractionEntityBuilder interactionEntityBuilder, @Nullable Guild guild, DataObject resolved, DataArray values)
     {
         this.jda = jda;
+        this.interactionEntityBuilder = interactionEntityBuilder;
         this.guild = guild;
         this.resolved = resolved;
         this.values = values.stream(DataArray::getString).collect(Collectors.toList());
@@ -96,6 +99,8 @@ public class SelectMenuMentions implements Mentions
     @Override
     public List<GuildChannel> getChannels()
     {
+        if (guild == null)
+            return Collections.emptyList();
         if (cachedChannels != null)
             return cachedChannels;
 
@@ -104,7 +109,18 @@ public class SelectMenuMentions implements Mentions
         return cachedChannels = values.stream()
                 .map(id -> channelMap.optObject(id).orElse(null))
                 .filter(Objects::nonNull)
-                .map(json -> jda.getGuildChannelById(ChannelType.fromId(json.getInt("type", -1)), json.getUnsignedLong("id")))
+                .map(json ->
+                {
+                    final ChannelType channelType = ChannelType.fromId(json.getInt("type", -1));
+                    if (!guild.isDetached())
+                        return guild.getGuildChannelById(channelType, json.getUnsignedLong("id"));
+
+                    // Unknown guilds
+                    if (channelType.isThread())
+                        return interactionEntityBuilder.createThreadChannel(guild, json);
+                    // Will return null if the type isn't known
+                    return interactionEntityBuilder.createGuildChannel(guild, json);
+                })
                 .filter(Objects::nonNull)
                 .collect(Helpers.toUnmodifiableList());
     }
@@ -137,14 +153,22 @@ public class SelectMenuMentions implements Mentions
     @Override
     public List<Role> getRoles()
     {
+        if (guild == null)
+            return Collections.emptyList();
         if (cachedRoles != null)
             return cachedRoles;
 
         DataObject roleMap = resolved.optObject("roles").orElseGet(DataObject::empty);
 
         return cachedRoles = values.stream()
-                .filter(roleMap::hasKey)
-                .map(jda::getRoleById)
+                .map(id -> roleMap.optObject(id).orElse(null))
+                .filter(Objects::nonNull)
+                .map(json ->
+                {
+                    if (!guild.isDetached())
+                        return guild.getRoleById(json.getUnsignedLong("id"));
+                    return interactionEntityBuilder.createRole(guild, json);
+                })
                 .filter(Objects::nonNull)
                 .collect(Helpers.toUnmodifiableList());
     }
@@ -188,21 +212,24 @@ public class SelectMenuMentions implements Mentions
     @Override
     public List<Member> getMembers()
     {
+        if (guild == null)
+            return Collections.emptyList();
         if (cachedMembers != null)
             return cachedMembers;
 
         DataObject memberMap = resolved.optObject("members").orElseGet(DataObject::empty);
         DataObject userMap = resolved.optObject("users").orElseGet(DataObject::empty);
-        EntityBuilder builder = jda.getEntityBuilder();
 
         return cachedMembers = values.stream()
                 .map(id -> memberMap.optObject(id).map(m -> m.put("id", id)).orElse(null))
                 .filter(Objects::nonNull)
                 .map(json -> json.put("user", userMap.getObject(json.getString("id"))))
-                .map(json -> builder.createMember(guild, json))
+                .map(json -> interactionEntityBuilder.createMember(guild, json))
                 .filter(Objects::nonNull)
-                .filter(member -> {
-                    builder.updateMemberCache(member);
+                .filter(member ->
+                {
+                    if (!member.isDetached())
+                        jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
                     return true;
                 })
                 .collect(Helpers.toUnmodifiableList());

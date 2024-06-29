@@ -192,7 +192,7 @@ public class ChannelUpdateHandler extends SocketHandler
             return channel;
 
         EntityBuilder builder = getJDA().getEntityBuilder();
-        GuildImpl guild = channel.getGuild();
+        GuildImpl guild = (GuildImpl) channel.getGuild();
 
         ChannelType oldType = channel.getType();
 

@@ -91,7 +91,7 @@ public class MessageMentionsImpl extends AbstractMentions
         {
             DataObject mention = userMentionMap.get(iter.next());
             if (mention.getBoolean("is_member"))
-                members.add(0, entityBuilder.createMember(guild, mention));
+                members.add(0, entityBuilder.createMember((GuildImpl) guild, mention));
         }
 
         // Update member cache
@@ -151,7 +151,7 @@ public class MessageMentionsImpl extends AbstractMentions
         long id = Long.parseUnsignedLong(matcher.group(1));
         DataObject member = userMentionMap.get(id);
         return member != null && member.getBoolean("is_member")
-                ? jda.getEntityBuilder().createMember(guild, member)
+                ? jda.getEntityBuilder().createMember((GuildImpl) guild, member)
                 : null;
     }
 

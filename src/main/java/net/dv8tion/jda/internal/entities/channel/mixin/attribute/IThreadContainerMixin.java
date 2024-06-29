@@ -45,6 +45,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
 
+        checkAttached();
         Checks.checkAccess(getGuild().getSelfMember(), this);
         if (isPrivate)
             checkPermission(Permission.CREATE_PRIVATE_THREADS);
@@ -69,6 +70,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
 
+        checkAttached();
         Checks.checkAccess(getGuild().getSelfMember(), this);
         checkPermission(Permission.CREATE_PUBLIC_THREADS);
 
@@ -79,6 +81,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
     @Override
     default ThreadChannelPaginationAction retrieveArchivedPublicThreadChannels()
     {
+        checkAttached();
         Checks.checkAccess(getGuild().getSelfMember(), this);
         checkPermission(Permission.MESSAGE_HISTORY);
 
@@ -90,6 +93,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
     @Override
     default ThreadChannelPaginationAction retrieveArchivedPrivateThreadChannels()
     {
+        checkAttached();
         Checks.checkAccess(getGuild().getSelfMember(), this);
         checkPermission(Permission.MESSAGE_HISTORY);
         checkPermission(Permission.MANAGE_THREADS);
@@ -102,6 +106,7 @@ public interface IThreadContainerMixin<T extends IThreadContainerMixin<T>> exten
     @Override
     default ThreadChannelPaginationAction retrieveArchivedPrivateJoinedThreadChannels()
     {
+        checkAttached();
         Checks.checkAccess(getGuild().getSelfMember(), this);
         checkPermission(Permission.MESSAGE_HISTORY);
 

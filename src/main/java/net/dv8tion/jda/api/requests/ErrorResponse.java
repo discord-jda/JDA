@@ -118,6 +118,7 @@ public enum ErrorResponse
     USER_NOT_CONNECTED(                       40032, "Target user is not connected to voice."),
     ALREADY_CROSSPOSTED(                      40033, "This message has already been crossposted."),
     APPLICATION_COMMAND_NAME_ALREADY_EXISTS(  40041, "An application command with that name already exists"),
+    MAX_FOLLOW_UP_MESSAGES_HIT(               40094, "This interaction has hit the maximum number of follow up messages"),
     MISSING_ACCESS(                           50001, "Missing Access"),
     INVALID_ACCOUNT_TYPE(                     50002, "Invalid Account Type"),
     INVALID_DM_ACTION(                        50003, "Cannot execute action on a DM channel"),

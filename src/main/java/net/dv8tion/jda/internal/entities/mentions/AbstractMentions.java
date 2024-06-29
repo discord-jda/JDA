@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.interactions.commands.ICommandReference;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandReference;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.apache.commons.collections4.Bag;
@@ -35,6 +34,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -45,7 +45,7 @@ public abstract class AbstractMentions implements Mentions
 {
     protected final String content;
     protected final JDAImpl jda;
-    protected final GuildImpl guild;
+    @Nullable protected final Guild guild;
     protected final boolean mentionsEveryone;
 
     protected List<User> mentionedUsers;
@@ -55,7 +55,7 @@ public abstract class AbstractMentions implements Mentions
     protected List<CustomEmoji> mentionedEmojis;
     protected List<SlashCommandReference> mentionedSlashCommands;
 
-    public AbstractMentions(String content, JDAImpl jda, GuildImpl guild, boolean mentionsEveryone)
+    public AbstractMentions(String content, JDAImpl jda, @Nullable Guild guild, boolean mentionsEveryone)
     {
         this.content = content;
         this.jda = jda;
