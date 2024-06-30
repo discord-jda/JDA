@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -39,6 +41,7 @@ public enum Permission
     MANAGE_WEBHOOKS(                    29, true,  true,  "Manage Webhooks"),
     MANAGE_GUILD_EXPRESSIONS(           30, true,  false, "Manage Expressions"),
     MANAGE_EVENTS(                      33, true,  true,  "Manage Events"),
+    USE_EMBEDDED_ACTIVITIES(            39, true,  true,  "Use Activities"),
     VIEW_CREATOR_MONETIZATION_ANALYTICS(41, true,  false, "View Creator Analytics"),
     CREATE_GUILD_EXPRESSIONS(           43, true,  false, "Create Expressions"),
     CREATE_SCHEDULED_EVENTS(            44, true,  false, "Create Events"),
@@ -65,6 +68,7 @@ public enum Permission
     MESSAGE_EXT_STICKER(         37, true, true, "Use External Stickers"),
     MESSAGE_ATTACH_VOICE_MESSAGE(46, true, true, "Send Voice Messages"),
     MESSAGE_SEND_POLLS(          49, true, true, "Create Polls"),
+    USE_EXTERNAL_APPLICATIONS(   50, true, true, "Use External Apps"),
 
     // Thread Permissions
     MANAGE_THREADS(          34, true, true, "Manage Threads"),
@@ -81,6 +85,9 @@ public enum Permission
     VOICE_DEAF_OTHERS(        23, true, true, "Deafen Members"),
     VOICE_MOVE_OTHERS(        24, true, true, "Move Members"),
     VOICE_USE_VAD(            25, true, true, "Use Voice Activity"),
+    @Deprecated
+    @ForRemoval(deadline="5.1.0")
+    @ReplaceWith("USE_EMBEDDED_ACTIVITIES")
     VOICE_START_ACTIVITIES(   39, true, true, "Use Activities"),
     VOICE_USE_SOUNDBOARD(     42, true, true, "Use Soundboard"),
     VOICE_USE_EXTERNAL_SOUNDS(45, true, true, "Use External Sounds"),
@@ -103,38 +110,59 @@ public enum Permission
 
     /**
      * Represents a raw set of all permissions
+     *
+     * @deprecated To be removed in 5.1.0
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
 
     /**
      * All permissions that apply to a channel
+     *
+     * @deprecated To be removed in 5.1.0 (use {@link Permission#isChannel()} instead)
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_CHANNEL_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
             .filter(Permission::isChannel).collect(Collectors.toSet()));
 
     /**
      * All Guild specific permissions which are only available to roles
+     *
+     * @deprecated To be removed in 5.1.0 (use {@link Permission#isGuild()} instead)
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_GUILD_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
             .filter(Permission::isGuild).collect(Collectors.toSet()));
 
     /**
      * All text channel specific permissions which are only available in text channel permission overrides
+     *
+     * @deprecated To be removed in 5.1.0
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_TEXT_PERMISSIONS
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS, MESSAGE_MANAGE,
                                 MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_EMOJI, MESSAGE_EXT_STICKER,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
+                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE,
+                                USE_APPLICATION_COMMANDS, USE_EXTERNAL_APPLICATIONS, USE_EMBEDDED_ACTIVITIES,
                                 MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS,
                                 MESSAGE_SEND_IN_THREADS, MESSAGE_ATTACH_VOICE_MESSAGE, MESSAGE_SEND_POLLS);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
+     *
+     * @deprecated To be removed in 5.1.0
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
                                 VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD,
-                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, VOICE_START_ACTIVITIES,
+                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, USE_EMBEDDED_ACTIVITIES,
                                 VOICE_USE_SOUNDBOARD, VOICE_USE_EXTERNAL_SOUNDS, VOICE_SET_STATUS);
 
     private final int offset;
@@ -211,7 +239,11 @@ public enum Permission
      * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannels}
      *
      * @return True, if and only if this permission can only be applied to text channels
+     *
+     * @deprecated To be removed in 5.1.0
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public boolean isText()
     {
         return (raw & ALL_TEXT_PERMISSIONS) == raw;
@@ -221,7 +253,11 @@ public enum Permission
      * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel VoiceChannels}
      *
      * @return True, if and only if this permission can only be applied to voice channels
+     *
+     * @deprecated To be removed in 5.1.0
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public boolean isVoice()
     {
         return (raw & ALL_VOICE_PERMISSIONS) == raw;
