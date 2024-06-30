@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -25,8 +23,6 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -106,25 +102,6 @@ public interface Modal extends SerializableData
      */
     @Nonnull
     String getTitle();
-
-    /**
-     * A List of {@link net.dv8tion.jda.api.interactions.components.ActionRow ActionRows} that this modal contains.
-     *
-     * @return List of ActionRows
-     *
-     * @deprecated Use {@link #getComponents()} instead
-     */
-    @Nonnull
-    @ForRemoval
-    @Deprecated
-    @ReplaceWith("getComponents()")
-    default List<ActionRow> getActionRows()
-    {
-        return getComponents().stream()
-                .filter(ActionRow.class::isInstance)
-                .map(ActionRow.class::cast)
-                .collect(Helpers.toUnmodifiableList());
-    }
 
     /**
      * A List of {@link LayoutComponent LayoutComponents} that this modal contains.
@@ -227,56 +204,6 @@ public interface Modal extends SerializableData
         }
 
         /**
-         * Adds ActionRows to this modal
-         *
-         * @param  actionRows
-         *         ActionRows to add to the modal, up to 5
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If any of the provided ActionRows are null</li>
-         *             <li>If any of the provided ActionRows' components are not compatible with Modals</li>
-         *         </ul>
-         *
-         * @return The same builder instance for chaining
-         *
-         * @see    ActionRow#isModalCompatible()
-         */
-        @Nonnull
-        @ForRemoval
-        @Deprecated
-        @ReplaceWith("addComponents(actionRows)")
-        public Builder addActionRows(@Nonnull ActionRow... actionRows)
-        {
-            return addComponents(actionRows);
-        }
-
-        /**
-         * Adds ActionRows to this modal
-         *
-         * @param  actionRows
-         *         ActionRows to add to the modal, up to 5
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If any of the provided ActionRows are null</li>
-         *             <li>If any of the provided ActionRows' components are not compatible with Modals</li>
-         *         </ul>
-         *
-         * @return The same builder instance for chaining
-         *
-         * @see    ActionRow#isModalCompatible()
-         */
-        @Nonnull
-        @ForRemoval
-        @Deprecated
-        @ReplaceWith("addComponents(actionRows)")
-        public Builder addActionRows(@Nonnull Collection<? extends ActionRow> actionRows)
-        {
-            return addComponents(actionRows);
-        }
-
-        /**
          * Adds {@link LayoutComponent LayoutComponents} to this modal
          *
          * @param  components
@@ -370,24 +297,6 @@ public interface Modal extends SerializableData
         public Builder addActionRow(@Nonnull ItemComponent... components)
         {
             return addComponents(ActionRow.of(components));
-        }
-
-        /**
-         * Returns an immutable list of all ActionRow components
-         *
-         * @return An immutable list of all ActionRow components
-         */
-        @Nonnull
-        @ForRemoval
-        @Deprecated
-        @ReplaceWith("getComponents()")
-        @Unmodifiable
-        public List<ActionRow> getActionRows()
-        {
-            return components.stream()
-                    .filter(ActionRow.class::isInstance)
-                    .map(ActionRow.class::cast)
-                    .collect(Helpers.toUnmodifiableList());
         }
 
         /**

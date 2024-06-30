@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.events.self;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 
 import javax.annotation.Nonnull;
@@ -27,13 +26,7 @@ import javax.annotation.Nonnull;
  * <p>Can be used to retrieve the old discriminator.
  *
  * <p>Identifier: {@code discriminator}
- *
- * @deprecated This will become obsolete in the future.
- *             Discriminators are being phased out and replaced by globally unique usernames.
- *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
  */
-@Deprecated
-@ForRemoval
 public class SelfUpdateDiscriminatorEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "discriminator";

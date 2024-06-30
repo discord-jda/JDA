@@ -19,7 +19,6 @@ package net.dv8tion.jda.test.compliance;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.UpdateEvent;
-import net.dv8tion.jda.api.events.self.SelfUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -45,9 +44,7 @@ public class EventConsistencyComplianceTest
         eventTypes = events.getSubTypesOf(GenericEvent.class);
         excludedTypes = new HashSet<>(Arrays.asList(
             // Special casing
-            UpdateEvent.class, Event.class, GenericEvent.class,
-            // Deprecated / Removed / Unused
-            SelfUpdateDiscriminatorEvent.class
+            UpdateEvent.class, Event.class, GenericEvent.class
         ));
     }
 

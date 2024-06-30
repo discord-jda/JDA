@@ -75,7 +75,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
     @Override
     public String getDiscriminator()
     {
-        return Helpers.format("%04d", discriminator);
+        return discriminator == 0 ? "0000" : Helpers.format("%04d", discriminator);
     }
 
     @Nullable

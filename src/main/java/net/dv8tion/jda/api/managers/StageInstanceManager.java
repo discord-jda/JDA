@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.managers;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.StageInstance;
 
 import javax.annotation.CheckReturnValue;
@@ -116,13 +117,15 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
      *         The privacy level
      *
      * @throws IllegalArgumentException
-     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN},
-     *         or {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#PUBLIC PUBLIC}.
+     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN}.
      *
      * @return StageInstanceManager for chaining convenience
+     *
+     * @deprecated Obsolete.
      */
     @Nonnull
     @CheckReturnValue
-    @SuppressWarnings("deprecation")
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level);
 }

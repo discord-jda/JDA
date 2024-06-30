@@ -16,8 +16,6 @@
 package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
@@ -557,34 +555,6 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setEventPassthrough(boolean enable)
     {
         return setFlag(ConfigFlag.EVENT_PASSTHROUGH, enable);
-    }
-
-    /**
-     * Whether the rate-limit should be relative to the current time plus latency.
-     * <br>By default we use the {@code X-RateLimit-Rest-After} header to determine when
-     * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
-     * to the latency which is ignored by the reset-after relative delay.
-     *
-     * <p>When disabled, we will use the {@code X-RateLimit-Reset} absolute timestamp instead which accounts for
-     * latency but requires a properly NTP synchronized clock to be present.
-     * If your system does have this feature you might gain a little quicker rate-limit handling than the default allows.
-     *
-     * <p>Default: <b>true</b>
-     *
-     * @param  enable
-     *         True, if the relative {@code X-RateLimit-Reset-After} header should be used.
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @since  4.1.0
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.1.0")
-    @ReplaceWith("setRestConfig(new RestConfig().setRelativeRateLimit(enable))")
-    public DefaultShardManagerBuilder setRelativeRateLimit(boolean enable)
-    {
-        return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
     }
 
     /**
@@ -1317,97 +1287,9 @@ public class  DefaultShardManagerBuilder
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
+     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitSchedulerProvider(ThreadPoolProvider)}.
      * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
-     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimiPool(executor, true)}</b>
-     *
-     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
-     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
-     * and similar methods.
-     *
-     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
-     *
-     * @param  pool
-     *         The thread-pool to use for rate-limit handling
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @deprecated This pool is now split into two pools.
-     *             You should use {@link #setRateLimitScheduler(ScheduledExecutorService)} and {@link #setRateLimitElastic(ExecutorService)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setRateLimitScheduler(pool) or setRateLimitElastic(pool)")
-    public DefaultShardManagerBuilder setRateLimitPool(@Nullable ScheduledExecutorService pool)
-    {
-        return setRateLimitPool(pool, pool == null);
-    }
-
-    /**
-     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
-     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
-     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
-     *
-     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
-     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
-     * and similar methods.
-     *
-     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
-     *
-     * @param  pool
-     *         The thread-pool to use for rate-limit handling
-     * @param  automaticShutdown
-     *         Whether {@link net.dv8tion.jda.api.JDA#shutdown()} should automatically shutdown this pool
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @deprecated This pool is now split into two pools.
-     *             You should use {@link #setRateLimitScheduler(ScheduledExecutorService, boolean)} and {@link #setRateLimitElastic(ExecutorService, boolean)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setRateLimitScheduler(pool, automaticShutdown) or setRateLimitElastic(pool, automaticShutdown)")
-    public DefaultShardManagerBuilder setRateLimitPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
-    {
-        return setRateLimitPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
-    }
-
-    /**
-     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} provider that should be used in
-     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
-     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     *
-     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
-     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
-     * and similar methods.
-     *
-     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * }{@link #setShardsTotal(int) shard_total}) threads.
-     *
-     * @param  provider
-     *         The thread-pool provider to use for rate-limit handling
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @deprecated This pool is now split into two pools.
-     *             You should use {@link #setRateLimitPoolProvider(ThreadPoolProvider)} and {@link #setRateLimitElasticProvider(ThreadPoolProvider)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setRateLimitSchedulerProvider(provider) or setRateLimitElasticProvider(provider)")
-    public DefaultShardManagerBuilder setRateLimitPoolProvider(@Nullable ThreadPoolProvider<? extends ScheduledExecutorService> provider)
-    {
-        this.rateLimitSchedulerProvider = provider;
-        return this;
-    }
-
-    /**
-     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
-     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
-     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
-     * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
-     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimiPool(executor, true)}</b>
+     * it using {@link #setRateLimitScheduler(ScheduledExecutorService, boolean) setRateLimiPool(executor, true)}</b>
      *
      * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
@@ -1430,7 +1312,7 @@ public class  DefaultShardManagerBuilder
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
+     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitSchedulerProvider(ThreadPoolProvider)}.
      *
      * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}

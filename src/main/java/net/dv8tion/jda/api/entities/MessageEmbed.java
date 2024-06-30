@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.FileProxy;
@@ -102,20 +101,6 @@ public class MessageEmbed implements SerializableData
      * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean)
      */
     public static final int EMBED_MAX_LENGTH_BOT = 6000;
-
-    /**
-     * The maximum amount of total visible characters an embed can have
-     *
-     * @see net.dv8tion.jda.api.EmbedBuilder#setDescription(CharSequence)
-     * @see net.dv8tion.jda.api.EmbedBuilder#setTitle(String)
-     * @see net.dv8tion.jda.api.EmbedBuilder#setFooter(String, String)
-     * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean)
-     *
-     * @deprecated This will be removed in the future.
-     */
-    @Deprecated
-    @ForRemoval
-    public static final int EMBED_MAX_LENGTH_CLIENT = 2000;
 
     /**
      * The maximum amount of total embed fields the embed can hold

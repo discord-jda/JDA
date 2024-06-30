@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.requests;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import okhttp3.Response;
 import org.jetbrains.annotations.Blocking;
@@ -266,19 +265,6 @@ public interface RestRateLimiter
             this.elastic = elastic;
             this.globalRateLimit = globalRateLimit;
             this.isRelative = isRelative;
-        }
-
-        /**
-         * The {@link ScheduledExecutorService} used to schedule rate-limit tasks.
-         *
-         * @return The {@link ScheduledExecutorService}
-         */
-        @Nonnull
-        @Deprecated
-        @ReplaceWith("getScheduler() or getElastic()")
-        public ScheduledExecutorService getPool()
-        {
-            return scheduler;
         }
 
         /**

@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.automod.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
@@ -160,8 +158,6 @@ public abstract class ListenerAdapter implements EventListener
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
     public void onUserUpdateGlobalName(@Nonnull UserUpdateGlobalNameEvent event) {}
-    @Deprecated
-    @ForRemoval
     public void onUserUpdateDiscriminator(@Nonnull UserUpdateDiscriminatorEvent event) {}
     public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
@@ -176,6 +172,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onSelfUpdateAvatar(@Nonnull SelfUpdateAvatarEvent event) {}
     public void onSelfUpdateMFA(@Nonnull SelfUpdateMFAEvent event) {}
     public void onSelfUpdateName(@Nonnull SelfUpdateNameEvent event) {}
+    public void onSelfUpdateDiscriminator(@Nonnull SelfUpdateDiscriminatorEvent event) {}
     public void onSelfUpdateGlobalName(@Nonnull SelfUpdateGlobalNameEvent event) {}
     public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
 
@@ -381,10 +378,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
-    @Deprecated
-    @ReplaceWith("onGenericSession(event)")
-    @ForRemoval(deadline = "5.0.0")
-    public void onGenericSessionEvent(@Nonnull GenericSessionEvent event) {}
     public void onGenericSession(@Nonnull GenericSessionEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericAutoCompleteInteraction(@Nonnull GenericAutoCompleteInteractionEvent event) {}
