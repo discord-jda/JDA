@@ -46,10 +46,7 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
             return ErrorResponseException.create(
                     "This interaction was acknowledged by another process running for the same bot.\n" +
                             "To resolve this, try stopping all current processes for the bot that could be responsible, or resetting your bot token.\n" +
-                            "You can reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot\n" +
-                            "You can also find processes by using 'jps -l' in your terminal, find the one which matches your main class/jar, then kill the process using the PID on the left:\n" +
-                            "\t- Windows: taskkill /F /PID <pid>\n" +
-                            "\t- Linux/Mac: kill -9 <pid>",
+                            "You can reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot",
                     exception
             );
 
@@ -64,10 +61,7 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
                             "2. This interaction could have been acknowledged by another process running for the same bot\n" +
                             "You can confirm this by checking if your bot replied, or the three dots in a button disappeared without saying 'This interaction failed', or you see '[Bot] is thinking...' for more than 3 seconds.\n" +
                             "To resolve this, try stopping all current processes for the bot that could be responsible, or resetting your bot token.\n" +
-                            "You can reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot\n" +
-                            "You can also find processes by using 'jps -l' in your terminal, find the one which matches your main class/jar, then kill the process using the PID on the left:\n" +
-                            "\t- Windows: taskkill /F /PID <pid>\n" +
-                            "\t- Linux/Mac: kill -9 <pid>",
+                            "You can reset your token at https://discord.com/developers/applications/" + getJDA().getSelfUser().getApplicationId() + "/bot",
                     exception
             );
 
