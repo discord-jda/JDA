@@ -110,23 +110,37 @@ public enum Permission
 
     /**
      * Represents a raw set of all permissions
+     *
+     * @deprecated To be removed in 5.1.0
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
 
     /**
      * All permissions that apply to a channel
+     *
+     * @deprecated To be removed in 5.1.0 (use {@link Permission#isChannel()} instead)
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_CHANNEL_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
             .filter(Permission::isChannel).collect(Collectors.toSet()));
 
     /**
      * All Guild specific permissions which are only available to roles
+     *
+     * @deprecated To be removed in 5.1.0 (use {@link Permission#isGuild()} instead)
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_GUILD_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
             .filter(Permission::isGuild).collect(Collectors.toSet()));
 
     /**
      * All text channel specific permissions which are only available in text channel permission overrides
+     *
+     * @deprecated To be removed in 5.1.0
      */
     @Deprecated
     @ForRemoval(deadline = "5.1.0")
@@ -140,6 +154,8 @@ public enum Permission
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
+     *
+     * @deprecated To be removed in 5.1.0
      */
     @Deprecated
     @ForRemoval(deadline = "5.1.0")
