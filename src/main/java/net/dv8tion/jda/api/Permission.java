@@ -128,6 +128,8 @@ public enum Permission
     /**
      * All text channel specific permissions which are only available in text channel permission overrides
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_TEXT_PERMISSIONS
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS, MESSAGE_MANAGE,
                                 MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_EMOJI, MESSAGE_EXT_STICKER,
@@ -139,6 +141,8 @@ public enum Permission
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
                                 VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD,
@@ -219,7 +223,11 @@ public enum Permission
      * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannels}
      *
      * @return True, if and only if this permission can only be applied to text channels
+     *
+     * @deprecated To be removed in 5.1.0
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public boolean isText()
     {
         return (raw & ALL_TEXT_PERMISSIONS) == raw;
@@ -229,7 +237,11 @@ public enum Permission
      * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel VoiceChannels}
      *
      * @return True, if and only if this permission can only be applied to voice channels
+     *
+     * @deprecated To be removed in 5.1.0
      */
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     public boolean isVoice()
     {
         return (raw & ALL_VOICE_PERMISSIONS) == raw;
