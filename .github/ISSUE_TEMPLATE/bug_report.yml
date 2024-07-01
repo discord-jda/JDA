@@ -41,7 +41,7 @@ body:
     description: |-
       Please add the code you use to reproduce this problem.  
       Make sure to remove or replace any sensitive data like your Bot's token.
-      Leave this empty or put "N/A" if you don't have a reproducible setup.
+      Put "N/A" if you don't have a reproducible setup.
       
       The provided text will be rendered as Java code, so you don't have to provide a Code block for it.
     render: java
@@ -68,7 +68,6 @@ body:
     label: "Exception or Error"
     description: |-
       Share any Exception or Error you encountered.  
-      Make sure to put it into a code block for better formatting.
       Leave this blank or put "N/A" if you don't have an Exception or Error.
       
       The provided text will be rendered as code, so you don't have to provide a Code block for it.
