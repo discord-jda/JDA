@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.components.selections;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -77,6 +78,10 @@ public interface SelectMenu extends ActionComponent
      * @return The max values
      */
     int getMaxValues();
+
+    @Nonnull
+    @CheckReturnValue
+    Builder<? extends SelectMenu, ? extends Builder<?, ?>> createCopy();
 
     /**
      * A preconfigured builder for the creation of select menus.
