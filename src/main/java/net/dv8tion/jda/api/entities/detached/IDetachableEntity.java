@@ -28,7 +28,7 @@ public interface IDetachableEntity
 {
     /**
      * Whether this entity is detached, i.e.,
-     * if the entity isn't known by the bot, such as unknown guilds, and group DMs.
+     * if the entity isn't known by the bot, such as unknown guilds, friend DMs, and group DMs.
      *
      * @return {@code True}, if the entity is detached
      */
