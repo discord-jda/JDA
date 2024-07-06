@@ -37,10 +37,10 @@ public interface ChannelMixin<T extends ChannelMixin<T>> extends
     @CheckReturnValue
     default RestAction<Void> delete()
     {
+        checkCanAccess();
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new RestActionImpl<>(getJDA(), route);
     }
-
 
     // ---- State Accessors ----
     T setName(String name);
