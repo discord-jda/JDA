@@ -30,6 +30,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.detached.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IInteractionPermissionMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.PrivateChannelMixin;
 import net.dv8tion.jda.internal.entities.detached.DetachedGuildImpl;
 import net.dv8tion.jda.internal.entities.detached.DetachedMemberImpl;
 import net.dv8tion.jda.internal.entities.detached.DetachedRoleImpl;
@@ -247,9 +248,26 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder
         return role;
     }
 
-    public PrivateChannel createPrivateChannel(DataObject json, User user)
+    public PrivateChannel createPrivateChannel(DataObject json, User interactionUser)
     {
-        final PrivateChannelImpl channel = new PrivateChannelImpl(getJDA(), json.getUnsignedLong("id"), user);
+        final long channelId = json.getUnsignedLong("id");
+        final DataObject recipientObj = json.optArray("recipients")
+                .map(d -> d.getObject(0))
+                .orElse(null);
+
+        final PrivateChannelMixin<?> channel;
+        if (recipientObj != null) {
+            // We only get recipient in Bot DMs and Group DMs
+            if (interactionUser.getIdLong() == recipientObj.getLong("id")) {
+                channel = new PrivateChannelImpl(getJDA(), channelId, interactionUser);
+            } else {
+                // Friend DMs don't have recipients
+                throw new IllegalArgumentException("Recipient should only be present in Bot DMs");
+            }
+        } else {
+            // Friend DMs, no info
+            channel = new DetachedPrivateChannelImpl(getJDA(), channelId);
+        }
         configurePrivateChannel(json, channel);
         return channel;
     }

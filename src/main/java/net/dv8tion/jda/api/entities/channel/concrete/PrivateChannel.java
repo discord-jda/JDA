@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities.channel.concrete;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -57,6 +58,9 @@ public interface PrivateChannel extends MessageChannel
      * Retrieves the {@link User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      *
      * <br>This method fetches the channel from the API and retrieves the User from that.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if this channel is {@link Guild#isDetached() detached}, representing a friend DMs.
      *
      * @return A {@link RestAction RestAction} to retrieve the {@link User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      */

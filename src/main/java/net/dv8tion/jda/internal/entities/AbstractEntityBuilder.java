@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.channel.concrete.PrivateChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPostContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.*;
 import net.dv8tion.jda.internal.entities.mixin.MemberMixin;
@@ -197,7 +196,7 @@ public abstract class AbstractEntityBuilder
         return tag;
     }
 
-    protected void configurePrivateChannel(DataObject json, PrivateChannelImpl channel)
+    protected void configurePrivateChannel(DataObject json, PrivateChannelMixin<?> channel)
     {
         channel.setLatestMessageIdLong(json.getLong("last_message_id", 0));
     }
