@@ -1,6 +1,6 @@
 [maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA?color=blue
 [jitpack]: https://img.shields.io/badge/Snapshots-JitPack-blue
-[download]: #download
+[installation]: #-installation
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://jda.wiki/introduction/migration-v4-v5/
 [jenkins]: https://ci.dv8tion.net/job/JDA5
@@ -22,7 +22,7 @@
 
 <img align="right" src="https://github.com/discord-jda/JDA/blob/assets/assets/readme/logo.png?raw=true" height="150" width="150">
 
-[![maven-central][]][download]
+[![maven-central][]][installation]
 [![jitpack][]](https://jitpack.io/#discord-jda/JDA)
 [![jenkins-shield][]][jenkins]
 [![license-shield][]][license]
