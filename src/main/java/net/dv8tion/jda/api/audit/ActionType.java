@@ -551,7 +551,7 @@ public enum ActionType
      * <p><b>Possible Keys</b><br>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_NAME THREAD_NAME}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_SLOWMODE THREAD_SLOWMODE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_SLOWMODE CHANNEL_SLOWMODE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_ARCHIVED THREAD_ARCHIVED}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_AUTO_ARCHIVE_DURATION THREAD_AUTO_ARCHIVE_DURATION}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_LOCKED THREAD_LOCKED}</li>
@@ -567,7 +567,7 @@ public enum ActionType
      * <p><b>Possible Keys</b><br>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_NAME THREAD_NAME}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_SLOWMODE THREAD_SLOWMODE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_SLOWMODE CHANNEL_SLOWMODE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_ARCHIVED THREAD_ARCHIVED}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_AUTO_ARCHIVE_DURATION THREAD_AUTO_ARCHIVE_DURATION}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_LOCKED THREAD_LOCKED}</li>

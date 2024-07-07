@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api.audit;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
@@ -353,19 +350,6 @@ public enum AuditLogKey
      * <p>Expected type: <b>String</b>
      */
     THREAD_NAME("name"),
-
-    /**
-     * Change of the {@link ISlowmodeChannel#getSlowmode()} value.
-     *
-     * <p>Expected type: <b>Integer</b>
-     *
-     * @deprecated Use {@link #CHANNEL_SLOWMODE} instead
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
-    @ReplaceWith("CHANNEL_SLOWMODE")
-    THREAD_SLOWMODE("rate_limit_per_user"),
 
     /**
      * Change of the {@link ThreadChannel#getAutoArchiveDuration() ThreadChannel.getAutoArchiveDuration()} value.

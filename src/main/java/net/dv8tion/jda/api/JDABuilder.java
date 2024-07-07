@@ -16,8 +16,6 @@
 package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.Event;
@@ -548,32 +546,6 @@ public class JDABuilder
     }
 
     /**
-     * Whether the rate-limit should be relative to the current time plus latency.
-     * <br>By default we use the {@code X-RateLimit-Reset-After} header to determine when
-     * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
-     * to the latency which is ignored by the reset-after relative delay.
-     *
-     * <p>When disabled, we will use the {@code X-RateLimit-Reset} absolute timestamp instead which accounts for
-     * latency but requires a properly NTP synchronized clock to be present.
-     * If your system does have this feature you might gain a little quicker rate-limit handling than the default allows.
-     *
-     * <p>Default: <b>true</b>
-     *
-     * @param  enable
-     *         True, if the relative {@code X-RateLimit-Reset-After} header should be used.
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.1.0")
-    @ReplaceWith("setRestConfig(new RestConfig().setRelativeRateLimit(enable))")
-    public JDABuilder setRelativeRateLimit(boolean enable)
-    {
-        return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
-    }
-
-    /**
      * Custom {@link RestConfig} to use for this JDA instance.
      * <br>This can be used to customize how rate-limits are handled and configure a custom http proxy.
      *
@@ -903,67 +875,7 @@ public class JDABuilder
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
      * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
-     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimitPool(executor, true)}</b>
-     *
-     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
-     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
-     * and similar methods.
-     *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads.
-     *
-     * @param  pool
-     *         The thread-pool to use for rate-limit handling
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @deprecated This pool is now split into two pools.
-     *             You should use {@link #setRateLimitScheduler(ScheduledExecutorService)} and {@link #setRateLimitElastic(ExecutorService)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setRateLimitScheduler(pool)")
-    public JDABuilder setRateLimitPool(@Nullable ScheduledExecutorService pool)
-    {
-        return setRateLimitPool(pool, pool == null);
-    }
-
-    /**
-     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
-     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
-     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     *
-     * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
-     * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
-     * and similar methods.
-     *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads.
-     *
-     * @param  pool
-     *         The thread-pool to use for rate-limit handling
-     * @param  automaticShutdown
-     *         Whether {@link JDA#shutdown()} should shutdown this pool
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     *
-     * @deprecated This pool is now split into two pools.
-     *             You should use {@link #setRateLimitScheduler(ScheduledExecutorService, boolean)} and {@link #setRateLimitElastic(ExecutorService, boolean)} instead.
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setRateLimitScheduler(pool, automaticShutdown)")
-    public JDABuilder setRateLimitPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
-    {
-        this.rateLimitScheduler = pool;
-        this.shutdownRateLimitScheduler = automaticShutdown;
-        return this;
-    }
-
-    /**
-     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
-     * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
-     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
-     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimitPool(executor, true)}</b>
+     * it using {@link #setRateLimitScheduler(ScheduledExecutorService, boolean) setRateLimitScheduler(executor, true)}</b>
      *
      * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}

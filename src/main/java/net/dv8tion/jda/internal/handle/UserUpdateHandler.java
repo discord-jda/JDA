@@ -36,6 +36,7 @@ public class UserUpdateHandler extends SocketHandler
         SelfUserImpl self = (SelfUserImpl) getJDA().getSelfUser();
 
         String name = content.getString("username");
+        String discriminator = content.getString("discriminator");
         String globalName = content.getString("global_name", null);
         String avatarId = content.getString("avatar", null);
         Boolean verified = content.hasKey("verified") ? content.getBoolean("verified") : null;
@@ -49,6 +50,16 @@ public class UserUpdateHandler extends SocketHandler
                 new SelfUpdateNameEvent(
                     getJDA(), responseNumber,
                     oldName));
+        }
+
+        if (!Objects.equals(discriminator, self.getDiscriminator()))
+        {
+            String oldDiscriminator = self.getDiscriminator();
+            self.setDiscriminator(Short.parseShort(discriminator));
+            getJDA().handleEvent(
+                new SelfUpdateDiscriminatorEvent(
+                    getJDA(), responseNumber,
+                    oldDiscriminator));
         }
 
         if (!Objects.equals(globalName, self.getGlobalName()))

@@ -511,8 +511,6 @@ class AudioWebSocket extends WebSocketAdapter
                 }
                 else
                 {
-                    //noinspection deprecation
-                    listener.onUserSpeaking(user, speaking);
                     listener.onUserSpeakingModeUpdate((UserSnowflake) user, speaking);
                 }
 
