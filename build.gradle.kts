@@ -27,7 +27,7 @@ plugins {
     `java-library`
     `maven-publish`
 
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -455,8 +455,8 @@ val release by tasks.creating(Task::class) {
 }
 
 afterEvaluate {
-    val closeAndReleaseSonatypeStagingRepository by tasks.getting
-    closeAndReleaseSonatypeStagingRepository.apply {
+    val closeAndReleaseStagingRepositories by tasks.getting
+    closeAndReleaseStagingRepositories.apply {
         release.dependsOn(this)
         mustRunAfter(publishingTasks)
     }
