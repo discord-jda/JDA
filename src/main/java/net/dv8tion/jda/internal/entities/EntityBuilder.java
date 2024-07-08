@@ -2553,7 +2553,10 @@ public class EntityBuilder
             DataObject userJson = o.getObject("user");
             TeamMember.MembershipState state = TeamMember.MembershipState.fromKey(o.getInt("membership_state"));
             User user = createUser(userJson);
-            return new TeamMemberImpl(user, state, id);
+            TeamMember.RoleType roleType = user.getIdLong() == ownerId
+                    ? TeamMember.RoleType.OWNER
+                    : TeamMember.RoleType.fromKey(o.getString("role"));
+            return new TeamMemberImpl(user, state, roleType, id);
         });
         return new ApplicationTeamImpl(iconId, members, id, ownerId);
     }
