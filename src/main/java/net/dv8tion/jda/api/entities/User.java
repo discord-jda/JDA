@@ -16,8 +16,6 @@
 package net.dv8tion.jda.api.entities;
 
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
@@ -26,6 +24,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -163,18 +162,15 @@ public interface User extends UserSnowflake
     }
 
     /**
-     * <br>The discriminator of the {@link net.dv8tion.jda.api.entities.User User}. Used to differentiate between users with the same usernames.
+     * The discriminator of the {@link net.dv8tion.jda.api.entities.User User}. Used to differentiate between users with the same usernames.
      * <br>This only contains the 4 digits after the username and the #.
      *
-     * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} discriminator.
+     * <p>For most users, no discriminator is used and this will be {@code "0000"} instead.
+     * The primary use-case for discriminators is bot and guest accounts, to prevent name squatting.
      *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
+     * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} discriminator.
      */
     @Nonnull
-    @Deprecated
-    @ForRemoval
     String getDiscriminator();
 
     /**
@@ -256,16 +252,11 @@ public interface User extends UserSnowflake
      * The "tag" for this user
      * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", user)
      *
-     * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
+     * <p>Users without a discriminator use {@code #0000} instead.
      *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
+     * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
      */
     @Nonnull
-    @Deprecated
-    @ForRemoval
-    @ReplaceWith("getName()")
     String getAsTag();
 
     /**
@@ -321,6 +312,7 @@ public interface User extends UserSnowflake
      * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that this user is a member of.
      */
     @Nonnull
+    @Unmodifiable
     List<Guild> getMutualGuilds();
 
     /**

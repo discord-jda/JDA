@@ -96,22 +96,22 @@ public enum MessageType
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_DISQUALIFIED(14, true, false),
+    GUILD_DISCOVERY_DISQUALIFIED(14, true, true),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_REQUALIFIED(15, true, false),
+    GUILD_DISCOVERY_REQUALIFIED(15, true, true),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16, true, false),
+    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16, true, true),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17, true, false),
+    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17, true, true),
 
     /**
      * This is sent to a TextChannel when a message thread is created if the message from which the thread was started is "old".
@@ -216,23 +216,28 @@ public enum MessageType
      *
      * @see java.time.OffsetDateTime#parse(CharSequence)
      */
-    GUILD_INCIDENT_ALERT_MODE_ENABLED(36, true, false),
+    GUILD_INCIDENT_ALERT_MODE_ENABLED(36, true, true),
 
     /**
      * Sent when a moderator deactivates a temporary security measure, such as pausing invites or direct messages.
      */
-    GUILD_INCIDENT_ALERT_MODE_DISABLED(37, true, false),
+    GUILD_INCIDENT_ALERT_MODE_DISABLED(37, true, true),
 
     /**
      * Sent when a moderator reports a raid in a guild.
      * <br>The message author is the reporter.
      */
-    GUILD_INCIDENT_REPORT_RAID(38, true, false),
+    GUILD_INCIDENT_REPORT_RAID(38, true, true),
 
     /**
      * Sent when a moderator reports a raid as a false alarm in a guild.
      */
-    GUILD_INCIDENT_REPORT_FALSE_ALARM(39, true, false),
+    GUILD_INCIDENT_REPORT_FALSE_ALARM(39, true, true),
+
+    /**
+     * Sent when a user purchases a product sold in a guild
+     */
+    PURCHASE_NOTIFICATION(44, true, true),
 
     /**
      * Unknown MessageType.

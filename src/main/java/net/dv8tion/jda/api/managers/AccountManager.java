@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
 
@@ -42,16 +41,12 @@ public interface AccountManager extends Manager<AccountManager>
 {
     /**
      * Used to reset the name field
-     *
-     * @deprecated Bot usernames are set through the application name now.
      */
-    @Deprecated
-    @ForRemoval
-    long NAME        = 1;
+    long NAME   = 1;
     /** Used to reset the avatar field */
-    long AVATAR      = 1 << 1;
+    long AVATAR = 1 << 1;
     /** Used to reset the banner field */
-    long BANNER      = 1 << 2;
+    long BANNER = 1 << 2;
 
     /**
      * The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser} that will be
@@ -118,13 +113,9 @@ public interface AccountManager extends Manager<AccountManager>
      *         </ul>
      *
      * @return AccountManager for chaining convenience
-     *
-     * @deprecated Bot usernames are set through the application name now.
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval
     AccountManager setName(@Nonnull String name);
 
     /**

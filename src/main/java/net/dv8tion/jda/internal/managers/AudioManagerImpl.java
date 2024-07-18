@@ -154,12 +154,6 @@ public class AudioManagerImpl implements AudioManager
         return EnumSet.copyOf(this.speakingModes);
     }
 
-    @Override
-    @Deprecated
-    public void setSpeakingDelay(int millis)
-    {
-    }
-
     @Nonnull
     @Override
     public JDAImpl getJDA()

@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.Incubating;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
@@ -33,6 +30,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -183,6 +181,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * @return Immutable list of {@link Activity Activities} for the user
      */
     @Nonnull
+    @Unmodifiable
     List<Activity> getActivities();
 
     /**
@@ -339,6 +338,7 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * @see    Guild#modifyMemberRoles(Member, Collection, Collection)
      */
     @Nonnull
+    @Unmodifiable
     List<Role> getRoles();
 
     /**
@@ -548,50 +548,6 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
     default AuditableRestAction<Void> kick()
     {
         return getGuild().kick(this);
-    }
-
-    /**
-     * Kicks this Member from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.Member Member}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link Permission#KICK_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link Member#canInteract(Member)}
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided reason is longer than 512 characters
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     *         Kicks the provided Member from the current Guild
-     *
-     * @deprecated
-     *         Use {@link #kick()} and {@link AuditableRestAction#reason(String)} instead
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    @ReplaceWith("kick().reason(reason)")
-    @DeprecatedSince("5.0.0")
-    default AuditableRestAction<Void> kick(@Nullable String reason)
-    {
-        return getGuild().kick(this, reason);
     }
 
     /**

@@ -68,6 +68,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -415,7 +416,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<AutoModRule>> retrieveAutoModRules();
+    RestAction<@Unmodifiable List<AutoModRule>> retrieveAutoModRules();
 
     /**
      * Retrieves the {@link AutoModRule} for the provided id.
@@ -692,6 +693,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features">List of Features</a>
      */
     @Nonnull
+    @Unmodifiable
     Set<String> getFeatures();
 
     /**
@@ -907,6 +909,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Immutable list of members who boost this guild
      */
     @Nonnull
+    @Unmodifiable
     List<Member> getBoosters();
 
     /**
@@ -1211,14 +1214,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
      *
      * @see    net.dv8tion.jda.api.JDA#getUserByTag(String)
-     *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
-    @Deprecated
-    @ForRemoval
     default Member getMemberByTag(@Nonnull String tag)
     {
         User user = getJDA().getUserByTag(tag);
@@ -1251,14 +1248,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
      *
      * @see    #getMemberByTag(String)
-     *
-     * @deprecated This will become obsolete in the future.
-     *             Discriminators are being phased out and replaced by globally unique usernames.
-     *             For more information, see <a href="https://support.discord.com/hc/en-us/articles/12620128861463" target="_blank">New Usernames &amp; Display Names</a>.
      */
     @Nullable
-    @Deprecated
-    @ForRemoval
     default Member getMemberByTag(@Nonnull String username, @Nonnull String discriminator)
     {
         User user = getJDA().getUserByTag(username, discriminator);
@@ -1282,6 +1273,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #loadMembers()
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembers()
     {
         return getMemberCache().asList();
@@ -1311,6 +1303,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @Incubating
+    @Unmodifiable
     default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getMemberCache().getElementsByUsername(name, ignoreCase);
@@ -1334,6 +1327,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembersByNickname(@Nullable String nickname, boolean ignoreCase)
     {
         return getMemberCache().getElementsByNickname(nickname, ignoreCase);
@@ -1360,6 +1354,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembersByEffectiveName(@Nonnull String name, boolean ignoreCase)
     {
         return getMemberCache().getElementsByName(name, ignoreCase);
@@ -1384,6 +1379,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #findMembersWithRoles(Role...)
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembersWithRoles(@Nonnull Role... roles)
     {
         Checks.notNull(roles, "Roles");
@@ -1409,6 +1405,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #findMembersWithRoles(Collection)
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles)
     {
         Checks.noneNull(roles, "Roles");
@@ -1463,6 +1460,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable list of all ScheduledEvent names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<ScheduledEvent> getScheduledEventsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getScheduledEventCache().getElementsByName(name, ignoreCase);
@@ -1526,6 +1524,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable List of {@link ScheduledEvent ScheduledEvents}.
      */
     @Nonnull
+    @Unmodifiable
     default List<ScheduledEvent> getScheduledEvents()
     {
         return getScheduledEventCache().asList();
@@ -1599,6 +1598,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #getChannels(boolean)
      */
     @Nonnull
+    @Unmodifiable
     default List<GuildChannel> getChannels()
     {
         return getChannels(true);
@@ -1628,6 +1628,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #getChannels()
      */
     @Nonnull
+    @Unmodifiable
     List<GuildChannel> getChannels(boolean includeHidden);
 
     /**
@@ -1680,6 +1681,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return An immutable List of {@link Role Roles}.
      */
     @Nonnull
+    @Unmodifiable
     default List<Role> getRoles()
     {
         return getRoleCache().asList();
@@ -1698,6 +1700,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
@@ -1893,6 +1896,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveEmojis()
      */
     @Nonnull
+    @Unmodifiable
     default List<RichCustomEmoji> getEmojis()
     {
         return getEmojiCache().asList();
@@ -1915,6 +1919,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable list of all Emojis that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase)
     {
         return getEmojiCache().getElementsByName(name, ignoreCase);
@@ -1995,6 +2000,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveStickers()
      */
     @Nonnull
+    @Unmodifiable
     default List<GuildSticker> getStickers()
     {
         return getStickerCache().asList();
@@ -2015,6 +2021,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return Possibly-empty immutable list of all Stickers that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<GuildSticker> getStickersByName(@Nonnull String name, boolean ignoreCase)
     {
         return getStickerCache().getElementsByName(name, ignoreCase);
@@ -2044,7 +2051,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<RichCustomEmoji>> retrieveEmojis();
+    RestAction<@Unmodifiable List<RichCustomEmoji>> retrieveEmojis();
 
     /**
      * Retrieves a custom emoji together with its respective creator.
@@ -2144,7 +2151,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<GuildSticker>> retrieveStickers();
+    RestAction<@Unmodifiable List<GuildSticker>> retrieveStickers();
 
     /**
      * Attempts to retrieve a {@link GuildSticker} object for this guild based on the provided snowflake reference.
@@ -2480,7 +2487,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Invite>> retrieveInvites();
+    RestAction<@Unmodifiable List<Invite>> retrieveInvites();
 
     /**
      * Retrieves all {@link net.dv8tion.jda.api.entities.templates.Template Templates} for this guild.
@@ -2495,7 +2502,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Template>> retrieveTemplates();
+    RestAction<@Unmodifiable List<Template>> retrieveTemplates();
 
     /**
      * Used to create a new {@link net.dv8tion.jda.api.entities.templates.Template Template} for this Guild.
@@ -2543,7 +2550,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<Webhook>> retrieveWebhooks();
+    RestAction<@Unmodifiable List<Webhook>> retrieveWebhooks();
 
     /**
      * Retrieves the {@link GuildWelcomeScreen welcome screen} for this Guild.
@@ -2784,7 +2791,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
      * and immediately provided if the member information is consistent. The cache consistency directly
      * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(true)} to always
+     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to always
      * make a new request, which is the default behavior if the required intents are disabled.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
@@ -2822,7 +2829,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
      * and immediately provided if the member information is consistent. The cache consistency directly
      * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(true)} to always
+     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to always
      * make a new request, which is the default behavior if the required intents are disabled.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
@@ -2854,7 +2861,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
      * and immediately provided if the member information is consistent. The cache consistency directly
      * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(true)} to always
+     * is required to keep the cache updated with the latest information. You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to always
      * make a new request, which is the default behavior if the required intents are disabled.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
@@ -3245,15 +3252,20 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
     @CheckReturnValue
     Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
 
+    /**
+     * Retrieves the active threads in this guild.
+     *
+     * @return {@link RestAction} - List of {@link ThreadChannel}
+     */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<ThreadChannel>> retrieveActiveThreads();
+    RestAction<@Unmodifiable List<ThreadChannel>> retrieveActiveThreads();
 
     /**
      * Retrieves a {@link ScheduledEvent} by its ID.
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT ErrorResponse.UNKNOWN_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SCHEDULED_EVENT ErrorResponse.UNKNOWN_SCHEDULED_EVENT}
      *     <br>A scheduled event with the specified ID does not exist in the guild, or the currently logged in user does not
      *     have access to it.</li>
      * </ul>
@@ -3276,7 +3288,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * Retrieves a {@link ScheduledEvent} by its ID.
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT ErrorResponse.UNKNOWN_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SCHEDULED_EVENT ErrorResponse.UNKNOWN_SCHEDULED_EVENT}
      *     <br>A scheduled event with the specified ID does not exist in this guild, or the currently logged in user does not
      *     have access to it.</li>
      * </ul>
@@ -3698,7 +3710,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<UserSnowflake> users, @Nullable Duration deletionTime);
+    AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<? extends UserSnowflake> users, @Nullable Duration deletionTime);
 
     /**
      * Bans up to 200 of the provided users.
@@ -3739,7 +3751,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<UserSnowflake> users, int deletionTimeframe, @Nonnull TimeUnit unit)
+    default AuditableRestAction<BulkBanResponse> ban(@Nonnull Collection<? extends UserSnowflake> users, int deletionTimeframe, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
         return ban(users, Duration.ofSeconds(unit.toSeconds(deletionTimeframe)));

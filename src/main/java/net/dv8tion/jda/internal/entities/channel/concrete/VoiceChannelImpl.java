@@ -179,7 +179,7 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     public AuditableRestAction<Void> modifyStatus(@Nonnull String status)
     {
         Checks.notLonger(status, MAX_STATUS_LENGTH, "Voice Status");
-        checkCanAccessChannel();
+        checkCanAccess();
         if (this.equals(getGuild().getSelfMember().getVoiceState().getChannel()))
             checkPermission(Permission.VOICE_SET_STATUS);
         else

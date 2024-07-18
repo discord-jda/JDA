@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils.concurrent;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Blocking;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
@@ -129,6 +130,7 @@ public interface Task<T>
      * @return The result value
      */
     @Nonnull
+    @Blocking
     T get();
 
     /**

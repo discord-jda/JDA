@@ -16,12 +16,11 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.managers.StageInstanceManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -79,6 +78,7 @@ public interface StageInstance extends ISnowflake
      * @return Immutable {@link List} of {@link Member Members} which can speak in this stage instance
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getSpeakers()
     {
         return getChannel().getMembers()
@@ -100,6 +100,7 @@ public interface StageInstance extends ISnowflake
      * @return Immutable {@link List} of {@link Member Members} which cannot speak in this stage instance
      */
     @Nonnull
+    @Unmodifiable
     default List<Member> getAudience()
     {
         return getChannel().getMembers()
@@ -152,15 +153,6 @@ public interface StageInstance extends ISnowflake
     {
         /** Placeholder for future privacy levels, indicates that this version of JDA does not support this privacy level yet */
         UNKNOWN(-1),
-        /**
-         * This stage instance can be accessed by lurkers, meaning users that are not active members of the guild
-         *
-         * @deprecated Public stage instances are no longer supported by discord
-         */
-        @Deprecated
-        @ForRemoval
-        @DeprecatedSince("5.0.0")
-        PUBLIC(1),
         /** This stage instance can only be accessed by guild members */
         GUILD_ONLY(2);
 

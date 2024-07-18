@@ -72,29 +72,6 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
-    public void onUserSpeaking(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes)
-    {
-        if (listener == null)
-            return;
-        ConnectionListener listener = this.listener;
-        try
-        {
-            if (listener != null)
-            {
-                listener.onUserSpeaking(user, modes);
-                listener.onUserSpeaking(user, modes.contains(SpeakingMode.VOICE));
-                listener.onUserSpeaking(user, modes.contains(SpeakingMode.VOICE), modes.contains(SpeakingMode.SOUNDSHARE));
-            }
-        }
-        catch (Throwable t)
-        {
-            log.error("The ConnectionListener encountered and uncaught exception", t);
-            if (t instanceof Error)
-                throw (Error) t;
-        }
-    }
-
-    @Override
     public void onUserSpeakingModeUpdate(@Nonnull UserSnowflake user, @Nonnull EnumSet<SpeakingMode> modes)
     {
         if (listener == null)

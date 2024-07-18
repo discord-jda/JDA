@@ -27,7 +27,7 @@ plugins {
     `java-library`
     `maven-publish`
 
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -40,7 +40,7 @@ plugins {
 
 
 val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "0", revision = "0", classifier = "beta.23")
+val versionObj = Version(major = "5", minor = "0", revision = "1", classifier = null)
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
@@ -455,8 +455,8 @@ val release by tasks.creating(Task::class) {
 }
 
 afterEvaluate {
-    val closeAndReleaseSonatypeStagingRepository by tasks.getting
-    closeAndReleaseSonatypeStagingRepository.apply {
+    val closeAndReleaseStagingRepositories by tasks.getting
+    closeAndReleaseStagingRepositories.apply {
         release.dependsOn(this)
         mustRunAfter(publishingTasks)
     }

@@ -61,7 +61,7 @@ public class ThreadingConfig
     public void setRateLimitElastic(@Nullable ExecutorService executor, boolean shutdown)
     {
         this.rateLimitElastic = executor;
-        this.shutdownRateLimitScheduler = shutdown;
+        this.shutdownRateLimitElastic = shutdown;
     }
 
     public void setGatewayPool(@Nullable ScheduledExecutorService executor, boolean shutdown)

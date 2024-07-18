@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -70,6 +71,7 @@ public interface MessagePoll
      * @return Immutable {@link List} of {@link Answer}
      */
     @Nonnull
+    @Unmodifiable
     List<Answer> getAnswers();
 
     /**

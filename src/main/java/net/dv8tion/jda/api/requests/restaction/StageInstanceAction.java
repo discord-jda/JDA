@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -68,13 +69,15 @@ public interface StageInstanceAction extends RestAction<StageInstance>
      *         The {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel}
      *
      * @throws IllegalArgumentException
-     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN},
-     *         or {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#PUBLIC PUBLIC}.
+     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN}.
      *
      * @return The StageInstanceAction for chaining
+     *
+     * @deprecated Obsolete.
      */
     @Nonnull
     @CheckReturnValue
-    @SuppressWarnings("deprecation")
+    @Deprecated
+    @ForRemoval(deadline = "5.1.0")
     StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level);
 }

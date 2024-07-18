@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -73,6 +74,7 @@ public interface IPermissionContainer extends GuildChannel
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @Unmodifiable
     List<PermissionOverride> getPermissionOverrides();
 
     /**
@@ -86,6 +88,7 @@ public interface IPermissionContainer extends GuildChannel
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @Unmodifiable
     default List<PermissionOverride> getMemberPermissionOverrides()
     {
         return getPermissionOverrides().stream()
@@ -102,6 +105,7 @@ public interface IPermissionContainer extends GuildChannel
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @Unmodifiable
     default List<PermissionOverride> getRolePermissionOverrides()
     {
         return getPermissionOverrides().stream()

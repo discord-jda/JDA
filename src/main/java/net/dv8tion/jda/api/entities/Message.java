@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -36,7 +34,6 @@ import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
-import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.InteractionType;
@@ -44,7 +41,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
@@ -61,22 +57,19 @@ import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
-import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -151,16 +144,6 @@ public interface Message extends ISnowflake, Formattable
      *  @see MessageRequest#setFiles(Collection)
      */
     int MAX_FILE_SIZE = 25 << 20;
-
-    /**
-     * The maximum sendable file size for nitro (50 MiB)
-     *
-     * @see MessageRequest#setFiles(Collection)
-     *
-     * @deprecated Self-bots are not supported anymore and the value is outdated.
-     */
-    @Deprecated
-    int MAX_FILE_SIZE_NITRO = 50 << 20;
 
     /**
      * The maximum amount of files sendable within a single message ({@value})
@@ -456,6 +439,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of invite codes
      */
     @Nonnull
+    @Unmodifiable
     List<String> getInvites();
 
     /**
@@ -658,6 +642,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
     @Nonnull
+    @Unmodifiable
     List<Attachment> getAttachments();
 
     /**
@@ -668,6 +653,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all given MessageEmbeds.
      */
     @Nonnull
+    @Unmodifiable
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -683,6 +669,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
+    @Unmodifiable
     List<LayoutComponent> getComponents();
 
     /**
@@ -734,6 +721,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
+    @Unmodifiable
     default List<ActionRow> getActionRows()
     {
         return getComponents()
@@ -751,6 +739,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons}
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtons()
     {
         return getComponents().stream()
@@ -797,6 +786,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons} with the specified label
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
     {
         Checks.notNull(label, "Label");
@@ -818,6 +808,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    MessageReaction
      */
     @Nonnull
+    @Unmodifiable
     List<MessageReaction> getReactions();
 
     /**
@@ -827,6 +818,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all StickerItems in this message.
      */
     @Nonnull
+    @Unmodifiable
     List<StickerItem> getStickers();
 
     /**
@@ -2648,263 +2640,6 @@ public interface Message extends ISnowflake, Formattable
         public String getDescription()
         {
             return description;
-        }
-
-        /**
-         * Enqueues a request to retrieve the contents of this Attachment.
-         * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void printContents(Message.Attachment attachment)
-         * {
-         *     attachment.retrieveInputStream().thenAccept(in -> {
-         *         StringBuilder builder = new StringBuilder();
-         *         byte[] buf = byte[1024];
-         *         int count = 0;
-         *         while ((count = in.read(buf)) > 0)
-         *         {
-         *             builder.append(new String(buf, 0, count));
-         *         }
-         *         in.close();
-         *         System.out.println(builder);
-         *     }).exceptionally(t -> { // handle failure
-         *         t.printStackTrace();
-         *         return null;
-         *     });
-         * }
-         * }</pre>
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#download()}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getProxy().download()")
-        public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
-        {
-            CompletableFuture<InputStream> future = new CompletableFuture<>();
-            Request req = getRequest();
-            OkHttpClient httpClient = getJDA().getHttpClient();
-            httpClient.newCall(req).enqueue(FunctionalCallback
-                .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
-                .onSuccess((call, response) -> {
-                    if (response.isSuccessful())
-                    {
-                        InputStream body = IOUtil.getBody(response);
-                        if (!future.complete(body))
-                            IOUtil.silentClose(response);
-                    }
-                    else
-                    {
-                        future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
-                        IOUtil.silentClose(response);
-                    }
-                }).build());
-            return future;
-        }
-
-        /**
-         * Downloads the attachment into the current working directory using the file name provided by {@link #getFileName()}.
-         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void saveLocally(Message.Attachment attachment)
-         * {
-         *     attachment.downloadToFile()
-         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
-         *         .exceptionally(t ->
-         *         { // handle failure
-         *             t.printStackTrace();
-         *             return null;
-         *         });
-         * }
-         * }</pre>
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getProxy().downloadToFile()")
-        public CompletableFuture<File> downloadToFile() // using relative path
-        {
-            return downloadToFile(getFileName());
-        }
-
-        /**
-         * Downloads the attachment to a file at the specified path (relative or absolute).
-         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void saveLocally(Message.Attachment attachment)
-         * {
-         *     attachment.downloadToFile("/tmp/" + attachment.getFileName())
-         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
-         *         .exceptionally(t ->
-         *         { // handle failure
-         *             t.printStackTrace();
-         *             return null;
-         *         });
-         * }
-         * }</pre>
-         *
-         * @param  path
-         *         The path to save the file to
-         *
-         * @throws java.lang.IllegalArgumentException
-         *         If the provided path is null
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getProxy().downloadToFile(new File(String))")
-        public CompletableFuture<File> downloadToFile(String path)
-        {
-            Checks.notNull(path, "Path");
-            return downloadToFile(new File(path));
-        }
-
-        /**
-         * Downloads the attachment to a file at the specified path (relative or absolute).
-         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void saveLocally(Message.Attachment attachment)
-         * {
-         *     attachment.downloadToFile(new File("/tmp/" + attachment.getFileName()))
-         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
-         *         .exceptionally(t ->
-         *         { // handle failure
-         *             t.printStackTrace();
-         *             return null;
-         *         });
-         * }
-         * }</pre>
-         *
-         * @param  file
-         *         The file to write to
-         *
-         * @throws java.lang.IllegalArgumentException
-         *         If the provided file is null or cannot be written to
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
-         */
-        @SuppressWarnings("ResultOfMethodCallIgnored")
-        @Nonnull
-        @ForRemoval
-        @ReplaceWith("getProxy().downloadToFile(File)")
-        public CompletableFuture<File> downloadToFile(File file)
-        {
-            Checks.notNull(file, "File");
-            try
-            {
-                if (!file.exists())
-                    file.createNewFile();
-                else
-                    Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
-            }
-            catch (IOException e)
-            {
-                throw new IllegalArgumentException("Cannot create file", e);
-            }
-
-            return retrieveInputStream().thenApplyAsync((stream) -> {
-                try (FileOutputStream out = new FileOutputStream(file))
-                {
-                    byte[] buf = new byte[1024];
-                    int count;
-                    while ((count = stream.read(buf)) > 0)
-                    {
-                        out.write(buf, 0, count);
-                    }
-                    return file;
-                }
-                catch (IOException e)
-                {
-                    throw new UncheckedIOException(e);
-                }
-                finally
-                {
-                    IOUtil.silentClose(stream);
-                }
-            }, getJDA().getCallbackPool());
-        }
-
-        /**
-         * Retrieves the image of this attachment and provides an {@link net.dv8tion.jda.api.entities.Icon} equivalent.
-         * <br>Useful with {@link net.dv8tion.jda.api.managers.AccountManager#setAvatar(Icon)}.
-         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void changeAvatar(Message.Attachment attachment)
-         * {
-         *     attachment.retrieveAsIcon().thenCompose(icon -> {
-         *         SelfUser self = attachment.getJDA().getSelfUser();
-         *         AccountManager manager = self.getManager();
-         *         return manager.setAvatar(icon).submit();
-         *     }).exceptionally(t -> {
-         *         t.printStackTrace();
-         *         return null;
-         *     });
-         * }
-         * }</pre>
-         *
-         * @throws java.lang.IllegalStateException
-         *         If this is not an image ({@link #isImage()})
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadAsIcon()}
-         */
-        @Nonnull
-        @ReplaceWith("getProxy().downloadAsIcon()")
-        public CompletableFuture<Icon> retrieveAsIcon()
-        {
-            if (!isImage())
-                throw new IllegalStateException("Cannot create an Icon out of this attachment. This is not an image.");
-            return retrieveInputStream().thenApplyAsync((stream) ->
-            {
-                try
-                {
-                    return Icon.from(stream);
-                }
-                catch (IOException e)
-                {
-                    throw new UncheckedIOException(e);
-                }
-                finally
-                {
-                    IOUtil.silentClose(stream);
-                }
-            }, getJDA().getCallbackPool());
-        }
-
-        protected Request getRequest()
-        {
-            return new Request.Builder()
-                .url(getUrl())
-                .addHeader("user-agent", RestConfig.USER_AGENT)
-                .addHeader("accept-encoding", "gzip, deflate")
-                .build();
         }
 
         /**
