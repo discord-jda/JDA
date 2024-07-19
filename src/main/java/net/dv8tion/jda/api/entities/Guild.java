@@ -1448,7 +1448,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<@Unmodifiable List<ScheduledEvent>> retrieveScheduledEvents();
+    RestAction<List<ScheduledEvent>> retrieveScheduledEvents();
     
     /**
      * Gets a list of all {@link ScheduledEvent ScheduledEvents} in this Guild that have the same
