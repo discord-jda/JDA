@@ -1747,6 +1747,40 @@ public interface JDA extends IGuildChannelContainer<Channel>
         return getEmojiCache().getElementsByName(name, ignoreCase);
     }
 
+    @CheckReturnValue
+    RestAction<List<RichCustomEmoji>> retrieveApplicationEmojis();
+
+    @Nullable
+    @CheckReturnValue
+    RestAction<RichCustomEmoji> retrieveApplicationEmojiById(long emojiId);
+
+    @Nullable
+    @CheckReturnValue
+    default RestAction<RichCustomEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId)
+    {
+        return retrieveApplicationEmojiById(MiscUtil.parseSnowflake(emojiId));
+    }
+
+    @Nullable
+    @CheckReturnValue
+    RestAction<RichCustomEmoji> updateApplicationEmojiName(long emojiId, @Nonnull String name);
+
+    @Nullable
+    @CheckReturnValue
+    default RestAction<RichCustomEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @Nonnull String name)
+    {
+        return updateApplicationEmojiName(MiscUtil.parseSnowflake(emojiId), name);
+    }
+
+    @CheckReturnValue
+    RestAction<Void> deleteApplicationEmojiById(long emojiId);
+
+    @CheckReturnValue
+    default RestAction<Void> deleteApplicationEmojiById(@Nonnull String emojiId)
+    {
+        return deleteApplicationEmojiById(MiscUtil.parseSnowflake(emojiId));
+    }
+
     /**
      * Attempts to retrieve a {@link Sticker} object based on the provided snowflake reference.
      * <br>This works for both {@link StandardSticker} and {@link GuildSticker}, and you can resolve them using the provided {@link StickerUnion}.

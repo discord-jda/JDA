@@ -82,6 +82,8 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -673,6 +675,32 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmojiCache));
+    }
+
+    @Override
+    public RestAction<List<RichCustomEmoji>> retrieveApplicationEmojis()
+    {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public RestAction<RichCustomEmoji> retrieveApplicationEmojiById(long emojiId)
+    {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public RestAction<RichCustomEmoji> updateApplicationEmojiName(long emojiId, @NotNull String name)
+    {
+        return null;
+    }
+
+    @Override
+    public RestAction<Void> deleteApplicationEmojiById(long emojiId)
+    {
+        return null;
     }
 
     @Nonnull
