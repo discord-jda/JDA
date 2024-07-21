@@ -14,9 +14,9 @@ import javax.annotation.Nonnull;
 public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiManager> implements ApplicationEmojiManager
 {
     protected final ApplicationEmoji emoji;
-    
+
     protected String name;
-    
+
     public ApplicationEmojiManagerImpl(ApplicationEmoji emoji)
     {
         super(emoji.getJDA(), Route.Applications.MODIFY_APPLICATION_EMOJI.compile(emoji.getJDA().getSelfUser().getApplicationId(), emoji.getId()));
@@ -29,7 +29,7 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
     {
         return emoji;
     }
-    
+
     @Nonnull
     @Override
     @CheckReturnValue
@@ -40,7 +40,7 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
             this.name = null;
         return this;
     }
-    
+
     @Nonnull
     @Override
     @CheckReturnValue
@@ -61,7 +61,7 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
         set |= NAME;
         return this;
     }
-    
+
     @Override
     protected RequestBody finalizeData()
     {

@@ -83,7 +83,7 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
     {
         return owner;
     }
-    
+
     @Nonnull
     @Override
     public ApplicationEmojiManager getManager()
