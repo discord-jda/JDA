@@ -44,7 +44,7 @@ public class Once<E extends GenericEvent> implements EventListener
 
         this.future = new CompletableFuture<>();
         this.task = createTask(future);
-        this.timeoutFuture = scheduleTimeout(builder.timeout, future);
+        this.timeoutFuture = scheduleTimeout(builder.timeout, builder.timeoutPool, future);
     }
 
     @Nonnull
@@ -66,11 +66,12 @@ public class Once<E extends GenericEvent> implements EventListener
     }
 
     @Nullable
-    private ScheduledFuture<?> scheduleTimeout(@Nullable Duration timeout, @Nonnull CompletableFuture<E> future)
+    private ScheduledFuture<?> scheduleTimeout(@Nullable Duration timeout, @Nullable ScheduledExecutorService timeoutPool, @Nonnull CompletableFuture<E> future)
     {
         if (timeout == null) return null;
+        if (timeoutPool == null) timeoutPool = jda.getGatewayPool();
 
-        return jda.getGatewayPool().schedule(() ->
+        return timeoutPool.schedule(() ->
         {
             // On timeout, throw timeout exception and run timeout callback
             jda.removeEventListener(this);
@@ -116,6 +117,7 @@ public class Once<E extends GenericEvent> implements EventListener
         private final Class<E> eventType;
         private final List<Predicate<? super E>> filters = new ArrayList<>();
 
+        private ScheduledExecutorService timeoutPool;
         private Duration timeout;
         private Runnable timeoutCallback;
 
@@ -194,6 +196,27 @@ public class Once<E extends GenericEvent> implements EventListener
             Checks.notNull(timeout, "Timeout");
             this.timeout = timeout;
             this.timeoutCallback = timeoutCallback;
+            return this;
+        }
+
+        /**
+         * Sets the thread pool used to schedule timeouts and run its callback.
+         *
+         * <p>By default {@link JDA#getGatewayPool()} is used.
+         *
+         * @param  timeoutPool
+         *         The thread pool to use for timeouts
+         *
+         * @throws IllegalArgumentException
+         *         If the timeout pool is null
+         *
+         * @return This instance for chaining convenience
+         */
+        @Nonnull
+        public Builder<E> setTimeoutPool(@Nonnull ScheduledExecutorService timeoutPool)
+        {
+            Checks.notNull(timeoutPool, "Timeout pool");
+            this.timeoutPool = timeoutPool;
             return this;
         }
 
