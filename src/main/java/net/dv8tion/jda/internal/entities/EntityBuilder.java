@@ -2555,7 +2555,7 @@ public class EntityBuilder
             User user = createUser(userJson);
             TeamMember.RoleType roleType = user.getIdLong() == ownerId
                     ? TeamMember.RoleType.OWNER
-                    : TeamMember.RoleType.fromKey(o.getString("role"));
+                    : TeamMember.RoleType.fromKey(o.getString("role", ""));
             return new TeamMemberImpl(user, state, roleType, id);
         });
         return new ApplicationTeamImpl(iconId, members, id, ownerId);
