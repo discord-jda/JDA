@@ -126,6 +126,9 @@ public class Once<E extends GenericEvent> implements EventListener
          *        The JDA instance
          * @param eventType
          *        The event type to listen for
+         *
+         * @throws IllegalArgumentException
+         *         If any of the parameters is null
          */
         public Builder(@Nonnull JDA jda, @Nonnull Class<E> eventType)
         {
@@ -140,6 +143,9 @@ public class Once<E extends GenericEvent> implements EventListener
          *
          * @param  filter
          *         The filter to add, returns {@code true} if the event can be consumed
+         *
+         * @throws IllegalArgumentException
+         *         If the filter is null
          *
          * @return This instance for chaining convenience
          */
@@ -157,6 +163,9 @@ public class Once<E extends GenericEvent> implements EventListener
          * @param  timeout
          *         The duration after which the event is no longer listener for
          *
+         * @throws IllegalArgumentException
+         *         If the timeout is null
+         *
          * @return This instance for chaining convenience
          */
         @Nonnull
@@ -173,6 +182,9 @@ public class Once<E extends GenericEvent> implements EventListener
          *         The duration after which the event is no longer listener for
          * @param  timeoutCallback
          *         The callback run after the duration
+         *
+         * @throws IllegalArgumentException
+         *         If the timeout is null
          *
          * @return This instance for chaining convenience
          */
