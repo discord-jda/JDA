@@ -232,6 +232,9 @@ public class Once<E extends GenericEvent> implements EventListener
          *     <li>Any exception thrown by the {@link #timeout(Duration, Runnable) timeout callback}</li>
          * </ul>
          *
+         * @throws IllegalArgumentException
+         *         If the callback is null
+         *
          * @return {@link Task} returning an event satisfying all preconditions
          *
          * @see Task#onSuccess(Consumer)
@@ -239,11 +242,11 @@ public class Once<E extends GenericEvent> implements EventListener
          */
         @Nonnull
         @CheckReturnValue
-        public Task<E> submit()
+        public Task<E> subscribe(@Nonnull Consumer<E> callback)
         {
             final Once<E> once = new Once<>(this);
             jda.addEventListener(once);
-            return once.task;
+            return once.task.onSuccess(callback);
         }
     }
 }

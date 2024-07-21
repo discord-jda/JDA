@@ -631,8 +631,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *         .timeout(timeout, () -> {
      *             event.getHook().editOriginal("Timeout!").queue();
      *         })
-     *         .submit()
-     *         .onSuccess(messageEvent -> {
+     *         .subscribe(messageEvent -> {
      *             event.getHook().editOriginal("You sent: " + messageEvent.getMessage().getContentRaw()).queue();
      *         });
      * }</pre>
