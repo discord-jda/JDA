@@ -610,6 +610,12 @@ public interface JDA extends IGuildChannelContainer<Channel>
     /**
      * Returns a reusable builder for a one-time event listener.
      *
+     * <p>Note that this method only works if the {@link JDABuilder#setEventManager(IEventManager) event manager}
+     * is either the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager}
+     * or {@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager}.
+     * <br>Other implementations can support it as long as they call
+     * {@link net.dv8tion.jda.api.hooks.EventListener#onEvent(GenericEvent) EventListener.onEvent(GenericEvent)}.
+     *
      * <p><b>Example:</b>
      *
      * <p>Listening to a message from a channel and a user, after using a slash command:
@@ -634,10 +640,10 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param  eventType
      *         Type of the event to listen to
      *
-     * @return The one-time event listener builder
-     *
      * @throws IllegalArgumentException
      *         If the provided event type is {@code null}
+     *
+     * @return The one-time event listener builder
      */
     @Nonnull
     @CheckReturnValue
