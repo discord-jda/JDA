@@ -79,7 +79,9 @@ public class Once<E extends GenericEvent> implements EventListener
         {
             // On timeout, throw timeout exception and run timeout callback
             jda.removeEventListener(this);
-            future.completeExceptionally(new TimeoutException());
+            if (!future.completeExceptionally(new TimeoutException()))
+                // Return if the future was already completed
+                return;
             if (timeoutCallback != null)
             {
                 try
