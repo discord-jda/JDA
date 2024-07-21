@@ -27,12 +27,14 @@ public class TeamMemberImpl implements TeamMember
 {
     private final User user;
     private final MembershipState state;
+    private final RoleType roleType;
     private final long teamId;
 
-    public TeamMemberImpl(User user, MembershipState state, long teamId)
+    public TeamMemberImpl(User user, MembershipState state, RoleType roleType, long teamId)
     {
         this.user = user;
         this.state = state;
+        this.roleType = roleType;
         this.teamId = teamId;
     }
 
@@ -48,6 +50,13 @@ public class TeamMemberImpl implements TeamMember
     public MembershipState getMembershipState()
     {
         return state;
+    }
+
+    @Nonnull
+    @Override
+    public RoleType getRoleType()
+    {
+        return roleType;
     }
 
     @Override
