@@ -91,6 +91,8 @@ public class Once<E extends GenericEvent> implements EventListener
                 catch (Throwable e)
                 {
                     LOG.error("An error occurred while running the timeout callback", e);
+                    if (e instanceof Error)
+                        throw (Error) e;
                 }
             }
         }, timeout.toMillis(), TimeUnit.MILLISECONDS);
@@ -117,6 +119,8 @@ public class Once<E extends GenericEvent> implements EventListener
         {
             if (future.completeExceptionally(e))
                 event.getJDA().removeEventListener(this);
+            if (e instanceof Error)
+                throw (Error) e;
         }
     }
 
