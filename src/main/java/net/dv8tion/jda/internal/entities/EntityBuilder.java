@@ -1015,7 +1015,7 @@ public class EntityBuilder
                 .setManaged(json.getBoolean("managed"))
                 .setAvailable(json.getBoolean("available", true));
     }
-    
+
     public ApplicationEmojiImpl createApplicationEmoji(JDAImpl api, DataObject json)
     {
         final long emojiId = json.getLong("id");
