@@ -103,12 +103,20 @@ public class Once<E extends GenericEvent> implements EventListener
         if (!eventType.isInstance(event))
             return;
         final E casted = eventType.cast(event);
-        if (filters.stream().allMatch(p -> p.test(casted)))
+        try
         {
-            if (timeoutFuture != null)
-                timeoutFuture.cancel(false);
-            event.getJDA().removeEventListener(this);
-            future.complete(casted);
+            if (filters.stream().allMatch(p -> p.test(casted)))
+            {
+                if (timeoutFuture != null)
+                    timeoutFuture.cancel(false);
+                event.getJDA().removeEventListener(this);
+                future.complete(casted);
+            }
+        }
+        catch (Throwable e)
+        {
+            if (future.completeExceptionally(e))
+                event.getJDA().removeEventListener(this);
         }
     }
 
@@ -148,6 +156,8 @@ public class Once<E extends GenericEvent> implements EventListener
 
         /**
          * Adds an event filter, all filters need to return {@code true} for the event to be consumed.
+         *
+         * <p>If the filter throws an exception, this listener will unregister itself.
          *
          * @param  filter
          *         The filter to add, returns {@code true} if the event can be consumed
