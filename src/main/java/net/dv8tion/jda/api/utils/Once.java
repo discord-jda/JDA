@@ -43,12 +43,12 @@ public class Once<E extends GenericEvent> implements EventListener
         this.timeoutCallback = builder.timeoutCallback;
 
         this.future = new CompletableFuture<>();
-        this.task = createTask(future);
-        this.timeoutFuture = scheduleTimeout(builder.timeout, builder.timeoutPool, future);
+        this.task = createTask();
+        this.timeoutFuture = scheduleTimeout(builder.timeout, builder.timeoutPool);
     }
 
     @Nonnull
-    private GatewayTask<E> createTask(@Nonnull CompletableFuture<E> future)
+    private GatewayTask<E> createTask()
     {
         final GatewayTask<E> task = new GatewayTask<>(future, () ->
         {
@@ -66,7 +66,7 @@ public class Once<E extends GenericEvent> implements EventListener
     }
 
     @Nullable
-    private ScheduledFuture<?> scheduleTimeout(@Nullable Duration timeout, @Nullable ScheduledExecutorService timeoutPool, @Nonnull CompletableFuture<E> future)
+    private ScheduledFuture<?> scheduleTimeout(@Nullable Duration timeout, @Nullable ScheduledExecutorService timeoutPool)
     {
         if (timeout == null) return null;
         if (timeoutPool == null) timeoutPool = jda.getGatewayPool();
