@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -678,21 +679,37 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public RestAction<List<RichCustomEmoji>> retrieveApplicationEmojis()
+    public RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis()
     {
-        return null;
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJIS.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            DataArray emojis = response.getObject().getArray("items");
+            List<ApplicationEmoji> list = new ArrayList<>(emojis.length());
+            for (int i = 0; i < emojis.length(); i++)
+            {
+                // TODO: Find a way to make custom emoji without needing Guild instance.
+                list.add(entityBuilder.createApplicationEmoji(this, emojis.getObject(i)));
+            }
+
+            return Collections.unmodifiableList(list);
+        });
     }
 
     @Nullable
     @Override
-    public RestAction<RichCustomEmoji> retrieveApplicationEmojiById(long emojiId)
+    public RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId)
     {
-        return null;
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), String.valueOf(emojiId));
+        return new RestActionImpl<>(this, route,
+                // TODO: Find a way to make custom emoji without needing Guild instance.
+                (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())
+        );
     }
 
     @Nullable
     @Override
-    public RestAction<RichCustomEmoji> updateApplicationEmojiName(long emojiId, @NotNull String name)
+    public RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @NotNull String name)
     {
         return null;
     }
@@ -700,7 +717,8 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<Void> deleteApplicationEmojiById(long emojiId)
     {
-        return null;
+        Route.CompiledRoute route = Route.Applications.DELETE_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route);
     }
 
     @Nonnull

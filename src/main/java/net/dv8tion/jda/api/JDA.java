@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -1748,26 +1749,26 @@ public interface JDA extends IGuildChannelContainer<Channel>
     }
 
     @CheckReturnValue
-    RestAction<List<RichCustomEmoji>> retrieveApplicationEmojis();
+    RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis();
 
     @Nullable
     @CheckReturnValue
-    RestAction<RichCustomEmoji> retrieveApplicationEmojiById(long emojiId);
+    RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId);
 
     @Nullable
     @CheckReturnValue
-    default RestAction<RichCustomEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId)
+    default RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId)
     {
         return retrieveApplicationEmojiById(MiscUtil.parseSnowflake(emojiId));
     }
 
     @Nullable
     @CheckReturnValue
-    RestAction<RichCustomEmoji> updateApplicationEmojiName(long emojiId, @Nonnull String name);
+    RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @Nonnull String name);
 
     @Nullable
     @CheckReturnValue
-    default RestAction<RichCustomEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @Nonnull String name)
+    default RestAction<ApplicationEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @Nonnull String name)
     {
         return updateApplicationEmojiName(MiscUtil.parseSnowflake(emojiId), name);
     }
