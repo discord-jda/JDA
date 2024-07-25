@@ -55,16 +55,16 @@ public class Once<E extends GenericEvent> implements EventListener
     private final ScheduledFuture<?> timeoutFuture;
     private final Runnable timeoutCallback;
 
-    private Once(@Nonnull Once.Builder<E> builder)
+    protected Once(JDA jda, Class<E> eventType, List<Predicate<? super E>> filters, Runnable timeoutCallback, Duration timeout, ScheduledExecutorService timeoutPool)
     {
-        this.jda = builder.jda;
-        this.eventType = builder.eventType;
-        this.filters = new ArrayList<>(builder.filters);
-        this.timeoutCallback = builder.timeoutCallback;
+        this.jda = jda;
+        this.eventType = eventType;
+        this.filters = new ArrayList<>(filters);
+        this.timeoutCallback = timeoutCallback;
 
         this.future = new CompletableFuture<>();
         this.task = createTask();
-        this.timeoutFuture = scheduleTimeout(builder.timeout, builder.timeoutPool);
+        this.timeoutFuture = scheduleTimeout(timeout, timeoutPool);
     }
 
     @Nonnull
@@ -279,7 +279,7 @@ public class Once<E extends GenericEvent> implements EventListener
         @CheckReturnValue
         public Task<E> subscribe(@Nonnull Consumer<E> callback)
         {
-            final Once<E> once = new Once<>(this);
+            final Once<E> once = new Once<>(jda, eventType, filters, timeoutCallback, timeout, timeoutPool);
             jda.addEventListener(once);
             return once.task.onSuccess(callback);
         }
