@@ -49,6 +49,18 @@ import java.util.function.Consumer;
 
 public class Requester
 {
+    private static final int[] RETRY_ERROR_CODES = {
+        502, // bad gateway
+        503, // service temporarily unavailable
+        504, // gateway timeout
+        520, // web server returns an unknown error
+        521, // web server is down
+        522, // connection timed out
+        523, // origin is unreachable
+        524, // a timeout occurred
+        529, // The service is overloaded
+    };
+
     public static final Logger LOG = JDALogger.getLog(Requester.class);
     @SuppressWarnings("deprecation")
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[0]);
@@ -341,7 +353,14 @@ public class Requester
 
     private static boolean shouldRetry(int code)
     {
-        return code == 502 || code == 504 || code == 529;
+        if (code < RETRY_ERROR_CODES[0] || code > RETRY_ERROR_CODES[RETRY_ERROR_CODES.length - 1])
+            return false;
+        for (int retryCode : RETRY_ERROR_CODES)
+        {
+            if (retryCode == code)
+                return true;
+        }
+        return false;
     }
 
     private long parseRetry(okhttp3.Response response)
