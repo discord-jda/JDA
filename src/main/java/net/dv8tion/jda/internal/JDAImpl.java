@@ -1011,6 +1011,13 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public <E extends GenericEvent> Once.Builder<E> listenOnce(@Nonnull Class<E> eventType)
+    {
+        return new Once.Builder<>(this, eventType);
+    }
+
+    @Nonnull
+    @Override
     public RestAction<List<Command>> retrieveCommands(boolean withLocalizations)
     {
         Route.CompiledRoute route = Route.Interactions.GET_COMMANDS
