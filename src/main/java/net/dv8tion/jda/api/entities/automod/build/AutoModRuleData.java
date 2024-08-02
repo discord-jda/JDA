@@ -95,25 +95,25 @@ public class AutoModRuleData implements SerializableData
         return new AutoModRuleData(AutoModEventType.MESSAGE_SEND, name, triggerConfig);
     }
 
-//    /**
-//     * Create a new {@link AutoModRule} which triggers on a member profile being updated.
-//     *
-//     * @param  name
-//     *         The name of the rule (1-{@value AutoModRule#MAX_RULE_NAME_LENGTH} characters)
-//     * @param  triggerConfig
-//     *         The trigger configuration for this rule
-//     *
-//     * @throws IllegalArgumentException
-//     *         If null is provided or the name is not between 1 and {@value AutoModRule#MAX_RULE_NAME_LENGTH} characters
-//     *
-//     * @return The new {@link AutoModRuleData} instance
-//     */
-//    @Nonnull
-//    public static AutoModRuleData onMemberProfile(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
-//    {
-//        return new AutoModRuleData(AutoModEventType.MEMBER_UPDATE, name, triggerConfig)
-//                .putResponses(AutoModResponse.blockMemberInteraction());
-//    }
+    /**
+     * Create a new {@link AutoModRule} which triggers on a member profile being updated.
+     *
+     * @param  name
+     *         The name of the rule (1-{@value AutoModRule#MAX_RULE_NAME_LENGTH} characters)
+     * @param  triggerConfig
+     *         The trigger configuration for this rule
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is not between 1 and {@value AutoModRule#MAX_RULE_NAME_LENGTH} characters
+     *
+     * @return The new {@link AutoModRuleData} instance
+     */
+    @Nonnull
+    public static AutoModRuleData onMemberProfile(@Nonnull String name, @Nonnull TriggerConfig triggerConfig)
+    {
+        return new AutoModRuleData(AutoModEventType.MEMBER_UPDATE, name, triggerConfig)
+                .putResponses(AutoModResponse.blockMemberInteraction());
+    }
 
 
     /**
