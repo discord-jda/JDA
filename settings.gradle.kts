@@ -3,7 +3,7 @@ rootProject.name = "JDA"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            version("jackson", "2.17.0")
+            version("jackson", "2.17.2")
             library("jackson-core",     "com.fasterxml.jackson.core", "jackson-core").versionRef("jackson")
             library("jackson-databind", "com.fasterxml.jackson.core", "jackson-databind").versionRef("jackson")
             bundle("jackson", listOf("jackson-core", "jackson-databind"))
