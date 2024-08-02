@@ -37,7 +37,7 @@ public class ModalImpl implements Modal
 
     public ModalImpl(DataObject object)
     {
-        this.id = object.getString("id");
+        this.id = object.getString("custom_id");
         this.title = object.getString("title");
         this.components = object.optArray("components").orElseGet(DataArray::empty)
                     .stream(DataArray::getObject)
