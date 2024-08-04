@@ -2500,9 +2500,12 @@ public class EntityBuilder extends AbstractEntityBuilder
             })
             .orElse(Collections.emptyMap());
 
+        final int approxUserInstallCount = object.getInt("approximate_user_install_count", -1);
+
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, flags, isBotPublic, name,
                 termsOfServiceUrl, privacyPolicyUrl, owner, team, tags, redirectUris, interactionsEndpointUrl,
-                roleConnectionsVerificationUrl, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes, integrationTypesConfig);
+                roleConnectionsVerificationUrl, customAuthUrl, defaultAuthUrlPerms, defaultAuthUrlScopes,
+                approxUserInstallCount, integrationTypesConfig);
     }
 
     public ApplicationTeam createApplicationTeam(DataObject object)

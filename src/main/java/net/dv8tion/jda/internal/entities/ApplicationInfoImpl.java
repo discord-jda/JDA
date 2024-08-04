@@ -51,6 +51,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final String customAuthUrl;
     private final long defaultAuthUrlPerms;
     private final List<String> defaultAuthUrlScopes;
+    private final int approxUserInstallCount;
     private final Map<IntegrationType, IntegrationTypeConfiguration> integrationTypesConfig;
     private String scopes = "bot";
 
@@ -58,7 +59,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
                                boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team,
                                List<String> tags, List<String> redirectUris, String interactionsEndpointUrl, String roleConnectionsVerificationUrl,
                                String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes,
-                               Map<IntegrationType, IntegrationTypeConfiguration> integrationTypesConfig)
+                               int approxUserInstallCount, Map<IntegrationType, IntegrationTypeConfiguration> integrationTypesConfig)
     {
         this.api = api;
         this.description = description;
@@ -79,6 +80,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.customAuthUrl = customAuthUrl;
         this.defaultAuthUrlPerms = defaultAuthUrlPerms;
         this.defaultAuthUrlScopes = Collections.unmodifiableList(defaultAuthUrlScopes);
+        this.approxUserInstallCount = approxUserInstallCount;
         this.integrationTypesConfig = integrationTypesConfig;
     }
 
@@ -267,6 +269,12 @@ public class ApplicationInfoImpl implements ApplicationInfo
     public List<String> getScopes()
     {
         return defaultAuthUrlScopes;
+    }
+
+    @Override
+    public int getUserInstallCount()
+    {
+        return approxUserInstallCount;
     }
 
     @Nonnull

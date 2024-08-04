@@ -407,6 +407,14 @@ public interface ApplicationInfo extends ISnowflake
     long getFlagsRaw();
 
     /**
+     * The approximate count of users that have installed this application,
+     * or {@code -1} if it is unknown.
+     *
+     * @return The approximate count of users that have installed this application.
+     */
+    int getUserInstallCount();
+
+    /**
      * The configurations for each {@link IntegrationType} set on the application.
      *
      * @return The configurations for each integration type
