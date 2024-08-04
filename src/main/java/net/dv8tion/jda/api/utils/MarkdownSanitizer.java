@@ -57,6 +57,8 @@ public class MarkdownSanitizer
     public static final int QUOTE       = 1 << 9;
     /** Quote block region such as {@code ">>> text here"} */
     public static final int QUOTE_BLOCK = 1 << 10;
+    /** Small text such as {@code "-# text here"} */
+    public static final int SMALL_TEXT = 1 << 11;
 
     private static final int ESCAPED_BOLD        = Integer.MIN_VALUE | BOLD;
     private static final int ESCAPED_ITALICS_U   = Integer.MIN_VALUE | ITALICS_U;
@@ -69,10 +71,12 @@ public class MarkdownSanitizer
     private static final int ESCAPED_STRIKE      = Integer.MIN_VALUE | STRIKE;
     private static final int ESCAPED_QUOTE       = Integer.MIN_VALUE | QUOTE;
     private static final int ESCAPED_QUOTE_BLOCK = Integer.MIN_VALUE | QUOTE_BLOCK;
+    private static final int ESCAPED_SMALL_TEXT  = Integer.MIN_VALUE | SMALL_TEXT;
 
     private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
     private static final Pattern quote = Pattern.compile("> +.*", Pattern.DOTALL | Pattern.MULTILINE);
     private static final Pattern quoteBlock = Pattern.compile(">>>\\s+\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
+    private static final Pattern smallText = Pattern.compile("-#\\s+\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
 
     private static final TIntObjectMap<String> tokens;
 
