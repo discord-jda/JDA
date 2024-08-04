@@ -30,6 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
@@ -135,7 +136,7 @@ public class IOUtil
         Checks.notNull(file, "File");
         Checks.check(file.exists(), "Provided file does not exist!");
 
-        try (InputStream is = new FileInputStream(file))
+        try (InputStream is = Files.newInputStream(file.toPath()))
         {
             // Get the size of the file
             long length = file.length();
