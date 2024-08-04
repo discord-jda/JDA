@@ -147,6 +147,12 @@ public class GuildImpl implements Guild
             memberPresences = null;
     }
 
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
     public void invalidate()
     {
         //Remove everything from global cache

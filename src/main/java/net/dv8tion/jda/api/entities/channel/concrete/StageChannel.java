@@ -80,6 +80,8 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
      *         If the self member is not a stage moderator. (See {@link #isModerator(Member)})
      * @throws IllegalArgumentException
      *         If the topic is null, empty, or longer than 120 characters
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link StageInstanceAction}
      */
@@ -87,6 +89,7 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
     @CheckReturnValue
     default StageInstanceAction createStageInstance(@Nonnull String topic)
     {
+        Checks.checkAttached(this);
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
         EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
         for (Permission perm : required)
@@ -146,6 +149,8 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
      *
      * @throws IllegalStateException
      *         If the self member is not currently connected to the channel
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      *
@@ -163,6 +168,8 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
      *
      * @throws IllegalStateException
      *         If the self member is not currently connected to the channel
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return {@link RestAction}
      *

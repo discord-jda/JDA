@@ -102,6 +102,7 @@ public class ReceivedMessage implements Message
     protected final OffsetDateTime editedTime;
     protected final Mentions mentions;
     protected final Message.Interaction interaction;
+    protected final Message.InteractionMetadata interactionMetadata;
     protected final ThreadChannel startedThread;
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
@@ -123,7 +124,7 @@ public class ReceivedMessage implements Message
             String content, String nonce, User author, Member member, MessageActivity activity, MessagePoll poll, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
             List<StickerItem> stickers, List<ActionRow> components,
-            int flags, Message.Interaction interaction, ThreadChannel startedThread, int position)
+            int flags, Message.Interaction interaction, Message.InteractionMetadata interactionMetadata, ThreadChannel startedThread, int position)
     {
         this.id = id;
         this.channelId = channelId;
@@ -151,6 +152,7 @@ public class ReceivedMessage implements Message
         this.components = Collections.unmodifiableList(components);
         this.flags = flags;
         this.interaction = interaction;
+        this.interactionMetadata = interactionMetadata;
         this.startedThread = startedThread;
         this.position = position;
         this.poll = poll;
@@ -384,6 +386,13 @@ public class ReceivedMessage implements Message
     public Interaction getInteraction()
     {
         return interaction;
+    }
+
+    @Nullable
+    @Override
+    public InteractionMetadata getInteractionMetadata()
+    {
+        return interactionMetadata;
     }
 
     @Override

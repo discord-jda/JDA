@@ -63,6 +63,8 @@ public interface ICopyableChannel extends GuildChannel
      *         If the provided guild is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link Guild#isDetached() isn't in the guild} the channel should be copied to.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
@@ -95,6 +97,8 @@ public interface ICopyableChannel extends GuildChannel
      *
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the currently logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!

@@ -40,8 +40,7 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildMessageChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.ThreadChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.ThreadChannelManagerImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -59,8 +58,7 @@ import java.util.stream.LongStream;
 
 public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImpl> implements
         ThreadChannel,
-        GuildMessageChannelMixin<ThreadChannelImpl>,
-        ISlowmodeChannelMixin<ThreadChannelImpl>
+        ThreadChannelMixin<ThreadChannelImpl>
 {
     private final ChannelType type;
     private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
@@ -85,6 +83,19 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     {
         super(id, guild);
         this.type = type;
+    }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public GuildImpl getGuild()
+    {
+        return (GuildImpl) guild;
     }
 
     @Nonnull
@@ -349,6 +360,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setAutoArchiveDuration(AutoArchiveDuration autoArchiveDuration)
     {
         this.autoArchiveDuration = autoArchiveDuration;
@@ -361,60 +373,70 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setLocked(boolean locked)
     {
         this.locked = locked;
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setArchived(boolean archived)
     {
         this.archived = archived;
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setInvitable(boolean invitable)
     {
         this.invitable = invitable;
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setArchiveTimestamp(long archiveTimestamp)
     {
         this.archiveTimestamp = archiveTimestamp;
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setCreationTimestamp(long creationTimestamp)
     {
         this.creationTimestamp = creationTimestamp;
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setOwnerId(long ownerId)
     {
         this.ownerId = ownerId;
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setMessageCount(int messageCount)
     {
         this.messageCount = messageCount;
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setTotalMessageCount(int messageCount)
     {
         this.totalMessageCount = Math.max(messageCount, this.messageCount); // If this is 0 we use the older count
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setMemberCount(int memberCount)
     {
         this.memberCount = memberCount;
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setSlowmode(int slowmode)
     {
         this.slowmode = slowmode;
@@ -429,6 +451,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         return this;
     }
 
+    @Override
     public ThreadChannelImpl setFlags(int flags)
     {
         this.flags = flags;
@@ -444,7 +467,6 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
     {
         return appliedTags;
     }
-
 
     public int getRawFlags()
     {

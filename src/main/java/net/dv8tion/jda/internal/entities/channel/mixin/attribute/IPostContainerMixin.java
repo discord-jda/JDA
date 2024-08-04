@@ -39,6 +39,7 @@ public interface IPostContainerMixin<T extends IPostContainerMixin<T>> extends I
     @Override
     default ForumPostAction createForumPost(@Nonnull String name, @Nonnull MessageCreateData message)
     {
+        checkAttached();
         checkPermission(Permission.MESSAGE_SEND);
         return new ForumPostActionImpl(this, name, new MessageCreateBuilder().applyData(message));
     }

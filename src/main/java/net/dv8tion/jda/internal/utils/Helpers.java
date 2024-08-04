@@ -313,6 +313,11 @@ public final class Helpers
         return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 
+    public static <E extends Enum<E>> Collector<E, ?, Set<E>> toUnmodifiableEnumSet(Class<E> enumType)
+    {
+        return Collectors.collectingAndThen(Collectors.toCollection(() -> EnumSet.noneOf(enumType)), Collections::unmodifiableSet);
+    }
+
     public static <T> Collector<T, ?, DataArray> toDataArray()
     {
         return Collector.of(DataArray::empty, DataArray::add, DataArray::addAll);

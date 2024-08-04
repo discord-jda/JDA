@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities.channel.middleman;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -30,7 +31,7 @@ public abstract class AbstractStandardGuildChannelImpl<T extends AbstractStandar
     protected long parentCategoryId;
     protected int position;
 
-    public AbstractStandardGuildChannelImpl(long id, GuildImpl guild)
+    public AbstractStandardGuildChannelImpl(long id, Guild guild)
     {
         super(id, guild);
     }
@@ -72,6 +73,7 @@ public abstract class AbstractStandardGuildChannelImpl<T extends AbstractStandar
 
     protected final void onPositionChange()
     {
-        guild.getChannelView().clearCachedLists();
+        if (!isDetached())
+            ((GuildImpl) getGuild()).getChannelView().clearCachedLists();
     }
 }

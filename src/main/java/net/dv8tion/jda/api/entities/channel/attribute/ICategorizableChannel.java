@@ -41,6 +41,9 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      * Computes the relative position of this channel in the {@link #getParentCategory() parent category}.
      * <br>This is effectively the same as {@code getParentCategory().getChannels().indexOf(channel)}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
+     *
      * @return The relative position in the parent category, or {@code -1} if no parent is set
      */
     default int getPositionInCategory()
@@ -80,6 +83,9 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      * <br>Note that a {@link Category Category} will
      * always return {@code null} for this method as nested categories are not supported.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
+     *
      * @return Possibly-null {@link Category Category} for this GuildChannel
      */
     @Nullable
@@ -94,6 +100,9 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      *
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled.
      * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this CacheFlag by default.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return True, if this channel is synced with its parent category
      *

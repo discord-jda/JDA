@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -166,8 +168,35 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     CommandCreateAction setGuildOnly(boolean guildOnly);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default CommandCreateAction setContexts(@Nonnull InteractionContextType... contexts)
+    {
+        return (CommandCreateAction) SlashCommandData.super.setContexts(contexts);
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    CommandCreateAction setContexts(@Nonnull Collection<InteractionContextType> contexts);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default CommandCreateAction setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
+    {
+        return (CommandCreateAction) SlashCommandData.super.setIntegrationTypes(integrationTypes);
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    CommandCreateAction setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes);
 
     @Nonnull
     @Override
