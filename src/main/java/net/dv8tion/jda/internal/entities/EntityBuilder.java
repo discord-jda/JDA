@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -343,7 +342,13 @@ public class EntityBuilder
         }
 
         TLongObjectMap<DataObject> voiceStates = Helpers.convertToMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
-        TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> Helpers.convertToMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
+        if (guildObj.getPresenceView() != null)
+        {
+            presencesArray.ifPresent(arr ->
+                arr.stream(DataArray::getObject)
+                   .forEach(p -> createPresence(guildObj, p)));
+        }
+
         try (UnlockHook h1 = guildObj.getMembersView().writeLock();
              UnlockHook h2 = getJDA().getUsersView().writeLock())
         {
@@ -353,8 +358,7 @@ public class EntityBuilder
             {
                 long userId = memberJson.getObject("user").getUnsignedLong("id");
                 DataObject voiceState = voiceStates.get(userId);
-                DataObject presence = presences.get(userId);
-                updateMemberCache(createMember(guildObj, memberJson, voiceState, presence));
+                updateMemberCache(createMember(guildObj, memberJson, voiceState));
             }
         }
 
@@ -597,12 +601,11 @@ public class EntityBuilder
 
     public MemberImpl createMember(GuildImpl guild, DataObject memberJson)
     {
-        return createMember(guild, memberJson, null, null);
+        return createMember(guild, memberJson, null);
     }
 
-    public MemberImpl createMember(GuildImpl guild, DataObject memberJson, DataObject voiceStateJson, DataObject presence)
+    public MemberImpl createMember(GuildImpl guild, DataObject memberJson, DataObject voiceStateJson)
     {
-        boolean playbackCache = false;
         User user = createUser(memberJson.getObject("user"));
         DataArray roleArray = memberJson.getArray("roles");
         MemberImpl member = (MemberImpl) guild.getMember(user);
@@ -647,7 +650,7 @@ public class EntityBuilder
                 if (role != null)
                     roles.add(role);
             }
-            updateMember(guild, member, memberJson, roles);
+            updateMember(member, memberJson, roles);
         }
 
         // Load joined_at if necessary
@@ -659,8 +662,6 @@ public class EntityBuilder
         // Load voice state and presence if necessary
         if (voiceStateJson != null && member.getVoiceState() != null)
             createVoiceState(guild, voiceStateJson, user, member);
-        if (presence != null)
-            createPresence(member, presence);
         return member;
     }
 
@@ -693,7 +694,7 @@ public class EntityBuilder
                   .setConnectedChannel(audioChannel);
     }
 
-    public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
+    public void updateMember(MemberImpl member, DataObject content, List<Role> newRoles)
     {
         //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
         long responseNumber = getJDA().getResponseTotal();
@@ -840,23 +841,22 @@ public class EntityBuilder
         }
     }
 
-    public void createPresence(MemberImpl member, DataObject presenceJson)
+    public void createPresence(GuildImpl guild, DataObject presenceJson)
     {
-        if (member == null)
-            throw new NullPointerException("Provided member was null!");
+        long userId = presenceJson.getObject("user").getUnsignedLong("id");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         if (onlineStatus == OnlineStatus.OFFLINE)
             return; // don't cache offline member presences!
-        MemberPresenceImpl presence = member.getPresence();
+        CacheView.SimpleCacheView<MemberPresenceImpl> presences = guild.getPresenceView();
+        if (presences == null)
+            return;
+        MemberPresenceImpl presence = presences.get(userId);
         if (presence == null)
         {
-            CacheView.SimpleCacheView<MemberPresenceImpl> view = member.getGuild().getPresenceView();
-            if (view == null)
-                return;
             presence = new MemberPresenceImpl();
-            try (UnlockHook lock = view.writeLock())
+            try (UnlockHook lock = presences.writeLock())
             {
-                view.getMap().put(member.getIdLong(), presence);
+                presences.getMap().put(userId, presence);
             }
         }
 
@@ -879,7 +879,6 @@ public class EntityBuilder
                 }
                 catch (Exception ex)
                 {
-                    String userId = member.getId();
                     if (LOG.isDebugEnabled())
                         LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, activityArray, ex);
                     else
@@ -1364,10 +1363,8 @@ public class EntityBuilder
 
     public ThreadMember createThreadMember(GuildImpl guild, ThreadChannelImpl threadChannel, DataObject json)
     {
-        DataObject memberJson = json.getObject("member");
-        DataObject presenceJson = json.isNull("presence") ? null : json.getObject("presence");
-
-        Member member = createMember(guild, memberJson, null, presenceJson);
+        json.optObject("presence").ifPresent(p -> createPresence(guild, p));
+        Member member = createMember(guild, json.getObject("member"));
         return createThreadMember(threadChannel, member, json);
     }
 

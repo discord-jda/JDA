@@ -95,7 +95,7 @@ public class MessageReactionHandler extends SocketHandler
                             .map(guild::getRoleById)
                             .filter(Objects::nonNull)
                             .collect(Collectors.toList());
-                    api.getEntityBuilder().updateMember((GuildImpl) guild, member, json, roles);
+                    api.getEntityBuilder().updateMember(member, json, roles);
                 }
                 // update internal references
                 api.getEntityBuilder().updateMemberCache(member);
