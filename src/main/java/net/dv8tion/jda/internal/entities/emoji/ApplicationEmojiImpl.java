@@ -16,6 +16,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
 {
@@ -77,7 +78,7 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
         return api;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public User getOwner()
     {

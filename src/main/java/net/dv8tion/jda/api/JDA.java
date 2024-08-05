@@ -1705,6 +1705,10 @@ public interface JDA extends IGuildChannelContainer<Channel>
         return getEmojiCache().getElementsByName(name, ignoreCase);
     }
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon);
+
     @CheckReturnValue
     RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis();
 
