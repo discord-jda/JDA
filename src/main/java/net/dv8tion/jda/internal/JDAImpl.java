@@ -678,6 +678,25 @@ public class JDAImpl implements JDA
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmojiCache));
     }
 
+    @Nonnull
+    @Override
+    public RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon)
+    {
+        Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.notNull(icon, "Emoji icon");
+
+        DataObject body = DataObject.empty();
+        body.put("name", name);
+        body.put("image", icon.getEncoding());
+
+        final Route.CompiledRoute route = Route.Applications.CREATE_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, body, (response, request) ->
+        {
+            final DataObject obj = response.getObject();
+            return entityBuilder.createApplicationEmoji(this, obj);
+        });
+    }
+
     @Override
     public RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis()
     {

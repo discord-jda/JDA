@@ -1019,7 +1019,8 @@ public class EntityBuilder
     public ApplicationEmojiImpl createApplicationEmoji(JDAImpl api, DataObject json)
     {
         final long emojiId = json.getLong("id");
-        final User user = createUser(json.getObject("user"));
+        // Nullable when creating emojis, at least
+        final User user = json.optObject("user").map(this::createUser).orElse(null);
         return new ApplicationEmojiImpl(emojiId, api, user)
                 .setAnimated(json.getBoolean("animated"))
                 .setName(json.getString("name"));
