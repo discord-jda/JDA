@@ -707,7 +707,6 @@ public class JDAImpl implements JDA
             List<ApplicationEmoji> list = new ArrayList<>(emojis.length());
             for (int i = 0; i < emojis.length(); i++)
             {
-                // TODO: Find a way to make custom emoji without needing Guild instance.
                 list.add(entityBuilder.createApplicationEmoji(this, emojis.getObject(i)));
             }
 
@@ -721,7 +720,6 @@ public class JDAImpl implements JDA
     {
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), String.valueOf(emojiId));
         return new RestActionImpl<>(this, route,
-                // TODO: Find a way to make custom emoji without needing Guild instance.
                 (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())
         );
     }
@@ -730,7 +728,14 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @NotNull String name)
     {
-        return null;
+        Checks.inRange(name, 2, 32, "Emoji name");
+
+        Route.CompiledRoute route = Route.Applications.MODIFY_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), String.valueOf(emojiId));
+        DataObject body = DataObject.empty();
+        body.put("name", name);
+        return new RestActionImpl<>(this, route, body,
+                (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())
+        );
     }
 
     @Override
