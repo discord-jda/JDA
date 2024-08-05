@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -1745,6 +1746,44 @@ public interface JDA extends IGuildChannelContainer<Channel>
     default List<RichCustomEmoji> getEmojisByName(@Nonnull String name, boolean ignoreCase)
     {
         return getEmojiCache().getElementsByName(name, ignoreCase);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon);
+
+    @CheckReturnValue
+    RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis();
+
+    @Nullable
+    @CheckReturnValue
+    RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId);
+
+    @Nullable
+    @CheckReturnValue
+    default RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId)
+    {
+        return retrieveApplicationEmojiById(MiscUtil.parseSnowflake(emojiId));
+    }
+
+    @Nullable
+    @CheckReturnValue
+    RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @Nonnull String name);
+
+    @Nullable
+    @CheckReturnValue
+    default RestAction<ApplicationEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @Nonnull String name)
+    {
+        return updateApplicationEmojiName(MiscUtil.parseSnowflake(emojiId), name);
+    }
+
+    @CheckReturnValue
+    RestAction<Void> deleteApplicationEmojiById(long emojiId);
+
+    @CheckReturnValue
+    default RestAction<Void> deleteApplicationEmojiById(@Nonnull String emojiId)
+    {
+        return deleteApplicationEmojiById(MiscUtil.parseSnowflake(emojiId));
     }
 
     /**
