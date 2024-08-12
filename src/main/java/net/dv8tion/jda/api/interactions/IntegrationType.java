@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.internal.utils.Helpers;
+
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -49,7 +49,7 @@ public enum IntegrationType
     /**
      * Contains all integration types
      */
-    public static final Set<IntegrationType> ALL = Collections.unmodifiableSet(EnumSet.of(GUILD_INSTALL, USER_INSTALL));
+    public static final Set<IntegrationType> ALL = Helpers.unmodifiableEnumSet(GUILD_INSTALL, USER_INSTALL);
 
     private final String key;
 

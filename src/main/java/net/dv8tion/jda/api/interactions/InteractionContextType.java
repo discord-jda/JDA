@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.internal.utils.Helpers;
+
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -53,7 +53,7 @@ public enum InteractionContextType
     /**
      * Contains all interaction types
      */
-    public static final Set<InteractionContextType> ALL = Collections.unmodifiableSet(EnumSet.of(GUILD, BOT_DM, PRIVATE_CHANNEL));
+    public static final Set<InteractionContextType> ALL = Helpers.unmodifiableEnumSet(GUILD, BOT_DM, PRIVATE_CHANNEL);
 
     private final String key;
 

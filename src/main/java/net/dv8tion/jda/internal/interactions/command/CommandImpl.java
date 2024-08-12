@@ -105,7 +105,7 @@ public class CommandImpl implements Command
                         .map(IntegrationType::fromKey)
                         .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class))
                 )
-                .orElse(Collections.unmodifiableSet(EnumSet.of(IntegrationType.GUILD_INSTALL)));
+                .orElse(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
         this.nsfw = json.getBoolean("nsfw");
     }
 
