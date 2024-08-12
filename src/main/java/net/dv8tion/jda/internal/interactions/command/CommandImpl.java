@@ -95,11 +95,16 @@ public class CommandImpl implements Command
                         .map(InteractionContextType::fromKey)
                         .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class))
                 )
-                // If the command is in a guild, it can only be guild, otherwise it's guild + bot DMs
-                .orElse(guildId != 0L
-                        ? Collections.unmodifiableSet(EnumSet.of(InteractionContextType.GUILD))
-                        : Collections.unmodifiableSet(EnumSet.of(InteractionContextType.GUILD, InteractionContextType.BOT_DM))
-                );
+                // If the command is in a guild, it can only be guild, otherwise up to the dm_permission flag
+                .orElseGet(() ->
+                {
+                    if (guildId != 0L) return Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
+
+                    final boolean dmPermission = json.getBoolean("dm_permission", true);
+                    return dmPermission
+                            ? Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM)
+                            : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
+                });
         this.integrationTypes = json.optArray("integration_types")
                 .map(d -> d.stream(DataArray::getString)
                         .map(IntegrationType::fromKey)
