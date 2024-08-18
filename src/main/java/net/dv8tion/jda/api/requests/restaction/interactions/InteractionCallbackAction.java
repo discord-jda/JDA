@@ -65,6 +65,8 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
          */
         @Deprecated
         PREMIUM_REQUIRED(10),
+        /** Placeholder for unknown types */
+        UNKNOWN(-1),
         ;
         private final int raw;
 
@@ -81,6 +83,17 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         public int getRaw()
         {
             return raw;
+        }
+
+        @Nonnull
+        public static ResponseType fromId(int id)
+        {
+            for (ResponseType type : values())
+            {
+                if (type.raw == id)
+                    return type;
+            }
+            return UNKNOWN;
         }
     }
 }
