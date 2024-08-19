@@ -747,13 +747,6 @@ public class AudioConnection
                 case XSALSA20_POLY1305:
                     nlen = 0;
                     break;
-                case XSALSA20_POLY1305_LITE:
-                    if (nonce >= MAX_UINT_32)
-                        loadNextNonce(nonce = 0);
-                    else
-                        loadNextNonce(++nonce);
-                    nlen = 4;
-                    break;
                 case XSALSA20_POLY1305_SUFFIX:
                     ThreadLocalRandom.current().nextBytes(nonceBuffer);
                     nlen = TweetNaclFast.SecretBox.nonceLength;

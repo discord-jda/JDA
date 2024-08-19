@@ -207,10 +207,6 @@ public class AudioPacket
                 extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
                 System.arraycopy(rawPacket, rawPacket.length - extendedNonce.length, extendedNonce, 0, extendedNonce.length);
                 break;
-            case XSALSA20_POLY1305_LITE:
-                extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
-                System.arraycopy(rawPacket, rawPacket.length - 4, extendedNonce, 0, 4);
-                break;
             default:
                 AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
                 return null;
@@ -223,9 +219,6 @@ public class AudioPacket
         {
             case XSALSA20_POLY1305:
 //                length = encodedAudio.remaining();
-                break;
-            case XSALSA20_POLY1305_LITE:
-                length -= 4;
                 break;
             case XSALSA20_POLY1305_SUFFIX:
                 length -= TweetNaclFast.SecretBox.nonceLength;

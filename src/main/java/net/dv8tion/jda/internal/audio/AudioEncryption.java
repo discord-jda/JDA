@@ -20,9 +20,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 
 public enum AudioEncryption
 {
-    // these are ordered by priority, lite > suffix > normal
-    // we prefer lite because it uses only 4 bytes for its nonce while the others use 24 bytes
-    XSALSA20_POLY1305_LITE,
+    // ordered by priority, suffix > normal
     XSALSA20_POLY1305_SUFFIX,
     XSALSA20_POLY1305;
 
