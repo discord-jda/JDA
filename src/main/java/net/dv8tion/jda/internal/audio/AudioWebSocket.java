@@ -73,6 +73,7 @@ class AudioWebSocket extends WebSocketAdapter
     private byte[] secretKey;
     private Future<?> keepAliveHandle;
     private InetSocketAddress address;
+    private long sequence;
 
     private volatile boolean shutdown = false;
 
@@ -392,6 +393,7 @@ class AudioWebSocket extends WebSocketAdapter
     private void handleEvent(DataObject contentAll)
     {
         int opCode = contentAll.getInt("op");
+        sequence = contentAll.getLong("seq", sequence);
 
         switch(opCode)
         {
@@ -540,6 +542,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     private void identify()
     {
+        sequence = 0;
         DataObject connectObj = DataObject.empty()
                 .put("server_id", guild.getId())
                 .put("user_id", getJDA().getSelfUser().getId())
@@ -554,7 +557,8 @@ class AudioWebSocket extends WebSocketAdapter
         DataObject resumeObj = DataObject.empty()
                 .put("server_id", guild.getId())
                 .put("session_id", sessionId)
-                .put("token", token);
+                .put("token", token)
+                .put("seq_ack", sequence);
         send(VoiceCode.RESUME, resumeObj);
     }
 
@@ -675,7 +679,12 @@ class AudioWebSocket extends WebSocketAdapter
         {
             getJDA().setContext();
             if (socket != null && socket.isOpen()) //TCP keep-alive
-                send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
+            {
+                DataObject packet = DataObject.empty().put("t", System.currentTimeMillis());
+                if (sequence > 0)
+                    packet.put("seq_ack", sequence);
+                send(VoiceCode.HEARTBEAT, packet);
+            }
             if (audioConnection.udpSocket != null && !audioConnection.udpSocket.isClosed()) //UDP keep-alive
             {
                 try
