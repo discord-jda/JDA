@@ -491,7 +491,7 @@ class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.HEARTBEAT_ACK:
             {
                 LOG.trace("-> HEARTBEAT_ACK {}", contentAll);
-                final long ping = System.currentTimeMillis() - contentAll.getLong("d");
+                final long ping = System.currentTimeMillis() - contentAll.getObject("d").getLong("t");
                 listener.onPing(ping);
                 break;
             }
