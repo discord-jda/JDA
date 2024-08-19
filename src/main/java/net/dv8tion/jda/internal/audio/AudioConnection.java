@@ -306,7 +306,7 @@ public class AudioConnection
         {
             setSpeaking(speakingMode);
             IAudioSendFactory factory = getJDA().getAudioSendFactory();
-            sendSystem = factory.createSendSystem(new PacketProvider(new TweetNaclFast.SecretBox(webSocket.getSecretKey())));
+            sendSystem = factory.createSendSystem(new PacketProvider());
             sendSystem.setContextMap(getJDA().getContextMap());
             sendSystem.start();
         }
@@ -377,7 +377,7 @@ public class AudioConnection
                         if (canReceive && webSocket.getSecretKey() != null)
                         {
                             couldReceive = true;
-                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(webSocket.encryption, receivedPacket, webSocket.getSecretKey());
+                            AudioPacket decryptedPacket = AudioPacket.decryptAudioPacket(webSocket.crypto, receivedPacket);
                             if (decryptedPacket == null)
                                 continue;
 
@@ -615,7 +615,6 @@ public class AudioConnection
 
     private class PacketProvider implements IPacketProvider
     {
-        private final TweetNaclFast.SecretBox boxer;
         private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
         private char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
@@ -623,9 +622,8 @@ public class AudioConnection
         private ByteBuffer buffer = ByteBuffer.allocate(512);
         private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
 
-        public PacketProvider(TweetNaclFast.SecretBox boxer)
+        public PacketProvider()
         {
-            this.boxer = boxer;
         }
 
         @Nonnull
@@ -742,8 +740,17 @@ public class AudioConnection
             ensureEncryptionBuffer(rawAudio);
             AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
             int nlen;
-            switch (webSocket.encryption)
+            switch (webSocket.crypto.getMode())
             {
+                case AEAD_XCHACHA20_POLY1305_RTPSIZE:
+                case AEAD_AES256_GCM_RTPSIZE:
+                    if (nonce >= MAX_UINT_32)
+                        loadNextNonce(nonce = 0);
+                    else
+                        loadNextNonce(++nonce);
+//                    nlen = 4;
+                    nlen = 0;
+                    break;
                 case XSALSA20_POLY1305:
                     nlen = 0;
                     break;
@@ -752,9 +759,9 @@ public class AudioConnection
                     nlen = TweetNaclFast.SecretBox.nonceLength;
                     break;
                 default:
-                    throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
+                    throw new IllegalStateException("Encryption mode [" + webSocket.crypto + "] is not supported!");
             }
-            return buffer = packet.asEncryptedPacket(boxer, buffer, nonceBuffer, nlen);
+            return buffer = packet.asEncryptedPacket(webSocket.crypto, buffer, nonceBuffer, nlen);
         }
 
         private void ensureEncryptionBuffer(ByteBuffer data)

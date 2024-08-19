@@ -23,6 +23,8 @@ dependencyResolutionManagement {
             library("mockito",               "org.mockito",              "mockito-core"        ).version("5.11.0")
             library("reflections",           "org.reflections",          "reflections"         ).version("0.10.2")
             library("slf4j",                 "org.slf4j",                "slf4j-api"           ).version("2.0.13")
+            library("jna",                   "net.java.dev.jna",         "jna"                 ).version("5.14.0")
+            library("lazysodium",            "com.goterl",               "lazysodium-java"     ).version("5.1.4")
         }
     }
 }

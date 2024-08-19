@@ -134,6 +134,10 @@ dependencies {
     implementation(libs.trove4j)
     implementation(libs.bundles.jackson)
 
+    //Audio crypto libraries
+    implementation(libs.jna)
+    implementation(libs.lazysodium)
+
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
         addAll(configurations["api"].allDependencies)
@@ -207,6 +211,7 @@ val noOpusJar by tasks.creating(ShadowJar::class) {
     from(sourceSets["main"].output)
     exclude("natives/**")     // ~2 MB
     exclude("com/sun/jna/**") // ~1 MB
+    exclude("com/goterl/**")  // ~1 MB
     exclude("club/minnced/opus/util/*")
     exclude("tomp2p/opuswrapper/*")
 
@@ -222,6 +227,7 @@ val minimalJar by tasks.creating(ShadowJar::class) {
     from(sourceSets["main"].output)
     exclude("natives/**")     // ~2 MB
     exclude("com/sun/jna/**") // ~1 MB
+    exclude("com/goterl/**")  // ~1 MB
     exclude("club/minnced/opus/util/*")
     exclude("tomp2p/opuswrapper/*")
     manifest.inheritFrom(jar.manifest)
