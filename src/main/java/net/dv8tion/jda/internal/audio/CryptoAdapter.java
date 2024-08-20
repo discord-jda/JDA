@@ -131,12 +131,20 @@ public interface CryptoAdapter
         }
 
         protected abstract void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception;
+
+        protected byte[] getAdditionalData(ByteBuffer output)
+        {
+            return Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
+        }
+
+        protected byte[] getPlaintextCopy(ByteBuffer audio)
+        {
+            return Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
+        }
     }
 
     class AES_GCM_Adapter extends AbstractAaedAdapter implements CryptoAdapter
     {
-        private int encryptCounter;
-
         public AES_GCM_Adapter(byte[] secretKey)
         {
             super(secretKey, 16, 12);
@@ -152,12 +160,9 @@ public interface CryptoAdapter
         protected void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
         {
             InsecureNonceAesGcmJce cipher = new InsecureNonceAesGcmJce(secretKey);
-            byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
-            byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
-
-            byte[] encrypted = cipher.encrypt(iv, input, additionalData);
-
-            output.put(encrypted);
+            byte[] input = getPlaintextCopy(audio);
+            byte[] additionalData = getAdditionalData(output);
+            output.put(cipher.encrypt(iv, input, additionalData));
         }
     }
 
@@ -178,12 +183,9 @@ public interface CryptoAdapter
         public void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
         {
             InsecureNonceXChaCha20Poly1305 cipher = new InsecureNonceXChaCha20Poly1305(secretKey);
-            byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
-            byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
-
-            byte[] encrypted = cipher.encrypt(iv, input, additionalData);
-
-            output.put(encrypted);
+            byte[] input = getPlaintextCopy(audio);
+            byte[] additionalData = getAdditionalData(output);
+            output.put(cipher.encrypt(iv, input, additionalData));
         }
     }
 }
