@@ -82,6 +82,7 @@ public interface CryptoAdapter
         private static final SecureRandom random = new SecureRandom();
 
         protected final byte[] secretKey;
+        protected final byte[] nonceBuffer;
         protected final int tagBytes;
         protected final int paddedNonceBytes;
         protected int encryptCounter;
@@ -91,6 +92,7 @@ public interface CryptoAdapter
             this.secretKey = secretKey;
             this.tagBytes = tagBytes;
             this.paddedNonceBytes = paddedNonceBytes;
+            this.nonceBuffer = new byte[paddedNonceBytes];
             this.encryptCounter = Math.abs(random.nextInt()) % 513 + 1;
         }
 
@@ -107,12 +109,11 @@ public interface CryptoAdapter
                 output = newBuffer;
             }
 
-            byte[] iv = new byte[paddedNonceBytes];
-            IOUtil.setIntBigEndian(iv, 0, encryptCounter);
+            IOUtil.setIntBigEndian(nonceBuffer, 0, encryptCounter);
 
             try
             {
-                encryptInternally(output, audio, iv);
+                encryptInternally(output, audio, nonceBuffer);
                 output.putInt(encryptCounter++);
                 return output;
             }
