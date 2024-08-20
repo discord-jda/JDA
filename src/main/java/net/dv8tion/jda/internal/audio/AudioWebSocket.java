@@ -55,6 +55,7 @@ class AudioWebSocket extends WebSocketAdapter
     private static final byte[] UDP_KEEP_ALIVE= { (byte) 0xC9, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     protected volatile AudioEncryption encryption;
+    protected volatile CryptoAdapter crypto;
     protected WebSocket socket;
 
     private final AudioConnection audioConnection;
@@ -414,7 +415,7 @@ class AudioWebSocket extends WebSocketAdapter
                 int port = content.getInt("port");
                 String ip = content.getString("ip");
                 DataArray modes = content.getArray("modes");
-                encryption = AudioEncryption.getPreferredMode(modes);
+                encryption = CryptoAdapter.negotiate(AudioEncryption.fromArray(modes));
                 if (encryption == null)
                 {
                     close(ConnectionStatus.ERROR_UNSUPPORTED_ENCRYPTION_MODES);
@@ -475,6 +476,8 @@ class AudioWebSocket extends WebSocketAdapter
                 secretKey = new byte[DISCORD_SECRET_KEY_LENGTH];
                 for (int i = 0; i < keyArray.length(); i++)
                     secretKey[i] = (byte) keyArray.getInt(i);
+
+                crypto = CryptoAdapter.getAdapter(encryption, secretKey);
 
                 LOG.debug("Audio connection has finished connecting!");
                 ready = true;

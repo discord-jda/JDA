@@ -134,6 +134,9 @@ dependencies {
     implementation(libs.trove4j)
     implementation(libs.bundles.jackson)
 
+    //Audio crypto libraries
+    implementation(libs.tink)
+
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
         addAll(configurations["api"].allDependencies)
@@ -222,6 +225,10 @@ val minimalJar by tasks.creating(ShadowJar::class) {
     from(sourceSets["main"].output)
     exclude("natives/**")     // ~2 MB
     exclude("com/sun/jna/**") // ~1 MB
+    exclude("com/google/crypto/tink/**") // ~2 MB
+    exclude("com/google/gson/**") // ~300 KB
+    exclude("com/google/protobuf/**") // ~2 MB
+    exclude("google/protobuf/**")
     exclude("club/minnced/opus/util/*")
     exclude("tomp2p/opuswrapper/*")
     manifest.inheritFrom(jar.manifest)
