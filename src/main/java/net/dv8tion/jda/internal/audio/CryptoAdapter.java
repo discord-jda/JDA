@@ -56,8 +56,6 @@ public interface CryptoAdapter
             return Security.getAlgorithms("Cipher").contains(AES_GCM_NO_PADDING);
         case AEAD_XCHACHA20_POLY1305_RTPSIZE:
             return true;
-        case XSALSA20_POLY1305_SUFFIX:
-        case XSALSA20_POLY1305:
         default:
             return false;
         }
