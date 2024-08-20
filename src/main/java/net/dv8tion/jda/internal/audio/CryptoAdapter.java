@@ -112,7 +112,9 @@ public interface CryptoAdapter
 
             try
             {
-                return encryptInternally(output, audio, iv);
+                encryptInternally(output, audio, iv);
+                output.putInt(encryptCounter++);
+                return output;
             }
             catch (Exception e)
             {
@@ -127,7 +129,7 @@ public interface CryptoAdapter
             return new byte[0];
         }
 
-        protected abstract ByteBuffer encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception;
+        protected abstract void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception;
     }
 
     class AES_GCM_Adapter extends AbstractAaedAdapter implements CryptoAdapter
@@ -146,7 +148,7 @@ public interface CryptoAdapter
         }
 
         @Override
-        protected ByteBuffer encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
+        protected void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
         {
             InsecureNonceAesGcmJce cipher = new InsecureNonceAesGcmJce(secretKey);
             byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
@@ -155,8 +157,6 @@ public interface CryptoAdapter
             byte[] encrypted = cipher.encrypt(iv, input, additionalData);
 
             output.put(encrypted);
-            output.putInt(encryptCounter++);
-            return output;
         }
     }
 
@@ -174,7 +174,7 @@ public interface CryptoAdapter
         }
 
         @Override
-        public ByteBuffer encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
+        public void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
         {
             InsecureNonceXChaCha20Poly1305 cipher = new InsecureNonceXChaCha20Poly1305(secretKey);
             byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
@@ -183,8 +183,6 @@ public interface CryptoAdapter
             byte[] encrypted = cipher.encrypt(iv, input, additionalData);
 
             output.put(encrypted);
-            output.putInt(encryptCounter++);
-            return output;
         }
     }
 }
