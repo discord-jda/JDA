@@ -35,7 +35,7 @@ public interface CryptoAdapter
 
     ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio);
 
-    byte[] decrypt(ByteBuffer packet, int headerLength);
+    byte[] decrypt(ByteBuffer packet);
 
     static AudioEncryption negotiate(EnumSet<AudioEncryption> supportedModes)
     {
@@ -124,10 +124,12 @@ public interface CryptoAdapter
         }
 
         @Override
-        public byte[] decrypt(ByteBuffer packet, int headerLength)
+        public byte[] decrypt(ByteBuffer packet)
         {
             try
             {
+                int headerLength = packet.position();
+                packet.position(0);
                 byte[] additionalData = new byte[headerLength];
                 packet.get(additionalData);
                 byte[] cipherText = new byte[packet.remaining() - nonceBytes];

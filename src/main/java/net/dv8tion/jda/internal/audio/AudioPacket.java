@@ -169,8 +169,9 @@ public class AudioPacket
             return null;
 
         ByteBuffer buffer = ByteBuffer.wrap(encryptedPacket.rawPacket);
-        int headerLength = RTP_HEADER_BYTE_LENGTH + 4; // todo correctly determine header length
-        byte[] decryptedPayload = crypto.decrypt(buffer, headerLength);
+        int headerLength = RTP_HEADER_BYTE_LENGTH + (encryptedPacket.hasExtension ? 4 : 0) + 4 * encryptedPacket.csrcCount;
+        buffer.position(headerLength);
+        byte[] decryptedPayload = crypto.decrypt(buffer);
 
         buffer.clear();
         if (buffer.capacity() < RTP_HEADER_BYTE_LENGTH + decryptedPayload.length)
