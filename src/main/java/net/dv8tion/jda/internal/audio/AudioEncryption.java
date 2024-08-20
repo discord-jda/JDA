@@ -25,8 +25,7 @@ import java.util.stream.Collectors;
 
 public enum AudioEncryption
 {
-    // ordered by priority, suffix > normal
-
+    // ordered by priority descending
     AEAD_AES256_GCM_RTPSIZE,
     AEAD_XCHACHA20_POLY1305_RTPSIZE,
     XSALSA20_POLY1305_SUFFIX,

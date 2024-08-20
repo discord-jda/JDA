@@ -135,8 +135,7 @@ dependencies {
     implementation(libs.bundles.jackson)
 
     //Audio crypto libraries
-    implementation(libs.jna)
-    implementation(libs.lazysodium)
+    implementation(libs.tink)
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
@@ -211,7 +210,6 @@ val noOpusJar by tasks.creating(ShadowJar::class) {
     from(sourceSets["main"].output)
     exclude("natives/**")     // ~2 MB
     exclude("com/sun/jna/**") // ~1 MB
-    exclude("com/goterl/**")  // ~1 MB
     exclude("club/minnced/opus/util/*")
     exclude("tomp2p/opuswrapper/*")
 
@@ -227,7 +225,7 @@ val minimalJar by tasks.creating(ShadowJar::class) {
     from(sourceSets["main"].output)
     exclude("natives/**")     // ~2 MB
     exclude("com/sun/jna/**") // ~1 MB
-    exclude("com/goterl/**")  // ~1 MB
+    exclude("com/google/crypto/tink/**")  // ~2 MB
     exclude("club/minnced/opus/util/*")
     exclude("tomp2p/opuswrapper/*")
     manifest.inheritFrom(jar.manifest)

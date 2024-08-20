@@ -16,28 +16,22 @@
 
 package net.dv8tion.jda.internal.audio;
 
-import com.goterl.lazysodium.LazySodiumJava;
-import com.goterl.lazysodium.SodiumJava;
-import com.goterl.lazysodium.interfaces.AEAD;
+import com.google.crypto.tink.aead.internal.InsecureNonceXChaCha20Poly1305;
 import com.iwebpp.crypto.TweetNaclFast;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 public interface CryptoAdapter
 {
-    SodiumJava sodium = new SodiumJava();
-    LazySodiumJava lazySodium = new LazySodiumJava(sodium);
-
     String AES_GCM_NO_PADDING = "AES_256/GCM/NOPADDING";
-    String XCHACHA_POLY1305 = "XCHACHA20-POLY1305";
 
     AudioEncryption getMode();
 
@@ -66,7 +60,6 @@ public interface CryptoAdapter
         case AEAD_AES256_GCM_RTPSIZE:
             return Security.getAlgorithms("Cipher").contains(AES_GCM_NO_PADDING);
         case AEAD_XCHACHA20_POLY1305_RTPSIZE:
-            return true; // Security.getAlgorithms("Cipher").contains(CHACHA_POLY1305);
         case XSALSA20_POLY1305_SUFFIX:
         case XSALSA20_POLY1305:
             return true;
@@ -244,40 +237,30 @@ public interface CryptoAdapter
                 output = newBuffer;
             }
 
-            byte[] cipherText = new byte[minimumOutputSize];
-            long[] cipherLength = new long[]{0};
+            byte[] iv = new byte[24];
+            IOUtil.setIntBigEndian(iv, 0, encryptCounter);
 
-            byte[] noncePacked = new byte[AEAD.XCHACHA20POLY1305_IETF_NPUBBYTES];
-            IOUtil.setIntBigEndian(noncePacked, 0, encryptCounter);
-            boolean success = lazySodium.cryptoAeadXChaCha20Poly1305IetfEncrypt(
-                    cipherText,
-                    cipherLength,
-                    audio.array(),
-                    audio.remaining(),
-                    output.array(),
-                    output.position(),
-                    null,
-                    noncePacked,
-                    secretKey
-            );
+            try
+            {
+                InsecureNonceXChaCha20Poly1305 xChaCha20Poly1305 = new InsecureNonceXChaCha20Poly1305(secretKey);
 
-            return output;
+                byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
+                byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
 
-//            byte[] iv = new byte[24];
-//            IOUtil.setIntBigEndian(iv, 0, encryptCounter);
-//
-//            try
-//            {
-//                Cipher cipher = getCipher(iv);
-//                cipher.updateAAD(output.array(), 0, output.position());
-//                cipher.doFinal(audio, output);
-//                output.putInt(encryptCounter++);
-//                return output;
-//            }
-//            catch (Exception e)
-//            {
-//                throw new RuntimeException(e);
-//            }
+                byte[] encrypted = xChaCha20Poly1305.encrypt(
+                    iv,
+                    input,
+                    additionalData
+                );
+
+                output.put(encrypted);
+                output.putInt(encryptCounter++);
+                return output;
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
@@ -285,20 +268,6 @@ public interface CryptoAdapter
         {
             // TODO
             return new byte[0];
-        }
-
-        private Cipher getCipher(byte[] iv)
-        {
-            try
-            {
-                Cipher cipher = Cipher.getInstance(XCHACHA_POLY1305);
-                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(secretKey, "AES"), new IvParameterSpec(iv));
-                return cipher;
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
         }
     }
 }
