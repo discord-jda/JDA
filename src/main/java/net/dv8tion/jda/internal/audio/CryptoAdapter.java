@@ -16,13 +16,11 @@
 
 package net.dv8tion.jda.internal.audio;
 
+import com.google.crypto.tink.aead.internal.InsecureNonceAesGcmJce;
 import com.google.crypto.tink.aead.internal.InsecureNonceXChaCha20Poly1305;
 import com.iwebpp.crypto.TweetNaclFast;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.security.Security;
@@ -163,12 +161,15 @@ public interface CryptoAdapter
 
             byte[] iv = new byte[12];
             IOUtil.setIntBigEndian(iv, 0, encryptCounter);
-
             try
             {
-                Cipher cipher = getCipher(iv);
-                cipher.updateAAD(output.array(), 0, output.position());
-                cipher.doFinal(audio, output);
+                InsecureNonceAesGcmJce cipher = new InsecureNonceAesGcmJce(secretKey);
+                byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
+                byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
+
+                byte[] encrypted = cipher.encrypt(iv, input, additionalData);
+
+                output.put(encrypted);
                 output.putInt(encryptCounter++);
                 return output;
             }
@@ -183,20 +184,6 @@ public interface CryptoAdapter
         {
             // TODO
             return new byte[0];
-        }
-
-        private Cipher getCipher(byte[] iv)
-        {
-            try
-            {
-                Cipher cipher = Cipher.getInstance(AES_GCM_NO_PADDING);
-                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(secretKey, "AES"), new GCMParameterSpec(128, iv));
-                return cipher;
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
         }
     }
 
@@ -242,16 +229,12 @@ public interface CryptoAdapter
 
             try
             {
-                InsecureNonceXChaCha20Poly1305 xChaCha20Poly1305 = new InsecureNonceXChaCha20Poly1305(secretKey);
+                InsecureNonceXChaCha20Poly1305 cipher = new InsecureNonceXChaCha20Poly1305(secretKey);
 
                 byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
                 byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
 
-                byte[] encrypted = xChaCha20Poly1305.encrypt(
-                    iv,
-                    input,
-                    additionalData
-                );
+                byte[] encrypted = cipher.encrypt(iv, input, additionalData);
 
                 output.put(encrypted);
                 output.putInt(encryptCounter++);
