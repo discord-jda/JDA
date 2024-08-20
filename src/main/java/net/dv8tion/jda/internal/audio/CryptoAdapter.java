@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.audio;
 
 import com.google.crypto.tink.aead.internal.InsecureNonceAesGcmJce;
 import com.google.crypto.tink.aead.internal.InsecureNonceXChaCha20Poly1305;
-import com.iwebpp.crypto.TweetNaclFast;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.nio.ByteBuffer;
@@ -32,8 +31,6 @@ public interface CryptoAdapter
     String AES_GCM_NO_PADDING = "AES_256/GCM/NOPADDING";
 
     AudioEncryption getMode();
-
-    boolean encryptHeader();
 
     ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio);
 
@@ -58,9 +55,9 @@ public interface CryptoAdapter
         case AEAD_AES256_GCM_RTPSIZE:
             return Security.getAlgorithms("Cipher").contains(AES_GCM_NO_PADDING);
         case AEAD_XCHACHA20_POLY1305_RTPSIZE:
+            return true;
         case XSALSA20_POLY1305_SUFFIX:
         case XSALSA20_POLY1305:
-            return true;
         default:
             return false;
         }
@@ -73,65 +70,73 @@ public interface CryptoAdapter
         case AEAD_AES256_GCM_RTPSIZE:
             return new CryptoAdapter.AES_GCM_Adapter(secretKey);
         case AEAD_XCHACHA20_POLY1305_RTPSIZE:
-            return new ChaCha20Poly1305Adapter(secretKey);
-        case XSALSA20_POLY1305_SUFFIX:
-        case XSALSA20_POLY1305:
-            return new CryptoAdapter.SecretBoxAdapter(mode, secretKey);
+            return new XChaCha20Poly1305Adapter(secretKey);
         default:
             throw new IllegalStateException("Unsupported encryption mode: " + mode);
         }
     }
 
-    class SecretBoxAdapter implements CryptoAdapter
+    abstract class AbstractAaedAdapter implements CryptoAdapter
     {
-        private final AudioEncryption mode;
-        private final TweetNaclFast.SecretBox boxer;
-        private final byte[] secretKey;
+        private static final int nonceBytes = 4;
+        private static final SecureRandom random = new SecureRandom();
 
-        public SecretBoxAdapter(AudioEncryption mode, byte[] secretKey)
+        protected final byte[] secretKey;
+        protected final int tagBytes;
+        protected final int paddedNonceBytes;
+        protected int encryptCounter;
+
+        protected AbstractAaedAdapter(byte[] secretKey, int tagBytes, int paddedNonceBytes)
         {
-            this.mode = mode;
-            this.boxer = new TweetNaclFast.SecretBox(secretKey);
             this.secretKey = secretKey;
+            this.tagBytes = tagBytes;
+            this.paddedNonceBytes = paddedNonceBytes;
+            this.encryptCounter = Math.abs(random.nextInt()) % 513 + 1;
         }
 
         @Override
-        public AudioEncryption getMode()
+        public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio)
         {
-            return mode;
-        }
+            int minimumOutputSize = audio.remaining() + this.tagBytes + nonceBytes;
 
-        @Override
-        public boolean encryptHeader()
-        {
-            return false;
-        }
+            if (output.remaining() < minimumOutputSize)
+            {
+                ByteBuffer newBuffer = ByteBuffer.allocate(output.capacity() + minimumOutputSize);
+                output.flip();
+                newBuffer.put(output);
+                output = newBuffer;
+            }
 
-        @Override
-        public ByteBuffer encrypt(ByteBuffer header, ByteBuffer audio)
-        {
-            //FIXME nonce handling for each mode
-            return ByteBuffer.wrap(boxer.box(audio.array(), audio.arrayOffset(), audio.remaining(), null));
+            byte[] iv = new byte[paddedNonceBytes];
+            IOUtil.setIntBigEndian(iv, 0, encryptCounter);
+
+            try
+            {
+                return encryptInternally(output, audio, iv);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
         public byte[] decrypt(byte[] data, int offset, int length, byte[] nonce)
         {
-            TweetNaclFast.SecretBox opener = new TweetNaclFast.SecretBox(secretKey);
-            return opener.open(data, offset, length, nonce);
+            // TODO
+            return new byte[0];
         }
+
+        protected abstract ByteBuffer encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception;
     }
 
-    class AES_GCM_Adapter implements CryptoAdapter
+    class AES_GCM_Adapter extends AbstractAaedAdapter implements CryptoAdapter
     {
-        private static final SecureRandom random = new SecureRandom();
-        private final byte[] secretKey;
         private int encryptCounter;
 
         public AES_GCM_Adapter(byte[] secretKey)
         {
-            this.secretKey = secretKey;
-            this.encryptCounter = Math.abs(random.nextInt()) % 513 + 1;
+            super(secretKey, 16, 12);
         }
 
         @Override
@@ -141,62 +146,25 @@ public interface CryptoAdapter
         }
 
         @Override
-        public boolean encryptHeader()
+        protected ByteBuffer encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
         {
-            return true;
-        }
+            InsecureNonceAesGcmJce cipher = new InsecureNonceAesGcmJce(secretKey);
+            byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
+            byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
 
-        @Override
-        public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio)
-        {
-            int minimumOutputSize = audio.remaining() + 20; // TAG (16) + NONCE (4)
+            byte[] encrypted = cipher.encrypt(iv, input, additionalData);
 
-            if (output.remaining() < minimumOutputSize)
-            {
-                ByteBuffer newBuffer = ByteBuffer.allocate(output.capacity() + minimumOutputSize);
-                output.flip();
-                newBuffer.put(output);
-                output = newBuffer;
-            }
-
-            byte[] iv = new byte[12];
-            IOUtil.setIntBigEndian(iv, 0, encryptCounter);
-            try
-            {
-                InsecureNonceAesGcmJce cipher = new InsecureNonceAesGcmJce(secretKey);
-                byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
-                byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
-
-                byte[] encrypted = cipher.encrypt(iv, input, additionalData);
-
-                output.put(encrypted);
-                output.putInt(encryptCounter++);
-                return output;
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public byte[] decrypt(byte[] data, int offset, int length, byte[] nonce)
-        {
-            // TODO
-            return new byte[0];
+            output.put(encrypted);
+            output.putInt(encryptCounter++);
+            return output;
         }
     }
 
-    class ChaCha20Poly1305Adapter implements CryptoAdapter
+    class XChaCha20Poly1305Adapter extends AbstractAaedAdapter implements CryptoAdapter
     {
-        private static final SecureRandom random = new SecureRandom();
-        private final byte[] secretKey;
-        private int encryptCounter;
-
-        public ChaCha20Poly1305Adapter(byte[] secretKey)
+        public XChaCha20Poly1305Adapter(byte[] secretKey)
         {
-            this.secretKey = secretKey;
-            this.encryptCounter = Math.abs(random.nextInt()) % 513 + 1;
+            super(secretKey, 16, 24);
         }
 
         @Override
@@ -206,51 +174,17 @@ public interface CryptoAdapter
         }
 
         @Override
-        public boolean encryptHeader()
+        public ByteBuffer encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
         {
-            return true;
-        }
+            InsecureNonceXChaCha20Poly1305 cipher = new InsecureNonceXChaCha20Poly1305(secretKey);
+            byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
+            byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
 
-        @Override
-        public ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio)
-        {
-            int minimumOutputSize = audio.remaining() + 20; // TAG (16) + NONCE (4)
+            byte[] encrypted = cipher.encrypt(iv, input, additionalData);
 
-            if (output.remaining() < minimumOutputSize)
-            {
-                ByteBuffer newBuffer = ByteBuffer.allocate(output.capacity() + minimumOutputSize);
-                output.flip();
-                newBuffer.put(output);
-                output = newBuffer;
-            }
-
-            byte[] iv = new byte[24];
-            IOUtil.setIntBigEndian(iv, 0, encryptCounter);
-
-            try
-            {
-                InsecureNonceXChaCha20Poly1305 cipher = new InsecureNonceXChaCha20Poly1305(secretKey);
-
-                byte[] input = Arrays.copyOfRange(audio.array(), audio.arrayOffset() + audio.position(), audio.arrayOffset() + audio.limit());
-                byte[] additionalData = Arrays.copyOfRange(output.array(), output.arrayOffset(), output.arrayOffset() + output.position());
-
-                byte[] encrypted = cipher.encrypt(iv, input, additionalData);
-
-                output.put(encrypted);
-                output.putInt(encryptCounter++);
-                return output;
-            }
-            catch (Exception e)
-            {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public byte[] decrypt(byte[] data, int offset, int length, byte[] nonce)
-        {
-            // TODO
-            return new byte[0];
+            output.put(encrypted);
+            output.putInt(encryptCounter++);
+            return output;
         }
     }
 }

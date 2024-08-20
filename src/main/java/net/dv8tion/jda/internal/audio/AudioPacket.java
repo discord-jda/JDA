@@ -162,27 +162,11 @@ public class AudioPacket
         return timestamp;
     }
 
-    protected ByteBuffer asEncryptedPacket(CryptoAdapter crypto, ByteBuffer buffer, byte[] nonce, int nlen)
+    protected ByteBuffer asEncryptedPacket(CryptoAdapter crypto, ByteBuffer buffer)
     {
         ((Buffer) buffer).clear();
-
-        if (crypto.encryptHeader())
-        {
-            writeHeader(seq, timestamp, ssrc, buffer);
-            crypto.encrypt(buffer, encodedAudio);
-            ((Buffer) buffer).flip();
-            return buffer;
-        }
-
-        byte[] encryptedAudio = crypto.encrypt(null, encodedAudio).array();
-
-        int capacity = RTP_HEADER_BYTE_LENGTH + encryptedAudio.length + nlen;
-        if (capacity > buffer.remaining())
-            buffer = ByteBuffer.allocate(capacity);
-        populateBuffer(seq, timestamp, ssrc, ByteBuffer.wrap(encryptedAudio), buffer);
-        if (nlen > 0)
-            buffer.put(nonce, 0, nlen);
-
+        writeHeader(seq, timestamp, ssrc, buffer);
+        buffer = crypto.encrypt(buffer, encodedAudio);
         ((Buffer) buffer).flip();
         return buffer;
     }

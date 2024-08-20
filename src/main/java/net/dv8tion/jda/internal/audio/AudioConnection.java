@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.audio;
 
-import com.iwebpp.crypto.TweetNaclFast;
 import com.neovisionaries.ws.client.WebSocket;
 import com.sun.jna.ptr.PointerByReference;
 import gnu.trove.map.TIntLongMap;
@@ -36,7 +35,6 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
@@ -48,7 +46,10 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -615,16 +616,10 @@ public class AudioConnection
 
     private class PacketProvider implements IPacketProvider
     {
-        private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
         private char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
-        private long nonce = 0;
         private ByteBuffer buffer = ByteBuffer.allocate(512);
         private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
-
-        public PacketProvider()
-        {
-        }
 
         @Nonnull
         @Override
@@ -739,29 +734,7 @@ public class AudioConnection
         {
             ensureEncryptionBuffer(rawAudio);
             AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
-            int nlen;
-            switch (webSocket.crypto.getMode())
-            {
-                case AEAD_XCHACHA20_POLY1305_RTPSIZE:
-                case AEAD_AES256_GCM_RTPSIZE:
-                    if (nonce >= MAX_UINT_32)
-                        loadNextNonce(nonce = 0);
-                    else
-                        loadNextNonce(++nonce);
-//                    nlen = 4;
-                    nlen = 0;
-                    break;
-                case XSALSA20_POLY1305:
-                    nlen = 0;
-                    break;
-                case XSALSA20_POLY1305_SUFFIX:
-                    ThreadLocalRandom.current().nextBytes(nonceBuffer);
-                    nlen = TweetNaclFast.SecretBox.nonceLength;
-                    break;
-                default:
-                    throw new IllegalStateException("Encryption mode [" + webSocket.crypto + "] is not supported!");
-            }
-            return buffer = packet.asEncryptedPacket(webSocket.crypto, buffer, nonceBuffer, nlen);
+            return buffer = packet.asEncryptedPacket(webSocket.crypto, buffer);
         }
 
         private void ensureEncryptionBuffer(ByteBuffer data)
@@ -771,11 +744,6 @@ public class AudioConnection
             int requiredCapacity = AudioPacket.RTP_HEADER_BYTE_LENGTH + data.remaining();
             if (currentCapacity < requiredCapacity)
                 encryptionBuffer = ByteBuffer.allocate(requiredCapacity);
-        }
-
-        private void loadNextNonce(long nonce)
-        {
-            IOUtil.setIntBigEndian(nonceBuffer, 0, (int) nonce);
         }
 
         @Override
