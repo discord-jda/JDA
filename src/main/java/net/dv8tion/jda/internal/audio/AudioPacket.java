@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.audio;
 
-import com.iwebpp.crypto.TweetNaclFast;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.net.DatagramPacket;
@@ -62,6 +61,8 @@ public class AudioPacket
     private final char seq;
     private final int timestamp;
     private final int ssrc;
+    private final boolean hasExtension;
+    private final int csrcCount;
     private final byte[] rawPacket;
     private final ByteBuffer encodedAudio;
 
@@ -81,10 +82,11 @@ public class AudioPacket
         this.type = buffer.get(PT_INDEX);
 
         final byte profile = buffer.get(0);
+        this.csrcCount = (byte) (profile & 0x0f);  // CSRC count
+        this.hasExtension = (profile & 0x10) != 0; // extension bit is at 000X
+        final int csrcLength = csrcCount * 4;      // defines count of 4-byte words
+
         final byte[] data = buffer.array();
-        final boolean hasExtension = (profile & 0x10) != 0; // extension bit is at 000X
-        final byte cc = (byte) (profile & 0x0f);            // CSRC count - we ignore this for now
-        final int csrcLength = cc * 4;                      // defines count of 4-byte words
         // it seems as if extensions only exist without a csrc list being present
         final short extension = hasExtension ? IOUtil.getShortBigEndian(data, RTP_HEADER_BYTE_LENGTH + csrcLength) : 0;
 
@@ -102,6 +104,8 @@ public class AudioPacket
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;
+        this.hasExtension = false;
+        this.csrcCount = 0;
         this.encodedAudio = encodedAudio;
         this.type = RTP_PAYLOAD_TYPE;
         this.rawPacket = generateRawPacket(buffer, seq, timestamp, ssrc, encodedAudio);
@@ -127,19 +131,6 @@ public class AudioPacket
     {
         //The first 12 bytes of the rawPacket are the RTP Discord Nonce.
         return Arrays.copyOf(rawPacket, RTP_HEADER_BYTE_LENGTH);
-    }
-
-    public byte[] getNoncePadded()
-    {
-        byte[] nonce = new byte[TweetNaclFast.SecretBox.nonceLength];
-        //The first 12 bytes are the rawPacket are the RTP Discord Nonce.
-        System.arraycopy(rawPacket, 0, nonce, 0, RTP_HEADER_BYTE_LENGTH);
-        return nonce;
-    }
-
-    public byte[] getRawPacket()
-    {
-        return rawPacket;
     }
 
     public ByteBuffer getEncodedAudio()
@@ -177,31 +168,15 @@ public class AudioPacket
         if (encryptedPacket.type != RTP_PAYLOAD_TYPE)
             return null;
 
-
         ByteBuffer buffer = ByteBuffer.wrap(encryptedPacket.rawPacket);
-        int headerLength = buffer.remaining() - encryptedPacket.encodedAudio.remaining();
+        int headerLength = RTP_HEADER_BYTE_LENGTH + 4; // todo correctly determine header length
         byte[] decryptedPayload = crypto.decrypt(buffer, headerLength);
 
-        ByteBuffer outputBuffer;
-        if (buffer.capacity() < headerLength + decryptedPayload.length)
-        {
-            outputBuffer = ByteBuffer.allocate(headerLength + decryptedPayload.length);
-            buffer.position(0);
-            buffer.limit(headerLength);
-            outputBuffer.put(buffer);
-        }
-        else
-        {
-            outputBuffer = buffer;
-            outputBuffer.position(headerLength);
-        }
+        buffer.clear();
+        if (buffer.capacity() < RTP_HEADER_BYTE_LENGTH + decryptedPayload.length)
+            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + decryptedPayload.length);
 
-        buffer.put(decryptedPayload);
-        buffer.flip();
-
-        byte[] output = new byte[outputBuffer.remaining()];
-        outputBuffer.get(output);
-        return new AudioPacket(output);
+        return new AudioPacket(buffer, encryptedPacket.seq, encryptedPacket.timestamp, encryptedPacket.ssrc, ByteBuffer.wrap(decryptedPayload));
     }
 
     private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data)
