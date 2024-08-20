@@ -177,59 +177,29 @@ public class AudioPacket
         if (encryptedPacket.type != RTP_PAYLOAD_TYPE)
             return null;
 
-        byte[] extendedNonce;
-        byte[] rawPacket = encryptedPacket.getRawPacket();
-        switch (crypto.getMode())
+        ByteBuffer buffer = ByteBuffer.wrap(encryptedPacket.rawPacket);
+        byte[] decryptedPayload = crypto.decrypt(buffer, RTP_HEADER_BYTE_LENGTH);
+
+        ByteBuffer outputBuffer;
+        if (buffer.capacity() < RTP_HEADER_BYTE_LENGTH + decryptedPayload.length)
         {
-            case AEAD_AES256_GCM_RTPSIZE:
-                extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
-                System.arraycopy(rawPacket, rawPacket.length - 4, extendedNonce, 0, 4);
-                break;
-            case XSALSA20_POLY1305:
-                extendedNonce = encryptedPacket.getNoncePadded();
-                break;
-            case XSALSA20_POLY1305_SUFFIX:
-                extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
-                System.arraycopy(rawPacket, rawPacket.length - extendedNonce.length, extendedNonce, 0, extendedNonce.length);
-                break;
-            default:
-                AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
-                return null;
+            outputBuffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + decryptedPayload.length);
+            buffer.position(0);
+            buffer.limit(RTP_HEADER_BYTE_LENGTH);
+            outputBuffer.put(buffer);
+        }
+        else
+        {
+            outputBuffer = buffer;
+            outputBuffer.position(RTP_HEADER_BYTE_LENGTH);
         }
 
-        ByteBuffer encodedAudio = encryptedPacket.encodedAudio;
-        int length = encodedAudio.remaining();
-        int offset = encodedAudio.arrayOffset() + encodedAudio.position();
-        switch (crypto.getMode())
-        {
-            case AEAD_AES256_GCM_RTPSIZE:
-                length -= 4;
-                break;
-            case XSALSA20_POLY1305:
-//                length = encodedAudio.remaining();
-                break;
-            case XSALSA20_POLY1305_SUFFIX:
-                length -= TweetNaclFast.SecretBox.nonceLength;
-                break;
-            default:
-                AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
-                return null;
-        }
+        buffer.put(decryptedPayload);
+        buffer.flip();
 
-        final byte[] decryptedAudio = crypto.decrypt(encodedAudio.array(), offset, length, extendedNonce);
-        if (decryptedAudio == null)
-        {
-            AudioConnection.LOG.trace("Failed to decrypt audio packet");
-            return null;
-        }
-        final byte[] decryptedRawPacket = new byte[RTP_HEADER_BYTE_LENGTH + decryptedAudio.length];
-
-        //first 12 bytes of rawPacket are the RTP header
-        //the rest is the audio data we just decrypted
-        System.arraycopy(encryptedPacket.rawPacket, 0, decryptedRawPacket, 0, RTP_HEADER_BYTE_LENGTH);
-        System.arraycopy(decryptedAudio, 0, decryptedRawPacket, RTP_HEADER_BYTE_LENGTH, decryptedAudio.length);
-
-        return new AudioPacket(decryptedRawPacket);
+        byte[] output = new byte[outputBuffer.remaining()];
+        outputBuffer.get(output);
+        return new AudioPacket(output);
     }
 
     private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data)

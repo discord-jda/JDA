@@ -21,6 +21,7 @@ import com.google.crypto.tink.aead.internal.InsecureNonceXChaCha20Poly1305;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.nio.ByteBuffer;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.Arrays;
@@ -34,8 +35,7 @@ public interface CryptoAdapter
 
     ByteBuffer encrypt(ByteBuffer output, ByteBuffer audio);
 
-    byte[] decrypt(byte[] data, int offset, int length,
-                   byte[] nonce);
+    byte[] decrypt(ByteBuffer packet, int headerLength);
 
     static AudioEncryption negotiate(EnumSet<AudioEncryption> supportedModes)
     {
@@ -78,8 +78,8 @@ public interface CryptoAdapter
 
     abstract class AbstractAaedAdapter implements CryptoAdapter
     {
-        private static final int nonceBytes = 4;
-        private static final SecureRandom random = new SecureRandom();
+        protected static final int nonceBytes = 4;
+        protected static final SecureRandom random = new SecureRandom();
 
         protected final byte[] secretKey;
         protected final byte[] nonceBuffer;
@@ -124,13 +124,26 @@ public interface CryptoAdapter
         }
 
         @Override
-        public byte[] decrypt(byte[] data, int offset, int length, byte[] nonce)
+        public byte[] decrypt(ByteBuffer packet, int headerLength)
         {
-            // TODO
-            return new byte[0];
+            try
+            {
+                byte[] additionalData = new byte[headerLength];
+                packet.get(additionalData);
+                byte[] cipherText = new byte[packet.remaining() - nonceBytes];
+                packet.get(cipherText);
+                byte[] nonce = new byte[paddedNonceBytes];
+                packet.get(nonce, 0, nonceBytes);
+                return decryptInternally(cipherText, additionalData, nonce);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
         }
 
         protected abstract void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception;
+        protected abstract byte[] decryptInternally(byte[] cipherText, byte[] additionalData, byte[] nonce) throws Exception;
 
         protected byte[] getAdditionalData(ByteBuffer output)
         {
@@ -159,10 +172,22 @@ public interface CryptoAdapter
         @Override
         protected void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
         {
-            InsecureNonceAesGcmJce cipher = new InsecureNonceAesGcmJce(secretKey);
+            InsecureNonceAesGcmJce cipher = getCipher();
             byte[] input = getPlaintextCopy(audio);
             byte[] additionalData = getAdditionalData(output);
             output.put(cipher.encrypt(iv, input, additionalData));
+        }
+
+        @Override
+        public byte[] decryptInternally(byte[] cipherText, byte[] additionalData, byte[] nonce) throws Exception
+        {
+            InsecureNonceAesGcmJce cipher = getCipher();
+            return cipher.decrypt(nonce, cipherText, additionalData);
+        }
+
+        private InsecureNonceAesGcmJce getCipher() throws GeneralSecurityException
+        {
+            return new InsecureNonceAesGcmJce(secretKey);
         }
     }
 
@@ -182,10 +207,22 @@ public interface CryptoAdapter
         @Override
         public void encryptInternally(ByteBuffer output, ByteBuffer audio, byte[] iv) throws Exception
         {
-            InsecureNonceXChaCha20Poly1305 cipher = new InsecureNonceXChaCha20Poly1305(secretKey);
+            InsecureNonceXChaCha20Poly1305 cipher = getCipher();
             byte[] input = getPlaintextCopy(audio);
             byte[] additionalData = getAdditionalData(output);
             output.put(cipher.encrypt(iv, input, additionalData));
+        }
+
+        @Override
+        public byte[] decryptInternally(byte[] cipherText, byte[] additionalData, byte[] nonce) throws Exception
+        {
+            InsecureNonceXChaCha20Poly1305 cipher = getCipher();
+            return cipher.decrypt(nonce, cipherText, additionalData);
+        }
+
+        private InsecureNonceXChaCha20Poly1305 getCipher() throws GeneralSecurityException
+        {
+            return new InsecureNonceXChaCha20Poly1305(secretKey);
         }
     }
 }
