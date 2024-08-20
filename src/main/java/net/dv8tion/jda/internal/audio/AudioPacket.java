@@ -177,21 +177,23 @@ public class AudioPacket
         if (encryptedPacket.type != RTP_PAYLOAD_TYPE)
             return null;
 
+
         ByteBuffer buffer = ByteBuffer.wrap(encryptedPacket.rawPacket);
-        byte[] decryptedPayload = crypto.decrypt(buffer, RTP_HEADER_BYTE_LENGTH);
+        int headerLength = buffer.remaining() - encryptedPacket.encodedAudio.remaining();
+        byte[] decryptedPayload = crypto.decrypt(buffer, headerLength);
 
         ByteBuffer outputBuffer;
-        if (buffer.capacity() < RTP_HEADER_BYTE_LENGTH + decryptedPayload.length)
+        if (buffer.capacity() < headerLength + decryptedPayload.length)
         {
-            outputBuffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + decryptedPayload.length);
+            outputBuffer = ByteBuffer.allocate(headerLength + decryptedPayload.length);
             buffer.position(0);
-            buffer.limit(RTP_HEADER_BYTE_LENGTH);
+            buffer.limit(headerLength);
             outputBuffer.put(buffer);
         }
         else
         {
             outputBuffer = buffer;
-            outputBuffer.position(RTP_HEADER_BYTE_LENGTH);
+            outputBuffer.position(headerLength);
         }
 
         buffer.put(decryptedPayload);
