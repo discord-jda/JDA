@@ -129,7 +129,7 @@ public class AudioPacket
         return timestamp;
     }
 
-    protected ByteBuffer asEncryptedPacket(CryptoAdapter crypto, ByteBuffer buffer)
+    public ByteBuffer asEncryptedPacket(CryptoAdapter crypto, ByteBuffer buffer)
     {
         ((Buffer) buffer).clear();
         writeHeader(seq, timestamp, ssrc, buffer);
@@ -138,7 +138,7 @@ public class AudioPacket
         return buffer;
     }
 
-    protected static AudioPacket decryptAudioPacket(CryptoAdapter crypto, DatagramPacket packet)
+    public static AudioPacket decryptAudioPacket(CryptoAdapter crypto, DatagramPacket packet)
     {
         AudioPacket encryptedPacket = new AudioPacket(packet);
         if (encryptedPacket.type != RTP_PAYLOAD_TYPE)
