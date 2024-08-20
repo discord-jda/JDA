@@ -111,7 +111,7 @@ public class AudioPacket
         this.rawPacket = generateRawPacket(buffer, seq, timestamp, ssrc, encodedAudio);
     }
 
-    private int getPayloadOffset(byte[] data, int csrcLength)
+    private static int getPayloadOffset(byte[] data, int csrcLength)
     {
         // headerLength defines number of 4-byte words in the extension
         final short headerLength = IOUtil.getShortBigEndian(data, RTP_HEADER_BYTE_LENGTH + 2 + csrcLength);
@@ -168,16 +168,22 @@ public class AudioPacket
         if (encryptedPacket.type != RTP_PAYLOAD_TYPE)
             return null;
 
+        int csrcLength = 4 * encryptedPacket.csrcCount;
+
         ByteBuffer buffer = ByteBuffer.wrap(encryptedPacket.rawPacket);
-        int headerLength = RTP_HEADER_BYTE_LENGTH + (encryptedPacket.hasExtension ? 4 : 0) + 4 * encryptedPacket.csrcCount;
+        int headerLength = RTP_HEADER_BYTE_LENGTH + (encryptedPacket.hasExtension ? 4 : 0) + csrcLength;
         buffer.position(headerLength);
         byte[] decryptedPayload = crypto.decrypt(buffer);
 
-        buffer.clear();
-        if (buffer.capacity() < RTP_HEADER_BYTE_LENGTH + decryptedPayload.length)
-            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + decryptedPayload.length);
+        int offset = headerLength - RTP_HEADER_BYTE_LENGTH;
 
-        return new AudioPacket(buffer, encryptedPacket.seq, encryptedPacket.timestamp, encryptedPacket.ssrc, ByteBuffer.wrap(decryptedPayload));
+        buffer.clear();
+        if (buffer.capacity() < RTP_HEADER_BYTE_LENGTH + decryptedPayload.length - offset)
+            buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + decryptedPayload.length - offset);
+
+        ByteBuffer data = ByteBuffer.allocate(decryptedPayload.length - offset);
+        data.put(decryptedPayload, offset, decryptedPayload.length - offset);
+        return new AudioPacket(buffer, encryptedPacket.seq, encryptedPacket.timestamp, encryptedPacket.ssrc, data);
     }
 
     private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data)
