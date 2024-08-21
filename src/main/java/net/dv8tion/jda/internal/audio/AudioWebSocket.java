@@ -55,6 +55,7 @@ class AudioWebSocket extends WebSocketAdapter
     private static final byte[] UDP_KEEP_ALIVE= { (byte) 0xC9, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     protected volatile AudioEncryption encryption;
+    protected volatile CryptoAdapter crypto;
     protected WebSocket socket;
 
     private final AudioConnection audioConnection;
@@ -73,6 +74,7 @@ class AudioWebSocket extends WebSocketAdapter
     private byte[] secretKey;
     private Future<?> keepAliveHandle;
     private InetSocketAddress address;
+    private long sequence;
 
     private volatile boolean shutdown = false;
 
@@ -392,6 +394,7 @@ class AudioWebSocket extends WebSocketAdapter
     private void handleEvent(DataObject contentAll)
     {
         int opCode = contentAll.getInt("op");
+        sequence = contentAll.getLong("seq", sequence);
 
         switch(opCode)
         {
@@ -412,7 +415,7 @@ class AudioWebSocket extends WebSocketAdapter
                 int port = content.getInt("port");
                 String ip = content.getString("ip");
                 DataArray modes = content.getArray("modes");
-                encryption = AudioEncryption.getPreferredMode(modes);
+                encryption = CryptoAdapter.negotiate(AudioEncryption.fromArray(modes));
                 if (encryption == null)
                 {
                     close(ConnectionStatus.ERROR_UNSUPPORTED_ENCRYPTION_MODES);
@@ -474,6 +477,8 @@ class AudioWebSocket extends WebSocketAdapter
                 for (int i = 0; i < keyArray.length(); i++)
                     secretKey[i] = (byte) keyArray.getInt(i);
 
+                crypto = CryptoAdapter.getAdapter(encryption, secretKey);
+
                 LOG.debug("Audio connection has finished connecting!");
                 ready = true;
                 MiscUtil.locked(audioConnection.readyLock, audioConnection.readyCondvar::signalAll);
@@ -489,7 +494,7 @@ class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.HEARTBEAT_ACK:
             {
                 LOG.trace("-> HEARTBEAT_ACK {}", contentAll);
-                final long ping = System.currentTimeMillis() - contentAll.getLong("d");
+                final long ping = System.currentTimeMillis() - contentAll.getObject("d").getLong("t");
                 listener.onPing(ping);
                 break;
             }
@@ -540,6 +545,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     private void identify()
     {
+        sequence = 0;
         DataObject connectObj = DataObject.empty()
                 .put("server_id", guild.getId())
                 .put("user_id", getJDA().getSelfUser().getId())
@@ -554,7 +560,8 @@ class AudioWebSocket extends WebSocketAdapter
         DataObject resumeObj = DataObject.empty()
                 .put("server_id", guild.getId())
                 .put("session_id", sessionId)
-                .put("token", token);
+                .put("token", token)
+                .put("seq_ack", sequence);
         send(VoiceCode.RESUME, resumeObj);
     }
 
@@ -675,7 +682,12 @@ class AudioWebSocket extends WebSocketAdapter
         {
             getJDA().setContext();
             if (socket != null && socket.isOpen()) //TCP keep-alive
-                send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
+            {
+                DataObject packet = DataObject.empty().put("t", System.currentTimeMillis());
+                if (sequence > 0)
+                    packet.put("seq_ack", sequence);
+                send(VoiceCode.HEARTBEAT, packet);
+            }
             if (audioConnection.udpSocket != null && !audioConnection.udpSocket.isClosed()) //UDP keep-alive
             {
                 try

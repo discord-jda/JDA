@@ -22,7 +22,7 @@ public class JDAInfo
 {
     public static final int DISCORD_GATEWAY_VERSION = 10;
     public static final int DISCORD_REST_VERSION = 10;
-    public static final int AUDIO_GATEWAY_VERSION = 4;
+    public static final int AUDIO_GATEWAY_VERSION = 8;
     public static final String GITHUB = "https://github.com/discord-jda/JDA";
     public static final String VERSION_MAJOR = "@versionMajor@";
     public static final String VERSION_MINOR = "@versionMinor@";
