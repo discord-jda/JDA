@@ -268,8 +268,8 @@ public class EntityBuilder
         final DataArray threadArray = guildJson.getArray("threads");
         final DataArray scheduledEventsArray = guildJson.getArray("guild_scheduled_events");
         final DataArray emojisArray = guildJson.getArray("emojis");
-        final DataArray stickersArray = guildJson.getArray("stickers");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
+        final Optional<DataArray> stickersArray = guildJson.optArray("stickers");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");
         final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
@@ -391,7 +391,7 @@ public class EntityBuilder
 
         createScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmojiPass(guildObj, emojisArray);
-        createGuildStickerPass(guildObj, stickersArray);
+        stickersArray.ifPresent(stickers -> createGuildStickerPass(guildObj, stickers));
         guildJson.optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
                 .ifPresent(list -> list.forEach(it -> createStageInstance(guildObj, it)));
