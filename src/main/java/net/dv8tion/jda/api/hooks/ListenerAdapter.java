@@ -181,7 +181,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageUpdate(@Nonnull MessageUpdateEvent event) {}
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {}
     public void onMessageBulkDelete(@Nonnull MessageBulkDeleteEvent event) {}
-    public void onMessageEmbed(@Nonnull MessageEmbedEvent event) {}
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {}
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {}
     public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
