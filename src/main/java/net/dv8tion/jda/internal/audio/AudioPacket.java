@@ -84,7 +84,16 @@ public class AudioPacket
         for (int i = 0; i < cc; i++)
             this.csrc[i] = buffer.getInt();
 
-        this.extension = this.hasExtension ? buffer.getInt() : 0;
+        // Extract extension length as described by https://datatracker.ietf.org/doc/html/rfc3550#section-5.3.1
+        if (this.hasExtension)
+        {
+            buffer.position(buffer.position() + 2);
+            this.extension = buffer.getShort();
+        }
+        else
+        {
+            this.extension = 0;
+        }
 
         this.headerLength = buffer.position();
         this.encodedAudio = buffer;
@@ -145,12 +154,14 @@ public class AudioPacket
             return null;
 
         byte[] decryptedPayload = crypto.decrypt(encryptedPacket.encodedAudio);
+        int offset = 4 * encryptedPacket.extension;
+
         return new AudioPacket(
             null,
             encryptedPacket.seq,
             encryptedPacket.timestamp,
             encryptedPacket.ssrc,
-            ByteBuffer.wrap(decryptedPayload)
+            ByteBuffer.wrap(decryptedPayload, offset, decryptedPayload.length - offset).slice()
         );
     }
 
