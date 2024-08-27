@@ -124,7 +124,7 @@ Starting your bot and attaching an event listener, using the right [intents][Gat
 ```java
 public static void main(String[] args) {
   JDABuilder.createLight(token, EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
-      .addEventListener(new MessageReceiveListener())
+      .addEventListeners(new MessageReceiveListener())
       .build();
 }
 ```
