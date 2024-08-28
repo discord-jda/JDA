@@ -125,6 +125,7 @@ public class GuildImpl implements Guild
     private TextChannel systemChannel;
     private TextChannel rulesChannel;
     private TextChannel communityUpdatesChannel;
+    private TextChannel safetyAlertsChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
@@ -630,6 +631,13 @@ public class GuildImpl implements Guild
     public TextChannel getCommunityUpdatesChannel()
     {
         return communityUpdatesChannel;
+    }
+
+    @Nullable
+    @Override
+    public TextChannel getSafetyAlertsChannel()
+    {
+        return safetyAlertsChannel;
     }
 
     @Nonnull
@@ -2188,6 +2196,12 @@ public class GuildImpl implements Guild
     public GuildImpl setCommunityUpdatesChannel(TextChannel communityUpdatesChannel)
     {
         this.communityUpdatesChannel = communityUpdatesChannel;
+        return this;
+    }
+
+    public GuildImpl setSafetyAlertsChannel(TextChannel safetyAlertsChannel)
+    {
+        this.safetyAlertsChannel = safetyAlertsChannel;
         return this;
     }
 

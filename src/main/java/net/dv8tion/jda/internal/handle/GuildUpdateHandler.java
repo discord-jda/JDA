@@ -89,6 +89,8 @@ public class GuildUpdateHandler extends SocketHandler
                 ? null : guild.getChannelById(TextChannel.class, content.getLong("rules_channel_id"));
         TextChannel communityUpdatesChannel = content.isNull("public_updates_channel_id")
                 ? null : guild.getChannelById(TextChannel.class, content.getLong("public_updates_channel_id"));
+        TextChannel safetyAlertsChannel = content.isNull("safety_alerts_channel_id")
+                ? null : guild.getChannelById(TextChannel.class, content.getLong("safety_alerts_channel_id"));
         Set<String> features;
         if (!content.isNull("features"))
         {
@@ -303,6 +305,15 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateCommunityUpdatesChannelEvent(
                             getJDA(), responseNumber,
                             guild, oldCommunityUpdatesChannel));
+        }
+        if (!Objects.equals(safetyAlertsChannel, guild.getSafetyAlertsChannel()))
+        {
+            TextChannel oldSafetyAlertsChannel = guild.getSafetyAlertsChannel();
+            guild.setSafetyAlertsChannel(safetyAlertsChannel);
+            getJDA().handleEvent(
+                    new GuildUpdateSafetyAlertsChannelEvent(
+                            getJDA(), responseNumber,
+                            guild, oldSafetyAlertsChannel));
         }
         if (content.hasKey("nsfw_level") && nsfwLevel != guild.getNSFWLevel())
         {
