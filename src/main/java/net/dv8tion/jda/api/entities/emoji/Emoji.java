@@ -237,6 +237,6 @@ public interface Emoji extends SerializableData, Formattable
          * <br>This represents emojis which were created by users and added to a guild.
          * <br>This can also represent emojis which were created by users and added to a jda.
          */
-        CUSTOM
+        CUSTOM,
     }
 }

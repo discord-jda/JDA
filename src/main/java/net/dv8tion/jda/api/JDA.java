@@ -1752,9 +1752,9 @@ public interface JDA extends IGuildChannelContainer<Channel>
     }
 
     /**
-     * Creates a new {@link ApplicationEmoji} for this JDA.
+     * Creates a new {@link ApplicationEmoji} for this bot.
      *
-     * <p>Note that a JDA is limited to 2000 normal/animated emojis.
+     * <p>Note that the bot is limited to 2000 Application Emojis (normal and animated).
      *
      * @param  name
      *         The name for the new emoji (2-30 characters)
