@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -82,10 +83,12 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
@@ -673,6 +676,73 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmojiCache));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon)
+    {
+        Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.notNull(icon, "Emoji icon");
+
+        DataObject body = DataObject.empty();
+        body.put("name", name);
+        body.put("image", icon.getEncoding());
+
+        final Route.CompiledRoute route = Route.Applications.CREATE_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, body, (response, request) ->
+        {
+            final DataObject obj = response.getObject();
+            return entityBuilder.createApplicationEmoji(this, obj);
+        });
+    }
+
+    @Override
+    public RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJIS.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            DataArray emojis = response.getObject().getArray("items");
+            List<ApplicationEmoji> list = new ArrayList<>(emojis.length());
+            for (int i = 0; i < emojis.length(); i++)
+            {
+                list.add(entityBuilder.createApplicationEmoji(this, emojis.getObject(i)));
+            }
+
+            return Collections.unmodifiableList(list);
+        });
+    }
+
+    @Nullable
+    @Override
+    public RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId)
+    {
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), String.valueOf(emojiId));
+        return new RestActionImpl<>(this, route,
+                (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())
+        );
+    }
+
+    @Nullable
+    @Override
+    public RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @NotNull String name)
+    {
+        Checks.inRange(name, 2, 32, "Emoji name");
+
+        Route.CompiledRoute route = Route.Applications.MODIFY_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), String.valueOf(emojiId));
+        DataObject body = DataObject.empty();
+        body.put("name", name);
+        return new RestActionImpl<>(this, route, body,
+                (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())
+        );
+    }
+
+    @Override
+    public RestAction<Void> deleteApplicationEmojiById(long emojiId)
+    {
+        Route.CompiledRoute route = Route.Applications.DELETE_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route);
     }
 
     @Nonnull
