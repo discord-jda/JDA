@@ -1,6 +1,7 @@
 package net.dv8tion.jda.api.entities.emoji;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.managers.ApplicationEmojiManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -15,6 +16,7 @@ import javax.annotation.Nullable;
  * <p><b>This does not represent unicode emojis like they are used in the official client!
  * The format {@code :smiley:} is a client-side alias which is replaced by the unicode emoji, not a custom emoji.</b>
  *
+ * @see JDA#createApplicationEmoji(String, Icon)
  * @see JDA#retrieveApplicationEmojiById(long)
  * @see JDA#retrieveApplicationEmojis()
  */
@@ -30,6 +32,8 @@ public interface ApplicationEmoji extends CustomEmoji
 
     /**
      * The user who created this emoji
+     *
+     * <p>This returns null, right after creating the emoji.
      *
      * @return The user who created this emoji
      */
@@ -48,6 +52,8 @@ public interface ApplicationEmoji extends CustomEmoji
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      *         The RestAction to delete this emoji.
      */
+    @Nonnull
+    @CheckReturnValue
     RestAction<Void> delete();
 
     /**

@@ -54,9 +54,8 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
     @Override
     public ApplicationEmojiManager setName(@NotNull String name)
     {
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.inRange(name, 2, 32, "Name");
+        Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Emoji name");
         this.name = name;
         set |= NAME;
         return this;

@@ -98,6 +98,7 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
         return animated;
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> delete()
     {
@@ -156,7 +157,7 @@ public class ApplicationEmojiImpl implements ApplicationEmoji, EmojiUnion
     @Override
     public UnicodeEmoji asUnicode()
     {
-        throw new IllegalStateException("Cannot convert CustomEmoji to UnicodeEmoji!");
+        throw new IllegalStateException("Cannot convert ApplicationEmoji to UnicodeEmoji!");
     }
 
     @Nonnull

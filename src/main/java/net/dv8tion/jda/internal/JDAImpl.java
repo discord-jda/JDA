@@ -697,6 +697,7 @@ public class JDAImpl implements JDA
         });
     }
 
+    @Nonnull
     @Override
     public RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis()
     {
@@ -714,23 +715,24 @@ public class JDAImpl implements JDA
         });
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId)
+    public RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId)
     {
-        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), String.valueOf(emojiId));
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
         return new RestActionImpl<>(this, route,
                 (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())
         );
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @NotNull String name)
+    public RestAction<ApplicationEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @NotNull String name)
     {
         Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Emoji name");
 
-        Route.CompiledRoute route = Route.Applications.MODIFY_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), String.valueOf(emojiId));
+        Route.CompiledRoute route = Route.Applications.MODIFY_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
         DataObject body = DataObject.empty();
         body.put("name", name);
         return new RestActionImpl<>(this, route, body,
@@ -738,10 +740,11 @@ public class JDAImpl implements JDA
         );
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> deleteApplicationEmojiById(long emojiId)
+    public RestAction<Void> deleteApplicationEmojiById(@Nonnull String emojiId)
     {
-        Route.CompiledRoute route = Route.Applications.DELETE_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId());
+        Route.CompiledRoute route = Route.Applications.DELETE_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
         return new RestActionImpl<>(this, route);
     }
 

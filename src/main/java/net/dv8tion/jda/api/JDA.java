@@ -1755,39 +1755,42 @@ public interface JDA extends IGuildChannelContainer<Channel>
     @CheckReturnValue
     RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon);
 
+    @Nonnull
     @CheckReturnValue
     RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis();
 
-    @Nullable
+    @Nonnull
     @CheckReturnValue
-    RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId);
-
-    @Nullable
-    @CheckReturnValue
-    default RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId)
+    default RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId)
     {
-        return retrieveApplicationEmojiById(MiscUtil.parseSnowflake(emojiId));
+        return retrieveApplicationEmojiById(String.valueOf(emojiId));
     }
 
-    @Nullable
+    @Nonnull
     @CheckReturnValue
-    RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @Nonnull String name);
+    RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId);
 
-    @Nullable
+    @Nonnull
     @CheckReturnValue
-    default RestAction<ApplicationEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @Nonnull String name)
+    default RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @Nonnull String name)
     {
-        return updateApplicationEmojiName(MiscUtil.parseSnowflake(emojiId), name);
+        return updateApplicationEmojiName(String.valueOf(emojiId), name);
     }
 
+    @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteApplicationEmojiById(long emojiId);
+    RestAction<ApplicationEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @Nonnull String name);
 
+    @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteApplicationEmojiById(@Nonnull String emojiId)
+    default RestAction<Void> deleteApplicationEmojiById(long emojiId)
     {
-        return deleteApplicationEmojiById(MiscUtil.parseSnowflake(emojiId));
+        return deleteApplicationEmojiById(String.valueOf(emojiId));
     }
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> deleteApplicationEmojiById(@Nonnull String emojiId);
 
     /**
      * Attempts to retrieve a {@link Sticker} object based on the provided snowflake reference.
