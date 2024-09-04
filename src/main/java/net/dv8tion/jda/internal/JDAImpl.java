@@ -83,7 +83,6 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -722,29 +721,6 @@ public class JDAImpl implements JDA
         return new RestActionImpl<>(this, route,
                 (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())
         );
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<ApplicationEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @NotNull String name)
-    {
-        Checks.inRange(name, 2, 32, "Emoji name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Emoji name");
-
-        Route.CompiledRoute route = Route.Applications.MODIFY_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
-        DataObject body = DataObject.empty();
-        body.put("name", name);
-        return new RestActionImpl<>(this, route, body,
-                (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())
-        );
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> deleteApplicationEmojiById(@Nonnull String emojiId)
-    {
-        Route.CompiledRoute route = Route.Applications.DELETE_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
-        return new RestActionImpl<>(this, route);
     }
 
     @Nonnull

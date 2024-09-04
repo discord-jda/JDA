@@ -1751,14 +1751,40 @@ public interface JDA extends IGuildChannelContainer<Channel>
         return getEmojiCache().getElementsByName(name, ignoreCase);
     }
 
+    /**
+     * Creates a new {@link ApplicationEmoji} for this JDA.
+     *
+     * <p>Note that a JDA is limited to 2000 normal/animated emojis.
+     *
+     * @param  name
+     *         The name for the new emoji (2-30 characters)
+     * @param  icon
+     *         The {@link Icon} for the new emoji
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon);
 
+    /**
+     * Retrieves a list of Application Emojis together with their respective creators.
+     *
+     * @return {@link RestAction RestAction} - Type: List of {@link ApplicationEmoji}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis();
 
+    /**
+     * Retrieves an application emoji together with its respective creator.
+     *
+     * @param  emojiId
+     *         The emoji id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction RestAction} - Type: {@link ApplicationEmoji}
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId)
@@ -1766,31 +1792,20 @@ public interface JDA extends IGuildChannelContainer<Channel>
         return retrieveApplicationEmojiById(String.valueOf(emojiId));
     }
 
+    /**
+     * Retrieves an application emoji together with its respective creator.
+     *
+     * @param  emojiId
+     *         The emoji id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction RestAction} - Type: {@link ApplicationEmoji}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId);
-
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<ApplicationEmoji> updateApplicationEmojiName(long emojiId, @Nonnull String name)
-    {
-        return updateApplicationEmojiName(String.valueOf(emojiId), name);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    RestAction<ApplicationEmoji> updateApplicationEmojiName(@Nonnull String emojiId, @Nonnull String name);
-
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<Void> deleteApplicationEmojiById(long emojiId)
-    {
-        return deleteApplicationEmojiById(String.valueOf(emojiId));
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> deleteApplicationEmojiById(@Nonnull String emojiId);
 
     /**
      * Attempts to retrieve a {@link Sticker} object based on the provided snowflake reference.
