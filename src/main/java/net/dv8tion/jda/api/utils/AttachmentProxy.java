@@ -60,6 +60,13 @@ public class AttachmentProxy extends FileProxy
      * @param  height
      *         The height of the image
      *
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The requested width is negative or 0</li>
+     *             <li>The requested height is negative or 0</li>
+     *         </ul>
+     *
      * @return URL of the attachment with the specified width and height
      */
     @Nonnull

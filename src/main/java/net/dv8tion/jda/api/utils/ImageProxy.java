@@ -30,7 +30,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * A utility class to retrieve images.
- * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific size (width is the same as the height).
+ * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific width.
  */
 public class ImageProxy extends FileProxy
 {
@@ -53,7 +53,10 @@ public class ImageProxy extends FileProxy
      * <br>The size is a best-effort resize from Discord, with recommended size values as powers of 2 such as 1024 or 512.
      *
      * @param  size
-     *         The size of the image
+     *         The width of the image
+     *
+     * @throws IllegalArgumentException
+     *         If the requested size is negative or 0
      *
      * @return URL of the image with the specified size
      */
@@ -67,12 +70,13 @@ public class ImageProxy extends FileProxy
 
     /**
      * Retrieves the {@link InputStream} of this image at the specified size.
-     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
      *
      * @param  size
-     *         The size of this image
+     *         The width of this image
      *
      * @return {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually.
      */
@@ -84,8 +88,10 @@ public class ImageProxy extends FileProxy
     }
 
     /**
-     * Downloads the data of this image, at the specified size, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL).
-     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     * Downloads the data of this image, at the specified size, and stores it in a file with the same name
+     * as the queried file name (this would be the last segment of the URL).
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
      *
@@ -93,7 +99,7 @@ public class ImageProxy extends FileProxy
      *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
      *
      * @param  size
-     *         The width and height of this image, must be positive
+     *         The width of this image, must be positive
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
@@ -113,7 +119,8 @@ public class ImageProxy extends FileProxy
 
     /**
      * Downloads the data of this image, at the specified size, and stores it in the specified file.
-     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
      *
@@ -122,6 +129,8 @@ public class ImageProxy extends FileProxy
      *
      * @param  file
      *         The file in which to download the image
+     * @param  size
+     *         The width of this image, must be positive
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
@@ -147,7 +156,8 @@ public class ImageProxy extends FileProxy
 
     /**
      * Downloads the data of this image, at the specified size, and stores it in the specified file.
-     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
      *
@@ -157,6 +167,8 @@ public class ImageProxy extends FileProxy
      *
      * @param  path
      *         The file in which to download the image
+     * @param  size
+     *         The width of this image, must be positive
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
