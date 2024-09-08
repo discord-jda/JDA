@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -189,5 +190,37 @@ public class ImageProxy extends FileProxy
         Checks.notNull(path, "Path");
 
         return downloadToPath(getUrl(size), path);
+    }
+
+    /**
+     * Downloads the data of this attachment, and constructs an {@link Icon} from the data.
+     *
+     * @return {@link CompletableFuture} which holds an {@link Icon}.
+     */
+    @Nonnull
+    public CompletableFuture<Icon> downloadAsIcon()
+    {
+        return downloadAsIcon(getUrl());
+    }
+
+    /**
+     * Downloads the data of this image, at the specified size, and constructs an {@link Icon} from the data.
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
+     *
+     * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
+     *
+     * @param  size
+     *         The width of this image, must be positive
+     *
+     * @throws IllegalArgumentException
+     *         If the requested size is negative or 0
+     *
+     * @return {@link CompletableFuture} which holds an {@link Icon}.
+     */
+    @Nonnull
+    public CompletableFuture<Icon> downloadAsIcon(int size)
+    {
+        return downloadAsIcon(getUrl(size));
     }
 }
