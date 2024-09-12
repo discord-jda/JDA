@@ -66,10 +66,11 @@ public class AutoModResponseImpl implements AutoModResponse
 
     public AutoModResponseImpl(Guild guild, DataObject json)
     {
+        DataObject metadata = json.getObject("metadata");
         this.type = AutoModResponse.Type.fromKey(json.getInt("type", -1));
-        this.channel = guild.getChannelById(GuildMessageChannel.class, json.getUnsignedLong("channel_id", 0L));
-        this.customMessage = json.getString("custom_message", null);
-        this.timeoutDuration = json.getUnsignedLong("duration_seconds", 0L);
+        this.channel = guild.getChannelById(GuildMessageChannel.class, metadata.getUnsignedLong("channel_id", 0L));
+        this.customMessage = metadata.getString("custom_message", null);
+        this.timeoutDuration = metadata.getUnsignedLong("duration_seconds", 0L);
     }
 
     @Nonnull
