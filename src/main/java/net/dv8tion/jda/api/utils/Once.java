@@ -26,7 +26,6 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import org.slf4j.Logger;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -276,7 +275,6 @@ public class Once<E extends GenericEvent> implements EventListener
          * @see Task#get()
          */
         @Nonnull
-        @CheckReturnValue
         public Task<E> subscribe(@Nonnull Consumer<E> callback)
         {
             final Once<E> once = new Once<>(jda, eventType, filters, timeoutCallback, timeout, timeoutPool);
