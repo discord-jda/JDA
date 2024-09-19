@@ -37,6 +37,12 @@ import java.time.OffsetDateTime;
  */
 public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent>
 {
+
+    /**
+     * Template for {@link #getJumpUrl()}. Args: .../guild_id/event_id
+     */
+    String JUMP_URL = "https://discord.com/events/%s/%s";
+
     /**
      * The maximum allowed length for an event's name.
      */
@@ -200,6 +206,14 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent>
      */
     @Nonnull
     String getLocation();
+
+    /**
+     * Returns the jump-to URL of the event. Clicking this URL in the Discord client will open the event.
+     *
+     * @return A String representing the jump-to URL of the event.
+     */
+    @Nonnull
+    String getJumpUrl();
 
     /**
      * Deletes this Scheduled Event.
