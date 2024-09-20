@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.MentionTypeUtil;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.BagUtils;
 import org.apache.commons.collections4.bag.HashBag;
@@ -217,14 +218,12 @@ public class SelectMenuMentions implements Mentions
 
     @Nonnull
     @Override
-    public List<IMentionable> getMentions(@Nonnull Message.MentionType... types)
+    public List<IMentionable> getMentions(@Nonnull Collection<Message.MentionType> types)
     {
-        if (types.length == 0)
-            return getMentions(Message.MentionType.values());
+        Checks.notNull(types, "Mention Types");
+
         List<IMentionable> mentions = new ArrayList<>();
-        // Convert to set to avoid duplicates
-        EnumSet<Message.MentionType> set = EnumSet.of(types[0], types);
-        for (Message.MentionType type : set)
+        for (Message.MentionType type : MentionTypeUtil.getEffectiveMentionTypes(types))
         {
             switch (type)
             {
@@ -250,14 +249,12 @@ public class SelectMenuMentions implements Mentions
     }
 
     @Override
-    public boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull Message.MentionType... types)
+    public boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull Collection<Message.MentionType> types)
     {
         Checks.notNull(types, "Mention Types");
-        if (types.length == 0)
-            return isMentioned(mentionable, Message.MentionType.values());
 
         String id = mentionable.getId();
-        for (Message.MentionType type : types)
+        for (Message.MentionType type : MentionTypeUtil.getEffectiveMentionTypes(types))
         {
             switch (type)
             {
