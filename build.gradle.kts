@@ -40,7 +40,7 @@ plugins {
 
 
 val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "1", revision = "0", classifier = null)
+val versionObj = Version(major = "5", minor = "1", revision = "1", classifier = null)
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
