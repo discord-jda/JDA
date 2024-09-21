@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.managers.ApplicationManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.*;
@@ -65,6 +66,7 @@ import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
+import net.dv8tion.jda.internal.managers.ApplicationManagerImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -82,6 +84,7 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -142,6 +145,8 @@ public class JDAImpl implements JDA
     protected final AtomicBoolean requesterShutdown = new AtomicBoolean(false);
     protected final AtomicReference<ShutdownEvent> shutdownEvent = new AtomicReference<>(null);
 
+    protected final ApplicationManager applicationManager;
+
     public JDAImpl(AuthorizationConfig authConfig)
     {
         this(authConfig, null, null, null, null);
@@ -162,6 +167,7 @@ public class JDAImpl implements JDA
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
         this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
+        this.applicationManager = new ApplicationManagerImpl(this);
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -1152,6 +1158,12 @@ public class JDAImpl implements JDA
             EntityBuilder builder = getEntityBuilder();
             return builder.createWebhook(object, true);
         });
+    }
+
+    @Nullable
+    @Override
+    public ApplicationManager getApplicationManager() {
+        return this.applicationManager;
     }
 
     @Nonnull
