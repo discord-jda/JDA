@@ -10,7 +10,8 @@ import javax.annotation.Nonnull;
  * Implemented only description, icon and cover_image.
  * <br>For more fields check Discord docs: <a href="https://discord.com/developers/docs/resources/application#edit-current-application">https://discord.com/developers/docs/resources/application#edit-current-application</a>
  */
-public interface ApplicationManager extends Manager<ApplicationManager>{
+public interface ApplicationManager extends Manager<ApplicationManager>
+{
 
     /**
      * Used to set description
