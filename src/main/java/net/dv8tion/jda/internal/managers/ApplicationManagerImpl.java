@@ -17,27 +17,30 @@ import javax.annotation.Nonnull;
 /**
  * When implement new fields, update also {@link #reset(long)}, {@link #reset(long...)}, {@link #reset()} and {@link #finalizeData()}
  */
-public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> implements ApplicationManager{
+public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> implements ApplicationManager
+{
 
     protected String description;
     protected Icon icon;
     protected Icon coverImage;
 
-    public ApplicationManagerImpl(JDA jda){
+    public ApplicationManagerImpl(JDA jda)
+    {
         super(jda, Route.Applications.EDIT_BOT_APPLICATION.compile());
     }
 
     @NotNull
     @Override
-    public ApplicationInfo getApplicationInfo() {
+    public ApplicationInfo getApplicationInfo()
+    {
         return this.getJDA().retrieveApplicationInfo().complete();
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ApplicationManagerImpl reset(long fields){
-
+    public ApplicationManagerImpl reset(long fields)
+    {
         super.reset(fields);
 
         if((fields & DESCRIPTION) == DESCRIPTION)
@@ -48,17 +51,17 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> impl
             coverImage = null;
 
         return this;
-
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ApplicationManagerImpl reset(long... fields){
-
+    public ApplicationManagerImpl reset(long... fields)
+    {
         super.reset(fields);
 
-        for(long field : fields){
+        for(long field : fields)
+        {
 
             if(field == DESCRIPTION)
                 description = null;
@@ -70,54 +73,50 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> impl
         }
 
         return this;
-
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ApplicationManager reset(){
-
+    public ApplicationManager reset()
+    {
         super.reset();
         this.description = null;
         this.icon = null;
         this.coverImage = null;
         return this;
-
     }
 
     @NotNull
     @Override
-    public ApplicationManager setDescription(@NotNull String description){
-
+    public ApplicationManager setDescription(@NotNull String description)
+    {
         this.description = description.trim();
         set |= DESCRIPTION;
         return this;
-
     }
 
     @NotNull
     @Override
-    public ApplicationManager setIcon(@NotNull Icon icon){
-
+    public ApplicationManager setIcon(@NotNull Icon icon)
+    {
         this.icon = icon;
         set |= ICON;
         return this;
-
     }
 
     @NotNull
     @Override
-    public ApplicationManager setCoverImage(@NotNull Icon coverImage){
-
+    public ApplicationManager setCoverImage(@NotNull Icon coverImage)
+    {
         this.coverImage = coverImage;
         set |= COVER_IMAGE;
         return this;
-
     }
 
     @Override
-    protected RequestBody finalizeData(){
+    protected RequestBody finalizeData()
+    {
         DataObject body = DataObject.empty();
 
         if(shouldUpdate(DESCRIPTION))
@@ -129,11 +128,11 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> impl
 
         reset();
         return getRequestBody(body);
-
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Void> request){
+    protected void handleSuccess(Response response, Request<Void> request)
+    {
         request.onSuccess(null);
     }
 
