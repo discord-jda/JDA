@@ -270,11 +270,21 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     /**
      * Whether this message is silent.
      *
-     * @return True, if the message will not trigger push and desktop notifications
+     * @return True, if the message will not trigger push and desktop notifications.
      */
     public boolean isSuppressedNotifications()
     {
         return (flags & Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
+    }
+
+    /**
+     * Whether this message is intended as a voice message.
+     *
+     * @return True, if this message is intended as a voice message.
+     */
+    public boolean isVoiceMessage()
+    {
+        return (flags & Message.MessageFlag.IS_VOICE_MESSAGE.getValue()) != 0;
     }
 
     /**

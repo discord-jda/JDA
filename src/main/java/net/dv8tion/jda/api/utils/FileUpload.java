@@ -32,9 +32,11 @@ import okio.Source;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.function.Supplier;
 
 /**
@@ -51,6 +53,9 @@ public class FileUpload implements Closeable, AttachedFile
     private String name;
     private TypedBody<?> body;
     private String description;
+    private MediaType mediaType = Requester.MEDIA_TYPE_OCTET;
+    private byte[] waveform;
+    private double durationSeconds;
 
     protected FileUpload(InputStream resource, String name)
     {
@@ -359,6 +364,45 @@ public class FileUpload implements Closeable, AttachedFile
     }
 
     /**
+     * Turns this attachment into a voice message with the provided waveform.
+     *
+     * @param  mediaType
+     *         The audio type for the attached audio file. Should be {@code audio/ogg} or similar.
+     * @param  waveform
+     *         The waveform of the audio, which is a low frequency sampling up to 256 bytes.
+     * @param  durationSeconds
+     *         The actual duration of the audio data in seconds.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the waveform is not between 1 and 256 bytes long.
+     *
+     * @return The same FileUpload instance configured as a voice message attachment
+     */
+    @Nonnull
+    public FileUpload asVoiceMessage(@Nonnull MediaType mediaType, @Nonnull byte[] waveform, double durationSeconds)
+    {
+        Checks.notNull(mediaType, "Media type");
+        Checks.notNull(waveform, "Waveform");
+        Checks.check(waveform.length > 0 && waveform.length <= 256, "Waveform must be between 1 and 256 bytes long");
+        Checks.check(Double.isFinite(durationSeconds), "Duration must be a finite number");
+        Checks.check(durationSeconds > 0, "Duration must be positive");
+        this.waveform = waveform;
+        this.durationSeconds = durationSeconds;
+        this.mediaType = mediaType;
+        return this;
+    }
+
+    /**
+     * Whether this attachment is a valid voice message attachment.
+     *
+     * @return True, if this is a voice message attachment.
+     */
+    public boolean isVoiceMessage()
+    {
+        return this.mediaType.type().equals("audio");
+    }
+
+    /**
      * The filename for the file.
      *
      * @return The filename
@@ -425,17 +469,24 @@ public class FileUpload implements Closeable, AttachedFile
     @SuppressWarnings("ConstantConditions")
     public synchronized void addPart(@Nonnull MultipartBody.Builder builder, int index)
     {
-        builder.addFormDataPart("files[" + index + "]", name, getRequestBody(Requester.MEDIA_TYPE_OCTET));
+        builder.addFormDataPart("files[" + index + "]", name, getRequestBody(mediaType));
     }
 
     @Nonnull
     @Override
     public DataObject toAttachmentData(int index)
     {
-        return DataObject.empty()
+        DataObject attachment = DataObject.empty()
                 .put("id", index)
                 .put("description", description == null ? "" : description)
+                .put("content_type", mediaType)
                 .put("filename", name);
+        if (waveform != null && durationSeconds > 0)
+        {
+            attachment.put("waveform", new String(Base64.getEncoder().encode(waveform), StandardCharsets.UTF_8));
+            attachment.put("duration_secs", durationSeconds);
+        }
+        return attachment;
     }
 
     @Override

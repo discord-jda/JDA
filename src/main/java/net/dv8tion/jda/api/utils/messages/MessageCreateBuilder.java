@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -181,7 +182,10 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
             Checks.noneNull(files, "Files");
         this.files.clear();
         if (files != null)
+        {
             this.files.addAll(files);
+            this.setVoiceMessageIfApplicable(files);
+        }
         return this;
     }
 
@@ -213,6 +217,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     {
         Checks.noneNull(files, "Files");
         this.files.addAll(files);
+        this.setVoiceMessageIfApplicable(files);
         return this;
     }
 
@@ -228,10 +233,21 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     @Override
     public MessageCreateBuilder setSuppressedNotifications(boolean suppressed)
     {
-        if(suppressed)
+        if (suppressed)
             messageFlags |= Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
         else
             messageFlags &= ~Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setVoiceMessage(boolean voiceMessage)
+    {
+        if (voiceMessage)
+            messageFlags |= Message.MessageFlag.IS_VOICE_MESSAGE.getValue();
+        else
+            messageFlags &= ~Message.MessageFlag.IS_VOICE_MESSAGE.getValue();
         return this;
     }
 
@@ -290,5 +306,11 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         files.forEach(IOUtil::silentClose);
         files.clear();
         return this;
+    }
+
+    private void setVoiceMessageIfApplicable(@NotNull Collection<? extends FileUpload> files)
+    {
+        if (files.stream().anyMatch(FileUpload::isVoiceMessage))
+            this.setVoiceMessage(true);
     }
 }
