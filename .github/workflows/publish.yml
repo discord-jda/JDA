@@ -1,0 +1,30 @@
+name: Publish to Maven Central
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: "publish"
+
+jobs:
+  docs:
+    environment: MavenRelease
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+      - name: Release to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_ossrhUser: ${{ secrets.OSSRH_USER }}
+          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_stagingProfile: ${{ secrets.STAGING_PROFILE_ID }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_KEY }}
+          ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.GPG_KEYID }}
+        run: ./gradlew rebuild release
