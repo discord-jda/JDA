@@ -1160,7 +1160,7 @@ public class JDAImpl implements JDA
         });
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public ApplicationManager getApplicationManager() {
         return this.applicationManager;

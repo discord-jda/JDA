@@ -2221,7 +2221,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *
      * @return The corresponding ApplicationManager
      */
-    @Nullable
+    @Nonnull
     ApplicationManager getApplicationManager();
 
 }
