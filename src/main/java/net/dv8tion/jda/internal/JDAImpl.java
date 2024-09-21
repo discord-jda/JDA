@@ -1162,7 +1162,8 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public ApplicationManager getApplicationManager() {
+    public ApplicationManager getApplicationManager()
+    {
         return this.applicationManager;
     }
 
