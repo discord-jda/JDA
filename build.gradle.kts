@@ -66,8 +66,14 @@ val previousVersion: Version by lazy {
         versionObj
 }
 
-val ossrhConfigured = getProjectProperty("ossrhUser") != null
-val canSign = getProjectProperty("signing.keyId") != null
+val signingKey: String? by project
+val signingKeyId: String? by project
+val ossrhUser: String? by project
+val ossrhPassword: String? by project
+val stagingProfile: String? by project
+
+val ossrhConfigured = ossrhUser != null && ossrhPassword != null
+val canSign = signingKey != null && signingKeyId != null
 val shouldPublish = canSign && ossrhConfigured && isGithubAction
 
 // Use normal version string for new releases and commitHash for other builds
@@ -402,17 +408,17 @@ publishing {
     }
 }
 
-if (canSign) {
-    signing {
-        sign(publishing.publications.getByName("Release"))
-    }
+signing {
+    useInMemoryPgpKeys(signingKeyId, signingKey, "")
+    sign(publishing.publications.getByName("Release"))
+    isRequired = shouldPublish
 }
 
 nexusPublishing {
     repositories.sonatype {
-        username.set(getProjectProperty("ossrhUser"))
-        password.set(getProjectProperty("ossrhPassword"))
-        stagingProfileId.set(getProjectProperty("stagingProfileId"))
+        username.set(ossrhUser)
+        password.set(ossrhPassword)
+        stagingProfileId.set(stagingProfile)
     }
 
     connectTimeout.set(Duration.ofMinutes(1))
@@ -471,9 +477,6 @@ afterEvaluate {
 //            Helpers             //
 //                                //
 ////////////////////////////////////
-
-
-fun getProjectProperty(name: String) = project.properties[name] as? String
 
 fun nullableReplacement(string: String?): String {
     return if (string == null) "null"
