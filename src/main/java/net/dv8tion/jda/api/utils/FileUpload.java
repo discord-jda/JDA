@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.function.Supplier;
 
@@ -370,6 +371,28 @@ public class FileUpload implements Closeable, AttachedFile
      *         The audio type for the attached audio file. Should be {@code audio/ogg} or similar.
      * @param  waveform
      *         The waveform of the audio, which is a low frequency sampling up to 256 bytes.
+     * @param  duration
+     *         The actual duration of the audio data.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the waveform is not between 1 and 256 bytes long.
+     *
+     * @return The same FileUpload instance configured as a voice message attachment
+     */
+    @Nonnull
+    public FileUpload asVoiceMessage(@Nonnull MediaType mediaType, @Nonnull byte[] waveform, @Nonnull Duration duration)
+    {
+        Checks.notNull(duration, "Duration");
+        return this.asVoiceMessage(mediaType, waveform, duration.toNanos() / 1_000_000_000.0);
+    }
+
+    /**
+     * Turns this attachment into a voice message with the provided waveform.
+     *
+     * @param  mediaType
+     *         The audio type for the attached audio file. Should be {@code audio/ogg} or similar.
+     * @param  waveform
+     *         The waveform of the audio, which is a low frequency sampling up to 256 bytes.
      * @param  durationSeconds
      *         The actual duration of the audio data in seconds.
      *
@@ -479,7 +502,7 @@ public class FileUpload implements Closeable, AttachedFile
         DataObject attachment = DataObject.empty()
                 .put("id", index)
                 .put("description", description == null ? "" : description)
-                .put("content_type", mediaType)
+                .put("content_type", mediaType.toString())
                 .put("filename", name);
         if (waveform != null && durationSeconds > 0)
         {
