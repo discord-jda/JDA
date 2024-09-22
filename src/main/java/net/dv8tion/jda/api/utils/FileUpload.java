@@ -422,7 +422,10 @@ public class FileUpload implements Closeable, AttachedFile
      */
     public boolean isVoiceMessage()
     {
-        return this.mediaType.type().equals("audio");
+        return this.mediaType.type().equals("audio")
+            && this.durationSeconds > 0.0
+            && this.waveform != null
+            && this.waveform.length > 0;
     }
 
     /**
