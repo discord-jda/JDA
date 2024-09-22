@@ -7,7 +7,7 @@ concurrency:
   group: "publish"
 
 jobs:
-  docs:
+  publish:
     environment: MavenRelease
     runs-on: ubuntu-latest
     steps:
