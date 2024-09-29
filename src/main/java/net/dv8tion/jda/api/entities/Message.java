@@ -268,6 +268,14 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
      *
+     * <p>This will have different meaning depending on the {@link #getType() type} of message,
+     * here are the message types where a reference will be present:
+     * <ul>
+     *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
+     *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link MessageType#CONTEXT_COMMAND CONTEXT_COMMAND} (message context command)</li>
+     * </ul>
+     *
      * <p>You can access all the information about a reference through this object.
      * Additionally, you can retrieve the referenced Message if discord did not load it in time. This can be done with {@link MessageReference#resolve()}.
      *
@@ -279,9 +287,15 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Referenced message.
      *
-     * <p>This will have different meaning depending on the {@link #getType() type} of message.
-     * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
-     * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
+     * <p>This will have different meaning depending on the {@link #getType() type} of message,
+     * here are the message types where a reference can be present:
+     * <ul>
+     *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
+     *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link MessageType#CONTEXT_COMMAND CONTEXT_COMMAND} (message context command)</li>
+     * </ul>
+     *
+     * <p>This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      *
      * <p>This differs from a {@link MessageReference}, which contains the raw IDs attached to the reference, and allows you to retrieve the referenced message
      *
