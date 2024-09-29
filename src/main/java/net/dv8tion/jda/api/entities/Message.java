@@ -2942,8 +2942,10 @@ public interface Message extends ISnowflake, Formattable
         private final Long originalResponseMessageId;
         private final Long interactedMessageId;
         private final InteractionMetadata triggeringInteraction;
+        private final User targetUser;
+        private final Long targetMessageId;
 
-        public InteractionMetadata(long id, int type, User user, IntegrationOwners integrationOwners, Long originalResponseMessageId, Long interactedMessageId, InteractionMetadata triggeringInteraction)
+        public InteractionMetadata(long id, int type, User user, IntegrationOwners integrationOwners, Long originalResponseMessageId, Long interactedMessageId, InteractionMetadata triggeringInteraction, User targetUser, Long targetMessageId)
         {
             this.id = id;
             this.type = type;
@@ -2952,6 +2954,8 @@ public interface Message extends ISnowflake, Formattable
             this.originalResponseMessageId = originalResponseMessageId;
             this.interactedMessageId = interactedMessageId;
             this.triggeringInteraction = triggeringInteraction;
+            this.targetUser = targetUser;
+            this.targetMessageId = targetMessageId;
         }
 
         @Override
@@ -3036,6 +3040,30 @@ public interface Message extends ISnowflake, Formattable
         public InteractionMetadata getTriggeringInteraction()
         {
             return triggeringInteraction;
+        }
+
+        /**
+         * The user the command was run on, present only on user interaction commands.
+         *
+         * @return The user the command was run on, or {@code null}
+         */
+        @Nullable
+        public User getTargetUser()
+        {
+            return targetUser;
+        }
+
+        /**
+         * The ID of the message the command was run on, present only on message interaction commands.
+         *
+         * <p>If this is present, {@link Message#getMessageReference()} will also be present.
+         *
+         * @return The ID of the message the command was run on, or {@code null}
+         */
+        @Nullable
+        public Long getTargetMessageId()
+        {
+            return targetMessageId;
         }
     }
 }

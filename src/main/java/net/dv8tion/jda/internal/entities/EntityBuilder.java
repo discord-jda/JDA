@@ -2087,8 +2087,12 @@ public class EntityBuilder extends AbstractEntityBuilder
         final Message.InteractionMetadata triggeringInteraction = content.optObject("triggering_interaction_metadata")
                 .map(this::createMessageInteractionMetadata)
                 .orElse(null);
+        final User targetUser = content.optObject("target_user")
+                .map(this::createUser)
+                .orElse(null);
+        final Long targetMessageId = content.isNull("target_message_id") ? null : content.getLong("target_message_id");
 
-        return new Message.InteractionMetadata(id, type, user, integrationOwners, originalResponseMessageId, interactedMessageId, triggeringInteraction);
+        return new Message.InteractionMetadata(id, type, user, integrationOwners, originalResponseMessageId, interactedMessageId, triggeringInteraction, targetUser, targetMessageId);
     }
 
     public MessageSnapshot createMessageSnapshot(MessageReference messageReference, DataObject jsonObject)
