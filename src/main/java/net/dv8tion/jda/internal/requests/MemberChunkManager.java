@@ -205,16 +205,18 @@ public class MemberChunkManager
         {
             EntityBuilder builder = guild.getJDA().getEntityBuilder();
             DataArray memberArray = chunk.getArray("members");
-            TLongObjectMap<DataObject> presences = chunk.optArray("presences").map(it ->
-                Helpers.convertToMap(o -> o.getObject("user").getUnsignedLong("id"), it)
-            ).orElseGet(TLongObjectHashMap::new);
+            if (guild.getPresenceView() != null)
+            {
+                chunk.optArray("presences").ifPresent(arr ->
+                    arr.stream(DataArray::getObject)
+                       .forEach(p -> builder.createPresence(guild, p)));
+            }
+
             List<Member> collect = new ArrayList<>(memberArray.length());
             for (int i = 0; i < memberArray.length(); i++)
             {
                 DataObject json = memberArray.getObject(i);
-                long userId = json.getObject("user").getUnsignedLong("id");
-                DataObject presence = presences.get(userId);
-                MemberImpl member = builder.createMember(guild, json, null, presence);
+                MemberImpl member = builder.createMember(guild, json);
                 builder.updateMemberCache(member);
                 collect.add(member);
             }
