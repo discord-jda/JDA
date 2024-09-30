@@ -165,8 +165,30 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     public ScheduledEventManager setStatus(@Nonnull ScheduledEvent.Status status)
     {
         Checks.notNull(status, "Status");
-        Checks.check(status != ScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
-        Checks.check(status != ScheduledEvent.Status.SCHEDULED && getScheduledEvent().getStatus() != ScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
+        Checks.check(
+                status != ScheduledEvent.Status.UNKNOWN && status != ScheduledEvent.Status.SCHEDULED,
+                "Cannot set the event status to an unknown or scheduled status!"
+        );
+
+        //get the current status of the event. multiple-usages
+        ScheduledEvent.Status eventStatus = getScheduledEvent().getStatus();
+
+        //event should be different from complete and cancel
+        Checks.check(
+                eventStatus != ScheduledEvent.Status.COMPLETED && eventStatus != ScheduledEvent.Status.CANCELED,
+                "Cannot perform status update! Event is completed or canceled."
+        );
+        //if event is scheduled -> new status can be only active or cancel
+        Checks.check(
+                !(eventStatus == ScheduledEvent.Status.SCHEDULED && status != ScheduledEvent.Status.ACTIVE && status != ScheduledEvent.Status.CANCELED),
+                "Cannot perform status update! A scheduled event can be set only to active or canceled status."
+        );
+        //if event is active -> new status can be only completed
+        Checks.check(
+                !(eventStatus == ScheduledEvent.Status.ACTIVE && status != ScheduledEvent.Status.COMPLETED),
+                "Cannot perform status updated! An active event can be set only completed status."
+        );
+
         this.status = status;
         set |= STATUS;
         return this;
