@@ -162,34 +162,43 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
 
     @Nonnull
     @Override
-    public ScheduledEventManager setStatus(@Nonnull ScheduledEvent.Status status)
+    public ScheduledEventManager setStatus(@Nonnull ScheduledEvent.Status newStatus)
     {
-        Checks.notNull(status, "Status");
-        Checks.check(
-                status != ScheduledEvent.Status.UNKNOWN && status != ScheduledEvent.Status.SCHEDULED,
-                "Cannot set the event status to an unknown or scheduled status!"
-        );
+        Checks.notNull(newStatus, "Status");
+        switch (newStatus){
+            case SCHEDULED:
+            case UNKNOWN:
+                throw new IllegalArgumentException("Invalid new status: " + newStatus);
+        }
 
-        //get the current status of the event. multiple-usages
-        ScheduledEvent.Status eventStatus = getScheduledEvent().getStatus();
+        //get the current status of the event. multiple-usage
+        ScheduledEvent.Status currentStatus = getScheduledEvent().getStatus();
 
-        //event should be different from complete and cancel
-        Checks.check(
-                eventStatus != ScheduledEvent.Status.COMPLETED && eventStatus != ScheduledEvent.Status.CANCELED,
-                "Cannot perform status update! Event is completed or canceled."
-        );
-        //if event is scheduled -> new status can be only active or cancel
-        Checks.check(
-                !(eventStatus == ScheduledEvent.Status.SCHEDULED && status != ScheduledEvent.Status.ACTIVE && status != ScheduledEvent.Status.CANCELED),
-                "Cannot perform status update! A scheduled event can be set only to active or canceled status."
-        );
-        //if event is active -> new status can be only completed
-        Checks.check(
-                !(eventStatus == ScheduledEvent.Status.ACTIVE && status != ScheduledEvent.Status.COMPLETED),
-                "Cannot perform status updated! An active event can be set only completed status."
-        );
+        switch (currentStatus)
+        {
+            case SCHEDULED:
+                //event is scheduled -> new status can be only active or cancel
+                Checks.check(
+                        newStatus == ScheduledEvent.Status.ACTIVE || newStatus == ScheduledEvent.Status.CANCELED,
+                        "Cannot perform status update! A scheduled event can only be set to active or canceled status."
+                );
+                break;
 
-        this.status = status;
+            case ACTIVE:
+                //event is active -> new status can be only completed
+                Checks.check(
+                        newStatus == ScheduledEvent.Status.COMPLETED,
+                        "Cannot perform status updated! An active event can only be set to completed status."
+                );
+                break;
+
+            case COMPLETED:
+            case CANCELED:
+                //event is completed or canceled -> can't update status
+                throw new IllegalArgumentException("Cannot perform status update! Event is " + currentStatus.name().toLowerCase() + ".");
+        }
+
+        this.status = newStatus;
         set |= STATUS;
         return this;
     }
