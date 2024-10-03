@@ -124,7 +124,7 @@ Starting your bot and attaching an event listener, using the right [intents][Gat
 ```java
 public static void main(String[] args) {
   JDABuilder.createLight(token, EnumSet.of(GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT))
-      .addEventListener(new MessageReceiveListener())
+      .addEventListeners(new MessageReceiveListener())
       .build();
 }
 ```
@@ -152,7 +152,7 @@ This is a bot that makes use of [interactions](https://jda.wiki/using-jda/intera
 ```java
 public static void main(String[] args) {
   JDA jda = JDABuilder.createLight(token, Collections.emptyList())
-      .addEventListener(new SlashCommandListener())
+      .addEventListeners(new SlashCommandListener())
       .build();
 
   // Register your commands to make them visible globally on Discord:
