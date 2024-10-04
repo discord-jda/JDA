@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageReference;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -51,7 +53,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     private final MessageCreateBuilder builder = new MessageCreateBuilder();
     private final List<String> stickers = new ArrayList<>();
     private String nonce;
-    private String messageReferenceId;
+    private MessageReferenceData messageReference;
     private boolean failOnInvalidReply = defaultFailOnInvalidReply;
 
     public static void setDefaultFailOnInvalidReply(boolean fail)
@@ -79,6 +81,8 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         {
             if (!stickers.isEmpty())
                 return getRequestBody(DataObject.empty().put("sticker_ids", stickers));
+            if (messageReference != null && messageReference.type == MessageReference.MessageReferenceType.FORWARD)
+                return getRequestBody(DataObject.empty().put("message_reference", messageReference));
             throw new IllegalStateException("Cannot build empty messages! Must provide at least one of: content, embed, file, poll, or stickers");
         }
 
@@ -92,12 +96,10 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
                 json.put("nonce", Long.toUnsignedString(nonceGenerator.nextLong()));
             if (stickers != null && !stickers.isEmpty())
                 json.put("sticker_ids", stickers);
-            if (messageReferenceId != null)
+            if (messageReference != null)
             {
-                json.put("message_reference", DataObject.empty()
-                        .put("channel_id", channel.getId())
-                        .put("message_id", messageReferenceId)
-                        .put("fail_if_not_exists", failOnInvalidReply)
+                json.put("message_reference", messageReference.toData()
+                    .put("fail_if_not_exists", failOnInvalidReply)
                 );
             }
 
@@ -123,11 +125,28 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
 
     @Nonnull
     @Override
+    public MessageCreateAction setMessageReference(@Nonnull MessageReference.MessageReferenceType type, @Nullable String guildId, @Nonnull String channelId, @Nonnull String messageId)
+    {
+        Checks.notNull(type, "Type");
+        if (guildId != null)
+            Checks.isSnowflake(guildId, "Guild ID");
+        Checks.isSnowflake(channelId, "Channel ID");
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.check(type != MessageReference.MessageReferenceType.UNKNOWN, "Cannot create a message reference of UNKNOWN type");
+        this.messageReference = new MessageReferenceData(type, guildId, messageId);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public MessageCreateAction setMessageReference(@Nullable String messageId)
     {
         if (messageId != null)
             Checks.isSnowflake(messageId);
-        this.messageReferenceId = messageId;
+        String guildId = null;
+        if (channel instanceof GuildChannel)
+            guildId = ((GuildChannel) channel).getGuild().getId();
+        this.messageReference = new MessageReferenceData(MessageReference.MessageReferenceType.DEFAULT, guildId, messageId);
         return this;
     }
 
@@ -183,5 +202,32 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     public MessageCreateAction deadline(long timestamp)
     {
         return (MessageCreateAction) super.deadline(timestamp);
+    }
+
+    private class MessageReferenceData implements SerializableData
+    {
+        private final MessageReference.MessageReferenceType type;
+        private final String messageId;
+        private final String guildId;
+
+        private MessageReferenceData(MessageReference.MessageReferenceType type, String guildId, String messageId)
+        {
+            this.type = type;
+            this.messageId = messageId;
+            this.guildId = guildId;
+        }
+
+        @Nonnull
+        @Override
+        public DataObject toData()
+        {
+            DataObject data = DataObject.empty()
+                    .put("type", type.getId())
+                    .put("message_id", messageId)
+                    .put("channel_id", channel.getId());
+            if (guildId != null)
+                data.put("guild_id", guildId);
+            return data;
+        }
     }
 }

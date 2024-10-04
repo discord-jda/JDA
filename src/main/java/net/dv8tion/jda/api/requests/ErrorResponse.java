@@ -218,6 +218,8 @@ public enum ErrorResponse
     THREAD_LOCKED(                            160005, "Thread is locked"),
     MAX_ACTIVE_THREADS(                       160006, "Maximum number of active threads reached"),
     MAX_ANNOUNCEMENT_THREADS(                 160007, "Maximum number of active announcement threads reached"),
+    REFERENCED_MESSSAGE_NOT_FOUND(            160008, "Message could not be found"),
+    FORWARD_CANNOT_HAVE_CONTENT(              160011, "Forward messages cannot have additional content"),
     INVALID_LOTTIE_JSON(                      170001, "Invalid JSON for uploaded Lottie file"),
     LOTTIE_CANNOT_CONTAIN_RASTERIZED_IMAGE(   170002, "Uploaded Lotties cannot contain rasterized images such as PNG or JPEG"),
     MAX_STICKER_FPS(                          170003, "Sticker maximum framerate exceeded"),
