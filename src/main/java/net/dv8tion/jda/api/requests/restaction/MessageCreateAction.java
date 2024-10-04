@@ -209,6 +209,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
     @Nonnull
     default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nonnull Message message)
     {
+        Checks.notNull(message, "Message");
         return setMessageReference(type, message.getGuildId(), message.getChannel().getId(), message.getId());
     }
 
