@@ -1760,7 +1760,6 @@ public class EntityBuilder
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, channelId, id, obj));
         final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
-        final List<MessageSnapshot>    snapshots   = map(jsonObject, "message_snapshots", (obj) -> createMessageSnapshot(obj.getObject("message")));
 
         // Message activity (for game invites/spotify)
         MessageActivity activity = null;
@@ -1828,18 +1827,24 @@ public class EntityBuilder
             }
         }
 
+        List<MessageSnapshot> snapshots = Collections.emptyList();
         MessageReference messageReference = null;
         if (!jsonObject.isNull("message_reference")) // always contains the channel + message id for a referenced message
         {                                                // used for when referenced_message is not provided
             DataObject messageReferenceJson = jsonObject.getObject("message_reference");
 
             messageReference = new MessageReference(
+                    messageReferenceJson.getInt("type", -1),
                     messageReferenceJson.getLong("message_id", 0),
                     messageReferenceJson.getLong("channel_id", 0),
                     messageReferenceJson.getLong("guild_id", 0),
                     referencedMessage,
                     api
             );
+
+
+            MessageReference finalReference = messageReference;
+            snapshots = map(jsonObject, "message_snapshots", (obj) -> createMessageSnapshot(finalReference, obj.getObject("message")));
         }
 
         MessagePoll poll = jsonObject.optObject("poll").map(EntityBuilder::createMessagePoll).orElse(null);
@@ -2182,7 +2187,7 @@ public class EntityBuilder
         return new Message.Interaction(id, type, name, user, member);
     }
 
-    public MessageSnapshot createMessageSnapshot(DataObject jsonObject)
+    public MessageSnapshot createMessageSnapshot(MessageReference messageReference, DataObject jsonObject)
     {
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
 
@@ -2207,10 +2212,11 @@ public class EntityBuilder
                     .collect(Collectors.toList());
         }
 
+        Guild guild = messageReference.getGuild();
         // Lazy Mention parsing and caching (includes reply mentions)
         // This only works if the message is from the same guild
         Mentions mentions = new MessageMentionsImpl(
-            api, null, content, mentionsEveryone,
+            api, guild instanceof GuildImpl ? (GuildImpl) guild : null, content, mentionsEveryone,
             jsonObject.getArray("mentions"),
             jsonObject.optArray("mention_roles").orElseGet(DataArray::empty)
         );
