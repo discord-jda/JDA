@@ -79,31 +79,39 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     {
         if (builder.isEmpty())
         {
-            if (!stickers.isEmpty())
-                return getRequestBody(DataObject.empty().put("sticker_ids", stickers));
-            if (messageReference != null && messageReference.type == MessageReference.MessageReferenceType.FORWARD)
-                return getRequestBody(DataObject.empty().put("message_reference", messageReference));
+            // Special cases where builder is empty but can still send message on this endpoint
+            DataObject body = DataObject.empty().put("flags", builder.getMessageFlagsRaw());
+            populateBody(body);
+
+            if (!stickers.isEmpty() || messageReference != null && messageReference.type == MessageReference.MessageReferenceType.FORWARD)
+                return getRequestBody(body);
+
             throw new IllegalStateException("Cannot build empty messages! Must provide at least one of: content, embed, file, poll, or stickers");
         }
 
         try (MessageCreateData data = builder.build())
         {
             DataObject json = data.toData();
-            json.put("enforce_nonce", true);
-            if (nonce != null && !nonce.isEmpty())
-                json.put("nonce", nonce);
-            else
-                json.put("nonce", Long.toUnsignedString(nonceGenerator.nextLong()));
-            if (stickers != null && !stickers.isEmpty())
-                json.put("sticker_ids", stickers);
-            if (messageReference != null)
-            {
-                json.put("message_reference", messageReference.toData()
-                    .put("fail_if_not_exists", failOnInvalidReply)
-                );
-            }
+            populateBody(json);
 
             return getMultipartBody(data.getFiles(), json);
+        }
+    }
+
+    private void populateBody(DataObject json)
+    {
+        json.put("enforce_nonce", true);
+        if (nonce != null && !nonce.isEmpty())
+            json.put("nonce", nonce);
+        else
+            json.put("nonce", Long.toUnsignedString(nonceGenerator.nextLong()));
+        if (stickers != null && !stickers.isEmpty())
+            json.put("sticker_ids", stickers);
+        if (messageReference != null)
+        {
+            json.put("message_reference", messageReference.toData()
+                .put("fail_if_not_exists", failOnInvalidReply)
+            );
         }
     }
 
