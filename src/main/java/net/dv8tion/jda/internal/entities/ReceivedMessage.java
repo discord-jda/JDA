@@ -39,7 +39,6 @@ import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -124,7 +123,7 @@ public class ReceivedMessage implements Message
             boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, MessagePoll poll, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
-            List<StickerItem> stickers, List<ActionRow> components, List<MessageSnapshot> messageSnapshots,
+            List<StickerItem> stickers, List<LayoutComponent> components, List<MessageSnapshot> messageSnapshots,
             int flags, Message.Interaction interaction, ThreadChannel startedThread, int position)
     {
         this.id = id;

@@ -91,6 +91,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -1760,6 +1761,9 @@ public class EntityBuilder
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, channelId, id, obj));
         final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
+        final List<LayoutComponent>    components  = map(jsonObject, "components",    ActionRow::fromData, obj -> obj.getInt("type", -1) == 1);
+
+        MessagePoll poll = jsonObject.optObject("poll").map(EntityBuilder::createMessagePoll).orElse(null);
 
         // Message activity (for game invites/spotify)
         MessageActivity activity = null;
@@ -1845,20 +1849,6 @@ public class EntityBuilder
 
             MessageReference finalReference = messageReference;
             snapshots = map(jsonObject, "message_snapshots", (obj) -> createMessageSnapshot(finalReference, obj.getObject("message")));
-        }
-
-        MessagePoll poll = jsonObject.optObject("poll").map(EntityBuilder::createMessagePoll).orElse(null);
-
-        // Message Components
-        List<ActionRow> components = Collections.emptyList();
-        Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
-        if (componentsArrayOpt.isPresent())
-        {
-            DataArray array = componentsArrayOpt.get();
-            components = array.stream(DataArray::getObject)
-                    .filter(it -> it.getInt("type", 0) == 1)
-                    .map(ActionRow::fromData)
-                    .collect(Collectors.toList());
         }
 
         // Application command and component replies
@@ -2199,18 +2189,7 @@ public class EntityBuilder
         List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
-
-        // Message Components
-        List<LayoutComponent> components = Collections.emptyList();
-        Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
-        if (componentsArrayOpt.isPresent())
-        {
-            DataArray array = componentsArrayOpt.get();
-            components = array.stream(DataArray::getObject)
-                    .filter(it -> it.getInt("type", 0) == 1)
-                    .map(ActionRow::fromData)
-                    .collect(Collectors.toList());
-        }
+        List<LayoutComponent>    components  = map(jsonObject, "components",    ActionRow::fromData, obj -> obj.getInt("type", -1) == 1);
 
         Guild guild = messageReference.getGuild();
         // Lazy Mention parsing and caching (includes reply mentions)
@@ -2677,6 +2656,11 @@ public class EntityBuilder
 
     private <T> List<T> map(DataObject jsonObject, String key, Function<DataObject, T> convert)
     {
+        return map(jsonObject, key, convert, (ignored) -> true);
+    }
+
+    private <T> List<T> map(DataObject jsonObject, String key, Function<DataObject, T> convert, Predicate<DataObject> filter)
+    {
         if (jsonObject.isNull(key))
             return Collections.emptyList();
 
@@ -2687,6 +2671,8 @@ public class EntityBuilder
             DataObject obj = arr.getObject(i);
             try
             {
+                if (!filter.test(obj))
+                    continue;
                 T result = convert.apply(obj);
                 if (result != null)
                     mappedObjects.add(result);
