@@ -108,4 +108,12 @@ public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> ex
         getBuilder().setSuppressedNotifications(suppressed);
         return (R) this;
     }
+
+    @Nonnull
+    @Override
+    default R setVoiceMessage(boolean voiceMessage)
+    {
+        getBuilder().setVoiceMessage(voiceMessage);
+        return (R) this;
+    }
 }

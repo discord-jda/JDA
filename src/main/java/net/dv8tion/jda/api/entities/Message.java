@@ -2254,6 +2254,13 @@ public interface Message extends ISnowflake, Formattable
     boolean isSuppressedNotifications();
 
     /**
+     * Whether this message is a voice message.
+     *
+     * @return True, if this is a voice message
+     */
+    boolean isVoiceMessage();
+
+    /**
      * Returns a possibly {@code null} {@link ThreadChannel ThreadChannel} that was started from this message.
      * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
      *

@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import org.jetbrains.annotations.Contract;
 import org.mockito.ThrowingConsumer;
 
@@ -72,6 +74,21 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
     {
         assertions.add(assertion);
         return this;
+    }
+
+    @CheckReturnValue
+    @Contract("->this")
+    public RestActionAssertions hasMultipartBody()
+    {
+        return checkAssertions(request -> {
+            RequestBody body = request.getBody();
+            assertThat(body).isNotNull();
+            MediaType mediaType = body.contentType();
+            assertThat(mediaType).isNotNull();
+
+            assertThat(mediaType.toString())
+                .startsWith("multipart/form-data; boundary=");
+        });
     }
 
     @CheckReturnValue

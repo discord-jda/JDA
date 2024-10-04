@@ -933,6 +933,12 @@ public class ReceivedMessage implements Message
         return (this.flags & MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
     }
 
+    @Override
+    public boolean isVoiceMessage()
+    {
+        return (this.flags & MessageFlag.IS_VOICE_MESSAGE.getValue()) != 0;
+    }
+
     @Nullable
     @Override
     public ThreadChannel getStartedThread()
