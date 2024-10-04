@@ -2679,9 +2679,16 @@ public class EntityBuilder
         for (int i = 0; i < arr.length(); i++)
         {
             DataObject obj = arr.getObject(i);
-            T result = convert.apply(obj);
-            if (result != null)
-                mappedObjects.add(result);
+            try
+            {
+                T result = convert.apply(obj);
+                if (result != null)
+                    mappedObjects.add(result);
+            }
+            catch (Exception e)
+            {
+                LOG.error("Failed to parse element in {} with content {}", key, obj, e);
+            }
         }
 
         return mappedObjects;
