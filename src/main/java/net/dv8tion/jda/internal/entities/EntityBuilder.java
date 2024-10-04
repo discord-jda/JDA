@@ -1760,7 +1760,7 @@ public class EntityBuilder
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, channelId, id, obj));
         final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
-        final List<MessageSnapshot>    snapshots   = map(jsonObject, "message_snapshots", (obj) -> createMessageSnapshot(guild, obj.getObject("message")));
+        final List<MessageSnapshot>    snapshots   = map(jsonObject, "message_snapshots", (obj) -> createMessageSnapshot(obj.getObject("message")));
 
         // Message activity (for game invites/spotify)
         MessageActivity activity = null;
@@ -2182,7 +2182,7 @@ public class EntityBuilder
         return new Message.Interaction(id, type, name, user, member);
     }
 
-    public MessageSnapshot createMessageSnapshot(GuildImpl guild, DataObject jsonObject)
+    public MessageSnapshot createMessageSnapshot(DataObject jsonObject)
     {
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
 
@@ -2210,7 +2210,7 @@ public class EntityBuilder
         // Lazy Mention parsing and caching (includes reply mentions)
         // This only works if the message is from the same guild
         Mentions mentions = new MessageMentionsImpl(
-            api, guild, content, mentionsEveryone,
+            api, null, content, mentionsEveryone,
             jsonObject.getArray("mentions"),
             jsonObject.optArray("mention_roles").orElseGet(DataArray::empty)
         );
