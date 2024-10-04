@@ -165,10 +165,11 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
     public ScheduledEventManager setStatus(@Nonnull ScheduledEvent.Status newStatus)
     {
         Checks.notNull(newStatus, "Status");
-        switch (newStatus){
+        switch (newStatus)
+        {
             case SCHEDULED:
             case UNKNOWN:
-                throw new IllegalArgumentException("Invalid new status: " + newStatus);
+                throw new IllegalArgumentException("Cannot change scheduled event status to " + newStatus);
         }
 
         //get the current status of the event. multiple-usage
@@ -180,7 +181,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
                 //event is scheduled -> new status can be only active or cancel
                 Checks.check(
                         newStatus == ScheduledEvent.Status.ACTIVE || newStatus == ScheduledEvent.Status.CANCELED,
-                        "Cannot perform status update! A scheduled event can only be set to active or canceled status."
+                        "Cannot perform status update! A scheduled event with status SCHEDULED can only be set to ACTIVE or CANCELED status."
                 );
                 break;
 
@@ -188,7 +189,7 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
                 //event is active -> new status can be only completed
                 Checks.check(
                         newStatus == ScheduledEvent.Status.COMPLETED,
-                        "Cannot perform status updated! An active event can only be set to completed status."
+                        "Cannot perform status updated! A scheduled event with status ACTIVE can only be set to COMPLETED status."
                 );
                 break;
 
