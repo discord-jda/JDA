@@ -822,6 +822,15 @@ public interface Message extends ISnowflake, Formattable
     @Unmodifiable
     List<StickerItem> getStickers();
 
+    /**
+     * The {@link MessageSnapshot MessageSnaphots} attached to this message.
+     *
+     * <p>This is used primarily for message forwarding.
+     * The content of the forwarded message is provided as a snapshot at the time of forwarding.
+     * When the message is edited or deleted, this snapshot remains unchanged.
+     *
+     * @return Immutable {@link List} of {@link MessageSnapshot}
+     */
     @Nonnull
     @Unmodifiable
     List<MessageSnapshot> getMessageSnapshots();
