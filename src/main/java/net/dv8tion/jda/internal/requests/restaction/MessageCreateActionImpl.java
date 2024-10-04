@@ -141,7 +141,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         Checks.isSnowflake(channelId, "Channel ID");
         Checks.isSnowflake(messageId, "Message ID");
         Checks.check(type != MessageReference.MessageReferenceType.UNKNOWN, "Cannot create a message reference of UNKNOWN type");
-        this.messageReference = new MessageReferenceData(type, guildId, messageId);
+        this.messageReference = new MessageReferenceData(type, guildId, channelId, messageId);
         return this;
     }
 
@@ -154,7 +154,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
         String guildId = null;
         if (channel instanceof GuildChannel)
             guildId = ((GuildChannel) channel).getGuild().getId();
-        this.messageReference = new MessageReferenceData(MessageReference.MessageReferenceType.DEFAULT, guildId, messageId);
+        this.messageReference = new MessageReferenceData(MessageReference.MessageReferenceType.DEFAULT, guildId, channel.getId(), messageId);
         return this;
     }
 
@@ -216,13 +216,15 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     {
         private final MessageReference.MessageReferenceType type;
         private final String messageId;
+        private final String channelId;
         private final String guildId;
 
-        private MessageReferenceData(MessageReference.MessageReferenceType type, String guildId, String messageId)
+        private MessageReferenceData(MessageReference.MessageReferenceType type, String guildId, String channelId, String messageId)
         {
             this.type = type;
             this.messageId = messageId;
             this.guildId = guildId;
+            this.channelId = channelId;
         }
 
         @Nonnull
@@ -232,7 +234,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
             DataObject data = DataObject.empty()
                     .put("type", type.getId())
                     .put("message_id", messageId)
-                    .put("channel_id", channel.getId());
+                    .put("channel_id", channelId);
             if (guildId != null)
                 data.put("guild_id", guildId);
             return data;

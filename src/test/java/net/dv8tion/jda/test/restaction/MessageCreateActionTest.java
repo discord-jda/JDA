@@ -19,6 +19,7 @@ package net.dv8tion.jda.test.restaction;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageReference;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
+import net.dv8tion.jda.test.Constants;
 import net.dv8tion.jda.test.IntegrationTest;
 import okhttp3.MediaType;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,9 +66,16 @@ public class MessageCreateActionTest extends IntegrationTest
     @Mock
     protected MessageChannel channel;
 
-    private static DataObject defaultMessageRequest()
+    private static DataObject minimalMessageRequest()
     {
         return DataObject.empty()
+            .put("enforce_nonce", true)
+            .put("flags", 0)
+            .put("nonce", FIXED_NONCE);
+    }
+    private static DataObject defaultMessageRequest()
+    {
+        return minimalMessageRequest()
                 .put("allowed_mentions", DataObject.empty()
                     .put("parse", DataArray.empty()
                         .add("users")
@@ -77,9 +86,6 @@ public class MessageCreateActionTest extends IntegrationTest
                 .put("content", "")
                 .put("embeds", DataArray.empty())
                 .put("poll", null)
-                .put("enforce_nonce", true)
-                .put("flags", 0)
-                .put("nonce", FIXED_NONCE)
                 .put("tts", false);
     }
 
@@ -191,6 +197,54 @@ public class MessageCreateActionTest extends IntegrationTest
                     .put("attachments", DataArray.empty()
                         .add(Data.getVoiceMessageAttachmentBody(voiceMessageMediaType, voiceMessageFilename, voiceMessageAudio)))
             ).whenQueueCalled();
+    }
+
+    @Test
+    void testReplyWithContent()
+    {
+        MessageCreateActionImpl action = new MessageCreateActionImpl(channel);
+
+        long messageId = random.nextLong();
+        action.setMessageReference(messageId);
+        action.setContent("test content");
+        action.failOnInvalidReply(true);
+
+        assertThatRequestFrom(action)
+            .hasBodyEqualTo(defaultMessageRequest()
+                .put("content", "test content")
+                .put("message_reference", DataObject.empty()
+                    .put("type", 0)
+                    .put("channel_id", channel.getId())
+                    .put("message_id", Long.toUnsignedString(messageId))
+                    .put("fail_if_not_exists", true)))
+            .whenQueueCalled();
+    }
+
+    @Test
+    void testForwardWithFlags()
+    {
+        MessageCreateActionImpl action = new MessageCreateActionImpl(channel);
+
+        long messageId = random.nextLong();
+        action.setMessageReference(
+            MessageReference.MessageReferenceType.FORWARD,
+            Constants.GUILD_ID,
+            Constants.CHANNEL_ID,
+            messageId
+        );
+
+        action.setSuppressedNotifications(true);
+
+        assertThatRequestFrom(action)
+            .hasBodyEqualTo(minimalMessageRequest()
+                .put("flags", 1 << 12)
+                .put("message_reference", DataObject.empty()
+                    .put("type", 1)
+                    .put("guild_id", Long.toUnsignedString(Constants.GUILD_ID))
+                    .put("channel_id", Long.toUnsignedString(Constants.CHANNEL_ID))
+                    .put("message_id", Long.toUnsignedString(messageId))
+                    .put("fail_if_not_exists", false)))
+            .whenQueueCalled();
     }
 
     @Test
