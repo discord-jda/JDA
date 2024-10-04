@@ -1721,7 +1721,7 @@ public interface Message extends ISnowflake, Formattable
         if (channel instanceof MessageChannelMixin)
             ((MessageChannelMixin<?>) channel).checkCanSendMessage();
         return new MessageCreateActionImpl(channel)
-                .setMessageReference(MessageReference.MessageReferenceType.FORWARD, getGuildId(), getChannelId(), getId());
+                .setMessageReference(MessageReference.MessageReferenceType.FORWARD, this);
     }
 
     /**
