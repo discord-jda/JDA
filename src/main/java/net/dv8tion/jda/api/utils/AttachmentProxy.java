@@ -20,6 +20,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
@@ -90,6 +91,7 @@ public class AttachmentProxy extends FileProxy
      * @return {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<InputStream> download(int width, int height)
     {
         return download(getUrl(width, height));
@@ -120,6 +122,7 @@ public class AttachmentProxy extends FileProxy
      *
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Path> downloadToPath(int width, int height)
     {
         return downloadToPath(getUrl(width, height));
@@ -154,6 +157,7 @@ public class AttachmentProxy extends FileProxy
      * @return {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int width, int height)
     {
         Checks.notNull(file, "File");
@@ -192,6 +196,7 @@ public class AttachmentProxy extends FileProxy
      * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int width, int height)
     {
         Checks.notNull(path, "Path");
@@ -200,6 +205,7 @@ public class AttachmentProxy extends FileProxy
     }
 
     @Nonnull
+    @CheckReturnValue
     private CompletableFuture<Icon> downloadAsIcon(String url)
     {
         final CompletableFuture<InputStream> downloadFuture = download(url);
@@ -222,6 +228,7 @@ public class AttachmentProxy extends FileProxy
      * @return {@link CompletableFuture} which holds an {@link Icon}.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Icon> downloadAsIcon()
     {
         return downloadAsIcon(getUrl());
@@ -247,6 +254,7 @@ public class AttachmentProxy extends FileProxy
      * @return {@link CompletableFuture} which holds an {@link Icon}.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Icon> downloadAsIcon(int width, int height)
     {
         return downloadAsIcon(getUrl(width, height));

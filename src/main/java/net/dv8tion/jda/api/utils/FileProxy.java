@@ -26,6 +26,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
@@ -140,6 +141,8 @@ public class FileProxy
                 .build();
     }
 
+    @Nonnull
+    @CheckReturnValue
     protected CompletableFuture<InputStream> download(String url)
     {
         // We need to apply a pattern of CompletableFuture as shown here https://discord.com/channels/125227483518861312/942488867167146005/942492134446088203
@@ -181,6 +184,8 @@ public class FileProxy
         return new DownloadTask(newCall, future);
     }
 
+    @Nonnull
+    @CheckReturnValue
     protected CompletableFuture<Path> downloadToPath(String url)
     {
         final HttpUrl parsedUrl = HttpUrl.parse(url);
@@ -193,6 +198,8 @@ public class FileProxy
         return downloadToPath(Paths.get(fileName));
     }
 
+    @Nonnull
+    @CheckReturnValue
     protected CompletableFuture<Path> downloadToPath(String url, Path path)
     {
         //Turn this into an absolute path so we can check the parent folder
@@ -242,6 +249,7 @@ public class FileProxy
      * @return {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<InputStream> download()
     {
         return download(url);
@@ -256,6 +264,7 @@ public class FileProxy
      * @return {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Path> downloadToPath()
     {
         return downloadToPath(url);
@@ -282,6 +291,7 @@ public class FileProxy
      * @return {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<File> downloadToFile(@Nonnull File file)
     {
         Checks.notNull(file, "File");
@@ -312,6 +322,7 @@ public class FileProxy
      * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path)
     {
         Checks.notNull(path, "Path");
@@ -335,6 +346,8 @@ public class FileProxy
             call.cancel();
         }
 
+        @Nonnull
+        @CheckReturnValue
         protected CompletableFuture<InputStream> getFuture()
         {
             return future;

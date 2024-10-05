@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
@@ -45,8 +45,19 @@ public class RestActionComplianceTest
         methods()
             .that()
             .haveRawReturnType(assignableTo(RestAction.class))
-            .and()
-            .areNotDeclaredIn(RestAction.class)
+            .should()
+            .beAnnotatedWith(CheckReturnValue.class)
+            .andShould()
+            .beAnnotatedWith(Nonnull.class)
+            .check(apiClasses);
+    }
+
+    @Test
+    void testMethodsThatReturnCompletableFutureHaveCorrectAnnotations()
+    {
+        methods()
+            .that()
+            .haveRawReturnType(assignableTo(CompletableFuture.class))
             .should()
             .beAnnotatedWith(CheckReturnValue.class)
             .andShould()

@@ -694,6 +694,7 @@ public interface RestAction<T>
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} representing the completion promise
      */
     @Nonnull
+    @CheckReturnValue
     default CompletableFuture<T> submit()
     {
         return submit(true);
@@ -713,6 +714,7 @@ public interface RestAction<T>
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} task representing the completion promise
      */
     @Nonnull
+    @CheckReturnValue
     CompletableFuture<T> submit(boolean shouldQueue);
 
     /**
@@ -1292,6 +1294,7 @@ public interface RestAction<T>
      *         representing the delayed operation
      */
     @Nonnull
+    @CheckReturnValue
     default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit)
     {
         return submitAfter(delay, unit, null);
@@ -1322,6 +1325,7 @@ public interface RestAction<T>
      *         representing the delayed operation
      */
     @Nonnull
+    @CheckReturnValue
     default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor)
     {
         Checks.notNull(unit, "TimeUnit");
