@@ -246,10 +246,12 @@ public interface NewsChannel extends StandardGuildMessageChannel
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ChannelAction<NewsChannel> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default ChannelAction<NewsChannel> createCopy()
     {
         return createCopy(getGuild());
@@ -257,5 +259,6 @@ public interface NewsChannel extends StandardGuildMessageChannel
 
     @Nonnull
     @Override
+    @CheckReturnValue
     NewsChannelManager getManager();
 }

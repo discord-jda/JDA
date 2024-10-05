@@ -45,14 +45,17 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     PermissionOverrideAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     PermissionOverrideAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     PermissionOverrideAction deadline(long timestamp);
 
     /**
@@ -62,6 +65,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The current PermissionOverrideAction for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     default PermissionOverrideAction reset()
     {
         return resetAllow().resetDeny();
@@ -74,6 +78,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The current PermissionOverrideAction for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     PermissionOverrideAction resetAllow();
 
     /**
@@ -83,6 +88,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The current PermissionOverrideAction for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     PermissionOverrideAction resetDeny();
 
     /**

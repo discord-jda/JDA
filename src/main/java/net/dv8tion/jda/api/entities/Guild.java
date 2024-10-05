@@ -2322,6 +2322,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return The Manager of this Guild
      */
     @Nonnull
+    @CheckReturnValue
     GuildManager getManager();
 
     /**
@@ -2827,6 +2828,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
+    @CheckReturnValue
     default CacheRestAction<Member> retrieveMember(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
@@ -2862,6 +2864,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #retrieveMemberById(long)
      */
     @Nonnull
+    @CheckReturnValue
     default CacheRestAction<Member> retrieveOwner()
     {
         return retrieveMemberById(getOwnerIdLong());
@@ -2898,6 +2901,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
+    @CheckReturnValue
     default CacheRestAction<Member> retrieveMemberById(@Nonnull String id)
     {
         return retrieveMemberById(MiscUtil.parseSnowflake(id));
@@ -2929,6 +2933,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
+    @CheckReturnValue
     CacheRestAction<Member> retrieveMemberById(long id);
 
     /**
@@ -3950,6 +3955,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @CheckReturnValue
     AuditableRestAction<Void> removeTimeout(@Nonnull UserSnowflake user);
 
     /**

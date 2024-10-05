@@ -405,6 +405,7 @@ public interface RestAction<T>
      * @see    #addCheck(BooleanSupplier)
      */
     @Nonnull
+    @CheckReturnValue
     RestAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     /**
@@ -472,6 +473,7 @@ public interface RestAction<T>
      * @see    #setDefaultTimeout(long, TimeUnit)
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
@@ -501,6 +503,7 @@ public interface RestAction<T>
      * @see    #setDefaultTimeout(long, TimeUnit)
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<T> deadline(long timestamp)
     {
         throw new UnsupportedOperationException();

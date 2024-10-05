@@ -282,6 +282,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @see    #getGatewayPing()
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<Long> getRestPing()
     {
         AtomicLong time = new AtomicLong();

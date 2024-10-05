@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -57,10 +58,12 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default ChannelAction<VoiceChannel> createCopy()
     {
         return createCopy(getGuild());
@@ -68,5 +71,6 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
 
     @Nonnull
     @Override
+    @CheckReturnValue
     VoiceChannelManager getManager();
 }

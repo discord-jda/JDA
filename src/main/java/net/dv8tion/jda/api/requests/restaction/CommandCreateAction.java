@@ -46,14 +46,17 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction addCheck(@Nonnull BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
@@ -171,5 +174,6 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandCreateAction setNSFW(boolean nsfw);
 }

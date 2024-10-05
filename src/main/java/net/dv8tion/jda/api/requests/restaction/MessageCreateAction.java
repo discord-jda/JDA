@@ -73,6 +73,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
     @Nonnull
+    @CheckReturnValue
     MessageCreateAction setNonce(@Nullable String nonce);
 
     /**
@@ -118,6 +119,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      * @return The same instance for chaining
      */
     @Nonnull
+    @CheckReturnValue
     MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nullable String guildId, @Nonnull String channelId, @Nonnull String messageId);
 
     /**
@@ -163,6 +165,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      * @return The same instance for chaining
      */
     @Nonnull
+    @CheckReturnValue
     default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, long guildId, long channelId, long messageId)
     {
         return setMessageReference(type, Long.toUnsignedString(guildId), Long.toUnsignedString(channelId), Long.toUnsignedString(messageId));
@@ -207,6 +210,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      * @return The same instance for chaining
      */
     @Nonnull
+    @CheckReturnValue
     default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nonnull Message message)
     {
         Checks.notNull(message, "Message");
@@ -235,6 +239,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      * @return The same instance for chaining
      */
     @Nonnull
+    @CheckReturnValue
     MessageCreateAction setMessageReference(@Nullable String messageId);
 
     /**
@@ -256,6 +261,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      * @return The same instance for chaining
      */
     @Nonnull
+    @CheckReturnValue
     default MessageCreateAction setMessageReference(long messageId)
     {
         return setMessageReference(Long.toUnsignedString(messageId));
@@ -280,6 +286,7 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      * @return The same instance for chaining
      */
     @Nonnull
+    @CheckReturnValue
     default MessageCreateAction setMessageReference(@Nullable Message message)
     {
         return setMessageReference(message == null ? null : message.getId());

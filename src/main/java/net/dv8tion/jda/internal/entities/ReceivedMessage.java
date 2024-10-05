@@ -956,7 +956,7 @@ public class ReceivedMessage implements Message
     }
 
     @Override
-    public ThreadChannelAction createThreadChannel(String name)
+    public ThreadChannelAction createThreadChannel(@Nonnull String name)
     {
         return getGuildChannel().asThreadContainer().createThreadChannel(name, this.getIdLong());
     }

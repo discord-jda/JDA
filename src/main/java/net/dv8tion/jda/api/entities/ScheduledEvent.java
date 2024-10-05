@@ -305,6 +305,7 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent>
      * @return The ScheduledEventManager of this event
      */
     @Nonnull
+    @CheckReturnValue
     ScheduledEventManager getManager();
 
     /**

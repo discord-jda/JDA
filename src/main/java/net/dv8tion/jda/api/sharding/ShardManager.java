@@ -209,6 +209,7 @@ public interface ShardManager extends IGuildChannelContainer<Channel>
      * @return The Application registry for this bot.
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<ApplicationInfo> retrieveApplicationInfo()
     {
         return this.getShardCache().stream()

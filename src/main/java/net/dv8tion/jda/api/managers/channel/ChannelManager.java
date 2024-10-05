@@ -133,6 +133,7 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     M reset(long fields);
 
     /**
@@ -173,6 +174,7 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     M reset(long... fields);
 
     /**

@@ -43,14 +43,17 @@ public interface MemberAction extends RestAction<Void>
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     MemberAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     MemberAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     MemberAction deadline(long timestamp);
 
     /**

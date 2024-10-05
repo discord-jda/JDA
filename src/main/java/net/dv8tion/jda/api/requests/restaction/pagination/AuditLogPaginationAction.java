@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -87,6 +88,7 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      * @return The current AuditLogPaginationAction for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     AuditLogPaginationAction type(@Nullable ActionType type);
 
     /**
@@ -100,5 +102,6 @@ public interface AuditLogPaginationAction extends PaginationAction<AuditLogEntry
      * @return The current AuditLogPaginationAction for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     AuditLogPaginationAction user(@Nullable UserSnowflake user);
 }

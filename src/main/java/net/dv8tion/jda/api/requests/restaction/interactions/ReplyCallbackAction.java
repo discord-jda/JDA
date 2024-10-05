@@ -31,6 +31,7 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     ReplyCallbackAction closeResources();
 
     /**

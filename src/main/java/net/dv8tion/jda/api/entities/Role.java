@@ -238,6 +238,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      * @return The RoleManager of this Role
      */
     @Nonnull
+    @CheckReturnValue
     RoleManager getManager();
 
     /**

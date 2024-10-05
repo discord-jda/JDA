@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities.channel.attribute;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManager;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -32,6 +33,7 @@ public interface IPositionableChannel extends GuildChannel
 {
     @Override
     @Nonnull
+    @CheckReturnValue
     IPositionableChannelManager<?, ?> getManager();
 
     /**

@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.managers.channel.concrete.MediaChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -44,14 +45,17 @@ public interface MediaChannel extends StandardGuildChannel, IPostContainer, IWeb
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     MediaChannelManager getManager();
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ChannelAction<MediaChannel> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default ChannelAction<MediaChannel> createCopy()
     {
         return createCopy(getGuild());

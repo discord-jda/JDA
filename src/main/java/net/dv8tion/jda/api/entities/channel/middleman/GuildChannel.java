@@ -61,6 +61,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @return The ChannelManager of this GuildChannel
      */
     @Nonnull
+    @CheckReturnValue
     ChannelManager<?, ?> getManager();
 
     /**

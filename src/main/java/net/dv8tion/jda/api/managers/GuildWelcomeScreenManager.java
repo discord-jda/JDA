@@ -84,6 +84,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildWelcomeScreenManager reset(long fields);
 
     /**
@@ -104,6 +105,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildWelcomeScreenManager reset(long... fields);
 
     /**

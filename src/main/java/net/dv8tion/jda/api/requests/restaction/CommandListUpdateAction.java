@@ -41,18 +41,22 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandListUpdateAction deadline(long timestamp);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandListUpdateAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks);
 
     /**

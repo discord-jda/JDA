@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -115,6 +116,7 @@ public class CommandAutoCompleteInteractionEvent extends GenericAutoCompleteInte
 
     @Nonnull
     @Override
+    @CheckReturnValue
     public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
     {
         return interaction.replyChoices(choices);

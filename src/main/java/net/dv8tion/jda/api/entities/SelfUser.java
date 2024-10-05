@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.AccountManager;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -84,5 +85,6 @@ public interface SelfUser extends User
      * @return An AccountManager instance for the current account
      */
     @Nonnull
+    @CheckReturnValue
     AccountManager getManager();
 }

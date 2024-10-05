@@ -67,14 +67,17 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
 
     @Nonnull
     @Override
+    @CheckReturnValue
     M setCheck(BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     M timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     M deadline(long timestamp);
 
     @Nonnull

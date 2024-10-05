@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
@@ -35,10 +36,12 @@ public interface FluentRestAction<T, R extends FluentRestAction<T, R>> extends R
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     R setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default R addCheck(@Nonnull BooleanSupplier checks)
     {
         return (R) RestAction.super.addCheck(checks);
@@ -46,6 +49,7 @@ public interface FluentRestAction<T, R extends FluentRestAction<T, R>> extends R
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default R timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (R) RestAction.super.timeout(timeout, unit);
@@ -53,6 +57,7 @@ public interface FluentRestAction<T, R extends FluentRestAction<T, R>> extends R
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default R deadline(long timestamp)
     {
         return (R) RestAction.super.deadline(timestamp);

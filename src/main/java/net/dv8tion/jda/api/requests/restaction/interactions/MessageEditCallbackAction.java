@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.FluentRestAction;
 import net.dv8tion.jda.api.utils.messages.MessageEditRequest;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -29,5 +30,6 @@ public interface MessageEditCallbackAction extends InteractionCallbackAction<Int
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     MessageEditCallbackAction closeResources();
 }

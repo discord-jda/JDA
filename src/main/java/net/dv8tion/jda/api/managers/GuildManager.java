@@ -111,6 +111,7 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildManager reset(long fields);
 
     /**
@@ -142,6 +143,7 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildManager reset(long... fields);
 
     /**
