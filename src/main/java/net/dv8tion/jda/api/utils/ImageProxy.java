@@ -32,6 +32,8 @@ import java.util.concurrent.CompletableFuture;
 /**
  * A utility class to retrieve images.
  * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific size.
+ *
+ * @see <a href="https://discord.com/developers/docs/reference#image-formatting" target="_blank">Discord docs on image formatting</a>
  */
 public class ImageProxy extends FileProxy
 {
