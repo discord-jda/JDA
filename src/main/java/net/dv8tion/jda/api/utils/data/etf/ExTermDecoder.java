@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.data.etf;
 
+import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -60,6 +61,7 @@ public class ExTermDecoder
      *
      * @return The java object
      */
+    @Nonnull
     public static Object unpack(ByteBuffer buffer)
     {
         if (buffer.get() != -125)
@@ -90,6 +92,7 @@ public class ExTermDecoder
      *
      * @return The parsed {@link Map} instance
      */
+    @Nonnull
     @SuppressWarnings("unchecked")
     public static Map<String, Object> unpackMap(ByteBuffer buffer)
     {
@@ -121,6 +124,7 @@ public class ExTermDecoder
      *
      * @return The parsed {@link List} instance
      */
+    @Nonnull
     @SuppressWarnings("unchecked")
     public static List<Object> unpackList(ByteBuffer buffer)
     {

@@ -35,14 +35,17 @@ public interface StageInstanceAction extends RestAction<StageInstance>
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     StageInstanceAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     StageInstanceAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     StageInstanceAction deadline(long timestamp);
 
     /**

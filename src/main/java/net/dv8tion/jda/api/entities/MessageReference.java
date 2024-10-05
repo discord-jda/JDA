@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -102,6 +103,7 @@ public class MessageReference
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
      */
     @Nonnull
+    @CheckReturnValue
     public RestAction<Message> resolve()
     {
         return resolve(true);
@@ -146,6 +148,7 @@ public class MessageReference
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
      */
     @Nonnull
+    @CheckReturnValue
     public RestAction<Message> resolve(boolean update)
     {
         checkPermission(Permission.VIEW_CHANNEL);

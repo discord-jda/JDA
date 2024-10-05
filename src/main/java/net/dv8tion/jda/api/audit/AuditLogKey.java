@@ -33,6 +33,8 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.internal.utils.EntityString;
 
+import javax.annotation.Nonnull;
+
 /**
  * Enum of possible/expected keys that can be provided
  * to {@link AuditLogEntry#getChangeByKey(AuditLogKey) AuditLogEntry.getChangeByKey(AuditLogEntry.AuditLogKey}.
@@ -686,11 +688,13 @@ public enum AuditLogKey
         this.key = key;
     }
 
+    @Nonnull
     public String getKey()
     {
         return key;
     }
 
+    @Nonnull
     @Override
     public String toString()
     {

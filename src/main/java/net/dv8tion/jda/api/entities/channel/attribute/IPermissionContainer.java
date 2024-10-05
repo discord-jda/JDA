@@ -40,6 +40,7 @@ public interface IPermissionContainer extends GuildChannel
 {
     @Override
     @Nonnull
+    @CheckReturnValue
     IPermissionContainerManager<?, ?> getManager();
 
     /**

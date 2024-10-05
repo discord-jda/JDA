@@ -196,6 +196,7 @@ public interface SessionController
          *
          * @return The endpoint
          */
+        @Nonnull
         public String getUrl()
         {
             return url;

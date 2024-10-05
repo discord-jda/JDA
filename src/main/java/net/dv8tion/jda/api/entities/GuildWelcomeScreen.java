@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.GuildWelcomeScreenImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -66,6 +67,7 @@ public interface GuildWelcomeScreen
      * @see Guild#modifyWelcomeScreen()
      */
     @Nonnull
+    @CheckReturnValue
     GuildWelcomeScreenManager getManager();
 
     /**

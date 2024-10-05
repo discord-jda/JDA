@@ -50,14 +50,17 @@ public interface GuildAction extends RestAction<Void>
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildAction deadline(long timestamp);
 
     /**

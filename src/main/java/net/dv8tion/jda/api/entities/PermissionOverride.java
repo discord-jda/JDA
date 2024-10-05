@@ -182,6 +182,7 @@ public interface PermissionOverride extends ISnowflake
      * @return The PermissionOverrideAction of this override.
      */
     @Nonnull
+    @CheckReturnValue
     PermissionOverrideAction getManager();
 
     /**

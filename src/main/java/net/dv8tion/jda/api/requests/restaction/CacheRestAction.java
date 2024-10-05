@@ -34,10 +34,12 @@ public interface CacheRestAction<T> extends RestAction<T>
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     CacheRestAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default CacheRestAction<T> addCheck(@Nonnull BooleanSupplier checks)
     {
         return (CacheRestAction<T>) RestAction.super.addCheck(checks);
@@ -45,6 +47,7 @@ public interface CacheRestAction<T> extends RestAction<T>
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default CacheRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (CacheRestAction<T>) RestAction.super.timeout(timeout, unit);
@@ -52,6 +55,7 @@ public interface CacheRestAction<T> extends RestAction<T>
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default CacheRestAction<T> deadline(long timestamp)
     {
         return (CacheRestAction<T>) RestAction.super.deadline(timestamp);

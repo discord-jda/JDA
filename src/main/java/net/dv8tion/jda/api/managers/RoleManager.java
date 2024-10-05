@@ -83,6 +83,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     RoleManager reset(long fields);
 
     /**
@@ -106,6 +107,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     RoleManager reset(long... fields);
 
     /**

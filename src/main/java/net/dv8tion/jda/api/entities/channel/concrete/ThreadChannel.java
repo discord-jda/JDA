@@ -1001,6 +1001,7 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
 
     @Override
     @Nonnull
+    @CheckReturnValue
     ThreadChannelManager getManager();
 
     @Override

@@ -72,6 +72,7 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildStickerManager reset(long fields);
 
     /**
@@ -92,6 +93,7 @@ public interface GuildStickerManager extends Manager<GuildStickerManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildStickerManager reset(long... fields);
 
     /**

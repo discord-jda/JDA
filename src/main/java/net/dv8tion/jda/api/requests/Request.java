@@ -30,6 +30,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CancellationException;
@@ -204,6 +205,7 @@ public class Request<T>
     }
 
     @Nonnull
+    @CheckReturnValue
     public RestAction<T> getRestAction()
     {
         return restAction;

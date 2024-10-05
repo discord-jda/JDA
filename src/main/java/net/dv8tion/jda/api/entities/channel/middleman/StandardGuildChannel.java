@@ -47,6 +47,7 @@ public interface StandardGuildChannel extends GuildChannel, IPermissionContainer
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     StandardGuildChannelManager<?, ?> getManager();
 
     @Override

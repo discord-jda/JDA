@@ -15,7 +15,9 @@
  */
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import javax.annotation.CheckReturnValue;
@@ -79,6 +81,7 @@ public interface ScheduledEventManager extends Manager<ScheduledEventManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     ScheduledEventManager reset(long fields);
 
     /**
@@ -104,6 +107,7 @@ public interface ScheduledEventManager extends Manager<ScheduledEventManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     ScheduledEventManager reset(long... fields);
 
     /**

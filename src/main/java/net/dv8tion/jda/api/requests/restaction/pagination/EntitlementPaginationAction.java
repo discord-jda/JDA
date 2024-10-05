@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -46,6 +47,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     EntitlementPaginationAction user(@Nullable UserSnowflake user);
 
     /**
@@ -57,6 +59,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     EntitlementPaginationAction skuIds(long... skuIds);
 
     /**
@@ -71,6 +74,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     EntitlementPaginationAction skuIds(@Nonnull String... skuIds);
 
     /**
@@ -85,6 +89,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     EntitlementPaginationAction skuIds(@Nonnull Collection<String> skuIds);
 
     /**
@@ -96,6 +101,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     EntitlementPaginationAction guild(long guildId);
 
     /**
@@ -110,6 +116,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     default EntitlementPaginationAction guild(@Nonnull String guildId)
     {
         Checks.notNull(guildId, "guildId");
@@ -129,6 +136,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     default EntitlementPaginationAction guild(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "guild");
@@ -145,5 +153,6 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      * @return The current {@link EntitlementPaginationAction EntitlementPaginationAction} for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     EntitlementPaginationAction excludeEnded(boolean excludeEnded);
 }

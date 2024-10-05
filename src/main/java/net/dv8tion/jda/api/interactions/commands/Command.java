@@ -426,6 +426,7 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @return The Choice instance, for chaining
          */
+        @Nonnull
         public Choice setName(@Nonnull String name)
         {
             checkName(name);

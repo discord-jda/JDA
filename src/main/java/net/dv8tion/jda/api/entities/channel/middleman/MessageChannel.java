@@ -1136,6 +1136,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @return A {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} related to this channel.
      */
+    @Nonnull
     default MessageHistory getHistory()
     {
         return new MessageHistory(this);

@@ -17,10 +17,11 @@
 package net.dv8tion.jda.api.entities.channel.attribute;
 
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -67,5 +68,6 @@ public interface ISlowmodeChannel extends GuildChannel
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     ISlowmodeChannelManager<?, ?> getManager();
 }

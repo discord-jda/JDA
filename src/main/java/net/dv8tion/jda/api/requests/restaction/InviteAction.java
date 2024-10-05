@@ -38,14 +38,17 @@ public interface InviteAction extends AuditableRestAction<Invite>
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     InviteAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     InviteAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     InviteAction deadline(long timestamp);
 
     /**

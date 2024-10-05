@@ -127,10 +127,12 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ChannelAction<StageChannel> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default ChannelAction<StageChannel> createCopy()
     {
         return createCopy(getGuild());
@@ -138,6 +140,7 @@ public interface StageChannel extends StandardGuildChannel, GuildMessageChannel,
 
     @Nonnull
     @Override
+    @CheckReturnValue
     StageChannelManager getManager();
 
     /**

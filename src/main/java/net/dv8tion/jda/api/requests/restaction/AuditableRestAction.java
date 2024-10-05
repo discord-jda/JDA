@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
@@ -66,6 +67,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      * @see    ThreadLocalReason
      */
     @Nonnull
+    @CheckReturnValue
     AuditableRestAction<T> reason(@Nullable String reason);
 
     /**
@@ -73,6 +75,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     /**
@@ -80,6 +83,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     default AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (AuditableRestAction<T>) RestAction.super.timeout(timeout, unit);
@@ -90,6 +94,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     default AuditableRestAction<T> deadline(long timestamp)
     {
         return (AuditableRestAction<T>) RestAction.super.deadline(timestamp);

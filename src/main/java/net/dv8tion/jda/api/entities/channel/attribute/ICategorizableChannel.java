@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.ICategorizableChannelManager;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -35,6 +36,7 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
 {
     @Override
     @Nonnull
+    @CheckReturnValue
     ICategorizableChannelManager<?, ?> getManager();
 
     /**

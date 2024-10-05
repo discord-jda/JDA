@@ -465,13 +465,16 @@ public interface Category extends GuildChannel, ICopyableChannel, IPositionableC
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ChannelAction<Category> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ChannelAction<Category> createCopy();
 
     @Nonnull
     @Override
+    @CheckReturnValue
     CategoryManager getManager();
 }

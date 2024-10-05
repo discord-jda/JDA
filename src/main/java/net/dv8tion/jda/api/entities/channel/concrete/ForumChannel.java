@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
@@ -61,14 +62,17 @@ public interface ForumChannel extends StandardGuildChannel, IPostContainer, IWeb
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ForumChannelManager getManager();
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ChannelAction<ForumChannel> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default ChannelAction<ForumChannel> createCopy()
     {
         return createCopy(getGuild());

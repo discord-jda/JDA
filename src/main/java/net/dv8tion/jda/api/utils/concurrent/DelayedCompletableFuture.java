@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.concurrent;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -54,6 +55,7 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
      * @return DelayedCompletableFuture for the specified runnable
      */
     @Nonnull
+    @CheckReturnValue
     public static <E> DelayedCompletableFuture<E> make(@Nonnull ScheduledExecutorService executor, long delay, @Nonnull TimeUnit unit, @Nonnull Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping)
     {
         DelayedCompletableFuture<E> handle = new DelayedCompletableFuture<>();

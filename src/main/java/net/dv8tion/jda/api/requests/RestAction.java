@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -405,6 +406,7 @@ public interface RestAction<T>
      * @see    #addCheck(BooleanSupplier)
      */
     @Nonnull
+    @CheckReturnValue
     RestAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     /**
@@ -472,6 +474,7 @@ public interface RestAction<T>
      * @see    #setDefaultTimeout(long, TimeUnit)
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
@@ -501,6 +504,7 @@ public interface RestAction<T>
      * @see    #setDefaultTimeout(long, TimeUnit)
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<T> deadline(long timestamp)
     {
         throw new UnsupportedOperationException();
@@ -627,6 +631,7 @@ public interface RestAction<T>
      * @return The response value
      */
     @Blocking
+    @UnknownNullability
     default T complete()
     {
         try
@@ -661,6 +666,7 @@ public interface RestAction<T>
      * @return The response value
      */
     @Blocking
+    @UnknownNullability
     T complete(boolean shouldQueue) throws RateLimitedException;
 
     /**
@@ -691,6 +697,7 @@ public interface RestAction<T>
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} representing the completion promise
      */
     @Nonnull
+    @CheckReturnValue
     default CompletableFuture<T> submit()
     {
         return submit(true);
@@ -710,6 +717,7 @@ public interface RestAction<T>
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} task representing the completion promise
      */
     @Nonnull
+    @CheckReturnValue
     CompletableFuture<T> submit(boolean shouldQueue);
 
     /**
@@ -1289,6 +1297,7 @@ public interface RestAction<T>
      *         representing the delayed operation
      */
     @Nonnull
+    @CheckReturnValue
     default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit)
     {
         return submitAfter(delay, unit, null);
@@ -1319,6 +1328,7 @@ public interface RestAction<T>
      *         representing the delayed operation
      */
     @Nonnull
+    @CheckReturnValue
     default DelayedCompletableFuture<T> submitAfter(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService executor)
     {
         Checks.notNull(unit, "TimeUnit");
@@ -1354,6 +1364,7 @@ public interface RestAction<T>
      * @return The response value
      */
     @Blocking
+    @UnknownNullability
     default T completeAfter(long delay, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");

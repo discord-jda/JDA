@@ -66,6 +66,7 @@ public interface CustomEmojiManager extends Manager<CustomEmojiManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     CustomEmojiManager reset(long fields);
 
     /**
@@ -85,6 +86,7 @@ public interface CustomEmojiManager extends Manager<CustomEmojiManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     CustomEmojiManager reset(long... fields);
 
     /**

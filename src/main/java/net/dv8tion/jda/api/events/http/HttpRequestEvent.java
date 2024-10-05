@@ -27,6 +27,7 @@ import okhttp3.Headers;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Set;
@@ -128,6 +129,7 @@ public class HttpRequestEvent extends Event
     }
 
     @Nonnull
+    @CheckReturnValue
     public RestAction<?> getRestAction()
     {
         return this.request.getRestAction();

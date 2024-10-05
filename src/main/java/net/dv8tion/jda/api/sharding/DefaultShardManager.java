@@ -252,6 +252,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
+    @Nullable
     public Guild getGuildById(long id)
     {
         int shardId = MiscUtil.getShardForGuild(id, getShardsTotal());

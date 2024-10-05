@@ -64,6 +64,7 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     StageInstanceManager reset(long fields);
 
     /**
@@ -83,6 +84,7 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     StageInstanceManager reset(long... fields);
 
     /**

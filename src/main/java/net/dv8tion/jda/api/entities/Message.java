@@ -2382,8 +2382,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
+    @Nonnull
     @CheckReturnValue
-    ThreadChannelAction createThreadChannel(String name);
+    ThreadChannelAction createThreadChannel(@Nonnull String name);
 
     /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}

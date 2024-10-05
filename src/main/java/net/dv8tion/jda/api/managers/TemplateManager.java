@@ -63,6 +63,7 @@ public interface TemplateManager extends Manager<TemplateManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     TemplateManager reset(long fields);
 
     /**
@@ -82,6 +83,7 @@ public interface TemplateManager extends Manager<TemplateManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     TemplateManager reset(long... fields);
 
     /**

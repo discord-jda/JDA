@@ -163,6 +163,7 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.commons.lang3)
     testImplementation(libs.logback.classic)
+    testImplementation(libs.archunit)
 }
 
 

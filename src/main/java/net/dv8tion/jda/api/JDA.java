@@ -186,11 +186,13 @@ public interface JDA extends IGuildChannelContainer<Channel>
          *
          * @return A String representing the information used to build this shard.
          */
+        @Nonnull
         public String getShardString()
         {
             return "[" + shardId + " / " + shardTotal + "]";
         }
 
+        @Nonnull
         @Override
         public String toString()
         {
@@ -282,6 +284,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @see    #getGatewayPing()
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<Long> getRestPing()
     {
         AtomicLong time = new AtomicLong();

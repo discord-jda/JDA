@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AutoModRuleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.List;
@@ -225,6 +226,7 @@ public interface AutoModRule extends ISnowflake
      * @return The manager instance
      */
     @Nonnull
+    @CheckReturnValue
     default AutoModRuleManager getManager()
     {
         return getGuild().modifyAutoModRuleById(getId());
@@ -239,6 +241,7 @@ public interface AutoModRule extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Void}
      */
     @Nonnull
+    @CheckReturnValue
     default AuditableRestAction<Void> delete()
     {
         return getGuild().deleteAutoModRuleById(getId());

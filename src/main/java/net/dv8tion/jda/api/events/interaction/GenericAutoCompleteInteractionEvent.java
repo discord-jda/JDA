@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.restaction.interactions.AutoCompleteCallbackAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
@@ -52,6 +53,7 @@ public class GenericAutoCompleteInteractionEvent extends GenericInteractionCreat
 
     @Nonnull
     @Override
+    @CheckReturnValue
     public AutoCompleteCallbackAction replyChoices(@Nonnull Collection<Command.Choice> choices)
     {
         return getInteraction().replyChoices(choices);

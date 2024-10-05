@@ -79,6 +79,7 @@ public interface Entitlement extends ISnowflake
      *
      * @return The id of the user that purchased the {@link Entitlement Entitlement}
      */
+    @Nonnull
     default String getUserId()
     {
         return Long.toUnsignedString(getUserIdLong());

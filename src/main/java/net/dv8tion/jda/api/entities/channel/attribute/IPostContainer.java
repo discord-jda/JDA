@@ -62,6 +62,7 @@ public interface IPostContainer extends IThreadContainer
 
     @Nonnull
     @Override
+    @CheckReturnValue
     IPostContainerManager<?, ?> getManager();
 
     /**
