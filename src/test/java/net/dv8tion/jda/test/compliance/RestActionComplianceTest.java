@@ -21,7 +21,6 @@ import com.tngtech.archunit.core.importer.ClassFileImporter;
 import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Contract;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.CheckReturnValue;
@@ -34,13 +33,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 public class RestActionComplianceTest
 {
-    JavaClasses apiClasses;
-
-    @BeforeEach
-    void loadApiClasses()
-    {
-        apiClasses = new ClassFileImporter().importPackages("net.dv8tion.jda.api");
-    }
+    final JavaClasses apiClasses = new ClassFileImporter().importPackages("net.dv8tion.jda.api");
 
     @Test
     void testMethodsThatReturnRestActionHaveCorrectAnnotations()
