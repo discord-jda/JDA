@@ -43,7 +43,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     protected String name;
     protected Icon icon, splash, banner;
-    protected String afkChannel, systemChannel, rulesChannel, communityUpdatesChannel;
+    protected String afkChannel, systemChannel, rulesChannel, communityUpdatesChannel, safetyAlertsChannel;
     protected String description;
     protected int afkTimeout;
     protected int mfaLevel;
@@ -91,6 +91,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             this.rulesChannel = null;
         if ((fields & COMMUNITY_UPDATES_CHANNEL) == COMMUNITY_UPDATES_CHANNEL)
             this.communityUpdatesChannel = null;
+        if ((fields & SAFETY_ALERTS_CHANNEL) == SAFETY_ALERTS_CHANNEL)
+            this.safetyAlertsChannel = null;
         if ((fields & DESCRIPTION) == DESCRIPTION)
             this.description = null;
         if ((fields & BANNER) == BANNER)
@@ -200,6 +202,17 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         Checks.check(communityUpdatesChannel == null || communityUpdatesChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
         this.communityUpdatesChannel = communityUpdatesChannel == null ? null : communityUpdatesChannel.getId();
         set |= COMMUNITY_UPDATES_CHANNEL;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildManagerImpl setSafetyAlertsChannel(TextChannel safetyAlertsChannel)
+    {
+        Checks.check(safetyAlertsChannel == null || safetyAlertsChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        this.safetyAlertsChannel = safetyAlertsChannel == null ? null : safetyAlertsChannel.getId();
+        set |= SAFETY_ALERTS_CHANNEL;
         return this;
     }
 

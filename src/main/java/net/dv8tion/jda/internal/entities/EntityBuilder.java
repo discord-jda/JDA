@@ -280,6 +280,7 @@ public class EntityBuilder
         final long systemChannelId = guildJson.getUnsignedLong("system_channel_id", 0L);
         final long rulesChannelId = guildJson.getUnsignedLong("rules_channel_id", 0L);
         final long communityUpdatesChannelId = guildJson.getUnsignedLong("public_updates_channel_id", 0L);
+        final long safetyAlertsChannelId = guildJson.getUnsignedLong("safety_alerts_channel_id", 0L);
         final int boostCount = guildJson.getInt("premium_subscription_count", 0);
         final int boostTier = guildJson.getInt("premium_tier", 0);
         final int maxMembers = guildJson.getInt("max_members", 0);
@@ -402,7 +403,8 @@ public class EntityBuilder
         guildObj.setAfkChannel(guildObj.getVoiceChannelById(afkChannelId))
                 .setSystemChannel(guildObj.getTextChannelById(systemChannelId))
                 .setRulesChannel(guildObj.getTextChannelById(rulesChannelId))
-                .setCommunityUpdatesChannel(guildObj.getTextChannelById(communityUpdatesChannelId));
+                .setCommunityUpdatesChannel(guildObj.getTextChannelById(communityUpdatesChannelId))
+                .setSafetyAlertsChannel(guildObj.getTextChannelById(safetyAlertsChannelId));
 
         return guildObj;
     }
