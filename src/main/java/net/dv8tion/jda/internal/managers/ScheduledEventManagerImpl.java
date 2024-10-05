@@ -162,12 +162,44 @@ public class ScheduledEventManagerImpl extends ManagerBase<ScheduledEventManager
 
     @Nonnull
     @Override
-    public ScheduledEventManager setStatus(@Nonnull ScheduledEvent.Status status)
+    public ScheduledEventManager setStatus(@Nonnull ScheduledEvent.Status newStatus)
     {
-        Checks.notNull(status, "Status");
-        Checks.check(status != ScheduledEvent.Status.UNKNOWN, "Cannot set the event status to an unknown status!");
-        Checks.check(status != ScheduledEvent.Status.SCHEDULED && getScheduledEvent().getStatus() != ScheduledEvent.Status.ACTIVE, "Cannot perform status update!");
-        this.status = status;
+        Checks.notNull(newStatus, "Status");
+        switch (newStatus)
+        {
+            case SCHEDULED:
+            case UNKNOWN:
+                throw new IllegalArgumentException("Cannot change scheduled event status to " + newStatus);
+        }
+
+        //get the current status of the event. multiple-usage
+        ScheduledEvent.Status currentStatus = getScheduledEvent().getStatus();
+
+        switch (currentStatus)
+        {
+            case SCHEDULED:
+                //event is scheduled -> new status can be only active or cancel
+                Checks.check(
+                        newStatus == ScheduledEvent.Status.ACTIVE || newStatus == ScheduledEvent.Status.CANCELED,
+                        "Cannot perform status update! A scheduled event with status SCHEDULED can only be set to ACTIVE or CANCELED status."
+                );
+                break;
+
+            case ACTIVE:
+                //event is active -> new status can be only completed
+                Checks.check(
+                        newStatus == ScheduledEvent.Status.COMPLETED,
+                        "Cannot perform status updated! A scheduled event with status ACTIVE can only be set to COMPLETED status."
+                );
+                break;
+
+            case COMPLETED:
+            case CANCELED:
+                //event is completed or canceled -> can't update status
+                throw new IllegalArgumentException("Cannot perform status update! Event is " + currentStatus.name().toLowerCase() + ".");
+        }
+
+        this.status = newStatus;
         set |= STATUS;
         return this;
     }
