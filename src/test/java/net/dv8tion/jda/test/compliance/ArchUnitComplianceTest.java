@@ -35,7 +35,7 @@ import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
-public class RestActionComplianceTest
+public class ArchUnitComplianceTest
 {
     final JavaClasses apiClasses = new ClassFileImporter().importPackages("net.dv8tion.jda.api");
 
@@ -93,7 +93,7 @@ public class RestActionComplianceTest
     }
 
     @Test
-    void testMethodsThatReturnDoNotReturnObjectShouldNotHaveNullabilityAnnotations()
+    void testMethodsThatReturnPrimitivesShouldNotHaveNullabilityAnnotations()
     {
         methods()
             .that()
