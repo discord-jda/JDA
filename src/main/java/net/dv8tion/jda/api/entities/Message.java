@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
+import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
@@ -57,6 +58,8 @@ import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -820,6 +823,19 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @Unmodifiable
     List<StickerItem> getStickers();
+
+    /**
+     * The {@link MessageSnapshot MessageSnaphots} attached to this message.
+     *
+     * <p>This is used primarily for message forwarding.
+     * The content of the forwarded message is provided as a snapshot at the time of forwarding.
+     * When the message is edited or deleted, this snapshot remains unchanged.
+     *
+     * @return Immutable {@link List} of {@link MessageSnapshot}
+     */
+    @Nonnull
+    @Unmodifiable
+    List<MessageSnapshot> getMessageSnapshots();
 
     /**
      * Defines whether or not this Message triggers TTS (Text-To-Speech).
@@ -1672,6 +1688,40 @@ public interface Message extends ISnowflake, Formattable
     default MessageCreateAction replyFiles(@Nonnull Collection<? extends FileUpload> files)
     {
         return getChannel().sendFiles(files).setMessageReference(this);
+    }
+
+    /**
+     * Forwards this message into the provided channel.
+     *
+     * <p><b>A message forward request cannot contain additional content.</b>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REFERENCED_MESSSAGE_NOT_FOUND REFERENCED_MESSSAGE_NOT_FOUND}
+     *     <br>If the provided reference cannot be resolved to a message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
+     *     <br>If additional content is sent alongside a forwarded message</li>
+     * </ul>
+     *
+     * @param  channel
+     *         The target channel to forward to
+     *
+     * @throws InsufficientPermissionException
+     *         If the bot is missing {@link Permission#MESSAGE_SEND} in the target channel
+     * @throws IllegalArgumentException
+     *         If the target channel is null
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction forwardTo(@Nonnull MessageChannel channel)
+    {
+        Checks.notNull(channel, "Target channel");
+        if (channel instanceof MessageChannelMixin)
+            ((MessageChannelMixin<?>) channel).checkCanSendMessage();
+        return new MessageCreateActionImpl(channel)
+                .setMessageReference(MessageReference.MessageReferenceType.FORWARD, this);
     }
 
     /**

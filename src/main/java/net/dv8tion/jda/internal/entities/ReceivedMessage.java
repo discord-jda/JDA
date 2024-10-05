@@ -34,11 +34,11 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
+import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -108,6 +108,7 @@ public class ReceivedMessage implements Message
     protected final List<MessageEmbed> embeds;
     protected final List<StickerItem> stickers;
     protected final List<LayoutComponent> components;
+    protected final List<MessageSnapshot> messageSnapshots;
 
     protected WebhookClient<Message> webhook;
 
@@ -122,7 +123,7 @@ public class ReceivedMessage implements Message
             boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, MessagePoll poll, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
-            List<StickerItem> stickers, List<ActionRow> components,
+            List<StickerItem> stickers, List<LayoutComponent> components, List<MessageSnapshot> messageSnapshots,
             int flags, Message.Interaction interaction, ThreadChannel startedThread, int position)
     {
         this.id = id;
@@ -149,6 +150,7 @@ public class ReceivedMessage implements Message
         this.embeds = Collections.unmodifiableList(embeds);
         this.stickers = Collections.unmodifiableList(stickers);
         this.components = Collections.unmodifiableList(components);
+        this.messageSnapshots = Collections.unmodifiableList(messageSnapshots);
         this.flags = flags;
         this.interaction = interaction;
         this.startedThread = startedThread;
@@ -658,6 +660,13 @@ public class ReceivedMessage implements Message
     public List<StickerItem> getStickers()
     {
         return this.stickers;
+    }
+
+    @Nonnull
+    @Override
+    public List<MessageSnapshot> getMessageSnapshots()
+    {
+        return messageSnapshots;
     }
 
     @Override

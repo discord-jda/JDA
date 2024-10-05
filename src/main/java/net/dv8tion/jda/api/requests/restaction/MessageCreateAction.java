@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageReference.MessageReferenceType;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
@@ -73,6 +74,144 @@ public interface MessageCreateAction extends MessageCreateRequest<MessageCreateA
      */
     @Nonnull
     MessageCreateAction setNonce(@Nullable String nonce);
+
+    /**
+     * Message reference used for a reply or forwarded message.
+     *
+     * <p><b>{@link MessageReferenceType#DEFAULT Default Type}</b>
+     *
+     * <p>You can only reply to messages from the same channel.
+     * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
+     *
+     * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     *
+     * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
+     * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.
+     *
+     * <p><b>{@link MessageReferenceType#FORWARD Forward Type}</b>
+     *
+     * <p>Creates a snapshot of the referenced message at the current time and sends it in this channel.
+     *
+     * <p>You cannot forward messages from channels you do not have access to.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REFERENCED_MESSSAGE_NOT_FOUND REFERENCED_MESSSAGE_NOT_FOUND}
+     *     <br>If the provided reference cannot be resolved to a message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
+     *     <br>If additional content is sent alongside a forwarded message</li>
+     * </ul>
+     *
+     * @param  type
+     *         The type of message reference
+     * @param  guildId
+     *         The guild id the forwarded message comes from, or null if it is not from a guild
+     * @param  channelId
+     *         The channel id the forwarded message comes from
+     * @param  messageId
+     *         The target message id
+     *
+     * @throws IllegalArgumentException
+     *         If null or an invalid snowflake is passed or the reference type is {@link MessageReferenceType#UNKNOWN}
+     *
+     * @return The same instance for chaining
+     */
+    @Nonnull
+    MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nullable String guildId, @Nonnull String channelId, @Nonnull String messageId);
+
+    /**
+     * Message reference used for a reply or forwarded message.
+     *
+     * <p><b>{@link MessageReferenceType#DEFAULT Default Type}</b>
+     *
+     * <p>You can only reply to messages from the same channel.
+     * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
+     *
+     * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     *
+     * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
+     * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.
+     *
+     * <p><b>{@link MessageReferenceType#FORWARD Forward Type}</b>
+     *
+     * <p>Creates a snapshot of the referenced message at the current time and sends it in this channel.
+     *
+     * <p>You cannot forward messages from channels you do not have access to.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REFERENCED_MESSSAGE_NOT_FOUND REFERENCED_MESSSAGE_NOT_FOUND}
+     *     <br>If the provided reference cannot be resolved to a message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
+     *     <br>If additional content is sent alongside a forwarded message</li>
+     * </ul>
+     *
+     * @param  type
+     *         The type of message reference
+     * @param  guildId
+     *         The guild id the forwarded message comes from, or 0 if it is not from a guild
+     * @param  channelId
+     *         The channel id the forwarded message comes from
+     * @param  messageId
+     *         The target message id
+     *
+     * @throws IllegalArgumentException
+     *         If the reference type is null or {@link MessageReferenceType#UNKNOWN}
+     *
+     * @return The same instance for chaining
+     */
+    @Nonnull
+    default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, long guildId, long channelId, long messageId)
+    {
+        return setMessageReference(type, Long.toUnsignedString(guildId), Long.toUnsignedString(channelId), Long.toUnsignedString(messageId));
+    }
+
+    /**
+     * Message reference used for a reply or forwarded message.
+     *
+     * <p><b>{@link MessageReferenceType#DEFAULT Default Type}</b>
+     *
+     * <p>You can only reply to messages from the same channel.
+     * By default, this will mention the author of the target message, this can be disabled using {@link #mentionRepliedUser(boolean)}.
+     *
+     * <p>This also requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * If this permission is missing, you receive {@link net.dv8tion.jda.api.requests.ErrorResponse#REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM ErrorResponse.REPLY_FAILED_MISSING_MESSAGE_HISTORY_PERM}.
+     *
+     * <p>If the target message does not exist, this will result in {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE ErrorResponse.UNKNOWN_MESSAGE}.
+     * You can use {@link #failOnInvalidReply(boolean)} to allow unknown or deleted messages.
+     *
+     * <p><b>{@link MessageReferenceType#FORWARD Forward Type}</b>
+     *
+     * <p>Creates a snapshot of the referenced message at the current time and sends it in this channel.
+     *
+     * <p>You cannot forward messages from channels you do not have access to.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REFERENCED_MESSSAGE_NOT_FOUND REFERENCED_MESSSAGE_NOT_FOUND}
+     *     <br>If the provided reference cannot be resolved to a message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
+     *     <br>If additional content is sent alongside a forwarded message</li>
+     * </ul>
+     *
+     * @param  type
+     *         The type of message reference
+     * @param  message
+     *         The target message
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the reference type is {@link MessageReferenceType#UNKNOWN}
+     *
+     * @return The same instance for chaining
+     */
+    @Nonnull
+    default MessageCreateAction setMessageReference(@Nonnull MessageReferenceType type, @Nonnull Message message)
+    {
+        Checks.notNull(message, "Message");
+        return setMessageReference(type, message.getGuildId(), message.getChannel().getId(), message.getId());
+    }
 
     /**
      * Message reference used for a reply.
