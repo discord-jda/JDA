@@ -41,12 +41,12 @@ plugins {
 
 val javaVersion = JavaVersion.current()
 val versionObj = Version(major = "5", minor = "1", revision = "1", classifier = null)
+val isGithubAction = System.getProperty("GITHUB_ACTION") != null || System.getenv("GITHUB_ACTION") != null
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
         || System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
-        || System.getProperty("GITHUB_ACTION") != null // Github Actions
-        || System.getenv("GITHUB_ACTION") != null
+        || isGithubAction // Github Actions
 
 // Check the commit hash and version information
 val commitHash: String by lazy {
@@ -66,10 +66,23 @@ val previousVersion: Version by lazy {
         versionObj
 }
 
-val isNewVersion = previousVersion != versionObj
+val signingKey: String? by project
+val signingKeyId: String? by project
+val ossrhUser: String? by project
+val ossrhPassword: String? by project
+val stagingProfile: String? by project
+
+val ossrhConfigured = ossrhUser != null && ossrhPassword != null
+val canSign = signingKey != null && signingKeyId != null
+val shouldPublish = canSign && ossrhConfigured && isGithubAction
 
 // Use normal version string for new releases and commitHash for other builds
-project.version = "$versionObj" + if (isNewVersion) "" else "_$commitHash"
+if (shouldPublish) {
+    project.version = "$versionObj"
+} else {
+    project.version = "${versionObj}_$commitHash"
+}
+
 project.group = "net.dv8tion"
 
 
@@ -395,21 +408,17 @@ publishing {
     }
 }
 
-val ossrhConfigured = getProjectProperty("ossrhUser") != null
-val canSign = getProjectProperty("signing.keyId") != null
-val shouldPublish = isNewVersion && canSign && ossrhConfigured
-
-if (canSign) {
-    signing {
-        sign(publishing.publications.getByName("Release"))
-    }
+signing {
+    useInMemoryPgpKeys(signingKeyId, signingKey, "")
+    sign(publishing.publications.getByName("Release"))
+    isRequired = shouldPublish
 }
 
 nexusPublishing {
     repositories.sonatype {
-        username.set(getProjectProperty("ossrhUser"))
-        password.set(getProjectProperty("ossrhPassword"))
-        stagingProfileId.set(getProjectProperty("stagingProfileId"))
+        username.set(ossrhUser)
+        password.set(ossrhPassword)
+        stagingProfileId.set(stagingProfile)
     }
 
     connectTimeout.set(Duration.ofMinutes(1))
@@ -452,13 +461,6 @@ val release by tasks.creating(Task::class) {
     enabled = shouldPublish
 
     dependsOn(publishingTasks)
-
-    doLast { // Only runs when shouldPublish = true
-        logger.lifecycle("Saving version $versionObj to .version")
-        val file = layout.projectDirectory.file(".version")
-        file.asFile.createNewFile()
-        file.asFile.writeText(versionObj.toString())
-    }
 }
 
 afterEvaluate {
@@ -475,9 +477,6 @@ afterEvaluate {
 //            Helpers             //
 //                                //
 ////////////////////////////////////
-
-
-fun getProjectProperty(name: String) = project.properties[name] as? String
 
 fun nullableReplacement(string: String?): String {
     return if (string == null) "null"
