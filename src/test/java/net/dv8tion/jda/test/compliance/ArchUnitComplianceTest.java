@@ -134,4 +134,18 @@ public class ArchUnitComplianceTest
             .haveSimpleNameEndingWith("Manager")
             .check(apiClasses);
     }
+
+    @Test
+    void testInternalClassesAreNotInApiPackage()
+    {
+        classes()
+            .that()
+            .arePublic()
+            .and()
+            .haveSimpleNameEndingWith("Impl")
+            .should()
+            .resideOutsideOfPackage("net.dv8tion.jda.api..")
+            .allowEmptyShould(true)
+            .check(apiClasses);
+    }
 }
