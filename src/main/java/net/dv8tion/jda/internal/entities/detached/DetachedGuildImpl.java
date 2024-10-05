@@ -360,9 +360,15 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
         throw detachedException();
     }
 
-
     @Override
     public TextChannel getCommunityUpdatesChannel()
+    {
+        throw detachedException();
+    }
+
+    @Nullable
+    @Override
+    public TextChannel getSafetyAlertsChannel()
     {
         throw detachedException();
     }
