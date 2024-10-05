@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.channel.forum.update;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
@@ -58,12 +59,14 @@ public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent
     }
 
     @Override
+    @UnknownNullability
     public T getOldValue()
     {
         return previous;
     }
 
     @Override
+    @UnknownNullability
     public T getNewValue()
     {
         return next;
