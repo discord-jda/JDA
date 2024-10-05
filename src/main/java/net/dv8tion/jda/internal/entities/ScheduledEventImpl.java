@@ -29,6 +29,8 @@ import net.dv8tion.jda.internal.managers.ScheduledEventManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ScheduledEventMembersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -131,6 +133,12 @@ public class ScheduledEventImpl implements ScheduledEvent
     public String getLocation()
     {
         return location;
+    }
+
+    @NotNull
+    @Override
+    public String getJumpUrl(){
+        return Helpers.format(ScheduledEvent.JUMP_URL, getGuild().getId(), getId());
     }
 
     @Override
