@@ -200,6 +200,7 @@ public class ImageProxy extends FileProxy
      * @return {@link CompletableFuture} which holds an {@link Icon}.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Icon> downloadAsIcon()
     {
         return downloadAsIcon(getUrl());
@@ -221,6 +222,7 @@ public class ImageProxy extends FileProxy
      * @return {@link CompletableFuture} which holds an {@link Icon}.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Icon> downloadAsIcon(int size)
     {
         return downloadAsIcon(getUrl(size));
