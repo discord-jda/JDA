@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.test.compliance;
 
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import net.dv8tion.jda.annotations.UnknownNullability;
+import net.dv8tion.jda.api.managers.Manager;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Contract;
 import org.junit.jupiter.api.Test;
@@ -28,7 +30,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
+import static com.tngtech.archunit.base.DescribedPredicate.describe;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 public class RestActionComplianceTest
@@ -85,6 +89,49 @@ public class RestActionComplianceTest
             .beAnnotatedWith(Contract.class)
             .orShould()
             .beAnnotatedWith(UnknownNullability.class)
+            .check(apiClasses);
+    }
+
+    @Test
+    void testMethodsThatReturnDoNotReturnObjectShouldNotHaveNullabilityAnnotations()
+    {
+        methods()
+            .that()
+            .haveRawReturnType(describe("primitive", JavaClass::isPrimitive))
+            .and()
+            .arePublic()
+            .should()
+            .notBeAnnotatedWith(Nonnull.class)
+            .andShould()
+            .notBeAnnotatedWith(Nullable.class)
+            .check(apiClasses);
+    }
+
+    @Test
+    void testRestActionClassesFollowNamePattern()
+    {
+        classes()
+            .that()
+            .areAssignableTo(RestAction.class)
+            .and()
+            .areNotAssignableTo(Manager.class)
+            .and()
+            .arePublic()
+            .should()
+            .haveSimpleNameEndingWith("Action")
+            .check(apiClasses);
+    }
+
+    @Test
+    void testManagerClassesFollowNamePattern()
+    {
+        classes()
+            .that()
+            .areAssignableTo(Manager.class)
+            .and()
+            .arePublic()
+            .should()
+            .haveSimpleNameEndingWith("Manager")
             .check(apiClasses);
     }
 }
