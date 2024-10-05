@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.data;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Contract;
@@ -96,6 +97,7 @@ public class DataPath
      * @return The value at the provided path, using the provided resolver functions.
      *         Possibly null, if the path ends with a "?" operator, or the resolver function returns null.
      */
+    @UnknownNullability
     public static <T> T get(@Nonnull DataObject root, @Nonnull String path, @Nonnull BiFunction<DataObject, String, ? extends T> fromObject, @Nonnull BiFunction<DataArray, Integer, ? extends T> fromArray)
     {
         Checks.notEmpty(path, "Path");
@@ -178,6 +180,7 @@ public class DataPath
      * @return The value at the provided path, using the provided resolver functions.
      *         Possibly null, if the path ends with a "?" operator, or the resolver function returns null.
      */
+    @UnknownNullability
     public static <T> T get(@Nonnull DataArray root, @Nonnull String path, @Nonnull BiFunction<DataObject, String, ? extends T> fromObject, @Nonnull BiFunction<DataArray, Integer, ? extends T> fromArray)
     {
         Checks.notNull(root, "DataArray");

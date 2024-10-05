@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
@@ -98,7 +97,7 @@ public class MessagePollData implements SerializableData
         return new MessagePollBuilder(poll).build();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public DataObject toData()
     {

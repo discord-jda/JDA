@@ -262,6 +262,7 @@ public interface MessagePoll
          *
          * @return The layout type or {@link #UNKNOWN}
          */
+        @Nonnull
         public static LayoutType fromKey(int key)
         {
             for (LayoutType type : values())

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.cache;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.ClosableIterator;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -143,6 +144,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @see    #acceptStream(Consumer)
      */
+    @UnknownNullability
     default <R> R applyStream(@Nonnull Function<? super Stream<T>, ? extends R> action)
     {
         Checks.notNull(action, "Action");

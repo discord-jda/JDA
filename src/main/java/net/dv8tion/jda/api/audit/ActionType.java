@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.entities.channel.attribute.IVoiceStatusChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
+import javax.annotation.Nonnull;
+
 /**
  * ActionTypes for {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntry} instances
  * <br>Found via {@link net.dv8tion.jda.api.audit.AuditLogEntry#getType() AuditLogEntry.getType()}
@@ -684,11 +686,13 @@ public enum ActionType
      *
      * @return {@link net.dv8tion.jda.api.audit.TargetType TargetType}
      */
+    @Nonnull
     public TargetType getTargetType()
     {
         return target;
     }
 
+    @Nonnull
     public static ActionType from(int key)
     {
         for (ActionType type : values())

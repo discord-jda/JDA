@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -630,6 +631,7 @@ public interface RestAction<T>
      * @return The response value
      */
     @Blocking
+    @UnknownNullability
     default T complete()
     {
         try
@@ -664,6 +666,7 @@ public interface RestAction<T>
      * @return The response value
      */
     @Blocking
+    @UnknownNullability
     T complete(boolean shouldQueue) throws RateLimitedException;
 
     /**
@@ -1361,6 +1364,7 @@ public interface RestAction<T>
      * @return The response value
      */
     @Blocking
+    @UnknownNullability
     default T completeAfter(long delay, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");

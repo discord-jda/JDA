@@ -450,6 +450,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             });
         }
 
+        @Nonnull
         public Queue<Work> getRequests()
         {
             return requests;

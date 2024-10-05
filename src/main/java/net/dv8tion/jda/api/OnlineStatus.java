@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents the online presence of a {@link net.dv8tion.jda.api.entities.Member Member}.
  */
@@ -63,6 +65,7 @@ public enum OnlineStatus
      *
      * @see    <a href="https://discord.com/developers/docs/topics/gateway#presence-update">PRESENCE_UPDATE</a>
      */
+    @Nonnull
     public String getKey()
     {
         return key;
@@ -77,7 +80,8 @@ public enum OnlineStatus
      *
      * @return The matching {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus}. If there is no match, returns {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}.
      */
-    public static OnlineStatus fromKey(String key)
+    @Nonnull
+    public static OnlineStatus fromKey(@Nonnull String key)
     {
         for (OnlineStatus onlineStatus : values())
         {

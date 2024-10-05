@@ -71,6 +71,7 @@ class AllowedMentionsData implements SerializableData
         mentionRepliedUser = defaultMentionRepliedUser;
     }
 
+    @Nonnull
     public AllowedMentionsData copy()
     {
         AllowedMentionsData copy = new AllowedMentionsData();

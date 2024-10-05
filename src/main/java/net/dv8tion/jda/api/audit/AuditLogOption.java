@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.audit;
 
 import net.dv8tion.jda.internal.utils.EntityString;
 
+import javax.annotation.Nonnull;
+
 /**
  * Enum constants for possible options
  * <br>Providing detailed description of possible occasions and expected types.
@@ -139,6 +141,7 @@ public enum AuditLogOption
      *
      * @return Key for this option
      */
+    @Nonnull
     public String getKey()
     {
         return key;

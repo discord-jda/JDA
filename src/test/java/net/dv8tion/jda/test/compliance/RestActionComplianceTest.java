@@ -18,12 +18,15 @@ package net.dv8tion.jda.test.compliance;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.Contract;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.assignableTo;
@@ -62,6 +65,33 @@ public class RestActionComplianceTest
             .beAnnotatedWith(CheckReturnValue.class)
             .andShould()
             .beAnnotatedWith(Nonnull.class)
+            .check(apiClasses);
+    }
+
+    @Test
+    void testMethodsThatReturnObjectShouldHaveNullabilityAnnotations()
+    {
+        methods()
+            .that()
+            .haveRawReturnType(assignableTo(Object.class))
+            .and()
+            .arePublic()
+            .and()
+            .doNotHaveName("getNewValue")
+            .and()
+            .doNotHaveName("getOldValue")
+            .and()
+            .doNotHaveName("valueOf")
+            .and()
+            .doNotHaveName("toString")
+            .should()
+            .beAnnotatedWith(Nonnull.class)
+            .orShould()
+            .beAnnotatedWith(Nullable.class)
+            .orShould()
+            .beAnnotatedWith(Contract.class)
+            .orShould()
+            .beAnnotatedWith(UnknownNullability.class)
             .check(apiClasses);
     }
 }

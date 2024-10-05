@@ -89,6 +89,7 @@ public class TemplateChannel implements ISnowflake
      * @throws java.lang.UnsupportedOperationException
      *         The date of creation cannot be calculated.
      */
+    @Nonnull
     @Override
     public OffsetDateTime getTimeCreated()
     {
@@ -341,6 +342,7 @@ public class TemplateChannel implements ISnowflake
          * @throws java.lang.UnsupportedOperationException
          *         The date of creation cannot be calculated.
          */
+        @Nonnull
         @Override
         public OffsetDateTime getTimeCreated()
         {

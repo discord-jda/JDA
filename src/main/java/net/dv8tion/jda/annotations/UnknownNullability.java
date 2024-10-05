@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils;
+package net.dv8tion.jda.annotations;
 
-import net.dv8tion.jda.annotations.UnknownNullability;
+import java.lang.annotation.*;
 
-import java.io.IOException;
-
-/**
- * Function accepting one argument and throwing {@link IOException}.
- *
- * @param <T> The type of the argument
- * @param <R> The type of the return value
- */
-@FunctionalInterface
-public interface IOFunction<T, R>
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface UnknownNullability
 {
-    @UnknownNullability
-    R apply(T t) throws IOException;
 }

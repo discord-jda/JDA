@@ -678,6 +678,7 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Blocking
     void forEachRemaining(@Nonnull final Procedure<? super T> action);
 
+    @Nonnull
     @Override
     @Blocking
     default Spliterator<T> spliterator()
@@ -790,7 +791,9 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
             return false;
         }
 
+        @Nonnull
         @Override
+        @SuppressWarnings("DataFlowIssue")
         public E next()
         {
             if (!hasNext())

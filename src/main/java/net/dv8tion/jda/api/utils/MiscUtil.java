@@ -18,10 +18,12 @@ package net.dv8tion.jda.api.utils;
 import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Formatter;
@@ -100,6 +102,7 @@ public class MiscUtil
      *
      * @return a new thread-safe {@link gnu.trove.map.TLongObjectMap TLongObjectMap}
      */
+    @Nonnull
     public static <T> TLongObjectMap<T> newLongMap()
     {
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
@@ -127,6 +130,7 @@ public class MiscUtil
         }
     }
 
+    @UnknownNullability
     public static <E> E locked(ReentrantLock lock, Supplier<E> task)
     {
         tryLock(lock);

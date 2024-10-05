@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -24,6 +25,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -410,6 +412,7 @@ public interface CommandInteractionPayload extends Interaction
      * @see    #getOption(String, Function)
      * @see    #getOption(String, Supplier, Function)
      */
+    @Contract("_,null,_->null")
     default <T> T getOption(@Nonnull String name,
                             @Nullable T fallback,
                             @Nonnull Function<? super OptionMapping, ? extends T> resolver)
@@ -459,6 +462,7 @@ public interface CommandInteractionPayload extends Interaction
      * @see    #getOption(String, Function)
      * @see    #getOption(String, Object, Function)
      */
+    @UnknownNullability
     default <T> T getOption(@Nonnull String name,
                             @Nullable Supplier<? extends T> fallback,
                             @Nonnull Function<? super OptionMapping, ? extends T> resolver)
