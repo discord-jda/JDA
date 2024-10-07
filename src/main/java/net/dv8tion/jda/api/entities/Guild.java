@@ -2667,7 +2667,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
     default CacheRestAction<GuildVoiceState> retrieveMemberVoiceState(UserSnowflake user)
     {
         Checks.notNull(user, "User");
-        return retrieveMemberVoiceStateById(user.getId());
+        return retrieveMemberVoiceStateById(user.getIdLong());
     }
 
     /**
