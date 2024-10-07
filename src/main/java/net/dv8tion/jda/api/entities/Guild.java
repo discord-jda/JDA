@@ -2586,6 +2586,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
 
     /**
      * Load the member's voice state for the specified user.
+     *
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)} and
      * the voice state is immediately provided by {@link Member#getVoiceState()}.
      * The cache consistency directly relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
