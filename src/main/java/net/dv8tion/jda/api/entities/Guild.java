@@ -2664,7 +2664,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
     @Nonnull
-    default CacheRestAction<GuildVoiceState> retrieveMemberVoiceState(UserSnowflake user)
+    default CacheRestAction<GuildVoiceState> retrieveMemberVoiceState(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         return retrieveMemberVoiceStateById(user.getIdLong());
