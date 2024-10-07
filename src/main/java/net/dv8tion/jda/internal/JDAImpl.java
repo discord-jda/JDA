@@ -680,7 +680,7 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon)
     {
-        Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
 
         DataObject body = DataObject.empty();
@@ -717,6 +717,7 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId)
     {
+        Checks.isSnowflake(emojiId);
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
         return new RestActionImpl<>(this, route,
                 (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject())

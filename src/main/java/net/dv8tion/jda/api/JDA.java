@@ -1754,10 +1754,10 @@ public interface JDA extends IGuildChannelContainer<Channel>
     /**
      * Creates a new {@link ApplicationEmoji} for this bot.
      *
-     * <p>Note that the bot is limited to 2000 Application Emojis (normal and animated).
+     * <p>Note that the bot is limited to {@value ApplicationEmoji#APPLICATION_EMOJI_CAP} Application Emojis (normal and animated).
      *
      * @param  name
-     *         The name for the new emoji (2-30 characters)
+     *         The name for the new emoji (2-{@value CustomEmoji#EMOJI_NAME_MAX_LENGTH} characters)
      * @param  icon
      *         The {@link Icon} for the new emoji
      */
@@ -1780,16 +1780,13 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param  emojiId
      *         The emoji id
      *
-     * @throws IllegalArgumentException
-     *         If the provided id is not a valid snowflake
-     *
      * @return {@link RestAction RestAction} - Type: {@link ApplicationEmoji}
      */
     @Nonnull
     @CheckReturnValue
     default RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId)
     {
-        return retrieveApplicationEmojiById(String.valueOf(emojiId));
+        return retrieveApplicationEmojiById(Long.toUnsignedString(emojiId));
     }
 
     /**
