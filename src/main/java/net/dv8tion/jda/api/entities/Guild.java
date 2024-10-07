@@ -2587,13 +2587,6 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
     /**
      * Load the member's voice state for the specified user.
      *
-     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)} and
-     * the voice state is immediately provided by {@link Member#getVoiceState()}.
-     * The cache consistency directly relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * and {@link GatewayIntent#GUILD_VOICE_STATES GatewayIntent.GUILD_VOICE_STATES} are required to keep the cache updated with the latest information.
-     * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to always
-     * make a new request, which is the default behavior if the required intents are disabled.
-     *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_VOICE_STATE}
@@ -2606,16 +2599,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
     @Nonnull
-    CacheRestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id);
+    RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id);
 
     /**
      * Load the member's voice state for the specified user.
-     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)} and
-     * the voice state is immediately provided by {@link Member#getVoiceState()}.
-     * The cache consistency directly relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * and {@link GatewayIntent#GUILD_VOICE_STATES GatewayIntent.GUILD_VOICE_STATES} are required to keep the cache updated with the latest information.
-     * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to always
-     * make a new request, which is the default behavior if the required intents are disabled.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
@@ -2634,19 +2621,13 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
     @Nonnull
-    default CacheRestAction<GuildVoiceState> retrieveMemberVoiceStateById(@Nonnull String id)
+    default RestAction<GuildVoiceState> retrieveMemberVoiceStateById(@Nonnull String id)
     {
         return retrieveMemberVoiceStateById(MiscUtil.parseSnowflake(id));
     }
 
     /**
      * Load the member's voice state for the specified {@link UserSnowflake}.
-     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)} and
-     * the voice state is immediately provided by {@link Member#getVoiceState()}.
-     * The cache consistency directly relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
-     * and {@link GatewayIntent#GUILD_VOICE_STATES GatewayIntent.GUILD_VOICE_STATES} are required to keep the cache updated with the latest information.
-     * You can use {@link CacheRestAction#useCache(boolean) useCache(false)} to always
-     * make a new request, which is the default behavior if the required intents are disabled.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
@@ -2664,7 +2645,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
     @Nonnull
-    default CacheRestAction<GuildVoiceState> retrieveMemberVoiceState(@Nonnull UserSnowflake user)
+    default RestAction<GuildVoiceState> retrieveMemberVoiceState(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
         return retrieveMemberVoiceStateById(user.getIdLong());

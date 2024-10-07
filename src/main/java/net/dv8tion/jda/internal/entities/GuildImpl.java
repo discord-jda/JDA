@@ -1155,28 +1155,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CacheRestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
+    public RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
     {
         JDAImpl jda = getJDA();
-        return new DeferredRestAction<>(jda, GuildVoiceState.class,
-                () ->
-                {
-                    MemberImpl member = (MemberImpl) getMemberById(id);
-                    return member == null ? null : member.getVoiceState();
-                },
-                () ->
-                {
-                    Route.CompiledRoute route = Route.Guilds.GET_VOICE_STATE.compile(getId(), Long.toUnsignedString(id));
-                    return new RestActionImpl<>(jda, route, (response, request) ->
-                    {
-                        EntityBuilder entityBuilder = jda.getEntityBuilder();
-                        DataObject voiceStateData = response.getObject();
-                        //Creates voice state if VOICE_STATE cache flag is set
-                        MemberImpl member = entityBuilder.createMember(this, voiceStateData.getObject("member"), voiceStateData, null);
-                        entityBuilder.updateMemberCache(member);
-                        return entityBuilder.createGuildVoiceState(member, voiceStateData);
-                    });
-                }).useCache(jda.isIntent(GatewayIntent.GUILD_MEMBERS) && jda.isIntent(GatewayIntent.GUILD_VOICE_STATES));
+        Route.CompiledRoute route = Route.Guilds.GET_VOICE_STATE.compile(getId(), Long.toUnsignedString(id));
+        return new RestActionImpl<>(jda, route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = jda.getEntityBuilder();
+            DataObject voiceStateData = response.getObject();
+            MemberImpl member = entityBuilder.createMember(this, voiceStateData.getObject("member"), voiceStateData, null);
+            entityBuilder.updateMemberCache(member);
+            return entityBuilder.createGuildVoiceState(member, voiceStateData);
+        });
     }
 
     @Nonnull
