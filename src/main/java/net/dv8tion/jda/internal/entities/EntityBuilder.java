@@ -616,13 +616,13 @@ public class EntityBuilder
                 member.setFlags(memberJson.getInt("flags"));
 
             long boostTimestamp = memberJson.isNull("premium_since")
-                    ? 0
-                    : Helpers.toTimestamp(memberJson.getString("premium_since"));
+                ? 0
+                : Helpers.toTimestamp(memberJson.getString("premium_since"));
             member.setBoostDate(boostTimestamp);
 
             long timeOutTimestamp = memberJson.isNull("communication_disabled_until")
-                    ? 0
-                    : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
+                ? 0
+                : Helpers.toTimestamp(memberJson.getString("communication_disabled_until"));
             member.setTimeOutEnd(timeOutTimestamp);
 
             if (!memberJson.isNull("pending"))
