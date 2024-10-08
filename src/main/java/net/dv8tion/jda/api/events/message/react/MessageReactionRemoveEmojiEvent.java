@@ -17,12 +17,15 @@
 package net.dv8tion.jda.api.events.message.react;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.requests.RestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -69,5 +72,22 @@ public class MessageReactionRemoveEmojiEvent extends GenericMessageEvent
     public EmojiUnion getEmoji()
     {
         return reaction.getEmoji();
+    }
+
+    /**
+     * Retrieves the message for this reaction event.
+     * <br>Simple shortcut for {@code getChannel().retrieveMessageById(getMessageId())}.
+     *
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
+     *
+     * @return {@link RestAction} - Type: {@link Message}
+     *
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Message> retrieveMessage()
+    {
+        return getChannel().retrieveMessageById(getMessageId());
     }
 }
