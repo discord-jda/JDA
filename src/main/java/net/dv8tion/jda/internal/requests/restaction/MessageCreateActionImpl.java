@@ -149,8 +149,13 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     @Override
     public MessageCreateAction setMessageReference(@Nullable String messageId)
     {
-        if (messageId != null)
-            Checks.isSnowflake(messageId);
+        if (messageId == null)
+        {
+            this.messageReference = null;
+            return this;
+        }
+
+        Checks.isSnowflake(messageId);
         String guildId = null;
         if (channel instanceof GuildChannel)
             guildId = ((GuildChannel) channel).getGuild().getId();
