@@ -1155,6 +1155,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    @CheckReturnValue
     public RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
     {
         JDAImpl jda = getJDA();

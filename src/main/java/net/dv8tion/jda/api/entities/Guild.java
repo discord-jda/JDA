@@ -2599,6 +2599,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
     @Nonnull
+    @CheckReturnValue
     RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id);
 
     /**
@@ -2621,6 +2622,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<GuildVoiceState> retrieveMemberVoiceStateById(@Nonnull String id)
     {
         return retrieveMemberVoiceStateById(MiscUtil.parseSnowflake(id));
@@ -2645,6 +2647,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<GuildVoiceState> retrieveMemberVoiceState(@Nonnull UserSnowflake user)
     {
         Checks.notNull(user, "User");
