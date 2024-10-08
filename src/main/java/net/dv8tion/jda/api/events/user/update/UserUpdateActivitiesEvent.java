@@ -20,6 +20,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
@@ -38,7 +42,7 @@ import java.util.List;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
- * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this by default!
  *
  * <p>Additionally, this event requires the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
  * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
@@ -50,6 +54,9 @@ import java.util.List;
  *
  * @since  4.2.1
  */
+@RequiredIntents(always = GatewayIntent.GUILD_PRESENCES)
+@RequiredCacheFlags(always = CacheFlag.ACTIVITY)
+@RequiresCachedMember
 public class UserUpdateActivitiesEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent
 {
     public static final String IDENTIFIER = "activities";
