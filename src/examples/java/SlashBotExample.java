@@ -19,10 +19,14 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -34,6 +38,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
@@ -45,7 +50,7 @@ public class SlashBotExample extends ListenerAdapter
                 .addEventListeners(new SlashBotExample())
                 .build();
 
-        // These commands might take a few minutes to be active after creation/update/delete
+        // You might need to reload your Discord client if you don't see the commands
         CommandListUpdateAction commands = jda.updateCommands();
 
         // Moderation commands with required options
@@ -56,27 +61,40 @@ public class SlashBotExample extends ListenerAdapter
                 .addOptions(new OptionData(INTEGER, "del_days", "Delete messages from the past days.") // This is optional
                     .setRequiredRange(0, 7)) // Only allow values between 0 and 7 (inclusive)
                 .addOptions(new OptionData(STRING, "reason", "The ban reason to use (default: Banned by <user>)")) // optional reason
-                .setGuildOnly(true) // This way the command can only be executed from a guild, and not the DMs
+                .setContexts(InteractionContextType.GUILD) // This way the command can only be executed from a guild, and not the DMs
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)) // Only members with the BAN_MEMBERS permission are going to see this command
         );
 
         // Simple reply commands
         commands.addCommands(
+            Commands.slash("echo", "Makes the bot reply to yourself")
+                .setContexts(InteractionContextType.ALL) // Allow the command to be used anywhere (Bot DMs, Guild, Friend DMs, Group DMs)
+                .setIntegrationTypes(IntegrationType.ALL) // Allow the command to be installed anywhere (Guilds, Users)
+                .addOption(STRING, "content", "What the bot should reply to yourself", true) // you can add required options like this too
+        );
+
+        commands.addCommands(
             Commands.slash("say", "Makes the bot say what you tell it to")
+                .setContexts(InteractionContextType.ALL) // Allow the command to be used anywhere (Bot DMs, Guild, Friend DMs, Group DMs)
+                .setIntegrationTypes(IntegrationType.ALL) // Allow the command to be installed anywhere (Guilds, Users)
                 .addOption(STRING, "content", "What the bot should say", true) // you can add required options like this too
         );
 
         // Commands without any inputs
         commands.addCommands(
             Commands.slash("leave", "Make the bot leave the server")
-                .setGuildOnly(true) // this doesn't make sense in DMs
+                // The default integration types are GUILD_INSTALL.
+                // Can't use this in DMs, and in guilds the bot isn't in.
+                .setContexts(InteractionContextType.GUILD)
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED) // only admins should be able to use this command.
         );
 
         commands.addCommands(
             Commands.slash("prune", "Prune messages from this channel")
                 .addOption(INTEGER, "amount", "How many messages to prune (Default 100)") // simple optional argument
-                .setGuildOnly(true)
+                // The default integration types are GUILD_INSTALL.
+                // Can't use this in DMs, and in guilds the bot isn't in.
+                .setContexts(InteractionContextType.GUILD)
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE))
         );
 
@@ -97,6 +115,9 @@ public class SlashBotExample extends ListenerAdapter
             Member member = event.getOption("user").getAsMember(); // the "user" option is required, so it doesn't need a null-check here
             User user = event.getOption("user").getAsUser();
             ban(event, user, member);
+            break;
+        case "echo":
+            echo(event, event.getOption("content").getAsString()); // content is required so no null-check here
             break;
         case "say":
             say(event, event.getOption("content").getAsString()); // content is required so no null-check here
@@ -177,9 +198,76 @@ public class SlashBotExample extends ListenerAdapter
             .queue(); // execute the entire call chain
     }
 
-    public void say(SlashCommandInteractionEvent event, String content)
+    public void echo(SlashCommandInteractionEvent event, String content)
     {
         event.reply(content).queue(); // This requires no permissions!
+    }
+
+    public void say(SlashCommandInteractionEvent event, String content)
+    {
+        event.deferReply().queue();
+
+        // To use a webhook, the bot needs to be in the guild,
+        // reply to the interaction in other cases (detached guilds, DMs, Group DMs).
+        tryUseWebhook(
+                event,
+                // If we can use a webhook
+                webhook ->
+                {
+                    // Remove the bot thinking message
+                    event.getHook().deleteOriginal().queue();
+
+                    webhook.sendMessage(content)
+                            .setUsername(event.getMember().getEffectiveName())
+                            .setAvatarUrl(event.getMember().getEffectiveAvatarUrl())
+                            .queue();
+                },
+                // Fallback
+                () -> event.getHook().sendMessage(content).queue() // This requires no permissions!
+        );
+    }
+
+    private void tryUseWebhook(SlashCommandInteractionEvent event, Consumer<Webhook> webhookCallback, Runnable noWebhookCallback)
+    {
+        // If the bot isn't in the guild, fallback to a normal reply
+        if (!event.hasFullGuild())
+        {
+            noWebhookCallback.run();
+            return;
+        }
+
+        // In case the channel doesn't support webhooks, fallback to a normal reply
+        if (!(event.getGuildChannel() instanceof IWebhookContainer))
+        {
+            noWebhookCallback.run();
+            return;
+        }
+
+        // If we don't have permissions to create a webhook, fallback to a normal reply
+        final IWebhookContainer webhookContainer = (IWebhookContainer) event.getGuildChannel();
+        // Make sure to take the permission overrides into account by supplying the channel!
+        if (!event.getGuild().getSelfMember().hasPermission(webhookContainer, Permission.MANAGE_WEBHOOKS))
+        {
+            noWebhookCallback.run();
+            return;
+        }
+
+        // We can use webhooks! Try to find an existing one, or create one
+        webhookContainer.retrieveWebhooks().queue(webhooks ->
+        {
+            // Try to find an existing webhook, one which we own
+            for (Webhook webhook : webhooks)
+            {
+                if (event.getJDA().getSelfUser().equals(webhook.getOwnerAsUser()))
+                {
+                    webhookCallback.accept(webhook);
+                    return;
+                }
+            }
+
+            // No webhook found, create one and pass it to the callback
+            webhookContainer.createWebhook("/say webhook").queue(webhookCallback);
+        });
     }
 
     public void leave(SlashCommandInteractionEvent event)

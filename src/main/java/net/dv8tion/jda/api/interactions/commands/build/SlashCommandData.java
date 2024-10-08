@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -27,6 +29,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -63,7 +66,30 @@ public interface SlashCommandData extends CommandData
 
     @Nonnull
     @Override
+    @Deprecated
     SlashCommandData setGuildOnly(boolean guildOnly);
+
+    @Nonnull
+    @Override
+    default SlashCommandData setContexts(@Nonnull InteractionContextType... contexts)
+    {
+        return (SlashCommandData) CommandData.super.setContexts(contexts);
+    }
+
+    @Nonnull
+    @Override
+    SlashCommandData setContexts(@Nonnull Collection<InteractionContextType> contexts);
+
+    @Nonnull
+    @Override
+    default SlashCommandData setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
+    {
+        return (SlashCommandData) CommandData.super.setIntegrationTypes(integrationTypes);
+    }
+
+    @Nonnull
+    @Override
+    SlashCommandData setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes);
 
     @Nonnull
     @Override
@@ -597,6 +623,8 @@ public interface SlashCommandData extends CommandData
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
         data.setGuildOnly(command.isGuildOnly());
+        data.setContexts(command.getContexts());
+        data.setIntegrationTypes(command.getIntegrationTypes());
         data.setNSFW(command.isNSFW());
         data.setDefaultPermissions(command.getDefaultPermissions());
         //Command localizations are unmodifiable, make a copy
@@ -646,7 +674,12 @@ public interface SlashCommandData extends CommandData
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
-        command.setGuildOnly(!object.getBoolean("dm_permission", true));
+        command.setContexts(object.getArray("contexts").stream(DataArray::getString)
+                        .map(InteractionContextType::fromKey)
+                        .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
+        command.setIntegrationTypes(object.getArray("integration_types").stream(DataArray::getString)
+                .map(IntegrationType::fromKey)
+                .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
         command.setNSFW(object.getBoolean("nsfw"));
 
         command.setDefaultPermissions(

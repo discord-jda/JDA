@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.InteractionMentions;
 import net.dv8tion.jda.internal.utils.EntityString;
 
@@ -59,9 +58,9 @@ public class OptionMapping
         this.name = data.getString("name");
         this.resolved = resolved;
         if (type == OptionType.STRING)
-            mentions = new InteractionMentions(getAsString(), resolved, (JDAImpl) jda, (GuildImpl) guild);
+            mentions = new InteractionMentions(getAsString(), resolved, (JDAImpl) jda, guild);
         else
-            mentions = new InteractionMentions("", new TLongObjectHashMap<>(0), (JDAImpl) jda, (GuildImpl) guild);
+            mentions = new InteractionMentions("", new TLongObjectHashMap<>(0), (JDAImpl) jda, guild);
     }
 
     /**
