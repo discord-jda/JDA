@@ -33,6 +33,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -71,6 +72,15 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     Interaction getInteraction();
+
+    /**
+     * The message created by interaction replies like {@link IReplyCallback#reply(String)}
+     * or interaction updates like {@link IMessageEditCallback#editMessage(String)}.
+     *
+     * @return {@link Message}, if available.
+     */
+    @Nullable
+    Message getCallbackResponseMessage();
 
     /**
      * The unix millisecond timestamp for the expiration of this interaction hook.
