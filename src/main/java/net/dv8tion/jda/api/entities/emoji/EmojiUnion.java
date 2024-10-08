@@ -22,7 +22,8 @@ import javax.annotation.Nonnull;
  * Represents possible {@link Emoji} types.
  *
  * <p>This delegates the emoji methods for some concrete emoji type,
- * but can be converted to a concrete type using either {@link #asUnicode()} or {@link #asCustom()}.
+ * but can be converted to a concrete type using either {@link #asUnicode()},
+ * {@link #asCustom()}, {@link #asRich()} or {@link #asApplication()}.
  */
 public interface EmojiUnion extends Emoji
 {
@@ -47,4 +48,26 @@ public interface EmojiUnion extends Emoji
      */
     @Nonnull
     CustomEmoji asCustom();
+
+    /**
+     * Returns the underlying {@link RichCustomEmoji} if applicable.
+     *
+     * @throws IllegalStateException
+     *         If this is not a {@link RichCustomEmoji}
+     *
+     * @return The {@link RichCustomEmoji}
+     */
+    @Nonnull
+    RichCustomEmoji asRich();
+
+    /**
+     * Returns the underlying {@link ApplicationEmoji} if applicable.
+     *
+     * @throws IllegalStateException
+     *         If this is not a {@link ApplicationEmoji}
+     *
+     * @return The {@link ApplicationEmoji}
+     */
+    @Nonnull
+    ApplicationEmoji asApplication();
 }

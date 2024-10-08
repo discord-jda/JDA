@@ -1875,7 +1875,7 @@ public class GuildImpl implements Guild
     public AuditableRestAction<RichCustomEmoji> createEmoji(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
         checkPermission(Permission.MANAGE_GUILD_EXPRESSIONS);
-        Checks.inRange(name, 2, 32, "Emoji name");
+        Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
         Checks.notNull(roles, "Roles");
 
