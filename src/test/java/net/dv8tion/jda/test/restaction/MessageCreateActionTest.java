@@ -266,6 +266,21 @@ public class MessageCreateActionTest extends IntegrationTest
             .whenQueueCalled();
     }
 
+    @Test
+    void testSetMessageReferenceNull()
+    {
+        MessageCreateActionImpl action = new MessageCreateActionImpl(channel);
+
+        action.setMessageReference((String) null);
+        action.setContent("test content");
+        action.failOnInvalidReply(true);
+
+        assertThatRequestFrom(action)
+            .hasBodyEqualTo(defaultMessageRequest()
+                .put("content", "test content"))
+            .whenQueueCalled();
+    }
+
     @Nonnull
     protected DataObject normalizeRequestBody(@Nonnull DataObject body)
     {
