@@ -34,6 +34,7 @@ public class ButtonImpl implements Button
     private final String label;
     private final ButtonStyle style;
     private final String url;
+    private final long skuId;
     private final boolean disabled;
     private final EmojiUnion emoji;
 
@@ -44,21 +45,23 @@ public class ButtonImpl implements Button
             data.getString("label", ""),
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
+            data.getLong("sku_id", -1),
             data.getBoolean("disabled"),
             data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
     public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)
     {
-        this(id, label, style, null, disabled, emoji);
+        this(id, label, style, null, -1, disabled, emoji);
     }
 
-    public ButtonImpl(String id, String label, ButtonStyle style, String url, boolean disabled, Emoji emoji)
+    public ButtonImpl(String id, String label, ButtonStyle style, String url, long skuId, boolean disabled, Emoji emoji)
     {
         this.id = id;
         this.label = label;
         this.style = style;
         this.url = url;  // max length 512
+        this.skuId = skuId;
         this.disabled = disabled;
         this.emoji = (EmojiUnion) emoji;
     }
@@ -96,6 +99,12 @@ public class ButtonImpl implements Button
     public String getUrl()
     {
         return url;
+    }
+
+    @Override
+    public long getSkuId()
+    {
+        return skuId;
     }
 
     @Nullable
