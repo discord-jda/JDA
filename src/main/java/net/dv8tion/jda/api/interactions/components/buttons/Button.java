@@ -167,7 +167,8 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji);
+        Checks.check(getStyle() != ButtonStyle.PREMIUM, "Premium components cannot have emojis");
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), null, isDisabled(), emoji);
     }
 
     /**
@@ -258,7 +259,7 @@ public interface Button extends ActionComponent
     default Button withSku(@Nonnull SkuSnowflake sku)
     {
         Checks.notNull(sku, "SKU");
-        return new ButtonImpl(null, getLabel(), ButtonStyle.PREMIUM, null, sku, isDisabled(), getEmoji());
+        return new ButtonImpl(null, getLabel(), ButtonStyle.PREMIUM, null, sku, isDisabled(), null);
     }
 
     /**
