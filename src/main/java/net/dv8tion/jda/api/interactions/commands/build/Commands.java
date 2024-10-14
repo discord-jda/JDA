@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.EntryPointCommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -127,6 +128,13 @@ public class Commands
     public static CommandData context(@Nonnull Command.Type type, @Nonnull String name)
     {
         return new CommandDataImpl(type, name);
+    }
+
+    //TODO docs
+    @Nonnull
+    public static EntryPointCommandData entryPoint(@Nonnull String name, @Nonnull String description)
+    {
+        return new EntryPointCommandDataImpl(name, description);
     }
 
 
