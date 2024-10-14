@@ -799,13 +799,13 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * jda.updateCommands().queue();
      * }</pre>
      *
-     * @return {@link CommandListUpdateAction}
+     * @return {@link GlobalCommandListUpdateAction}
      *
      * @see    Guild#updateCommands()
      */
     @Nonnull
     @CheckReturnValue
-    CommandListUpdateAction updateCommands();
+    GlobalCommandListUpdateAction updateCommands();
 
     /**
      * Edit an existing global command by id.
