@@ -50,6 +50,8 @@ import java.util.List;
  *     <br>Which supports replying using a {@link Modal} via {@link IModalCallback#replyModal(Modal)}</li>
  *     <li>{@link IPremiumRequiredReplyCallback}
  *     <br>Which will reply stating that an {@link Entitlement Entitlement} is required</li>
+ *     <li>{@link ILaunchActivityReplyCallback}
+ *     <br>Which will launch the app's activity</li>
  * </ul>
  *
  * <p>Once the interaction is acknowledged, you can not reply with these methods again. If the interaction is a {@link IDeferrableCallback deferrable},

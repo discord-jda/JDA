@@ -57,6 +57,8 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         MODAL(9),
         /** Respond with the "Premium required" default Discord message for premium App subscriptions **/
         PREMIUM_REQUIRED(10),
+        /** Launch the app's activity */
+        LAUNCH_ACTIVITY(12),
         ;
         private final int raw;
 
