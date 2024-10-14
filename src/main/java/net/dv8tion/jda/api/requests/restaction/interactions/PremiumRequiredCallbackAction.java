@@ -16,13 +16,18 @@
 
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
+import net.dv8tion.jda.api.entities.SkuSnowflake;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.FluentRestAction;
 
 /**
+ * @deprecated Replaced with {@link Button#premium(SkuSnowflake, String)}
+ *
  * An {@link InteractionCallbackAction} that can be used to send the "Premium required" interaction response.
  *
  * @see net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback
  */
+@Deprecated
 public interface PremiumRequiredCallbackAction extends InteractionCallbackAction<Void>, FluentRestAction<Void, PremiumRequiredCallbackAction>
 {
 

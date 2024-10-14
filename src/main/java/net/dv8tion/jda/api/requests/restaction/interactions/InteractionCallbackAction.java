@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
+import net.dv8tion.jda.api.entities.SkuSnowflake;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -55,7 +57,12 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         COMMAND_AUTOCOMPLETE_CHOICES(8),
         /** Respond with a modal */
         MODAL(9),
-        /** Respond with the "Premium required" default Discord message for premium App subscriptions **/
+        /**
+         * @deprecated Replaced with {@link Button#premium(SkuSnowflake, String)}
+         *
+         * Respond with the "Premium required" default Discord message for premium App subscriptions
+         */
+        @Deprecated
         PREMIUM_REQUIRED(10),
         ;
         private final int raw;
