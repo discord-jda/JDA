@@ -41,6 +41,7 @@ public class EntryPointCommandDataImpl implements EntryPointCommandData, IDescri
     private boolean guildOnly = false;
     private boolean nsfw = false;
     private DefaultMemberPermissions defaultMemberPermissions = DefaultMemberPermissions.ENABLED;
+    private Handler handler;
 
     public EntryPointCommandDataImpl(@Nonnull String name, @Nonnull String description)
     {
@@ -56,6 +57,7 @@ public class EntryPointCommandDataImpl implements EntryPointCommandData, IDescri
 
         return DataObject.empty()
                 .put("type", getType().getId())
+                .put("handler", handler.getValue())
                 .put("name", name)
                 .put("description", description)
                 .put("description_localizations", descriptionLocalizations)
@@ -176,6 +178,14 @@ public class EntryPointCommandDataImpl implements EntryPointCommandData, IDescri
     public EntryPointCommandDataImpl setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map)
     {
         descriptionLocalizations.setTranslations(map);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public EntryPointCommandData setHandler(Handler handler)
+    {
+        this.handler = handler;
         return this;
     }
 
