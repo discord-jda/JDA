@@ -607,8 +607,8 @@ public interface Button extends ActionComponent
 
     /**
      * Creates a button with {@link ButtonStyle#PREMIUM PREMIUM} Style.
-     * <br>The button is enabled and has no emoji attached by default.
-     * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     * <br>The button is enabled by default, and cannot have emojis attached to it.
+     * You can use {@link #asDisabled()} to further configure it.
      *
      * <p>Note that link buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
      * These buttons only open a modal about the SKU.
@@ -634,34 +634,6 @@ public interface Button extends ActionComponent
         Checks.notEmpty(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         return new ButtonImpl(null, label, ButtonStyle.PREMIUM, null, sku, false, null);
-    }
-
-    /**
-     * Creates a button with {@link ButtonStyle#PREMIUM PREMIUM} Style.
-     * <br>The button is enabled and has no text label.
-     * To use labels you can use {@code premium(url, label).withEmoji(emoji)}
-     *
-     * <p>To disable the button you can use {@link #asDisabled()}.
-     *
-     * <p>Note that link buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
-     * These buttons only open a modal about the SKU.
-     *
-     * @param  sku
-     *         The target SKU for this button
-     * @param  emoji
-     *         The emoji to use as the button label
-     *
-     * @throws IllegalArgumentException
-     *         If any provided argument is null or empty
-     *
-     * @return The button instance
-     */
-    @Nonnull
-    static Button premium(@Nonnull SkuSnowflake sku, @Nonnull Emoji emoji)
-    {
-        Checks.notNull(sku, "SKU");
-        Checks.notNull(emoji, "Emoji");
-        return new ButtonImpl(null, "", ButtonStyle.PREMIUM, null, sku, false, emoji);
     }
 
     /**
