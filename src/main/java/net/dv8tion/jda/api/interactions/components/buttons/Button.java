@@ -115,7 +115,11 @@ public interface Button extends ActionComponent
     @Nullable
     String getUrl();
 
-    //TODO docs
+    /**
+     * The target SKU for this button, if it is a {@link ButtonStyle#PREMIUM premium}-style Button.
+     *
+     * @return The target SKU or {@code null}
+     */
     @Nullable
     SkuSnowflake getSku();
 
@@ -238,7 +242,17 @@ public interface Button extends ActionComponent
         return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, null, isDisabled(), getEmoji());
     }
 
-    //TODO docs
+    /**
+     * Returns a copy of this button with the provided SKU.
+     *
+     * @param  sku
+     *         The SKU to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided {@code sku} is null
+     *
+     * @return New button with the changed url
+     */
     @Nonnull
     @CheckReturnValue
     default Button withSku(@Nonnull SkuSnowflake sku)
@@ -591,6 +605,28 @@ public interface Button extends ActionComponent
         return new ButtonImpl(null, "", ButtonStyle.LINK, url, null, false, emoji);
     }
 
+    /**
+     * Creates a button with {@link ButtonStyle#PREMIUM PREMIUM} Style.
+     * <br>The button is enabled and has no emoji attached by default.
+     * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     *
+     * <p>Note that link buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
+     * These buttons only open a modal about the SKU.
+     *
+     * @param  sku
+     *         The target SKU for this button
+     * @param  label
+     *         The text to display on the button
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
+     *
+     * @return The button instance
+     */
     @Nonnull
     static Button premium(@Nonnull SkuSnowflake sku, @Nonnull String label)
     {
@@ -600,6 +636,26 @@ public interface Button extends ActionComponent
         return new ButtonImpl(null, label, ButtonStyle.PREMIUM, null, sku, false, null);
     }
 
+    /**
+     * Creates a button with {@link ButtonStyle#PREMIUM PREMIUM} Style.
+     * <br>The button is enabled and has no text label.
+     * To use labels you can use {@code premium(url, label).withEmoji(emoji)}
+     *
+     * <p>To disable the button you can use {@link #asDisabled()}.
+     *
+     * <p>Note that link buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
+     * These buttons only open a modal about the SKU.
+     *
+     * @param  sku
+     *         The target SKU for this button
+     * @param  emoji
+     *         The emoji to use as the button label
+     *
+     * @throws IllegalArgumentException
+     *         If any provided argument is null or empty
+     *
+     * @return The button instance
+     */
     @Nonnull
     static Button premium(@Nonnull SkuSnowflake sku, @Nonnull Emoji emoji)
     {
