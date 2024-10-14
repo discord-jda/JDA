@@ -230,7 +230,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
             ActionComponent action = (ActionComponent) component;
             if (id.equals(action.getId())
                     || (action instanceof Button && id.equals(((Button) action).getUrl()))
-                    || (action instanceof Button && id.equals(String.valueOf(((Button) action).getSkuId()))))
+                    || (action instanceof Button && ((Button) action).getSku() != null && id.equals(((Button) action).getSku().getId())))
             {
                 if (newComponent == null)
                     it.remove();

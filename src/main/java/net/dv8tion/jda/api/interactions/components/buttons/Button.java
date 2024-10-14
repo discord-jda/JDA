@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.buttons;
 
+import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -24,7 +25,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -116,7 +116,8 @@ public interface Button extends ActionComponent
     String getUrl();
 
     //TODO docs
-    long getSkuId();
+    @Nullable
+    SkuSnowflake getSku();
 
     /**
      * The emoji attached to this button.
@@ -147,7 +148,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withDisabled(boolean disabled)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSkuId(), disabled, getEmoji());
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji());
     }
 
     /**
@@ -162,7 +163,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSkuId(), isDisabled(), emoji);
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji);
     }
 
     /**
@@ -186,7 +187,7 @@ public interface Button extends ActionComponent
     {
         Checks.notEmpty(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(getId(), label, getStyle(), getUrl(), getSkuId(), isDisabled(), getEmoji());
+        return new ButtonImpl(getId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji());
     }
 
     /**
@@ -210,7 +211,7 @@ public interface Button extends ActionComponent
     {
         Checks.notEmpty(id, "ID");
         Checks.notLonger(id, ID_MAX_LENGTH, "ID");
-        return new ButtonImpl(id, getLabel(), getStyle(), null, -1, isDisabled(), getEmoji());
+        return new ButtonImpl(id, getLabel(), getStyle(), null, null, isDisabled(), getEmoji());
     }
 
     /**
@@ -234,23 +235,16 @@ public interface Button extends ActionComponent
     {
         Checks.notEmpty(url, "URL");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, -1, isDisabled(), getEmoji());
+        return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, null, isDisabled(), getEmoji());
     }
 
     //TODO docs
     @Nonnull
     @CheckReturnValue
-    default Button withSkuId(@Nonnull String skuId)
+    default Button withSku(@Nonnull SkuSnowflake sku)
     {
-        return withSkuId(MiscUtil.parseSnowflake(skuId));
-    }
-
-    //TODO docs
-    @Nonnull
-    @CheckReturnValue
-    default Button withSkuId(long skuId)
-    {
-        return new ButtonImpl(null, getLabel(), ButtonStyle.PREMIUM, null, skuId, isDisabled(), getEmoji());
+        Checks.notNull(sku, "SKU");
+        return new ButtonImpl(null, getLabel(), ButtonStyle.PREMIUM, null, sku, isDisabled(), getEmoji());
     }
 
     /**
@@ -283,7 +277,7 @@ public interface Button extends ActionComponent
             throw new IllegalArgumentException("You cannot change a premium button to another style!");
         if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM)
             throw new IllegalArgumentException("You cannot change a styled button to a premium button!");
-        return new ButtonImpl(getId(), getLabel(), style, getUrl(), getSkuId(), isDisabled(), getEmoji());
+        return new ButtonImpl(getId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji());
     }
 
     /**
@@ -561,7 +555,7 @@ public interface Button extends ActionComponent
         Checks.notEmpty(label, "Label");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(null, label, ButtonStyle.LINK, url, -1, false, null);
+        return new ButtonImpl(null, label, ButtonStyle.LINK, url, null, false, null);
     }
 
     /**
@@ -594,22 +588,24 @@ public interface Button extends ActionComponent
         Checks.notEmpty(url, "URL");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new ButtonImpl(null, "", ButtonStyle.LINK, url, -1, false, emoji);
+        return new ButtonImpl(null, "", ButtonStyle.LINK, url, null, false, emoji);
     }
 
     @Nonnull
-    static Button premium(long skuId, @Nonnull String label)
+    static Button premium(@Nonnull SkuSnowflake sku, @Nonnull String label)
     {
+        Checks.notNull(sku, "SKU");
         Checks.notEmpty(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(null, label, ButtonStyle.PREMIUM, null, skuId, false, null);
+        return new ButtonImpl(null, label, ButtonStyle.PREMIUM, null, sku, false, null);
     }
 
     @Nonnull
-    static Button premium(long skuId, @Nonnull Emoji emoji)
+    static Button premium(@Nonnull SkuSnowflake sku, @Nonnull Emoji emoji)
     {
+        Checks.notNull(sku, "SKU");
         Checks.notNull(emoji, "Emoji");
-        return new ButtonImpl(null, "", ButtonStyle.PREMIUM, null, skuId, false, emoji);
+        return new ButtonImpl(null, "", ButtonStyle.PREMIUM, null, sku, false, emoji);
     }
 
     /**
