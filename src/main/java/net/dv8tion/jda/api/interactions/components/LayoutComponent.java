@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -228,9 +229,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
             if (!(component instanceof ActionComponent))
                 continue;
             ActionComponent action = (ActionComponent) component;
-            if (id.equals(action.getId())
-                    || (action instanceof Button && id.equals(((Button) action).getUrl()))
-                    || (action instanceof Button && ((Button) action).getSku() != null && id.equals(((Button) action).getSku().getId())))
+            if (ComponentsUtil.checkButtonIdentity(action, id))
             {
                 if (newComponent == null)
                     it.remove();
