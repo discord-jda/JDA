@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SoundboardSound;
 import net.dv8tion.jda.api.entities.User;
@@ -27,6 +28,7 @@ import javax.annotation.Nullable;
 
 public class SoundboardSoundImpl implements SoundboardSound
 {
+    private final JDA api;
     private final long id;
     private final String name;
     private final double volume;
@@ -35,8 +37,9 @@ public class SoundboardSoundImpl implements SoundboardSound
     private final boolean available;
     private final User user;
 
-    public SoundboardSoundImpl(long id, String name, double volume, EmojiUnion emoji, Guild guild, boolean available, User user)
+    public SoundboardSoundImpl(JDA api, long id, String name, double volume, EmojiUnion emoji, Guild guild, boolean available, User user)
     {
+        this.api = api;
         this.id = id;
         this.name = name;
         this.volume = volume;
@@ -50,6 +53,13 @@ public class SoundboardSoundImpl implements SoundboardSound
     public long getIdLong()
     {
         return this.id;
+    }
+
+    @Nonnull
+    @Override
+    public JDA getJDA()
+    {
+        return api;
     }
 
     @Nonnull

@@ -196,7 +196,7 @@ public class EntityBuilder
         boolean available = json.getBoolean("available");
         User user = json.optObject("user").map(this::createUser).orElse(null);
 
-        return new SoundboardSoundImpl(id, name, volume, emoji, guild, available, user);
+        return new SoundboardSoundImpl(api, id, name, volume, emoji, guild, available, user);
     }
 
     private void createGuildEmojiPass(GuildImpl guildObj, DataArray array)
