@@ -84,6 +84,7 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -780,6 +781,21 @@ public class JDAImpl implements JDA
                 }
             }
             return Collections.unmodifiableList(packs);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<@Unmodifiable List<SoundboardSound>> retrieveDefaultSoundboardSounds()
+    {
+        final Route.CompiledRoute route = Route.SoundboardSounds.LIST_DEFAULT_SOUNDBOARD_SOUNDS.compile();
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            final DataArray array = response.getArray();
+            List<SoundboardSound> sounds = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+                sounds.add(entityBuilder.createSoundboardSound(array.getObject(i)));
+            return Collections.unmodifiableList(sounds);
         });
     }
 
