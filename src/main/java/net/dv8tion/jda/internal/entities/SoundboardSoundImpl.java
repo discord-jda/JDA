@@ -20,7 +20,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SoundboardSound;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
@@ -99,6 +104,20 @@ public class SoundboardSoundImpl implements SoundboardSound
     public User getUser()
     {
         return user;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> sendTo(AudioChannel channel)
+    {
+        //TODO checks
+        DataObject data = DataObject.empty()
+                .put("sound_id", getId());
+
+        if (guild != null)
+            data.put("source_guild_id", guild.getId());
+
+        return new RestActionImpl<>(api, Route.SoundboardSounds.SEND_SOUNDBOARD_SOUND.compile(channel.getId()), data);
     }
 
     @Override
