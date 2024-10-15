@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.attributes.*;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import net.dv8tion.jda.api.requests.restaction.GlobalCommandListUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
@@ -29,9 +30,11 @@ import java.util.Map;
 
 /**
  * Builder for Entry Point Commands.
- * <br>Use the factory methods provided by {@link Commands} to create instances of this interface.
+ * <br>Use {@link Commands#entryPoint(String, String)} to create instances of this interface.
  *
- * @see Commands
+ * <p>This command can only be added via {@link GlobalCommandListUpdateAction#setEntryPointCommand(EntryPointCommandData)}.
+ *
+ * @see Commands#entryPoint(String, String)
  */
 public interface EntryPointCommandData
         extends IDescribedCommandData, INamedCommandData, IScopedCommandData, IRestrictedCommandData,

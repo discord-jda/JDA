@@ -30,6 +30,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Specialized {@link RestAction} used to replace existing commands globally.
  * <br>Any commands that currently exist and are not listed through {@link #addCommands(CommandData...)} will be <b>DELETED</b>!
+ * <br>If your bot has activities enabled, you <b>must</b> {@link #setEntryPointCommand(EntryPointCommandData) set your entry point command}.
  *
  * <p>This operation is idempotent. Commands will persist between restarts of your bot, you only have to create a command once.
  */
@@ -65,7 +66,16 @@ public interface GlobalCommandListUpdateAction extends CommandListUpdateAction
     @CheckReturnValue
     GlobalCommandListUpdateAction addCommands(@Nonnull CommandData... commands);
 
-    //TODO docs
+    /**
+     * Sets your app's activity primary entry point.
+     * <br>This <b>must</b> be set if your application has activities enabled.
+     * <br>Using this with activities disabled will not make the entry point appear.
+     *
+     * @param  entryPoint
+     *         The entry point data
+     *
+     * @return This instance, for chaining
+     */
     @Nonnull
     @CheckReturnValue
     GlobalCommandListUpdateAction setEntryPointCommand(@Nonnull EntryPointCommandData entryPoint);

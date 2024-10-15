@@ -130,7 +130,25 @@ public class Commands
         return new CommandDataImpl(type, name);
     }
 
-    //TODO docs
+    /**
+     * Create an activity entry point command builder.
+     *
+     * <p>Only one entry point can be created per app.
+     *
+     * @param name
+     *        The entry point name, 1-32 lowercase alphanumeric characters
+     * @param description
+     *        The entry point description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If any of the following requirements are not met
+     *         <ul>
+     *             <li>The name must be lowercase alphanumeric (with dash), 1-32 characters long</li>
+     *             <li>The description must be 1-100 characters long</li>
+     *         </ul>
+     *
+     * @return {@link EntryPointCommandData} builder for the app's activity entry point command
+     */
     @Nonnull
     public static EntryPointCommandData entryPoint(@Nonnull String name, @Nonnull String description)
     {
