@@ -1845,6 +1845,10 @@ public interface JDA extends IGuildChannelContainer<Channel>
     @CheckReturnValue
     RestAction<@Unmodifiable List<StickerPack>> retrieveNitroStickerPacks();
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<@Unmodifiable List<SoundboardSound>> retrieveDefaultSoundboardSounds();
+
     /**
      * The EventManager used by this JDA instance.
      *
