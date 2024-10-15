@@ -5571,6 +5571,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @CheckReturnValue
     AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id);
 
+    @Nonnull
+    @CheckReturnValue
+    SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file);
+
     /**
      * Creates a new {@link ScheduledEvent}.
      * Events created with this method will be of {@link ScheduledEvent.Type#EXTERNAL Type.EXTERNAL}.

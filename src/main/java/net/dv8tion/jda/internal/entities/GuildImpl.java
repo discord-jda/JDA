@@ -1997,6 +1997,17 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file)
+    {
+        checkPermission(Permission.CREATE_GUILD_EXPRESSIONS);
+        Checks.notNull(name, "Name");
+        Checks.notNull(file, "File");
+        Route.CompiledRoute route = Route.SoundboardSounds.CREATE_GUILD_SOUNDBOARD_SOUNDS.compile(getId());
+        return new SoundboardSoundCreateActionImpl(getJDA(), route, name, file);
+    }
+
+    @Nonnull
+    @Override
     public ChannelOrderAction modifyCategoryPositions()
     {
         return new ChannelOrderActionImpl(this, ChannelType.CATEGORY.getSortBucket());
