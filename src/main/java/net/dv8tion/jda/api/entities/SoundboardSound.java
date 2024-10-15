@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 
 import javax.annotation.Nonnull;
@@ -25,6 +26,9 @@ public interface SoundboardSound extends ISnowflake
 {
     /** Template for {@link #getUrl()}.*/
     String SOUND_URL = "https://cdn.discordapp.com/soundboard-sounds/%s";
+
+    @Nonnull
+    JDA getJDA();
 
     @Nonnull
     default String getUrl()
