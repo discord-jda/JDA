@@ -175,6 +175,23 @@ public class EntityBuilder extends AbstractEntityBuilder
             return new CustomEmojiImpl(emoji.getString(nameKey, ""), id, emoji.getBoolean("animated"));
     }
 
+    public SoundboardSound createSoundboardSound(DataObject json)
+    {
+        String name = json.getString("name");
+        long id = json.getLong("sound_id");
+        double volume = json.getDouble("volume");
+        EmojiUnion emoji;
+        if (!json.isNull("emoji_name") || !json.isNull("emoji_id"))
+            emoji = createEmoji(json, "emoji_name", "emoji_id");
+        else
+            emoji = null;
+        Guild guild = getJDA().getGuildById(json.getLong("guild_id", 0));
+        boolean available = json.getBoolean("available");
+        User user = json.optObject("user").map(this::createUser).orElse(null);
+
+        return new SoundboardSoundImpl(id, name, volume, emoji, guild, available, user);
+    }
+
     private void createGuildEmojiPass(GuildImpl guildObj, DataArray array)
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.EMOJI))
@@ -250,6 +267,30 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
     }
 
+    private void createGuildSoundboardSoundPass(GuildImpl guildObj, DataArray array)
+    {
+        if (!getJDA().isCacheFlagSet(CacheFlag.SOUNDBOARD_SOUNDS))
+            return;
+        SnowflakeCacheViewImpl<SoundboardSound> soundboardView = guildObj.getSoundboardSoundsView();
+        try (UnlockHook hook = soundboardView.writeLock())
+        {
+            TLongObjectMap<SoundboardSound> soundboardMap = soundboardView.getMap();
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject object = array.getObject(i);
+                if (object.isNull("sound_id"))
+                {
+                    LOG.error("Received GUILD_CREATE with a sound with a null ID. GuildId: {} JSON: {}",
+                            guildObj.getId(), object);
+                    continue;
+                }
+
+                SoundboardSound sound = createSoundboardSound(object);
+                soundboardMap.put(sound.getIdLong(), sound);
+            }
+        }
+    }
+
     public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members, int memberCount)
     {
         final GuildImpl guildObj = new GuildImpl(getJDA(), guildId);
@@ -267,6 +308,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         final DataArray emojisArray = guildJson.getArray("emojis");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> stickersArray = guildJson.optArray("stickers");
+        final Optional<DataArray> soundboardSoundsArray = guildJson.optArray("soundboard_sounds");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
         final Optional<DataArray> presencesArray = guildJson.optArray("presences");
         final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
@@ -390,6 +432,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         createScheduledEventPass(guildObj, scheduledEventsArray);
         createGuildEmojiPass(guildObj, emojisArray);
         stickersArray.ifPresent(stickers -> createGuildStickerPass(guildObj, stickers));
+        soundboardSoundsArray.ifPresent(stickers -> createGuildSoundboardSoundPass(guildObj, stickers));
         guildJson.optArray("stage_instances")
                 .map(arr -> arr.stream(DataArray::getObject))
                 .ifPresent(list -> list.forEach(it -> createStageInstance(guildObj, it)));
