@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -38,6 +39,7 @@ public interface SoundboardSound extends ISnowflake
         return String.format(SOUND_URL, getId());
     }
 
+    @Nonnull
     String getName();
 
     double getVolume();
@@ -54,5 +56,6 @@ public interface SoundboardSound extends ISnowflake
     User getUser();
 
     @Nonnull
+    @CheckReturnValue
     RestAction<Void> sendTo(AudioChannel channel);
 }
