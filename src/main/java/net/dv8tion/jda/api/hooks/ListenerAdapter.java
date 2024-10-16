@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.events.automod.*;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.GenericChannelEvent;
+import net.dv8tion.jda.api.events.channel.VoiceChannelEffectSendEvent;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagAddEvent;
 import net.dv8tion.jda.api.events.channel.forum.ForumTagRemoveEvent;
 import net.dv8tion.jda.api.events.channel.forum.GenericForumTagEvent;
@@ -384,6 +385,9 @@ public abstract class ListenerAdapter implements EventListener
     public void onSoundboardSoundUpdateName(@Nonnull SoundboardSoundUpdateNameEvent event) {}
     public void onSoundboardSoundUpdateVolume(@Nonnull SoundboardSoundUpdateVolumeEvent event) {}
     public void onSoundboardSoundUpdateEmoji(@Nonnull SoundboardSoundUpdateEmojiEvent event) {}
+
+    // Voice channel effect events
+    public void onVoiceChannelEffectSend(@Nonnull VoiceChannelEffectSendEvent event) {}
 
     // Entitlement events
     public void onEntitlementCreate(@Nonnull EntitlementCreateEvent event) {}
