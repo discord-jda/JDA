@@ -17,12 +17,17 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.SoundboardSound;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateNameEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateVolumeEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+
+import java.util.Objects;
 
 public class GuildSoundboardSoundsUpdateHandler extends SocketHandler
 {
@@ -62,6 +67,15 @@ public class GuildSoundboardSoundsUpdateHandler extends SocketHandler
         {
             soundboardSoundsView.getMap().put(soundboardSound.getIdLong(), soundboardSound);
         }
+
+        if (!Objects.equals(oldSoundboardSound.getName(), soundboardSound.getName()))
+            api.handleEvent(new SoundboardSoundUpdateNameEvent(api, responseNumber, soundboardSound, oldSoundboardSound.getName()));
+
+        if (oldSoundboardSound.getVolume() != soundboardSound.getVolume())
+            api.handleEvent(new SoundboardSoundUpdateVolumeEvent(api, responseNumber, soundboardSound, oldSoundboardSound.getVolume()));
+
+        if (!Objects.equals(oldSoundboardSound.getEmoji(), soundboardSound.getEmoji()))
+            api.handleEvent(new SoundboardSoundUpdateEmojiEvent(api, responseNumber, soundboardSound, oldSoundboardSound.getEmoji()));
 
         return null;
     }
