@@ -2325,6 +2325,18 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     SnowflakeCacheView<GuildSticker> getStickerCache();
 
+    @Nullable
+    default SoundboardSound getSoundboardSoundById(String id)
+    {
+        return getSoundboardCache().getElementById(id);
+    }
+
+    @Nullable
+    default SoundboardSound getSoundboardSoundById(long id)
+    {
+        return getSoundboardCache().getElementById(id);
+    }
+
     @Nonnull
     @Unmodifiable
     default List<SoundboardSound> getSoundboardSounds()
