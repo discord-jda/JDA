@@ -69,6 +69,9 @@ import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.events.self.*;
 import net.dv8tion.jda.api.events.session.*;
+import net.dv8tion.jda.api.events.soundboard.GenericSoundboardSoundEvent;
+import net.dv8tion.jda.api.events.soundboard.SoundboardSoundCreateEvent;
+import net.dv8tion.jda.api.events.soundboard.SoundboardSoundDeleteEvent;
 import net.dv8tion.jda.api.events.stage.GenericStageInstanceEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceCreateEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
@@ -369,6 +372,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildStickerUpdateDescription(@Nonnull GuildStickerUpdateDescriptionEvent event) {}
     public void onGuildStickerUpdateAvailable(@Nonnull GuildStickerUpdateAvailableEvent event) {}
 
+    // Soundboard sound events
+    public void onSoundboardSoundCreate(@Nonnull SoundboardSoundCreateEvent event) {}
+    public void onSoundboardSoundDelete(@Nonnull SoundboardSoundDeleteEvent event) {}
+
     // Entitlement events
     public void onEntitlementCreate(@Nonnull EntitlementCreateEvent event) {}
     public void onEntitlementUpdate(@Nonnull EntitlementUpdateEvent event) {}
@@ -411,6 +418,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEmojiUpdate(@Nonnull GenericEmojiUpdateEvent event) {}
     public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
+    public void onGenericSoundboardSound(@Nonnull GenericSoundboardSoundEvent event) {}
     public void onGenericEntitlement(@Nonnull GenericEntitlementEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
     public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent event) {}

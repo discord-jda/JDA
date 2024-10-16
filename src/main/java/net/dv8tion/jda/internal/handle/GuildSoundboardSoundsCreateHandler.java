@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.SoundboardSound;
+import net.dv8tion.jda.api.events.soundboard.SoundboardSoundCreateEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -53,6 +54,8 @@ public class GuildSoundboardSoundsCreateHandler extends SocketHandler
         {
             soundboardSoundsView.getMap().put(soundboardSound.getIdLong(), soundboardSound);
         }
+
+        api.handleEvent(new SoundboardSoundCreateEvent(api, responseNumber, soundboardSound));
 
         return null;
     }

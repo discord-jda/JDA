@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.SoundboardSound;
+import net.dv8tion.jda.api.events.soundboard.SoundboardSoundDeleteEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -48,10 +49,14 @@ public class GuildSoundboardSoundsDeleteHandler extends SocketHandler
         }
 
         final SnowflakeCacheViewImpl<SoundboardSound> soundboardSoundsView = guild.getSoundboardSoundsView();
+        final SoundboardSound removedSound;
         try (UnlockHook unlockHook = soundboardSoundsView.writeLock())
         {
-            soundboardSoundsView.getMap().remove(content.getLong("sound_id"));
+            removedSound = soundboardSoundsView.getMap().remove(content.getLong("sound_id"));
         }
+
+        if (removedSound != null)
+            api.handleEvent(new SoundboardSoundDeleteEvent(api, responseNumber, removedSound));
 
         return null;
     }
