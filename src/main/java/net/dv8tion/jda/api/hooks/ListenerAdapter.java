@@ -72,6 +72,10 @@ import net.dv8tion.jda.api.events.session.*;
 import net.dv8tion.jda.api.events.soundboard.GenericSoundboardSoundEvent;
 import net.dv8tion.jda.api.events.soundboard.SoundboardSoundCreateEvent;
 import net.dv8tion.jda.api.events.soundboard.SoundboardSoundDeleteEvent;
+import net.dv8tion.jda.api.events.soundboard.update.GenericSoundboardSoundUpdateEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateNameEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateVolumeEvent;
 import net.dv8tion.jda.api.events.stage.GenericStageInstanceEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceCreateEvent;
 import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
@@ -376,6 +380,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onSoundboardSoundCreate(@Nonnull SoundboardSoundCreateEvent event) {}
     public void onSoundboardSoundDelete(@Nonnull SoundboardSoundDeleteEvent event) {}
 
+    // Soundboard sound update events
+    public void onSoundboardSoundUpdateName(@Nonnull SoundboardSoundUpdateNameEvent event) {}
+    public void onSoundboardSoundUpdateVolume(@Nonnull SoundboardSoundUpdateVolumeEvent event) {}
+    public void onSoundboardSoundUpdateEmoji(@Nonnull SoundboardSoundUpdateEmojiEvent event) {}
+
     // Entitlement events
     public void onEntitlementCreate(@Nonnull EntitlementCreateEvent event) {}
     public void onEntitlementUpdate(@Nonnull EntitlementUpdateEvent event) {}
@@ -419,6 +428,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericGuildSticker(@Nonnull GenericGuildStickerEvent event) {}
     public void onGenericGuildStickerUpdate(@Nonnull GenericGuildStickerUpdateEvent event) {}
     public void onGenericSoundboardSound(@Nonnull GenericSoundboardSoundEvent event) {}
+    public void onGenericSoundboardSoundUpdate(@Nonnull GenericSoundboardSoundUpdateEvent event) {}
     public void onGenericEntitlement(@Nonnull GenericEntitlementEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
     public void onGenericScheduledEventUpdate(@Nonnull GenericScheduledEventUpdateEvent event) {}
