@@ -17,6 +17,9 @@ package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.SoundboardSound;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IVoiceStatusChannel;
@@ -25,11 +28,13 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a Discord Voice GuildChannel.
@@ -73,4 +78,107 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
     @Override
     @CheckReturnValue
     VoiceChannelManager getManager();
+
+    class Effect
+    {
+        private final VoiceChannel channel;
+        private final User user;
+        private final EmojiUnion emoji;
+        private final Animation animation;
+        private final SoundboardSound soundboardSound;
+
+        public Effect(VoiceChannel channel, User user, EmojiUnion emoji, Animation animation, SoundboardSound soundboardSound)
+        {
+            this.channel = channel;
+            this.user = user;
+            this.emoji = emoji;
+            this.animation = animation;
+            this.soundboardSound = soundboardSound;
+        }
+
+        @Nonnull
+        public VoiceChannel getChannel()
+        {
+            return channel;
+        }
+
+        @Nonnull
+        public User getUser()
+        {
+            return user;
+        }
+
+        @Nullable
+        public EmojiUnion getEmoji()
+        {
+            return emoji;
+        }
+
+        @Nullable
+        public Animation getAnimation()
+        {
+            return animation;
+        }
+
+        @Nullable
+        public SoundboardSound getSoundboardSound()
+        {
+            return soundboardSound;
+        }
+
+        public static class Animation implements ISnowflake
+        {
+            public Animation(long id, Type type)
+            {
+                this.id = id;
+                this.type = type;
+            }
+
+            private final long id;
+            private final Type type;
+
+            @Override
+            public long getIdLong()
+            {
+                return id;
+            }
+
+            @Nonnull
+            public Type getType()
+            {
+                return type;
+            }
+
+            public enum Type
+            {
+                UNKNOWN(-1),
+                PREMIUM(0),
+                BASIC(1);
+
+                private final int value;
+
+                Type(int value)
+                {
+                    this.value = value;
+                }
+
+                public int getValue()
+                {
+                    return value;
+                }
+
+                @Nonnull
+                public static Type fromValue(int value)
+                {
+                    for (Type type : values())
+                    {
+                        if (type.value == value)
+                            return type;
+                    }
+
+                    return UNKNOWN;
+                }
+            }
+        }
+    }
 }
