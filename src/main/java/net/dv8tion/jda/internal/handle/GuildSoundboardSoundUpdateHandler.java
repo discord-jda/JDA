@@ -17,7 +17,9 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.SoundboardSound;
-import net.dv8tion.jda.api.events.soundboard.SoundboardSoundCreateEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateEmojiEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateNameEvent;
+import net.dv8tion.jda.api.events.soundboard.update.SoundboardSoundUpdateVolumeEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -25,9 +27,11 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
-public class GuildSoundboardSoundsCreateHandler extends SocketHandler
+import java.util.Objects;
+
+public class GuildSoundboardSoundUpdateHandler extends SocketHandler
 {
-    public GuildSoundboardSoundsCreateHandler(JDAImpl api)
+    public GuildSoundboardSoundUpdateHandler(JDAImpl api)
     {
         super(api);
     }
@@ -48,14 +52,30 @@ public class GuildSoundboardSoundsCreateHandler extends SocketHandler
             return null;
         }
 
+        SnowflakeCacheViewImpl<SoundboardSound> soundboardSoundsView = guild.getSoundboardSoundsView();
+        long soundId = content.getLong("sound_id");
+        final SoundboardSound oldSoundboardSound = soundboardSoundsView.get(soundId);
+        if (oldSoundboardSound == null)
+        {
+            getJDA().getEventCache().cache(EventCache.Type.SOUNDBOARD_SOUND, soundId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received a Guild Soundboard Sound Update for SoundboardSound that is not yet cached: {}", content);
+            return null;
+        }
+
         final SoundboardSound soundboardSound = api.getEntityBuilder().createSoundboardSound(content);
-        final SnowflakeCacheViewImpl<SoundboardSound> soundboardSoundsView = guild.getSoundboardSoundsView();
         try (UnlockHook unlockHook = soundboardSoundsView.writeLock())
         {
             soundboardSoundsView.getMap().put(soundboardSound.getIdLong(), soundboardSound);
         }
 
-        api.handleEvent(new SoundboardSoundCreateEvent(api, responseNumber, soundboardSound));
+        if (!Objects.equals(oldSoundboardSound.getName(), soundboardSound.getName()))
+            api.handleEvent(new SoundboardSoundUpdateNameEvent(api, responseNumber, soundboardSound, oldSoundboardSound.getName()));
+
+        if (oldSoundboardSound.getVolume() != soundboardSound.getVolume())
+            api.handleEvent(new SoundboardSoundUpdateVolumeEvent(api, responseNumber, soundboardSound, oldSoundboardSound.getVolume()));
+
+        if (!Objects.equals(oldSoundboardSound.getEmoji(), soundboardSound.getEmoji()))
+            api.handleEvent(new SoundboardSoundUpdateEmojiEvent(api, responseNumber, soundboardSound, oldSoundboardSound.getEmoji()));
 
         return null;
     }

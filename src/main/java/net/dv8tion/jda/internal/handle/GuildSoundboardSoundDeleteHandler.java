@@ -16,15 +16,18 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.SoundboardSound;
+import net.dv8tion.jda.api.events.soundboard.SoundboardSoundDeleteEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
-public class GuildSoundboardSoundsUpdateHandler extends SocketHandler
+public class GuildSoundboardSoundDeleteHandler extends SocketHandler
 {
-    public GuildSoundboardSoundsUpdateHandler(JDAImpl api)
+    public GuildSoundboardSoundDeleteHandler(JDAImpl api)
     {
         super(api);
     }
@@ -45,16 +48,15 @@ public class GuildSoundboardSoundsUpdateHandler extends SocketHandler
             return null;
         }
 
-        SocketHandler handler = getJDA().getClient().getHandlers().get("GUILD_SOUNDBOARD_SOUND_UPDATE");
-        DataArray array = content.getArray("soundboard_sounds");
-        for (int i = 0; i < array.length(); i++)
+        final SnowflakeCacheViewImpl<SoundboardSound> soundboardSoundsView = guild.getSoundboardSoundsView();
+        final SoundboardSound removedSound;
+        try (UnlockHook unlockHook = soundboardSoundsView.writeLock())
         {
-            handler.handle(responseNumber, DataObject.empty()
-                    .put("t", "GUILD_SOUNDBOARD_SOUND_UPDATE")
-                    .put("d", array.getObject(i)
-                            .put("guild_id", content.getLong("guild_id")) //Just in case
-                    ));
+            removedSound = soundboardSoundsView.getMap().remove(content.getLong("sound_id"));
         }
+
+        if (removedSound != null)
+            api.handleEvent(new SoundboardSoundDeleteEvent(api, responseNumber, removedSound));
 
         return null;
     }
