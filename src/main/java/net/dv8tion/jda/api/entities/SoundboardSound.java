@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.managers.SoundboardSoundManager;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -62,4 +63,8 @@ public interface SoundboardSound extends ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<Void> delete();
+
+    @Nonnull
+    @CheckReturnValue
+    SoundboardSoundManager getManager();
 }
