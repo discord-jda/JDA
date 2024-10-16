@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -100,8 +101,16 @@ public enum GatewayIntent
     GUILD_MODERATION(2),
     /**
      * Custom emoji and sticker add/update/delete events.
+     *
+     * @deprecated Replaced with {@link #GUILD_EXPRESSIONS}
      */
+    @ForRemoval(deadline = "5.2.0")
+    @Deprecated
     GUILD_EMOJIS_AND_STICKERS(3),
+    /**
+     * Custom emoji, sticker and soundboard sound add/update/delete events.
+     */
+    GUILD_EXPRESSIONS(3),
 //    /**
 //     * Integration events. (unused)
 //     */
@@ -407,7 +416,10 @@ public enum GatewayIntent
             else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event) || GuildAuditLogEntryCreateEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_MODERATION);
             else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
+            {
                 intents.add(GUILD_EMOJIS_AND_STICKERS);
+                intents.add(GUILD_EXPRESSIONS);
+            }
             else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event))
                 intents.add(SCHEDULED_EVENTS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
