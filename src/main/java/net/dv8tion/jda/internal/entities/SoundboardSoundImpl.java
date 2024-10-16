@@ -17,19 +17,26 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.SoundboardSound;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class SoundboardSoundImpl implements SoundboardSound
 {
@@ -118,6 +125,26 @@ public class SoundboardSoundImpl implements SoundboardSound
             data.put("source_guild_id", guild.getId());
 
         return new RestActionImpl<>(api, Route.SoundboardSounds.SEND_SOUNDBOARD_SOUND.compile(channel.getId()), data);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> delete()
+    {
+        Checks.check(getGuild() != null, "Cannot delete default soundboard sounds");
+        checkEditPermissions();
+
+        final Route.CompiledRoute route = Route.SoundboardSounds.DELETE_GUILD_SOUNDBOARD_SOUNDS.compile(guild.getId(), getId());
+        return new AuditableRestActionImpl<>(api, route);
+    }
+
+    private void checkEditPermissions()
+    {
+        final Member selfMember = guild.getSelfMember();
+        if (Objects.equals(getUser(), selfMember.getUser()))
+            PermissionUtil.requireAnyPermission(selfMember, Permission.CREATE_GUILD_EXPRESSIONS, Permission.MANAGE_GUILD_EXPRESSIONS);
+        else if (!selfMember.hasPermission(Permission.MANAGE_GUILD_EXPRESSIONS))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_GUILD_EXPRESSIONS);
     }
 
     @Override

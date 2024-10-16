@@ -58,4 +58,8 @@ public interface SoundboardSound extends ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<Void> sendTo(AudioChannel channel);
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> delete();
 }
