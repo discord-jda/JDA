@@ -47,8 +47,17 @@ public class GuildSoundboardSoundsUpdateHandler extends SocketHandler
             return null;
         }
 
+        SnowflakeCacheViewImpl<SoundboardSound> soundboardSoundsView = guild.getSoundboardSoundsView();
+        long soundId = content.getLong("sound_id");
+        final SoundboardSound oldSoundboardSound = soundboardSoundsView.get(soundId);
+        if (oldSoundboardSound == null)
+        {
+            getJDA().getEventCache().cache(EventCache.Type.SOUNDBOARD_SOUND, soundId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received a Guild Soundboard Sound Update for SoundboardSound that is not yet cached: {}", content);
+            return null;
+        }
+
         final SoundboardSound soundboardSound = api.getEntityBuilder().createSoundboardSound(content);
-        final SnowflakeCacheViewImpl<SoundboardSound> soundboardSoundsView = guild.getSoundboardSoundsView();
         try (UnlockHook unlockHook = soundboardSoundsView.writeLock())
         {
             soundboardSoundsView.getMap().put(soundboardSound.getIdLong(), soundboardSound);
