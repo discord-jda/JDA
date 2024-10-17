@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -100,6 +101,7 @@ public class SoundboardSoundManagerImpl extends ManagerBase<SoundboardSoundManag
     @Override
     public SoundboardSoundManagerImpl setName(@Nonnull String name)
     {
+        Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2 and 32 characters");
         this.name = name;
         set |= NAME;
         return this;
@@ -109,6 +111,7 @@ public class SoundboardSoundManagerImpl extends ManagerBase<SoundboardSoundManag
     @Override
     public SoundboardSoundManagerImpl setVolume(double volume)
     {
+        Checks.check(volume >= 0 && volume <= 1, "Volume must be between 0 and 1");
         this.volume = volume;
         set |= VOLUME;
         return this;
