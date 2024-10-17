@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.SoundboardSound;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
@@ -117,7 +117,7 @@ public class SoundboardSoundImpl implements SoundboardSound
 
     @Nonnull
     @Override
-    public RestAction<Void> sendTo(AudioChannel channel)
+    public RestAction<Void> sendTo(VoiceChannel channel)
     {
         //TODO checks
         DataObject data = DataObject.empty()
