@@ -18,18 +18,19 @@ package net.dv8tion.jda.api.events.channel;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.VoiceChannelEffect;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link VoiceChannel.Effect voice channel effect} was sent in a {@link VoiceChannel}.
+ * Indicates that a {@link VoiceChannelEffect voice channel effect} was sent in a {@link VoiceChannel}.
  */
 public class VoiceChannelEffectSendEvent extends GenericChannelEvent
 {
-    private final VoiceChannel.Effect effect;
+    private final VoiceChannelEffect effect;
 
-    public VoiceChannelEffectSendEvent(@Nonnull JDA api, long responseNumber, Channel channel, VoiceChannel.Effect effect)
+    public VoiceChannelEffectSendEvent(@Nonnull JDA api, long responseNumber, Channel channel, VoiceChannelEffect effect)
     {
         super(api, responseNumber, channel);
         this.effect = effect;
@@ -42,7 +43,7 @@ public class VoiceChannelEffectSendEvent extends GenericChannelEvent
     }
 
     @Nonnull
-    public VoiceChannel.Effect getEffect()
+    public VoiceChannelEffect getEffect()
     {
         return effect;
     }

@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.SoundboardSound;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.VoiceChannelEffect;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel.Effect;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.channel.VoiceChannelEffectSendEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -58,19 +58,19 @@ public class VoiceChannelEffectSendHandler extends SocketHandler
 
         User user = api.getUserById(content.getString("user_id"));
         EmojiUnion emoji = content.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null);
-        Effect.Animation animation = content.opt("animation_type")
+        VoiceChannelEffect.Animation animation = content.opt("animation_type")
                 .map(rawAnimationType ->
                 {
                     long animationId = content.getLong("animation_id");
-                    Effect.Animation.Type type = Effect.Animation.Type.fromValue(Integer.parseInt(rawAnimationType.toString()));
-                    return new Effect.Animation(animationId, type);
+                    VoiceChannelEffect.Animation.Type type = VoiceChannelEffect.Animation.Type.fromValue(Integer.parseInt(rawAnimationType.toString()));
+                    return new VoiceChannelEffect.Animation(animationId, type);
                 })
                 .orElse(null);
         SoundboardSound soundboardSound = content.opt("sound_id")
                 .map(soundId -> guild.getSoundboardSoundById(soundId.toString()))
                 .orElse(null);
 
-        Effect effect = new Effect(channel, user, emoji, animation, soundboardSound);
+        VoiceChannelEffect effect = new VoiceChannelEffect(channel, user, emoji, animation, soundboardSound);
 
         api.handleEvent(new VoiceChannelEffectSendEvent(api, responseNumber, channel, effect));
 
