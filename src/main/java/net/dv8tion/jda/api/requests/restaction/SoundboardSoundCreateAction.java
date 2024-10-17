@@ -57,5 +57,5 @@ public interface SoundboardSoundCreateAction extends AuditableRestAction<Soundbo
 
     @Nonnull
     @CheckReturnValue
-    SoundboardSoundCreateAction setEmoji(@Nonnull Emoji emoji);
+    SoundboardSoundCreateAction setEmoji(@Nullable Emoji emoji);
 }

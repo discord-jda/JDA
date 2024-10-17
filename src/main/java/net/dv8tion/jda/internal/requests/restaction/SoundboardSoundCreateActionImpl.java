@@ -32,6 +32,7 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -93,9 +94,8 @@ public class SoundboardSoundCreateActionImpl extends AuditableRestActionImpl<Sou
 
     @Nonnull
     @Override
-    public SoundboardSoundCreateAction setEmoji(@Nonnull Emoji emoji)
+    public SoundboardSoundCreateAction setEmoji(@Nullable Emoji emoji)
     {
-        Checks.notNull(emoji, "Emoji");
         this.emoji = emoji;
         return this;
     }
