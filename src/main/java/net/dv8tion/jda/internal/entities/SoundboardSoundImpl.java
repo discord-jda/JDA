@@ -118,6 +118,10 @@ public class SoundboardSoundImpl implements SoundboardSound
     {
         Checks.notNull(channel, "Channel");
 
+        // Check available
+        if (!isAvailable())
+            throw new IllegalStateException("Cannot send an unavailable sound");
+
         // Check speak permissions
         final Guild targetGuild = channel.getGuild();
         if (!targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_SPEAK))
@@ -125,9 +129,8 @@ public class SoundboardSoundImpl implements SoundboardSound
         if (!targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_SOUNDBOARD))
             throw new InsufficientPermissionException(channel, Permission.VOICE_USE_SOUNDBOARD);
 
-        if (!targetGuild.equals(getGuild()))
-            if (!targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS))
-                throw new InsufficientPermissionException(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS);
+        if (!targetGuild.equals(getGuild()) && !targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS))
+            throw new InsufficientPermissionException(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS);
 
         // Check voice state if possible
         if (!channel.equals(targetGuild.getAudioManager().getConnectedChannel()))
