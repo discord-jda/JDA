@@ -2328,31 +2328,31 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nullable
     default SoundboardSound getSoundboardSoundById(String id)
     {
-        return getSoundboardCache().getElementById(id);
+        return getSoundboardSoundCache().getElementById(id);
     }
 
     @Nullable
     default SoundboardSound getSoundboardSoundById(long id)
     {
-        return getSoundboardCache().getElementById(id);
+        return getSoundboardSoundCache().getElementById(id);
     }
 
     @Nonnull
     @Unmodifiable
     default List<SoundboardSound> getSoundboardSounds()
     {
-        return getSoundboardCache().asList();
+        return getSoundboardSoundCache().asList();
     }
 
     @Nonnull
     @Unmodifiable
     default List<SoundboardSound> getSoundboardSoundsByName(@Nonnull String name, boolean ignoreCase)
     {
-        return getSoundboardCache().getElementsByName(name, ignoreCase);
+        return getSoundboardSoundCache().getElementsByName(name, ignoreCase);
     }
 
     @Nonnull
-    SnowflakeCacheView<SoundboardSound> getSoundboardCache();
+    SnowflakeCacheView<SoundboardSound> getSoundboardSoundCache();
 
     /**
      * Retrieves an immutable list of Custom Emojis together with their respective creators.

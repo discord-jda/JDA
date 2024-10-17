@@ -836,7 +836,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SnowflakeCacheViewImpl<SoundboardSound> getSoundboardCache()
+    public SnowflakeCacheViewImpl<SoundboardSound> getSoundboardSoundCache()
     {
         return soundboardCache;
     }
