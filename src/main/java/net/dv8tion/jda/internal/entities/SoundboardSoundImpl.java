@@ -18,10 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.SoundboardSound;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -119,7 +116,34 @@ public class SoundboardSoundImpl implements SoundboardSound
     @Override
     public RestAction<Void> sendTo(VoiceChannel channel)
     {
-        //TODO checks
+        Checks.notNull(channel, "Channel");
+
+        // Check speak permissions
+        final Guild targetGuild = channel.getGuild();
+        if (!targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_SPEAK))
+            throw new InsufficientPermissionException(channel, Permission.VOICE_SPEAK);
+        if (!targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_SOUNDBOARD))
+            throw new InsufficientPermissionException(channel, Permission.VOICE_USE_SOUNDBOARD);
+
+        if (!targetGuild.equals(getGuild()))
+            if (!targetGuild.getSelfMember().hasPermission(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS))
+                throw new InsufficientPermissionException(channel, Permission.VOICE_USE_EXTERNAL_SOUNDS);
+
+        // Check voice state if possible
+        if (!channel.equals(targetGuild.getAudioManager().getConnectedChannel()))
+            throw new IllegalStateException("You must be connected to the voice channel you want to send the sound effect to");
+        final GuildVoiceState voiceState = targetGuild.getSelfMember().getVoiceState();
+        if (voiceState != null)
+        {
+            if (voiceState.isSuppressed())
+                throw new IllegalStateException("You cannot send sound effects while you are being suppressed");
+            if (voiceState.isDeafened())
+                throw new IllegalStateException("You cannot send sound effects while you are deafened");
+            if (voiceState.isMuted())
+                throw new IllegalStateException("You cannot send sound effects while you are muted");
+        }
+
+        // Send
         DataObject data = DataObject.empty()
                 .put("sound_id", getId());
 
