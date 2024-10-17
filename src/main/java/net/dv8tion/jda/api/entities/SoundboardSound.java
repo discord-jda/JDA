@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.managers.SoundboardSoundManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -58,7 +58,7 @@ public interface SoundboardSound extends ISnowflake
 
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> sendTo(AudioChannel channel);
+    RestAction<Void> sendTo(VoiceChannel channel);
 
     @Nonnull
     @CheckReturnValue
