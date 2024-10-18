@@ -40,7 +40,9 @@ public interface EntryPointCommandData
         extends IDescribedCommandData, INamedCommandData, IScopedCommandData, IRestrictedCommandData,
         IAgeRestrictedCommandData, SerializableData
 {
-    //TODO docs
+    /**
+     * Defines the behavior of an Entry Point Command.
+     */
     enum Handler
     {
         UNKNOWN(-1),
@@ -126,7 +128,15 @@ public interface EntryPointCommandData
     @Override
     EntryPointCommandData setNSFW(boolean nsfw);
 
-    //TODO docs
+    /**
+     * Sets the handler of this entry point command.
+     * This defines the behavior when this command is used.
+     *
+     * @param  handler
+     *         The handler type for this command
+     *
+     * @return This builder instance, for chaining
+     */
     @Nonnull
     EntryPointCommandData setHandler(Handler handler);
 

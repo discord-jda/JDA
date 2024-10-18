@@ -22,7 +22,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * Replies ???.
+ * Callback which launches this app's activity.
  *
  * <p>Replying with {@link #replyWithLaunchedActivity()} will automatically acknowledge this interaction.
  *
@@ -30,6 +30,11 @@ import javax.annotation.Nonnull;
  */
 public interface ILaunchActivityReplyCallback extends IDeferrableCallback
 {
+    /**
+     * Launches this app's activity and acknowledges this interaction.
+     *
+     * @return {@link LaunchActivityCallbackAction}
+     */
     @Nonnull
     @CheckReturnValue
     LaunchActivityCallbackAction replyWithLaunchedActivity();

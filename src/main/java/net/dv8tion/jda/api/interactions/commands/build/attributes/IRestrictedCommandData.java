@@ -21,7 +21,13 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 
 import javax.annotation.Nonnull;
 
-//TODO docs
+/**
+ * Builder for permission restricted Application Commands.
+ *
+ * @see net.dv8tion.jda.api.interactions.commands.build.CommandData
+ * @see net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
+ * @see net.dv8tion.jda.api.interactions.commands.build.EntryPointCommandData
+ */
 public interface IRestrictedCommandData extends INamedCommandData
 {
     /**
