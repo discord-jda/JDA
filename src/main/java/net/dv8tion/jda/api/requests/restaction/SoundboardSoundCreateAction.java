@@ -51,10 +51,29 @@ public interface SoundboardSoundCreateAction extends AuditableRestAction<Soundbo
     @CheckReturnValue
     SoundboardSoundCreateAction addCheck(@Nonnull BooleanSupplier checks);
 
+    /**
+     * Sets the <b><u>volume</u></b> of the soundboard sound being created.
+     *
+     * @param  volume
+     *         The new volume
+     *
+     * @throws IllegalArgumentException
+     *         If the provided volume is not between 0-1
+     *
+     * @return This action for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     SoundboardSoundCreateAction setVolume(double volume);
 
+    /**
+     * Sets the <b><u>emoji</u></b> of the soundboard sound being created.
+     *
+     * @param  emoji
+     *         The new emoji, can be {@code null}
+     *
+     * @return This action for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     SoundboardSoundCreateAction setEmoji(@Nullable Emoji emoji);

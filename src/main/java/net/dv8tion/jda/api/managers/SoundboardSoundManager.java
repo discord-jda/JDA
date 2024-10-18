@@ -144,7 +144,7 @@ public interface SoundboardSoundManager extends Manager<SoundboardSoundManager>
      * Sets the <b><u>emoji</u></b> of the selected {@link SoundboardSound}.
      *
      * @param  emoji
-     *         The new emoji for the selected {@link SoundboardSound}
+     *         The new emoji for the selected {@link SoundboardSound}, can be {@code null}
      *
      * @return SoundboardSoundManager for chaining convenience
      */

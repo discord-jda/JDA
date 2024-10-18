@@ -39,12 +39,22 @@ public class VoiceChannelEffectSendEvent extends GenericChannelEvent
         this.effect = effect;
     }
 
+    /**
+     * The voice channel the effect was sent to.
+     *
+     * @return The voice channel the effect was sent to.
+     */
     @Nonnull
     public VoiceChannel getVoiceChannel()
     {
         return effect.getChannel();
     }
 
+    /**
+     * The effect that was sent.
+     *
+     * @return The effect that was sent.
+     */
     @Nonnull
     public VoiceChannelEffect getEffect()
     {
