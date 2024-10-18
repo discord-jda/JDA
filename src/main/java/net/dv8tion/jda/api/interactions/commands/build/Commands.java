@@ -135,10 +135,10 @@ public class Commands
      *
      * <p>Only one entry point can be created per app.
      *
-     * @param name
-     *        The entry point name, 1-32 lowercase alphanumeric characters
-     * @param description
-     *        The entry point description, 1-100 characters
+     * @param  name
+     *         The entry point name, 1-32 lowercase alphanumeric characters
+     * @param  description
+     *         The entry point description, 1-100 characters
      *
      * @throws IllegalArgumentException
      *         If any of the following requirements are not met
@@ -154,7 +154,6 @@ public class Commands
     {
         return new EntryPointCommandDataImpl(name, description);
     }
-
 
     /**
      * Parses the provided serialization back into an CommandData instance.
