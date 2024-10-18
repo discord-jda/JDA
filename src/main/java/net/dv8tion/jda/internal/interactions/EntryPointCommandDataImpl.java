@@ -183,7 +183,7 @@ public class EntryPointCommandDataImpl implements EntryPointCommandData, IDescri
 
     @Nonnull
     @Override
-    public EntryPointCommandData setHandler(Handler handler)
+    public EntryPointCommandData setHandler(@Nonnull Handler handler)
     {
         this.handler = handler;
         return this;
