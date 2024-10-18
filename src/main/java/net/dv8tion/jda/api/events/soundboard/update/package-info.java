@@ -15,7 +15,7 @@
  */
 
 /**
- * Events that track updates for existing {@link net.dv8tion.jda.api.entities.SoundboardSound Soundboard sounds}
+ * Events that track updates for existing {@link net.dv8tion.jda.api.entities.SoundboardSound SoundboardSounds}
  *
  * <p><b>Requirements</b><br>
  *

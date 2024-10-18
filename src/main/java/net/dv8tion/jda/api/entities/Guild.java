@@ -2375,10 +2375,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getStickerCache()} and use its more efficient
+     * a local variable or use {@link #getSoundboardSoundCache()} and use its more efficient
      * versions of handling these values.
      *
-     * <p>This requires the {@link CacheFlag#STICKER} to be enabled!
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
      *
      * @return An immutable List of {@link SoundboardSound SoundboardSounds}.
      */
@@ -2401,7 +2401,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
-     * @return Possibly-empty immutable list of all Soundboard sounds that match the provided name.
+     * @return Possibly-empty immutable list of all SoundboardSounds that match the provided name.
      */
     @Nonnull
     @Unmodifiable
@@ -5655,7 +5655,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     /**
      * Creates a soundboard sound in the guild.
      *
-     * <p>The returned {@link RestAction} can encounter the following Discord errors:
+     * <p>The returned {@link RestAction} can encounter the following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses}:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FILE_EXCEEDS_MAXIMUM_LENGTH INVALID_FILE_EXCEEDS_MAXIMUM_LENGTH}
      *     <br>The provided file exceeds the duration of 5.2 seconds</li>
@@ -5669,11 +5669,17 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     <br>The file is malformed</li>
      * </ul>
      *
+     * @param name
+     *        The name of the soundboard sound, must be between 2-32 characters
      * @param file
      *        The file to use as the sound, can be an MP3 or an OGG file
      *
      * @throws IllegalArgumentException
-     *         If {@code null} is provided, or {@code name} is not between 2-32 characters
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If {@code name} is not between 2-32 characters</li>
+     *             <li>If the file is not of the correct type</li>
+     *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} in the guild.
      *

@@ -1846,7 +1846,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
     RestAction<@Unmodifiable List<StickerPack>> retrieveNitroStickerPacks();
 
     /**
-     * Retrieves a list of the default {@link SoundboardSound soundboard sounds}.
+     * Retrieves a list of the default {@link SoundboardSound SoundboardSounds}.
      *
      * @return {@link RestAction} - Type: List of {@link SoundboardSound}
      */

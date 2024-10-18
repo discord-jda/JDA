@@ -102,7 +102,7 @@ public interface SoundboardSound extends ISnowflake
     /**
      * The user which created this sound.
      *
-     * <p>This is present only if the {@link Guild#getSelfMember() current member} has
+     * <p>This is present only if the {@link Guild#getSelfMember() self member} has
      * the {@link Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS}
      * or {@link Permission#MANAGE_GUILD_EXPRESSIONS MANAGE_GUILD_EXPRESSIONS} permission.
      *
@@ -116,27 +116,31 @@ public interface SoundboardSound extends ISnowflake
      * <br>You must be connected to the voice channel to use this method,
      * as well as be able to speak and hear.
      *
-     * <p>Possible {@link ErrorResponse ErrorResponses} caused by
-     * the returned {@link RestAction} include the following:
+     * <p>The returned {@link RestAction} can encounter the following {@link ErrorResponse ErrorResponses}:
      * <ul>
      *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The sound cannot be sent due to a permission discrepancy</li>
      *     <li>{@link ErrorResponse#CANNOT_SEND_VOICE_EFFECT CANNOT_SEND_VOICE_EFFECT}
      *     <br>The sound cannot be sent as the bot is either muted, deafened or suppressed</li>
+     *     <li>{@link ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
+     *     <br>The sound was deleted</li>
      * </ul>
      *
      * @param  channel
      *         The channel to send this sound on
      *
      * @throws InsufficientPermissionException
-     *         If the logged in account does not have the {@link Permission#VOICE_SPEAK VOICE_SPEAK},
-     *         {@link Permission#VOICE_USE_SOUNDBOARD VOICE_USE_SOUNDBOARD},
-     *         or {@link Permission#VOICE_USE_EXTERNAL_SOUNDS VOICE_USE_EXTERNAL_SOUNDS} permission.
+     *         If the bot does not have the following permissions:
+     *         <ul>
+     *             <li>{@link Permission#VOICE_SPEAK VOICE_SPEAK}, {@link Permission#VOICE_USE_SOUNDBOARD VOICE_USE_SOUNDBOARD}</li>
+     *             <li>When used in other guilds, {@link Permission#VOICE_USE_EXTERNAL_SOUNDS VOICE_USE_EXTERNAL_SOUNDS} permission</li>
+     *         </ul>
      * @throws IllegalArgumentException
      *         If the provided channel is {@code null}
      * @throws IllegalStateException
      *         <ul>
      *             <li>If {@link GatewayIntent#GUILD_VOICE_STATES} is not enabled</li>
+     *             <li>If the sound is not {@link #isAvailable() available}</li>
      *             <li>If the bot is not connected to the specified channel</li>
      *             <li>If the bot is deafened, muted or suppressed in the target guild</li>
      *         </ul>
@@ -147,10 +151,49 @@ public interface SoundboardSound extends ISnowflake
     @CheckReturnValue
     RestAction<Void> sendTo(VoiceChannel channel);
 
+    /**
+     * Deletes this soundboard sound.
+     *
+     * <p>The returned {@link RestAction} can encounter the following {@link ErrorResponse ErrorResponses}:
+     * <ul>
+     *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The sound cannot be deleted due to a permission discrepancy</li>
+     *     <li>{@link ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
+     *     <br>The sound was deleted</li>
+     * </ul>
+     *
+     * @throws InsufficientPermissionException
+     *         <ul>
+     *             <li>If the bot does not own this sound and does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS}</li>
+     *             <li>If the bot owns this sound and does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS} or {@link Permission#CREATE_GUILD_EXPRESSIONS}</li>
+     *         </ul>
+     *
+     * @return {@link RestAction} - Type: {@link Void}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> delete();
 
+    /**
+     * The {@link SoundboardSoundManager} for this soundboard sound, in which you can modify values.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link RestAction#queue()}.
+     *
+     * <p>The returned {@link RestAction} can encounter the following {@link ErrorResponse ErrorResponses}:
+     * <ul>
+     *     <li>{@link ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The sound cannot be edited due to a permission discrepancy</li>
+     *     <li>{@link ErrorResponse#UNKNOWN_SOUND UNKNOWN_SOUND}
+     *     <br>The sound was deleted</li>
+     * </ul>
+     *
+     * @throws InsufficientPermissionException
+     *         <ul>
+     *             <li>If the bot does not own this sound and does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS}</li>
+     *             <li>If the bot owns this sound and does not have {@link Permission#MANAGE_GUILD_EXPRESSIONS} or {@link Permission#CREATE_GUILD_EXPRESSIONS}</li>
+     *         </ul>
+     *
+     * @return The SoundboardSoundManager of this soundboard sound
+     */
     @Nonnull
     @CheckReturnValue
     SoundboardSoundManager getManager();
