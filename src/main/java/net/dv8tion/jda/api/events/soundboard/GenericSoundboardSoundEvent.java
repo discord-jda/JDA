@@ -17,12 +17,24 @@
 package net.dv8tion.jda.api.events.soundboard;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.SoundboardSound;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a {@link SoundboardSound} was created/deleted/updated.
+ *
+ * <p><b>Requirements</b><br>
+ * These events require {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled,
+ * which requires {@link GatewayIntent#GUILD_EMOJIS_AND_STICKERS}.
+ *
+ * <br>{@link JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
+ */
 public abstract class GenericSoundboardSoundEvent extends Event
 {
     private final SoundboardSound soundboardSound;

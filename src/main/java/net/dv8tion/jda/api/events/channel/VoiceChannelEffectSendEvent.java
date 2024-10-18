@@ -20,11 +20,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.VoiceChannelEffect;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
 /**
  * Indicates that a {@link VoiceChannelEffect voice channel effect} was sent in a {@link VoiceChannel}.
+ *
+ * <p><b>Requirements</b><br>
+ * This event requires {@link GatewayIntent#GUILD_VOICE_STATES} to be enabled.
  */
 public class VoiceChannelEffectSendEvent extends GenericChannelEvent
 {
