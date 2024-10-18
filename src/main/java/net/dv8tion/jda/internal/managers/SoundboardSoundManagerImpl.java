@@ -101,6 +101,7 @@ public class SoundboardSoundManagerImpl extends ManagerBase<SoundboardSoundManag
     @Override
     public SoundboardSoundManagerImpl setName(@Nonnull String name)
     {
+        Checks.notNull(name, "name");
         Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2 and 32 characters");
         this.name = name;
         set |= NAME;
