@@ -24,6 +24,9 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 import net.dv8tion.jda.api.requests.restaction.GlobalCommandListUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.interactions.EntryPointCommandDataImpl;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -138,21 +141,77 @@ public interface EntryPointCommandData
      * @return This builder instance, for chaining
      */
     @Nonnull
-    EntryPointCommandData setHandler(Handler handler);
+    EntryPointCommandData setHandler(@Nonnull Handler handler);
 
-    //TODO docs
+    /**
+     * Converts the provided {@link Command} into a {@link EntryPointCommandData} instance.
+     *
+     * @param  command
+     *         The command to convert
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the command has illegal configuration
+     *
+     * @return An instance of {@link EntryPointCommandData}
+     */
     @Nonnull
+    @SuppressWarnings("DataFlowIssue") // Handler cannot be null if command type is correct
     static EntryPointCommandData fromCommand(@Nonnull Command command)
     {
-        //TODO
-        throw new UnsupportedOperationException();
+        Checks.notNull(command, "Command");
+        if (command.getType() != Command.Type.PRIMARY_ENTRY_POINT)
+            throw new IllegalArgumentException("Cannot convert command of type " + command.getType() + " to EntryPointCommandData!");
+
+        EntryPointCommandDataImpl data = new EntryPointCommandDataImpl(command.getName(), command.getDescription());
+        data.setGuildOnly(command.isGuildOnly());
+        data.setNSFW(command.isNSFW());
+        data.setDefaultPermissions(command.getDefaultPermissions());
+        //Command localizations are unmodifiable, make a copy
+        data.setNameLocalizations(command.getNameLocalizations().toMap());
+        data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
+        data.setHandler(command.getHandler());
+        return data;
     }
 
-    //TODO docs
+    /**
+     * Parses the provided serialization back into a {@link EntryPointCommandData} instance.
+     * <br>This is the reverse function for {@link EntryPointCommandData#toData()}.
+     *
+     * @param  object
+     *         The serialized {@link DataObject} representing the command
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the serialized object is missing required fields
+     * @throws IllegalArgumentException
+     *         If any of the values are failing the respective checks such as length
+     *
+     * @return The parsed {@link EntryPointCommandData} instance, which can be further configured through setters
+     */
     @Nonnull
     static EntryPointCommandData fromData(@Nonnull DataObject object)
     {
-        //TODO
-        throw new UnsupportedOperationException();
+        Checks.notNull(object, "DataObject");
+
+        Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
+        Checks.check(commandType == Command.Type.PRIMARY_ENTRY_POINT, "Cannot convert command of type " + commandType + " to EntryPointCommandData!");
+
+        String name = object.getString("name");
+        String description = object.getString("description");
+        EntryPointCommandDataImpl command = new EntryPointCommandDataImpl(name, description);
+        command.setGuildOnly(!object.getBoolean("dm_permission", true));
+        command.setNSFW(object.getBoolean("nsfw"));
+
+        command.setDefaultPermissions(
+                object.isNull("default_member_permissions")
+                        ? DefaultMemberPermissions.ENABLED
+                        : DefaultMemberPermissions.enabledFor(object.getLong("default_member_permissions"))
+        );
+
+        command.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+        command.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
+
+        command.setHandler(Handler.fromValue(object.getLong("handler")));
+
+        return command;
     }
 }
