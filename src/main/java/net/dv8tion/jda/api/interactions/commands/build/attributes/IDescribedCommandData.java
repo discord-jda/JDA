@@ -23,7 +23,12 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
-//TODO docs
+/**
+ * Builder for describable Application Commands.
+ *
+ * @see net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
+ * @see net.dv8tion.jda.api.interactions.commands.build.EntryPointCommandData
+ */
 public interface IDescribedCommandData extends INamedCommandData
 {
     /**

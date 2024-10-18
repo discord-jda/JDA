@@ -18,7 +18,13 @@ package net.dv8tion.jda.api.interactions.commands.build.attributes;
 
 import javax.annotation.Nonnull;
 
-//TODO docs
+/**
+ * Builder for age restricted Application Commands.
+ *
+ * @see net.dv8tion.jda.api.interactions.commands.build.CommandData
+ * @see net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
+ * @see net.dv8tion.jda.api.interactions.commands.build.EntryPointCommandData
+ */
 public interface IAgeRestrictedCommandData extends INamedCommandData
 {
     /**
