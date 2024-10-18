@@ -159,6 +159,8 @@ public class Commands
      * Parses the provided serialization back into an CommandData instance.
      * <br>This is the reverse function for {@link CommandData#toData()}.
      *
+     * <p><b>Note:</b> This does not take into account {@link #entryPoint(String, String) entry point commands}.
+     *
      * @param  array
      *         Array of serialized {@link DataObject} representing the commands
      *
@@ -171,6 +173,7 @@ public class Commands
      *
      * @see    CommandData#fromData(DataObject)
      * @see    SlashCommandData#fromData(DataObject)
+     * @see    EntryPointCommandData#fromData(DataObject)
      */
     @Nonnull
     public static List<CommandData> fromList(@Nonnull DataArray array)
@@ -185,6 +188,8 @@ public class Commands
      * Parses the provided serialization back into an CommandData instance.
      * <br>This is the reverse function for {@link CommandData#toData()}.
      *
+     * <p><b>Note:</b> This does not take into account {@link #entryPoint(String, String) entry point commands}.
+     *
      * @param  collection
      *         Collection of serialized {@link DataObject} representing the commands
      *
@@ -197,6 +202,7 @@ public class Commands
      *
      * @see    CommandData#fromData(DataObject)
      * @see    SlashCommandData#fromData(DataObject)
+     * @see    EntryPointCommandData#fromData(DataObject)
      */
     @Nonnull
     public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection)
