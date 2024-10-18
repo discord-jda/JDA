@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.EntryPointCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -145,6 +146,14 @@ public interface Command extends ISnowflake, ICommandReference
      */
     @Nonnull
     LocalizationMap getDescriptionLocalizations();
+
+    /**
+     * The handler, if this is an {@link EntryPointCommandData entry point command}.
+     *
+     * @return The entry point handler
+     */
+    @Nullable
+    EntryPointCommandData.Handler getHandler();
 
     /**
      * The {@link Option Options} of this command.
