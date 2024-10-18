@@ -72,7 +72,7 @@ public class VoiceChannelEffectSendHandler extends SocketHandler
 
         VoiceChannelEffect effect = new VoiceChannelEffect(channel, user, emoji, animation, soundboardSound);
 
-        api.handleEvent(new VoiceChannelEffectSendEvent(api, responseNumber, channel, effect));
+        api.handleEvent(new VoiceChannelEffectSendEvent(api, responseNumber, effect));
 
         return null;
     }

@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.events.channel;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.VoiceChannelEffect;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -34,16 +33,16 @@ public class VoiceChannelEffectSendEvent extends GenericChannelEvent
 {
     private final VoiceChannelEffect effect;
 
-    public VoiceChannelEffectSendEvent(@Nonnull JDA api, long responseNumber, Channel channel, VoiceChannelEffect effect)
+    public VoiceChannelEffectSendEvent(@Nonnull JDA api, long responseNumber, VoiceChannelEffect effect)
     {
-        super(api, responseNumber, channel);
+        super(api, responseNumber, effect.getChannel());
         this.effect = effect;
     }
 
     @Nonnull
     public VoiceChannel getVoiceChannel()
     {
-        return getChannel().asVoiceChannel();
+        return effect.getChannel();
     }
 
     @Nonnull
