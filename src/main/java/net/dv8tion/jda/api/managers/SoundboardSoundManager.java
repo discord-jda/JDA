@@ -33,8 +33,8 @@ import javax.annotation.Nullable;
  *        .setEmoji(null)
  *        .queue();
  * manager.reset(SoundboardSoundManager.VOLUME | SoundboardSoundManager.EMOJI)
- *        .setVolume("1")
- *        .setEmoji(Color.RED)
+ *        .setVolume(1)
+ *        .setEmoji(Emoji.fromUnicode("🤔"))
  *        .queue();
  * }</pre>
  *
