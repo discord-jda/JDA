@@ -73,5 +73,4 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
     @Override
     @CheckReturnValue
     VoiceChannelManager getManager();
-
 }
