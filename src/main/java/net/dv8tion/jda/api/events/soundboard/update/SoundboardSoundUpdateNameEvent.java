@@ -17,21 +17,23 @@
 package net.dv8tion.jda.api.events.soundboard.update;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.SoundboardSound;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
 /**
  * Indicates that the name of a {@link SoundboardSound soundboard sound} changed.
  *
- * <p>Can be used to retrieve the old name
+ * <p>Can be used to retrieve the old name.
  *
  * <p><b>Requirements</b><br>
+ * This event require {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled,
+ * which requires {@link GatewayIntent#GUILD_EMOJIS_AND_STICKERS}.
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#SOUNDBOARD_SOUNDS SOUNDBOARD_SOUNDS} CacheFlag to be enabled, which requires
- * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent.
- *
- * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
+ * <br>{@link JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  *
  * <p>Identifier: {@value IDENTIFIER}
  */

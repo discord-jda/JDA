@@ -19,9 +19,8 @@
  * and {@link net.dv8tion.jda.api.events.soundboard.SoundboardSoundDeleteEvent deleted soundboard sounds}.
  *
  * <p><b>Requirements</b><br>
- *
- * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#SOUNDBOARD_SOUNDS SOUNDBOARD_SOUNDS} CacheFlag to be enabled, which requires
- * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent.
+ * These events require {@link net.dv8tion.jda.api.utils.cache.CacheFlag#SOUNDBOARD_SOUNDS} to be enabled,
+ * which requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS}.
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
