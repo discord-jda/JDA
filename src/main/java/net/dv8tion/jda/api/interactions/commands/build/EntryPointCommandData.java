@@ -43,54 +43,6 @@ public interface EntryPointCommandData
         extends IDescribedCommandData, INamedCommandData, IScopedCommandData, IRestrictedCommandData,
         IAgeRestrictedCommandData, SerializableData
 {
-    /**
-     * Defines the behavior of an Entry Point Command.
-     */
-    enum Handler
-    {
-        UNKNOWN(-1),
-        /**
-         * Lets this app handle the activity start via an interaction.
-         */
-        APP_HANDLER(1),
-        /**
-         * Lets Discord handle the activity start,
-         * and sends a follow-up message without coordinating with this app.
-         */
-        DISCORD_LAUNCH_ACTIVITY(2);
-
-        private final int value;
-
-        Handler(int value)
-        {
-            this.value = value;
-        }
-
-        public int getValue()
-        {
-            return value;
-        }
-
-        /**
-         * Converts the value to the corresponding handler.
-         *
-         * @param  value
-         *         The value of the handler
-         *
-         * @return {@link Handler}
-         */
-        @Nonnull
-        public static Handler fromValue(long value)
-        {
-            for (Handler handler : values())
-            {
-                if (handler.value == value)
-                    return handler;
-            }
-            return UNKNOWN;
-        }
-    }
-
     @Nonnull
     @Override
     EntryPointCommandData setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
@@ -213,5 +165,53 @@ public interface EntryPointCommandData
         command.setHandler(Handler.fromValue(object.getLong("handler")));
 
         return command;
+    }
+
+    /**
+     * Defines the behavior of an Entry Point Command.
+     */
+    enum Handler
+    {
+        UNKNOWN(-1),
+        /**
+         * Lets this app handle the activity start via an interaction.
+         */
+        APP_HANDLER(1),
+        /**
+         * Lets Discord handle the activity start,
+         * and sends a follow-up message without coordinating with this app.
+         */
+        DISCORD_LAUNCH_ACTIVITY(2);
+
+        private final int value;
+
+        Handler(int value)
+        {
+            this.value = value;
+        }
+
+        public int getValue()
+        {
+            return value;
+        }
+
+        /**
+         * Converts the value to the corresponding handler.
+         *
+         * @param  value
+         *         The value of the handler
+         *
+         * @return {@link Handler}
+         */
+        @Nonnull
+        public static Handler fromValue(long value)
+        {
+            for (Handler handler : values())
+            {
+                if (handler.value == value)
+                    return handler;
+            }
+            return UNKNOWN;
+        }
     }
 }
