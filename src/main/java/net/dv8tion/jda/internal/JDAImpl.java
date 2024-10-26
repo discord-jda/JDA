@@ -1361,4 +1361,10 @@ public class JDAImpl implements JDA
     {
         return threadConfig.getAudioPool(this::getIdentifierString);
     }
+
+    @Override
+    public void close() throws Exception
+    {
+        shutdown();
+    }
 }

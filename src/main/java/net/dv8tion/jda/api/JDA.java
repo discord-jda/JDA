@@ -74,7 +74,7 @@ import java.util.regex.Matcher;
  *
  * @see JDABuilder
  */
-public interface JDA extends IGuildChannelContainer<Channel>
+public interface JDA extends IGuildChannelContainer<Channel>, AutoCloseable
 {
     /**
      * Represents the connection status of JDA and its Main WebSocket.
