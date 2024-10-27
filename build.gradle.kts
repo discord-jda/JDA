@@ -149,6 +149,9 @@ dependencies {
 
     //Audio crypto libraries
     implementation(libs.tink)
+    implementation(libs.protobuf.java) {
+        because("Overrides transitive dependency from tink to address CVE-2024-7254.")
+    }
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
