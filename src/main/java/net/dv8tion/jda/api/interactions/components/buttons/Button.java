@@ -611,7 +611,7 @@ public interface Button extends ActionComponent
      * <br>The button is enabled by default, and cannot have emojis attached to it.
      * You can use {@link #asDisabled()} to further configure it.
      *
-     * <p>Note that link buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
+     * <p>Note that premium buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
      * These buttons only open a modal about the SKU.
      *
      * @param  sku
