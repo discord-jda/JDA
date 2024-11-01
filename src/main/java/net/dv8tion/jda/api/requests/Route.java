@@ -50,6 +50,11 @@ public class Route
         public static final Route CONSUME_ENTITLEMENT =             new Route(POST, "applications/{application_id}/entitlements/{entitlement_id}/consume");
         public static final Route CREATE_TEST_ENTITLEMENT =         new Route(POST, "applications/{application_id}/entitlements");
         public static final Route DELETE_TEST_ENTITLEMENT =         new Route(DELETE, "applications/{application_id}/entitlements/{entitlement_id}");
+        public static final Route GET_APPLICATION_EMOJIS =          new Route(GET, "applications/{application_id}/emojis");
+        public static final Route GET_APPLICATION_EMOJI =           new Route(GET, "applications/{application_id}/emojis/{emoji_id}");
+        public static final Route CREATE_APPLICATION_EMOJI =        new Route(POST, "applications/{application_id}/emojis");
+        public static final Route MODIFY_APPLICATION_EMOJI =        new Route(PATCH, "applications/{application_id}/emojis/{emoji_id}");
+        public static final Route DELETE_APPLICATION_EMOJI =        new Route(DELETE, "applications/{application_id}/emojis/{emoji_id}");
     }
 
     public static class Interactions

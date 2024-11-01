@@ -66,6 +66,7 @@ import net.dv8tion.jda.internal.entities.channel.concrete.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPostContainerMixin;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
+import net.dv8tion.jda.internal.entities.emoji.ApplicationEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.UnicodeEmojiImpl;
@@ -1018,6 +1019,15 @@ public class EntityBuilder
                 .setAnimated(json.getBoolean("animated"))
                 .setManaged(json.getBoolean("managed"))
                 .setAvailable(json.getBoolean("available", true));
+    }
+
+    public ApplicationEmojiImpl createApplicationEmoji(JDAImpl api, DataObject json)
+    {
+        final long emojiId = json.getUnsignedLong("id");
+        final User user = createUser(json.getObject("user"));
+        return new ApplicationEmojiImpl(emojiId, api, user)
+                .setAnimated(json.getBoolean("animated"))
+                .setName(json.getString("name"));
     }
 
     public ScheduledEvent createScheduledEvent(GuildImpl guild, DataObject json)
