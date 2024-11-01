@@ -250,7 +250,7 @@ public interface Button extends ActionComponent
      *         The SKU to use
      *
      * @throws IllegalArgumentException
-     *         If the provided {@code sku} is null
+     *         If the provided {@code sku} is null, or if the button is not a {@link ButtonStyle#PREMIUM Premium} button
      *
      * @return New button with the changed url
      */
@@ -259,6 +259,7 @@ public interface Button extends ActionComponent
     default Button withSku(@Nonnull SkuSnowflake sku)
     {
         Checks.notNull(sku, "SKU");
+        Checks.check(getStyle() == ButtonStyle.PREMIUM, "You can only set an SKU on Premium buttons");
         return new ButtonImpl(null, getLabel(), ButtonStyle.PREMIUM, null, sku, isDisabled(), null);
     }
 
