@@ -40,6 +40,8 @@ public enum ButtonStyle
     DANGER(4),
     /** Link button style, usually in gray and has a link attached  */
     LINK(5),
+    /** Premium button style, usually in blurple and has a SKU attached */
+    PREMIUM(6),
     ;
 
     private final int key;

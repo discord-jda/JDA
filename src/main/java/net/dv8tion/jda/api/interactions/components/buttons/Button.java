@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.buttons;
 
+import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -115,6 +116,14 @@ public interface Button extends ActionComponent
     String getUrl();
 
     /**
+     * The target SKU for this button, if it is a {@link ButtonStyle#PREMIUM premium}-style Button.
+     *
+     * @return The target SKU or {@code null}
+     */
+    @Nullable
+    SkuSnowflake getSku();
+
+    /**
      * The emoji attached to this button.
      * <br>This can be either {@link Emoji.Type#UNICODE unicode} or {@link Emoji.Type#CUSTOM custom}.
      *
@@ -143,7 +152,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withDisabled(boolean disabled)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), disabled, getEmoji());
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji());
     }
 
     /**
@@ -158,7 +167,8 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji);
+        Checks.check(getStyle() != ButtonStyle.PREMIUM, "Premium components cannot have emojis");
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), null, isDisabled(), emoji);
     }
 
     /**
@@ -182,7 +192,7 @@ public interface Button extends ActionComponent
     {
         Checks.notEmpty(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(getId(), label, getStyle(), getUrl(), isDisabled(), getEmoji());
+        return new ButtonImpl(getId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji());
     }
 
     /**
@@ -206,7 +216,7 @@ public interface Button extends ActionComponent
     {
         Checks.notEmpty(id, "ID");
         Checks.notLonger(id, ID_MAX_LENGTH, "ID");
-        return new ButtonImpl(id, getLabel(), getStyle(), null, isDisabled(), getEmoji());
+        return new ButtonImpl(id, getLabel(), getStyle(), null, null, isDisabled(), getEmoji());
     }
 
     /**
@@ -230,7 +240,27 @@ public interface Button extends ActionComponent
     {
         Checks.notEmpty(url, "URL");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, isDisabled(), getEmoji());
+        return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, null, isDisabled(), getEmoji());
+    }
+
+    /**
+     * Returns a copy of this button with the provided SKU.
+     *
+     * @param  sku
+     *         The SKU to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided {@code sku} is null, or if the button is not a {@link ButtonStyle#PREMIUM Premium} button
+     *
+     * @return New button with the changed url
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Button withSku(@Nonnull SkuSnowflake sku)
+    {
+        Checks.notNull(sku, "SKU");
+        Checks.check(getStyle() == ButtonStyle.PREMIUM, "You can only set an SKU on Premium buttons");
+        return new ButtonImpl(null, getLabel(), ButtonStyle.PREMIUM, null, sku, isDisabled(), null);
     }
 
     /**
@@ -259,7 +289,11 @@ public interface Button extends ActionComponent
             throw new IllegalArgumentException("You cannot change a link button to another style!");
         if (getStyle() != ButtonStyle.LINK && style == ButtonStyle.LINK)
             throw new IllegalArgumentException("You cannot change a styled button to a link button!");
-        return new ButtonImpl(getId(), getLabel(), style, getUrl(), isDisabled(), getEmoji());
+        if (getStyle() == ButtonStyle.PREMIUM && style != ButtonStyle.PREMIUM)
+            throw new IllegalArgumentException("You cannot change a premium button to another style!");
+        if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM)
+            throw new IllegalArgumentException("You cannot change a styled button to a premium button!");
+        return new ButtonImpl(getId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji());
     }
 
     /**
@@ -537,7 +571,7 @@ public interface Button extends ActionComponent
         Checks.notEmpty(label, "Label");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(null, label, ButtonStyle.LINK, url, false, null);
+        return new ButtonImpl(null, label, ButtonStyle.LINK, url, null, false, null);
     }
 
     /**
@@ -570,7 +604,38 @@ public interface Button extends ActionComponent
         Checks.notEmpty(url, "URL");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new ButtonImpl(null, "", ButtonStyle.LINK, url, false, emoji);
+        return new ButtonImpl(null, "", ButtonStyle.LINK, url, null, false, emoji);
+    }
+
+    /**
+     * Creates a button with {@link ButtonStyle#PREMIUM PREMIUM} Style.
+     * <br>The button is enabled by default, and cannot have emojis attached to it.
+     * You can use {@link #asDisabled()} to further configure it.
+     *
+     * <p>Note that premium buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
+     * These buttons only open a modal about the SKU.
+     *
+     * @param  sku
+     *         The target SKU for this button
+     * @param  label
+     *         The text to display on the button
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button premium(@Nonnull SkuSnowflake sku, @Nonnull String label)
+    {
+        Checks.notNull(sku, "SKU");
+        Checks.notEmpty(label, "Label");
+        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
+        return new ButtonImpl(null, label, ButtonStyle.PREMIUM, null, sku, false, null);
     }
 
     /**

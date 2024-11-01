@@ -132,6 +132,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     public PremiumRequiredCallbackAction replyWithPremiumRequired()
     {

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.component;
 
+import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -34,6 +35,7 @@ public class ButtonImpl implements Button
     private final String label;
     private final ButtonStyle style;
     private final String url;
+    private final SkuSnowflake sku;
     private final boolean disabled;
     private final EmojiUnion emoji;
 
@@ -44,21 +46,23 @@ public class ButtonImpl implements Button
             data.getString("label", ""),
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
+            data.hasKey("sku_id") ? SkuSnowflake.fromId(data.getLong("sku_id")) : null,
             data.getBoolean("disabled"),
             data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
     public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)
     {
-        this(id, label, style, null, disabled, emoji);
+        this(id, label, style, null, null, disabled, emoji);
     }
 
-    public ButtonImpl(String id, String label, ButtonStyle style, String url, boolean disabled, Emoji emoji)
+    public ButtonImpl(String id, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
     {
         this.id = id;
         this.label = label;
         this.style = style;
         this.url = url;  // max length 512
+        this.sku = sku;
         this.disabled = disabled;
         this.emoji = (EmojiUnion) emoji;
     }
@@ -100,6 +104,13 @@ public class ButtonImpl implements Button
 
     @Nullable
     @Override
+    public SkuSnowflake getSku()
+    {
+        return sku;
+    }
+
+    @Nullable
+    @Override
     public EmojiUnion getEmoji()
     {
         return emoji;
@@ -124,8 +135,10 @@ public class ButtonImpl implements Button
             json.put("emoji", emoji);
         if (url != null)
             json.put("url", url);
-        else
+        else if (id != null)
             json.put("custom_id", id);
+        else
+            json.put("sku_id", sku.getId());
         return json;
     }
 
