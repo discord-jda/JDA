@@ -46,7 +46,7 @@ public class ButtonImpl implements Button
             data.getString("label", ""),
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
-            SkuSnowflake.fromId(data.getLong("sku_id", -1)),
+            data.hasKey("sku_id") ? SkuSnowflake.fromId(data.getLong("sku_id")) : null,
             data.getBoolean("disabled"),
             data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
@@ -135,8 +135,10 @@ public class ButtonImpl implements Button
             json.put("emoji", emoji);
         if (url != null)
             json.put("url", url);
-        else
+        else if (id != null)
             json.put("custom_id", id);
+        else
+            json.put("sku_id", sku.getId());
         return json;
     }
 
