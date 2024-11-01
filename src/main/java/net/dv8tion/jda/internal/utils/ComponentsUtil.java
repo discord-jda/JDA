@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 public class ComponentsUtil
 {
     /** Checks whether the provided component has the {@code identifier} as its custom id, url or SKU id */
-    public static boolean checkButtonIdentity(@Nonnull ActionComponent component, @Nonnull String identifier)
+    public static boolean isSameIdentifier(@Nonnull ActionComponent component, @Nonnull String identifier)
     {
         if (identifier.equals(component.getId()))
             return true;

@@ -229,7 +229,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
             if (!(component instanceof ActionComponent))
                 continue;
             ActionComponent action = (ActionComponent) component;
-            if (ComponentsUtil.checkButtonIdentity(action, id))
+            if (ComponentsUtil.isSameIdentifier(action, id))
             {
                 if (newComponent == null)
                     it.remove();
