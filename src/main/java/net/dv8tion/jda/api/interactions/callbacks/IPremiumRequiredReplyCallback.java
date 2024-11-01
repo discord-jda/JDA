@@ -25,19 +25,21 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * @deprecated Replaced with {@link Button#premium(SkuSnowflake, String)}
- *
  * Replies with an in-built client message stating that an {@link Entitlement Entitlement} is required.
  *
  * <p>Replying with {@link #replyWithPremiumRequired()} will automatically acknowledge this interaction.
  *
  * <p><b>Note:</b>This interaction requires <a href="https://discord.com/developers/docs/monetization/overview" target="_blank">monetization</a> to be enabled.
+ *
+ * @deprecated Replaced with {@link Button#premium(SkuSnowflake, String)},
+ * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
  */
 @Deprecated
 public interface IPremiumRequiredReplyCallback extends IDeferrableCallback
 {
     /**
-     * @deprecated Replaced with {@link Button#premium(SkuSnowflake, String)}
+     * @deprecated Replaced with {@link Button#premium(SkuSnowflake, String)},
+     * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
      */
     @Nonnull
     @Deprecated
