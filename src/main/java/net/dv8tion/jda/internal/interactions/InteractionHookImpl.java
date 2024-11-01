@@ -55,6 +55,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     private Exception exception;
     private boolean isReady;
     private boolean ephemeral;
+    private Message callbackResponseMessage;
 
     public InteractionHookImpl(@Nonnull DeferrableInteractionImpl interaction, @Nonnull JDA api)
     {
@@ -126,6 +127,12 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         });
     }
 
+    public InteractionHookImpl setCallbackResponseMessage(Message message)
+    {
+        this.callbackResponseMessage = message;
+        return this;
+    }
+
     @Nonnull
     @Override
     public InteractionImpl getInteraction()
@@ -133,6 +140,12 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         if (interaction == null)
             throw new IllegalStateException("Cannot get interaction instance from this webhook.");
         return interaction;
+    }
+
+    @Override
+    public Message getCallbackResponseMessage()
+    {
+        return callbackResponseMessage;
     }
 
     @Override
@@ -210,7 +223,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     // Sometimes we can't resolve the channel and report an unknown type
     // Currently known cases where channels can't be resolved:
     //  - InteractionHook created using id/token factory, has no interaction object to use as context
-    private Message buildMessage(DataObject json)
+    public Message buildMessage(DataObject json)
     {
         JDAImpl jda = (JDAImpl) api;
         MessageChannel channel = null;
