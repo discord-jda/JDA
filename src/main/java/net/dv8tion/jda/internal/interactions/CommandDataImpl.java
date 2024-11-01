@@ -17,6 +17,8 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -33,6 +35,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandDataImpl implements SlashCommandData
@@ -47,7 +50,8 @@ public class CommandDataImpl implements SlashCommandData
     private boolean allowSubcommands = true;
     private boolean allowOption = true;
     private boolean allowRequired = true;
-    private boolean guildOnly = false;
+    private EnumSet<InteractionContextType> contexts = EnumSet.of(InteractionContextType.GUILD, InteractionContextType.BOT_DM);
+    private EnumSet<IntegrationType> integrationTypes = EnumSet.of(IntegrationType.GUILD_INSTALL);
     private boolean nsfw = false;
     private DefaultMemberPermissions defaultMemberPermissions = DefaultMemberPermissions.ENABLED;
 
@@ -103,7 +107,8 @@ public class CommandDataImpl implements SlashCommandData
                 .put("name", name)
                 .put("nsfw", nsfw)
                 .put("options", options)
-                .put("dm_permission", !guildOnly)
+                .put("contexts", contexts.stream().map(InteractionContextType::getType).collect(Collectors.toList()))
+                .put("integration_types", integrationTypes.stream().map(IntegrationType::getType).collect(Collectors.toList()))
                 .put("default_member_permissions", defaultMemberPermissions == DefaultMemberPermissions.ENABLED
                         ? null
                         : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()))
@@ -134,7 +139,21 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public boolean isGuildOnly()
     {
-        return guildOnly;
+        return contexts.size() == 1 && contexts.contains(InteractionContextType.GUILD);
+    }
+
+    @Nonnull
+    @Override
+    public Set<InteractionContextType> getContexts()
+    {
+        return Collections.unmodifiableSet(contexts);
+    }
+
+    @Nonnull
+    @Override
+    public Set<IntegrationType> getIntegrationTypes()
+    {
+        return integrationTypes;
     }
 
     @Override
@@ -186,7 +205,25 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setGuildOnly(boolean guildOnly)
     {
-        this.guildOnly = guildOnly;
+        setContexts(guildOnly
+                ? EnumSet.of(InteractionContextType.GUILD)
+                : EnumSet.of(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setContexts(@Nonnull Collection<InteractionContextType> contexts)
+    {
+        this.contexts = EnumSet.copyOf(contexts);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes)
+    {
+        this.integrationTypes = EnumSet.copyOf(integrationTypes);
         return this;
     }
 

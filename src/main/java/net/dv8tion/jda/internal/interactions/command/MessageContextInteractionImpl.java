@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.commands.context.MessageContextInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -36,16 +37,10 @@ public class MessageContextInteractionImpl extends ContextInteractionImpl<Messag
         DataObject messages = resolved.getObject("messages");
         DataObject message = messages.getObject(messages.keys().iterator().next());
 
-        Guild guild = null;
-        if (!interaction.isNull("guild_id"))
-        {
-            long guildId = interaction.getUnsignedLong("guild_id");
-            guild = api.getGuildById(guildId);
-            if (guild == null)
-                throw new IllegalStateException("Cannot find guild for resolved message object.");
-        }
+        Guild guild = getGuild();
+        MessageChannel channel = getChannel();
 
-        return api.getEntityBuilder().createMessageWithLookup(message, guild, false);
+        return api.getEntityBuilder().createMessageBestEffort(message, channel, guild);
     }
 
     @Override

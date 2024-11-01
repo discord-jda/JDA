@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
  * <br>This interface represents the follow concrete channel types:
  * <ul>
  *     <li>{@link PrivateChannel}</li>
+ *     <li>{@link GroupChannel}</li>
  *     <li>{@link TextChannel}</li>
  *     <li>{@link NewsChannel}</li>
  *     <li>{@link ThreadChannel}</li>
@@ -66,6 +67,27 @@ public interface ChannelUnion extends Channel
     @Nonnull
     PrivateChannel asPrivateChannel();
 
+    /**
+     * Casts this union to a {@link GroupChannel}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * GroupChannel channel = union.asGroupChannel();
+     * GroupChannel channel2 = (GroupChannel) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the channel is of type {@link ChannelType#GROUP} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>channel instanceof GroupChannel</code>
+     *
+     * @throws IllegalStateException
+     *         If the channel represented by this union is not actually a {@link GroupChannel}.
+     *
+     * @return The channel as a {@link GroupChannel}
+     */
+    @Nonnull
+    GroupChannel asGroupChannel();
 
     /**
      * Casts this union to a {@link TextChannel}.

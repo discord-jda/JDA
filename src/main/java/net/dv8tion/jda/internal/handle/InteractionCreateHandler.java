@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -62,16 +61,13 @@ public class InteractionCreateHandler extends SocketHandler
         }
 
         long guildId = content.getUnsignedLong("guild_id", 0);
-        Guild guild = api.getGuildById(guildId);
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
-        if (guildId != 0 && guild == null)
-            return null; // discard event if it is not from a guild we are currently in
 
         // Check channel type
         DataObject channelJson = content.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
-        if (!channelType.isMessage() || channelType == ChannelType.GROUP)
+        if (!channelType.isMessage())
         {
             WebSocketClient.LOG.debug("Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channelJson);
             return null;
