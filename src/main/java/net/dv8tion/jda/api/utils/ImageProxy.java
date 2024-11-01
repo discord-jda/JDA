@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.utils;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -46,6 +47,13 @@ public class ImageProxy extends FileProxy
     public ImageProxy(@Nonnull String url)
     {
         super(url);
+    }
+
+    @Nonnull
+    @Override
+    public ImageProxy withClient(@Nonnull OkHttpClient customHttpClient)
+    {
+        return (ImageProxy) super.withClient(customHttpClient);
     }
 
     /**
