@@ -104,7 +104,8 @@ public enum GatewayIntent
      *
      * @deprecated Replaced with {@link #GUILD_EXPRESSIONS}
      */
-    @ForRemoval(deadline = "5.2.0")
+    @ForRemoval(deadline = "5.3.0")
+    @ReplaceWith("GUILD_EXPRESSIONS")
     @Deprecated
     GUILD_EMOJIS_AND_STICKERS(3),
     /**
