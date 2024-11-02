@@ -240,7 +240,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withUrl(@Nonnull String url)
     {
-        return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, null, isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(null, getLabel(), getStyle(), url, null, isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -258,7 +258,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withSku(@Nonnull SkuSnowflake sku)
     {
-        return new ButtonImpl(null, "", ButtonStyle.PREMIUM, null, sku, isDisabled(), null).checkValid();
+        return new ButtonImpl(null, "", getStyle(), null, sku, isDisabled(), null).checkValid();
     }
 
     /**
