@@ -60,7 +60,7 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         /**
          * Respond with the "Premium required" default Discord message for premium App subscriptions
          *
-         * @deprecated Replaced with {@link Button#premium(SkuSnowflake, String)},
+         * @deprecated Replaced with {@link Button#premium(SkuSnowflake)},
          * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
          */
         @Deprecated
