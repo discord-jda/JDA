@@ -16,12 +16,10 @@
 
 package net.dv8tion.jda.test;
 
-import ch.qos.logback.classic.Logger;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import net.dv8tion.jda.internal.JDAImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -44,7 +42,7 @@ public class JDABuilderTest
         TestJDABuilder builder = new TestJDABuilder(ALL_INTENTS);
         builder.applyIntents();
 
-        List<String> logs = captureLogging((Logger) JDAImpl.LOG, builder::checkIntents);
+        List<String> logs = captureLogging(builder::checkIntents);
         assertThat(logs).isEmpty();
     }
 
@@ -54,7 +52,7 @@ public class JDABuilderTest
         TestJDABuilder builder = new TestJDABuilder(0);
         builder.applyIntents();
 
-        List<String> logs = captureLogging((Logger) JDAImpl.LOG, builder::checkIntents);
+        List<String> logs = captureLogging(builder::checkIntents);
 
         EnumSet<CacheFlag> flags = EnumSet.allOf(CacheFlag.class);
         flags.removeIf(flag -> flag.getRequiredIntent() == null);
@@ -68,7 +66,7 @@ public class JDABuilderTest
         builder.applyIntents();
         builder.enableCache(EnumSet.allOf(CacheFlag.class));
 
-        List<String> logs = captureLogging((Logger) JDAImpl.LOG, builder::checkIntents);
+        List<String> logs = captureLogging(builder::checkIntents);
         assertThat(logs).isEmpty();
     }
 
@@ -128,7 +126,7 @@ public class JDABuilderTest
         EnumSet<CacheFlag> flags = EnumSet.allOf(CacheFlag.class);
         flags.removeIf(flag -> flag.getRequiredIntent() == null || defaultDisabled.contains(flag));
 
-        List<String> logs = captureLogging((Logger) JDAImpl.LOG, builder::checkIntents);
+        List<String> logs = captureLogging(builder::checkIntents);
         checkMissingIntentWarnings(logs, flags);
     }
 
@@ -139,7 +137,7 @@ public class JDABuilderTest
         builder.applyIntents();
         builder.setChunkingFilter(ChunkingFilter.ALL);
 
-        List<String> logs = captureLogging((Logger) JDAImpl.LOG, builder::checkIntents);
+        List<String> logs = captureLogging(builder::checkIntents);
         assertThat(logs).contains("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
     }
 

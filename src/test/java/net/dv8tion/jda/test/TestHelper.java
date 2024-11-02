@@ -16,20 +16,31 @@
 
 package net.dv8tion.jda.test;
 
-import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class TestHelper
 {
+    public static List<String> captureLogging(Runnable task)
+    {
+        return captureLogging(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME), task);
+    }
+
     public static List<String> captureLogging(Logger logger, Runnable task)
     {
+        assertThat(logger).isInstanceOf(ch.qos.logback.classic.Logger.class);
+        ch.qos.logback.classic.Logger logbackLogger = (ch.qos.logback.classic.Logger) logger;
+
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
-        logger.addAppender(listAppender);
+        logbackLogger.addAppender(listAppender);
         try
         {
             task.run();
@@ -39,7 +50,7 @@ public class TestHelper
         }
         finally
         {
-            logger.detachAppender(listAppender);
+            logbackLogger.detachAppender(listAppender);
             listAppender.stop();
         }
     }
