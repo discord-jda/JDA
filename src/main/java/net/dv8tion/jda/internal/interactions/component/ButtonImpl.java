@@ -73,30 +73,33 @@ public class ButtonImpl implements Button
         Checks.notNull(style, "Style");
         Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
 
-        if (style == ButtonStyle.LINK)
+        switch (style)
         {
+        case PRIMARY:
+        case SECONDARY:
+        case SUCCESS:
+        case DANGER:
+            Checks.check(url == null, "Cannot set an URL on action buttons");
+            Checks.check(sku == null, "Cannot set an SKU on action buttons");
+            Checks.check(emoji != null || (label != null && !label.isEmpty()), "Action buttons must have either an emoji or label");
+            Checks.notEmpty(id, "Id");
+            Checks.notLonger(id, ID_MAX_LENGTH, "Id");
+            break;
+        case LINK:
             Checks.check(id == null, "Cannot set an ID on link buttons");
             Checks.check(url != null, "You must set an URL on link buttons");
             Checks.check(sku == null, "Cannot set an SKU on link buttons");
             Checks.check(emoji != null || (label != null && !label.isEmpty()), "Link buttons must have either an emoji or label");
             Checks.notEmpty(url, "URL");
             Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        }
-        else if (style == ButtonStyle.PREMIUM)
-        {
+            break;
+        case PREMIUM:
             Checks.check(id == null, "Cannot set an ID on premium buttons");
             Checks.check(url == null, "Cannot set an URL on premium buttons");
             Checks.check(emoji == null, "Cannot set an emoji on premium buttons");
             Checks.check(label == null || label.isEmpty(), "Cannot set a label on premium buttons");
             Checks.notNull(sku, "SKU");
-        }
-        else
-        {
-            Checks.check(url == null, "Cannot set an URL on action buttons");
-            Checks.check(sku == null, "Cannot set an SKU on action buttons");
-            Checks.check(emoji != null || (label != null && !label.isEmpty()), "Action buttons must have either an emoji or label");
-            Checks.notEmpty(id, "Id");
-            Checks.notLonger(id, ID_MAX_LENGTH, "Id");
+            break;
         }
 
         if (label != null)
