@@ -171,8 +171,6 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        if (emoji != null)
-            Checks.check(getStyle() != ButtonStyle.PREMIUM, "Premium buttons cannot have emojis");
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), null, isDisabled(), emoji).checkValid();
     }
 
@@ -196,7 +194,6 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withLabel(@Nonnull String label)
     {
-        Checks.check(getStyle() != ButtonStyle.PREMIUM, "Premium buttons cannot have labels");
         return new ButtonImpl(getId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
@@ -220,8 +217,6 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withId(@Nonnull String id)
     {
-        Checks.check(getStyle() != ButtonStyle.LINK, "Link buttons cannot have IDs");
-        Checks.check(getStyle() != ButtonStyle.PREMIUM, "Premium buttons cannot have IDs");
         return new ButtonImpl(id, getLabel(), getStyle(), null, null, isDisabled(), getEmoji()).checkValid();
     }
 
@@ -245,7 +240,6 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withUrl(@Nonnull String url)
     {
-        Checks.check(getStyle() == ButtonStyle.LINK, "Only link buttons can have URLs");
         return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, null, isDisabled(), getEmoji()).checkValid();
     }
 
@@ -264,7 +258,6 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withSku(@Nonnull SkuSnowflake sku)
     {
-        Checks.check(getStyle() == ButtonStyle.PREMIUM, "You can only set an SKU on Premium buttons");
         return new ButtonImpl(null, "", ButtonStyle.PREMIUM, null, sku, isDisabled(), null).checkValid();
     }
 
@@ -589,11 +582,7 @@ public interface Button extends ActionComponent
      *         The target SKU for this button
      *
      * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If any provided argument is null or empty.</li>
-     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
-     *             is exceeded.</li>
-     *         </ul>
+     *         If the provided SKU is {@code null}
      *
      * @return The button instance
      */
@@ -686,7 +675,7 @@ public interface Button extends ActionComponent
      * @param  style
      *         The button style
      * @param  idOrUrlOrSku
-     *         Either the ID or URL for this button
+     *         Either the ID, URL, or SKU for this button
      * @param  label
      *         The text to display on the button
      * @param  emoji
