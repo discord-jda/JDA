@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
@@ -65,6 +66,45 @@ public class ButtonImpl implements Button
         this.sku = sku;
         this.disabled = disabled;
         this.emoji = (EmojiUnion) emoji;
+    }
+
+    public ButtonImpl checkValid()
+    {
+        Checks.notNull(style, "Style");
+        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
+
+        if (style == ButtonStyle.LINK)
+        {
+            Checks.check(id == null, "Cannot set an ID on link buttons");
+            Checks.check(url != null, "Cannot set an ID on link buttons");
+            Checks.check(sku == null, "Cannot set an SKU on link buttons");
+            Checks.check(emoji != null || (label != null && !label.isEmpty()), "Link buttons must have either an emoji or label");
+            Checks.notEmpty(url, "URL");
+            Checks.notLonger(url, URL_MAX_LENGTH, "URL");
+        }
+        else if (style == ButtonStyle.PREMIUM)
+        {
+            Checks.check(id == null, "Cannot set an ID on premium buttons");
+            Checks.check(url == null, "Cannot set an URL on premium buttons");
+            Checks.check(emoji == null, "Cannot set an emoji on premium buttons");
+            Checks.check(label == null || label.isEmpty(), "Cannot set a label on premium buttons");
+            Checks.notNull(sku, "SKU");
+        }
+        else
+        {
+            Checks.check(url == null, "Cannot set an URL on action buttons");
+            Checks.check(sku == null, "Cannot set an SKU on action buttons");
+            Checks.check(emoji != null || (label != null && !label.isEmpty()), "Action buttons must have either an emoji or label");
+            Checks.notEmpty(id, "Id");
+            Checks.notLonger(id, ID_MAX_LENGTH, "Id");
+        }
+
+        if (label != null)
+        {
+            Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
+        }
+
+        return this;
     }
 
     @Nonnull
@@ -128,7 +168,8 @@ public class ButtonImpl implements Button
     {
         DataObject json = DataObject.empty();
         json.put("type", 2);
-        json.put("label", label);
+        if (!label.isEmpty())
+            json.put("label", label);
         json.put("style", style.getKey());
         json.put("disabled", disabled);
         if (emoji != null)
