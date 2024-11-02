@@ -76,7 +76,7 @@ public class ButtonImpl implements Button
         if (style == ButtonStyle.LINK)
         {
             Checks.check(id == null, "Cannot set an ID on link buttons");
-            Checks.check(url != null, "Cannot set an ID on link buttons");
+            Checks.check(url != null, "You must set an URL on link buttons");
             Checks.check(sku == null, "Cannot set an SKU on link buttons");
             Checks.check(emoji != null || (label != null && !label.isEmpty()), "Link buttons must have either an emoji or label");
             Checks.notEmpty(url, "URL");
