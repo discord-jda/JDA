@@ -16,33 +16,33 @@
 
 package net.dv8tion.jda.test.util;
 
-import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.internal.utils.ComponentsUtil;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ComponentsUtilTest
 {
-    @Test
-    void testId()
+    @MethodSource("testCustomId")
+    @ParameterizedTest
+    void testCustomId(String customId, ButtonStyle style, String label, boolean expected)
     {
-        final Button button = Button.primary("id", "Label");
-        assertThat(ComponentsUtil.isSameIdentifier(button, "id")).isTrue();
+        final Button button = Button.of(style, customId, label, null);
+        assertThat(ComponentsUtil.isSameIdentifier(button, "id")).isEqualTo(expected);
     }
 
-    @Test
-    void testUrl()
+    static Stream<Arguments> testCustomId()
     {
-        final Button button = Button.link("http://localhost:8080", "Label");
-        assertThat(ComponentsUtil.isSameIdentifier(button, "http://localhost:8080")).isTrue();
-    }
-
-    @Test
-    void testSku()
-    {
-        final Button button = Button.premium(SkuSnowflake.fromId(1234), "Label");
-        assertThat(ComponentsUtil.isSameIdentifier(button, "1234")).isTrue();
+        return Stream.of(
+                Arguments.of("id", ButtonStyle.PRIMARY, "Label", true),
+                Arguments.of("http://localhost:8080", ButtonStyle.LINK, "Label", false),
+                Arguments.of("1234", ButtonStyle.PREMIUM, "", false)
+        );
     }
 }
