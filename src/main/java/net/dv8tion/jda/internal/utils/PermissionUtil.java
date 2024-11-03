@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Arrays;
@@ -283,8 +282,7 @@ public class PermissionUtil
         Checks.notNull(member, "Member");
         Checks.notNull(permissions, "Permissions");
 
-        GuildImpl guild = (GuildImpl) channel.getGuild();
-        checkGuild(guild, member.getGuild(), "Member");
+        checkGuild(channel.getGuild(), member.getGuild(), "Member");
 
         long effectivePerms = getEffectivePermission(channel, member);
         return isApplied(effectivePerms, Permission.getRaw(permissions));
