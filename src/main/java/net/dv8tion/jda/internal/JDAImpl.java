@@ -708,7 +708,14 @@ public class JDAImpl implements JDA
             List<ApplicationEmoji> list = new ArrayList<>(emojis.length());
             for (int i = 0; i < emojis.length(); i++)
             {
-                list.add(entityBuilder.createApplicationEmoji(this, emojis.getObject(i)));
+                try
+                {
+                    list.add(entityBuilder.createApplicationEmoji(this, emojis.getObject(i)));
+                }
+                catch (ParsingException e)
+                {
+                    LOG.error("Failed to parse application emoji with JSON: {}", emojis.getObject(i), e);
+                }
             }
 
             return Collections.unmodifiableList(list);
