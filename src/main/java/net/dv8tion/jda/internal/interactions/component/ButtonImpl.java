@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.internal.interactions.component;
 
+import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
@@ -34,6 +36,7 @@ public class ButtonImpl implements Button
     private final String label;
     private final ButtonStyle style;
     private final String url;
+    private final SkuSnowflake sku;
     private final boolean disabled;
     private final EmojiUnion emoji;
 
@@ -44,23 +47,67 @@ public class ButtonImpl implements Button
             data.getString("label", ""),
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
+            data.hasKey("sku_id") ? SkuSnowflake.fromId(data.getLong("sku_id")) : null,
             data.getBoolean("disabled"),
             data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
     public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)
     {
-        this(id, label, style, null, disabled, emoji);
+        this(id, label, style, null, null, disabled, emoji);
     }
 
-    public ButtonImpl(String id, String label, ButtonStyle style, String url, boolean disabled, Emoji emoji)
+    public ButtonImpl(String id, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
     {
         this.id = id;
         this.label = label;
         this.style = style;
         this.url = url;  // max length 512
+        this.sku = sku;
         this.disabled = disabled;
         this.emoji = (EmojiUnion) emoji;
+    }
+
+    public ButtonImpl checkValid()
+    {
+        Checks.notNull(style, "Style");
+        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
+
+        switch (style)
+        {
+        case PRIMARY:
+        case SECONDARY:
+        case SUCCESS:
+        case DANGER:
+            Checks.check(url == null, "Cannot set an URL on action buttons");
+            Checks.check(sku == null, "Cannot set an SKU on action buttons");
+            Checks.check(emoji != null || (label != null && !label.isEmpty()), "Action buttons must have either an emoji or label");
+            Checks.notEmpty(id, "Id");
+            Checks.notLonger(id, ID_MAX_LENGTH, "Id");
+            break;
+        case LINK:
+            Checks.check(id == null, "Cannot set an ID on link buttons");
+            Checks.check(url != null, "You must set an URL on link buttons");
+            Checks.check(sku == null, "Cannot set an SKU on link buttons");
+            Checks.check(emoji != null || (label != null && !label.isEmpty()), "Link buttons must have either an emoji or label");
+            Checks.notEmpty(url, "URL");
+            Checks.notLonger(url, URL_MAX_LENGTH, "URL");
+            break;
+        case PREMIUM:
+            Checks.check(id == null, "Cannot set an ID on premium buttons");
+            Checks.check(url == null, "Cannot set an URL on premium buttons");
+            Checks.check(emoji == null, "Cannot set an emoji on premium buttons");
+            Checks.check(label == null || label.isEmpty(), "Cannot set a label on premium buttons");
+            Checks.notNull(sku, "SKU");
+            break;
+        }
+
+        if (label != null)
+        {
+            Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
+        }
+
+        return this;
     }
 
     @Nonnull
@@ -100,6 +147,13 @@ public class ButtonImpl implements Button
 
     @Nullable
     @Override
+    public SkuSnowflake getSku()
+    {
+        return sku;
+    }
+
+    @Nullable
+    @Override
     public EmojiUnion getEmoji()
     {
         return emoji;
@@ -117,15 +171,18 @@ public class ButtonImpl implements Button
     {
         DataObject json = DataObject.empty();
         json.put("type", 2);
-        json.put("label", label);
+        if (!label.isEmpty())
+            json.put("label", label);
         json.put("style", style.getKey());
         json.put("disabled", disabled);
         if (emoji != null)
             json.put("emoji", emoji);
         if (url != null)
             json.put("url", url);
-        else
+        else if (id != null)
             json.put("custom_id", id);
+        else
+            json.put("sku_id", sku.getId());
         return json;
     }
 

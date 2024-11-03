@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -207,7 +208,8 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
      * <br>This will locate and replace the existing component with the specified ID. If you provide null it will be removed instead.
      *
      * @param  id
-     *         The custom id of this component, can also be a URL for a {@link Button} with {@link ButtonStyle#LINK}
+     *         The custom id of this component, can also be a URL for a {@link Button} with {@link ButtonStyle#LINK},
+     *         or an SKU id for {@link ButtonStyle#PREMIUM}
      * @param  newComponent
      *         The new component or null to remove it
      *
@@ -227,7 +229,7 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
             if (!(component instanceof ActionComponent))
                 continue;
             ActionComponent action = (ActionComponent) component;
-            if (id.equals(action.getId()) || (action instanceof Button && id.equals(((Button) action).getUrl())))
+            if (ComponentsUtil.isSameIdentifier(action, id))
             {
                 if (newComponent == null)
                     it.remove();

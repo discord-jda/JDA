@@ -1919,7 +1919,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
     void setRequestTimeoutRetry(boolean retryOnTimeout);
 
     /**
-     * USed to determine whether or not autoReconnect is enabled for JDA.
+     * Used to determine whether or not autoReconnect is enabled for JDA.
      *
      * @return True if JDA will attempt to automatically reconnect when a connection-error is encountered.
      */
