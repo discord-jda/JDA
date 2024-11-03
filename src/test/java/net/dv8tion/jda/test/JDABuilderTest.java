@@ -141,6 +141,23 @@ public class JDABuilderTest
         assertThat(logs).contains("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
     }
 
+    @Test
+    @SuppressWarnings("deprecation")
+    void testDeprecatedIntentDoesNotDisableCache()
+    {
+        TestJDABuilder builder = new TestJDABuilder(GatewayIntent.GUILD_EMOJIS_AND_STICKERS.getRawValue());
+        builder.applyIntents();
+
+        List<String> logs = captureLogging(() ->
+            assertThatNoException().isThrownBy(builder::checkIntents)
+        );
+
+        assertThat(logs)
+            .isNotEmpty()
+            .noneMatch(log -> log.contains("CacheFlag." + CacheFlag.EMOJI))
+            .noneMatch(log -> log.contains("CacheFlag." + CacheFlag.STICKER));
+    }
+
     private void checkMissingIntentWarnings(List<String> logs, EnumSet<CacheFlag> cacheFlagsWithMissingIntents)
     {
         String commaSeparatedList = cacheFlagsWithMissingIntents.stream()
