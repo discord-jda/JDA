@@ -418,10 +418,7 @@ public enum GatewayIntent
             else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event) || GuildAuditLogEntryCreateEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_MODERATION);
             else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
-            {
-                intents.add(GUILD_EMOJIS_AND_STICKERS);
                 intents.add(GUILD_EXPRESSIONS);
-            }
             else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event))
                 intents.add(SCHEDULED_EVENTS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
