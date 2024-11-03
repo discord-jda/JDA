@@ -43,7 +43,13 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
 {
     /** Used to reset the topic field */
     long TOPIC         = 1;
-    /** Used to reset the privacy level field */
+    /**
+     * Used to reset the privacy level field
+     *
+     * @deprecated Obsolete.
+     */
+    @Deprecated
+    @ForRemoval(deadline = "5.3.0")
     long PRIVACY_LEVEL = 1 << 1;
 
     /**
@@ -110,24 +116,4 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
     @Nonnull
     @CheckReturnValue
     StageInstanceManager setTopic(@Nullable String topic);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel PrivacyLevel} for this stage instance.
-     * <br>This indicates whether guild lurkers are allowed to join the stage instance or only guild members.
-     *
-     * @param  level
-     *         The privacy level
-     *
-     * @throws IllegalArgumentException
-     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN}.
-     *
-     * @return StageInstanceManager for chaining convenience
-     *
-     * @deprecated Obsolete.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.1.0")
-    StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level);
 }

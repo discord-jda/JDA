@@ -31,7 +31,6 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
     private final StageInstance instance;
 
     private String topic;
-    private StageInstance.PrivacyLevel privacyLevel;
 
     public StageInstanceManagerImpl(StageInstance instance)
     {
@@ -62,26 +61,12 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
         return this;
     }
 
-    @Nonnull
-    @Override
-    @Deprecated
-    public StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
-    {
-        Checks.notNull(level, "PrivacyLevel");
-        Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "PrivacyLevel must not be UNKNOWN!");
-        this.privacyLevel = level;
-        set |= PRIVACY_LEVEL;
-        return this;
-    }
-
     @Override
     protected RequestBody finalizeData()
     {
         DataObject body = DataObject.empty();
         if (shouldUpdate(TOPIC) && topic != null)
             body.put("topic", topic);
-        if (shouldUpdate(PRIVACY_LEVEL))
-            body.put("privacy_level", privacyLevel.getKey());
         return getRequestBody(body);
     }
 }

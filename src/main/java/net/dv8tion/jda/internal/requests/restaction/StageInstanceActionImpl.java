@@ -36,7 +36,6 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
 {
     private final StageChannel channel;
     private String topic;
-    private StageInstance.PrivacyLevel level = StageInstance.PrivacyLevel.GUILD_ONLY;
 
     public StageInstanceActionImpl(StageChannel channel)
     {
@@ -75,24 +74,12 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
         return this;
     }
 
-    @Nonnull
-    @Override
-    @Deprecated
-    public StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
-    {
-        Checks.notNull(level, "PrivacyLevel");
-        Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "The PrivacyLevel must not be UNKNOWN!");
-        this.level = level;
-        return this;
-    }
-
     @Override
     protected RequestBody finalizeData()
     {
         DataObject body = DataObject.empty();
         body.put("channel_id", channel.getId());
         body.put("topic", topic);
-        body.put("privacy_level", level.getKey());
         return getRequestBody(body);
     }
 
