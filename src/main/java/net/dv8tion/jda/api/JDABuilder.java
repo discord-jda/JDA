@@ -98,7 +98,7 @@ public class JDABuilder
     protected GatewayEncoding encoding = GatewayEncoding.JSON;
     protected RestConfig restConfig = new RestConfig();
 
-    private JDABuilder(@Nullable String token, int intents)
+    protected JDABuilder(@Nullable String token, int intents)
     {
         this.token = token;
         this.intents = 1 | intents;
@@ -212,7 +212,7 @@ public class JDABuilder
         return create(token, intents).applyDefault();
     }
 
-    private JDABuilder applyDefault()
+    protected JDABuilder applyDefault()
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
@@ -322,7 +322,7 @@ public class JDABuilder
         return create(token, intents).applyLight();
     }
 
-    private JDABuilder applyLight()
+    protected JDABuilder applyLight()
     {
         return this.setMemberCachePolicy(MemberCachePolicy.NONE)
                    .setChunkingFilter(ChunkingFilter.NONE)
@@ -464,7 +464,7 @@ public class JDABuilder
         return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyIntents();
     }
 
-    private JDABuilder applyIntents()
+    protected JDABuilder applyIntents()
     {
         EnumSet<CacheFlag> disabledCache = EnumSet.allOf(CacheFlag.class);
         for (CacheFlag flag : CacheFlag.values())
@@ -1859,7 +1859,7 @@ public class JDABuilder
         return this;
     }
 
-    private void checkIntents()
+    protected void checkIntents()
     {
         boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
         if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL)
