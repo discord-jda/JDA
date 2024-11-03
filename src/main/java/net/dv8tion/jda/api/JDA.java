@@ -1761,6 +1761,11 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *         The name for the new emoji (2-{@value CustomEmoji#EMOJI_NAME_MAX_LENGTH} characters)
      * @param  icon
      *         The {@link Icon} for the new emoji
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is not alphanumeric or not between 2 and {@value CustomEmoji#EMOJI_NAME_MAX_LENGTH} characters long
+     *
+     * @return {@link RestAction} - Type: {@link ApplicationEmoji}
      */
     @Nonnull
     @CheckReturnValue

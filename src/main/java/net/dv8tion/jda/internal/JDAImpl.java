@@ -682,6 +682,7 @@ public class JDAImpl implements JDA
     public RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon)
     {
         Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Emoji name");
         Checks.notNull(icon, "Emoji icon");
 
         DataObject body = DataObject.empty();

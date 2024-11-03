@@ -94,6 +94,9 @@ public interface ApplicationEmojiManager extends Manager<ApplicationEmojiManager
      * @param  name
      *         The new name for the selected {@link ApplicationEmoji}
      *
+     * @throws IllegalArgumentException
+     *         If the provided name is null, not alphanumeric, or not between 2 and {@value CustomEmoji#EMOJI_NAME_MAX_LENGTH} characters long
+     *
      * @return ApplicationEmojiManager for chaining convenience.
      */
     @Nonnull
