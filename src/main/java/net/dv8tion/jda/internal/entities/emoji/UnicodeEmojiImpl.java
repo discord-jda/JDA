@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.internal.entities.emoji;
 
+import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -99,5 +101,19 @@ public class UnicodeEmojiImpl implements UnicodeEmoji, EmojiUnion
     public CustomEmoji asCustom()
     {
         throw new IllegalStateException("Cannot convert UnicodeEmoji into CustomEmoji!");
+    }
+
+    @Nonnull
+    @Override
+    public RichCustomEmoji asRich()
+    {
+        throw new IllegalStateException("Cannot convert UnicodeEmoji into RichCustomEmoji!");
+    }
+
+    @Nonnull
+    @Override
+    public ApplicationEmoji asApplication()
+    {
+        throw new IllegalStateException("Cannot convert UnicodeEmoji to ApplicationEmoji!");
     }
 }
