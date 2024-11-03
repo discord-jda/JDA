@@ -125,6 +125,7 @@ public class GenericCommandInteractionEvent extends GenericInteractionCreateEven
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     public PremiumRequiredCallbackAction replyWithPremiumRequired()
     {
