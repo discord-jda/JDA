@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
-import net.dv8tion.jda.api.requests.restaction.interactions.PremiumRequiredCallbackAction;
 import net.dv8tion.jda.api.entities.Entitlement;
+import net.dv8tion.jda.api.entities.SkuSnowflake;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.requests.restaction.interactions.PremiumRequiredCallbackAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -28,10 +30,19 @@ import javax.annotation.Nonnull;
  * <p>Replying with {@link #replyWithPremiumRequired()} will automatically acknowledge this interaction.
  *
  * <p><b>Note:</b>This interaction requires <a href="https://discord.com/developers/docs/monetization/overview" target="_blank">monetization</a> to be enabled.
+ *
+ * @deprecated Replaced with {@link Button#premium(SkuSnowflake)},
+ * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
  */
+@Deprecated
 public interface IPremiumRequiredReplyCallback extends IDeferrableCallback
 {
+    /**
+     * @deprecated Replaced with {@link Button#premium(SkuSnowflake)},
+     * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
+     */
     @Nonnull
+    @Deprecated
     @CheckReturnValue
     PremiumRequiredCallbackAction replyWithPremiumRequired();
 }
