@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -33,11 +32,13 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.ToLongFunction;
 
 public class AuditLogPaginationActionImpl
     extends PaginationActionImpl<AuditLogEntry, AuditLogPaginationAction>
@@ -105,35 +106,29 @@ public class AuditLogPaginationActionImpl
     protected void handleSuccess(Response response, Request<List<AuditLogEntry>> request)
     {
         DataObject obj = response.getObject();
+        DataArray entries = obj.getArray("audit_log_entries");
         DataArray users = obj.getArray("users");
         DataArray webhooks = obj.getArray("webhooks");
-        DataArray entries = obj.getArray("audit_log_entries");
+        DataArray threads = obj.getArray("threads");
+        DataArray events = obj.getArray("guild_scheduled_events");
+        DataArray automodRules = obj.getArray("auto_moderation_rules");
 
         List<AuditLogEntry> list = new ArrayList<>(entries.length());
         EntityBuilder builder = api.getEntityBuilder();
 
-        TLongObjectMap<DataObject> userMap = new TLongObjectHashMap<>();
-        for (int i = 0; i < users.length(); i++)
-        {
-            DataObject user = users.getObject(i);
-            userMap.put(user.getLong("id"), user);
-        }
-
-        TLongObjectMap<DataObject> webhookMap = new TLongObjectHashMap<>();
-        for (int i = 0; i < webhooks.length(); i++)
-        {
-            DataObject webhook = webhooks.getObject(i);
-            webhookMap.put(webhook.getLong("id"), webhook);
-        }
+        ToLongFunction<DataObject> getIdFunction = dataObject -> dataObject.getLong("id");
+        TLongObjectMap<DataObject> userMap = Helpers.convertToMap(getIdFunction, users);
+        TLongObjectMap<DataObject> webhookMap = Helpers.convertToMap(getIdFunction, webhooks);
+        TLongObjectMap<DataObject> threadMap = Helpers.convertToMap(getIdFunction, threads);
+        TLongObjectMap<DataObject> eventMap = Helpers.convertToMap(getIdFunction, events);
+        TLongObjectMap<DataObject> automodRuleMap = Helpers.convertToMap(getIdFunction, automodRules);
 
         for (int i = 0; i < entries.length(); i++)
         {
             try
             {
                 DataObject entry = entries.getObject(i);
-                DataObject user = userMap.get(entry.getLong("user_id", 0));
-                DataObject webhook = webhookMap.get(entry.getLong("target_id", 0));
-                AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user, webhook);
+                AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, userMap, webhookMap, threadMap, eventMap, automodRuleMap);
                 list.add(result);
             }
             catch (ParsingException | NullPointerException e)
