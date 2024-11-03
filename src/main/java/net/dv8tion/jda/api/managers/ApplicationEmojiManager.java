@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -53,6 +54,7 @@ public interface ApplicationEmojiManager extends Manager<ApplicationEmojiManager
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     ApplicationEmojiManager reset(long fields);
 
     /**
@@ -70,6 +72,7 @@ public interface ApplicationEmojiManager extends Manager<ApplicationEmojiManager
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     ApplicationEmojiManager reset(long... fields);
 
     /**
