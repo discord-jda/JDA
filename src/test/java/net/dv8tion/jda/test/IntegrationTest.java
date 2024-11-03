@@ -87,6 +87,11 @@ public class IntegrationTest
                 .withNormalizedBody(this::normalizeRequestBody);
     }
 
+    protected void assertThatNoRequestsWereSent()
+    {
+        verify(requester, never()).request(any());
+    }
+
     protected <T> void whenSuccess(RestActionImpl<T> action, DataArray array, Consumer<T> assertion)
     {
         Response response = mock();
