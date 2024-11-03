@@ -38,7 +38,7 @@ import java.util.Formatter;
  */
 public interface CustomEmoji extends Emoji, IMentionable
 {
-    int EMOJI_NAME_MAX_LENGTH = 32
+    int EMOJI_NAME_MAX_LENGTH = 32;
 
     /** Template for {@link #getImageUrl()} */
     String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
