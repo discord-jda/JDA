@@ -1554,7 +1554,7 @@ public class JDABuilder
     {
         this.intents = GatewayIntent.ALL_INTENTS;
         if (intents != null)
-            this.intents &= ~GatewayIntent.getRaw(intents);
+            this.intents = 1 | (GatewayIntent.ALL_INTENTS & ~GatewayIntent.getRaw(intents));
         return this;
     }
 
@@ -1646,7 +1646,7 @@ public class JDABuilder
         Checks.notNull(intent, "Intents");
         Checks.noneNull(intents, "Intents");
         EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
-        return setDisabledIntents(EnumSet.complementOf(set));
+        return setEnabledIntents(set);
     }
 
     /**
@@ -1673,11 +1673,9 @@ public class JDABuilder
     public JDABuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents)
     {
         if (intents == null || intents.isEmpty())
-            setDisabledIntents(EnumSet.allOf(GatewayIntent.class));
-        else if (intents instanceof EnumSet)
-            setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
+            this.intents = 1;
         else
-            setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+            this.intents = 1 | GatewayIntent.getRaw(intents);
         return this;
     }
 
