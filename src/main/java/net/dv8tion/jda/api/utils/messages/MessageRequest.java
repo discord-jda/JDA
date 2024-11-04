@@ -432,7 +432,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
      *
      * @param  mention
-     *         True, to mention the author if the referenced message
+     *         True, to mention the author in the referenced message
      *
      * @return The same instance for chaining
      */
