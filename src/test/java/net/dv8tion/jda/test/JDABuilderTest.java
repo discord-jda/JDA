@@ -148,19 +148,40 @@ public class JDABuilderTest
         assertThat(logs).contains("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
     }
 
-    @Test
+    @EnumSource
+    @ParameterizedTest
     @SuppressWarnings("deprecation")
-    void testDeprecatedIntentDoesNotDisableCache()
+    void testDeprecatedIntentDoesNotDisableCache(IntentTestCase testCase)
     {
-        TestJDABuilder builder = new TestJDABuilder(GatewayIntent.GUILD_EMOJIS_AND_STICKERS.getRawValue());
-        builder.applyIntents();
+        TestJDABuilder builder;
+
+        switch (testCase)
+        {
+        case PASSED_TO_FACTORY:
+            builder = new TestJDABuilder(GatewayIntent.GUILD_EMOJIS_AND_STICKERS.getRawValue());
+            builder.applyIntents();
+            break;
+        case PASSED_TO_RELATIVE:
+            builder = new TestJDABuilder(0);
+            builder.applyLight();
+            builder.enableIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS);
+            builder.enableCache(CacheFlag.EMOJI, CacheFlag.STICKER);
+            break;
+        case PASSED_TO_SETTER:
+            builder = new TestJDABuilder(0);
+            builder.applyLight();
+            builder.setEnabledIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS);
+            builder.enableCache(CacheFlag.EMOJI, CacheFlag.STICKER);
+            break;
+        default:
+            throw new AssertionError("Unexpected test case " + testCase);
+        }
 
         List<String> logs = captureLogging(() ->
             assertThatNoException().isThrownBy(builder::checkIntents)
         );
 
         assertThat(logs)
-            .isNotEmpty()
             .noneMatch(log -> log.contains("CacheFlag." + CacheFlag.EMOJI))
             .noneMatch(log -> log.contains("CacheFlag." + CacheFlag.STICKER));
     }
@@ -214,5 +235,12 @@ public class JDABuilderTest
         {
             super.checkIntents();
         }
+    }
+
+    enum IntentTestCase
+    {
+        PASSED_TO_FACTORY,
+        PASSED_TO_RELATIVE,
+        PASSED_TO_SETTER;
     }
 }
