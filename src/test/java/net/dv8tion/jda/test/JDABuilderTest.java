@@ -102,7 +102,6 @@ public class JDABuilderTest
         }
     }
 
-
     @ParameterizedTest
     @EnumSource(CacheFlag.class)
     void testRequiredIntentForCacheFlagEnabled(CacheFlag cacheFlag)
@@ -110,6 +109,14 @@ public class JDABuilderTest
         GatewayIntent requiredIntent = cacheFlag.getRequiredIntent();
         TestJDABuilder builder = new TestJDABuilder(requiredIntent != null ? requiredIntent.getRawValue() : 0);
         builder.applyIntents();
+        builder.enableCache(cacheFlag);
+
+        assertThatNoException().isThrownBy(builder::checkIntents);
+
+        builder = new TestJDABuilder(0);
+        builder.applyIntents();
+        if (requiredIntent != null)
+            builder.setEnabledIntents(requiredIntent);
         builder.enableCache(cacheFlag);
 
         assertThatNoException().isThrownBy(builder::checkIntents);
