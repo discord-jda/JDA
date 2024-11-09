@@ -664,7 +664,8 @@ public class EntityBuilder
         return member;
     }
 
-    public GuildVoiceState createGuildVoiceState(MemberImpl member, DataObject voiceStateJson) {
+    public GuildVoiceState createGuildVoiceState(MemberImpl member, DataObject voiceStateJson)
+    {
         GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
         if (voiceState == null)
             voiceState = new GuildVoiceStateImpl(member);
