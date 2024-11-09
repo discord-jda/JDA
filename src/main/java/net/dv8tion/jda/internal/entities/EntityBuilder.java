@@ -679,7 +679,10 @@ public class EntityBuilder
         final long channelId = newVoiceStateJson.getLong("channel_id");
         AudioChannel audioChannel = (AudioChannel) guild.getGuildChannelById(channelId);
         if (audioChannel != null)
-            ((AudioChannelMixin<?>) audioChannel).getConnectedMembersMap().put(member.getIdLong(), member);
+        {
+            if (member.getVoiceState() != null)
+                ((AudioChannelMixin<?>) audioChannel).getConnectedMembersMap().put(member.getIdLong(), member);
+        }
         else
             LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                     channelId, guild.getId(), member.getId());
