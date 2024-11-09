@@ -1164,7 +1164,7 @@ public class GuildImpl implements Guild
         {
             EntityBuilder entityBuilder = jda.getEntityBuilder();
             DataObject voiceStateData = response.getObject();
-            MemberImpl member = entityBuilder.createMember(this, voiceStateData.getObject("member"), voiceStateData, null);
+            MemberImpl member = entityBuilder.createMember(this, voiceStateData.getObject("member"), null, null);
             entityBuilder.updateMemberCache(member);
             return entityBuilder.createGuildVoiceState(member, voiceStateData);
         });
