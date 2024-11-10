@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import static net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.*;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class ButtonTests
@@ -48,6 +49,7 @@ public class ButtonTests
     {
         ButtonImpl button = new ButtonImpl(id, label, style, url, sku, false, emoji);
         assertDoesNotThrow(button::checkValid);
+        assertDoesNotThrow(button::toData);
     }
 
     static Stream<Arguments> testButtonValid()
@@ -55,15 +57,15 @@ public class ButtonTests
         // The following button configurations are valid:
         return Stream.of(
                 // Normal button; id, either label, emoji, label+emoji
-                Arguments.of(PRIMARY, "id", EXAMPLE_LABEL, null, null, null),
-                Arguments.of(PRIMARY, "id", EXAMPLE_LABEL, null, null, EXAMPLE_EMOJI),
-                Arguments.of(PRIMARY, "id", "", null, null, EXAMPLE_EMOJI),
+                arguments(PRIMARY, "id", EXAMPLE_LABEL, null, null, null),
+                arguments(PRIMARY, "id", EXAMPLE_LABEL, null, null, EXAMPLE_EMOJI),
+                arguments(PRIMARY, "id", null, null, null, EXAMPLE_EMOJI),
                 // Link button; url, either label, emoji, label+emoji
-                Arguments.of(LINK, null, EXAMPLE_LABEL, EXAMPLE_URL, null, null),
-                Arguments.of(LINK, null, EXAMPLE_LABEL, EXAMPLE_URL, null, EXAMPLE_EMOJI),
-                Arguments.of(LINK, null, "", EXAMPLE_URL, null, EXAMPLE_EMOJI),
+                arguments(LINK, null, EXAMPLE_LABEL, EXAMPLE_URL, null, null),
+                arguments(LINK, null, EXAMPLE_LABEL, EXAMPLE_URL, null, EXAMPLE_EMOJI),
+                arguments(LINK, null, null, EXAMPLE_URL, null, EXAMPLE_EMOJI),
                 // Premium button doesn't have anything
-                Arguments.of(PREMIUM, null, "", null, EXAMPLE_SKU, null)
+                arguments(PREMIUM, null, null, null, EXAMPLE_SKU, null)
         );
     }
 
@@ -80,20 +82,20 @@ public class ButtonTests
         // The following button configuration will fail when:
         return Stream.of(
                 // Normal button; has no id, has neither label/emoji, has url, has sku
-                Arguments.of(PRIMARY, null, EXAMPLE_LABEL, null, null, null),
-                Arguments.of(PRIMARY, "id", "", null, null, null),
-                Arguments.of(PRIMARY, "id", EXAMPLE_LABEL, EXAMPLE_URL, null, null),
-                Arguments.of(PRIMARY, "id", EXAMPLE_LABEL, null, EXAMPLE_SKU, null),
+                arguments(PRIMARY, null, EXAMPLE_LABEL, null, null, null),
+                arguments(PRIMARY, "id", "", null, null, null),
+                arguments(PRIMARY, "id", EXAMPLE_LABEL, EXAMPLE_URL, null, null),
+                arguments(PRIMARY, "id", EXAMPLE_LABEL, null, EXAMPLE_SKU, null),
                 // Link button; has no url, has id, has sku
-                Arguments.of(LINK, null, EXAMPLE_LABEL, null, null, null),
-                Arguments.of(LINK, "id", EXAMPLE_LABEL, EXAMPLE_URL, null, null),
-                Arguments.of(LINK, null, EXAMPLE_LABEL, EXAMPLE_URL, EXAMPLE_SKU, null),
+                arguments(LINK, null, EXAMPLE_LABEL, null, null, null),
+                arguments(LINK, "id", EXAMPLE_LABEL, EXAMPLE_URL, null, null),
+                arguments(LINK, null, EXAMPLE_LABEL, EXAMPLE_URL, EXAMPLE_SKU, null),
                 // Premium button; has no sku, has id, has url, has label, has emoji
-                Arguments.of(PREMIUM, null, "", null, null, null),
-                Arguments.of(PREMIUM, "id", "", null, EXAMPLE_SKU, null),
-                Arguments.of(PREMIUM, null, "", "url", EXAMPLE_SKU, null),
-                Arguments.of(PREMIUM, null, EXAMPLE_LABEL, null, EXAMPLE_SKU, null),
-                Arguments.of(PREMIUM, null, "", null, EXAMPLE_SKU, EXAMPLE_EMOJI)
+                arguments(PREMIUM, null, "", null, null, null),
+                arguments(PREMIUM, "id", "", null, EXAMPLE_SKU, null),
+                arguments(PREMIUM, null, "", "url", EXAMPLE_SKU, null),
+                arguments(PREMIUM, null, EXAMPLE_LABEL, null, EXAMPLE_SKU, null),
+                arguments(PREMIUM, null, "", null, EXAMPLE_SKU, EXAMPLE_EMOJI)
         );
     }
 
@@ -108,14 +110,14 @@ public class ButtonTests
     void testPrimaryWithUrl()
     {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> Button.primary("id", EXAMPLE_LABEL).withUrl(EXAMPLE_URL));
+            .isThrownBy(() -> Button.primary("id", EXAMPLE_LABEL).withUrl(EXAMPLE_URL));
     }
 
     @Test
     void linkWithId()
     {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> Button.link(EXAMPLE_URL, EXAMPLE_LABEL).withId(EXAMPLE_ID));
+            .isThrownBy(() -> Button.link(EXAMPLE_URL, EXAMPLE_LABEL).withId(EXAMPLE_ID));
     }
     
     @Test
@@ -129,7 +131,7 @@ public class ButtonTests
     void testPremiumWithId()
     {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> Button.premium(EXAMPLE_SKU).withLabel(EXAMPLE_ID));
+            .isThrownBy(() -> Button.premium(EXAMPLE_SKU).withLabel(EXAMPLE_ID));
     }
 
     @Test

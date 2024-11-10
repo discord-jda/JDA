@@ -60,9 +60,9 @@ public class ButtonImpl implements Button
     public ButtonImpl(String id, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
     {
         this.id = id;
-        this.label = label;
+        this.label = label == null ? "" : label;
         this.style = style;
-        this.url = url;  // max length 512
+        this.url = url;
         this.sku = sku;
         this.disabled = disabled;
         this.emoji = (EmojiUnion) emoji;
@@ -71,6 +71,7 @@ public class ButtonImpl implements Button
     public ButtonImpl checkValid()
     {
         Checks.notNull(style, "Style");
+        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
 
         switch (style)
@@ -81,7 +82,7 @@ public class ButtonImpl implements Button
         case DANGER:
             Checks.check(url == null, "Cannot set an URL on action buttons");
             Checks.check(sku == null, "Cannot set an SKU on action buttons");
-            Checks.check(emoji != null || (label != null && !label.isEmpty()), "Action buttons must have either an emoji or label");
+            Checks.check(emoji != null || !label.isEmpty(), "Action buttons must have either an emoji or label");
             Checks.notEmpty(id, "Id");
             Checks.notLonger(id, ID_MAX_LENGTH, "Id");
             break;
@@ -89,7 +90,7 @@ public class ButtonImpl implements Button
             Checks.check(id == null, "Cannot set an ID on link buttons");
             Checks.check(url != null, "You must set an URL on link buttons");
             Checks.check(sku == null, "Cannot set an SKU on link buttons");
-            Checks.check(emoji != null || (label != null && !label.isEmpty()), "Link buttons must have either an emoji or label");
+            Checks.check(emoji != null || !label.isEmpty(), "Link buttons must have either an emoji or label");
             Checks.notEmpty(url, "URL");
             Checks.notLonger(url, URL_MAX_LENGTH, "URL");
             break;
@@ -97,14 +98,9 @@ public class ButtonImpl implements Button
             Checks.check(id == null, "Cannot set an ID on premium buttons");
             Checks.check(url == null, "Cannot set an URL on premium buttons");
             Checks.check(emoji == null, "Cannot set an emoji on premium buttons");
-            Checks.check(label == null || label.isEmpty(), "Cannot set a label on premium buttons");
+            Checks.check(label.isEmpty(), "Cannot set a label on premium buttons");
             Checks.notNull(sku, "SKU");
             break;
-        }
-
-        if (label != null)
-        {
-            Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         }
 
         return this;

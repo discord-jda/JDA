@@ -345,7 +345,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button primary(@Nonnull String id, @Nonnull Emoji emoji)
     {
-        return new ButtonImpl(id, "", ButtonStyle.PRIMARY, false, emoji).checkValid();
+        return new ButtonImpl(id, null, ButtonStyle.PRIMARY, false, emoji).checkValid();
     }
 
     /**
@@ -399,7 +399,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button secondary(@Nonnull String id, @Nonnull Emoji emoji)
     {
-        return new ButtonImpl(id, "", ButtonStyle.SECONDARY, false, emoji).checkValid();
+        return new ButtonImpl(id, null, ButtonStyle.SECONDARY, false, emoji).checkValid();
     }
 
     /**
@@ -453,7 +453,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button success(@Nonnull String id, @Nonnull Emoji emoji)
     {
-        return new ButtonImpl(id, "", ButtonStyle.SUCCESS, false, emoji).checkValid();
+        return new ButtonImpl(id, null, ButtonStyle.SUCCESS, false, emoji).checkValid();
     }
 
     /**
@@ -507,7 +507,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button danger(@Nonnull String id, @Nonnull Emoji emoji)
     {
-        return new ButtonImpl(id, "", ButtonStyle.DANGER, false, emoji).checkValid();
+        return new ButtonImpl(id, null, ButtonStyle.DANGER, false, emoji).checkValid();
     }
 
     /**
@@ -567,7 +567,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button link(@Nonnull String url, @Nonnull Emoji emoji)
     {
-        return new ButtonImpl(null, "", ButtonStyle.LINK, url, null, false, emoji).checkValid();
+        return new ButtonImpl(null, null, ButtonStyle.LINK, url, null, false, emoji).checkValid();
     }
 
     /**
@@ -589,7 +589,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button premium(@Nonnull SkuSnowflake sku)
     {
-        return new ButtonImpl(null, "", ButtonStyle.PREMIUM, null, sku, false, null).checkValid();
+        return new ButtonImpl(null, null, ButtonStyle.PREMIUM, null, sku, false, null).checkValid();
     }
 
     /**
@@ -661,7 +661,7 @@ public interface Button extends ActionComponent
         Checks.check(style != ButtonStyle.PREMIUM, "Premium buttons don't support emojis");
         if (style == ButtonStyle.LINK)
             return link(idOrUrl, emoji);
-        return new ButtonImpl(idOrUrl, "", style, false, emoji).checkValid();
+        return new ButtonImpl(idOrUrl, null, style, false, emoji).checkValid();
     }
 
     /**
