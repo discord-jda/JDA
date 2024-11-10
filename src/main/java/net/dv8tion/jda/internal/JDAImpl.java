@@ -693,7 +693,8 @@ public class JDAImpl implements JDA
         return new RestActionImpl<>(this, route, body, (response, request) ->
         {
             final DataObject obj = response.getObject();
-            return entityBuilder.createApplicationEmoji(this, obj, true);
+            final User selfUser = getSelfUser();
+            return entityBuilder.createApplicationEmoji(this, obj, selfUser);
         });
     }
 
@@ -710,7 +711,12 @@ public class JDAImpl implements JDA
             {
                 try
                 {
-                    list.add(entityBuilder.createApplicationEmoji(this, emojis.getObject(i), false));
+                    final DataObject emoji = emojis.getObject(i);
+                    final User owner = emoji.optObject("user")
+                            .map(entityBuilder::createUser)
+                            .orElse(null);
+
+                    list.add(entityBuilder.createApplicationEmoji(this, emoji, owner));
                 }
                 catch (ParsingException e)
                 {
@@ -728,9 +734,15 @@ public class JDAImpl implements JDA
     {
         Checks.isSnowflake(emojiId);
         Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
-        return new RestActionImpl<>(this, route,
-                (response, request) -> entityBuilder.createApplicationEmoji(this, response.getObject(), false)
-        );
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            final DataObject emoji = response.getObject();
+            final User owner = emoji.optObject("user")
+                    .map(entityBuilder::createUser)
+                    .orElse(null);
+
+            return entityBuilder.createApplicationEmoji(this, emoji, owner);
+        });
     }
 
     @Nonnull
