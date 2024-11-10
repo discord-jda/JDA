@@ -2018,7 +2018,7 @@ public class  DefaultShardManagerBuilder
     {
         this.intents = GatewayIntent.ALL_INTENTS;
         if (intents != null)
-            this.intents &= ~GatewayIntent.getRaw(intents);
+            this.intents = 1 | ~GatewayIntent.getRaw(intents);
         return this;
     }
 
@@ -2110,7 +2110,7 @@ public class  DefaultShardManagerBuilder
         Checks.notNull(intent, "Intent");
         Checks.noneNull(intents, "Intent");
         EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
-        return setDisabledIntents(EnumSet.complementOf(set));
+        return setEnabledIntents(set);
     }
 
     /**
@@ -2137,11 +2137,9 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents)
     {
         if (intents == null || intents.isEmpty())
-            setDisabledIntents(EnumSet.allOf(GatewayIntent.class));
-        else if (intents instanceof EnumSet)
-            setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
+            this.intents = 1;
         else
-            setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+            this.intents = 1 | GatewayIntent.getRaw(intents);
         return this;
     }
 
