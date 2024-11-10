@@ -171,7 +171,7 @@ public class ButtonImpl implements Button
     {
         DataObject json = DataObject.empty();
         json.put("type", 2);
-        if (!label.isEmpty())
+        if (label != null && !label.isEmpty())
             json.put("label", label);
         json.put("style", style.getKey());
         json.put("disabled", disabled);
