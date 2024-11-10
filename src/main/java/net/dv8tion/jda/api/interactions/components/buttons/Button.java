@@ -171,7 +171,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), null, isDisabled(), emoji).checkValid();
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji).checkValid();
     }
 
     /**
@@ -217,7 +217,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withId(@Nonnull String id)
     {
-        return new ButtonImpl(id, getLabel(), getStyle(), null, null, isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(id, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -240,7 +240,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withUrl(@Nonnull String url)
     {
-        return new ButtonImpl(null, getLabel(), getStyle(), url, null, isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -258,7 +258,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withSku(@Nonnull SkuSnowflake sku)
     {
-        return new ButtonImpl(null, "", getStyle(), null, sku, isDisabled(), null).checkValid();
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -697,10 +697,16 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrlOrSku, @Nullable String label, @Nullable Emoji emoji)
     {
-        if (style == ButtonStyle.LINK)
+        Checks.notNull(style, "ButtonStyle");
+
+        switch (style)
+        {
+        case LINK:
             return new ButtonImpl(null, label, style, idOrUrlOrSku, null, false, emoji).checkValid();
-        if (style == ButtonStyle.PREMIUM)
+        case PREMIUM:
             return new ButtonImpl(null, label, style, null, SkuSnowflake.fromId(idOrUrlOrSku), false, emoji).checkValid();
-        return new ButtonImpl(idOrUrlOrSku, label, style, null, null, false, emoji).checkValid();
+        default:
+            return new ButtonImpl(idOrUrlOrSku, label, style, null, null, false, emoji).checkValid();
+        }
     }
 }
