@@ -1021,11 +1021,11 @@ public class EntityBuilder
                 .setAvailable(json.getBoolean("available", true));
     }
 
-    public ApplicationEmojiImpl createApplicationEmoji(JDAImpl api, DataObject json)
+    public ApplicationEmojiImpl createApplicationEmoji(JDAImpl api, DataObject json, User owner)
     {
         final long emojiId = json.getUnsignedLong("id");
-        final User user = createUser(json.getObject("user"));
-        return new ApplicationEmojiImpl(emojiId, api, user)
+
+        return new ApplicationEmojiImpl(emojiId, api, owner)
                 .setAnimated(json.getBoolean("animated"))
                 .setName(json.getString("name"));
     }
