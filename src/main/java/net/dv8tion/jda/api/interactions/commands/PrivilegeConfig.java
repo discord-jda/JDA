@@ -20,19 +20,18 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.interactions.commands.PrivilegeHelper;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A PrivilegeConfig is the collection of moderator defined {@link IntegrationPrivilege privileges} set on a specific application and its commands
@@ -171,177 +170,6 @@ public class PrivilegeConfig
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
         Checks.notNull(command, "Command");
-        if (member.hasPermission(channel, Permission.ADMINISTRATOR))
-            return true;
-        return isCommandAllowedInChannel(channel, member, command);
-    }
-
-    private boolean isCommandAllowedInChannel(GuildChannel channel, Member member, Command command)
-    {
-        final IntegrationPrivilege commandChannelPermissions = findPrivilege(getCommandPrivileges(command), matchingChannel(channel));
-        if (commandChannelPermissions != null)
-        {
-            if (commandChannelPermissions.isDisabled())
-                return false;
-            return userOrRolePermission(channel, member, command);
-        }
-        else
-            return isCommandAllowedInAllChannels(channel, member, command);
-    }
-
-    private boolean isCommandAllowedInAllChannels(GuildChannel channel, Member member, Command command)
-    {
-        final IntegrationPrivilege commandAllChannelsPermissions = findPrivilege(getCommandPrivileges(command), IntegrationPrivilege::targetsAllChannels);
-
-        if (commandAllChannelsPermissions != null)
-        {
-            if (commandAllChannelsPermissions.isEnabled())
-                return userOrRolePermission(channel, member, command);
-            return false;
-        }
-        else
-            return isAppAllowedInChannel(channel, member, command);
-    }
-
-    private boolean userOrRolePermission(GuildChannel channel, Member member, Command command)
-    {
-        final List<IntegrationPrivilege> commandPrivileges = getCommandPrivileges(command);
-        final IntegrationPrivilege commandUserPermissions = findPrivilege(commandPrivileges, matchingMember(member));
-        if (commandUserPermissions != null)
-            return commandUserPermissions.isEnabled();
-        else
-        {
-            // If there's a role override, then at least one needs to be enabled
-            // If there's no role override, check @everyone
-            final List<IntegrationPrivilege> commandRolePermissionList = member.getRoles().stream()
-                    .map(r -> findPrivilege(commandPrivileges, matchingRole(r)))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            if (commandRolePermissionList.isEmpty())
-                return commandEveryonePermission(channel, member, command);
-
-            for (IntegrationPrivilege integrationPrivilege : commandRolePermissionList)
-            {
-                if (integrationPrivilege.isEnabled())
-                    return true;
-            }
-            return false;
-        }
-    }
-
-    private boolean commandEveryonePermission(GuildChannel channel, Member member, Command command)
-    {
-        final IntegrationPrivilege commandEveryonePermissions = findPrivilege(getCommandPrivileges(command), matchingRole(channel.getGuild().getPublicRole()));
-        if (commandEveryonePermissions != null)
-            return commandEveryonePermissions.isEnabled();
-        return appLevelUserOrRolePermission(channel, member, command);
-    }
-
-    private boolean appLevelUserOrRolePermission(GuildChannel channel, Member member, Command command)
-    {
-        final List<IntegrationPrivilege> applicationPrivileges = getApplicationPrivileges();
-        final IntegrationPrivilege appUserPermissions = findPrivilege(applicationPrivileges, matchingMember(member));
-        if (appUserPermissions != null)
-        {
-            if (appUserPermissions.isEnabled())
-                return hasDefaultMemberPermissions(channel, member, command);
-        }
-        else
-        {
-            // If there's a role override, then at least one needs to be enabled
-            // If there's no role override, check @everyone
-            final List<IntegrationPrivilege> commandRolePermissionList = member.getRoles().stream()
-                    .map(r -> findPrivilege(applicationPrivileges, matchingRole(r)))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            if (commandRolePermissionList.isEmpty())
-                return isAppAllowingEveryone(channel, member, command);
-
-            for (IntegrationPrivilege integrationPrivilege : commandRolePermissionList)
-            {
-                if (integrationPrivilege.isEnabled())
-                    return hasDefaultMemberPermissions(channel, member, command);
-            }
-        }
-        return false;
-    }
-
-    private boolean isAppAllowingEveryone(GuildChannel channel, Member member, Command command)
-    {
-        final IntegrationPrivilege commandEveryonePermissions = findPrivilege(getCommandPrivileges(command), matchingRole(channel.getGuild().getPublicRole()));
-        if (commandEveryonePermissions != null)
-        {
-            if (commandEveryonePermissions.isEnabled())
-                return hasDefaultMemberPermissions(channel, member, command);
-            return false;
-        }
-        return appLevelUserOrRolePermission(channel, member, command);
-    }
-
-    private boolean hasDefaultMemberPermissions(GuildChannel channel, Member member, Command command)
-    {
-        final Long rawPermissions = command.getDefaultPermissions().getPermissionsRaw();
-        // No permissions requires
-        if (rawPermissions == null)
-            return true;
-        // Admins only, already checked in [[PrivilegeConfig#canMemberRun]]
-        if (rawPermissions == 0)
-            return false;
-        return ((PermissionUtil.getEffectivePermission(channel, member) & rawPermissions) == rawPermissions);
-    }
-
-    private boolean isAppAllowedInChannel(GuildChannel channel, Member member, Command command)
-    {
-        final IntegrationPrivilege appChannelPermissions = findPrivilege(getApplicationPrivileges(), matchingChannel(channel));
-        if (appChannelPermissions != null)
-        {
-            if (appChannelPermissions.isEnabled())
-                return userOrRolePermission(channel, member, command);
-            return false;
-        }
-        else
-            return isAppAllowedInAllChannels(channel, member, command);
-    }
-
-    private boolean isAppAllowedInAllChannels(GuildChannel channel, Member member, Command command)
-    {
-        final IntegrationPrivilege appChannelPermissions = findPrivilege(getApplicationPrivileges(), IntegrationPrivilege::targetsAllChannels);
-        if (appChannelPermissions != null)
-        {
-            if (appChannelPermissions.isEnabled())
-                return userOrRolePermission(channel, member, command);
-            return false;
-        }
-        else
-            return userOrRolePermission(channel, member, command);
-    }
-
-    @Nullable
-    private static IntegrationPrivilege findPrivilege(@Nullable Collection<IntegrationPrivilege> privileges, @Nonnull Predicate<IntegrationPrivilege> predicate)
-    {
-        if (privileges == null)
-            return null;
-        return privileges.stream()
-                .filter(predicate)
-                .findAny()
-                .orElse(null);
-    }
-
-    @Nonnull
-    private static Predicate<IntegrationPrivilege> matchingChannel(@Nonnull GuildChannel channel)
-    {
-        return p -> p.getType() == IntegrationPrivilege.Type.CHANNEL && p.getIdLong() == channel.getIdLong();
-    }
-
-    @Nonnull
-    private static Predicate<IntegrationPrivilege> matchingMember(@Nonnull Member member)
-    {
-        return p -> p.getType() == IntegrationPrivilege.Type.USER && p.getIdLong() == member.getIdLong();
-    }
-
-    @Nonnull
-    private static Predicate<IntegrationPrivilege> matchingRole(@Nonnull Role role)
-    {
-        return p -> p.getType() == IntegrationPrivilege.Type.ROLE && p.getIdLong() == role.getIdLong();
+        return PrivilegeHelper.canMemberRun(this, channel, member, command);
     }
 }
