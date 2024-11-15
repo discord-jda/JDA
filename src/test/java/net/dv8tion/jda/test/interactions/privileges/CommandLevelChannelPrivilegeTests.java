@@ -23,7 +23,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 public class CommandLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTest
@@ -45,10 +44,7 @@ public class CommandLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTe
         assertThat(CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command)).isFalse();
 
         // Verify what got called
-        commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.isAllowedInAllChannels(config, channel, member, command), never());
-        appLevelChannelMock.verifyNoInteractions();
-        commandLevelUserRoleMock.verifyNoInteractions();
-        appLevelUserRoleMock.verifyNoInteractions();
+        commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
     }
 
     @Test
@@ -67,10 +63,8 @@ public class CommandLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTe
         CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command); // No result assert, only test forwarding
 
         // Verify what got called
-        commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.isAllowedInAllChannels(config, channel, member, command), never());
-        appLevelChannelMock.verifyNoInteractions();
+        commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
         commandLevelUserRoleMock.verify(() -> CommandLevelUserOrRolePermissionChecks.canMemberRun(config, channel, member, command), times(1));
-        appLevelUserRoleMock.verifyNoInteractions();
     }
 
     @Test
@@ -90,10 +84,8 @@ public class CommandLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTe
         assertThat(CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command)).isFalse();
 
         // Verify what got called
+        commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
         commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.isAllowedInAllChannels(config, channel, member, command), times(1));
-        appLevelChannelMock.verifyNoInteractions();
-        commandLevelUserRoleMock.verifyNoInteractions();
-        appLevelUserRoleMock.verifyNoInteractions();
     }
 
     @Test
@@ -114,10 +106,9 @@ public class CommandLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTe
         CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command); // No result assert, only test forwarding
 
         // Verify what got called
+        commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
         commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.isAllowedInAllChannels(config, channel, member, command), times(1));
-        appLevelChannelMock.verifyNoInteractions();
         commandLevelUserRoleMock.verify(() -> CommandLevelUserOrRolePermissionChecks.canMemberRun(config, channel, member, command), times(1));
-        appLevelUserRoleMock.verifyNoInteractions();
     }
 
     @Test
@@ -138,9 +129,8 @@ public class CommandLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTe
         CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command); // No result assert, only test forwarding
 
         // Verify what got called
+        commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
         commandLevelChannelMock.verify(() -> CommandLevelChannelPermissionChecks.isAllowedInAllChannels(config, channel, member, command), times(1));
         appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
-        commandLevelUserRoleMock.verifyNoInteractions();
-        appLevelUserRoleMock.verifyNoInteractions();
     }
 }

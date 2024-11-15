@@ -77,10 +77,21 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
     @AfterEach
     void teardownMocks()
     {
-        commandLevelChannelMock.close();
-        appLevelChannelMock.close();
-        commandLevelUserRoleMock.close();
-        appLevelUserRoleMock.close();
+        try
+        {
+            // Make sure all interactions were checked by the test subclasses
+            commandLevelChannelMock.verifyNoMoreInteractions();
+            appLevelChannelMock.verifyNoMoreInteractions();
+            commandLevelUserRoleMock.verifyNoMoreInteractions();
+            appLevelUserRoleMock.verifyNoMoreInteractions();
+        }
+        finally
+        {
+            commandLevelChannelMock.close();
+            appLevelChannelMock.close();
+            commandLevelUserRoleMock.close();
+            appLevelUserRoleMock.close();
+        }
     }
 
     protected void useCommandPrivileges(IntegrationPrivilege... privileges)

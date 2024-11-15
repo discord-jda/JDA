@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 public class AppLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTest
@@ -45,10 +44,7 @@ public class AppLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTest
         assertThat(AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command)).isFalse();
 
         // Verify what got called
-        commandLevelChannelMock.verifyNoInteractions();
-        appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.isAllowedInAllChannels(any(), any(), any(), any()), never());
-        commandLevelUserRoleMock.verifyNoInteractions();
-        appLevelUserRoleMock.verifyNoInteractions();
+        appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
     }
 
     @Test
@@ -67,10 +63,8 @@ public class AppLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTest
         AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command); // No result assert, only test forwarding
 
         // Verify what got called
-        commandLevelChannelMock.verifyNoInteractions();
-        appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.isAllowedInAllChannels(any(), any(), any(), any()), never());
+        appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
         commandLevelUserRoleMock.verify(() -> CommandLevelUserOrRolePermissionChecks.canMemberRun(any(), any(), any(), any()), times(1));
-        appLevelUserRoleMock.verifyNoInteractions();
     }
 
     @Test
@@ -90,10 +84,8 @@ public class AppLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTest
         assertThat(AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command)).isFalse();
 
         // Verify what got called
-        commandLevelChannelMock.verifyNoInteractions();
+        appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
         appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.isAllowedInAllChannels(any(), any(), any(), any()), times(1));
-        commandLevelUserRoleMock.verifyNoInteractions();
-        appLevelUserRoleMock.verifyNoInteractions();
     }
 
     @Test
@@ -114,10 +106,9 @@ public class AppLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTest
         AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command); // No result assert, only test forwarding
 
         // Verify what got called
-        commandLevelChannelMock.verifyNoInteractions();
+        appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
         appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.isAllowedInAllChannels(any(), any(), any(), any()), times(1));
         commandLevelUserRoleMock.verify(() -> CommandLevelUserOrRolePermissionChecks.canMemberRun(any(), any(), any(), any()), times(1));
-        appLevelUserRoleMock.verifyNoInteractions();
     }
 
     @Test
@@ -138,9 +129,8 @@ public class AppLevelChannelPrivilegeTests extends AbstractPrivilegeConfigTest
         AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command); // No result assert, only test forwarding
 
         // Verify what got called
-        commandLevelChannelMock.verifyNoInteractions();
+        appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.canMemberRun(config, channel, member, command), times(1));
         appLevelChannelMock.verify(() -> AppLevelChannelPermissionChecks.isAllowedInAllChannels(any(), any(), any(), any()), times(1));
         commandLevelUserRoleMock.verify(() -> CommandLevelUserOrRolePermissionChecks.canMemberRun(any(), any(), any(), any()), times(1));
-        appLevelUserRoleMock.verifyNoInteractions();
     }
 }
