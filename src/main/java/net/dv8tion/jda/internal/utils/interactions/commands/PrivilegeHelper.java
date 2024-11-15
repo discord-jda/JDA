@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class PrivilegeHelper
 {
@@ -47,6 +48,14 @@ public class PrivilegeHelper
                 .filter(predicate)
                 .findAny()
                 .orElse(null);
+    }
+
+    @Nullable
+    public static Stream<IntegrationPrivilege> findAllPrivileges(@Nullable Collection<IntegrationPrivilege> privileges, @Nonnull Predicate<IntegrationPrivilege> predicate)
+    {
+        if (privileges == null)
+            return null;
+        return privileges.stream().filter(predicate);
     }
 
     @Nonnull

@@ -51,7 +51,7 @@ public class AppLevelUserOrRolePermissionChecks
         // If there's a role override, then at least one needs to be enabled
         // If there's no role override, check @everyone
         final List<IntegrationPrivilege> commandRolePermissionList = member.getRoles().stream()
-                .map(r -> findPrivilege(config.getApplicationPrivileges(), matchingRole(r)))
+                .flatMap(r -> findAllPrivileges(config.getApplicationPrivileges(), matchingRole(r)))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (commandRolePermissionList.isEmpty())
