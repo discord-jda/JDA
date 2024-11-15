@@ -24,10 +24,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
-import net.dv8tion.jda.internal.utils.interactions.commands.AppLevelChannelPermissionChecks;
-import net.dv8tion.jda.internal.utils.interactions.commands.AppLevelUserOrRolePermissionChecks;
-import net.dv8tion.jda.internal.utils.interactions.commands.CommandLevelChannelPermissionChecks;
-import net.dv8tion.jda.internal.utils.interactions.commands.CommandLevelUserOrRolePermissionChecks;
+import net.dv8tion.jda.internal.utils.interactions.commands.*;
 import net.dv8tion.jda.test.Constants;
 import net.dv8tion.jda.test.IntegrationTest;
 import org.junit.jupiter.api.AfterEach;
@@ -61,6 +58,7 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
     protected MockedStatic<AppLevelChannelPermissionChecks> appLevelChannelMock;
     protected MockedStatic<CommandLevelUserOrRolePermissionChecks> commandLevelUserRoleMock;
     protected MockedStatic<AppLevelUserOrRolePermissionChecks> appLevelUserRoleMock;
+    protected MockedStatic<DefaultMemberPermissionsChecks> defaultMemberPermissionsMock;
 
     @BeforeEach
     void setupMocks()
@@ -84,6 +82,7 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
         appLevelChannelMock = mockStatic(AppLevelChannelPermissionChecks.class);
         commandLevelUserRoleMock = mockStatic(CommandLevelUserOrRolePermissionChecks.class);
         appLevelUserRoleMock = mockStatic(AppLevelUserOrRolePermissionChecks.class);
+        defaultMemberPermissionsMock = mockStatic(DefaultMemberPermissionsChecks.class);
     }
 
     @AfterEach
@@ -96,6 +95,7 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
             appLevelChannelMock.verifyNoMoreInteractions();
             commandLevelUserRoleMock.verifyNoMoreInteractions();
             appLevelUserRoleMock.verifyNoMoreInteractions();
+            defaultMemberPermissionsMock.verifyNoMoreInteractions();
         }
         finally
         {
@@ -103,6 +103,7 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
             appLevelChannelMock.close();
             commandLevelUserRoleMock.close();
             appLevelUserRoleMock.close();
+            defaultMemberPermissionsMock.close();
         }
     }
 
