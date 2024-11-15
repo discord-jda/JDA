@@ -37,10 +37,10 @@ public class CommandLevelChannelPermissionChecks
             return CommandLevelUserOrRolePermissionChecks.canMemberRun(config, channel, member, command);
         }
         else
-            return isCommandAllowedInAllChannels(config, channel, member, command);
+            return isAllowedInAllChannels(config, channel, member, command);
     }
 
-    private static boolean isCommandAllowedInAllChannels(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
+    public static boolean isAllowedInAllChannels(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
     {
         final IntegrationPrivilege commandAllChannelsPermissions = findPrivilege(config.getCommandPrivileges(command), IntegrationPrivilege::targetsAllChannels);
 

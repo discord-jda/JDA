@@ -38,28 +38,34 @@ public class AppLevelUserOrRolePermissionChecks
         {
             if (appUserPermissions.isEnabled())
                 return DefaultMemberPermissionsChecks.canMemberRun(channel, member, command);
+            return false;
         }
         else
         {
-            // If there's a role override, then at least one needs to be enabled
-            // If there's no role override, check @everyone
-            final List<IntegrationPrivilege> commandRolePermissionList = member.getRoles().stream()
-                    .map(r -> findPrivilege(applicationPrivileges, matchingRole(r)))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            if (commandRolePermissionList.isEmpty())
-                return isAppAllowingEveryone(config, channel, member, command);
+            return hasAtLeastOneConfiguredRole(config, channel, member, command);
+        }
+    }
 
-            for (IntegrationPrivilege integrationPrivilege : commandRolePermissionList)
-            {
-                if (integrationPrivilege.isEnabled())
-                    return DefaultMemberPermissionsChecks.canMemberRun(channel, member, command);
-            }
+    public static boolean hasAtLeastOneConfiguredRole(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
+    {
+        // If there's a role override, then at least one needs to be enabled
+        // If there's no role override, check @everyone
+        final List<IntegrationPrivilege> commandRolePermissionList = member.getRoles().stream()
+                .map(r -> findPrivilege(config.getApplicationPrivileges(), matchingRole(r)))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (commandRolePermissionList.isEmpty())
+            return isEveryoneAllowed(config, channel, member, command);
+
+        for (IntegrationPrivilege integrationPrivilege : commandRolePermissionList)
+        {
+            if (integrationPrivilege.isEnabled())
+                return DefaultMemberPermissionsChecks.canMemberRun(channel, member, command);
         }
         return false;
     }
 
-    private static boolean isAppAllowingEveryone(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
+    public static boolean isEveryoneAllowed(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
     {
         final IntegrationPrivilege commandEveryonePermissions = findPrivilege(config.getApplicationPrivileges(), matchingRole(channel.getGuild().getPublicRole()));
         if (commandEveryonePermissions != null)

@@ -36,10 +36,10 @@ public class CommandLevelUserOrRolePermissionChecks
         if (commandUserPermissions != null)
             return commandUserPermissions.isEnabled();
         else
-            return commandAtLeastOneRole(config, channel, member, command);
+            return hasAtLeastOneConfiguredRole(config, channel, member, command);
     }
 
-    private static boolean commandAtLeastOneRole(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
+    public static boolean hasAtLeastOneConfiguredRole(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
     {
         // If there's a role override, then at least one needs to be enabled
         // If there's no role override, check @everyone
@@ -48,7 +48,7 @@ public class CommandLevelUserOrRolePermissionChecks
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         if (commandRolePermissionList.isEmpty())
-            return commandEveryonePermission(config, channel, member, command);
+            return isEveryoneAllowed(config, channel, member, command);
 
         for (IntegrationPrivilege integrationPrivilege : commandRolePermissionList)
         {
@@ -58,7 +58,7 @@ public class CommandLevelUserOrRolePermissionChecks
         return false;
     }
 
-    private static boolean commandEveryonePermission(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
+    public static boolean isEveryoneAllowed(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
     {
         final IntegrationPrivilege commandEveryonePermissions = findPrivilege(config.getCommandPrivileges(command), matchingRole(channel.getGuild().getPublicRole()));
         if (commandEveryonePermissions != null)

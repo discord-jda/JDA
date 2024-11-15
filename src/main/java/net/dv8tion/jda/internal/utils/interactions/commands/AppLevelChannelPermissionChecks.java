@@ -37,10 +37,10 @@ public class AppLevelChannelPermissionChecks
             return false;
         }
         else
-            return isAppAllowedInAllChannels(config, channel, member, command);
+            return isAllowedInAllChannels(config, channel, member, command);
     }
 
-    private static boolean isAppAllowedInAllChannels(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
+    public static boolean isAllowedInAllChannels(PrivilegeConfig config, GuildChannel channel, Member member, Command command)
     {
         final IntegrationPrivilege appChannelPermissions = findPrivilege(config.getApplicationPrivileges(), IntegrationPrivilege::targetsAllChannels);
         if (appChannelPermissions != null)
