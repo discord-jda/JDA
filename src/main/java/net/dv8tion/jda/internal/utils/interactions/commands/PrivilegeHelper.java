@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 
@@ -34,8 +35,8 @@ public class PrivilegeHelper
 {
     public static boolean canMemberRun(@Nonnull PrivilegeConfig config, @Nonnull GuildChannel channel, @Nonnull Member member, @Nonnull Command command)
     {
-        if (member.hasPermission(channel, Permission.ADMINISTRATOR))
-            return true;
+        if (command.getDefaultPermissions().equals(DefaultMemberPermissions.DISABLED))
+            return member.hasPermission(channel, Permission.ADMINISTRATOR);
         return CommandLevelChannelPermissionChecks.canMemberRun(config, channel, member, command);
     }
 
