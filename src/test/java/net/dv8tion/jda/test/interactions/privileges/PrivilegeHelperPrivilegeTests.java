@@ -20,15 +20,37 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.internal.utils.interactions.commands.CommandLevelChannelPermissionChecks;
 import net.dv8tion.jda.internal.utils.interactions.commands.PrivilegeHelper;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class PrivilegeHelperPrivilegeTests extends AbstractPrivilegeConfigTest
 {
+    protected MockedStatic<PrivilegeHelper> privilegeHelperMock;
+
+    @BeforeEach
+    void setupPrivilegeHelper()
+    {
+        privilegeHelperMock = mockStatic(PrivilegeHelper.class);
+    }
+
+    @AfterEach
+    void teardownPrivilegeHelper()
+    {
+        try
+        {
+            privilegeHelperMock.verifyNoMoreInteractions();
+        }
+        finally
+        {
+            privilegeHelperMock.close();
+        }
+    }
 
     @Test
     @DisplayName("Requires no permissions, forward to command level permission checks")
