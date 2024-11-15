@@ -54,6 +54,7 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
     @Mock
     protected PrivilegeConfig config;
 
+    protected MockedStatic<PrivilegeHelper> privilegeHelperMock;
     protected MockedStatic<CommandLevelChannelPermissionChecks> commandLevelChannelMock;
     protected MockedStatic<AppLevelChannelPermissionChecks> appLevelChannelMock;
     protected MockedStatic<CommandLevelUserOrRolePermissionChecks> commandLevelUserRoleMock;
@@ -78,6 +79,7 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
         when(member.getIdLong()).thenReturn(Constants.MINN_USER_ID);
         when(member.getRoles()).thenReturn(Collections.singletonList(memberRole));
 
+        privilegeHelperMock = mockStatic(PrivilegeHelper.class);
         commandLevelChannelMock = mockStatic(CommandLevelChannelPermissionChecks.class);
         appLevelChannelMock = mockStatic(AppLevelChannelPermissionChecks.class);
         commandLevelUserRoleMock = mockStatic(CommandLevelUserOrRolePermissionChecks.class);
@@ -91,6 +93,7 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
         try
         {
             // Make sure all interactions were checked by the test subclasses
+            privilegeHelperMock.verifyNoMoreInteractions();
             commandLevelChannelMock.verifyNoMoreInteractions();
             appLevelChannelMock.verifyNoMoreInteractions();
             commandLevelUserRoleMock.verifyNoMoreInteractions();
@@ -99,6 +102,7 @@ public abstract class AbstractPrivilegeConfigTest extends IntegrationTest
         }
         finally
         {
+            privilegeHelperMock.close();
             commandLevelChannelMock.close();
             appLevelChannelMock.close();
             commandLevelUserRoleMock.close();
