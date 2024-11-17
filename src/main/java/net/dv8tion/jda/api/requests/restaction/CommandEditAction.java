@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -104,6 +105,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @Deprecated
+    @ReplaceWith("setContexts(InteractionContextType.GUILD)")
     @CheckReturnValue
     CommandEditAction setGuildOnly(boolean guildOnly);
 

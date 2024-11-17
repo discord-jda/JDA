@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -235,6 +236,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @deprecated Replaced with {@link #getContexts()}
      */
     @Deprecated
+    @ReplaceWith("getContexts().contains(InteractionContextType.GUILD)")
     boolean isGuildOnly();
 
     /**

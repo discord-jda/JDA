@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -158,6 +159,7 @@ public interface CommandData extends SerializableData
      */
     @Nonnull
     @Deprecated
+    @ReplaceWith("setContexts(InteractionContextType.GUILD)")
     CommandData setGuildOnly(boolean guildOnly);
 
     /**
