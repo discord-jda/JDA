@@ -89,7 +89,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditAction apply(@Nonnull CommandData commandData)
     {
         Checks.notNull(commandData, "Command Data");
-        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET | PERMISSIONS_SET | GUILD_ONLY_SET | NSFW_SET;
+        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET | PERMISSIONS_SET | GUILD_ONLY_SET | NSFW_SET | INTERACTION_CONTEXTS_SET | INTEGRATION_TYPES_SET;
         this.data = (CommandDataImpl) commandData;
         return this;
     }
@@ -238,6 +238,10 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
             json.remove("dm_permission");
         if (isUnchanged(NSFW_SET))
             json.remove("nsfw");
+        if (isUnchanged(INTERACTION_CONTEXTS_SET))
+            json.remove("contexts");
+        if (isUnchanged(INTEGRATION_TYPES_SET))
+            json.remove("integration_types");
         mask = 0;
         data = new CommandDataImpl(UNDEFINED, UNDEFINED);
         return getRequestBody(json);
