@@ -90,27 +90,34 @@ public class CommandImpl implements Command
                 ? DefaultMemberPermissions.ENABLED
                 : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
-        this.contexts = json.optArray("contexts")
-                .map(d -> d.stream(DataArray::getString)
-                        .map(InteractionContextType::fromKey)
-                        .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class))
-                )
-                // If the command is in a guild, it can only be guild, otherwise up to the dm_permission flag
-                .orElseGet(() ->
-                {
-                    if (guildId != 0L) return Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
+        if (json.hasKey("contexts"))
+        {
+            this.contexts = json.getArray("contexts")
+                    .stream(DataArray::getString)
+                    .map(InteractionContextType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class));
+        }
+        // If the command is in a guild, it can only be guild, otherwise up to the dm_permission flag
+        else if (guildId != 0L)
+            this.contexts = Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
+        else
+        {
+            final boolean dmPermission = json.getBoolean("dm_permission", true);
+            this.contexts = dmPermission
+                    ? Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM)
+                    : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
+        }
 
-                    final boolean dmPermission = json.getBoolean("dm_permission", true);
-                    return dmPermission
-                            ? Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM)
-                            : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
-                });
-        this.integrationTypes = json.optArray("integration_types")
-                .map(d -> d.stream(DataArray::getString)
-                        .map(IntegrationType::fromKey)
-                        .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class))
-                )
-                .orElse(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
+        if (json.hasKey("integration_types"))
+        {
+            this.integrationTypes = json.getArray("integration_types")
+                    .stream(DataArray::getString)
+                    .map(IntegrationType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class));
+        }
+        else
+            this.integrationTypes = Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL);
+
         this.nsfw = json.getBoolean("nsfw");
     }
 
