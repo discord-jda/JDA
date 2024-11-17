@@ -121,7 +121,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
                     DataObject memberJson = members.getObject(memberId);
                     memberJson.put("user", users.getObject(memberId)); // Add user json as well for parsing
                     Member optionMember = interactionEntityBuilder.createMember(guild, memberJson);
-                    if (hasFullGuild())
+                    if (member instanceof MemberImpl)
                         entityBuilder.updateMemberCache((MemberImpl) optionMember);
                     resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
                 });
@@ -132,7 +132,7 @@ public class CommandInteractionPayloadImpl extends InteractionImpl implements Co
                         .stream()
                         .map(roleId ->
                         {
-                            if (hasFullGuild())
+                            if (!guild.isDetached())
                                 return guild.getRoleById(roleId);
                             return interactionEntityBuilder.createRole(guild, roles.getObject(roleId));
                         })

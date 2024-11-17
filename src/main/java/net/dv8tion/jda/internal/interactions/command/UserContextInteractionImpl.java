@@ -41,7 +41,7 @@ public class UserContextInteractionImpl extends ContextInteractionImpl<User> imp
         resolved.optObject("members").filter(m -> !m.keys().isEmpty()).ifPresent(members -> {
             DataObject member = members.getObject(members.keys().iterator().next());
             this.member = interactionEntityBuilder.createMember(guild, member);
-            if (hasFullGuild())
+            if (this.member instanceof MemberImpl)
                 api.getEntityBuilder().updateMemberCache((MemberImpl) this.member);
         });
 

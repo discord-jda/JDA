@@ -25,7 +25,8 @@ public class MemberInteractionPermissions
     private final long channelId;
     private final long permissions;
 
-    public MemberInteractionPermissions(long channelId, long permissions) {
+    public MemberInteractionPermissions(long channelId, long permissions)
+    {
         this.channelId = channelId;
         this.permissions = permissions;
     }
