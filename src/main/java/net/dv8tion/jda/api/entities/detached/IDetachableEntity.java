@@ -22,13 +22,17 @@ package net.dv8tion.jda.api.entities.detached;
  * where the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild},
  * and in group DMs.
  * <br>Some information may be unavailable on detached entities,
- * and most {@link net.dv8tion.jda.api.requests.RestAction RestActions} will fail with a {@link net.dv8tion.jda.api.exceptions.DetachedEntityException DetachedEntityException}.
+ * and most {@link net.dv8tion.jda.api.requests.RestAction RestActions} will throw a {@link net.dv8tion.jda.api.exceptions.DetachedEntityException DetachedEntityException}.
  */
 public interface IDetachableEntity
 {
     /**
-     * Whether this entity is detached, i.e.,
-     * if the entity isn't known by the bot, such as unknown guilds, friend DMs, and group DMs.
+     * Whether this entity is detached.
+     *
+     * <p>A detached entity is not known to the bot.
+     * This is the case for interactions that happen through user-installed commands
+     * in channels that the bot is not a member of.
+     * For instance, when a command is used in a group channel or a guild that the bot is not a member in.
      *
      * @return {@code True}, if the entity is detached
      */

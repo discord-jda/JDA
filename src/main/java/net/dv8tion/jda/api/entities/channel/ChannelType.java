@@ -38,7 +38,7 @@ public enum ChannelType
      */
     VOICE(VoiceChannel.class, 2, 1, true),
     /**
-     * A {@link GroupChannel GroupChannel}, used only in user apps.
+     * A {@link GroupChannel GroupChannel}.
      */
     GROUP(GroupChannel.class, 3, -1),
     /**

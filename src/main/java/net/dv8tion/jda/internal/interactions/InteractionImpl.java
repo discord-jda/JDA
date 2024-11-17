@@ -64,25 +64,26 @@ public class InteractionImpl implements Interaction
 
     public InteractionImpl(JDAImpl jda, DataObject data)
     {
+        DataObject userObj = data.optObject("member").orElse(data).getObject("user");
         this.api = jda;
-        final DataObject userObj = data.optObject("member").orElse(data).getObject("user");
         this.interactionEntityBuilder = new InteractionEntityBuilder(jda, data.getLong("channel_id"), userObj.getUnsignedLong("id"));
         this.id = data.getUnsignedLong("id");
         this.token = data.getString("token");
         this.type = data.getInt("type");
-        this.guild = data.optObject("guild").map(guildJson ->
-                {
+        this.guild = data.optObject("guild")
+                .map(guildJson -> {
                     if (!guildJson.hasKey("preferred_locale"))
                         guildJson.put("preferred_locale", data.getString("guild_locale", "en-US"));
                     return interactionEntityBuilder.getOrCreateGuild(guildJson);
-                }
-        ).orElse(null);
+                })
+                .orElse(null);
         this.channelId = data.getUnsignedLong("channel_id", 0L);
         this.userLocale = DiscordLocale.from(data.getString("locale", "en-US"));
         this.context = InteractionContextType.fromKey(data.getString("context"));
         this.integrationOwners = new IntegrationOwnersImpl(data.getObject("authorizing_integration_owners"));
 
         DataObject channelJson = data.getObject("channel");
+        ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
         if (guild instanceof GuildImpl)
         {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
@@ -90,7 +91,7 @@ public class InteractionImpl implements Interaction
             user = member.getUser();
 
             GuildChannel channel = guild.getGuildChannelById(channelJson.getUnsignedLong("id"));
-            if (channel == null && ChannelType.fromId(channelJson.getInt("type")).isThread())
+            if (channel == null && channelType.isThread())
                 channel = api.getEntityBuilder().createThreadChannel((GuildImpl) guild, channelJson, guild.getIdLong(), false);
             if (channel == null)
                 throw new IllegalStateException("Failed to create channel instance for interaction! Channel Type: " + channelJson.getInt("type"));
@@ -101,7 +102,7 @@ public class InteractionImpl implements Interaction
             member = interactionEntityBuilder.createMember(guild, data.getObject("member"));
             user = member.getUser();
 
-            if (ChannelType.fromId(channelJson.getInt("type")).isThread())
+            if (channelType.isThread())
                 channel = interactionEntityBuilder.createThreadChannel(guild, channelJson);
             else
                 channel = interactionEntityBuilder.createGuildChannel(guild, channelJson);
@@ -113,12 +114,16 @@ public class InteractionImpl implements Interaction
             //(G)DMs
             user = jda.getEntityBuilder().createUser(userObj);
             member = null;
-            ChannelType type = ChannelType.fromId(channelJson.getInt("type"));
-            if (type == ChannelType.PRIVATE) {
+            ChannelType type = channelType;
+            switch (type)
+            {
+            case PRIVATE:
                 this.channel = interactionEntityBuilder.createPrivateChannel(channelJson, user);
-            } else if (type == ChannelType.GROUP) {
+                break;
+            case GROUP:
                 this.channel = interactionEntityBuilder.createGroupChannel(channelJson);
-            } else {
+                break;
+            default:
                 throw new IllegalArgumentException("Received interaction in unexpected channel type! Type " + type + " is not supported yet!");
             }
         }

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -56,7 +57,7 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
     default String getIconUrl()
     {
         String iconId = getIconId();
-        return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
+        return iconId == null ? null : Helpers.format(ICON_URL, getId(), iconId);
     }
 
     /**

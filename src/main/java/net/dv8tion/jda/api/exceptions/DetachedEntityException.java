@@ -20,14 +20,14 @@ package net.dv8tion.jda.api.exceptions;
  *
  * @see net.dv8tion.jda.api.entities.detached.IDetachableEntity
  */
-public class DetachedEntityException extends RuntimeException
+public class DetachedEntityException extends UnsupportedOperationException
 {
     /**
      * Creates a new DetachedEntityException
      */
     public DetachedEntityException()
     {
-        this("Cannot perform action as the bot is not in the guild");
+        this("Unsupported operation on detached entities");
     }
 
     /**

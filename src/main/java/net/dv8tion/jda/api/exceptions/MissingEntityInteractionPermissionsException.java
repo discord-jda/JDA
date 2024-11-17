@@ -20,7 +20,7 @@ package net.dv8tion.jda.api.exceptions;
  * indicating that the permissions could not be checked on this combination of channel and member.
  *
  * <p>Getting/Checking the permissions of a {@link net.dv8tion.jda.api.entities.Member Member} in a given {@link net.dv8tion.jda.api.entities.channel.middleman.GuildChannel GuildChannel},
- * will only work when either:
+ * will only work under certain circumstances:
  * <ul>
  *     <li>The member is the {@link net.dv8tion.jda.api.interactions.Interaction#getMember() interaction caller},
  *         and the channel is the {@link net.dv8tion.jda.api.interactions.Interaction#getGuildChannel() interaction channel}
@@ -31,16 +31,8 @@ package net.dv8tion.jda.api.exceptions;
  *     <li>The member is the {@link net.dv8tion.jda.api.interactions.Interaction#getMember() interaction caller}, and the channel is an interaction option</li>
  * </ul>
  */
-public class MissingEntityInteractionPermissionsException extends RuntimeException
+public class MissingEntityInteractionPermissionsException extends IllegalStateException
 {
-    /**
-     * Creates a new MissingEntityInteractionPermissionsException
-     */
-    public MissingEntityInteractionPermissionsException()
-    {
-        this("Cannot perform action as the bot is not in the guild");
-    }
-
     /**
      * Creates a new MissingEntityInteractionPermissionsException
      *
