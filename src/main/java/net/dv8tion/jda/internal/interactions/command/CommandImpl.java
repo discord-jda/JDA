@@ -252,16 +252,16 @@ public class CommandImpl implements Command
 
     @Nonnull
     @Override
-    public Set<InteractionContextType> getContexts()
+    public EnumSet<InteractionContextType> getContexts()
     {
-        return contexts;
+        return Helpers.copyEnumSet(InteractionContextType.class, contexts);
     }
 
     @Nonnull
     @Override
-    public Set<IntegrationType> getIntegrationTypes()
+    public EnumSet<IntegrationType> getIntegrationTypes()
     {
-        return integrationTypes;
+        return Helpers.copyEnumSet(IntegrationType.class, integrationTypes);
     }
 
     @Override

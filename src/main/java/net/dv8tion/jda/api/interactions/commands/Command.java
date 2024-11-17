@@ -238,12 +238,12 @@ public interface Command extends ISnowflake, ICommandReference
     boolean isGuildOnly();
 
     /**
-     * Gets the contexts in which this command can be executed.
+     * The contexts in which this command can be used.
      *
-     * @return The contexts in which this command can be executed
+     * @return The contexts in which this command can be used
      */
     @Nonnull
-    Set<InteractionContextType> getContexts();
+    EnumSet<InteractionContextType> getContexts();
 
     /**
      * Gets the integration types on which this command can be installed on.
@@ -251,7 +251,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @return The integration types on which this command can be installed on
      */
     @Nonnull
-    Set<IntegrationType> getIntegrationTypes();
+    EnumSet<IntegrationType> getIntegrationTypes();
 
     /**
      * Whether this command is restricted to NSFW (age-restricted) channels.
