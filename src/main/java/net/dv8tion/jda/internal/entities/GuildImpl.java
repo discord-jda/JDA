@@ -1164,6 +1164,23 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    @CheckReturnValue
+    public RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
+    {
+        JDAImpl jda = getJDA();
+        Route.CompiledRoute route = Route.Guilds.GET_VOICE_STATE.compile(getId(), Long.toUnsignedString(id));
+        return new RestActionImpl<>(jda, route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = jda.getEntityBuilder();
+            DataObject voiceStateData = response.getObject();
+            MemberImpl member = entityBuilder.createMember(this, voiceStateData.getObject("member"), null, null);
+            entityBuilder.updateMemberCache(member);
+            return entityBuilder.createGuildVoiceState(member, voiceStateData);
+        });
+    }
+
+    @Nonnull
+    @Override
     public VerificationLevel getVerificationLevel()
     {
         return verificationLevel;
