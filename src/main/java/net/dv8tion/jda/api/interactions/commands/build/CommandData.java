@@ -381,7 +381,7 @@ public interface CommandData extends SerializableData
                 data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
             }
 
-            if (object.hasKey("contexts"))
+            if (!object.isNull("contexts"))
             {
                 data.setContexts(object.getArray("contexts")
                         .stream(DataArray::getString)
@@ -391,7 +391,7 @@ public interface CommandData extends SerializableData
             else
                 data.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
 
-            if (object.hasKey("integration_types"))
+            if (!object.isNull("integration_types"))
             {
                 data.setIntegrationTypes(object.getArray("integration_types")
                         .stream(DataArray::getString)

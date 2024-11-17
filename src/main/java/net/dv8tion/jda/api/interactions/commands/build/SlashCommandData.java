@@ -673,7 +673,7 @@ public interface SlashCommandData extends CommandData
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
-        if (object.hasKey("contexts"))
+        if (!object.isNull("contexts"))
         {
             command.setContexts(object.getArray("contexts")
                     .stream(DataArray::getString)
@@ -683,7 +683,7 @@ public interface SlashCommandData extends CommandData
         else
             command.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
 
-        if (object.hasKey("integration_types"))
+        if (!object.isNull("integration_types"))
         {
             command.setIntegrationTypes(object.getArray("integration_types")
                     .stream(DataArray::getString)

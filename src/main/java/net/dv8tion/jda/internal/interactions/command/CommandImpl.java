@@ -90,7 +90,7 @@ public class CommandImpl implements Command
                 ? DefaultMemberPermissions.ENABLED
                 : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
-        if (json.hasKey("contexts"))
+        if (!json.isNull("contexts"))
         {
             this.contexts = json.getArray("contexts")
                     .stream(DataArray::getString)
@@ -108,7 +108,7 @@ public class CommandImpl implements Command
                     : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
         }
 
-        if (json.hasKey("integration_types"))
+        if (!json.isNull("integration_types"))
         {
             this.integrationTypes = json.getArray("integration_types")
                     .stream(DataArray::getString)
