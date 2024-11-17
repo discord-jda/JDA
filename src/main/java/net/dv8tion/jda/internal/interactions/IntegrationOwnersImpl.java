@@ -44,14 +44,14 @@ public class IntegrationOwnersImpl implements IntegrationOwners
 
     @Nullable
     @Override
-    public UserSnowflake getUserIntegration()
+    public UserSnowflake getAuthorizingUser()
     {
         return userIntegration;
     }
 
     @Nullable
     @Override
-    public Long getGuildIntegration()
+    public Long getAuthorizingGuild()
     {
         return guildIntegration;
     }
@@ -60,8 +60,8 @@ public class IntegrationOwnersImpl implements IntegrationOwners
     public String toString()
     {
         return new EntityString(this)
-                .addMetadata("user", getUserIntegration())
-                .addMetadata("guild", getGuildIntegration())
+                .addMetadata("user", getAuthorizingUser())
+                .addMetadata("guild", getAuthorizingGuild())
                 .toString();
     }
 }

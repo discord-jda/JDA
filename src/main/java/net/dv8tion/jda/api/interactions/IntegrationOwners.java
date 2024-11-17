@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import javax.annotation.Nullable;
@@ -29,30 +30,52 @@ import javax.annotation.Nullable;
  */
 public interface IntegrationOwners
 {
-    /**
-     * Returns the ID of the authorizing user.
-     * <br>This is not the ID of the interaction caller,
-     * but rather the ID of the user which started the original interaction.
-     *
-     * <p>This is only available if the app was installed on the user.
-     *
-     * @return the ID of the authorizing user, or {@code null}
-     */
-    @Nullable
-    UserSnowflake getUserIntegration();
 
     /**
-     * In some conditions, returns the guild ID if the interaction is triggered from a guild,
-     * or {@code 0} if the interaction is triggered from a DM with the app's bot user.
+     * Whether this interaction was first authorized by a command with the {@link IntegrationType#USER_INSTALL USER_INSTALL} integration type.
      *
-     * <p>In a guild and in the app's DMs, this is only available if:
-     * <ul>
-     *     <li>The command's integration contexts contains {@link IntegrationType#GUILD_INSTALL} and {@link IntegrationType#USER_INSTALL}</li>
-     *     <li>The interaction comes from a component</li>
-     * </ul>
+     * <p>You can retrieve the authorizing user with {@link #getAuthorizingUser()}.
      *
-     * @return the guild ID in which the interaction is triggered in, or {@code 0}, or {@code null}
+     * @return {@code true} if this interaction started from a user-installable command.
+     */
+    default boolean isUserIntegration()
+    {
+        return getAuthorizingUser() != null;
+    }
+
+    /**
+     * When the interaction has the {@link IntegrationType#USER_INSTALL USER_INSTALL} integration type,
+     * returns the {@link UserSnowflake} which first authorized this interaction,
+     * or {@code null} otherwise.
+     *
+     * @return the {@link UserSnowflake} which triggered the interaction,
+     *         or {@code null} for non-user-installable commands
      */
     @Nullable
-    Long getGuildIntegration();
+    UserSnowflake getAuthorizingUser();
+
+    /**
+     * Whether this interaction was first authorized by a command with the {@link IntegrationType#GUILD_INSTALL} integration type.
+     * <br>This includes guild commands and bot DMs commands.
+     *
+     * <p>You can retrieve the authorizing guild with {@link Interaction#getGuild()}.
+     *
+     * @return {@code true} if this interaction started from a guild-installable command.
+     */
+    default boolean isGuildIntegration()
+    {
+        return getAuthorizingGuild() != null;
+    }
+
+    /**
+     * When the interaction has the {@link IntegrationType#GUILD_INSTALL GUILD_INSTALL} integration type,
+     * returns the {@link Guild} ID which first authorized this interaction,
+     * or {@code 0} if the interaction is used in the app's bot DMs,
+     * returns {@code null} otherwise.
+     *
+     * @return the guild ID in which the interaction is triggered in, or {@code 0} for Bot DMs,
+     *         or {@code null} for non-guild-installable commands
+     */
+    @Nullable
+    Long getAuthorizingGuild();
 }
