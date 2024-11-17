@@ -94,8 +94,9 @@ public interface IReplyCallback extends IDeferrableCallback
      *     <li>Cannot be {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(long) retrieved by ID}</li>
      * </ul>
      *
-     * <b>Note:</b> Your message will always appear ephemeral
-     * if the guild has {@link net.dv8tion.jda.api.Permission#USE_EXTERNAL_APPLICATIONS Permission.USE_EXTERNAL_APPLICATIONS} disabled.
+     * <b>Note:</b> In guilds the bot is not a member of, your message will appear ephemeral
+     * if the member does not have the {@link net.dv8tion.jda.api.Permission#USE_EXTERNAL_APPLICATIONS USE_EXTERNAL_APPLICATIONS} permission,
+     * this usually happens for user-installed commands.
      *
      * @param  ephemeral
      *         True, if this message should only be visible to the interaction user

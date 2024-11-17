@@ -55,8 +55,9 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
      * the very first message sent through the {@link InteractionHook}, inherits the ephemeral state of the initial reply.
      * To send an ephemeral deferred reply, you must use {@link IReplyCallback#deferReply(boolean) deferReply(true)} instead.
      *
-     * <p><b>Note:</b> Your message will always appear ephemeral
-     * if the guild has {@link net.dv8tion.jda.api.Permission#USE_EXTERNAL_APPLICATIONS Permission.USE_EXTERNAL_APPLICATIONS} disabled.
+     * <p><b>Note:</b> In guilds the bot is not a member of, your message will appear ephemeral
+     * if the member does not have the {@link net.dv8tion.jda.api.Permission#USE_EXTERNAL_APPLICATIONS USE_EXTERNAL_APPLICATIONS} permission,
+     * this usually happens for user-installed commands.
      *
      * @param  ephemeral
      *         True, if this message should be invisible for other users
