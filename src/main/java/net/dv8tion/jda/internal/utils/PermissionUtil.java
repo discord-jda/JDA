@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Arrays;
@@ -302,6 +303,8 @@ public class PermissionUtil
      * @throws IllegalArgumentException
      *         if any of the provided parameters is {@code null}
      *         or the provided entities are not from the same guild
+     * @throws DetachedEntityException
+     *         If the provided member is in a guild the bot is not a member of
      *
      * @return The {@code long} representation of the literal permissions that
      *         this {@link net.dv8tion.jda.api.entities.Member Member} has in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -311,7 +314,7 @@ public class PermissionUtil
         Checks.notNull(member, "Member");
 
         if (member.isDetached())
-            throw new IllegalStateException("Cannot get the effective permissions of a detached member without a channel. " +
+            throw new DetachedEntityException("Cannot get the effective permissions of a detached member without a channel. " +
                     "Instead, please use the Member methods while supplying a GuildChannel");
 
         if (member.isOwner())
@@ -345,6 +348,8 @@ public class PermissionUtil
      * @throws IllegalArgumentException
      *         if any of the provided parameters is {@code null}
      *         or the provided entities are not from the same guild
+     * @throws DetachedEntityException
+     *         If the provided member is in a guild the bot is not a member of
      *
      * @return The {@code long} representation of the effective permissions that this {@link net.dv8tion.jda.api.entities.Member Member}
      *         has in this {@link IPermissionContainer GuildChannel}.
@@ -357,7 +362,7 @@ public class PermissionUtil
         Checks.check(channel.getGuild().equals(member.getGuild()), "Provided channel and provided member are not of the same guild!");
 
         if (member.isDetached())
-            throw new IllegalStateException("Cannot get the effective permissions of a detached member. " +
+            throw new DetachedEntityException("Cannot get the effective permissions of a detached member. " +
                     "Instead, please use the Member methods while supplying a GuildChannel");
 
         if (member.isOwner())
@@ -446,6 +451,8 @@ public class PermissionUtil
      *
      * @throws IllegalArgumentException
      *         If the specified member is {@code null}
+     * @throws DetachedEntityException
+     *         If the provided member is in a guild the bot is not a member of
      *
      * @return Primitive (unsigned) long value with the implicit permissions of the specified member
      *
@@ -456,7 +463,7 @@ public class PermissionUtil
         Checks.notNull(member, "Member");
 
         if (member.isDetached())
-            throw new IllegalStateException("Cannot get the explicit permissions of a detached member without a channel. " +
+            throw new DetachedEntityException("Cannot get the explicit permissions of a detached member without a channel. " +
                     "Instead, please use the Member methods while supplying a GuildChannel");
 
         final Guild guild = member.getGuild();
@@ -520,6 +527,8 @@ public class PermissionUtil
      * @throws IllegalArgumentException
      *         If any of the arguments is {@code null}
      *         or the specified entities are not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}
+     * @throws DetachedEntityException
+     *         If the provided member is in a guild the bot is not a member of
      *
      * @return Primitive (unsigned) long value with the implicit permissions of the specified member in the specified channel
      *
@@ -533,7 +542,7 @@ public class PermissionUtil
         checkGuild(channel.getGuild(), member.getGuild(), "Member");
 
         if (member.isDetached())
-            throw new IllegalStateException("Cannot get the explicit permissions of a detached member. " +
+            throw new DetachedEntityException("Cannot get the explicit permissions of a detached member. " +
                     "Instead, please use the Member methods while supplying a GuildChannel");
 
         long permission = includeRoles ? getExplicitPermission(member) : 0L;
@@ -595,6 +604,8 @@ public class PermissionUtil
      * @throws IllegalArgumentException
      *         If any of the arguments is {@code null}
      *         or the specified entities are not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}
+     * @throws DetachedEntityException
+     *         If the provided role is in a guild the bot is not a member of
      *
      * @return Primitive (unsigned) long value with the implicit permissions of the specified role in the specified channel
      *
@@ -607,7 +618,7 @@ public class PermissionUtil
 
         // Can't know exactly what the role's permissions in that channel are, since we don't have the overrides.
         if (role.isDetached())
-            throw new IllegalStateException("Cannot get the explicit permissions of a detached role");
+            throw new DetachedEntityException("Cannot get the explicit permissions of a detached role");
 
         IPermissionContainer permsChannel = channel.getPermissionContainer();
 
