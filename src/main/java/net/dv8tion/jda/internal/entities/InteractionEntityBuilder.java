@@ -252,6 +252,7 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder
     {
         final long channelId = json.getUnsignedLong("id");
         final DataObject recipientObj = json.optArray("recipients")
+                .filter(d -> !d.isEmpty())
                 .map(d -> d.getObject(0))
                 .orElse(null);
 
