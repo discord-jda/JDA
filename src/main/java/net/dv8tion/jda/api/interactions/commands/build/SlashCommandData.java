@@ -673,20 +673,26 @@ public interface SlashCommandData extends CommandData
         String description = object.getString("description");
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
         CommandDataImpl command = new CommandDataImpl(name, description);
-        command.setContexts(object.optArray("contexts")
-                .map(contexts ->
-                        contexts.stream(DataArray::getString)
-                                .map(InteractionContextType::fromKey)
-                                .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class))
-                )
-                .orElse(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM)));
-        command.setIntegrationTypes(object.optArray("integration_types")
-                .map(integrationTypes ->
-                        integrationTypes.stream(DataArray::getString)
-                                .map(IntegrationType::fromKey)
-                                .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class))
-                )
-                .orElse(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL)));
+        if (object.hasKey("contexts"))
+        {
+            command.setContexts(object.getArray("contexts")
+                    .stream(DataArray::getString)
+                    .map(InteractionContextType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
+        }
+        else
+            command.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+
+        if (object.hasKey("integration_types"))
+        {
+            command.setIntegrationTypes(object.getArray("integration_types")
+                    .stream(DataArray::getString)
+                    .map(IntegrationType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+        }
+        else
+            command.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
+
         command.setNSFW(object.getBoolean("nsfw"));
 
         command.setDefaultPermissions(
