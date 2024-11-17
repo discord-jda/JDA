@@ -23,8 +23,9 @@ dependencyResolutionManagement {
             library("mockito",               "org.mockito",              "mockito-core"        ).version("5.11.0")
             library("reflections",           "org.reflections",          "reflections"         ).version("0.10.2")
             library("slf4j",                 "org.slf4j",                "slf4j-api"           ).version("2.0.13")
-            library("tink",                  "com.google.crypto.tink",   "tink"                ).version("1.14.1")
+            library("tink",                  "com.google.crypto.tink",   "tink"                ).version("1.15.0")
             library("archunit",              "com.tngtech.archunit",     "archunit"            ).version("1.3.0")
+            library("protobuf-java",         "com.google.protobuf",      "protobuf-java"       ).version("3.25.5")
         }
     }
 }
