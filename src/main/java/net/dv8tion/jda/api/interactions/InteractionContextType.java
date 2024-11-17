@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
- * Represents where commands can be used,
- * think of it as 'Where can I use this command in the Discord client'.
+ * Represents where commands can be used.
  *
  * @see <a target="_blank" href="https://discord.com/developers/docs/interactions/application-commands#interaction-contexts">Discord docs</a>
  */
@@ -31,18 +31,18 @@ public enum InteractionContextType
 {
     UNKNOWN("-1"),
     /**
-     * Allows execution in a guild.
+     * Usable in guilds.
      *
      * <p><b>Note:</b> Using this command in guilds the bot isn't in
-     * requires the {@link IntegrationType#USER_INSTALL USER_INSTALL} installation context.
+     * requires the {@link IntegrationType#USER_INSTALL USER_INSTALL} installation context. (See {@link CommandData#setContexts(InteractionContextType...)})
      */
     GUILD("0"),
     /**
-     * Allows execution in the bot DMs.
+     * Usable in bot DMs.
      */
     BOT_DM("1"),
     /**
-     * Allows execution in a private channel other than the bot DMs,
+     * Usable in private channels other than the bot DMs,
      * includes friend DMs and Group DMs.
      *
      * <p><b>Requirements</b>
@@ -51,7 +51,7 @@ public enum InteractionContextType
     PRIVATE_CHANNEL("2");
 
     /**
-     * Contains all interaction types
+     * Contains all interaction types.
      */
     public static final Set<InteractionContextType> ALL = Helpers.unmodifiableEnumSet(GUILD, BOT_DM, PRIVATE_CHANNEL);
 
