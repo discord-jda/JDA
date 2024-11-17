@@ -381,12 +381,20 @@ public interface CommandData extends SerializableData
                 data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
             }
 
-            data.setContexts(object.getArray("contexts").stream(DataArray::getString)
-                    .map(InteractionContextType::fromKey)
-                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
-            data.setIntegrationTypes(object.getArray("integration_types").stream(DataArray::getString)
-                    .map(IntegrationType::fromKey)
-                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+            data.setContexts(object.optArray("contexts")
+                    .map(contexts ->
+                            contexts.stream(DataArray::getString)
+                                    .map(InteractionContextType::fromKey)
+                                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class))
+                    )
+                    .orElse(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM)));
+            data.setIntegrationTypes(object.optArray("integration_types")
+                    .map(integrationTypes ->
+                            integrationTypes.stream(DataArray::getString)
+                                    .map(IntegrationType::fromKey)
+                                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class))
+                    )
+                    .orElse(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL)));
             data.setNSFW(object.getBoolean("nsfw"));
             data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
             data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
