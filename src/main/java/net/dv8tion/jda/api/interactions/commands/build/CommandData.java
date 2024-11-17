@@ -163,28 +163,35 @@ public interface CommandData extends SerializableData
     CommandData setGuildOnly(boolean guildOnly);
 
     /**
-     * Sets the contexts in which this command can be executed (Default: Guild and Bot DMs).
+     * Sets the contexts in which this command can be used (Default: Guild and Bot DMs).
      * <br>This only has an effect if this command is registered globally.
      *
      * @param  contexts
-     *         The contexts in which this command can be executed
+     *         The contexts in which this command can be used
      *
      * @return The builder instance, for chaining
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no interaction context types were passed
      */
     @Nonnull
     default CommandData setContexts(@Nonnull InteractionContextType... contexts)
     {
+        Checks.notEmpty(contexts, "Contexts");
         return setContexts(Arrays.asList(contexts));
     }
 
     /**
-     * Sets the contexts in which this command can be executed (Default: Guild and Bot DMs).
+     * Sets the contexts in which this command can be used (Default: Guild and Bot DMs).
      * <br>This only has an effect if this command is registered globally.
      *
      * @param  contexts
-     *         The contexts in which this command can be executed
+     *         The contexts in which this command can be used
      *
      * @return The builder instance, for chaining
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no interaction context types were passed
      */
     @Nonnull
     CommandData setContexts(@Nonnull Collection<InteractionContextType> contexts);
@@ -197,10 +204,14 @@ public interface CommandData extends SerializableData
      *         The integration types on which this command can be installed on
      *
      * @return The builder instance, for chaining
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no integration types were passed
      */
     @Nonnull
     default CommandData setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
     {
+        Checks.notEmpty(integrationTypes, "Integration types");
         return setIntegrationTypes(Arrays.asList(integrationTypes));
     }
 
@@ -212,6 +223,9 @@ public interface CommandData extends SerializableData
      *         The integration types on which this command can be installed on
      *
      * @return The builder instance, for chaining
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no integration types were passed
      */
     @Nonnull
     CommandData setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes);
@@ -280,9 +294,9 @@ public interface CommandData extends SerializableData
     boolean isGuildOnly();
 
     /**
-     * Gets the contexts in which this command can be executed.
+     * The contexts in which this command can be used.
      *
-     * @return The contexts in which this command can be executed
+     * @return The contexts in which this command can be used
      */
     @Nonnull
     Set<InteractionContextType> getContexts();

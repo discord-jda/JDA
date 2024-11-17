@@ -215,7 +215,8 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setContexts(@Nonnull Collection<InteractionContextType> contexts)
     {
-        this.contexts = EnumSet.copyOf(contexts);
+        Checks.notEmpty(contexts, "Contexts");
+        this.contexts = Helpers.copyEnumSet(InteractionContextType.class, contexts);
         return this;
     }
 
@@ -223,7 +224,8 @@ public class CommandDataImpl implements SlashCommandData
     @Override
     public CommandDataImpl setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes)
     {
-        this.integrationTypes = EnumSet.copyOf(integrationTypes);
+        Checks.notEmpty(contexts, "Contexts");
+        this.integrationTypes = Helpers.copyEnumSet(IntegrationType.class, integrationTypes);
         return this;
     }
 
