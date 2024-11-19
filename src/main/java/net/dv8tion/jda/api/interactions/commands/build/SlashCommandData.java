@@ -680,6 +680,8 @@ public interface SlashCommandData extends CommandData
                     .map(InteractionContextType::fromKey)
                     .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
         }
+        else if (!object.isNull("dm_permission"))
+            command.setGuildOnly(true);
         else
             command.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
 
