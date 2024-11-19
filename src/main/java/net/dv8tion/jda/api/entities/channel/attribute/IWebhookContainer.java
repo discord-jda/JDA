@@ -49,6 +49,8 @@ public interface IWebhookContainer extends GuildChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Webhook Webhook}{@literal >}
      *         <br>Retrieved an immutable list of Webhooks attached to this channel
@@ -81,6 +83,8 @@ public interface IWebhookContainer extends GuildChannel
      * @throws IllegalArgumentException
      *         If the provided name is {@code null}, blank or not
      *         between 2-100 characters in length
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return A specific {@link WebhookAction WebhookAction}
      *         <br>This action allows to set fields for the new webhook before creating it
@@ -118,6 +122,8 @@ public interface IWebhookContainer extends GuildChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in this channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */

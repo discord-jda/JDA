@@ -41,6 +41,7 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>> exten
     @Override
     default InviteAction createInvite()
     {
+        checkAttached();
         checkPermission(Permission.CREATE_INSTANT_INVITE);
 
         return new InviteActionImpl(this.getJDA(), this.getId());
@@ -50,6 +51,7 @@ public interface IInviteContainerMixin<T extends IInviteContainerMixin<T>> exten
     @Override
     default RestAction<List<Invite>> retrieveInvites()
     {
+        checkAttached();
         checkPermission(Permission.MANAGE_CHANNEL);
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());

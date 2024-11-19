@@ -51,6 +51,9 @@ public interface IMemberContainer extends GuildChannel
      * <br>For {@link Category Categories},
      * this returns all Members who are in its child channels.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         if the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild}.
+     *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
      */
     @Nonnull

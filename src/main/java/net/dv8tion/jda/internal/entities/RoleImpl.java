@@ -30,11 +30,11 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.RoleMixin;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -45,12 +45,10 @@ import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.time.OffsetDateTime;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Objects;
 
-public class RoleImpl implements Role
+public class RoleImpl implements Role, RoleMixin<RoleImpl>
 {
     private final long id;
     private final JDAImpl api;
@@ -73,6 +71,12 @@ public class RoleImpl implements Role
         this.api =(JDAImpl) guild.getJDA();
         this.guild = guild;
         this.tags = api.isCacheFlagSet(CacheFlag.ROLE_TAGS) ? new RoleTagsImpl() : null;
+    }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
     }
 
     @Override
@@ -192,14 +196,6 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Collection<Permission> permissions)
-    {
-        Checks.notNull(permissions, "Permission Collection");
-
-        return hasPermission(permissions.toArray(Permission.EMPTY_PERMISSIONS));
-    }
-
-    @Override
     public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
         long effectivePerms = PermissionUtil.getEffectivePermission(channel.getPermissionContainer(), this);
@@ -210,14 +206,6 @@ public class RoleImpl implements Role
                 return false;
         }
         return true;
-    }
-
-    @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
-    {
-        Checks.notNull(permissions, "Permission Collection");
-
-        return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override
@@ -287,20 +275,6 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public RoleAction createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        return guild.createRole()
-                    .setColor(color)
-                    .setHoisted(hoisted)
-                    .setMentionable(mentionable)
-                    .setName(name)
-                    .setPermissions(rawPermissions)
-                    .setIcon(icon == null ? null : icon.getEmoji()); // we can only copy the emoji as we don't have access to the Icon instance
-    }
-
-    @Nonnull
-    @Override
     public RoleManager getManager()
     {
         return new RoleManagerImpl(this);
@@ -361,9 +335,9 @@ public class RoleImpl implements Role
     {
         if (o == this)
             return true;
-        if (!(o instanceof Role))
+        if (!(o instanceof RoleImpl))
             return false;
-        Role oRole = (Role) o;
+        RoleImpl oRole = (RoleImpl) o;
         return this.getIdLong() == oRole.getIdLong();
     }
 
@@ -381,68 +355,51 @@ public class RoleImpl implements Role
                 .toString();
     }
 
-    @Override
-    public int compareTo(@Nonnull Role r)
-    {
-        if (this == r)
-            return 0;
-        if (!(r instanceof RoleImpl))
-            throw new IllegalArgumentException("Cannot compare different role implementations");
-        RoleImpl impl = (RoleImpl) r;
-
-        if (this.guild.getIdLong() != impl.guild.getIdLong())
-            throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
-
-        if (this.getPositionRaw() != r.getPositionRaw())
-            return this.getPositionRaw() - r.getPositionRaw();
-
-        OffsetDateTime thisTime = this.getTimeCreated();
-        OffsetDateTime rTime = r.getTimeCreated();
-
-        //We compare the provided role's time to this's time instead of the reverse as one would expect due to how
-        // discord deals with hierarchy. The more recent a role was created, the lower its hierarchy ranking when
-        // it shares the same position as another role.
-        return rTime.compareTo(thisTime);
-    }
-
     // -- Setters --
 
+    @Override
     public RoleImpl setName(String name)
     {
         this.name = name;
         return this;
     }
 
+    @Override
     public RoleImpl setColor(int color)
     {
         this.color = color;
         return this;
     }
 
+    @Override
     public RoleImpl setManaged(boolean managed)
     {
         this.managed = managed;
         return this;
     }
 
+    @Override
     public RoleImpl setHoisted(boolean hoisted)
     {
         this.hoisted = hoisted;
         return this;
     }
 
+    @Override
     public RoleImpl setMentionable(boolean mentionable)
     {
         this.mentionable = mentionable;
         return this;
     }
 
+    @Override
     public RoleImpl setRawPermissions(long rawPermissions)
     {
         this.rawPermissions = rawPermissions;
         return this;
     }
 
+    @Override
     public RoleImpl setRawPosition(int rawPosition)
     {
         SortedSnowflakeCacheViewImpl<Role> roleCache = (SortedSnowflakeCacheViewImpl<Role>) getGuild().getRoleCache();
@@ -451,6 +408,7 @@ public class RoleImpl implements Role
         return this;
     }
 
+    @Override
     public RoleImpl setTags(DataObject tags)
     {
         if (this.tags == null)
@@ -459,6 +417,7 @@ public class RoleImpl implements Role
         return this;
     }
 
+    @Override
     public RoleImpl setIcon(RoleIcon icon)
     {
         this.icon = icon;

@@ -41,10 +41,13 @@ public interface ReplyCallbackAction extends InteractionCallbackAction<Interacti
      * <p>Ephemeral messages have some limitations and will be removed once the user restarts their client.
      * <br>Limitations:
      * <ul>
-     *     <li>Cannot contain any files/attachments</li>
      *     <li>Cannot be reacted to</li>
-     *     <li>Cannot be retrieved</li>
+     *     <li>Cannot be {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(long) retrieved by ID}</li>
      * </ul>
+     *
+     * <b>Note:</b> In guilds the bot is not a member of, your message will appear ephemeral
+     * if the member does not have the {@link net.dv8tion.jda.api.Permission#USE_EXTERNAL_APPLICATIONS USE_EXTERNAL_APPLICATIONS} permission,
+     * this usually happens for user-installed commands.
      *
      * @param  ephemeral
      *         True, if this message should be invisible for other users
