@@ -26,9 +26,11 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.pagination.ThreadChannelPaginationAction;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -75,19 +77,16 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
         if (useID)
             return Long.toUnsignedString(lastId);
 
-        if (order == PaginationOrder.FORWARD && lastId == 0)
-        {
-            // first second of 2015 aka discords epoch, hard coding something older makes no sense to me
-            return "2015-01-01T00:00:00.000";
-        }
-
-        // this should be redundant, due to calling this with PaginationAction#getLast() as last param,
-        // but let's have this here.
-        if (last == null)
+        if (last != null)
+            // If threads were retrieved
+            // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
+            return last.getTimeArchiveInfoLastModified().toString();
+        else if (lastId != 0)
+            // If the user skipped ahead
+            return TimeUtil.getTimeCreated(lastId).toString();
+        else
+            // If we just started paginating
             return OffsetDateTime.now(ZoneOffset.UTC).toString();
-
-        // OffsetDateTime#toString() is defined to be ISO8601, needs no helper method.
-        return last.getTimeArchiveInfoLastModified().toString();
     }
 
     @Override
@@ -118,7 +117,7 @@ public class ThreadChannelPaginationActionImpl extends PaginationActionImpl<Thre
 
                 try
                 {
-                    ThreadChannel thread = builder.createThreadChannel(threadObj, getGuild().getIdLong());
+                    ThreadChannel thread = builder.createThreadChannel((GuildImpl) getGuild(), threadObj, getGuild().getIdLong(), false);
                     list.add(thread);
 
                     if (this.useCache)
