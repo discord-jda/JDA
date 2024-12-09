@@ -161,8 +161,8 @@ public class SelectMenuMentions implements Mentions
         DataObject roleMap = resolved.optObject("roles").orElseGet(DataObject::empty);
 
         return cachedRoles = values.stream()
-                .map(id -> roleMap.optObject(id).orElse(null))
-                .filter(Objects::nonNull)
+                .filter(roleMap::hasKey)
+                .map(roleMap::getObject)
                 .map(json ->
                 {
                     if (!guild.isDetached())
