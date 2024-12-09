@@ -22,7 +22,8 @@ package net.dv8tion.jda.api.entities.detached;
  * where the bot is not a member of the guild,
  * and in group DMs.
  * <br>Some information may be unavailable on detached entities,
- * and most {@link net.dv8tion.jda.api.requests.RestAction RestActions} will throw a {@link net.dv8tion.jda.api.exceptions.DetachedEntityException DetachedEntityException}.
+ * and most methods that would otherwise return a {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+ * will throw a {@link net.dv8tion.jda.api.exceptions.DetachedEntityException DetachedEntityException} instead.
  */
 public interface IDetachableEntity
 {

@@ -38,7 +38,7 @@ public enum InteractionContextType
      */
     GUILD("0"),
     /**
-     * Usable in bot DMs.
+     * Usable in the bot's DM.
      */
     BOT_DM("1"),
     /**

@@ -389,7 +389,7 @@ public interface CommandData extends SerializableData
                         .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
             }
             else if (!object.isNull("dm_permission"))
-                data.setGuildOnly(true);
+                data.setGuildOnly(!object.getBoolean("dm_permission"));
             else
                 data.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
 

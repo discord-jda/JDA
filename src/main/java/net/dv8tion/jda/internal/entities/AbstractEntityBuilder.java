@@ -221,7 +221,7 @@ public abstract class AbstractEntityBuilder
         if (!memberJson.isNull("pending"))
             member.setPending(memberJson.getBoolean("pending"));
 
-        if (!memberJson.isNull("joined_at"))
+        if (!memberJson.isNull("joined_at") && !member.hasTimeJoined())
             member.setJoinDate(Helpers.toTimestamp(memberJson.getString("joined_at")));
     }
 

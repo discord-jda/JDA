@@ -268,8 +268,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
      *
-     * <p>This will have different meaning depending on the {@link #getType() type} of message,
-     * here are the message types where a reference will be present:
+     * <p>This will have different meaning depending on the message {@link #getType() type}.
+     * The following are the message types where a reference will be present:
      * <ul>
      *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
      *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
@@ -287,8 +287,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Referenced message.
      *
-     * <p>This will have different meaning depending on the {@link #getType() type} of message,
-     * here are the message types where a reference can be present:
+     * <p>This will have different meaning depending on the message {@link #getType() type}.
+     * The following are the message types where a reference can be present:
      * <ul>
      *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
      *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
