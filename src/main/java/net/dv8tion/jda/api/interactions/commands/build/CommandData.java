@@ -169,10 +169,10 @@ public interface CommandData extends SerializableData
      * @param  contexts
      *         The contexts in which this command can be used
      *
-     * @return The builder instance, for chaining
-     *
      * @throws IllegalArgumentException
      *         If {@code null} or no interaction context types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     default CommandData setContexts(@Nonnull InteractionContextType... contexts)
@@ -188,10 +188,10 @@ public interface CommandData extends SerializableData
      * @param  contexts
      *         The contexts in which this command can be used
      *
-     * @return The builder instance, for chaining
-     *
      * @throws IllegalArgumentException
      *         If {@code null} or no interaction context types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     CommandData setContexts(@Nonnull Collection<InteractionContextType> contexts);
@@ -203,10 +203,10 @@ public interface CommandData extends SerializableData
      * @param  integrationTypes
      *         The integration types on which this command can be installed on
      *
-     * @return The builder instance, for chaining
-     *
      * @throws IllegalArgumentException
      *         If {@code null} or no integration types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     default CommandData setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
@@ -222,10 +222,10 @@ public interface CommandData extends SerializableData
      * @param  integrationTypes
      *         The integration types on which this command can be installed on
      *
-     * @return The builder instance, for chaining
-     *
      * @throws IllegalArgumentException
      *         If {@code null} or no integration types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     CommandData setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes);

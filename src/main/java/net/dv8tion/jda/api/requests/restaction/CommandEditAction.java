@@ -116,10 +116,10 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  contexts
      *         The contexts in which this command can be executed
      *
-     * @return The builder instance, for chaining
-     *
      * @throws IllegalArgumentException
      *         If {@code null} or no interaction context types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
@@ -135,10 +135,10 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  contexts
      *         The contexts in which this command can be executed
      *
-     * @return The builder instance, for chaining
-     *
      * @throws IllegalArgumentException
      *         If {@code null} or no interaction context types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
@@ -151,10 +151,10 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  integrationTypes
      *         The integration types on which this command can be installed on
      *
-     * @return The builder instance, for chaining
-     *
      * @throws IllegalArgumentException
      *         If {@code null} or no integration types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
@@ -170,10 +170,10 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  integrationTypes
      *         The integration types on which this command can be installed on
      *
-     * @return The builder instance, for chaining
-     *
      * @throws IllegalArgumentException
      *         If {@code null} or no integration types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
