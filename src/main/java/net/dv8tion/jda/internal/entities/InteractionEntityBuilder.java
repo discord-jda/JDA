@@ -48,7 +48,7 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder
 {
     private static final Logger LOG = JDALogger.getLog(InteractionEntityBuilder.class);
 
-    private final EntityBuilder entityBuilder = api.getEntityBuilder();
+    private final EntityBuilder entityBuilder;
     private final long interactionChannelId;
     private final long interactionUserId;
 
@@ -57,6 +57,7 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder
         super(api);
         this.interactionChannelId = interactionChannelId;
         this.interactionUserId = interactionUserId;
+        this.entityBuilder = api.getEntityBuilder();
     }
 
     public Guild getOrCreateGuild(DataObject guildJson)
