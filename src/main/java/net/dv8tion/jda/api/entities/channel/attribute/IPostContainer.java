@@ -230,7 +230,7 @@ public interface IPostContainer extends IThreadContainer
      *             <li>If the name is empty or longer than {@value Channel#MAX_NAME_LENGTH} characters</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link Guild#isDetached() isn't in the guild}.
+     *         if the bot {@link #isDetached() isn't in the guild}.
      *
      * @return {@link ForumPostAction}
      */

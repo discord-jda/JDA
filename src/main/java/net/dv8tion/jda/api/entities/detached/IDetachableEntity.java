@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.entities.detached;
 /**
  * Represents an entity which might not be known by the bot.
  * It is mostly limited to user-installed interactions,
- * where the bot {@link net.dv8tion.jda.api.entities.Guild#isDetached() isn't in the guild},
+ * where the bot is not a member of the guild,
  * and in group DMs.
  * <br>Some information may be unavailable on detached entities,
  * and most {@link net.dv8tion.jda.api.requests.RestAction RestActions} will throw a {@link net.dv8tion.jda.api.exceptions.DetachedEntityException DetachedEntityException}.
