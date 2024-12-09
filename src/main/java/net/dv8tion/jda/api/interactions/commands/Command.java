@@ -236,7 +236,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @deprecated Replaced with {@link #getContexts()}
      */
     @Deprecated
-    @ReplaceWith("getContexts().contains(InteractionContextType.GUILD)")
+    @ReplaceWith("getContexts().equals(EnumSet.of(InteractionContextType.GUILD))")
     boolean isGuildOnly();
 
     /**

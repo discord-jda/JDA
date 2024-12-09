@@ -291,6 +291,7 @@ public interface CommandData extends SerializableData
      * @deprecated Replaced with {@link #getContexts()}
      */
     @Deprecated
+    @ReplaceWith("getContexts().equals(EnumSet.of(InteractionContextType.GUILD))")
     boolean isGuildOnly();
 
     /**
