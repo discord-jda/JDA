@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.exceptions;
 /**
  * Indicates that the operation cannot be done on a detached entity.
  *
- * @see net.dv8tion.jda.api.entities.detached.IDetachableEntity
+ * @see net.dv8tion.jda.api.entities.detached.IDetachableEntity IDetachableEntity
  */
 public class DetachedEntityException extends UnsupportedOperationException
 {
