@@ -47,7 +47,7 @@ public interface WebhookMessageCreateAction<T> extends MessageCreateRequest<Webh
      * <br>Limitations:
      * <ul>
      *     <li>Cannot be reacted to</li>
-     *     <li>Cannot be {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(long) retrieved by ID}</li>
+     *     <li>Can only be retrieved using the {@link InteractionHook#retrieveMessageById(String) InteractionHook}</li>
      * </ul>
      *
      * <p>This only works on {@link InteractionHook InteractionHooks}!

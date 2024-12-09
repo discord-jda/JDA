@@ -91,7 +91,7 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>Limitations:
      * <ul>
      *     <li>Cannot be reacted to</li>
-     *     <li>Cannot be {@link net.dv8tion.jda.api.entities.channel.middleman.MessageChannel#retrieveMessageById(long) retrieved by ID}</li>
+     *     <li>Can only be retrieved using the {@link InteractionHook#retrieveMessageById(String) InteractionHook}</li>
      * </ul>
      *
      * <b>Note:</b> In guilds the bot is not a member of, your message will appear ephemeral
