@@ -19,8 +19,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.Webhook;
-import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -38,7 +36,6 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
@@ -115,9 +112,6 @@ public class SlashBotExample extends ListenerAdapter
             Member member = event.getOption("user").getAsMember(); // the "user" option is required, so it doesn't need a null-check here
             User user = event.getOption("user").getAsUser();
             ban(event, user, member);
-            break;
-        case "echo":
-            echo(event, event.getOption("content").getAsString()); // content is required so no null-check here
             break;
         case "say":
             say(event, event.getOption("content").getAsString()); // content is required so no null-check here
@@ -198,76 +192,9 @@ public class SlashBotExample extends ListenerAdapter
             .queue(); // execute the entire call chain
     }
 
-    public void echo(SlashCommandInteractionEvent event, String content)
-    {
-        event.reply(content).queue(); // This requires no permissions!
-    }
-
     public void say(SlashCommandInteractionEvent event, String content)
     {
-        event.deferReply().queue();
-
-        // To use a webhook, the bot needs to be in the guild,
-        // reply to the interaction in other cases (detached guilds, DMs, Group DMs).
-        tryUseWebhook(
-                event,
-                // If we can use a webhook
-                webhook ->
-                {
-                    // Remove the bot thinking message
-                    event.getHook().deleteOriginal().queue();
-
-                    webhook.sendMessage(content)
-                            .setUsername(event.getMember().getEffectiveName())
-                            .setAvatarUrl(event.getMember().getEffectiveAvatarUrl())
-                            .queue();
-                },
-                // Fallback
-                () -> event.getHook().sendMessage(content).queue() // This requires no permissions!
-        );
-    }
-
-    private void tryUseWebhook(SlashCommandInteractionEvent event, Consumer<Webhook> webhookCallback, Runnable noWebhookCallback)
-    {
-        // If the bot isn't in the guild, fallback to a normal reply
-        if (!event.hasFullGuild())
-        {
-            noWebhookCallback.run();
-            return;
-        }
-
-        // In case the channel doesn't support webhooks, fallback to a normal reply
-        if (!(event.getGuildChannel() instanceof IWebhookContainer))
-        {
-            noWebhookCallback.run();
-            return;
-        }
-
-        // If we don't have permissions to create a webhook, fallback to a normal reply
-        final IWebhookContainer webhookContainer = (IWebhookContainer) event.getGuildChannel();
-        // Make sure to take the permission overrides into account by supplying the channel!
-        if (!event.getGuild().getSelfMember().hasPermission(webhookContainer, Permission.MANAGE_WEBHOOKS))
-        {
-            noWebhookCallback.run();
-            return;
-        }
-
-        // We can use webhooks! Try to find an existing one, or create one
-        webhookContainer.retrieveWebhooks().queue(webhooks ->
-        {
-            // Try to find an existing webhook, one which we own
-            for (Webhook webhook : webhooks)
-            {
-                if (event.getJDA().getSelfUser().equals(webhook.getOwnerAsUser()))
-                {
-                    webhookCallback.accept(webhook);
-                    return;
-                }
-            }
-
-            // No webhook found, create one and pass it to the callback
-            webhookContainer.createWebhook("/say webhook").queue(webhookCallback);
-        });
+        event.reply(content).queue(); // This requires no permissions!
     }
 
     public void leave(SlashCommandInteractionEvent event)
