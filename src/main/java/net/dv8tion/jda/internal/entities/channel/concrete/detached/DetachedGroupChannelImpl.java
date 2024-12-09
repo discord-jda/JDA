@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities.channel.concrete.detached;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.GroupChannelMixin;
@@ -32,7 +31,7 @@ public class DetachedGroupChannelImpl extends AbstractChannelImpl<DetachedGroupC
         IDetachableEntityMixin
 {
     private long latestMessageId;
-    private UserSnowflake ownerId;
+    private long ownerId;
     private String icon;
 
     public DetachedGroupChannelImpl(JDA api, long id)
@@ -53,9 +52,8 @@ public class DetachedGroupChannelImpl extends AbstractChannelImpl<DetachedGroupC
         return true;
     }
 
-    @Nonnull
     @Override
-    public UserSnowflake getOwnerId()
+    public long getOwnerIdLong()
     {
         return ownerId;
     }
@@ -142,7 +140,7 @@ public class DetachedGroupChannelImpl extends AbstractChannelImpl<DetachedGroupC
     @Override
     public DetachedGroupChannelImpl setOwnerId(long ownerId)
     {
-        this.ownerId = UserSnowflake.fromId(ownerId);
+        this.ownerId = ownerId;
         return this;
     }
 

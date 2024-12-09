@@ -34,14 +34,24 @@ public interface IntegrationOwners
     /**
      * Whether this interaction was first authorized by a command with the {@link IntegrationType#USER_INSTALL USER_INSTALL} integration type.
      *
-     * <p>You can retrieve the authorizing user with {@link #getAuthorizingUser()}.
+     * <p>You can retrieve the authorizing user with {@link #getAuthorizingUserIdLong()}.
      *
      * @return {@code true} if this interaction started from a user-installable command.
      */
     default boolean isUserIntegration()
     {
-        return getAuthorizingUser() != null;
+        return getAuthorizingUserIdLong() != 0;
     }
+
+    /**
+     * When the interaction has the {@link IntegrationType#USER_INSTALL USER_INSTALL} integration type,
+     * returns the {@link UserSnowflake} which first authorized this interaction,
+     * or {@code 0} otherwise.
+     *
+     * @return the {@link UserSnowflake} which triggered the interaction,
+     *         or {@code 0} for non-user-installable commands
+     */
+    long getAuthorizingUserIdLong();
 
     /**
      * When the interaction has the {@link IntegrationType#USER_INSTALL USER_INSTALL} integration type,
@@ -52,7 +62,11 @@ public interface IntegrationOwners
      *         or {@code null} for non-user-installable commands
      */
     @Nullable
-    UserSnowflake getAuthorizingUser();
+    default String getAuthorizingUserId()
+    {
+        if (getAuthorizingUserIdLong() == 0) return null;
+        return Long.toUnsignedString(getAuthorizingUserIdLong());
+    }
 
     /**
      * Whether this interaction was first authorized by a command with the {@link IntegrationType#GUILD_INSTALL} integration type.
@@ -64,7 +78,7 @@ public interface IntegrationOwners
      */
     default boolean isGuildIntegration()
     {
-        return getAuthorizingGuild() != null;
+        return getAuthorizingGuildIdLong() != null;
     }
 
     /**
@@ -77,5 +91,21 @@ public interface IntegrationOwners
      *         or {@code null} for non-guild-installable commands
      */
     @Nullable
-    Long getAuthorizingGuild();
+    Long getAuthorizingGuildIdLong();
+
+    /**
+     * When the interaction has the {@link IntegrationType#GUILD_INSTALL GUILD_INSTALL} integration type,
+     * returns the {@link Guild} ID which first authorized this interaction,
+     * or {@code 0} if the interaction is used in the app's bot DMs,
+     * returns {@code null} otherwise.
+     *
+     * @return the guild ID in which the interaction is triggered in, or {@code 0} for Bot DMs,
+     *         or {@code null} for non-guild-installable commands
+     */
+    @Nullable
+    default String getAuthorizingGuildId()
+    {
+        if (getAuthorizingGuildIdLong() == null) return null;
+        return Long.toUnsignedString(getAuthorizingGuildIdLong());
+    }
 }

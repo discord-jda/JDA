@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.entities.channel.concrete;
 
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -79,8 +78,18 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
      *
      * @return The ID of the user which owns this {@link GroupChannel}
      */
+    long getOwnerIdLong();
+
+    /**
+     * Returns the ID of the user which owns this {@link GroupChannel}.
+     *
+     * @return The ID of the user which owns this {@link GroupChannel}
+     */
     @Nonnull
-    UserSnowflake getOwnerId();
+    default String getOwnerId()
+    {
+        return Long.toUnsignedString(getOwnerIdLong());
+    }
 
     /**
      * Retrieves the {@link User} which owns this {@link GroupChannel}.
@@ -91,6 +100,6 @@ public interface GroupChannel extends MessageChannel, IDetachableEntity
     @CheckReturnValue
     default RestAction<User> retrieveOwner()
     {
-        return getJDA().retrieveUserById(getOwnerId().getIdLong());
+        return getJDA().retrieveUserById(getOwnerIdLong());
     }
 }

@@ -2082,15 +2082,15 @@ public class EntityBuilder extends AbstractEntityBuilder
         final int type = content.getInt("type");
         final User user = createUser(content.getObject("user"));
         final IntegrationOwners integrationOwners = new IntegrationOwnersImpl(content.getObject("authorizing_integration_owners"));
-        final Long originalResponseMessageId = content.isNull("original_response_message_id") ? null : content.getLong("original_response_message_id");
-        final Long interactedMessageId = content.isNull("interacted_message_id") ? null : content.getLong("interacted_message_id");
+        final long originalResponseMessageId = content.isNull("original_response_message_id") ? 0 : content.getLong("original_response_message_id");
+        final long interactedMessageId = content.isNull("interacted_message_id") ? 0 : content.getLong("interacted_message_id");
         final Message.InteractionMetadata triggeringInteraction = content.optObject("triggering_interaction_metadata")
                 .map(this::createMessageInteractionMetadata)
                 .orElse(null);
         final User targetUser = content.optObject("target_user")
                 .map(this::createUser)
                 .orElse(null);
-        final Long targetMessageId = content.isNull("target_message_id") ? null : content.getLong("target_message_id");
+        final long targetMessageId = content.isNull("target_message_id") ? 0 : content.getLong("target_message_id");
 
         return new Message.InteractionMetadata(id, type, user, integrationOwners, originalResponseMessageId, interactedMessageId, triggeringInteraction, targetUser, targetMessageId);
     }

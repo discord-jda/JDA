@@ -2953,13 +2953,13 @@ public interface Message extends ISnowflake, Formattable
         private final int type;
         private final User user;
         private final IntegrationOwners integrationOwners;
-        private final Long originalResponseMessageId;
-        private final Long interactedMessageId;
+        private final long originalResponseMessageId;
+        private final long interactedMessageId;
         private final InteractionMetadata triggeringInteraction;
         private final User targetUser;
-        private final Long targetMessageId;
+        private final long targetMessageId;
 
-        public InteractionMetadata(long id, int type, User user, IntegrationOwners integrationOwners, Long originalResponseMessageId, Long interactedMessageId, InteractionMetadata triggeringInteraction, User targetUser, Long targetMessageId)
+        public InteractionMetadata(long id, int type, User user, IntegrationOwners integrationOwners, long originalResponseMessageId, long interactedMessageId, InteractionMetadata triggeringInteraction, User targetUser, long targetMessageId)
         {
             this.id = id;
             this.type = type;
@@ -3025,12 +3025,33 @@ public interface Message extends ISnowflake, Formattable
         /**
          * The ID of the original response message, present only on followup messages.
          *
+         * @return The ID of the original response message, or {@code 0}
+         */
+        public long getOriginalResponseMessageIdLong()
+        {
+            return originalResponseMessageId;
+        }
+
+        /**
+         * The ID of the original response message, present only on followup messages.
+         *
          * @return The ID of the original response message, or {@code null}
          */
         @Nullable
-        public Long getOriginalResponseMessageId()
+        public String getOriginalResponseMessageId()
         {
-            return originalResponseMessageId;
+            if (originalResponseMessageId == 0) return null;
+            return Long.toUnsignedString(originalResponseMessageId);
+        }
+
+        /**
+         * The ID of the message containing the component which created this message.
+         *
+         * @return the ID of the message containing the component which created this message, or {@code 0}
+         */
+        public long getInteractedMessageIdLong()
+        {
+            return interactedMessageId;
         }
 
         /**
@@ -3039,9 +3060,10 @@ public interface Message extends ISnowflake, Formattable
          * @return the ID of the message containing the component which created this message, or {@code null}
          */
         @Nullable
-        public Long getInteractedMessageId()
+        public String getInteractedMessageId()
         {
-            return interactedMessageId;
+            if (interactedMessageId == 0) return null;
+            return Long.toUnsignedString(interactedMessageId);
         }
 
         /**
@@ -3072,12 +3094,25 @@ public interface Message extends ISnowflake, Formattable
          *
          * <p>If this is present, {@link Message#getMessageReference()} will also be present.
          *
+         * @return The ID of the message the command was run on, or {@code 0}
+         */
+        public long getTargetMessageIdLong()
+        {
+            return targetMessageId;
+        }
+
+        /**
+         * The ID of the message the command was run on, present only on message interaction commands.
+         *
+         * <p>If this is present, {@link Message#getMessageReference()} will also be present.
+         *
          * @return The ID of the message the command was run on, or {@code null}
          */
         @Nullable
-        public Long getTargetMessageId()
+        public String getTargetMessageId()
         {
-            return targetMessageId;
+            if (targetMessageId == 0) return null;
+            return Long.toUnsignedString(targetMessageId);
         }
     }
 }

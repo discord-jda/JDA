@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.interactions;
 
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -27,14 +26,11 @@ import javax.annotation.Nullable;
 public class IntegrationOwnersImpl implements IntegrationOwners
 {
     private final Long guildIntegration;
-    private final UserSnowflake userIntegration;
+    private final long userIntegration;
 
     public IntegrationOwnersImpl(DataObject authorizedIntegrationOwners)
     {
-        if (authorizedIntegrationOwners.hasKey(IntegrationType.USER_INSTALL.getType()))
-            this.userIntegration = UserSnowflake.fromId(authorizedIntegrationOwners.getLong(IntegrationType.USER_INSTALL.getType()));
-        else
-            this.userIntegration = null;
+        this.userIntegration = authorizedIntegrationOwners.getLong(IntegrationType.USER_INSTALL.getType(), 0);
 
         if (authorizedIntegrationOwners.hasKey(IntegrationType.GUILD_INSTALL.getType()))
             this.guildIntegration = authorizedIntegrationOwners.getLong(IntegrationType.GUILD_INSTALL.getType());
@@ -42,16 +38,15 @@ public class IntegrationOwnersImpl implements IntegrationOwners
             this.guildIntegration = null;
     }
 
-    @Nullable
     @Override
-    public UserSnowflake getAuthorizingUser()
+    public long getAuthorizingUserIdLong()
     {
         return userIntegration;
     }
 
     @Nullable
     @Override
-    public Long getAuthorizingGuild()
+    public Long getAuthorizingGuildIdLong()
     {
         return guildIntegration;
     }
@@ -60,8 +55,8 @@ public class IntegrationOwnersImpl implements IntegrationOwners
     public String toString()
     {
         return new EntityString(this)
-                .addMetadata("user", getAuthorizingUser())
-                .addMetadata("guild", getAuthorizingGuild())
+                .addMetadata("user", getAuthorizingUserId())
+                .addMetadata("guild", getAuthorizingGuildId())
                 .toString();
     }
 }
