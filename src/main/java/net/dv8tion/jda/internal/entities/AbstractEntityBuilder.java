@@ -201,6 +201,14 @@ public abstract class AbstractEntityBuilder
         channel.setLatestMessageIdLong(json.getLong("last_message_id", 0));
     }
 
+    protected void configureGroupChannel(DataObject json, GroupChannelMixin<?> channel)
+    {
+        channel.setLatestMessageIdLong(json.getLong("last_message_id", 0L))
+                .setName(json.getString("name", ""))
+                .setOwnerId(json.getLong("owner_id"))
+                .setIcon(json.getString("icon", null));
+    }
+
     protected void configureMember(DataObject memberJson, MemberMixin<?> member)
     {
         member.setNickname(memberJson.getString("nick", null));
