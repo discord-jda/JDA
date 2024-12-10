@@ -169,7 +169,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE} to be enabled!
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState}
      */
@@ -183,7 +183,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled!
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return Immutable list of {@link Activity Activities} for the user
      */
@@ -198,7 +198,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * <p>This will always return {@link OnlineStatus#OFFLINE} if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ONLINE_STATUS CacheFlag.ONLINE_STATUS} is disabled.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The current {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.api.entities.User User}.
      */
@@ -221,7 +221,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @throws java.lang.IllegalArgumentException
      *         If the provided type is null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The status for that specific client or OFFLINE
      *
@@ -243,7 +243,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return EnumSet of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes}
      *
@@ -347,7 +347,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * <br>It is implicit that every member holds the Public Role in a Guild thus it is not listed here!</b>
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Role Roles} for this Member.
      *
@@ -412,7 +412,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @throws IllegalArgumentException
      *         if the specified Member is not from the same guild
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this Member is able to interact with the specified Member
      */
@@ -432,7 +432,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @throws IllegalArgumentException
      *         if the specified Role is not from the same guild
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this member is able to interact with the specified Role
      */
@@ -450,7 +450,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @throws IllegalArgumentException
      *         if the specified emoji is not from the same guild
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this Member is able to interact with the specified emoji
      */
@@ -460,7 +460,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * Checks whether this member is the owner of its related {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this member is the owner of the attached Guild.
      */
@@ -473,7 +473,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @incubating Discord is still trying to figure this out
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this member hasn't passed the guild's Membership Screening requirements
      *
@@ -491,7 +491,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * any channel in the guild, this method returns {@code null}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The {@link DefaultGuildChannelUnion channel} representing the default channel for this member
      *         or null if no such channel exists.
@@ -537,7 +537,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *             <li>If the provided time unit is {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link AuditableRestAction}
      *
@@ -573,7 +573,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -617,7 +617,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -656,7 +656,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -695,7 +695,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -722,7 +722,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link Permission#MODERATE_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -761,7 +761,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @throws java.lang.IllegalStateException
      *         If the member is not currently connected to a voice channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -801,7 +801,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @throws java.lang.IllegalStateException
      *         If the member is not currently connected to a voice channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -847,7 +847,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
      *         <br>See {@link #canInteract(Member)}.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -874,7 +874,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * @throws IllegalArgumentException
      *         If {@code null} is provided
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link AuditableRestAction}
      */

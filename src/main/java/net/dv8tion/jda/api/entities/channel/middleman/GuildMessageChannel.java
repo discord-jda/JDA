@@ -125,7 +125,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -181,7 +181,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -230,7 +230,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -289,7 +289,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -329,7 +329,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code id} is {@code null} or empty.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -364,7 +364,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in this channel.
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -401,7 +401,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction}
      */
@@ -435,7 +435,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction}
      */
@@ -469,7 +469,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *           <li>If null is provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      *
@@ -502,7 +502,7 @@ public interface GuildMessageChannel extends GuildChannel, MessageChannel
      *           <li>If null is provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}.
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      *
