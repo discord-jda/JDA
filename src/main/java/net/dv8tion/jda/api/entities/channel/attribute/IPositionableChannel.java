@@ -45,6 +45,8 @@ public interface IPositionableChannel extends GuildChannel
      *
      * @throws IllegalStateException
      *         If this channel is not in the guild cache
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return Zero-based int of position of the GuildChannel.
      */

@@ -17,6 +17,8 @@
 package net.dv8tion.jda.test.interactions;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -44,7 +46,8 @@ public class CommandDataTest
     {
         return DataObject.empty()
                 .put("type", 1)
-                .put("dm_permission", true)
+                .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType()).add(InteractionContextType.BOT_DM.getType()))
+                .put("integration_types", DataArray.empty().add(IntegrationType.GUILD_INSTALL.getType()))
                 .put("name_localizations", DataObject.empty())
                 .put("description_localizations", DataObject.empty())
                 .put("nsfw", false)
@@ -68,7 +71,8 @@ public class CommandDataTest
     void testNormal()
     {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
-                .setGuildOnly(true)
+                .setContexts(InteractionContextType.GUILD)
+                .setIntegrationTypes(IntegrationType.USER_INSTALL)
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
                 .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                 .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
@@ -82,12 +86,38 @@ public class CommandDataTest
                 .put("type", 1)
                 .put("name", "ban")
                 .put("description", "Ban a user from this server")
-                .put("dm_permission", false)
+                .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType()))
+                .put("integration_types", DataArray.empty().add(IntegrationType.USER_INSTALL.getType()))
                 .put("default_member_permissions", "4")
                 .put("options", DataArray.empty()
                     .add(defaultOption(OptionType.USER, "user", "The user to ban").put("required", true))
                     .add(defaultOption(OptionType.STRING, "reason", "The ban reason"))
                     .add(defaultOption(OptionType.INTEGER, "days", "The duration of the ban"))));
+    }
+
+    @Test
+    void testDeprecatedGuildOnly()
+    {
+        CommandDataImpl command = new CommandDataImpl("ban", "Ban a user from this server")
+                .setGuildOnly(true);
+
+        assertThat(command.toData())
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(defaultCommand()
+                        .put("type", 1)
+                        .put("name", "ban")
+                        .put("description", "Ban a user from this server")
+                        .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType())));
+
+        command.setGuildOnly(false);
+
+        assertThat(command.toData())
+                .withRepresentation(new PrettyRepresentation())
+                .isEqualTo(defaultCommand()
+                        .put("type", 1)
+                        .put("name", "ban")
+                        .put("description", "Ban a user from this server")
+                        .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType()).add(InteractionContextType.BOT_DM.getType())));
     }
 
     @Test

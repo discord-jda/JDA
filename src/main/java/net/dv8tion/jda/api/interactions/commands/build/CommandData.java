@@ -16,20 +16,28 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Builder for Application Commands.
@@ -147,9 +155,81 @@ public interface CommandData extends SerializableData
      *         Whether to restrict this command to guilds
      *
      * @return The builder instance, for chaining
+     *
+     * @deprecated Replaced with {@link #setContexts(InteractionContextType...)}
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setContexts(InteractionContextType.GUILD)")
     CommandData setGuildOnly(boolean guildOnly);
+
+    /**
+     * Sets the contexts in which this command can be used (Default: Guild and Bot DMs).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  contexts
+     *         The contexts in which this command can be used
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no interaction context types were passed
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    default CommandData setContexts(@Nonnull InteractionContextType... contexts)
+    {
+        Checks.notEmpty(contexts, "Contexts");
+        return setContexts(Arrays.asList(contexts));
+    }
+
+    /**
+     * Sets the contexts in which this command can be used (Default: Guild and Bot DMs).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  contexts
+     *         The contexts in which this command can be used
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no interaction context types were passed
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setContexts(@Nonnull Collection<InteractionContextType> contexts);
+
+    /**
+     * Sets the integration types on which this command can be installed on (Default: Guilds).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  integrationTypes
+     *         The integration types on which this command can be installed on
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no integration types were passed
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    default CommandData setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
+    {
+        Checks.notEmpty(integrationTypes, "Integration types");
+        return setIntegrationTypes(Arrays.asList(integrationTypes));
+    }
+
+    /**
+     * Sets the integration types on which this command can be installed on (Default: Guilds).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  integrationTypes
+     *         The integration types on which this command can be installed on
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no integration types were passed
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    CommandData setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes);
 
     /**
      * Sets whether this command should only be usable in NSFW (age-restricted) channels.
@@ -208,8 +288,30 @@ public interface CommandData extends SerializableData
      * <br>Always true for guild commands.
      *
      * @return True, if this command is restricted to guilds.
+     *
+     * @deprecated Replaced with {@link #getContexts()}
      */
+    @Deprecated
+    @ReplaceWith("getContexts().equals(EnumSet.of(InteractionContextType.GUILD))")
     boolean isGuildOnly();
+
+    /**
+     * The contexts in which this command can be used.
+     *
+     * @return The contexts in which this command can be used
+     */
+    @Nonnull
+    @UnmodifiableView
+    Set<InteractionContextType> getContexts();
+
+    /**
+     * Gets the integration types on which this command can be installed on.
+     *
+     * @return The integration types on which this command can be installed on
+     */
+    @Nonnull
+    @UnmodifiableView
+    Set<IntegrationType> getIntegrationTypes();
 
     /**
      * Whether this command should only be usable in NSFW (age-restricted) channels
@@ -241,7 +343,8 @@ public interface CommandData extends SerializableData
         {
             final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
             return data.setDefaultPermissions(command.getDefaultPermissions())
-                    .setGuildOnly(command.isGuildOnly())
+                    .setContexts(command.getContexts())
+                    .setIntegrationTypes(command.getIntegrationTypes())
                     .setNSFW(command.isNSFW())
                     .setNameLocalizations(command.getNameLocalizations().toMap())
                     .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
@@ -282,7 +385,28 @@ public interface CommandData extends SerializableData
                 data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
             }
 
-            data.setGuildOnly(!object.getBoolean("dm_permission", true));
+            if (!object.isNull("contexts"))
+            {
+                data.setContexts(object.getArray("contexts")
+                        .stream(DataArray::getString)
+                        .map(InteractionContextType::fromKey)
+                        .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
+            }
+            else if (!object.isNull("dm_permission"))
+                data.setGuildOnly(!object.getBoolean("dm_permission"));
+            else
+                data.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+
+            if (!object.isNull("integration_types"))
+            {
+                data.setIntegrationTypes(object.getArray("integration_types")
+                        .stream(DataArray::getString)
+                        .map(IntegrationType::fromKey)
+                        .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+            }
+            else
+                data.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
+
             data.setNSFW(object.getBoolean("nsfw"));
             data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
             data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
