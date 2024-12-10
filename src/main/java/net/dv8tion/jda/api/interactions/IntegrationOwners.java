@@ -70,7 +70,7 @@ public interface IntegrationOwners
 
     /**
      * Whether this interaction was first authorized by a command with the {@link IntegrationType#GUILD_INSTALL} integration type.
-     * <br>This includes guild commands and bot DMs commands.
+     * <br>This includes commands in guilds and in this app's bot DMs.
      *
      * <p>You can retrieve the authorizing guild with {@link Interaction#getGuild()}.
      *
