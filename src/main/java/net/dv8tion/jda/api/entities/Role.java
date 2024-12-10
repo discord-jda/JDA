@@ -53,7 +53,7 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
      * @throws IllegalStateException
      *         If this role is not in the guild cache
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild}, use {@link #getPermissionsRaw()} instead.
+     *         If this role is {@link #isDetached() detached}, use {@link #getPermissionsRaw()} instead
      *
      * @return The position of this {@link net.dv8tion.jda.api.entities.Role Role} as integer.
      */
@@ -188,7 +188,7 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
      * @throws java.lang.IllegalArgumentException
      *         If the specified guild is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         if the bot {@link #isDetached() isn't in the guild} the role should be copied to.
+     *         If the guild the role should be copied to is {@link Guild#isDetached() detached}
      *
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
