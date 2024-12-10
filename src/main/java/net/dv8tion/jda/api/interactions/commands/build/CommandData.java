@@ -31,6 +31,7 @@ import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -300,6 +301,7 @@ public interface CommandData extends SerializableData
      * @return The contexts in which this command can be used
      */
     @Nonnull
+    @UnmodifiableView
     Set<InteractionContextType> getContexts();
 
     /**
@@ -308,6 +310,7 @@ public interface CommandData extends SerializableData
      * @return The integration types on which this command can be installed on
      */
     @Nonnull
+    @UnmodifiableView
     Set<IntegrationType> getIntegrationTypes();
 
     /**
