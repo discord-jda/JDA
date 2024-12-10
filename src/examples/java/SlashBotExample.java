@@ -64,13 +64,6 @@ public class SlashBotExample extends ListenerAdapter
 
         // Simple reply commands
         commands.addCommands(
-            Commands.slash("echo", "Makes the bot reply to yourself")
-                .setContexts(InteractionContextType.ALL) // Allow the command to be used anywhere (Bot DMs, Guild, Friend DMs, Group DMs)
-                .setIntegrationTypes(IntegrationType.ALL) // Allow the command to be installed anywhere (Guilds, Users)
-                .addOption(STRING, "content", "What the bot should reply to yourself", true) // you can add required options like this too
-        );
-
-        commands.addCommands(
             Commands.slash("say", "Makes the bot say what you tell it to")
                 .setContexts(InteractionContextType.ALL) // Allow the command to be used anywhere (Bot DMs, Guild, Friend DMs, Group DMs)
                 .setIntegrationTypes(IntegrationType.ALL) // Allow the command to be installed anywhere (Guilds, Users)
