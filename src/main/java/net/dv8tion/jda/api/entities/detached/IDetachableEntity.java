@@ -17,12 +17,16 @@
 package net.dv8tion.jda.api.entities.detached;
 
 /**
- * Represents an entity which might not be known by the bot.
- * It is mostly limited to user-installed interactions,
- * where the bot is not a member of the guild,
- * and in group DMs.
- * <br>Some information may be unavailable on detached entities,
- * and most methods that would otherwise return a {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+ * Represents an entity which can be detached.
+ *
+ * <p>A detached entity is one that was created from a potentially partial snapshot at some point in time,
+ * they are never cached and thus cannot be retrieved, nor be updated.
+ *
+ * <p>An entity may be detached when the bot does not have access to it,
+ * for example, in user-installed interactions outside guilds the bot is in,
+ * or in guilds which the bot is installed without the {@code bot} scope.
+ *
+ * <p>Most methods of detached entities that would otherwise return a {@link net.dv8tion.jda.api.requests.RestAction RestAction}
  * will throw a {@link net.dv8tion.jda.api.exceptions.DetachedEntityException DetachedEntityException} instead.
  */
 public interface IDetachableEntity
@@ -30,10 +34,10 @@ public interface IDetachableEntity
     /**
      * Whether this entity is detached.
      *
-     * <p>A detached entity is not known to the bot.
-     * This is the case for interactions that happen through user-installed commands
-     * in channels that the bot is not a member of.
-     * For instance, when a command is used in a group channel or a guild that the bot is not a member in.
+     * <p>If this returns {@code true},
+     * this entity cannot be retrieved, will never be updated, and
+     * most methods that would otherwise return a {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * will throw a {@link net.dv8tion.jda.api.exceptions.DetachedEntityException DetachedEntityException} instead.
      *
      * @return {@code True}, if the entity is detached
      */
