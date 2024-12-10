@@ -30,14 +30,15 @@ public enum IntegrationType
 {
     UNKNOWN("-1"),
     /**
-     * Indicates commands can be installed on the guild the application was invited in.
+     * Allows commands to be added to a guild by a {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER server manager},
+     * all users who are in the guild can access the commands and the app's DMs,
+     * assuming the app was invited with the {@code bot} scope.
      */
     GUILD_INSTALL("0"),
     /**
-     * Indicates commands can be installed on the user inviting the application.
-     *
-     * <p>Enables using {@link InteractionContextType#GUILD} in guilds the bot isn't in,
-     * and {@link InteractionContextType#PRIVATE_CHANNEL}.
+     * Allows commands to be added to a user after the app has been connected to their account.
+     * <br>Users can use the commands according to the {@link InteractionContextType InteractionContextTypes} set on each command,
+     * and can also access the app's DMs, assuming the app has a bot.
      *
      * <p><b>Requirements</b>
      * <br>This requires the bot to be user-installable,
@@ -47,7 +48,7 @@ public enum IntegrationType
     USER_INSTALL("1");
 
     /**
-     * Contains all integration types
+     * Contains all integration types.
      */
     public static final Set<IntegrationType> ALL = Helpers.unmodifiableEnumSet(GUILD_INSTALL, USER_INSTALL);
 
