@@ -19,9 +19,11 @@ package net.dv8tion.jda.api.interactions.modals;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.interactions.CustomIdInteraction;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
@@ -36,8 +38,16 @@ import java.util.List;
  *
  * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
  */
-public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
+public interface ModalInteraction extends IReplyCallback, IMessageEditCallback, CustomIdInteraction
 {
+
+    @Override
+    @NotNull
+    default String getCustomId()
+    {
+        return getModalId();
+    }
+
     /**
      * Returns the custom id of the Modal in question
      *
