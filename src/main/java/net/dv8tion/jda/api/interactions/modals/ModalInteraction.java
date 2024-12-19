@@ -42,7 +42,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback, 
 {
 
     @Override
-    @NotNull
+    @Nonnull
     default String getCustomId()
     {
         return getModalId();
