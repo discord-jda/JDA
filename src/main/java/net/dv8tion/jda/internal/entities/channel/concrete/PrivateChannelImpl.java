@@ -24,14 +24,16 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.PrivateChannelMixin;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements PrivateChannel, MessageChannelMixin<PrivateChannelImpl>
+public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements
+        PrivateChannel,
+        PrivateChannelMixin<PrivateChannelImpl>
 {
     private User user;
     private long latestMessageId;
@@ -40,6 +42,12 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     {
         super(id, api);
         this.user = user;
+    }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
     }
 
     @Nonnull
@@ -87,14 +95,6 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     {
         Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) -> ((JDAImpl) getJDA()).getEntityBuilder().createPrivateChannel(response.getObject()));
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> delete()
-    {
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Override

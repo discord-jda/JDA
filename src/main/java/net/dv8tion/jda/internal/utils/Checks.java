@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
+import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
@@ -302,6 +304,14 @@ public class Checks
         if (channel instanceof AudioChannel && !perms.contains(Permission.VOICE_CONNECT))
             throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
         throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+    }
+
+    // Attach checks
+
+    public static void checkAttached(IDetachableEntity entity)
+    {
+        if (entity.isDetached())
+            throw new DetachedEntityException();
     }
 
     // Type checks

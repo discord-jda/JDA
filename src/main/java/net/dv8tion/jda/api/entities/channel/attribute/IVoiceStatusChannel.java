@@ -59,6 +59,8 @@ public interface IVoiceStatusChannel extends Channel
      *             <li>If the currently logged in account is <b>not connected</b> and does not have the {@link Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission.</li>
      *             <li>If the currently logged in account is <b>connected</b> and does not have the {@link Permission#VOICE_SET_STATUS VOICE_SET_STATUS} permission.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link AuditableRestAction}
      */
