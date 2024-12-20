@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.interactions.CustomIdInteraction;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback;
@@ -32,8 +33,16 @@ import javax.annotation.Nonnull;
  * <p>Instead of {@link #deferReply()} and {@link #reply(String)} you can use {@link #deferEdit()} and {@link #editMessage(String)} with these interactions!
  * <b>You can only acknowledge an interaction once!</b>
  */
-public interface ComponentInteraction extends IReplyCallback, IMessageEditCallback, IModalCallback, IPremiumRequiredReplyCallback
+public interface ComponentInteraction extends IReplyCallback, IMessageEditCallback, IModalCallback, IPremiumRequiredReplyCallback, CustomIdInteraction
 {
+
+    @Override
+    @Nonnull
+    default String getCustomId()
+    {
+        return getComponentId();
+    }
+
     /**
      * The custom component ID provided to the component when it was originally created.
      * <br>This value should be used to determine what action to take in regard to this interaction.
