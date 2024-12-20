@@ -36,7 +36,7 @@ public class PollVotersPaginationActionImpl extends PaginationActionImpl<User, P
 {
     public PollVotersPaginationActionImpl(JDA jda, String channelId, String messageId, long answerId)
     {
-        super(jda, Route.Messages.GET_POLL_ANSWER_VOTERS.compile(channelId, messageId, Long.toString(answerId)), 1, 1000, 1000);
+        super(jda, Route.Messages.GET_POLL_ANSWER_VOTERS.compile(channelId, messageId, Long.toString(answerId)), 1, 100, 100);
         this.order = PaginationOrder.FORWARD;
     }
 
