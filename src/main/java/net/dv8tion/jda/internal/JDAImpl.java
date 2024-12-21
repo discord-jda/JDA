@@ -1121,10 +1121,10 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public CommandListUpdateAction updateCommands()
+    public GlobalCommandListUpdateAction updateCommands()
     {
         Route.CompiledRoute route = Route.Interactions.UPDATE_COMMANDS.compile(getSelfUser().getApplicationId());
-        return new CommandListUpdateActionImpl(this, null, route);
+        return new GlobalCommandListUpdateActionImpl(this, route);
     }
 
     @Nonnull

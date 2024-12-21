@@ -19,8 +19,11 @@ package net.dv8tion.jda.api.interactions.commands.build;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.IAgeRestrictedCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.INamedCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.IRestrictedCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.IScopedCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -37,188 +40,42 @@ import java.util.Map;
  *
  * @see Commands
  */
-public interface CommandData extends SerializableData
+public interface CommandData
+        extends INamedCommandData, IScopedCommandData, IRestrictedCommandData, IAgeRestrictedCommandData,
+        SerializableData
 {
-    /**
-     * The maximum length the name of a command can be. ({@value})
-     */
-    int MAX_NAME_LENGTH = 32;
-
-    /**
-     * The maximum length the description of a command can be. ({@value})
-     */
-    int MAX_DESCRIPTION_LENGTH = 100;
-
     /**
      * The maximum amount of options/subcommands/groups that can be added to a command or subcommand. ({@value})
      */
     int MAX_OPTIONS = 25;
 
-    /**
-     * Sets the {@link LocalizationFunction} for this command
-     * <br>This enables you to have the entirety of this command to be localized.
-     *
-     * @param  localizationFunction
-     *         The localization function
-     *
-     * @throws IllegalArgumentException
-     *         If the localization function is null
-     *
-     * @return The builder instance, for chaining
-     */
     @Nonnull
+    @Override
     CommandData setLocalizationFunction(@Nonnull LocalizationFunction localizationFunction);
 
-    /**
-     * Configure the command name.
-     *
-     * @param  name
-     *         The name, 1-{@value #MAX_NAME_LENGTH} characters (lowercase and alphanumeric for {@link Command.Type#SLASH})
-     *
-     * @throws IllegalArgumentException
-     *         If the name is not between 1-{@value #MAX_NAME_LENGTH} characters long, or not lowercase and alphanumeric for slash commands
-     *
-     * @return The builder instance, for chaining
-     */
     @Nonnull
+    @Override
     CommandData setName(@Nonnull String name);
 
-    /**
-     * Sets a {@link DiscordLocale language-specific} localization of this command's name.
-     *
-     * @param  locale
-     *         The locale to associate the translated name with
-     *
-     * @param  name
-     *         The translated name to put
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the locale is null</li>
-     *             <li>If the name is null</li>
-     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
-     *             <li>If the name does not pass the corresponding {@link #setName(String) name check}</li>
-     *         </ul>
-     *
-     * @return This builder instance, for chaining
-     */
     @Nonnull
+    @Override
     CommandData setNameLocalization(@Nonnull DiscordLocale locale, @Nonnull String name);
 
-    /**
-     * Sets multiple {@link DiscordLocale language-specific} localizations of this command's name.
-     *
-     * @param  map
-     *         The map from which to transfer the translated names
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the map is null</li>
-     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
-     *             <li>If the map contains a name which does not pass the corresponding {@link #setName(String) name check}</li>
-     *         </ul>
-     *
-     * @return This builder instance, for chaining
-     */
     @Nonnull
+    @Override
     CommandData setNameLocalizations(@Nonnull Map<DiscordLocale, String> map);
 
-    /**
-     * Sets the {@link net.dv8tion.jda.api.Permission Permissions} that a user must have in a specific channel to be able to use this command.
-     * <br>By default, everyone can use this command ({@link DefaultMemberPermissions#ENABLED}). Additionally, a command can be disabled for everyone but admins via {@link DefaultMemberPermissions#DISABLED}.
-     * <p>These configurations can be overwritten by moderators in each guild. See {@link Command#retrievePrivileges(net.dv8tion.jda.api.entities.Guild)} to get moderator defined overrides.
-     *
-     * @param  permission
-     *         {@link DefaultMemberPermissions} representing the default permissions of this command.
-     *
-     * @return The builder instance, for chaining
-     *
-     * @see DefaultMemberPermissions#ENABLED
-     * @see DefaultMemberPermissions#DISABLED
-     */
     @Nonnull
+    @Override
     CommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
-    /**
-     * Sets whether this command is only usable in a guild (Default: false).
-     * <br>This only has an effect if this command is registered globally.
-     *
-     * @param  guildOnly
-     *         Whether to restrict this command to guilds
-     *
-     * @return The builder instance, for chaining
-     */
     @Nonnull
+    @Override
     CommandData setGuildOnly(boolean guildOnly);
 
-    /**
-     * Sets whether this command should only be usable in NSFW (age-restricted) channels.
-     * <br>Default: false
-     *
-     * <p>Note: Age-restricted commands will not show up in direct messages by default unless the user enables them in their settings.
-     *
-     * @param  nsfw
-     *         True, to make this command nsfw
-     *
-     * @return The builder instance, for chaining
-     *
-     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
-     */
     @Nonnull
+    @Override
     CommandData setNSFW(boolean nsfw);
-
-    /**
-     * The current command name
-     *
-     * @return The command name
-     */
-    @Nonnull
-    String getName();
-
-    /**
-     * The localizations of this command's name for {@link DiscordLocale various languages}.
-     *
-     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized name
-     */
-    @Nonnull
-    LocalizationMap getNameLocalizations();
-
-    /**
-     * The {@link Command.Type}
-     *
-     * @return The {@link Command.Type}
-     */
-    @Nonnull
-    Command.Type getType();
-
-    /**
-     * Gets the {@link DefaultMemberPermissions} of this command.
-     * <br>If no permissions have been set, this returns {@link DefaultMemberPermissions#ENABLED}.
-     *
-     * @return DefaultMemberPermissions of this command.
-     *
-     * @see    DefaultMemberPermissions#ENABLED
-     * @see    DefaultMemberPermissions#DISABLED
-     */
-    @Nonnull
-    DefaultMemberPermissions getDefaultPermissions();
-
-    /**
-     * Whether the command can only be used inside a guild.
-     * <br>Always true for guild commands.
-     *
-     * @return True, if this command is restricted to guilds.
-     */
-    boolean isGuildOnly();
-
-    /**
-     * Whether this command should only be usable in NSFW (age-restricted) channels
-     *
-     * @return True, if this command is restricted to NSFW channels
-     *
-     * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
-     */
-    boolean isNSFW();
 
     /**
      * Converts the provided {@link Command} into a CommandData instance.
