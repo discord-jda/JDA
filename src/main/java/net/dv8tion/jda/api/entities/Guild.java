@@ -3985,7 +3985,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission
+     *         in the given channel.
      * @throws IllegalArgumentException
      *         If the provided user is null.
      * @throws java.lang.IllegalStateException
@@ -4024,7 +4025,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission
+     *         in the given channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided user is null.
      * @throws java.lang.IllegalStateException
