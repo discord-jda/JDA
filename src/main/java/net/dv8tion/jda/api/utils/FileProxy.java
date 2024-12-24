@@ -347,15 +347,8 @@ public class FileProxy
     {
         return FileUpload.fromStreamSupplier(name, () ->
         {
-            try
-            {
-                // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
-                return download().get();
-            }
-            catch (Throwable e)
-            {
-                throw new RuntimeException("Unable to download " + getUrl(), e);
-            }
+            // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+            return download().join();
         });
     }
 
