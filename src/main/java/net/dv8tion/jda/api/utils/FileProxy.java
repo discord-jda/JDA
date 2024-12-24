@@ -330,6 +330,35 @@ public class FileProxy
         return downloadToPath(url, path);
     }
 
+    /**
+     * Returns a {@link FileUpload} which supplies a data stream of this attachment,
+     * with the given file name.
+     * <br>The returned {@link FileUpload} can be reused safely, and does not need to be closed.
+     *
+     * @param  name
+     *         The name of the to-be-uploaded file
+     *
+     * @throws IllegalArgumentException If the file name is null or blank
+     *
+     * @return {@link FileUpload} from this attachment.
+     */
+    @Nonnull
+    public FileUpload downloadAsFileUpload(@Nonnull String name)
+    {
+        return FileUpload.fromStreamSupplier(name, () ->
+        {
+            try
+            {
+                // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+                return download().get();
+            }
+            catch (Throwable e)
+            {
+                throw new RuntimeException("Unable to download " + getUrl(), e);
+            }
+        });
+    }
+
     protected static class DownloadTask
     {
         private final Call call;
