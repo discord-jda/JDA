@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -26,6 +29,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -96,10 +100,84 @@ public interface CommandEditAction extends RestAction<Command>
      *         Whether to restrict this command to guilds
      *
      * @return The CommandEditAction instance, for chaining
+     *
+     * @deprecated Replaced with {@link #setContexts(InteractionContextType...)}
+     */
+    @Nonnull
+    @Deprecated
+    @ReplaceWith("setContexts(InteractionContextType.GUILD)")
+    @CheckReturnValue
+    CommandEditAction setGuildOnly(boolean guildOnly);
+
+    /**
+     * Sets the contexts in which this command can be executed (Default: Guild and Bot DMs).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  contexts
+     *         The contexts in which this command can be executed
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no interaction context types were passed
+     *
+     * @return The builder instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction setGuildOnly(boolean guildOnly);
+    default CommandEditAction setContexts(@Nonnull InteractionContextType... contexts)
+    {
+        return setContexts(Arrays.asList(contexts));
+    }
+
+    /**
+     * Sets the contexts in which this command can be executed (Default: Guild and Bot DMs).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  contexts
+     *         The contexts in which this command can be executed
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no interaction context types were passed
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction setContexts(@Nonnull Collection<InteractionContextType> contexts);
+
+    /**
+     * Sets the integration types on which this command can be installed on (Default: Guilds).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  integrationTypes
+     *         The integration types on which this command can be installed on
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no integration types were passed
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandEditAction setIntegrationTypes(@Nonnull IntegrationType... integrationTypes)
+    {
+        return setIntegrationTypes(Arrays.asList(integrationTypes));
+    }
+
+    /**
+     * Sets the integration types on which this command can be installed on (Default: Guilds).
+     * <br>This only has an effect if this command is registered globally.
+     *
+     * @param  integrationTypes
+     *         The integration types on which this command can be installed on
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} or no integration types were passed
+     *
+     * @return The builder instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes);
 
     /**
      * Sets whether this command should only be usable in NSFW (age-restricted) channels.

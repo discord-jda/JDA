@@ -97,6 +97,21 @@ public interface Interaction extends ISnowflake
     Guild getGuild();
 
     /**
+     * Whether this interaction happened in an attached guild.
+     *
+     * @return {@code true}, if this interaction happened in an attached guild
+     *
+     * @see Guild#isDetached()
+     */
+    default boolean isFromAttachedGuild()
+    {
+        final Guild guild = getGuild();
+        if (guild == null)
+            return false;
+        return !guild.isDetached();
+    }
+
+    /**
      * Whether this interaction came from a {@link Guild}.
      * <br>This is identical to {@code getGuild() != null}
      *
@@ -237,6 +252,22 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     List<Entitlement> getEntitlements();
+
+    /**
+     * Gets the context in which this command was executed.
+     *
+     * @return The context in which this command was executed
+     */
+    @Nonnull
+    InteractionContextType getContext();
+
+    /**
+     * Returns the integration owners of this interaction, which depends on how the app was installed.
+     *
+     * @return The integration owners of this interaction
+     */
+    @Nonnull
+    IntegrationOwners getIntegrationOwners();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this interaction

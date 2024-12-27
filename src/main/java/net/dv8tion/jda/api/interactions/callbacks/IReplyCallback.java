@@ -90,9 +90,18 @@ public interface IReplyCallback extends IDeferrableCallback
      * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
      * <br>Limitations:
      * <ul>
-     *     <li>Cannot contain any files/attachments</li>
      *     <li>Cannot be reacted to</li>
-     *     <li>Cannot be retrieved</li>
+     *     <li>Can only be retrieved using the {@link InteractionHook#retrieveMessageById(String) InteractionHook}</li>
+     * </ul>
+     *
+     * <b>Note:</b> Your message can appear ephemeral in several cases:
+     * <ul>
+     *     <li>In guilds the bot is not a member of,
+     *     if the member is unable to {@link net.dv8tion.jda.api.Permission#USE_EXTERNAL_APPLICATIONS use external application},
+     *     this usually happens for user-installed commands</li>
+     *     <li>If the interaction user is unable to {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND send messages}</li>
+     *     <li>If the content contains elements the user does not have the permission to send (like files or embeds)</li>
+     *     <li>If the content triggered AutoMod</li>
      * </ul>
      *
      * @param  ephemeral
