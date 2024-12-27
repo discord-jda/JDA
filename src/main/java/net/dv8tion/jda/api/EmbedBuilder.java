@@ -436,7 +436,7 @@ public class EmbedBuilder
      * @return the builder after the description has been set
      */
     @Nonnull
-    public final EmbedBuilder setDescription(@Nullable CharSequence description)
+    public EmbedBuilder setDescription(@Nullable CharSequence description)
     {
         this.description.setLength(0);
         if (description != null && description.length() >= 1)
