@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -64,6 +65,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.automod.AutoModRuleImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildChannelMixin;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.interactions.command.CommandImpl;
@@ -1641,7 +1643,6 @@ public class GuildImpl implements Guild
     public AuditableRestAction<Void> deafen(@Nonnull UserSnowflake user, boolean deafen)
     {
         Checks.notNull(user, "User");
-        checkPermission(Permission.VOICE_DEAF_OTHERS);
 
         Member member = resolveMember(user);
         if (member != null)
@@ -1649,10 +1650,12 @@ public class GuildImpl implements Guild
             GuildVoiceState voiceState = member.getVoiceState();
             if (voiceState != null)
             {
-                if (voiceState.getChannel() == null)
+                final AudioChannelUnion channel = voiceState.getChannel();
+                if (channel == null)
                     throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
                 if (voiceState.isGuildDeafened() == deafen)
                     return new CompletedRestAction<>(getJDA(), null);
+                ((GuildChannelMixin<?>) channel).checkPermission(Permission.VOICE_DEAF_OTHERS);
             }
         }
 
@@ -1666,7 +1669,6 @@ public class GuildImpl implements Guild
     public AuditableRestAction<Void> mute(@Nonnull UserSnowflake user, boolean mute)
     {
         Checks.notNull(user, "User");
-        checkPermission(Permission.VOICE_MUTE_OTHERS);
 
         Member member = resolveMember(user);
         if (member != null)
@@ -1674,10 +1676,12 @@ public class GuildImpl implements Guild
             GuildVoiceState voiceState = member.getVoiceState();
             if (voiceState != null)
             {
-                if (voiceState.getChannel() == null)
+                final AudioChannelUnion channel = voiceState.getChannel();
+                if (channel == null)
                     throw new IllegalStateException("Can only mute members who are currently in a voice channel");
                 if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
                     return new CompletedRestAction<>(getJDA(), null);
+                ((GuildChannelMixin<?>) channel).checkPermission(Permission.VOICE_MUTE_OTHERS);
             }
         }
 
