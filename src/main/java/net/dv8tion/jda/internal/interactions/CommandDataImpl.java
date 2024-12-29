@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.command.localization.LocalizationMapper;
+import net.dv8tion.jda.internal.interactions.mixin.attributes.IDescribedCommandDataMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -35,7 +36,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class CommandDataImpl implements SlashCommandData
+public class CommandDataImpl implements SlashCommandData, IDescribedCommandDataMixin
 {
     protected final List<SerializableData> options = new ArrayList<>(MAX_OPTIONS);
 
@@ -72,22 +73,6 @@ public class CommandDataImpl implements SlashCommandData
     {
         if (required != type)
             throw new IllegalStateException("Cannot " + action + " for commands of type " + type);
-    }
-
-    public void checkName(@Nonnull String name)
-    {
-        Checks.inRange(name, 1, MAX_NAME_LENGTH, "Name");
-        if (type == Command.Type.SLASH)
-        {
-            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-            Checks.isLowercase(name, "Name");
-        }
-    }
-
-    public void checkDescription(@Nonnull String description)
-    {
-        checkType(Command.Type.SLASH, "set description");
-        Checks.inRange(description, 1, MAX_DESCRIPTION_LENGTH, "Description");
     }
 
     @Nonnull
