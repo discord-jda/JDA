@@ -47,7 +47,20 @@ public class ReactionPaginationActionImpl
      */
     public ReactionPaginationActionImpl(MessageReaction reaction)
     {
-        super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannelId(), reaction.getMessageId(), getCode(reaction)), 1, 100, 100);
+        this(reaction, MessageReaction.ReactionType.NORMAL);
+    }
+
+    /**
+     * Creates a new PaginationAction instance
+     *
+     * @param reaction
+     *        The target {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction}
+     * @param type
+     *        Type of {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionType MessageReaction.ReactionType} to retrieve users for
+     */
+    public ReactionPaginationActionImpl(MessageReaction reaction, MessageReaction.ReactionType type)
+    {
+        super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannelId(), reaction.getMessageId(), getCode(reaction)).withQueryParams("type", String.valueOf(type.getValue())), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = reaction;
     }
