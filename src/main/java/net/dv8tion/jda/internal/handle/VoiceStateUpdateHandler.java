@@ -103,7 +103,9 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
         DataObject memberJson = content.getObject("member");
         MemberImpl member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson);
-        if (member == null) return;
+        // Only fire the events below if the member is cached
+        // If the member isn't cached, we would be firing every event that doesn't correspond to the default voice state
+        if (guild.getMemberById(member.getIdLong()) == null) return;
 
         GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
         if (vState == null)
