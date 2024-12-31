@@ -22,10 +22,9 @@ import net.dv8tion.jda.api.interactions.modals.ModalInteraction;
 import javax.annotation.Nonnull;
 
 /**
- * Interactions which have a custom ID, namely {@link ComponentInteraction} and {@link  ModalInteraction}.
+ * Marker interface for interactions with custom IDs.
  *
- * <br>This id does not have to be numerical.
- *
+ * <p>This includes modals and components.
  */
 public interface ICustomIdInteraction
 {
