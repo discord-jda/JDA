@@ -762,7 +762,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         If the id is null
      *
-     * @return The {@link Button} or null of no button with that ID is present on this message
+     * @return The {@link Button} or null if no button with that ID is present on this message
      */
     @Nullable
     default Button getButtonById(@Nonnull String id)
