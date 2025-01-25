@@ -48,6 +48,7 @@ class EntityManagerTest extends IntegrationTest
         ChannelCacheViewImpl<Channel> globalChannelCache = new ChannelCacheViewImpl<>(Channel.class);
         SortedChannelCacheViewImpl<GuildChannel> guildChannelCache = new SortedChannelCacheViewImpl<>(GuildChannel.class);
 
+        when(guild.getJDA()).thenReturn(jda);
         when(guild.getChannelView()).thenReturn(guildChannelCache);
         when(jda.getChannelsView()).thenReturn(globalChannelCache);
         when(jda.getTextChannelById(eq(Constants.CHANNEL_ID))).then(

@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImpl<T>> extends AbstractChannelImpl<T> implements GuildChannelMixin<T>
 {
-    protected GuildImpl guild;
+    private GuildImpl guild;
 
     public AbstractGuildChannelImpl(long id, GuildImpl guild)
     {
