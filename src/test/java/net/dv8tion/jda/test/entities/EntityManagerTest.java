@@ -33,8 +33,7 @@ import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class EntityManagerTest extends IntegrationTest
 {
@@ -62,6 +61,7 @@ class EntityManagerTest extends IntegrationTest
         entityBuilder.createTextChannel(guild, TestData.CHANNEL_CREATE, Constants.GUILD_ID);
 
         GuildImpl newGuild = mock(GuildImpl.class);
+        when(newGuild.getJDA()).thenReturn(jda);
         when(newGuild.getChannelView()).thenReturn(new SortedChannelCacheViewImpl<>(GuildChannel.class));
         when(newGuild.getTextChannelById(eq(Constants.CHANNEL_ID))).then(
             invocation -> newGuild.getChannelView().getElementById(Constants.CHANNEL_ID)
@@ -72,6 +72,15 @@ class EntityManagerTest extends IntegrationTest
         assertThat(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID)).isNotNull();
         assertThat(createdChannel)
             .isSameAs(newGuild.getChannelView().getElementById(Constants.CHANNEL_ID));
+
+
+        reset(jda);
+
+        when(jda.getGuildById(eq(Constants.GUILD_ID))).thenReturn(newGuild);
+        assertThat(createdChannel.getGuild())
+            .isSameAs(newGuild);
+
+        verify(jda, times(1)).getGuildById(anyLong());
     }
 
     static class TestData
