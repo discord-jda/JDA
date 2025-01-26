@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities.channel.middleman;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
@@ -26,7 +27,7 @@ import javax.annotation.Nonnull;
 
 public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImpl<T>> extends AbstractChannelImpl<T> implements GuildChannelMixin<T>
 {
-    protected GuildImpl guild;
+    private GuildImpl guild;
 
     public AbstractGuildChannelImpl(long id, GuildImpl guild)
     {
@@ -38,6 +39,9 @@ public abstract class AbstractGuildChannelImpl<T extends AbstractGuildChannelImp
     @Override
     public GuildImpl getGuild()
     {
+        Guild cachedGuild = getJDA().getGuildById(id);
+        if (cachedGuild instanceof GuildImpl)
+            return this.guild = (GuildImpl) cachedGuild;
         return guild;
     }
 

@@ -1094,11 +1094,15 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        CategoryImpl channel = (CategoryImpl) getJDA().getCategoryById(id);
+
+        if (guild == null)
+            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Missing guild for id " + Long.toUnsignedString(guildId));
+
+        CategoryImpl channel = (CategoryImpl) guild.getCategoryById(id);
         if (channel == null)
         {
-            if (guild == null)
-                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
             ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
@@ -1131,11 +1135,15 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        TextChannelImpl channel = (TextChannelImpl) getJDA().getTextChannelById(id);
+
+        if (guildObj == null)
+            guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        if (guildObj == null)
+            throw new IllegalStateException("Missing guild for id " + Long.toUnsignedString(guildId));
+
+        TextChannelImpl channel = (TextChannelImpl) guildObj.getTextChannelById(id);
         if (channel == null)
         {
-            if (guildObj == null)
-                guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
             ChannelCacheViewImpl<GuildChannel> guildView = guildObj.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
@@ -1174,11 +1182,15 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        NewsChannelImpl channel = (NewsChannelImpl) getJDA().getNewsChannelById(id);
+
+        if (guildObj == null)
+            guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        if (guildObj == null)
+            throw new IllegalStateException("Missing guild for id " + Long.toUnsignedString(guildId));
+
+        NewsChannelImpl channel = (NewsChannelImpl) guildObj.getNewsChannelById(id);
         if (channel == null)
         {
-            if (guildObj == null)
-                guildObj = (GuildImpl) getJDA().getGuildsView().get(guildId);
             ChannelCacheViewImpl<GuildChannel> guildView = guildObj.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
@@ -1214,11 +1226,15 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        VoiceChannelImpl channel = (VoiceChannelImpl) getJDA().getVoiceChannelById(id);
+
+        if (guild == null)
+            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Missing guild for id " + Long.toUnsignedString(guildId));
+
+        VoiceChannelImpl channel = (VoiceChannelImpl) guild.getVoiceChannelById(id);
         if (channel == null)
         {
-            if (guild == null)
-                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
             ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
@@ -1259,11 +1275,15 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        StageChannelImpl channel = (StageChannelImpl) getJDA().getStageChannelById(id);
+
+        if (guild == null)
+            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Missing guild for id " + Long.toUnsignedString(guildId));
+
+        StageChannelImpl channel = (StageChannelImpl) guild.getStageChannelById(id);
         if (channel == null)
         {
-            if (guild == null)
-                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
             ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
@@ -1313,6 +1333,8 @@ public class EntityBuilder
 
         if (guild == null)
             guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Missing guild for id " + Long.toUnsignedString(guildId));
 
         IThreadContainer parent = guild.getChannelById(IThreadContainer.class, parentId);
         if (parent == null)
@@ -1404,11 +1426,15 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        ForumChannelImpl channel = (ForumChannelImpl) getJDA().getForumChannelById(id);
+
+        if (guild == null)
+            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Missing guild for id " + Long.toUnsignedString(guildId));
+
+        ForumChannelImpl channel = (ForumChannelImpl) guild.getForumChannelById(id);
         if (channel == null)
         {
-            if (guild == null)
-                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
             ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
@@ -1456,11 +1482,15 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
-        MediaChannelImpl channel = (MediaChannelImpl) getJDA().getMediaChannelById(id);
+
+        if (guild == null)
+            guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+        if (guild == null)
+            throw new IllegalStateException("Missing guild for id " + Long.toUnsignedString(guildId));
+
+        MediaChannelImpl channel = (MediaChannelImpl) guild.getMediaChannelById(id);
         if (channel == null)
         {
-            if (guild == null)
-                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
             ChannelCacheViewImpl<GuildChannel> guildView = guild.getChannelView();
             ChannelCacheViewImpl<Channel> globalView = getJDA().getChannelsView();
             try (
