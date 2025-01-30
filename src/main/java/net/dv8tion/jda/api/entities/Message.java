@@ -207,7 +207,7 @@ public interface Message extends ISnowflake, Formattable
             "(?:https?://)?" +                     // Scheme
             "(?:\\w+\\.)?" +                       // Subdomain
             "discord(?:(?:app)?\\.com" +           // Discord domain
-            "/invite|\\.gg)/(?<code>[a-z0-9-]+)" + // Path
+            "/invite|\\.gg)[/\\\\](?<code>[a-z0-9-]+)" + // Path
             "(?:\\?\\S*)?(?:#\\S*)?",              // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
 
