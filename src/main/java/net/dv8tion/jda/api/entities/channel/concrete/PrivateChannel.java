@@ -39,6 +39,8 @@ public interface PrivateChannel extends MessageChannel
      *     <li>A reaction is added</li>
      *     <li>A message is deleted</li>
      *     <li>This account sends a message to a user from another shard (not shard 0)</li>
+     *     <li>This account receives an interaction response, happens when using an user-installed interaction</li>
+     *     <li>This channel represents a DM channel between friends, happens when using an user-installed interaction</li>
      * </ul>
      * The consequence of this is that for any message this bot receives from a guild or from other users, the user will not be null.
      *
@@ -55,6 +57,9 @@ public interface PrivateChannel extends MessageChannel
      * Retrieves the {@link User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      *
      * <br>This method fetches the channel from the API and retrieves the User from that.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         For channels from interactions with context type {@link net.dv8tion.jda.api.interactions.InteractionContextType#PRIVATE_CHANNEL PRIVATE_CHANNEL}
      *
      * @return A {@link RestAction RestAction} to retrieve the {@link User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      */

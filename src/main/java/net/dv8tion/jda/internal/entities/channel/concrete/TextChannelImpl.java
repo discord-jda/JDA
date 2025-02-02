@@ -17,20 +17,15 @@
 package net.dv8tion.jda.internal.entities.channel.concrete;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.managers.channel.concrete.TextChannelManager;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildMessageChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.TextChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.TextChannelManagerImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -39,13 +34,26 @@ import java.util.List;
 public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<TextChannelImpl> implements
         TextChannel,
         DefaultGuildChannelUnion,
-        ISlowmodeChannelMixin<TextChannelImpl>
+        TextChannelMixin<TextChannelImpl>
 {
     private int slowmode;
 
     public TextChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
+    }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public GuildImpl getGuild()
+    {
+        return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
@@ -72,33 +80,12 @@ public class TextChannelImpl extends AbstractStandardGuildMessageChannelImpl<Tex
 
     @Nonnull
     @Override
-    public ChannelAction<TextChannel> createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        ChannelAction<TextChannel> action = guild.createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
-        if (guild.equals(getGuild()))
-        {
-            Category parent = getParentCategory();
-            if (parent != null)
-                action.setParent(parent);
-            for (PermissionOverride o : overrides.valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-            }
-        }
-        return action;
-    }
-
-    @Nonnull
-    @Override
     public TextChannelManager getManager()
     {
         return new TextChannelManagerImpl(this);
     }
 
+    @Override
     public TextChannelImpl setSlowmode(int slowmode)
     {
         this.slowmode = slowmode;
