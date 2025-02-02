@@ -698,6 +698,13 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
 
     @Nonnull
     @Override
+    public RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
+    {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
     public VerificationLevel getVerificationLevel()
     {
         throw detachedException();

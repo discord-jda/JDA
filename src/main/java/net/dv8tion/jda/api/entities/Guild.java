@@ -2943,6 +2943,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @param  id
      *         The user id to load the voice state from
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
     @Nonnull
@@ -2965,6 +2968,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If the provided id is empty or null
      * @throws NumberFormatException
      *         If the provided id is not a snowflake
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
@@ -2990,6 +2995,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @throws IllegalArgumentException
      *         If provided with null
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link RestAction} - Type: {@link GuildVoiceState}
      */
