@@ -2597,6 +2597,76 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake
     List<GuildVoiceState> getVoiceStates();
 
     /**
+     * Load the member's voice state for the specified user.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_VOICE_STATE}
+     *     <br>The specified user does not exist, is not a member of this guild or is not connected to a voice channel</li>
+     * </ul>
+     *
+     * @param  id
+     *         The user id to load the voice state from
+     *
+     * @return {@link RestAction} - Type: {@link GuildVoiceState}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id);
+
+    /**
+     * Load the member's voice state for the specified user.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_VOICE_STATE}
+     *     <br>The specified user does not exist, is not a member of this guild or is not connected to a voice channel</li>
+     * </ul>
+     *
+     * @param  id
+     *         The user id to load the voice state from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is empty or null
+     * @throws NumberFormatException
+     *         If the provided id is not a snowflake
+     *
+     * @return {@link RestAction} - Type: {@link GuildVoiceState}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<GuildVoiceState> retrieveMemberVoiceStateById(@Nonnull String id)
+    {
+        return retrieveMemberVoiceStateById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Load the member's voice state for the specified {@link UserSnowflake}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_VOICE_STATE}
+     *     <br>The specified user does not exist, is not a member of this guild or is not connected to a voice channel</li>
+     * </ul>
+     *
+     * @param  user
+     *         The {@link UserSnowflake} for the member's voice state to retrieve.
+     *         This can be a member or user instance or {@link User#fromId(long)}.
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction} - Type: {@link GuildVoiceState}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<GuildVoiceState> retrieveMemberVoiceState(@Nonnull UserSnowflake user)
+    {
+        Checks.notNull(user, "User");
+        return retrieveMemberVoiceStateById(user.getIdLong());
+    }
+
+    /**
      * Returns the verification-Level of this Guild. Verification level is one of the factors that determines if a Member
      * can send messages in a Guild.
      * <br>For a short description of the different values, see {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel}.

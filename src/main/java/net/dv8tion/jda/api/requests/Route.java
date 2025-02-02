@@ -127,6 +127,7 @@ public class Route
         public static final Route GET_GUILD_EMOJIS =   new Route(GET,    "guilds/{guild_id}/emojis");
         public static final Route GET_AUDIT_LOGS =     new Route(GET,    "guilds/{guild_id}/audit-logs");
         public static final Route GET_VOICE_REGIONS =  new Route(GET,    "guilds/{guild_id}/regions");
+        public static final Route GET_VOICE_STATE =    new Route(GET,    "guilds/{guild_id}/voice-states/{user_id}");
         public static final Route UPDATE_VOICE_STATE = new Route(PATCH,  "guilds/{guild_id}/voice-states/{user_id}");
 
         public static final Route GET_INTEGRATIONS =   new Route(GET,    "guilds/{guild_id}/integrations");
