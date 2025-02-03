@@ -1656,6 +1656,15 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     SortedSnowflakeCacheView<ScheduledEvent> getScheduledEventCache();
+
+    /**
+     * Retrieves all {@link ScheduledEvent ScheduledEvents} for this guild.
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link ScheduledEvent}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<ScheduledEvent>> retrieveScheduledEvents();
     
     /**
      * Gets a list of all {@link ScheduledEvent ScheduledEvents} in this Guild that have the same
