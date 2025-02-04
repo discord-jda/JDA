@@ -21,12 +21,15 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.Result;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Duration;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
+import java.util.function.*;
 
 /**
  * Extension of RestAction to allow setting a reason.
@@ -98,5 +101,96 @@ public interface AuditableRestAction<T> extends RestAction<T>
     default AuditableRestAction<T> deadline(long timestamp)
     {
         return (AuditableRestAction<T>) RestAction.super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
+    default <O> AuditableRestAction<O> map(@Nonnull Function<? super T, ? extends O> map)
+    {
+        return (AuditableRestAction<O>) RestAction.super.map(map);
+    }
+
+    @Nonnull
+    @Override
+    default <O> AuditableRestAction<O> flatMap(@Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
+    {
+        return (AuditableRestAction<O>) RestAction.super.flatMap(flatMap);
+    }
+
+    @Nonnull
+    @Override
+    default <O> AuditableRestAction<O> flatMap(@Nullable Predicate<? super T> condition, @Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
+    {
+        return (AuditableRestAction<O>) RestAction.super.flatMap(condition, flatMap);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<Result<T>> mapToResult()
+    {
+        return (AuditableRestAction<Result<T>>) RestAction.super.mapToResult();
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> onSuccess(@Nonnull Consumer<? super T> consumer)
+    {
+        return (AuditableRestAction<T>) RestAction.super.onSuccess(consumer);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> onErrorMap(@Nonnull Function<? super Throwable, ? extends T> map)
+    {
+        return (AuditableRestAction<T>) RestAction.super.onErrorMap(map);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> onErrorMap(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends T> map)
+    {
+        return (AuditableRestAction<T>) RestAction.super.onErrorMap(condition, map);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> onErrorFlatMap(@Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
+    {
+        return (AuditableRestAction<T>) RestAction.super.onErrorFlatMap(map);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> onErrorFlatMap(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
+    {
+        return (AuditableRestAction<T>) RestAction.super.onErrorFlatMap(condition, map);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> delay(@Nonnull Duration duration)
+    {
+        return (AuditableRestAction<T>) RestAction.super.delay(duration);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> delay(@Nonnull Duration duration, @Nullable ScheduledExecutorService scheduler)
+    {
+        return (AuditableRestAction<T>) RestAction.super.delay(duration, scheduler);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> delay(long delay, @Nonnull TimeUnit unit)
+    {
+        return (AuditableRestAction<T>) RestAction.super.delay(delay, unit);
+    }
+
+    @Nonnull
+    @Override
+    default AuditableRestAction<T> delay(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService scheduler)
+    {
+        return (AuditableRestAction<T>) RestAction.super.delay(delay, unit, scheduler);
     }
 }
