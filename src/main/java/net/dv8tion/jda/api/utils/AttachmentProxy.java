@@ -23,9 +23,7 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -59,6 +57,13 @@ public class AttachmentProxy extends FileProxy
      *         The width of the image
      * @param  height
      *         The height of the image
+     *
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The requested width is negative or 0</li>
+     *             <li>The requested height is negative or 0</li>
+     *         </ul>
      *
      * @return URL of the attachment with the specified width and height
      */
@@ -202,24 +207,6 @@ public class AttachmentProxy extends FileProxy
         Checks.notNull(path, "Path");
 
         return downloadToPath(getUrl(width, height), path);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    private CompletableFuture<Icon> downloadAsIcon(String url)
-    {
-        final CompletableFuture<InputStream> downloadFuture = download(url);
-        return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
-        {
-            try (final InputStream ignored = stream)
-            {
-                return Icon.from(stream);
-            }
-            catch (IOException e)
-            {
-                throw new UncheckedIOException(e);
-            }
-        });
     }
 
     /**
