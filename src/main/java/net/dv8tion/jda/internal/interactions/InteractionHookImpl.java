@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.InteractionExpiredException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.response.CallbackResponseUnion;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageRetrieveAction;
@@ -30,6 +31,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
+import net.dv8tion.jda.internal.interactions.response.CallbackResponseImpl;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -55,7 +57,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     private Exception exception;
     private boolean isReady;
     private boolean ephemeral;
-    private Message callbackResponseMessage;
+    private CallbackResponseImpl callbackResponse;
 
     public InteractionHookImpl(@Nonnull DeferrableInteractionImpl interaction, @Nonnull JDA api)
     {
@@ -127,9 +129,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         });
     }
 
-    public InteractionHookImpl setCallbackResponseMessage(Message message)
+    public InteractionHookImpl setCallbackResponse(CallbackResponseImpl callbackResponse)
     {
-        this.callbackResponseMessage = message;
+        this.callbackResponse = callbackResponse;
         return this;
     }
 
@@ -143,9 +145,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     }
 
     @Override
-    public Message getCallbackResponseMessage()
+    public CallbackResponseUnion getCallbackResponse()
     {
-        return callbackResponseMessage;
+        return callbackResponse;
     }
 
     @Override

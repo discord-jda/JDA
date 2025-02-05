@@ -17,7 +17,9 @@
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.entities.SkuSnowflake;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.response.CallbackResponseUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -46,17 +48,17 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
     enum ResponseType
     {
         /** Immediately respond to an interaction with a message */
-        CHANNEL_MESSAGE_WITH_SOURCE(4),
+        CHANNEL_MESSAGE_WITH_SOURCE(4, true),
         /** Delayed or Deferred response to an interaction, this sends a "Thinking..." message to the channel */
-        DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE(5),
+        DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE(5, true),
         /** Defer the update of the message for a component interaction */
-        DEFERRED_MESSAGE_UPDATE(6),
+        DEFERRED_MESSAGE_UPDATE(6, true),
         /** Update the message for a component interaction */
-        MESSAGE_UPDATE(7),
+        MESSAGE_UPDATE(7, true),
         /** Provide auto-complete choices for a command */
-        COMMAND_AUTOCOMPLETE_CHOICES(8),
+        COMMAND_AUTOCOMPLETE_CHOICES(8, false),
         /** Respond with a modal */
-        MODAL(9),
+        MODAL(9, false),
         /**
          * Respond with the "Premium required" default Discord message for premium App subscriptions
          *
@@ -64,15 +66,17 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
          * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
          */
         @Deprecated
-        PREMIUM_REQUIRED(10),
+        PREMIUM_REQUIRED(10, false),
         /** Placeholder for unknown types */
-        UNKNOWN(-1),
+        UNKNOWN(-1, false),
         ;
         private final int raw;
+        private final boolean callbackResponseContainsMessage;
 
-        ResponseType(int raw)
+        ResponseType(int raw, boolean callbackResponseContainsMessage)
         {
             this.raw = raw;
+            this.callbackResponseContainsMessage = callbackResponseContainsMessage;
         }
 
         /**
@@ -83,6 +87,24 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         public int getRaw()
         {
             return raw;
+        }
+
+        /**
+         * Whether the {@link InteractionHook#getCallbackResponse() interaction callback response} of an interaction
+         * of this type will contain a {@link CallbackResponseUnion#asMessage() Message}.
+         * <br>This is true for:
+         * <ul>
+         *     <li>{@link #CHANNEL_MESSAGE_WITH_SOURCE}</li>
+         *     <li>{@link #DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE}</li>
+         *     <li>{@link #MESSAGE_UPDATE}</li>
+         *     <li>{@link #DEFERRED_MESSAGE_UPDATE}</li>
+         * </ul>
+         *
+         * @return Whether the callback response contains a Message
+         */
+        public boolean doesCallbackResponseContainMessage()
+        {
+            return callbackResponseContainsMessage;
         }
 
         @Nonnull

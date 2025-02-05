@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.response.CallbackResponseUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
@@ -79,13 +80,13 @@ public interface InteractionHook extends WebhookClient<Message>
     Interaction getInteraction();
 
     /**
-     * The message created by interaction replies like {@link IReplyCallback#reply(String)}
+     * The {@link CallbackResponseUnion callback response} created by interaction replies like {@link IReplyCallback#reply(String)}
      * or interaction updates like {@link IMessageEditCallback#editMessage(String)}.
      *
-     * @return {@link Message}, if available.
+     * @return {@link CallbackResponseUnion}, if available.
      */
     @Nullable
-    Message getCallbackResponseMessage();
+    CallbackResponseUnion getCallbackResponse();
 
     /**
      * The unix millisecond timestamp for the expiration of this interaction hook.
