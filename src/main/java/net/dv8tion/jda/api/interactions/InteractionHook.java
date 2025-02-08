@@ -82,6 +82,7 @@ public interface InteractionHook extends WebhookClient<Message>
     /**
      * The {@link CallbackResponseUnion callback response} created by interaction replies like {@link IReplyCallback#reply(String)}
      * or interaction updates like {@link IMessageEditCallback#editMessage(String)}.
+     * <br>This will be {@code null} if the Interaction has not yet been acknowledged.
      *
      * @return {@link CallbackResponseUnion}, if available.
      */

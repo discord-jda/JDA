@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  * {@link net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(String) IReplyCallback#reply()} or interaction updates like
  * {@link net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback#editMessage(String) IMessageEditCallback#editMessage()}.
  *
- * @see    net.dv8tion.jda.api.interactions.InteractionHook#getCallbackResponse() InteractionHook#getCallbackResponse
+ * @see net.dv8tion.jda.api.interactions.InteractionHook#getCallbackResponse() InteractionHook#getCallbackResponse
  */
 public interface CallbackResponseUnion
 {
@@ -37,6 +37,7 @@ public interface CallbackResponseUnion
      *         If this callback response does not contain a message.
      *
      * @return Message contained in this callback response.
+     *
      * @see    InteractionCallbackAction.ResponseType#doesCallbackResponseContainMessage() ResponseType#doesCallbackResponseContainMessage()
      */
     @Nonnull

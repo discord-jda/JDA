@@ -28,17 +28,16 @@ public class CallbackResponseImpl implements CallbackResponseUnion
 {
     private final InteractionCallbackAction.ResponseType type;
 
-    private Message message;
+    private final Message message;
 
     public CallbackResponseImpl(InteractionHookImpl hook, DataObject resource)
     {
         this.type = InteractionCallbackAction.ResponseType.fromId(resource.getInt("type", -1));
 
         if (type.doesCallbackResponseContainMessage())
-        {
-            resource.optObject("message")
-                    .ifPresent(message -> this.message = hook.buildMessage(message));
-        }
+            this.message = resource.optObject("message").map(hook::buildMessage).orElse(null);
+        else
+            this.message = null;
     }
 
     @Nonnull
