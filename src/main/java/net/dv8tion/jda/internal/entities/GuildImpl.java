@@ -600,6 +600,20 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public RestAction<List<ScheduledEvent>> retrieveScheduledEvents()
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENTS.compile(getId());
+
+        return new RestActionImpl<>(getJDA(), route,
+                (response, request) ->
+                        response.getArray()
+                                .stream(DataArray::getObject)
+                                .map(json -> api.getEntityBuilder().createScheduledEvent(this, json))
+                                .collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
     public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
