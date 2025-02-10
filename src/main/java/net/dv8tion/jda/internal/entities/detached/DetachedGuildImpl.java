@@ -441,6 +441,13 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
 
     @Nonnull
     @Override
+    public RestAction<List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount)
+    {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
     public SortedSnowflakeCacheView<Category> getCategoryCache()
     {
         throw detachedException();
