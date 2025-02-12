@@ -538,6 +538,13 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
 
     @Nonnull
     @Override
+    public SnowflakeCacheView<SoundboardSound> getSoundboardSoundCache()
+    {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
         throw detachedException();
@@ -993,6 +1000,13 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
     @Nonnull
     @Override
     public AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id)
+    {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file)
     {
         throw detachedException();
     }
