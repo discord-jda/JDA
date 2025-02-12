@@ -179,6 +179,19 @@ public class Route
         public static final Route LIST_PACKS  = new Route(GET, "sticker-packs");
     }
 
+    public static class SoundboardSounds
+    {
+        public static final Route SEND_SOUNDBOARD_SOUND =          new Route(POST,      "channels/{channel_id}/send-soundboard-sound");
+
+        public static final Route LIST_DEFAULT_SOUNDBOARD_SOUNDS = new Route(GET,       "soundboard-default-sounds");
+
+        public static final Route LIST_GUILD_SOUNDBOARD_SOUNDS =   new Route(GET,       "guilds/{guild_id}/soundboard-sounds");
+        public static final Route GET_GUILD_SOUNDBOARD_SOUNDS =    new Route(GET,       "guilds/{guild_id}/soundboard-sounds/{sound_id}");
+        public static final Route CREATE_GUILD_SOUNDBOARD_SOUNDS = new Route(POST,      "guilds/{guild_id}/soundboard-sounds");
+        public static final Route MODIFY_GUILD_SOUNDBOARD_SOUNDS = new Route(PATCH,     "guilds/{guild_id}/soundboard-sounds/{sound_id}");
+        public static final Route DELETE_GUILD_SOUNDBOARD_SOUNDS = new Route(DELETE,    "guilds/{guild_id}/soundboard-sounds/{sound_id}");
+    }
+
     public static class Webhooks
     {
         public static final Route GET_WEBHOOK          = new Route(GET,    "webhooks/{webhook_id}");
