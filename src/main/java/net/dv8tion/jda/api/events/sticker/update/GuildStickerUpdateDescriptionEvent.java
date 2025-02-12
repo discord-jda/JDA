@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code description}
  */
-@RequiredIntents(always = GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+@RequiredIntents(always = GatewayIntent.GUILD_EXPRESSIONS)
 @RequiredCacheFlags(always = CacheFlag.STICKER)
 public class GuildStickerUpdateDescriptionEvent extends GenericGuildStickerUpdateEvent<String>
 {

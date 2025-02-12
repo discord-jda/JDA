@@ -41,7 +41,7 @@ import java.util.List;
  *
  * <p>Identifier: {@code roles}
  */
-@RequiredIntents(always = GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+@RequiredIntents(always = GatewayIntent.GUILD_EXPRESSIONS)
 @RequiredCacheFlags(always = CacheFlag.EMOJI)
 public class EmojiUpdateRolesEvent extends GenericEmojiUpdateEvent<List<Role>>
 {

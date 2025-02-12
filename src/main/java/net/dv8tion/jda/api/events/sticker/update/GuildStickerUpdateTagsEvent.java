@@ -41,7 +41,7 @@ import java.util.Set;
  *
  * <p>Identifier: {@code tags}
  */
-@RequiredIntents(always = GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+@RequiredIntents(always = GatewayIntent.GUILD_EXPRESSIONS)
 @RequiredCacheFlags(always = CacheFlag.STICKER)
 public class GuildStickerUpdateTagsEvent extends GenericGuildStickerUpdateEvent<Set<String>>
 {

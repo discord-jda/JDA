@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code name}
  */
-@RequiredIntents(always = GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+@RequiredIntents(always = GatewayIntent.GUILD_EXPRESSIONS)
 @RequiredCacheFlags(always = CacheFlag.EMOJI)
 public class EmojiUpdateNameEvent extends GenericEmojiUpdateEvent<String>
 {

@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  */
-@RequiredIntents(always = GatewayIntent.GUILD_EMOJIS_AND_STICKERS)
+@RequiredIntents(always = GatewayIntent.GUILD_EXPRESSIONS)
 @RequiredCacheFlags(always = CacheFlag.EMOJI)
 public abstract class GenericEmojiEvent extends Event
 {
