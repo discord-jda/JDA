@@ -64,6 +64,9 @@ public interface SlashCommandData extends CommandData
     @Override
     SlashCommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
+    /**
+     * @deprecated Replaced with {@link #setContexts(InteractionContextType...)}
+     */
     @Nonnull
     @Override
     @Deprecated
