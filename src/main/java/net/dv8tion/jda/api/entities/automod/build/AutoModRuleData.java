@@ -29,10 +29,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.EnumSet;
+import java.util.*;
 
 /**
  * Data class used to create new {@link AutoModRule AutoModRules}.
@@ -169,14 +166,7 @@ public class AutoModRuleData implements SerializableData
     @Nonnull
     public AutoModRuleData putResponses(@Nonnull AutoModResponse... responses)
     {
-        Checks.noneNull(responses, "Responses");
-        for (AutoModResponse response : responses)
-        {
-            AutoModResponse.Type type = response.getType();
-            Checks.check(type != AutoModResponse.Type.UNKNOWN, "Cannot create response with unknown response type");
-            actions.put(type, response);
-        }
-        return this;
+        return putResponses(Arrays.asList(responses));
     }
 
     /**
@@ -254,11 +244,7 @@ public class AutoModRuleData implements SerializableData
     @Nonnull
     public AutoModRuleData addExemptRoles(@Nonnull Role... roles)
     {
-        Checks.noneNull(roles, "Roles");
-        Checks.check(roles.length + exemptRoles.size() <= AutoModRule.MAX_EXEMPT_ROLES, "Cannot add more than %d roles", AutoModRule.MAX_EXEMPT_ROLES);
-        for (Role role : roles)
-            exemptRoles.add(role.getId());
-        return this;
+        return addExemptRoles(Arrays.asList(roles));
     }
 
     /**
@@ -324,11 +310,7 @@ public class AutoModRuleData implements SerializableData
     @Nonnull
     public AutoModRuleData addExemptChannels(@Nonnull GuildChannel... channels)
     {
-        Checks.noneNull(channels, "Channels");
-        Checks.check(channels.length + exemptChannels.size() <= AutoModRule.MAX_EXEMPT_CHANNELS, "Cannot add more than %d channels", AutoModRule.MAX_EXEMPT_CHANNELS);
-        for (GuildChannel channel : channels)
-            exemptChannels.add(channel.getId());
-        return this;
+        return addExemptChannels(Arrays.asList(channels));
     }
 
     /**

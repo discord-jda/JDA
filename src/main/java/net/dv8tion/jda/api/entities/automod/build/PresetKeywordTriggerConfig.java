@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -53,11 +54,7 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
     @Nonnull
     public PresetKeywordTriggerConfig enablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
-        Checks.notNull(presets, "Presets");
-        for (AutoModRule.KeywordPreset preset : presets)
-            checkKnown(preset);
-        Collections.addAll(this.presets, presets);
-        return this;
+        return enablePresets(Arrays.asList(presets));
     }
 
     /**
@@ -94,10 +91,7 @@ public class PresetKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Pre
     @Nonnull
     public PresetKeywordTriggerConfig disablePresets(@Nonnull AutoModRule.KeywordPreset... presets)
     {
-        Checks.noneNull(presets, "Presets");
-        for (AutoModRule.KeywordPreset preset : presets)
-            this.presets.remove(preset);
-        return this;
+        return disablePresets(Arrays.asList(presets));
     }
 
     /**

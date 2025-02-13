@@ -22,10 +22,7 @@ import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Metadata used to create a thread through a {@link WebhookMessageCreateAction webhook message}.
@@ -88,10 +85,7 @@ public class ThreadCreateMetadata
     @Nonnull
     public ThreadCreateMetadata addTags(@Nonnull ForumTagSnowflake... tags)
     {
-        Checks.noneNull(tags, "Tags");
-        Checks.check(tags.length <= ForumChannel.MAX_POST_TAGS, "Cannot have more than %d post tags. Provided: %d", ForumChannel.MAX_POST_TAGS, tags.length);
-        Collections.addAll(this.appliedTags, tags);
-        return this;
+        return addTags(Arrays.asList(tags));
     }
 
     /**

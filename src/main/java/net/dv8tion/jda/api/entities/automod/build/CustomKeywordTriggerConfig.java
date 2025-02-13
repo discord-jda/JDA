@@ -23,10 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Configuration for a {@link net.dv8tion.jda.api.entities.automod.AutoModTriggerType#KEYWORD KEYWORD} trigger.
@@ -67,13 +64,7 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
     @Nonnull
     public CustomKeywordTriggerConfig addKeywords(@Nonnull String... keywords)
     {
-        Checks.noneNull(keywords, "Keywords");
-        Checks.check(this.keywords.size() + keywords.length <= AutoModRule.MAX_KEYWORD_AMOUNT, "Cannot add more than %d keywords!", AutoModRule.MAX_KEYWORD_AMOUNT);
-        for (String keyword : keywords)
-            checkKeyword(keyword);
-
-        Collections.addAll(this.keywords, keywords);
-        return this;
+        return addKeywords(Arrays.asList(keywords));
     }
 
     /**
@@ -172,13 +163,7 @@ public class CustomKeywordTriggerConfig extends AbstractKeywordTriggerConfig<Cus
     @Nonnull
     public CustomKeywordTriggerConfig addPatterns(@Nonnull String... patterns)
     {
-        Checks.noneNull(patterns, "Patterns");
-        Checks.check(this.patterns.size() + patterns.length <= AutoModRule.MAX_PATTERN_AMOUNT, "Cannot add more than %d patterns!", AutoModRule.MAX_PATTERN_AMOUNT);
-        for (String pattern : patterns)
-            checkPattern(pattern);
-
-        Collections.addAll(this.patterns, patterns);
-        return this;
+        return addPatterns(Arrays.asList(patterns));
     }
 
     /**

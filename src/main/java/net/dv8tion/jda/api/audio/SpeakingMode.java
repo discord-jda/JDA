@@ -16,8 +16,11 @@
 
 package net.dv8tion.jda.api.audio;
 
+import net.dv8tion.jda.internal.utils.Checks;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -79,12 +82,7 @@ public enum SpeakingMode
      */
     public static int getRaw(@Nullable SpeakingMode... modes)
     {
-        if (modes == null || modes.length == 0)
-            return 0;
-        int mask = 0;
-        for (SpeakingMode m : modes)
-            mask |= m.raw;
-        return mask;
+        return getRaw(Arrays.asList(modes));
     }
 
     /**
@@ -98,6 +96,7 @@ public enum SpeakingMode
      */
     public static int getRaw(@Nullable Collection<SpeakingMode> modes)
     {
+        Checks.noneNull(modes, "Modes");
         if (modes == null)
             return 0;
         int raw = 0;
