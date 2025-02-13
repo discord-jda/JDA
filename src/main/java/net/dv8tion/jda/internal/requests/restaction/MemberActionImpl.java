@@ -31,6 +31,7 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -151,11 +152,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
             this.roles = null;
             return this;
         }
-        Set<Role> newRoles = new HashSet<>(roles.length);
-        for (Role role : roles)
-            checkAndAdd(newRoles, role);
-        this.roles = newRoles;
-        return this;
+        return setRoles(Arrays.asList(roles));
     }
 
     @Nonnull

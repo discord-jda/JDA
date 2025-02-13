@@ -191,9 +191,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         @Override
         public List<Member> getElementsWithRoles(@Nonnull Role... roles)
         {
-            return distinctStream()
-                .flatMap(view -> view.getElementsWithRoles(roles).stream())
-                .collect(Helpers.toUnmodifiableList());
+            return getElementsWithRoles(Arrays.asList(roles));
         }
 
         @Nonnull

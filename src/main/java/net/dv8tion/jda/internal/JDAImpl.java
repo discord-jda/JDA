@@ -96,6 +96,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JDAImpl implements JDA
 {
@@ -1288,16 +1289,14 @@ public class JDAImpl implements JDA
     @Override
     public String getInviteUrl(Permission... permissions)
     {
-        StringBuilder builder = buildBaseInviteUrl();
-        if (permissions != null && permissions.length > 0)
-            builder.append("&permissions=").append(Permission.getRaw(permissions));
-        return builder.toString();
+        return getInviteUrl(Arrays.asList(permissions));
     }
 
     @Nonnull
     @Override
     public String getInviteUrl(Collection<Permission> permissions)
     {
+        Checks.noneNull(permissions, "Permissions");
         StringBuilder builder = buildBaseInviteUrl();
         if (permissions != null && !permissions.isEmpty())
             builder.append("&permissions=").append(Permission.getRaw(permissions));
