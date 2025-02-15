@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -170,5 +171,15 @@ class AllowedMentionsData implements SerializableData
         }
         allowedMentionsObj.put("replied_user", mentionRepliedUser);
         return allowedMentionsObj.put("parse", parsable);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .setType("AllowedMentions")
+                .addMetadata("mentionUsers", mentionUsers)
+                .addMetadata("mentionRoles", mentionRoles)
+                .toString();
     }
 }
