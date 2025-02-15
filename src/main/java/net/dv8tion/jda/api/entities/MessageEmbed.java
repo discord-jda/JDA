@@ -104,8 +104,8 @@ public class MessageEmbed implements SerializableData
 
     /**
      * The maximum amount of total embed fields the embed can hold
-     * 
-     * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean) 
+     *
+     * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean)
      */
     public static final int MAX_FIELD_AMOUNT = 25;
 
@@ -1077,4 +1077,26 @@ public class MessageEmbed implements SerializableData
                 && Objects.equals(field.value, value));
         }
     }
+
+    @Override
+    public String toString()
+    {
+        return "MessageEmbed{" +
+                ", url='" + url + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", type=" + type +
+                ", timestamp=" + timestamp +
+                ", color=" + color +
+                ", thumbnail=" + thumbnail +
+                ", siteProvider=" + siteProvider +
+                ", author=" + author +
+                ", videoInfo=" + videoInfo +
+                ", footer=" + footer +
+                ", image=" + image +
+                ", fields=" + fields +
+                '}';
+    }
+
+
 }

@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
@@ -372,5 +373,20 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     public void close()
     {
         files.forEach(IOUtil::silentClose);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .setType("Message")
+                .addMetadata("content", content)
+                .addMetadata("poll", poll)
+                .addMetadata("embeds", DataArray.fromCollection(embeds))
+                .addMetadata("components", DataArray.fromCollection(components))
+                .addMetadata("tts", tts)
+                .addMetadata("flags", flags)
+                .addMetadata("allowed_mentions", mentions)
+                .toString();
     }
 }

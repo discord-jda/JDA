@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
@@ -366,5 +367,17 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     protected boolean isSet(int flag)
     {
         return isReplace || (configuredFields & flag) != 0;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .setType("Message")
+                .addMetadata("content", content)
+                .addMetadata("embeds", DataArray.fromCollection(embeds))
+                .addMetadata("components", DataArray.fromCollection(components))
+                .addMetadata("allowed_mentions", mentions)
+                .toString();
     }
 }
