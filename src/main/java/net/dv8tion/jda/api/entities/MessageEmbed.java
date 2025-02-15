@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -1076,27 +1077,37 @@ public class MessageEmbed implements SerializableData
                 && Objects.equals(field.name, name)
                 && Objects.equals(field.value, value));
         }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .setType("Field")
+                    .setName(name)
+                    .addMetadata("value", value)
+                    .addMetadata("inline", inline)
+                    .toString();
+        }
     }
 
     @Override
     public String toString()
     {
-        return "MessageEmbed{" +
-                ", url='" + url + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", type=" + type +
-                ", timestamp=" + timestamp +
-                ", color=" + color +
-                ", thumbnail=" + thumbnail +
-                ", siteProvider=" + siteProvider +
-                ", author=" + author +
-                ", videoInfo=" + videoInfo +
-                ", footer=" + footer +
-                ", image=" + image +
-                ", fields=" + fields +
-                '}';
+        return new EntityString(this)
+                .setType("MessageEmbed")
+                .setName(title)
+                .addMetadata("url", url)
+                .addMetadata("description", description)
+                .addMetadata("type", type)
+                .addMetadata("timestamp", timestamp)
+                .addMetadata("color", color)
+                .addMetadata("thumbnail", thumbnail)
+                .addMetadata("siteProvider", siteProvider)
+                .addMetadata("author", author)
+                .addMetadata("videoInfo", videoInfo)
+                .addMetadata("footer", footer)
+                .addMetadata("image", image)
+                .addMetadata("fields", fields)
+                .toString();
     }
-
-
 }
