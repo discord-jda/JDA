@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.command.localization.LocalizationMapper;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -57,9 +58,9 @@ public class CommandDataImpl implements SlashCommandData
 
     private final Command.Type type;
 
-    public CommandDataImpl(@Nonnull String name, @Nonnull String description)
+    public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name, @Nonnull String description)
     {
-        this.type = Command.Type.SLASH;
+        this.type = type;
         setName(name);
         setDescription(description);
     }
@@ -68,7 +69,7 @@ public class CommandDataImpl implements SlashCommandData
     {
         this.type = type;
         Checks.notNull(type, "Command Type");
-        Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
+        Checks.check(type != Command.Type.SLASH && type != Command.Type.PRIMARY_ENTRY_POINT, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
         setName(name);
     }
 
@@ -90,7 +91,8 @@ public class CommandDataImpl implements SlashCommandData
 
     public void checkDescription(@Nonnull String description)
     {
-        checkType(Command.Type.SLASH, "set description");
+        if (getType() != Command.Type.SLASH && getType() != Command.Type.PRIMARY_ENTRY_POINT)
+            throw new IllegalStateException("Cannot set description for commands of type " + getType());
         Checks.inRange(description, 1, MAX_DESCRIPTION_LENGTH, "Description");
     }
 
@@ -444,5 +446,61 @@ public class CommandDataImpl implements SlashCommandData
         allowOption = last instanceof OptionData;
         allowRequired = allowOption && ((OptionData) last).isRequired();
         allowSubcommands = !allowOption;
+    }
+
+    public static void applyBaseData(CommandDataImpl data, DataObject object)
+    {
+        if (!object.isNull("default_member_permissions"))
+        {
+            long defaultPermissions = object.getLong("default_member_permissions");
+            data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
+        }
+
+        if (!object.isNull("contexts"))
+        {
+            data.setContexts(object.getArray("contexts")
+                    .stream(DataArray::getString)
+                    .map(InteractionContextType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
+        }
+        else if (!object.isNull("dm_permission"))
+            data.setGuildOnly(!object.getBoolean("dm_permission"));
+        else
+            data.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+
+        if (!object.isNull("integration_types"))
+        {
+            data.setIntegrationTypes(object.getArray("integration_types")
+                    .stream(DataArray::getString)
+                    .map(IntegrationType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+        }
+        else
+            data.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
+
+        data.setNSFW(object.getBoolean("nsfw"));
+        data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+    }
+
+    public static void applyBaseData(CommandDataImpl data, Command command)
+    {
+        data.setDefaultPermissions(command.getDefaultPermissions());
+        data.setContexts(command.getContexts());
+        data.setIntegrationTypes(command.getIntegrationTypes());
+        data.setNSFW(command.isNSFW());
+        //Command localizations are unmodifiable, make a copy
+        data.setNameLocalizations(command.getNameLocalizations().toMap());
+    }
+
+    public static void applyDescribedCommandData(CommandDataImpl data, DataObject object)
+    {
+        data.setDescription(object.getString("description"));
+        data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
+    }
+
+    public static void applyDescribedCommandData(CommandDataImpl data, Command command)
+    {
+        data.setDescription(command.getDescription());
+        data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
     }
 }
