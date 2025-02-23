@@ -96,11 +96,11 @@ public interface Component extends SerializableData
         CHANNEL_SELECT(8, true, false),
         SECTION(9, true, false),
         TEXT_DISPLAY(10, true, false),
-        MEDIA_GALLERY(11, true, false),
-        THUMBNAIL(12, true, false),
+        THUMBNAIL(11, true, false),
+        MEDIA_GALLERY(12, true, false),
         FILE(13, true, false),
         SEPARATOR(14, true, false),
-        CONTAINER(16, true, false),
+        CONTAINER(17, true, false),
         ;
 
         private final int key;
