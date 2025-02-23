@@ -16,9 +16,12 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.text_input.TextInput;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
@@ -64,51 +67,66 @@ public interface Component extends SerializableData
      */
     boolean isModalCompatible();
 
+    // TODO-components-v2- docs
+    // TODO-components-v2 - this clashes with SelectMenu.createCopy.
+//    @Nonnull
+//    Component createCopy();
+
     /**
      * The component types
      */
     enum Type
     {
-        UNKNOWN(-1, 0, false, false),
+        UNKNOWN(-1, false, false),
         /** A row of components */
-        ACTION_ROW(1, 0, true, true),
+        ACTION_ROW(1, true, true),
         /** A button */
-        BUTTON(2, 5, true, false),
+        BUTTON(2, true, false),
         /** A select menu of strings */
-        STRING_SELECT(3, 1, true, false),
+        STRING_SELECT(3, true, false),
         /** A text input field */
-        TEXT_INPUT(4, 1, false, true),
+        TEXT_INPUT(4, false, true),
         /** A select menu of users */
-        USER_SELECT(5, 1, true, false),
+        USER_SELECT(5, true, false),
         /** A select menu of roles */
-        ROLE_SELECT(6, 1, true, false),
+        ROLE_SELECT(6, true, false),
         /** A select menu of users and roles */
-        MENTIONABLE_SELECT(7, 1, true, false),
+        MENTIONABLE_SELECT(7, true, false),
         /** A select menu of channels */
-        CHANNEL_SELECT(8, 1, true, false),
+        CHANNEL_SELECT(8, true, false),
+        SECTION(9, true, false),
+        TEXT_DISPLAY(10, true, false),
+        MEDIA_GALLERY(11, true, false),
+        THUMBNAIL(12, true, false),
+        FILE(13, true, false),
+        SEPARATOR(14, true, false),
+        CONTAINER(16, true, false),
         ;
 
         private final int key;
-        private final int maxPerRow;
         private final boolean messageCompatible;
         private final boolean modalCompatible;
 
-        Type(int key, int maxPerRow, boolean messageCompatible, boolean modalCompatible)
+        Type(int key, boolean messageCompatible, boolean modalCompatible)
         {
             this.key = key;
-            this.maxPerRow = maxPerRow;
             this.messageCompatible = messageCompatible;
             this.modalCompatible = modalCompatible;
         }
 
         /**
-         * How many of these components can be added to one {@link ActionRow}.
+         * How many components of this type can be added to one {@link ActionRow}.
          *
          * @return The maximum amount an action row can contain
+         *
+         * @deprecated Replaced with {@link ActionRow#getMaxAllowed(Component.Type)}
          */
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("ActionRow.getMaxAllowed(Component.Type)")
         public int getMaxPerRow()
         {
-            return maxPerRow;
+            return ActionRow.getMaxAllowed(this);
         }
 
         /**

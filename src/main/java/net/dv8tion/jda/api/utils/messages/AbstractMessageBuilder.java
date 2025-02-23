@@ -19,9 +19,12 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,7 +47,7 @@ import java.util.*;
 public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>> implements MessageRequest<R>
 {
     protected final List<MessageEmbed> embeds = new ArrayList<>(Message.MAX_EMBED_COUNT);
-    protected final List<LayoutComponent> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
+    protected final List<MessageTopLevelComponentUnion> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
     protected AllowedMentionsData mentions = new AllowedMentionsData();
     protected int messageFlags;
@@ -163,20 +166,26 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public R setComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "ComponentLayouts");
-        for (LayoutComponent layout : components)
-            Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
+        Checks.checkComponents(
+            "Provided component is invalid for messages!",
+            components,
+            Component::isMessageCompatible
+        );
         Checks.check(components.size() <= Message.MAX_COMPONENT_COUNT, "Cannot send more than %d component layouts in a message!", Message.MAX_COMPONENT_COUNT);
+
+        List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(components, MessageTopLevelComponentUnion.class);
+
         this.components.clear();
-        this.components.addAll(components);
+        this.components.addAll(componentsAsUnions);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return Collections.unmodifiableList(components);
     }

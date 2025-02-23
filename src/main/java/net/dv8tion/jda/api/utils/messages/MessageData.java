@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.AttachedFile;
 
 import javax.annotation.Nonnull;
@@ -66,7 +66,7 @@ public interface MessageData
      * @see    MessageRequest#setEmbeds(Collection)
      */
     @Nonnull
-    List<LayoutComponent> getComponents();
+    List<MessageTopLevelComponentUnion> getComponents();
 
     // Returns attachment interface for abstraction purposes, however you can only abstract the setter to allow FileUploads
 
