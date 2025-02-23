@@ -70,6 +70,14 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
+    default R useComponentsV2(boolean useComponentsV2)
+    {
+        getBuilder().useComponentsV2(useComponentsV2);
+        return (R) this;
+    }
+
+    @Nonnull
+    @Override
     default R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         getBuilder().setComponents(components);

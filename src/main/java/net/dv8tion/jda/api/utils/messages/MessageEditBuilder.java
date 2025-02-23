@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.AttachedFile;
@@ -221,6 +220,15 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
+    public MessageEditBuilder useComponentsV2(boolean useComponentsV2)
+    {
+        super.useComponentsV2(useComponentsV2);
+        configuredFields |= FLAGS;
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public MessageEditBuilder setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         super.setComponents(components);
@@ -309,6 +317,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
 
+        // TODO-components-v2 - Implement mutual exclusion of content/embeds, and components v2
         return new MessageEditData(configuredFields, messageFlags, replace, content, embeds, attachments, components, mentions);
     }
 

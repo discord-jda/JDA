@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -401,6 +401,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setSuppressedNotifications(data.isSuppressedNotifications())
                 .setVoiceMessage(data.isVoiceMessage())
                 .setComponents(MessageTopLevelComponents)
+                .useComponentsV2(data.isUsingComponentsV2())
                 .setPoll(data.getPoll())
                 .setFiles(data.getFiles());
     }
