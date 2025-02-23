@@ -19,11 +19,17 @@ package net.dv8tion.jda.api.interactions.components.separator;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
+import net.dv8tion.jda.internal.interactions.components.separator.SeparatorImpl;
 
 import javax.annotation.Nonnull;
 
 public interface Separator extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
+    static Separator create(boolean isDivider, Spacing spacing)
+    {
+        return new SeparatorImpl(spacing, isDivider);
+    }
+
     Spacing getSpacing();
 
     boolean hasDivider();

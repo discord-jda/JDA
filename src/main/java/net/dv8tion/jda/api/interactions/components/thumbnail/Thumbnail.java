@@ -17,9 +17,15 @@
 package net.dv8tion.jda.api.interactions.components.thumbnail;
 
 import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponent;
+import net.dv8tion.jda.internal.interactions.components.thumbnail.ThumbnailImpl;
 
 public interface Thumbnail extends SectionAccessoryComponent
 {
+    static Thumbnail fromUrl(String url)
+    {
+        return new ThumbnailImpl(url);
+    }
+
     boolean isSpoiler();
 
 }

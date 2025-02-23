@@ -16,6 +16,13 @@
 
 package net.dv8tion.jda.api.interactions.components.media_gallery;
 
-public interface MediaGalleryItem
+import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryItemImpl;
+
+public interface MediaGalleryItem extends SerializableData
 {
+    static MediaGalleryItem fromUrl(String url)
+    {
+        return new MediaGalleryItemImpl(url);
+    }
 }
