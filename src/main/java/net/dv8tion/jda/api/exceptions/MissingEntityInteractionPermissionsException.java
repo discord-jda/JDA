@@ -25,7 +25,7 @@ package net.dv8tion.jda.api.exceptions;
  *     <li>The member is the {@link net.dv8tion.jda.api.interactions.Interaction#getMember() interaction caller},
  *         and the channel is the {@link net.dv8tion.jda.api.interactions.Interaction#getGuildChannel() interaction channel}
  *     </li>
- *     <li>The member is an interaction option (such as slash command option or a member {@link net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu EntitySelectMenu} value)
+ *     <li>The member is an interaction option (such as slash command option or a member {@link net.dv8tion.jda.api.interactions.components.selects.EntitySelectMenu EntitySelectMenu} value)
  *         and the channel is the {@link net.dv8tion.jda.api.interactions.Interaction#getGuildChannel() interaction channel}
  *     </li>
  *     <li>The member is the {@link net.dv8tion.jda.api.interactions.Interaction#getMember() interaction caller}, and the channel is an interaction option</li>

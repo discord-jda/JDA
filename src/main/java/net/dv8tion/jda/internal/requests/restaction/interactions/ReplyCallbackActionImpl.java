@@ -63,6 +63,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
             json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
             if (flags != 0)
                 json.put("data", DataObject.empty().put("flags", flags));
+            System.out.println(json.toPrettyString());
             return getRequestBody(json);
         }
 
@@ -72,6 +73,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
             DataObject msg = data.toData();
             msg.put("flags", msg.getInt("flags", 0) | flags);
             json.put("data",msg);
+            System.out.println(json.toPrettyString());
             return getMultipartBody(data.getFiles(), json);
         }
     }

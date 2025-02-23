@@ -23,10 +23,10 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.ParsingException;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -592,9 +592,9 @@ public interface MessageChannel extends Channel, Formattable
      * </ul>
      *
      * @param  component
-     *         {@link LayoutComponent} to send
+     *         {@link MessageTopLevelComponent} to send
      * @param  other
-     *         Additional {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
@@ -610,11 +610,11 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    default MessageCreateAction sendMessageComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
-        Checks.notNull(component, "LayoutComponents");
-        Checks.noneNull(other, "LayoutComponents");
-        List<LayoutComponent> components = new ArrayList<>(1 + other.length);
+        Checks.notNull(component, "MessageTopLevelComponents");
+        Checks.noneNull(other, "MessageTopLevelComponents");
+        List<MessageTopLevelComponent> components = new ArrayList<>(1 + other.length);
         components.add(component);
         Collections.addAll(components, other);
         return new MessageCreateActionImpl(this).setComponents(components);
@@ -658,7 +658,7 @@ public interface MessageChannel extends Channel, Formattable
      * }</pre>
      *
      * @param  components
-     *         {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         {@link MessageTopLevelComponent MessageTopLevelComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
@@ -674,7 +674,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return new MessageCreateActionImpl(this).setComponents(components);
     }
@@ -3086,7 +3086,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3119,14 +3119,14 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link MessageTopLevelComponent MessageTopLevelComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
+     *             <li>If any of the provided {@link MessageTopLevelComponent MessageTopLevelComponents} is null</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3139,7 +3139,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noneNull(components, "Components");
@@ -3153,7 +3153,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3186,12 +3186,12 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link MessageTopLevelComponent MessageTopLevelComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
+     *         If any of the provided {@link MessageTopLevelComponent MessageTopLevelComponents} is null
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
@@ -3203,7 +3203,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
@@ -3212,7 +3212,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3244,14 +3244,14 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link MessageTopLevelComponent MessageTopLevelComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
+     *             <li>If any of the provided {@link MessageTopLevelComponent MessageTopLevelComponents} is null</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3264,7 +3264,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
@@ -3274,7 +3274,7 @@ public interface MessageChannel extends Channel, Formattable
      * Attempts to edit a message by its id in this MessageChannel.
      * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3306,12 +3306,12 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
+     *         Up to 5 new {@link MessageTopLevelComponent MessageTopLevelComponents} for the edited message, such as {@link ActionRow}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
+     *         If any of the provided {@link MessageTopLevelComponent MessageTopLevelComponents} is null
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
@@ -3323,7 +3323,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));

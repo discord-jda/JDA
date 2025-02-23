@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.response.InteractionCallbackResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
@@ -248,7 +248,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return editMessageComponentsById("@original", components);
     }
@@ -282,7 +282,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull LayoutComponent... components)
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull MessageTopLevelComponent... components)
     {
         return editMessageComponentsById("@original", components);
     }

@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -343,7 +343,7 @@ public interface IReplyCallback extends IDeferrableCallback
      * </ul>
      *
      * @param  components
-     *         The {@link LayoutComponent LayoutComponents} to send, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send, such as {@link ActionRow}
      *
      * @throws IllegalArgumentException
      *         If null is provided or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
@@ -352,7 +352,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default ReplyCallbackAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return deferReply().setComponents(components);
     }
@@ -380,9 +380,9 @@ public interface IReplyCallback extends IDeferrableCallback
      * </ul>
      *
      * @param  component
-     *         The {@link LayoutComponent} to send
+     *         The {@link MessageTopLevelComponent} to send
      * @param  other
-     *         Any addition {@link LayoutComponent LayoutComponents} to send
+     *         Any addition {@link MessageTopLevelComponent MessageTopLevelComponents} to send
      *
      * @throws IllegalArgumentException
      *         If null is provided or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
@@ -391,11 +391,11 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    default ReplyCallbackAction replyComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
-        Checks.notNull(component, "LayoutComponents");
-        Checks.noneNull(other, "LayoutComponents");
-        List<LayoutComponent> layouts = new ArrayList<>(1 + other.length);
+        Checks.notNull(component, "MessageTopLevelComponents");
+        Checks.noneNull(other, "MessageTopLevelComponents");
+        List<MessageTopLevelComponent> layouts = new ArrayList<>(1 + other.length);
         layouts.add(component);
         Collections.addAll(layouts, other);
         return replyComponents(layouts);

@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.internal.interactions.modal;
 
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -33,19 +33,19 @@ public class ModalImpl implements Modal
 {
     private final String id;
     private final String title;
-    private final List<LayoutComponent> components;
+    private final List<ModalTopLevelComponentUnion> components;
 
     public ModalImpl(DataObject object)
     {
         this.id = object.getString("custom_id");
         this.title = object.getString("title");
         this.components = object.optArray("components").orElseGet(DataArray::empty)
-                    .stream(DataArray::getObject)
-                    .map(ActionRow::fromData)
-                    .collect(Helpers.toUnmodifiableList());
+                .stream(DataArray::getObject)
+                .map(ModalTopLevelComponentUnion::fromData)
+                .collect(Helpers.toUnmodifiableList());
     }
 
-    public ModalImpl(String id, String title, List<LayoutComponent> components)
+    public ModalImpl(String id, String title, List<ModalTopLevelComponentUnion> components)
     {
         this.id = id;
         this.title = title;
@@ -68,7 +68,7 @@ public class ModalImpl implements Modal
 
     @Nonnull
     @Override
-    public List<LayoutComponent> getComponents()
+    public List<ModalTopLevelComponentUnion> getComponents()
     {
         return components;
     }
@@ -82,7 +82,7 @@ public class ModalImpl implements Modal
                 .put("title", title);
 
         object.put("components", DataArray.fromCollection(components.stream()
-                .map(LayoutComponent::toData)
+                .map(Component::toData)
                 .collect(Collectors.toList())));
         return object;
     }

@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -43,7 +43,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<FileUpload> files;
-    private final List<LayoutComponent> components;
+    private final List<MessageTopLevelComponentUnion> components;
     private final AllowedMentionsData mentions;
     private final MessagePollData poll;
     private final boolean tts;
@@ -51,7 +51,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
 
     protected MessageCreateData(
             String content,
-            List<MessageEmbed> embeds, List<FileUpload> files, List<LayoutComponent> components,
+            List<MessageEmbed> embeds, List<FileUpload> files, List<MessageTopLevelComponentUnion> components,
             AllowedMentionsData mentions, MessagePollData poll, boolean tts, int flags)
     {
         this.content = content;
@@ -228,7 +228,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return components;
     }
