@@ -168,6 +168,10 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
         return setEmbeds(Arrays.asList(embeds));
     }
 
+    // TODO-components-v2 - Docs
+    @Nonnull
+    R useComponentsV2(boolean useComponentsV2);
+
     /**
      * The {@link MessageTopLevelComponent MessageTopLevelComponents} that should be attached to the message.
      * <br>You can use {@link Collections#emptyList()} to remove all components from the message.

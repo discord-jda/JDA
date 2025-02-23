@@ -298,6 +298,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
         if (components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
+        // TODO-components-v2 - Implement mutual exclusion of content/embeds, and components v2
         return new MessageCreateData(content, embeds, files, components, mentions, poll, tts, messageFlags);
     }
 

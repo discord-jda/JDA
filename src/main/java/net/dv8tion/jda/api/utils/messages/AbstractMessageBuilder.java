@@ -166,6 +166,18 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
+    public R useComponentsV2(boolean useComponentsV2)
+    {
+        int flag = Message.MessageFlag.IS_COMPONENTS_V2.getValue();
+        if (useComponentsV2)
+            this.messageFlags |= flag;
+        else
+            this.messageFlags &= ~flag;
+        return (R) this;
+    }
+
+    @Nonnull
+    @Override
     public R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "ComponentLayouts");

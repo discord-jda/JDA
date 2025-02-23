@@ -79,7 +79,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Represents a Text message received from Discord.
@@ -2589,7 +2588,9 @@ public interface Message extends ISnowflake, Formattable
         /**
          * The Message is a voice message, containing an audio attachment
          */
-        IS_VOICE_MESSAGE(13);
+        IS_VOICE_MESSAGE(13),
+        // TODO-components-v2 - docs
+        IS_COMPONENTS_V2(15);
 
         private final int value;
 
