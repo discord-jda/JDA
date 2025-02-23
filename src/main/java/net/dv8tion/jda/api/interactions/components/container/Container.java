@@ -18,13 +18,26 @@ package net.dv8tion.jda.api.interactions.components.container;
 
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
 
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public interface Container extends LayoutComponent<ContainerChildComponentUnion>, MessageTopLevelComponent
 {
+    static Container of(Collection<? extends ContainerChildComponent> children)
+    {
+        return ContainerImpl.of(children);
+    }
+
+    static Container of(ContainerChildComponent... children)
+    {
+        return of(Arrays.asList(children));
+    }
+
     List<ContainerChildComponentUnion> getComponents();
 
     /**

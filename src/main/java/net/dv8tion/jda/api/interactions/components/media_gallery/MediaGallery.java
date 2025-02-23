@@ -19,11 +19,16 @@ package net.dv8tion.jda.api.interactions.components.media_gallery;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
+import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryImpl;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public interface MediaGallery extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
+    static MediaGallery of(MediaGalleryItem... items)
+    {
+        return new MediaGalleryImpl(items);
+    }
+
     List<MediaGalleryItem> getItems();
 }
