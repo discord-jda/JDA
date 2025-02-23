@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -219,7 +221,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder setComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public MessageEditBuilder setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         super.setComponents(components);
         configuredFields |= COMPONENTS;
@@ -249,10 +251,11 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             this.setEmbeds(data.getEmbeds());
         if (data.isSet(COMPONENTS))
         {
-            final List<LayoutComponent> layoutComponents = data.getComponents().stream()
-                    .map(LayoutComponent::createCopy)
+            final List<MessageTopLevelComponentUnion> components = data.getComponents().stream()
+//                  // TODO-components-v2 - restore
+//                   .map(LayoutComponent::createCopy)
                     .collect(Collectors.toList());
-            this.setComponents(layoutComponents);
+            this.setComponents(components);
         }
         if (data.isSet(ATTACHMENTS))
             this.setAttachments(data.getAttachments());
@@ -293,7 +296,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         String content = this.content.toString().trim();
         List<MessageEmbed> embeds = new ArrayList<>(this.embeds);
         List<AttachedFile> attachments = new ArrayList<>(this.attachments);
-        List<LayoutComponent> components = new ArrayList<>(this.components);
+        List<MessageTopLevelComponentUnion> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
         int length = isSet(CONTENT) ? Helpers.codePointLength(content) : 0;

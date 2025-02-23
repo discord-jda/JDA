@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.interactions.callbacks;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
@@ -137,18 +137,18 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If any of the provided LayoutComponents is null</li>
+     *             <li>If any of the provided MessageTopLevelComponents is null</li>
      *             <li>If any of the provided Components are not compatible with messages</li>
      *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
      *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      *
-     * @see    LayoutComponent#isMessageCompatible()
+     * @see    MessageTopLevelComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
@@ -171,20 +171,20 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If any of the provided LayoutComponents are null</li>
+     *             <li>If any of the provided MessageTopLevelComponents are null</li>
      *             <li>If any of the provided Components are not compatible with messages</li>
      *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
      *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      *
-     * @see    LayoutComponent#isMessageCompatible()
+     * @see    MessageTopLevelComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull LayoutComponent... components)
+    default MessageEditCallbackAction editComponents(@Nonnull MessageTopLevelComponent... components)
     {
-        Checks.noneNull(components, "LayoutComponents");
+        Checks.noneNull(components, "components");
         return editComponents(Arrays.asList(components));
     }
 

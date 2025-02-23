@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 /**
  * Component which supports interactions via {@link ComponentInteraction}.
  */
-public interface ActionComponent extends ItemComponent
+public interface ActionComponent extends Component
 {
     /**
      * The component ID or null.
@@ -87,4 +87,14 @@ public interface ActionComponent extends ItemComponent
     @Nonnull
     @CheckReturnValue
     ActionComponent withDisabled(boolean disabled);
+
+    @Override
+    default boolean isMessageCompatible() {
+        return getType().isMessageCompatible();
+    }
+
+    @Override
+    default boolean isModalCompatible() {
+        return getType().isModalCompatible();
+    }
 }

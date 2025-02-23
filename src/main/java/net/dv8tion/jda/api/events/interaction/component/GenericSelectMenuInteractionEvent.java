@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selects.SelectMenuInteraction;
 
 import javax.annotation.Nonnull;
 import java.util.List;

@@ -56,8 +56,7 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.IntegrationType;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -92,7 +91,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -1653,11 +1651,11 @@ public class EntityBuilder extends AbstractEntityBuilder
 
         // Message accessories
         MessageChannel tmpChannel = channel; // because java
-        final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
-        final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
-        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, channelId, id, obj));
-        final List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
-        final List<LayoutComponent>    components  = map(jsonObject, "components",    ActionRow::fromData, obj -> obj.getInt("type", -1) == 1);
+        final List<Message.Attachment>            attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
+        final List<MessageEmbed>                  embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
+        final List<MessageReaction>               reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, channelId, id, obj));
+        final List<StickerItem>                   stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
+        final List<MessageTopLevelComponentUnion> components  = map(jsonObject, "components",    MessageTopLevelComponentUnion::fromData);
 
         MessagePoll poll = jsonObject.optObject("poll").map(EntityBuilder::createMessagePoll).orElse(null);
 
@@ -1747,6 +1745,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
 
         // Application command and component replies
+        @SuppressWarnings("deprecation")
         Message.Interaction messageInteraction = null;
         if (!jsonObject.isNull("interaction"))
             messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
@@ -2053,6 +2052,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         return new StickerPackImpl(id, stickers, name, description, coverId, bannerId, skuId);
     }
 
+    @SuppressWarnings("deprecation")
     public Message.Interaction createMessageInteraction(GuildImpl guildImpl, DataObject content)
     {
         final long id = content.getLong("id");
@@ -2104,10 +2104,10 @@ public class EntityBuilder extends AbstractEntityBuilder
         int flags = jsonObject.getInt("flags", 0);
         boolean mentionsEveryone = jsonObject.getBoolean("mention_everyone");
 
-        List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
-        List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
-        List<StickerItem>        stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
-        List<LayoutComponent>    components  = map(jsonObject, "components",    ActionRow::fromData, obj -> obj.getInt("type", -1) == 1);
+        List<Message.Attachment>            attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
+        List<MessageEmbed>                  embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
+        List<StickerItem>                   stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
+        List<MessageTopLevelComponentUnion> components  = map(jsonObject, "components",    MessageTopLevelComponentUnion::fromData);
 
         Guild guild = messageReference.getGuild();
         // Lazy Mention parsing and caching (includes reply mentions)
@@ -2598,12 +2598,7 @@ public class EntityBuilder extends AbstractEntityBuilder
 
     private <T> List<T> map(DataObject jsonObject, String key, Function<DataObject, T> convert)
     {
-        return map(jsonObject, key, convert, (ignored) -> true);
-    }
-
-    private <T> List<T> map(DataObject jsonObject, String key, Function<DataObject, T> convert, Predicate<DataObject> filter)
-    {
-        if (jsonObject.isNull(key))
+          if (jsonObject.isNull(key))
             return Collections.emptyList();
 
         final DataArray arr = jsonObject.getArray(key);
@@ -2613,8 +2608,6 @@ public class EntityBuilder extends AbstractEntityBuilder
             DataObject obj = arr.getObject(i);
             try
             {
-                if (!filter.test(obj))
-                    continue;
                 T result = convert.apply(obj);
                 if (result != null)
                     mappedObjects.add(result);

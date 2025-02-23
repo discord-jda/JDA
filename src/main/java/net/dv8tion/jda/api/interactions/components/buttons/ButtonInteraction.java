@@ -16,19 +16,14 @@
 
 package net.dv8tion.jda.api.interactions.components.buttons;
 
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Interaction on a {@link Button} component.
@@ -69,13 +64,17 @@ public interface ButtonInteraction extends ComponentInteraction
     @CheckReturnValue
     default RestAction<Void> editButton(@Nullable Button newButton)
     {
-        Message message = getMessage();
-        List<ActionRow> components = new ArrayList<>(message.getActionRows());
-        LayoutComponent.updateComponent(components, getComponentId(), newButton);
+        // TODO-components-v2 - figure out better way to do edits.
+        throw new RuntimeException("This isn't implemented yet, sorry. Please use editMessageComponentsById / editComponents directly");
 
-        if (isAcknowledged())
-            return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);
-        else
-            return editComponents(components).map(it -> null);
+//        Message message = getMessage();
+//        List<ActionRow> components = new ArrayList<>(message.getActionRows());
+
+//        LayoutComponent.updateComponent(components, getComponentId(), newButton);
+
+//        if (isAcknowledged())
+//            return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);
+//        else
+//            return editComponents(components).map(it -> null);
     }
 }

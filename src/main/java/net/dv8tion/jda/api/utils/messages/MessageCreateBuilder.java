@@ -19,11 +19,14 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.UnionUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -161,16 +164,24 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
     @Nonnull
     @Override
-    public MessageCreateBuilder addComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public MessageCreateBuilder addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "ComponentLayouts");
-        for (LayoutComponent layout : components)
-            Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
+        Checks.checkComponents(
+                "Provided component is invalid for messages!",
+                components,
+                Component::isMessageCompatible
+        );
         Checks.check(
                 this.components.size() + components.size() <= Message.MAX_COMPONENT_COUNT,
             "Cannot add more than %d component layouts", Message.MAX_COMPONENT_COUNT
         );
-        this.components.addAll(components);
+        List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(
+                components,
+                MessageTopLevelComponentUnion.class
+        );
+
+        this.components.addAll(componentsAsUnions);
         return this;
     }
 
@@ -272,7 +283,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         String content = this.content.toString().trim();
         List<MessageEmbed> embeds = new ArrayList<>(this.embeds);
         List<FileUpload> files = new ArrayList<>(this.files);
-        List<LayoutComponent> components = new ArrayList<>(this.components);
+        List<MessageTopLevelComponentUnion> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
         if (content.isEmpty() && embeds.isEmpty() && files.isEmpty() && components.isEmpty() && poll == null)

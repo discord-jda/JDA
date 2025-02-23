@@ -21,16 +21,17 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
+import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponent;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
+import net.dv8tion.jda.internal.interactions.component.concrete.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 
 /**
  * Represents a Message Button.
@@ -71,10 +72,10 @@ import javax.annotation.Nullable;
  * <br>
  * <img alt="ButtonExample" src="https://raw.githubusercontent.com/discord-jda/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  *
- * @see ReplyCallbackAction#addActionRow(ItemComponent...)
- * @see ReplyCallbackAction#addComponents(LayoutComponent...)
+ * @see ActionRow#of(ActionRowChildComponent...)
+ * @see ReplyCallbackAction#addComponents(net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent...)
  */
-public interface Button extends ActionComponent
+public interface Button extends ActionComponent, ActionRowChildComponent, SectionAccessoryComponent
 {
     /**
      * The maximum length a button label can have

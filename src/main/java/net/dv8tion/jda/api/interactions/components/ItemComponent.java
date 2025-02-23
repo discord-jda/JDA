@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+
 /**
  * Component which can be inserted into a {@link LayoutComponent}.
  *
