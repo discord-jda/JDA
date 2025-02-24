@@ -2,6 +2,7 @@ package net.dv8tion.jda.api.interactions.components.replacer;
 
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 
 import javax.annotation.Nonnull;
 import java.util.function.Function;
@@ -35,8 +36,8 @@ public class ComponentReplacers
         {
             if (filter.test(oldComponent))
                 return updater.apply(oldComponent);
-            if (oldComponent instanceof IReplaceable)
-                return (T) ((IReplaceable<?, T>) oldComponent).replace(this);
+            if (oldComponent instanceof IReplacerAware)
+                return ((IReplacerAware<T>) oldComponent).replace(this);
 
             return oldComponent;
         }

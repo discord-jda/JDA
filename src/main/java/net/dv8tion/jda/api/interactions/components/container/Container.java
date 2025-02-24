@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.interactions.components.container;
 
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
 
 import javax.annotation.Nullable;
@@ -40,9 +39,6 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     }
 
     List<ContainerChildComponentUnion> getComponents();
-
-    @Override
-    Container replace(ComponentReplacer<ContainerChildComponentUnion> replacer);
 
     /**
      * The color of the stripe/border on the side of the container.

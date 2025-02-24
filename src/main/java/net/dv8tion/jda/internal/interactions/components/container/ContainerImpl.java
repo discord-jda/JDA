@@ -6,10 +6,10 @@ import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
+import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ContainerImpl
         extends AbstractComponentImpl
-        implements Container, MessageTopLevelComponentUnion
+        implements Container, MessageTopLevelComponentUnion, IReplacerAware<Container>
 {
     private final List<ContainerChildComponentUnion> children;
 
@@ -39,20 +39,13 @@ public class ContainerImpl
     }
 
     @Override
-    public Container replace(ComponentReplacer<ContainerChildComponentUnion> replacer)
+    public Container replace(ComponentReplacer<?> replacer)
     {
-        List<ContainerChildComponentUnion> newComponents = new ArrayList<>();
-        for (ContainerChildComponentUnion component : getComponents())
-        {
-            if (replacer.getComponentType().isInstance(component))
-                newComponents.add(replacer.apply(component));
-            else if (component instanceof IReplaceable)
-                newComponents.add((ContainerChildComponentUnion) ((IReplaceable) component).replace(replacer));
-            else
-                newComponents.add(component);
-        }
-
-        return new ContainerImpl(newComponents);
+        return IReplacerAware.doReplace(
+                getComponents(),
+                IReplacerAware.castReplacer(replacer),
+                ContainerImpl::new
+        );
     }
 
     @Override

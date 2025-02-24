@@ -3,7 +3,7 @@ package net.dv8tion.jda.internal.interactions.components;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentTree;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
+import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class ComponentTreeImpl implements ComponentTree
         this.components = new ArrayList<>(components);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     @Nonnull
     @Override
     public <T extends Component> ComponentTree replace(ComponentReplacer<T> replacer)
@@ -28,8 +28,8 @@ public class ComponentTreeImpl implements ComponentTree
         {
             if (replacer.getComponentType().isInstance(component))
                 newComponents.add(replacer.apply((T) component));
-            else if (component instanceof IReplaceable)
-                newComponents.add(((IReplaceable) component).replace(replacer));
+            else if (component instanceof IReplacerAware)
+                newComponents.add(((IReplacerAware<T>) component).replace(replacer));
             else
                 newComponents.add(component);
         }
