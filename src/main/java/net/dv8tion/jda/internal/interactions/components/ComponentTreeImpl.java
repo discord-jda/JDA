@@ -33,17 +33,10 @@ public class ComponentTreeImpl implements ComponentTree
     @Override
     public <T extends Component> ComponentTree replace(ComponentReplacer<T> replacer)
     {
-        List<Component> newComponents = new ArrayList<>();
-        for (Component component : components)
-        {
-            if (replacer.getComponentType().isInstance(component))
-                newComponents.add(replacer.apply((T) component));
-            else if (component instanceof IReplacerAware)
-                newComponents.add(((IReplacerAware<T>) component).replace(replacer));
-            else
-                newComponents.add(component);
-        }
-
-        return new ComponentTreeImpl(newComponents);
+        return IReplacerAware.doReplace(
+                components,
+                IReplacerAware.castReplacer(replacer),
+                ComponentTreeImpl::new
+        );
     }
 }
