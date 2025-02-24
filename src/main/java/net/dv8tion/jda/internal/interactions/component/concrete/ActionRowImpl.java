@@ -1,9 +1,11 @@
 package net.dv8tion.jda.internal.interactions.component.concrete;
 
-import net.dv8tion.jda.api.interactions.components.*;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -11,6 +13,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -58,7 +61,7 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     @Nonnull
     public static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> _components)
     {
-        Collection<ActionRowChildComponentUnion> components = membersToUnion(_components);
+        Collection<ActionRowChildComponentUnion> components = UnionUtil.membersToUnion(_components);
         Checks.noneNull(components, "Components");
 
         Checks.check(!components.isEmpty(), "Cannot have empty row!");
@@ -80,7 +83,7 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     @Nonnull
     public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> _components)
     {
-        Collection<ActionRowChildComponentUnion> components = membersToUnion(_components);
+        Collection<ActionRowChildComponentUnion> components = UnionUtil.membersToUnion(_components);
         Checks.noneNull(components, "Components");
 
         List<ActionRow> rows = new ArrayList<>();
@@ -198,10 +201,5 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
             return false;
 
         return components.equals(((ActionRowImpl) obj).components);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Collection<ActionRowChildComponentUnion> membersToUnion(Collection<? extends ActionRowChildComponent> members) {
-        return (Collection<ActionRowChildComponentUnion>) members;
     }
 }
