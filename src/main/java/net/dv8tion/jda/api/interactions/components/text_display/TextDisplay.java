@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.components.container.ContainerChildCompo
 import net.dv8tion.jda.api.interactions.components.section.SectionContentComponent;
 import net.dv8tion.jda.internal.interactions.components.text_display.TextDisplayImpl;
 
-public interface TextDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent
+public interface TextDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent, SectionContentComponent
 {
     static TextDisplay create(String content)
     {
