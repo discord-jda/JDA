@@ -82,11 +82,22 @@ public interface InteractionHook extends WebhookClient<Message>
     /**
      * The {@link CallbackResponseUnion callback response} created by interaction replies like {@link IReplyCallback#reply(String)}
      * or interaction updates like {@link IMessageEditCallback#editMessage(String)}.
-     * <br>This will be {@code null} if the Interaction has not yet been acknowledged.
      *
-     * @return {@link CallbackResponseUnion}, if available.
+     * <p><b>Example</b><br>
+     * <pre>
+     * {@code
+     * event.reply("foobar").queue(hook -> {
+     *     var messageId = hook.getCallbackResponse().asMessage().getIdLong();
+     *     System.out.println(messageId);
+     * });}
+     * </pre>
+     *
+     * @throws IllegalStateException
+     *         If this interaction has not yet been acknowledged.
+     *
+     * @return {@link CallbackResponseUnion}
      */
-    @Nullable
+    @Nonnull
     CallbackResponseUnion getCallbackResponse();
 
     /**
