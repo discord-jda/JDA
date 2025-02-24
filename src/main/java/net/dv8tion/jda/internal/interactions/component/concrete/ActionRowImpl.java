@@ -61,7 +61,7 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
         Collection<ActionRowChildComponentUnion> components = membersToUnion(_components);
         Checks.noneNull(components, "Components");
 
-        Checks.check(components.isEmpty(), "Cannot have empty row!");
+        Checks.check(!components.isEmpty(), "Cannot have empty row!");
 
         ActionRowImpl row = new ActionRowImpl();
         row.components.addAll(components);
