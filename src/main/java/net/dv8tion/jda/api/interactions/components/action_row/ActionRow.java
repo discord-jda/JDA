@@ -16,15 +16,21 @@
 
 package net.dv8tion.jda.api.interactions.components.action_row;
 
-import net.dv8tion.jda.api.interactions.components.*;
+import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.concrete.ActionRowImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -186,6 +192,9 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
      */
     @Nonnull
     List<ActionRowChildComponentUnion> getComponents();
+
+    @Override
+    ActionRow replace(ComponentReplacer<ActionRowChildComponentUnion> replacer);
 
     /**
      * Check whether this layout is empty.

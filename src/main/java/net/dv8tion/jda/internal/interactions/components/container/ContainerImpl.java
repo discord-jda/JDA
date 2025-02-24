@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion
 import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
+import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
@@ -34,6 +36,23 @@ public class ContainerImpl
         // TODO-components-v2 - checks
 
         return new ContainerImpl(children);
+    }
+
+    @Override
+    public Container replace(ComponentReplacer<ContainerChildComponentUnion> replacer)
+    {
+        List<ContainerChildComponentUnion> newComponents = new ArrayList<>();
+        for (ContainerChildComponentUnion component : getComponents())
+        {
+            if (replacer.getComponentType().isInstance(component))
+                newComponents.add(replacer.apply(component));
+            else if (component instanceof IReplaceable)
+                newComponents.add((ContainerChildComponentUnion) ((IReplaceable) component).replace(replacer));
+            else
+                newComponents.add(component);
+        }
+
+        return new ContainerImpl(newComponents);
     }
 
     @Override

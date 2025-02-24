@@ -2,6 +2,8 @@ package net.dv8tion.jda.internal.interactions.components.section;
 
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
+import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.interactions.components.section.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -30,6 +32,23 @@ public class SectionImpl
         // TODO-components-v2 - checks
 
         return new SectionImpl(children, null);
+    }
+
+    @Override
+    public Section replace(ComponentReplacer<SectionContentComponentUnion> replacer)
+    {
+        List<SectionContentComponentUnion> newComponents = new ArrayList<>();
+        for (SectionContentComponentUnion component : getComponents())
+        {
+            if (replacer.getComponentType().isInstance(component))
+                newComponents.add(replacer.apply(component));
+            else if (component instanceof IReplaceable)
+                newComponents.add((SectionContentComponentUnion) ((IReplaceable) component).replace(replacer));
+            else
+                newComponents.add(component);
+        }
+
+        return new SectionImpl(newComponents, accessory);
     }
 
     @Override

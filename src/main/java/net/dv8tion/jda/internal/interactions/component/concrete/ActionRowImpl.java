@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
+import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -22,9 +24,15 @@ import java.util.stream.Collectors;
 
 public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, MessageTopLevelComponentUnion, ModalTopLevelComponentUnion, ContainerChildComponentUnion
 {
-    private final List<ActionRowChildComponentUnion> components = new ArrayList<>();
+    private final List<ActionRowChildComponentUnion> components;
 
-    private ActionRowImpl() {}
+    private ActionRowImpl() {
+        this.components = new ArrayList<>();
+    }
+
+    private ActionRowImpl(List<ActionRowChildComponentUnion> components) {
+        this.components = new ArrayList<>(components);
+    }
 
     @Nonnull
     public static ActionRow fromData(@Nonnull DataObject data)
@@ -115,6 +123,23 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     public List<ActionRowChildComponentUnion> getComponents()
     {
         return components;
+    }
+
+    @Override
+    public ActionRowImpl replace(ComponentReplacer<ActionRowChildComponentUnion> replacer)
+    {
+        List<ActionRowChildComponentUnion> newComponents = new ArrayList<>();
+        for (ActionRowChildComponentUnion component : components)
+        {
+            if (replacer.getComponentType().isInstance(component))
+                newComponents.add(replacer.apply(component));
+            else if (component instanceof IReplaceable)
+                newComponents.add((ActionRowChildComponentUnion) ((IReplaceable) component).replace(replacer));
+            else
+                newComponents.add(component);
+        }
+
+        return new ActionRowImpl(newComponents);
     }
 
     @Nonnull
