@@ -32,7 +32,9 @@ public abstract class InteractionCallbackImpl<T> extends RestActionImpl<T> imple
 
     public InteractionCallbackImpl(InteractionImpl interaction)
     {
-        super(interaction.getJDA(),  Route.Interactions.CALLBACK.compile(interaction.getId(), interaction.getToken()));
+        super(interaction.getJDA(),
+            Route.Interactions.CALLBACK.compile(interaction.getId(), interaction.getToken())
+                .withQueryParams("with_response", "true"));
         this.interaction = interaction;
         setErrorMapper(this::handleUnknownInteraction);
     }
