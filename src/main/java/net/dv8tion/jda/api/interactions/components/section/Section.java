@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.components.section;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
 
 import java.util.Arrays;
@@ -38,6 +39,9 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     }
 
     List<SectionContentComponentUnion> getComponents();
+
+    @Override
+    Section replace(ComponentReplacer<SectionContentComponentUnion> replacer);
 
     SectionAccessoryComponentUnion getAccessory();
 
