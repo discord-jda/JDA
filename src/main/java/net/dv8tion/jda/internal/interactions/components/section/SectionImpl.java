@@ -63,6 +63,7 @@ public class SectionImpl
     public Section replace(ComponentReplacer<?> replacer)
     {
         return IReplacerAware.doReplace(
+                SectionContentComponent.class,
                 getComponents(),
                 IReplacerAware.castReplacer(replacer),
                 newComponents -> new SectionImpl(newComponents, accessory)

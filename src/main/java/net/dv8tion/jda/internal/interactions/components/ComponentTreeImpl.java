@@ -42,6 +42,7 @@ public class ComponentTreeImpl implements ComponentTree
     public <T extends Component> ComponentTree replace(ComponentReplacer<T> replacer)
     {
         return IReplacerAware.doReplace(
+                MessageTopLevelComponent.class,
                 components,
                 IReplacerAware.castReplacer(replacer),
                 ComponentTreeImpl::new

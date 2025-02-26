@@ -82,6 +82,7 @@ public class ContainerImpl
     public Container replace(ComponentReplacer<?> replacer)
     {
         return IReplacerAware.doReplace(
+                ContainerChildComponent.class,
                 getComponents(),
                 IReplacerAware.castReplacer(replacer),
                 ContainerImpl::new

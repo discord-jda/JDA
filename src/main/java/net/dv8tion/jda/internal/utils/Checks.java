@@ -259,6 +259,15 @@ public class Checks
         checkComponents(errorMessage, Arrays.asList(components), predicate);
     }
 
+    public static void checkComponentType(Class<? extends Component> expectedChildrenType, Component originalComponent, Component newComponent)
+    {
+        Checks.check(
+                expectedChildrenType.isInstance(newComponent),
+                "%s was replaced by an incompatible component (%s), this layout only supports components of type %s",
+                originalComponent, newComponent, expectedChildrenType.getSimpleName()
+        );
+    }
+
     // Permission checks
 
     public static void checkAccess(IPermissionHolder issuer, GuildChannel channel)
