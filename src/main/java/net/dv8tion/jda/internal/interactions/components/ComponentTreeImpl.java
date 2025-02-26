@@ -2,7 +2,8 @@ package net.dv8tion.jda.internal.interactions.components;
 
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentTree;
-import net.dv8tion.jda.api.interactions.components.ComponentUnion;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.UnionUtil;
@@ -14,16 +15,16 @@ import java.util.List;
 
 public class ComponentTreeImpl implements ComponentTree
 {
-    private final List<ComponentUnion> components;
+    private final List<MessageTopLevelComponentUnion> components;
 
-    private ComponentTreeImpl(Collection<ComponentUnion> components)
+    private ComponentTreeImpl(Collection<MessageTopLevelComponentUnion> components)
     {
         this.components = new ArrayList<>(components);
     }
 
-    public static ComponentTree of(Collection<? extends Component> _components)
+    public static ComponentTree of(Collection<? extends MessageTopLevelComponent> _components)
     {
-        final Collection<ComponentUnion> components = UnionUtil.membersToUnion(_components);
+        final Collection<MessageTopLevelComponentUnion> components = UnionUtil.membersToUnion(_components);
         // TODO-components-v2 - checks?
 
         return new ComponentTreeImpl(components);

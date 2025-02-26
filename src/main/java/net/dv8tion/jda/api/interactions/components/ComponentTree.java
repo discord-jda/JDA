@@ -14,12 +14,12 @@ public interface ComponentTree
     @CheckReturnValue
     <T extends Component> ComponentTree replace(ComponentReplacer<T> replacer);
 
-    static ComponentTree of(Collection<? extends Component> components)
+    static ComponentTree of(Collection<? extends MessageTopLevelComponent> components)
     {
         return ComponentTreeImpl.of(components);
     }
 
-    static ComponentTree of(Component... components)
+    static ComponentTree of(MessageTopLevelComponent... components)
     {
         return of(Arrays.asList(components));
     }
