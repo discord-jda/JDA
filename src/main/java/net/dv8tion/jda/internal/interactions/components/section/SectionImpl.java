@@ -12,7 +12,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 public class SectionImpl
         extends AbstractComponentImpl
@@ -116,7 +119,7 @@ public class SectionImpl
     @Override
     public Iterator iterator()
     {
-        return Arrays.asList(children).iterator();
+        return children.iterator();
     }
 
     @Nonnull
