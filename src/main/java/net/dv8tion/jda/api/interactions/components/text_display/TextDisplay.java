@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.interactions.components.text_display;
 
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
@@ -39,11 +38,6 @@ public interface TextDisplay extends Component, IdentifiableComponent, MessageTo
     @CheckReturnValue
     TextDisplay withUniqueId(int uniqueId);
 
-    String getContentRaw();
-    // TODO : do we actually want to do this? If we start sending text in modals, we won't have
-    // TODO : the data to resolve stuff, will we? Maybe it should accept a JDA to do it? Maybe a
-    // TODO : 'context' of some kind? idk
-    String getContentDisplay(Message message);
-
-    String getContentStripped();
+    @Nonnull
+    String getContent();
 }

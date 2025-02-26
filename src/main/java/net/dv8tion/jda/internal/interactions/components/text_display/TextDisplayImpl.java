@@ -1,6 +1,5 @@
 package net.dv8tion.jda.internal.interactions.components.text_display;
 
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.section.SectionContentComponentUnion;
@@ -74,20 +73,9 @@ public class TextDisplayImpl
         return false;
     }
 
+    @Nonnull
     @Override
-    public String getContentRaw()
-    {
-        return content;
-    }
-
-    @Override
-    public String getContentDisplay(Message message)
-    {
-        return content;
-    }
-
-    @Override
-    public String getContentStripped()
+    public String getContent()
     {
         return content;
     }
