@@ -11,11 +11,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +35,7 @@ public class ContainerImpl
     private ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> children)
     {
         this.uniqueId = uniqueId;
-        this.children = new ArrayList<>(children);
+        this.children = Helpers.copyAsUnmodifiableList(children);
     }
 
     public static Container of(Collection<? extends ContainerChildComponent> _children)
@@ -70,6 +70,7 @@ public class ContainerImpl
         );
     }
 
+    @Nonnull
     @Override
     public List<ContainerChildComponentUnion> getComponents()
     {

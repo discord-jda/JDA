@@ -345,6 +345,11 @@ public final class Helpers
         return Collections.unmodifiableSet(EnumSet.of(first, rest));
     }
 
+    public static <E> List<E> copyAsUnmodifiableList(Collection<E> items)
+    {
+        return Collections.unmodifiableList(new ArrayList<>(items));
+    }
+
     public static <T> Collector<T, ?, DataArray> toDataArray()
     {
         return Collector.of(DataArray::empty, DataArray::add, DataArray::addAll);

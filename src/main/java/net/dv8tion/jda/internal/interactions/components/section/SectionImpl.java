@@ -9,10 +9,10 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +33,7 @@ public class SectionImpl
     private SectionImpl(int uniqueId, Collection<SectionContentComponentUnion> children, SectionAccessoryComponentUnion accessory)
     {
         this.uniqueId = uniqueId;
-        this.children = new ArrayList<>(children);
+        this.children = Helpers.copyAsUnmodifiableList(children);
         this.accessory = accessory;
     }
 
@@ -69,6 +69,7 @@ public class SectionImpl
         );
     }
 
+    @Nonnull
     @Override
     public List<SectionContentComponentUnion> getComponents()
     {

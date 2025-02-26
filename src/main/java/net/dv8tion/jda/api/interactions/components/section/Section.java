@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -46,6 +47,8 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     @CheckReturnValue
     Section withUniqueId(int uniqueId);
 
+    @Nonnull
+    @Unmodifiable
     List<SectionContentComponentUnion> getComponents();
 
     SectionAccessoryComponentUnion getAccessory();

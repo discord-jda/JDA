@@ -6,12 +6,11 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class ComponentTreeImpl implements ComponentTree
@@ -20,7 +19,7 @@ public class ComponentTreeImpl implements ComponentTree
 
     private ComponentTreeImpl(Collection<MessageTopLevelComponentUnion> components)
     {
-        this.components = Collections.unmodifiableList(new ArrayList<>(components));
+        this.components = Helpers.copyAsUnmodifiableList(components);
     }
 
     public static ComponentTree of(Collection<? extends MessageTopLevelComponent> _components)

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -18,17 +19,17 @@ public class MediaGalleryImpl
         implements MediaGallery, MessageTopLevelComponentUnion, ContainerChildComponentUnion
 {
     private final int uniqueId;
-    private final MediaGalleryItem[] items;
+    private final List<MediaGalleryItem> items;
 
     public MediaGalleryImpl(MediaGalleryItem... items)
     {
-        this(-1, items);
+        this(-1, Arrays.asList(items));
     }
 
-    private MediaGalleryImpl(int uniqueId, MediaGalleryItem... items)
+    private MediaGalleryImpl(int uniqueId, List<MediaGalleryItem> items)
     {
         this.uniqueId = uniqueId;
-        this.items = items;
+        this.items = Helpers.copyAsUnmodifiableList(items);
     }
 
     @Nonnull
@@ -45,10 +46,11 @@ public class MediaGalleryImpl
         return uniqueId;
     }
 
+    @Nonnull
     @Override
     public List<MediaGalleryItem> getItems()
     {
-        return Arrays.asList(items);
+        return items;
     }
 
     @Nonnull
