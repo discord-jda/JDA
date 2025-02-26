@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
-import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -31,7 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public interface Section extends LayoutComponent<SectionContentComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, IReplacerAware<Section>
+public interface Section extends LayoutComponent<SectionContentComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
     static Section of(Collection<? extends SectionContentComponent> children)
     {
