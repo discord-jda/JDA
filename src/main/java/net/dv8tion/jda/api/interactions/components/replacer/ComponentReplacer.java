@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 public interface ComponentReplacer<T extends Component>
 {
     @Nonnull
-    Class<T> getComponentType();
+    Class<? super T> getComponentType();
 
     @Nonnull
     T apply(@Nonnull T oldComponent);
