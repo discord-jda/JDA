@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -51,8 +52,9 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     @Unmodifiable
     List<SectionContentComponentUnion> getComponents();
 
+    @Nullable
     SectionAccessoryComponentUnion getAccessory();
 
     //TODO maybe this should be part of a builder? maybe not as there's not many things to configure
-    Section withAccessory(SectionAccessoryComponent accessory);
+    Section withAccessory(@Nullable SectionAccessoryComponent accessory);
 }
