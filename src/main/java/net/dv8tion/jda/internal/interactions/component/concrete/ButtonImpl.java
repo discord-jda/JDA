@@ -35,6 +35,7 @@ import java.util.Objects;
 public class ButtonImpl extends AbstractComponentImpl implements Button, ActionRowChildComponentUnion
 {
     private final String id;
+    private final int uniqueId;
     private final String label;
     private final ButtonStyle style;
     private final String url;
@@ -46,6 +47,7 @@ public class ButtonImpl extends AbstractComponentImpl implements Button, ActionR
     {
         this(
             data.getString("custom_id", null),
+            data.getInt("id"),
             data.getString("label", ""),
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
@@ -61,7 +63,13 @@ public class ButtonImpl extends AbstractComponentImpl implements Button, ActionR
 
     public ButtonImpl(String id, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
     {
+        this(id, -1, label, style, url, sku, disabled, emoji);
+    }
+
+    public ButtonImpl(String id, int uniqueId, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
+    {
         this.id = id;
+        this.uniqueId = uniqueId;
         this.label = label == null ? "" : label;
         this.style = style;
         this.url = url;
@@ -120,6 +128,12 @@ public class ButtonImpl extends AbstractComponentImpl implements Button, ActionR
     public String getId()
     {
         return id;
+    }
+
+    @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
     }
 
     @Nonnull
@@ -181,6 +195,8 @@ public class ButtonImpl extends AbstractComponentImpl implements Button, ActionR
             json.put("custom_id", id);
         else
             json.put("sku_id", sku.getId());
+        if (uniqueId >= 0)
+            json.put("id", uniqueId);
         return json;
     }
 

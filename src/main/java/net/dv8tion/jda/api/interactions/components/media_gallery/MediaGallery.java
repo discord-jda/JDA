@@ -17,18 +17,26 @@
 package net.dv8tion.jda.api.interactions.components.media_gallery;
 
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryImpl;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.List;
 
-public interface MediaGallery extends Component, MessageTopLevelComponent, ContainerChildComponent
+public interface MediaGallery extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
     static MediaGallery of(MediaGalleryItem... items)
     {
         return new MediaGalleryImpl(items);
     }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    MediaGallery withUniqueId(int uniqueId);
 
     List<MediaGalleryItem> getItems();
 }

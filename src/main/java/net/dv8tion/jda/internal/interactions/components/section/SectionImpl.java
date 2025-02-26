@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
@@ -17,11 +18,18 @@ public class SectionImpl
         extends AbstractComponentImpl
         implements Section, ContainerChildComponentUnion, IReplacerAware<Section>
 {
+    private final int uniqueId;
     private final List<SectionContentComponentUnion> children;
     private SectionAccessoryComponentUnion accessory;
 
     public SectionImpl(Collection<SectionContentComponentUnion> children, SectionAccessoryComponentUnion accessory)
     {
+        this(-1, children, accessory);
+    }
+
+    private SectionImpl(int uniqueId, Collection<SectionContentComponentUnion> children, SectionAccessoryComponentUnion accessory)
+    {
+        this.uniqueId = uniqueId;
         this.children = new ArrayList<>(children);
         this.accessory = accessory;
     }
@@ -32,6 +40,20 @@ public class SectionImpl
         // TODO-components-v2 - checks
 
         return new SectionImpl(children, null);
+    }
+
+    @Nonnull
+    @Override
+    public Section withUniqueId(int uniqueId)
+    {
+        Checks.notNegative(uniqueId, "Unique ID");
+        return new SectionImpl(uniqueId, children, accessory);
+    }
+
+    @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
     }
 
     @Override
@@ -115,11 +137,13 @@ public class SectionImpl
     @Override
     public DataObject toData()
     {
-        final DataObject data = DataObject.empty();
-        data.put("type", getType().getKey());
-        data.put("components", DataArray.fromCollection(getComponents()));
+        final DataObject json = DataObject.empty();
+        json.put("type", getType().getKey());
+        json.put("components", DataArray.fromCollection(getComponents()));
+        if (uniqueId >= 0)
+            json.put("id", uniqueId);
         if (accessory != null)
-            data.put("accessory", accessory);
-        return data;
+            json.put("accessory", accessory);
+        return json;
     }
 }

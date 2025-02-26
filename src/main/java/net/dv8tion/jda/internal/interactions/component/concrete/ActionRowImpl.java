@@ -24,13 +24,16 @@ import java.util.stream.Collectors;
 
 public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, MessageTopLevelComponentUnion, ModalTopLevelComponentUnion, ContainerChildComponentUnion, IReplacerAware<ActionRow>
 {
+    private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
 
     private ActionRowImpl() {
+        this.uniqueId = -1;
         this.components = new ArrayList<>();
     }
 
-    private ActionRowImpl(List<ActionRowChildComponentUnion> components) {
+    private ActionRowImpl(List<ActionRowChildComponentUnion> components, int uniqueId) {
+        this.uniqueId = uniqueId;
         this.components = new ArrayList<>(components);
     }
 
@@ -118,6 +121,12 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
         return rows;
     }
 
+    @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
+    }
+
     @Nonnull
     @Override
     public List<ActionRowChildComponentUnion> getComponents()
@@ -131,8 +140,15 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
         return IReplacerAware.doReplace(
                 getComponents(),
                 IReplacerAware.castReplacer(replacer),
-                ActionRowImpl::new
+                newComponents -> new ActionRowImpl(newComponents, uniqueId)
         );
+    }
+
+    @Nonnull
+    @Override
+    public ActionRow withUniqueId(int uniqueId)
+    {
+        return new ActionRowImpl(getComponents(), uniqueId);
     }
 
     @Nonnull
@@ -184,9 +200,12 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     @Override
     public DataObject toData()
     {
-        return DataObject.empty()
+        final DataObject json = DataObject.empty()
                 .put("type", 1)
                 .put("components", DataArray.fromCollection(components));
+        if (uniqueId >= 0)
+            json.put("id", uniqueId);
+        return json;
     }
 
     @Nonnull

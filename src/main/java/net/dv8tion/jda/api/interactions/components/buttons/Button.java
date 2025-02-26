@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponent;
@@ -31,7 +32,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
 
 /**
  * Represents a Message Button.
@@ -75,7 +75,7 @@ import java.awt.*;
  * @see ActionRow#of(ActionRowChildComponent...)
  * @see ReplyCallbackAction#addComponents(net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent...)
  */
-public interface Button extends ActionComponent, ActionRowChildComponent, SectionAccessoryComponent
+public interface Button extends ActionComponent, IdentifiableComponent, ActionRowChildComponent, SectionAccessoryComponent
 {
     /**
      * The maximum length a button label can have
@@ -154,7 +154,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @CheckReturnValue
     default Button withDisabled(boolean disabled)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji()).checkValid();
+        return new ButtonImpl(getId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji()).checkValid();
     }
 
     /**
@@ -172,7 +172,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji).checkValid();
+        return new ButtonImpl(getId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji).checkValid();
     }
 
     /**
@@ -195,7 +195,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @CheckReturnValue
     default Button withLabel(@Nonnull String label)
     {
-        return new ButtonImpl(getId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getId(), getUniqueId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -218,7 +218,16 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @CheckReturnValue
     default Button withId(@Nonnull String id)
     {
-        return new ButtonImpl(id, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(id, getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+    }
+
+    // TODO-components-v2 docs
+    default Button withUniqueId(int uniqueId)
+    {
+        // This is not done in checkValid() because the button gets constructed with an invalid unique ID on purpose
+        // (as Discord generates one if none was passed)
+        Checks.notNegative(uniqueId, "Unique ID");
+        return new ButtonImpl(getId(), uniqueId, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -241,7 +250,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @CheckReturnValue
     default Button withUrl(@Nonnull String url)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getId(), getUniqueId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -259,7 +268,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @CheckReturnValue
     default Button withSku(@Nonnull SkuSnowflake sku)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getId(), getUniqueId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -292,7 +301,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
             throw new IllegalArgumentException("You cannot change a premium button to another style!");
         if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM)
             throw new IllegalArgumentException("You cannot change a styled button to a premium button!");
-        return new ButtonImpl(getId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getId(), getUniqueId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**

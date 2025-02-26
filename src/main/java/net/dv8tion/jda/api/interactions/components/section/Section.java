@@ -16,17 +16,20 @@
 
 package net.dv8tion.jda.api.interactions.components.section;
 
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public interface Section extends LayoutComponent<SectionContentComponentUnion>, MessageTopLevelComponent, ContainerChildComponent, IReplacerAware<Section>
+public interface Section extends LayoutComponent<SectionContentComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, IReplacerAware<Section>
 {
     static Section of(Collection<? extends SectionContentComponent> children)
     {
@@ -37,6 +40,11 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     {
         return of(Arrays.asList(children));
     }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Section withUniqueId(int uniqueId);
 
     List<SectionContentComponentUnion> getComponents();
 

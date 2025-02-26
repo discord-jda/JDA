@@ -17,18 +17,25 @@
 package net.dv8tion.jda.api.interactions.components.separator;
 
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.interactions.components.separator.SeparatorImpl;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public interface Separator extends Component, MessageTopLevelComponent, ContainerChildComponent
+public interface Separator extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
     static Separator create(boolean isDivider, Spacing spacing)
     {
         return new SeparatorImpl(spacing, isDivider);
     }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Separator withUniqueId(int uniqueId);
 
     Spacing getSpacing();
 

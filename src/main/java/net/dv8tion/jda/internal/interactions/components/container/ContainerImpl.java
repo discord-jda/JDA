@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
@@ -23,10 +24,17 @@ public class ContainerImpl
         extends AbstractComponentImpl
         implements Container, MessageTopLevelComponentUnion, IReplacerAware<Container>
 {
+    private final int uniqueId;
     private final List<ContainerChildComponentUnion> children;
 
     private ContainerImpl(Collection<ContainerChildComponentUnion> children)
     {
+        this(-1, children);
+    }
+
+    private ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> children)
+    {
+        this.uniqueId = uniqueId;
         this.children = new ArrayList<>(children);
     }
 
@@ -36,6 +44,20 @@ public class ContainerImpl
         // TODO-components-v2 - checks
 
         return new ContainerImpl(children);
+    }
+
+    @Nonnull
+    @Override
+    public Container withUniqueId(int uniqueId)
+    {
+        Checks.notNegative(uniqueId, "Unique ID");
+        return new ContainerImpl(uniqueId, children);
+    }
+
+    @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
     }
 
     @Override
@@ -119,8 +141,11 @@ public class ContainerImpl
     @Override
     public DataObject toData()
     {
-        return DataObject.empty()
+        final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("components", DataArray.fromCollection(getComponents()));
+        if (uniqueId >= 0)
+            json.put("id", uniqueId);
+        return json;
     }
 }

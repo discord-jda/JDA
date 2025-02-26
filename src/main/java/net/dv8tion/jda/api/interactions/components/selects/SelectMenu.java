@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.selects;
 
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -42,7 +43,7 @@ import java.util.Collection;
  * @see EntitySelectMenu
  * @see SelectMenuInteraction
  */
-public interface SelectMenu extends ActionComponent, ActionRowChildComponent
+public interface SelectMenu extends ActionComponent, IdentifiableComponent, ActionRowChildComponent
 {
     /**
      * The maximum length a select menu id can have
@@ -103,6 +104,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
     abstract class Builder<T extends SelectMenu, B extends Builder<T, B>>
     {
         protected String customId;
+        protected int uniqueId = -1;
         protected String placeholder;
         protected int minValues = 1, maxValues = 1;
         protected boolean disabled = false;
@@ -129,6 +131,15 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
             Checks.notEmpty(customId, "Component ID");
             Checks.notLonger(customId, ID_MAX_LENGTH, "Component ID");
             this.customId = customId;
+            return (B) this;
+        }
+
+        // TODO-components-v2 docs
+        @Nonnull
+        public B setUniqueId(int uniqueId)
+        {
+            Checks.notNegative(uniqueId, "Unique ID");
+            this.uniqueId = uniqueId;
             return (B) this;
         }
 
@@ -249,6 +260,12 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
         public String getId()
         {
             return customId;
+        }
+
+        // TODO-components-v2 docs
+        public int getUniqueId()
+        {
+            return uniqueId;
         }
 
         /**
