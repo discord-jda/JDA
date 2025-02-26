@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryImpl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -38,5 +39,7 @@ public interface MediaGallery extends Component, IdentifiableComponent, MessageT
     @CheckReturnValue
     MediaGallery withUniqueId(int uniqueId);
 
+    @Nonnull
+    @Unmodifiable
     List<MediaGalleryItem> getItems();
 }

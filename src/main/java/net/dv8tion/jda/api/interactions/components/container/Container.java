@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -46,6 +47,8 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     @CheckReturnValue
     Container withUniqueId(int uniqueId);
 
+    @Nonnull
+    @Unmodifiable
     List<ContainerChildComponentUnion> getComponents();
 
     /**
