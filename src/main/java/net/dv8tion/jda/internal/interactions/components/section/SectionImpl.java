@@ -15,8 +15,10 @@ import net.dv8tion.jda.internal.utils.UnionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 public class SectionImpl
         extends AbstractComponentImpl
@@ -63,12 +65,21 @@ public class SectionImpl
     @Override
     public Section replace(ComponentReplacer<?> replacer)
     {
-        return IReplacerAware.doReplace(
+        final List<SectionContentComponentUnion> newContent = IReplacerAware.doReplace(
                 SectionContentComponent.class,
                 getComponents(),
                 IReplacerAware.castReplacer(replacer),
-                newComponents -> new SectionImpl(newComponents, accessory)
+                Function.identity()
         );
+
+        final SectionAccessoryComponentUnion newAccessory = accessory != null ? IReplacerAware.doReplace(
+                SectionAccessoryComponent.class,
+                Collections.singletonList(accessory),
+                IReplacerAware.castReplacer(replacer),
+                newAccessories -> newAccessories.get(0)
+        ) : null;
+
+        return new SectionImpl(newContent, newAccessory);
     }
 
     @Nonnull
