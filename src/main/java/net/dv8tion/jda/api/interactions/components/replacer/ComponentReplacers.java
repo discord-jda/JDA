@@ -1,6 +1,7 @@
 package net.dv8tion.jda.api.interactions.components.replacer;
 
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selects.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
@@ -47,6 +48,13 @@ public class ComponentReplacers
     }
 
     private ComponentReplacers() {}
+
+    // TODO-components-v2 - docs
+    // TODO-components-v2 - Can the Class<T> be removed?
+    public static <T extends IdentifiableComponent> ComponentReplacer<T> identifiableReplacer(Class<T> type, T toReplace, Function<T, T> update)
+    {
+        return new ComponentReplacerImpl<>(type, component -> component.getUniqueId() == toReplace.getUniqueId(), update);
+    }
 
     // TODO-components-v2 - docs
     public static ComponentReplacer<Button> buttonReplacer(Predicate<Button> filter, Function<Button, Button> update)
