@@ -15,11 +15,11 @@ import java.util.function.Predicate;
 public class ComponentReplacers
 {
     private static class ComponentReplacerImpl<T extends Component> implements ComponentReplacer<T> {
-        private final Class<T> type;
-        private final Predicate<T> filter;
-        private final Function<T, T> updater;
+        private final Class<? super T> type;
+        private final Predicate<? super T> filter;
+        private final Function<? super T, T> updater;
 
-        private ComponentReplacerImpl(Class<T> type, Predicate<T> filter, Function<T, T> updater)
+        private ComponentReplacerImpl(Class<? super T> type, Predicate<? super T> filter, Function<? super T, T> updater)
         {
             this.type = type;
             this.filter = filter;
@@ -28,7 +28,7 @@ public class ComponentReplacers
 
         @Nonnull
         @Override
-        public Class<T> getComponentType()
+        public Class<? super T> getComponentType()
         {
             return type;
         }
