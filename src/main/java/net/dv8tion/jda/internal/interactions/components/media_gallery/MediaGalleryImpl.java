@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.interactions.components.media_gallery.MediaGalleryIte
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -16,11 +17,32 @@ public class MediaGalleryImpl
         extends AbstractComponentImpl
         implements MediaGallery, MessageTopLevelComponentUnion, ContainerChildComponentUnion
 {
+    private final int uniqueId;
     private final MediaGalleryItem[] items;
 
     public MediaGalleryImpl(MediaGalleryItem... items)
     {
+        this(-1, items);
+    }
+
+    private MediaGalleryImpl(int uniqueId, MediaGalleryItem... items)
+    {
+        this.uniqueId = uniqueId;
         this.items = items;
+    }
+
+    @Nonnull
+    @Override
+    public MediaGallery withUniqueId(int uniqueId)
+    {
+        Checks.notNegative(uniqueId, "Unique ID");
+        return new MediaGalleryImpl(uniqueId, items);
+    }
+
+    @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
     }
 
     @Override
@@ -52,8 +74,11 @@ public class MediaGalleryImpl
     @Override
     public DataObject toData()
     {
-        return DataObject.empty()
+        final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("items", DataArray.fromCollection(getItems()));
+        if (uniqueId >= 0)
+            json.put("id", uniqueId);
+        return json;
     }
 }

@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 public abstract class SelectMenuImpl extends AbstractComponentImpl implements SelectMenu, ActionRowChildComponentUnion
 {
     protected final String id, placeholder;
+    protected final int uniqueId;
     protected final int minValues, maxValues;
     protected final boolean disabled;
 
@@ -35,6 +36,7 @@ public abstract class SelectMenuImpl extends AbstractComponentImpl implements Se
     {
         this(
             data.getString("custom_id"),
+            data.getInt("id"),
             data.getString("placeholder", null),
             data.getInt("min_values", 1),
             data.getInt("max_values", 1),
@@ -42,9 +44,10 @@ public abstract class SelectMenuImpl extends AbstractComponentImpl implements Se
         );
     }
 
-    public SelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled)
+    public SelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled)
     {
         this.id = id;
+        this.uniqueId = uniqueId;
         this.placeholder = placeholder;
         this.minValues = minValues;
         this.maxValues = maxValues;
@@ -56,6 +59,12 @@ public abstract class SelectMenuImpl extends AbstractComponentImpl implements Se
     public String getId()
     {
         return id;
+    }
+
+    @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
     }
 
     @Nullable
@@ -89,6 +98,8 @@ public abstract class SelectMenuImpl extends AbstractComponentImpl implements Se
     {
         DataObject data = DataObject.empty();
         data.put("custom_id", id);
+        if (uniqueId >= 0)
+            data.put("id", uniqueId);
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
         data.put("disabled", disabled);

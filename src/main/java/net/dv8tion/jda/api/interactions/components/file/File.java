@@ -1,10 +1,19 @@
 package net.dv8tion.jda.api.interactions.components.file;
 
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 
-public interface File extends Component, MessageTopLevelComponent, ContainerChildComponent
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
+public interface File extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    File withUniqueId(int uniqueId);
+
     boolean isSpoiler();
 }

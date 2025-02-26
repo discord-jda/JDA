@@ -392,7 +392,7 @@ public interface StringSelectMenu extends SelectMenu
             Checks.check(options.size() <= OPTIONS_MAX_AMOUNT, "Cannot build a select menu with more than %d options.", OPTIONS_MAX_AMOUNT);
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
-            return new StringSelectMenuImpl(customId, placeholder, min, max, disabled, options);
+            return new StringSelectMenuImpl(customId, uniqueId, placeholder, min, max, disabled, options);
         }
     }
 }

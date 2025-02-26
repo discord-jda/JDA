@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.components.action_row;
 
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.concrete.ActionRowImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,7 +40,7 @@ import java.util.stream.Collectors;
  * @see ActionRowChildComponent
  * @see LayoutComponent
  */
-public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent
+public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent
 {
     /**
      * Load ActionRow from serialized representation.
@@ -182,6 +184,11 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
                 return 0;
         }
     }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    ActionRow withUniqueId(int uniqueId);
 
     /**
      * List representation of this component layout.

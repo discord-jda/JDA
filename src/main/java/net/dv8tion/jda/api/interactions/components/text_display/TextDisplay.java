@@ -18,17 +18,26 @@ package net.dv8tion.jda.api.interactions.components.text_display;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.components.section.SectionContentComponent;
 import net.dv8tion.jda.internal.interactions.components.text_display.TextDisplayImpl;
 
-public interface TextDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent, SectionContentComponent
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
+public interface TextDisplay extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, SectionContentComponent
 {
     static TextDisplay create(String content)
     {
         return new TextDisplayImpl(content);
     }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    TextDisplay withUniqueId(int uniqueId);
 
     String getContentRaw();
     // TODO : do we actually want to do this? If we start sending text in modals, we won't have

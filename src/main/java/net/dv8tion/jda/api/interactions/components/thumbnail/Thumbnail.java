@@ -16,15 +16,24 @@
 
 package net.dv8tion.jda.api.interactions.components.thumbnail;
 
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponent;
 import net.dv8tion.jda.internal.interactions.components.thumbnail.ThumbnailImpl;
 
-public interface Thumbnail extends SectionAccessoryComponent
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
+public interface Thumbnail extends SectionAccessoryComponent, IdentifiableComponent
 {
     static Thumbnail fromUrl(String url)
     {
         return new ThumbnailImpl(url);
     }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Thumbnail withUniqueId(int uniqueId);
 
     boolean isSpoiler();
 

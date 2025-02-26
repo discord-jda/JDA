@@ -16,17 +16,20 @@
 
 package net.dv8tion.jda.api.interactions.components.container;
 
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public interface Container extends LayoutComponent<ContainerChildComponentUnion>, MessageTopLevelComponent
+public interface Container extends LayoutComponent<ContainerChildComponentUnion>, IdentifiableComponent, MessageTopLevelComponent
 {
     static Container of(Collection<? extends ContainerChildComponent> children)
     {
@@ -37,6 +40,11 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     {
         return of(Arrays.asList(children));
     }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Container withUniqueId(int uniqueId);
 
     List<ContainerChildComponentUnion> getComponents();
 

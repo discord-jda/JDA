@@ -38,9 +38,9 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
         this.options = parseOptions(data.getArray("options"));
     }
 
-    public StringSelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
+    public StringSelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
     {
-        super(id, placeholder, minValues, maxValues, disabled);
+        super(id, uniqueId, placeholder, minValues, maxValues, disabled);
         this.options = options;
     }
 

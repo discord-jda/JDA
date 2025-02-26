@@ -51,9 +51,9 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         ).orElse(Collections.emptyList());
     }
 
-    public EntitySelectMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, Type type, EnumSet<ChannelType> channelTypes, List<DefaultValue> defaultValues)
+    public EntitySelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, Type type, EnumSet<ChannelType> channelTypes, List<DefaultValue> defaultValues)
     {
-        super(id, placeholder, minValues, maxValues, disabled);
+        super(id, uniqueId, placeholder, minValues, maxValues, disabled);
         this.type = type;
         this.channelTypes = channelTypes;
         this.defaultValues = defaultValues;
