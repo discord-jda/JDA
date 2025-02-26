@@ -18,16 +18,14 @@ package net.dv8tion.jda.api.interactions.components.selects;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.ComponentTree;
+import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacers;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -85,16 +83,16 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
     @CheckReturnValue
     default RestAction<Void> editSelectMenu(@Nullable SelectMenu newMenu)
     {
-        // TODO-components-v2 - figure out better way to do edits.
-        throw new RuntimeException("This isn't implemented yet, sorry. Please use editMessageComponentsById / editComponents directly");
+        final Message message = getMessage();
+        final ComponentTree newTree = message.getComponentTree().replace(ComponentReplacers.selectMenuReplacer(
+                //TODO replace using the new unique IDs
+                menu -> getSelectMenu().getUniqueId() == menu.getUniqueId(),
+                menu -> newMenu
+        ));
 
-//        Message message = getMessage();
-//        List<MessageTopLevelComponentUnion> components = new ArrayList<>(message.getComponents());
-//        LayoutComponent.updateComponent(components, getComponentId(), newMenu);
-//
-//        if (isAcknowledged())
-//            return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);
-//        else
-//            return editComponents(components).map(it -> null);
+        if (isAcknowledged())
+            return getHook().editMessageComponentsById(message.getId(), newTree.getComponents()).map(it -> null);
+        else
+            return editComponents(newTree.getComponents()).map(it -> null);
     }
 }

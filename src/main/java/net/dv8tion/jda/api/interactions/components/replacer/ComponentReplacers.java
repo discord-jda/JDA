@@ -2,6 +2,9 @@ package net.dv8tion.jda.api.interactions.components.replacer;
 
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selects.EntitySelectMenu;
+import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selects.StringSelectMenu;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 
 import javax.annotation.Nonnull;
@@ -45,8 +48,27 @@ public class ComponentReplacers
 
     private ComponentReplacers() {}
 
+    // TODO-components-v2 - docs
     public static ComponentReplacer<Button> buttonReplacer(Predicate<Button> filter, Function<Button, Button> update)
     {
         return new ComponentReplacerImpl<>(Button.class, filter, update);
+    }
+
+    // TODO-components-v2 - docs
+    public static ComponentReplacer<SelectMenu> selectMenuReplacer(Predicate<SelectMenu> filter, Function<SelectMenu, SelectMenu> update)
+    {
+        return new ComponentReplacerImpl<>(SelectMenu.class, filter, update);
+    }
+
+    // TODO-components-v2 - docs
+    public static ComponentReplacer<StringSelectMenu> stringSelectMenuReplacer(Predicate<StringSelectMenu> filter, Function<StringSelectMenu, StringSelectMenu> update)
+    {
+        return new ComponentReplacerImpl<>(StringSelectMenu.class, filter, update);
+    }
+
+    // TODO-components-v2 - docs
+    public static ComponentReplacer<EntitySelectMenu> entitySelectMenuReplacer(Predicate<EntitySelectMenu> filter, Function<EntitySelectMenu, EntitySelectMenu> update)
+    {
+        return new ComponentReplacerImpl<>(EntitySelectMenu.class, filter, update);
     }
 }
