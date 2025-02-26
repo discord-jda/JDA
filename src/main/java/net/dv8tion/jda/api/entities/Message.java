@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ComponentIterator;
+import net.dv8tion.jda.api.interactions.components.ComponentTree;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
@@ -701,6 +702,13 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @Unmodifiable
     List<MessageTopLevelComponentUnion> getComponents();
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    default ComponentTree getComponentTree()
+    {
+        return ComponentTree.of(getComponents());
+    }
 
     /**
      * The {@link MessagePoll} attached to this message.
