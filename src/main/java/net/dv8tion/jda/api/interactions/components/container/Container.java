@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
@@ -47,6 +48,25 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     @CheckReturnValue
     Container withUniqueId(int uniqueId);
 
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Container withAccentColor(int accentColor);
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    default Container withAccentColor(@Nonnull Color accentColor)
+    {
+        Checks.notNull(accentColor, "Accent color");
+        return withAccentColor(accentColor.getRGB());
+    }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Container withSpoiler(boolean spoiler);
+
     @Nonnull
     @Unmodifiable
     List<ContainerChildComponentUnion> getComponents();
@@ -72,5 +92,6 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     @Nullable
     Integer getAccentColorRaw();
 
+    // TODO-components-v2 docs
     boolean isSpoiler();
 }

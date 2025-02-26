@@ -26,16 +26,20 @@ public class ContainerImpl
 {
     private final int uniqueId;
     private final List<ContainerChildComponentUnion> children;
+    private final boolean spoiler;
+    private final Integer accentColor;
 
     private ContainerImpl(Collection<ContainerChildComponentUnion> children)
     {
-        this(-1, children);
+        this(-1, children, false, null);
     }
 
-    private ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> children)
+    private ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> children, boolean spoiler, Integer accentColor)
     {
         this.uniqueId = uniqueId;
         this.children = Helpers.copyAsUnmodifiableList(children);
+        this.spoiler = spoiler;
+        this.accentColor = accentColor;
     }
 
     public static Container of(Collection<? extends ContainerChildComponent> _children)
@@ -51,7 +55,21 @@ public class ContainerImpl
     public Container withUniqueId(int uniqueId)
     {
         Checks.notNegative(uniqueId, "Unique ID");
-        return new ContainerImpl(uniqueId, children);
+        return new ContainerImpl(uniqueId, children, spoiler, accentColor);
+    }
+
+    @Nonnull
+    @Override
+    public Container withSpoiler(boolean spoiler)
+    {
+        return new ContainerImpl(uniqueId, children, spoiler, accentColor);
+    }
+
+    @Nonnull
+    @Override
+    public Container withAccentColor(int accentColor)
+    {
+        return new ContainerImpl(uniqueId, children, spoiler, accentColor);
     }
 
     @Override
@@ -81,13 +99,13 @@ public class ContainerImpl
     @Override
     public Integer getAccentColorRaw()
     {
-        return 0;
+        return accentColor;
     }
 
     @Override
     public boolean isSpoiler()
     {
-        return false;
+        return spoiler;
     }
 
     @Nonnull
@@ -144,9 +162,12 @@ public class ContainerImpl
     {
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
-                .put("components", DataArray.fromCollection(getComponents()));
+                .put("components", DataArray.fromCollection(getComponents()))
+                .put("spoiler", spoiler);
         if (uniqueId >= 0)
             json.put("id", uniqueId);
+        if (accentColor != null)
+            json.put("accent_color", accentColor);
         return json;
     }
 }

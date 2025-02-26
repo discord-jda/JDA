@@ -7,6 +7,7 @@ import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ThumbnailImpl
         extends AbstractComponentImpl
@@ -14,16 +15,20 @@ public class ThumbnailImpl
 {
     private final int uniqueId;
     private final String url;
+    private final String description;
+    private final boolean spoiler;
 
     public ThumbnailImpl(String url)
     {
-        this(-1, url);
+        this(-1, url, null, false);
     }
 
-    private ThumbnailImpl(int uniqueId, String url)
+    private ThumbnailImpl(int uniqueId, String url, String description, boolean spoiler)
     {
         this.uniqueId = uniqueId;
         this.url = url;
+        this.description = description;
+        this.spoiler = spoiler;
     }
 
     @Nonnull
@@ -31,7 +36,21 @@ public class ThumbnailImpl
     public Thumbnail withUniqueId(int uniqueId)
     {
         Checks.notNegative(uniqueId, "Unique ID");
-        return new ThumbnailImpl(uniqueId, url);
+        return new ThumbnailImpl(uniqueId, url, description, spoiler);
+    }
+
+    @Nonnull
+    @Override
+    public Thumbnail withDescription(String description)
+    {
+        return new ThumbnailImpl(uniqueId, url, description, spoiler);
+    }
+
+    @Nonnull
+    @Override
+    public Thumbnail withSpoiler(boolean spoiler)
+    {
+        return new ThumbnailImpl(uniqueId, url, description, spoiler);
     }
 
     @Override
@@ -40,10 +59,17 @@ public class ThumbnailImpl
         return uniqueId;
     }
 
+    @Nullable
+    @Override
+    public String getDescription()
+    {
+        return description;
+    }
+
     @Override
     public boolean isSpoiler()
     {
-        return false;
+        return spoiler;
     }
 
     @Nonnull
@@ -71,9 +97,12 @@ public class ThumbnailImpl
     {
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
-                .put("media", DataObject.empty().put("url", url));
+                .put("media", DataObject.empty().put("url", url))
+                .put("spoiler", spoiler);
         if (uniqueId >= 0)
             json.put("id", uniqueId);
+        if (description != null)
+            json.put("description", description);
         return json;
     }
 }
