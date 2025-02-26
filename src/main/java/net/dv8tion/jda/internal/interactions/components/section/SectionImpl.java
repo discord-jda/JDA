@@ -13,6 +13,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -77,6 +78,7 @@ public class SectionImpl
         return children;
     }
 
+    @Nullable
     @Override
     public SectionAccessoryComponentUnion getAccessory()
     {
@@ -132,9 +134,8 @@ public class SectionImpl
     }
 
     @Override
-    public Section withAccessory(SectionAccessoryComponent accessory)
+    public Section withAccessory(@Nullable SectionAccessoryComponent accessory)
     {
-        Checks.notNull(accessory, "Accessory");
         // TODO-components-v2 Check union
         return new SectionImpl(uniqueId, children, (SectionAccessoryComponentUnion) accessory);
     }
