@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public interface IReplacerAware<T extends Component> {
+public interface IReplacerAware<T extends Component>
+{
     T replace(ComponentReplacer<?> replacer);
 
     @SuppressWarnings("unchecked")
@@ -43,7 +44,8 @@ public interface IReplacerAware<T extends Component> {
     }
 
     @SuppressWarnings("unchecked")
-    static <T extends Component> ComponentReplacer<T> castReplacer(ComponentReplacer<?> replacer) {
+    static <T extends Component> ComponentReplacer<T> castReplacer(ComponentReplacer<?> replacer)
+    {
         return (ComponentReplacer<T>) replacer;
     }
 }
