@@ -23,7 +23,7 @@ public class SectionImpl
 {
     private final int uniqueId;
     private final List<SectionContentComponentUnion> children;
-    private SectionAccessoryComponentUnion accessory;
+    private final SectionAccessoryComponentUnion accessory;
 
     public SectionImpl(Collection<SectionContentComponentUnion> children, SectionAccessoryComponentUnion accessory)
     {
@@ -133,8 +133,9 @@ public class SectionImpl
     @Override
     public Section withAccessory(SectionAccessoryComponent accessory)
     {
-        this.accessory = (SectionAccessoryComponentUnion) accessory;
-        return this;
+        Checks.notNull(accessory, "Accessory");
+        // TODO-components-v2 Check union
+        return new SectionImpl(uniqueId, children, (SectionAccessoryComponentUnion) accessory);
     }
 
     @Nonnull
