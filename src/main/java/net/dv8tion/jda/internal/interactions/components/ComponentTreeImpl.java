@@ -11,6 +11,7 @@ import net.dv8tion.jda.internal.utils.UnionUtil;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ComponentTreeImpl implements ComponentTree
@@ -19,7 +20,7 @@ public class ComponentTreeImpl implements ComponentTree
 
     private ComponentTreeImpl(Collection<MessageTopLevelComponentUnion> components)
     {
-        this.components = new ArrayList<>(components);
+        this.components = Collections.unmodifiableList(new ArrayList<>(components));
     }
 
     public static ComponentTree of(Collection<? extends MessageTopLevelComponent> _components)
@@ -28,6 +29,13 @@ public class ComponentTreeImpl implements ComponentTree
         // TODO-components-v2 - checks?
 
         return new ComponentTreeImpl(components);
+    }
+
+    @Nonnull
+    @Override
+    public List<MessageTopLevelComponentUnion> getComponents()
+    {
+        return components;
     }
 
     @Nonnull
