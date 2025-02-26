@@ -22,6 +22,7 @@ import net.dv8tion.jda.internal.interactions.components.thumbnail.ThumbnailImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface Thumbnail extends SectionAccessoryComponent, IdentifiableComponent
 {
@@ -35,6 +36,21 @@ public interface Thumbnail extends SectionAccessoryComponent, IdentifiableCompon
     @CheckReturnValue
     Thumbnail withUniqueId(int uniqueId);
 
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Thumbnail withDescription(@Nullable String description);
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Thumbnail withSpoiler(boolean spoiler);
+
+    // TODO-components-v2 docs
+    @Nullable
+    String getDescription();
+
+    // TODO-components-v2 docs
     boolean isSpoiler();
 
 }
