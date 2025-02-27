@@ -79,12 +79,12 @@ public class ContainerImpl
     }
 
     @Override
-    public Container replace(ComponentReplacer<?> replacer)
+    public Container replace(ComponentReplacer replacer)
     {
         return IReplacerAware.doReplace(
                 ContainerChildComponent.class,
                 getComponents(),
-                IReplacerAware.castReplacer(replacer),
+                replacer,
                 ContainerImpl::new
         );
     }

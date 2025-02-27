@@ -135,12 +135,12 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     }
 
     @Override
-    public ActionRow replace(ComponentReplacer<?> replacer)
+    public ActionRow replace(ComponentReplacer replacer)
     {
         return IReplacerAware.doReplace(
                 ActionRowChildComponent.class,
                 getComponents(),
-                IReplacerAware.castReplacer(replacer),
+                replacer,
                 newComponents -> new ActionRowImpl(newComponents, uniqueId)
         );
     }
