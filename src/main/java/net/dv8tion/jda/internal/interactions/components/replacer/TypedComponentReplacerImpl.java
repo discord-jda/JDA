@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -37,7 +38,7 @@ public class TypedComponentReplacerImpl<T extends Component> implements Componen
     }
 
     @SuppressWarnings("unchecked")
-    @Nonnull
+    @Nullable
     @Override
     public Component apply(@Nonnull Component oldComponent)
     {

@@ -25,14 +25,14 @@ import net.dv8tion.jda.api.interactions.components.selects.StringSelectMenu;
 import net.dv8tion.jda.internal.interactions.components.replacer.TypedComponentReplacerImpl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-// TODO-components-v2 - should this be able to remove components? (by returning null)
 @FunctionalInterface
 public interface ComponentReplacer
 {
-    @Nonnull
+    @Nullable
     Component apply(@Nonnull Component oldComponent);
 
     // TODO-components-v2 - docs
@@ -43,12 +43,17 @@ public interface ComponentReplacer
         {
             Component newComponent = first.apply(oldComponent);
             for (ComponentReplacer other : others)
+            {
+                if (newComponent == null)
+                    return null;
                 newComponent = other.apply(newComponent);
+            }
             return newComponent;
         };
     }
 
     // TODO-components-v2 - docs
+    //  update can return null
     @Nonnull
     static <T extends Component> ComponentReplacer of(@Nonnull Class<? super T> type, @Nonnull Predicate<? super T> filter, @Nonnull Function<? super T, Component> update)
     {
@@ -57,7 +62,7 @@ public interface ComponentReplacer
 
     // TODO-components-v2 - docs
     @Nonnull
-    static ComponentReplacer byId(@Nonnull IdentifiableComponent oldComponent, @Nonnull IdentifiableComponent newComponent)
+    static ComponentReplacer byId(@Nonnull IdentifiableComponent oldComponent, @Nullable IdentifiableComponent newComponent)
     {
         return of(IdentifiableComponent.class,
                 component -> component.getUniqueId() == oldComponent.getUniqueId(),
@@ -65,6 +70,7 @@ public interface ComponentReplacer
     }
 
     // TODO-components-v2 - docs
+    //  update can return null
     @Nonnull
     static ComponentReplacer button(@Nonnull Predicate<Button> filter, @Nonnull Function<Button, Button> update)
     {
@@ -72,6 +78,7 @@ public interface ComponentReplacer
     }
 
     // TODO-components-v2 - docs
+    //  update can return null
     @Nonnull
     static ComponentReplacer selectMenu(@Nonnull Predicate<SelectMenu> filter, @Nonnull Function<SelectMenu, SelectMenu> update)
     {
@@ -79,6 +86,7 @@ public interface ComponentReplacer
     }
 
     // TODO-components-v2 - docs
+    //  update can return null
     @Nonnull
     static ComponentReplacer stringSelectMenu(@Nonnull Predicate<StringSelectMenu> filter, @Nonnull Function<StringSelectMenu, StringSelectMenu> update)
     {
@@ -86,6 +94,7 @@ public interface ComponentReplacer
     }
 
     // TODO-components-v2 - docs
+    //  update can return null
     @Nonnull
     static ComponentReplacer entitySelectMenu(@Nonnull Predicate<EntitySelectMenu> filter, @Nonnull Function<EntitySelectMenu, EntitySelectMenu> update)
     {
