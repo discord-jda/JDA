@@ -39,12 +39,12 @@ public class ComponentTreeImpl implements ComponentTree
 
     @Nonnull
     @Override
-    public <T extends Component> ComponentTree replace(ComponentReplacer<T> replacer)
+    public ComponentTree replace(ComponentReplacer replacer)
     {
         return IReplacerAware.doReplace(
                 MessageTopLevelComponent.class,
                 components,
-                IReplacerAware.castReplacer(replacer),
+                replacer,
                 ComponentTreeImpl::new
         );
     }

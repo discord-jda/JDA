@@ -11,41 +11,34 @@ import java.util.function.Function;
 
 public interface IReplacerAware<T extends Component>
 {
-    T replace(ComponentReplacer<?> replacer);
+    T replace(ComponentReplacer replacer);
 
     @SuppressWarnings("unchecked")
-    static <C, E extends ComponentUnion> C doReplace(
+    static <R, E extends ComponentUnion> R doReplace(
+            // This isn't '? extends E' as users are not required to return unions
             Class<? extends Component> expectedChildrenType,
             Iterable<E> children,
-            ComponentReplacer<E> replacer,
-            Function<List<E>, C> finisher
+            ComponentReplacer replacer,
+            Function<List<E>, R> finisher
     )
     {
         List<E> newComponents = new ArrayList<>();
         for (E component : children)
         {
-            if (replacer.getComponentType().isInstance(component))
+            Component newComponent = replacer.apply(component);
+            // If it returned a different component, then use it and don't try to recurse
+            if (newComponent != component)
             {
-                final E newComponent = replacer.apply(component);
                 Checks.checkComponentType(expectedChildrenType, component, newComponent);
-                newComponents.add(newComponent);
             }
             else if (component instanceof IReplacerAware)
             {
-                final E newComponent = ((IReplacerAware<E>) component).replace(replacer);
+                newComponent = ((IReplacerAware<?>) component).replace(replacer);
                 Checks.checkComponentType(expectedChildrenType, component, newComponent);
-                newComponents.add(newComponent);
             }
-            else
-                newComponents.add(component);
+            newComponents.add((E) newComponent);
         }
 
         return finisher.apply(newComponents);
-    }
-
-    @SuppressWarnings("unchecked")
-    static <T extends Component> ComponentReplacer<T> castReplacer(ComponentReplacer<?> replacer)
-    {
-        return (ComponentReplacer<T>) replacer;
     }
 }

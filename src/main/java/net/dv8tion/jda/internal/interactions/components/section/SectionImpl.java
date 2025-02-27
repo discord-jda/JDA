@@ -63,19 +63,19 @@ public class SectionImpl
     }
 
     @Override
-    public Section replace(ComponentReplacer<?> replacer)
+    public Section replace(ComponentReplacer replacer)
     {
         final List<SectionContentComponentUnion> newContent = IReplacerAware.doReplace(
                 SectionContentComponent.class,
                 getComponents(),
-                IReplacerAware.castReplacer(replacer),
+                replacer,
                 Function.identity()
         );
 
         final SectionAccessoryComponentUnion newAccessory = accessory != null ? IReplacerAware.doReplace(
                 SectionAccessoryComponent.class,
                 Collections.singletonList(accessory),
-                IReplacerAware.castReplacer(replacer),
+                replacer,
                 newAccessories -> newAccessories.get(0)
         ) : null;
 
