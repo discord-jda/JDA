@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -35,7 +36,7 @@ import java.util.stream.StreamSupport;
  *
  * @see ActionRow
  */
-public interface LayoutComponent<T extends Component> extends SerializableData, Iterable<T>, Component
+public interface LayoutComponent<T extends Component> extends SerializableData, Iterable<T>, Component, IDisableable
 {
     // TODO-components-v2 - im not sure that we want to keep this.
     default Stream<T> iterableStream() {
