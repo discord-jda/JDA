@@ -1,11 +1,11 @@
 package net.dv8tion.jda.internal.interactions.component.concrete;
 
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponentUnion;
+import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
@@ -160,8 +160,8 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
         return of(
             components.stream()
                 .map(c -> {
-                    if (c instanceof ActionComponent)
-                        return (ActionRowChildComponentUnion) ((ActionComponent) c).withDisabled(disabled);
+                    if (c instanceof IDisableable)
+                        return (ActionRowChildComponentUnion) ((IDisableable) c).withDisabled(disabled);
                     return c;
                 })
                 .collect(Collectors.toList()));

@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
+import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,7 +25,7 @@ import javax.annotation.Nullable;
 /**
  * Component which supports interactions via {@link ComponentInteraction}.
  */
-public interface ActionComponent extends ItemComponent
+public interface ActionComponent extends ItemComponent, IDisableable
 {
     /**
      * The component ID or null.
