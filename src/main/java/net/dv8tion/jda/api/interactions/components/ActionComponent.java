@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 /**
  * Component which supports interactions via {@link ComponentInteraction}.
  */
-public interface ActionComponent extends Component
+public interface ActionComponent extends ItemComponent
 {
     /**
      * The component ID or null.

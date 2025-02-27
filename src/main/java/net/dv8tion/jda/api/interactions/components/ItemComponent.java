@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 
 /**
@@ -24,6 +26,9 @@ import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
  * @see ActionComponent
  * @see ActionRow
  */
+@ForRemoval
+@Deprecated
+@ReplaceWith("ActionRowChildComponent")
 public interface ItemComponent extends Component
 {
     /**
