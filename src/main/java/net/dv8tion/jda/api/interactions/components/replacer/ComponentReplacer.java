@@ -17,12 +17,78 @@
 package net.dv8tion.jda.api.interactions.components.replacer;
 
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selects.EntitySelectMenu;
+import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selects.StringSelectMenu;
+import net.dv8tion.jda.internal.interactions.components.replacer.TypedComponentReplacerImpl;
 
 import javax.annotation.Nonnull;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
+// TODO-components-v2 - should this be able to remove components? (by returning null)
 @FunctionalInterface
 public interface ComponentReplacer
 {
     @Nonnull
     Component apply(@Nonnull Component oldComponent);
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    static ComponentReplacer all(ComponentReplacer first, ComponentReplacer... others)
+    {
+        return oldComponent ->
+        {
+            Component newComponent = first.apply(oldComponent);
+            for (ComponentReplacer other : others)
+                newComponent = other.apply(newComponent);
+            return newComponent;
+        };
+    }
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    static <T extends Component> ComponentReplacer of(@Nonnull Class<? super T> type, @Nonnull Predicate<? super T> filter, @Nonnull Function<? super T, Component> update)
+    {
+        return new TypedComponentReplacerImpl<T>(type, filter, update);
+    }
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    static ComponentReplacer byId(@Nonnull IdentifiableComponent oldComponent, @Nonnull IdentifiableComponent newComponent)
+    {
+        return of(IdentifiableComponent.class,
+                component -> component.getUniqueId() == oldComponent.getUniqueId(),
+                component -> newComponent);
+    }
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    static ComponentReplacer button(@Nonnull Predicate<Button> filter, @Nonnull Function<Button, Button> update)
+    {
+        return new TypedComponentReplacerImpl<>(Button.class, filter, update);
+    }
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    static ComponentReplacer selectMenu(@Nonnull Predicate<SelectMenu> filter, @Nonnull Function<SelectMenu, SelectMenu> update)
+    {
+        return new TypedComponentReplacerImpl<>(SelectMenu.class, filter, update);
+    }
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    static ComponentReplacer stringSelectMenu(@Nonnull Predicate<StringSelectMenu> filter, @Nonnull Function<StringSelectMenu, StringSelectMenu> update)
+    {
+        return new TypedComponentReplacerImpl<>(StringSelectMenu.class, filter, update);
+    }
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    static ComponentReplacer entitySelectMenu(@Nonnull Predicate<EntitySelectMenu> filter, @Nonnull Function<EntitySelectMenu, EntitySelectMenu> update)
+    {
+        return new TypedComponentReplacerImpl<>(EntitySelectMenu.class, filter, update);
+    }
 }
