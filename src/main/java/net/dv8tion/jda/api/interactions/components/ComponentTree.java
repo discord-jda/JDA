@@ -18,7 +18,11 @@ public interface ComponentTree
 
     @Nonnull
     @CheckReturnValue
-    <T extends Component> ComponentTree replace(ComponentReplacer<T> replacer);
+    ComponentTree replace(ComponentReplacer replacer);
+
+    @Nonnull
+    @CheckReturnValue
+    ComponentTree disableAll();
 
     static ComponentTree of(Collection<? extends MessageTopLevelComponent> components)
     {

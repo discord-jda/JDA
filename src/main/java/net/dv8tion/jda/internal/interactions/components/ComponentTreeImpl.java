@@ -1,9 +1,6 @@
 package net.dv8tion.jda.internal.interactions.components;
 
-import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.ComponentTree;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.*;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -47,5 +44,19 @@ public class ComponentTreeImpl implements ComponentTree
                 replacer,
                 ComponentTreeImpl::new
         );
+    }
+
+    @Nonnull
+    @Override
+    public ComponentTree disableAll()
+    {
+        //TODO add IDisableable
+        return replace(oldComponent -> {
+            if (oldComponent instanceof LayoutComponent)
+                return ((LayoutComponent<?>) oldComponent).asDisabled();
+            else if (oldComponent instanceof ActionComponent)
+                return ((ActionComponent) oldComponent).asDisabled();
+            return oldComponent;
+        });
     }
 }
