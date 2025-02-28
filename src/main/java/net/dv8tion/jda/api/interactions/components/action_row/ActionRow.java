@@ -232,6 +232,18 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
         return getComponents().stream().allMatch(Component::isModalCompatible);
     }
 
+    @Nonnull
+    @Override
+    ActionRow asDisabled();
+
+    @Nonnull
+    @Override
+    ActionRow asEnabled();
+
+    @Nonnull
+    @Override
+    ActionRow withDisabled(boolean disabled);
+
     @Override
     default boolean isValid()
     {

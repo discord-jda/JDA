@@ -1,6 +1,7 @@
 package net.dv8tion.jda.internal.interactions.component.concrete;
 
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
@@ -19,6 +20,7 @@ import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -188,6 +190,27 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     public ActionRow createCopy()
     {
         return ActionRow.of(components);
+    }
+
+    // TODO after removal, make this immutable starting from the constructor
+    @Nullable
+    @Override
+    @Deprecated
+    public ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent)
+    {
+        Checks.notNull(id, "ID");
+
+        throw new UnsupportedOperationException("To be implemented, must return old/removed component, use IFinderAware to find component and then delegate to updateComponent(ItemComponent, ItemComponent)");
+    }
+
+    @Nullable
+    @Override
+    @Deprecated
+    public ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
+    {
+        Checks.notNull(component, "Component to be replaced");
+
+        throw new UnsupportedOperationException("To be implemented, must return old/removed component, use IFinderAware to find component and IReplacerAware to replace/remove");
     }
 
     @Nonnull
