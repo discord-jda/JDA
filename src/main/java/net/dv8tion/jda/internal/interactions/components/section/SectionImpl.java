@@ -1,5 +1,6 @@
 package net.dv8tion.jda.internal.interactions.components.section;
 
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
@@ -118,6 +119,12 @@ public class SectionImpl
     }
 
     @Override
+    public boolean isEmpty()
+    {
+        return children.isEmpty() && accessory == null;
+    }
+
+    @Override
     public boolean isValid()
     {
         return true;
@@ -128,6 +135,22 @@ public class SectionImpl
     public LayoutComponent createCopy()
     {
         return null;
+    }
+
+    @Nullable
+    @Override
+    @Deprecated
+    public ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
+    {
+        throw new UnsupportedOperationException("This layout is immutable, use ComponentTree#replace instead");
+    }
+
+    @Nullable
+    @Override
+    @Deprecated
+    public ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent)
+    {
+        throw new UnsupportedOperationException("This layout is immutable, use ComponentTree#replace instead");
     }
 
     @Nonnull

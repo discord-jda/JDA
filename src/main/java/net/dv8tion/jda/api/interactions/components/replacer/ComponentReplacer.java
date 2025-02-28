@@ -64,8 +64,15 @@ public interface ComponentReplacer
     @Nonnull
     static ComponentReplacer byId(@Nonnull IdentifiableComponent oldComponent, @Nullable IdentifiableComponent newComponent)
     {
+        return byId(oldComponent.getUniqueId(), newComponent);
+    }
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    static ComponentReplacer byId(int id, @Nullable IdentifiableComponent newComponent)
+    {
         return of(IdentifiableComponent.class,
-                component -> component.getUniqueId() == oldComponent.getUniqueId(),
+                component -> component.getUniqueId() == id,
                 component -> newComponent);
     }
 

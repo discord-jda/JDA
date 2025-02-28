@@ -16,14 +16,19 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
+import net.dv8tion.jda.api.interactions.components.text_input.TextInput;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.CheckReturnValue;
@@ -66,7 +71,7 @@ import java.util.stream.Collectors;
  *     }
  * }}</pre>
  *
- * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text_input.TextInput TextInputs} are allowed at this time.</b>
+ * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link TextInput TextInputs} are allowed at this time.</b>
  * You can check whether a component is supported via {@link net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible}.
  *
  * @see    ModalInteractionEvent
@@ -230,6 +235,60 @@ public interface Modal extends SerializableData
             return addComponents(Arrays.asList(components));
         }
 
+        /**
+         * Adds {@link LayoutComponent components} to this modal
+         *
+         * @param  components
+         *         {@link LayoutComponent Components} to add to the modal, up to {@value MAX_COMPONENTS} total
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If any of the provided layouts are null</li>
+         *             <li>If any of the provided components are not compatible with Modals</li>
+         *         </ul>
+         *
+         * @return The same builder instance for chaining
+         *
+         * @see    Component#isModalCompatible()
+         *
+         * @deprecated Replaced with {@link #addComponents(ModalTopLevelComponent...)}
+         */
+        @Nonnull
+        @Deprecated
+        @ForRemoval
+        public Builder addComponents(@Nonnull LayoutComponent<?>... components)
+        {
+            Checks.noneNull(components, "Components");
+            return addComponents(Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
+        }
+
+        /**
+         * Adds {@link ActionRow components} to this modal
+         *
+         * @param  components
+         *         {@link ActionRow Components} to add to the modal, up to {@value MAX_COMPONENTS} total
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If any of the provided layouts are null</li>
+         *             <li>If any of the provided components are not compatible with Modals</li>
+         *         </ul>
+         *
+         * @return The same builder instance for chaining
+         *
+         * @see    Component#isModalCompatible()
+         *
+         * @deprecated Replaced with {@link #addComponents(ModalTopLevelComponent...)}
+         */
+        @Nonnull
+        @Deprecated
+        @ForRemoval
+        public Builder addComponents(@Nonnull ActionRow... components)
+        {
+            Checks.noneNull(components, "ActionRows");
+            return addComponents(Arrays.asList(components));
+        }
+
 //        public Builder addComponents(@Nonnull ModalTopLevelComponentUnion... components) {
 //            Checks.noneNull(components, "Components");
 //            return addComponents((List<? extends ModalTopLevelComponent>) Arrays.asList(components));
@@ -315,6 +374,33 @@ public interface Modal extends SerializableData
         @Deprecated
         @ReplaceWith("addComponents(ActionRow.of(components))")
         public Builder addActionRow(@Nonnull ActionRowChildComponent... components)
+        {
+            return addComponents(ActionRow.of(components));
+        }
+
+        /**
+         * Adds an ActionRow to this modal
+         *
+         * @param  components
+         *         The components to add
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If any of the provided components are null, or an invalid number of components are provided</li>
+         *             <li>If any of the provided components are not compatible with Modals</li>
+         *         </ul>
+         *
+         * @return Same builder for chaining convenience
+         *
+         * @see    Component#isModalCompatible()
+         *
+         * @deprecated
+         *         Use {@link #addComponents(ModalTopLevelComponent...)} instead
+         */
+        @Nonnull
+        @Deprecated
+        @ReplaceWith("addComponents(ActionRow.of(components))")
+        public Builder addActionRow(@Nonnull ItemComponent... components)
         {
             return addComponents(ActionRow.of(components));
         }

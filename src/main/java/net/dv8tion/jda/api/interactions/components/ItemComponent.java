@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 
 /**
  * Component which can be inserted into a {@link LayoutComponent}.
@@ -29,7 +30,7 @@ import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 @ForRemoval
 @Deprecated
 @ReplaceWith("ActionRowChildComponent")
-public interface ItemComponent extends Component
+public interface ItemComponent extends ActionRowChildComponent
 {
     /**
      * How many of these components can be added to one {@link ActionRow}.

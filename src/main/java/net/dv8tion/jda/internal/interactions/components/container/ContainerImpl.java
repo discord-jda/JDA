@@ -1,5 +1,6 @@
 package net.dv8tion.jda.internal.interactions.components.container;
 
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.container.Container;
@@ -131,6 +132,12 @@ public class ContainerImpl
     }
 
     @Override
+    public boolean isEmpty()
+    {
+        return children.isEmpty();
+    }
+
+    @Override
     public boolean isValid()
     {
         return false;
@@ -141,6 +148,22 @@ public class ContainerImpl
     public LayoutComponent<ContainerChildComponentUnion> createCopy()
     {
         return null;
+    }
+
+    @Nullable
+    @Override
+    @Deprecated
+    public ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
+    {
+        throw new UnsupportedOperationException("This layout is immutable, use ComponentTree#replace instead");
+    }
+
+    @Nullable
+    @Override
+    @Deprecated
+    public ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent)
+    {
+        throw new UnsupportedOperationException("This layout is immutable, use ComponentTree#replace instead");
     }
 
     @Nonnull
