@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.section.Section;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.*;
