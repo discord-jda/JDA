@@ -218,7 +218,8 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      *
      * @return The old {@link ItemComponent} that was replaced or removed
      *
-     * @deprecated Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, IdentifiableComponent)}
+     * @deprecated
+     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, IdentifiableComponent)}
      */
     @Nullable
     @Deprecated
@@ -246,7 +247,8 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      *
      * @return True, if any of the layouts was modified
      *
-     * @deprecated Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, IdentifiableComponent)}
+     * @deprecated
+     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, IdentifiableComponent)}
      */
     @Deprecated
     @ForRemoval
@@ -291,7 +293,8 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      *
      * @return The old {@link ItemComponent} that was replaced or removed
      *
-     * @deprecated Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(IdentifiableComponent, IdentifiableComponent)}
+     * @deprecated
+     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(IdentifiableComponent, IdentifiableComponent)}
      */
     @Nullable
     @Deprecated
@@ -318,7 +321,8 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      *
      * @return True, if any of the layouts was modified
      *
-     * @deprecated Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(IdentifiableComponent, IdentifiableComponent)}
+     * @deprecated
+     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(IdentifiableComponent, IdentifiableComponent)}
      */
     @Deprecated
     static boolean updateComponent(@Nonnull List<? extends LayoutComponent<?>> layouts, @Nonnull ItemComponent component, @Nullable ItemComponent newComponent)

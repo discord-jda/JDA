@@ -1233,7 +1233,8 @@ public interface WebhookClient<T> extends ISnowflake
      *
      * @return {@link WebhookMessageEditAction}
      *
-     * @deprecated         Replaced with {@link #editMessageActionRowsById(String, ActionRow...)}
+     * @deprecated
+     *         Replaced with {@link #editMessageActionRowsById(String, ActionRow...)}
      */
     @Nonnull
     @CheckReturnValue

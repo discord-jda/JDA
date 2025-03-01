@@ -420,7 +420,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
 
     /**
      * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setComponentTree(MessageTopLevelComponent...)} instead.
+     * <br>To remove components, you should use {@link #setActionRows(ActionRow...)} instead.
      *
      * <p><b>Example</b><br>
      *
@@ -463,7 +463,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
 
     /**
      * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setComponentTree(MessageTopLevelComponent...)} instead.
+     * <br>To remove components, you should use {@link #setActionRows(ActionRow...)} instead.
      *
      * <p><b>Example</b><br>
      *
