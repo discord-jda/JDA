@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.interactions.components.section.Section;
 import net.dv8tion.jda.api.interactions.components.selects.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selects.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.separator.Separator;
-import net.dv8tion.jda.api.interactions.components.text_input.TextInput;
 import net.dv8tion.jda.api.interactions.components.text_display.TextDisplay;
+import net.dv8tion.jda.api.interactions.components.text_input.TextInput;
 import net.dv8tion.jda.api.interactions.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
