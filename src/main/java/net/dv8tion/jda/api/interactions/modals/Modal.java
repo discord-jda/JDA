@@ -251,7 +251,8 @@ public interface Modal extends SerializableData
          *
          * @see    Component#isModalCompatible()
          *
-         * @deprecated Replaced with {@link #addComponents(ModalTopLevelComponent...)}
+         * @deprecated
+         *         Replaced with {@link #addComponents(ModalTopLevelComponent...)}
          */
         @Nonnull
         @Deprecated
@@ -278,7 +279,8 @@ public interface Modal extends SerializableData
          *
          * @see    Component#isModalCompatible()
          *
-         * @deprecated Replaced with {@link #addComponents(ModalTopLevelComponent...)}
+         * @deprecated
+         *         Replaced with {@link #addComponents(ModalTopLevelComponent...)}
          */
         @Nonnull
         @Deprecated

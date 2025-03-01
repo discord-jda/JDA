@@ -182,7 +182,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setComponentTree(Collection)} instead, to replace the components entirely.
+     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
@@ -219,7 +219,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setComponentTree(Collection)} instead, to replace the components entirely.
+     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
@@ -256,7 +256,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setComponentTree(Collection)} instead, to replace the components entirely.
+     * <br>Use {@link #setActionRows(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
@@ -285,7 +285,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setComponentTree(Collection)} instead, to replace the components entirely.
+     * <br>Use {@link #setActionRows(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
@@ -317,7 +317,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Appends a single {@link ActionRow} to the request.
-     * <br>Use {@link #setComponentTree(Collection)} instead, to replace the components entirely.
+     * <br>Use {@link #setActionRow(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
@@ -355,7 +355,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Appends a single {@link ActionRow} to the request.
-     * <br>Use {@link #setComponentTree(Collection)} instead, to replace the components entirely.
+     * <br>Use {@link #setActionRow(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
