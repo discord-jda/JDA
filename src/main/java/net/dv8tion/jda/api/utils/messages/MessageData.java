@@ -57,7 +57,7 @@ public interface MessageData
     List<MessageEmbed> getEmbeds();
 
     /**
-     * The configured message components, this is the opposite of {@link MessageRequest#setComponents(Collection)} and only returns what was set using that setter.
+     * The configured message components, this is the opposite of {@link MessageRequest#setComponentTree(Collection)} and only returns what was set using that setter.
      *
      * <p>For message edit requests, this will not be the current components of the message.
      *
@@ -67,6 +67,9 @@ public interface MessageData
      */
     @Nonnull
     List<MessageTopLevelComponentUnion> getComponents();
+
+    // TODO-components-v2 - docs
+    boolean isUsingComponentsV2();
 
     // Returns attachment interface for abstraction purposes, however you can only abstract the setter to allow FileUploads
 

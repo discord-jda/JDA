@@ -37,8 +37,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 {
@@ -91,9 +89,16 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public WebhookMessageCreateAction<T> sendMessageComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        return sendRequest().setComponents(components);
+        return sendRequest().setComponentTree(components);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageCreateAction<T> sendMessageActionRows(@Nonnull Collection<? extends ActionRow> components)
+    {
+        return sendRequest().addActionRows(components);
     }
 
     @Nonnull
@@ -127,13 +132,10 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public WebhookMessageEditAction<T> editMessageComponentTreeById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "Components");
-        if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
-            throw new UnsupportedOperationException("The provided component layout is not supported");
-        List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return editRequest(messageId).setComponents(actionRows);
+        return editRequest(messageId).setComponentTree(components);
     }
 
     @Nonnull

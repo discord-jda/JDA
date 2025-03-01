@@ -355,9 +355,9 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default ReplyCallbackAction replyComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        return deferReply().setComponents(components);
+        return deferReply().setComponentTree(components);
     }
 
     /**
@@ -394,14 +394,57 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
+    default ReplyCallbackAction replyComponentTree(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
         Checks.notNull(component, "MessageTopLevelComponents");
         Checks.noneNull(other, "MessageTopLevelComponents");
         List<MessageTopLevelComponent> layouts = new ArrayList<>(1 + other.length);
         layouts.add(component);
         Collections.addAll(layouts, other);
-        return replyComponents(layouts);
+        return replyComponentTree(layouts);
+    }
+
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION UNKNOWN_INTERACTION}
+     *     <br>If the interaction has already been acknowledged or timed out</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  components
+     *         The {@link LayoutComponent LayoutComponents} to send
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *
+     * @return {@link ReplyCallbackAction}
+     *
+     * @deprecated
+     *         Replaced with {@link #replyActionRows(Collection)}
+     */
+    @Nonnull
+    @CheckReturnValue
+    @Deprecated
+    @ForRemoval
+    default ReplyCallbackAction replyComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
+    {
+        Checks.noneNull(components, "LayoutComponents");
+        return replyActionRows(ComponentsUtil.ensureIsActionRow(components));
     }
 
     /**
@@ -436,7 +479,8 @@ public interface IReplyCallback extends IDeferrableCallback
      *
      * @return {@link ReplyCallbackAction}
      *
-     * @deprecated Replaced with {@link #replyComponents(MessageTopLevelComponent, MessageTopLevelComponent...)}
+     * @deprecated
+     *         Replaced with {@link #replyActionRows(ActionRow, ActionRow...)}
      */
     @Nonnull
     @CheckReturnValue
@@ -446,10 +490,48 @@ public interface IReplyCallback extends IDeferrableCallback
     {
         Checks.notNull(component, "MessageTopLevelComponents");
         Checks.noneNull(other, "MessageTopLevelComponents");
-        List<MessageTopLevelComponent> layouts = new ArrayList<>(1 + other.length);
-        layouts.add(ComponentsUtil.ensureIsActionRow(component));
-        Collections.addAll(layouts, ComponentsUtil.ensureIsActionRow(other));
-        return replyComponents(layouts);
+        List<LayoutComponent<?>> layouts = new ArrayList<>(1 + other.length);
+        layouts.add(component);
+        Collections.addAll(layouts, other);
+        return replyActionRows(ComponentsUtil.ensureIsActionRow(layouts));
+    }
+
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyCallbackAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION UNKNOWN_INTERACTION}
+     *     <br>If the interaction has already been acknowledged or timed out</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  components
+     *         The {@link ActionRow ActionRows} to send
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *
+     * @return {@link ReplyCallbackAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReplyCallbackAction replyActionRows(@Nonnull Collection<? extends ActionRow> components)
+    {
+        Checks.noneNull(components, "ActionRows");
+        return deferReply().setActionRows(components);
     }
 
     /**
@@ -475,29 +557,25 @@ public interface IReplyCallback extends IDeferrableCallback
      * </ul>
      *
      * @param  component
-     *         The {@link ActionRow} to send
+     *         The first {@link ActionRow} to send
      * @param  other
-     *         Any addition {@link ActionRow ActionRows} to send
+     *         Additional {@link ActionRow ActionRows} to send
      *
      * @throws IllegalArgumentException
      *         If null is provided or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
      *
      * @return {@link ReplyCallbackAction}
-     *
-     * @deprecated Replaced with {@link #replyComponents(MessageTopLevelComponent, MessageTopLevelComponent...)}
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default ReplyCallbackAction replyComponents(@Nonnull ActionRow component, @Nonnull ActionRow... other)
+    default ReplyCallbackAction replyActionRows(@Nonnull ActionRow component, @Nonnull ActionRow... other)
     {
         Checks.notNull(component, "ActionRow");
         Checks.noneNull(other, "ActionRows");
-        List<MessageTopLevelComponent> layouts = new ArrayList<>(1 + other.length);
+        List<ActionRow> layouts = new ArrayList<>(1 + other.length);
         layouts.add(component);
         Collections.addAll(layouts, other);
-        return replyComponents(layouts);
+        return replyActionRows(layouts);
     }
 
     /**

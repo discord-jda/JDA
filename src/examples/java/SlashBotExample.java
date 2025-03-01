@@ -209,7 +209,7 @@ public class SlashBotExample extends ListenerAdapter
                 : (int) Math.min(200, Math.max(2, amountOption.getAsLong())); // enforcement: must be between 2-200
         String userId = event.getUser().getId();
         event.reply("This will delete " + amount + " messages.\nAre you sure?") // prompt the user with a button menu
-                .addComponents(
+                .addActionRows(
                         ActionRow.of( // this means "<style>(<id>, <label>)", you can encode anything you want in the id (up to 100 characters)
                                 Button.secondary(userId + ":delete", "Nevermind!"),
                                 Button.danger(userId + ":prune:" + amount, "Yes!") // the first parameter is the component id we use in onButtonInteraction above

@@ -250,6 +250,12 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         return components;
     }
 
+    @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (messageFlags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
+    }
+
     /**
      * The {@link AttachedFile AttachedFiles} attached to this message.
      *

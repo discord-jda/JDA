@@ -56,7 +56,7 @@ public interface ButtonInteraction extends ComponentInteraction
      * Update the button with a new button instance.
      *
      * <p>If this interaction is already acknowledged this will use {@link #getHook()}
-     * and otherwise {@link #editComponents(Collection)} directly to acknowledge the interaction.
+     * and otherwise {@link #editComponentTree(Collection)} directly to acknowledge the interaction.
      *
      * @param  newButton
      *         The new button to use, or null to remove this button from the message entirely
@@ -71,8 +71,8 @@ public interface ButtonInteraction extends ComponentInteraction
         final ComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getButton(), newButton));
 
         if (isAcknowledged())
-            return getHook().editMessageComponentsById(message.getId(), newTree.getComponents()).map(it -> null);
+            return getHook().editMessageComponentTreeById(message.getId(), newTree.getComponents()).map(it -> null);
         else
-            return editComponents(newTree.getComponents()).map(it -> null);
+            return editComponentTree(newTree.getComponents()).map(it -> null);
     }
 }

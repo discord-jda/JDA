@@ -632,6 +632,12 @@ public class ReceivedMessage implements Message
     }
 
     @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (this.flags & MessageFlag.IS_COMPONENTS_V2.getValue()) > 0;
+    }
+
+    @Override
     public MessagePoll getPoll()
     {
         checkIntent();
@@ -753,10 +759,10 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public MessageEditAction editMessageComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         MessageEditActionImpl action = editRequest();
-        action.setComponents(components);
+        action.setComponentTree(components);
 
         if (isWebhookRequest())
             return action.withHook(webhook);

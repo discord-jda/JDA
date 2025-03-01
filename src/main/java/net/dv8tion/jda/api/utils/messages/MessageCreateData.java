@@ -233,7 +233,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
         return components;
     }
 
-    // TODO-components-v2 - docs
+    @Override
     public boolean isUsingComponentsV2()
     {
         return (flags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;

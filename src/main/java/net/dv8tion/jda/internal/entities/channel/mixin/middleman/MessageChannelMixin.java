@@ -26,7 +26,9 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -43,7 +45,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.internal.entities.channel.mixin.ChannelMixin;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -158,20 +159,28 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
         return MessageChannelUnion.super.sendMessageEmbeds(embeds);
     }
 
-    @NotNull
+    @Nonnull
     @Override
-    default MessageCreateAction sendMessageComponents(@NotNull MessageTopLevelComponent component, @NotNull MessageTopLevelComponent... other)
+    default MessageCreateAction sendMessageComponentTree(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
         checkCanSendMessage();
-        return MessageChannelUnion.super.sendMessageComponents(component, other);
+        return MessageChannelUnion.super.sendMessageComponentTree(component, other);
     }
 
     @Nonnull
     @Override
-    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
     {
         checkCanSendMessage();
         return MessageChannelUnion.super.sendMessageComponents(components);
+    }
+
+    @Nonnull
+    @Override
+    default MessageCreateAction sendMessageActionRows(@Nonnull Collection<? extends ActionRow> components)
+    {
+        checkCanSendMessage();
+        return MessageChannelUnion.super.sendMessageActionRows(components);
     }
 
     @Nonnull
@@ -348,10 +357,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default MessageEditAction editMessageComponentTreeById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         checkCanSendMessage();
-        return MessageChannelUnion.super.editMessageComponentsById(messageId, components);
+        return MessageChannelUnion.super.editMessageComponentTreeById(messageId, components);
     }
 
     @Nonnull

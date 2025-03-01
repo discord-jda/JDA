@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnionUtil;
@@ -166,19 +167,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public R useComponentsV2(boolean useComponentsV2)
-    {
-        int flag = Message.MessageFlag.IS_COMPONENTS_V2.getValue();
-        if (useComponentsV2)
-            this.messageFlags |= flag;
-        else
-            this.messageFlags &= ~flag;
-        return (R) this;
-    }
-
-    @Nonnull
-    @Override
-    public R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public R setComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "ComponentLayouts");
         Checks.checkComponents(
@@ -187,6 +176,27 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
             Component::isMessageCompatible
         );
         Checks.check(components.size() <= Message.MAX_COMPONENT_COUNT, "Cannot send more than %d component layouts in a message!", Message.MAX_COMPONENT_COUNT);
+
+        List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(components, MessageTopLevelComponentUnion.class);
+
+        this.messageFlags |= Message.MessageFlag.IS_COMPONENTS_V2.getValue();
+
+        this.components.clear();
+        this.components.addAll(componentsAsUnions);
+        return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    public R setActionRows(@Nonnull Collection<? extends ActionRow> components)
+    {
+        Checks.noneNull(components, "ActionRows");
+        Checks.checkComponents(
+                "Provided component is invalid for messages!",
+                components,
+                Component::isMessageCompatible
+        );
+        Checks.check(components.size() <= Message.MAX_COMPONENT_COUNT, "Cannot send more than %d action rows in a message!", Message.MAX_COMPONENT_COUNT);
 
         List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(components, MessageTopLevelComponentUnion.class);
 
@@ -200,6 +210,12 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     public List<MessageTopLevelComponentUnion> getComponents()
     {
         return Collections.unmodifiableList(components);
+    }
+
+    @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (messageFlags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     @Nonnull
@@ -232,7 +248,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     /**
      * Whether this builder is considered empty, this checks for all <em>required</em> fields of the request type.
-     * <br>On a create request, this checks for {@link #setContent(String) content}, {@link #setEmbeds(Collection) embeds}, {@link #setComponents(Collection) components}, and {@link #setFiles(Collection) files}.
+     * <br>On a create request, this checks for {@link #setContent(String) content}, {@link #setEmbeds(Collection) embeds}, {@link #setComponentTree(Collection) components}, and {@link #setFiles(Collection) files}.
      * <br>An edit request is only considered empty if no setters were called. And never empty, if the builder is a {@link MessageEditRequest#setReplace(boolean) replace request}.
      *
      * @return True, if the builder state is empty
