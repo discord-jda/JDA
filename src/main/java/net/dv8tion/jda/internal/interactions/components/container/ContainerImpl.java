@@ -191,7 +191,7 @@ public class ContainerImpl
         if (uniqueId >= 0)
             json.put("id", uniqueId);
         if (accentColor != null)
-            json.put("accent_color", accentColor);
+            json.put("accent_color", accentColor & 0xFFFFFF);
         return json;
     }
 }
