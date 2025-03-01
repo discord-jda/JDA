@@ -43,10 +43,9 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     public static ActionRow fromData(@Nonnull DataObject data)
     {
         Checks.notNull(data, "Data");
-        ActionRowImpl row = new ActionRowImpl();
         if (data.getInt("type", 0) != 1)
             throw new IllegalArgumentException("Data has incorrect type. Expected: 1 Found: " + data.getInt("type"));
-        data.getArray("components")
+        List<ActionRowChildComponentUnion> components = data.getArray("components")
                 .stream(DataArray::getObject)
                 .map(obj -> {
                     switch (Component.Type.fromKey(obj.getInt("type")))
@@ -67,8 +66,12 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
                     }
                 })
                 .filter(Objects::nonNull)
-                .forEach(row.components::add);
-        return row;
+                .collect(Collectors.toList());
+        return new ActionRowImpl(
+                components,
+                // Absent in modals
+                data.getInt("id", -1)
+        );
     }
 
     @Nonnull
