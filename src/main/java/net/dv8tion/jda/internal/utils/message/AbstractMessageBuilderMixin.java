@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.AbstractMessageBuilder;
@@ -70,17 +71,17 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default R useComponentsV2(boolean useComponentsV2)
+    default R setComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        getBuilder().useComponentsV2(useComponentsV2);
+        getBuilder().setComponentTree(components);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default R setActionRows(@Nonnull Collection<? extends ActionRow> components)
     {
-        getBuilder().setComponents(components);
+        getBuilder().setActionRows(components);
         return (R) this;
     }
 
@@ -89,6 +90,12 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
     default List<MessageTopLevelComponentUnion> getComponents()
     {
         return getBuilder().getComponents();
+    }
+
+    @Override
+    default boolean isUsingComponentsV2()
+    {
+        return getBuilder().isUsingComponentsV2();
     }
 
     @Nonnull

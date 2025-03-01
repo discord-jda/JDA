@@ -38,8 +38,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Interactions which allow a target message to be edited on use.
@@ -151,13 +149,10 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default MessageEditCallbackAction editComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "Components");
-        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
-            throw new UnsupportedOperationException("The provided component layout is not supported");
-        List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return deferEdit().setComponents(actionRows);
+        return deferEdit().setComponentTree(components);
     }
 
     /**
@@ -185,10 +180,10 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull MessageTopLevelComponent... components)
+    default MessageEditCallbackAction editComponentTree(@Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "components");
-        return editComponents(Arrays.asList(components));
+        return editComponentTree(Arrays.asList(components));
     }
 
     /**
@@ -214,7 +209,44 @@ public interface IMessageEditCallback extends IDeferrableCallback
      *
      * @see    LayoutComponent#isMessageCompatible()
      *
-     * @deprecated Replaced with {@link #editComponents(MessageTopLevelComponent...)}
+     * @deprecated
+     *         Replaced with {@link #editActionRows(Collection)}
+     */
+    @Nonnull
+    @CheckReturnValue
+    @Deprecated
+    @ForRemoval
+    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
+    {
+        Checks.noneNull(components, "components");
+        return editActionRows(ComponentsUtil.ensureIsActionRow(components));
+    }
+
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     *
+     * @param  components
+     *         The new message components, such as {@link ActionRow}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the provided LayoutComponents are null</li>
+     *             <li>If any of the provided Components are not compatible with messages</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    LayoutComponent#isMessageCompatible()
+     *
+     * @deprecated
+     *         Replaced with {@link #editActionRows(ActionRow...)}
      */
     @Nonnull
     @CheckReturnValue
@@ -223,7 +255,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
     default MessageEditCallbackAction editComponents(@Nonnull LayoutComponent<?>... components)
     {
         Checks.noneNull(components, "components");
-        return editComponents(Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
+        return editActionRows(Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
     }
 
     /**
@@ -236,7 +268,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      *
      * @param  components
-     *         The new message components, such as {@link ActionRow}
+     *         The new {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -248,17 +280,44 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      *
      * @see    LayoutComponent#isMessageCompatible()
-     *
-     * @deprecated Replaced with {@link #editComponents(MessageTopLevelComponent...)}
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageEditCallbackAction editComponents(@Nonnull ActionRow... components)
+    default MessageEditCallbackAction editActionRows(@Nonnull Collection<? extends ActionRow> components)
     {
         Checks.noneNull(components, "components");
-        return editComponents(Arrays.asList(components));
+        return deferEdit().setActionRows(components);
+    }
+
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     *
+     * @param  components
+     *         The new {@link ActionRow ActionRows}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If any of the provided LayoutComponents are null</li>
+     *             <li>If any of the provided Components are not compatible with messages</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    LayoutComponent#isMessageCompatible()
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditCallbackAction editActionRows(@Nonnull ActionRow... components)
+    {
+        Checks.noneNull(components, "components");
+        return editActionRows(Arrays.asList(components));
     }
 
     /**

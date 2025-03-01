@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 
 public class ComponentsUtil
 {
@@ -57,5 +58,14 @@ public class ComponentsUtil
         for (LayoutComponent<?> component : components)
             ensureIsActionRow(component);
         return (ActionRow[]) components;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public static Collection<ActionRow> ensureIsActionRow(@Nonnull Collection<? extends LayoutComponent<?>> components)
+    {
+        for (LayoutComponent<?> component : components)
+            ensureIsActionRow(component);
+        return (Collection<ActionRow>) components;
     }
 }

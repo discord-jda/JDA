@@ -72,7 +72,7 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
      * Update the select menu with a new select menu instance.
      *
      * <p>If this interaction is already acknowledged this will use {@link #getHook()}
-     * and otherwise {@link #editComponents(Collection)} directly to acknowledge the interaction.
+     * and otherwise {@link #editComponentTree(Collection)} directly to acknowledge the interaction.
      *
      * @param  newMenu
      *         The new select menu to use, or null to remove this menu from the message entirely
@@ -87,8 +87,8 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
         final ComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getSelectMenu(), newMenu));
 
         if (isAcknowledged())
-            return getHook().editMessageComponentsById(message.getId(), newTree.getComponents()).map(it -> null);
+            return getHook().editMessageComponentTreeById(message.getId(), newTree.getComponents()).map(it -> null);
         else
-            return editComponents(newTree.getComponents()).map(it -> null);
+            return editComponentTree(newTree.getComponents()).map(it -> null);
     }
 }

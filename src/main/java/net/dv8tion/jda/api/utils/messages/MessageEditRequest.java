@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -30,8 +30,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Specialized abstraction of setters for editing existing messages throughout the API.
@@ -208,10 +206,10 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
     @Nonnull
     default R applyCreateData(@Nonnull MessageCreateData data)
     {
-        final List<MessageTopLevelComponentUnion> components = data.getComponents().stream()
-//                // TODO-components-v2 - restore
-//                .map(LayoutComponent::createCopy)
-                .collect(Collectors.toList());
+        if (data.isUsingComponentsV2())
+            setComponentTree(data.getComponents());
+        else
+            setActionRows((Collection<? extends ActionRow>) (Collection<?>) data.getComponents());
         return setReplace(true)
                 .setContent(data.getContent())
                 .setAllowedMentions(data.getAllowedMentions())
@@ -219,7 +217,6 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
                 .mentionRoles(data.getMentionedRoles())
                 .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
-                .setComponents(components)
                 .setFiles(data.getFiles());
     }
 

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -164,7 +165,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
     @Nonnull
     @Override
-    public MessageCreateBuilder addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public MessageCreateBuilder addComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "ComponentLayouts");
         Checks.checkComponents(
@@ -180,6 +181,31 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
                 components,
                 MessageTopLevelComponentUnion.class
         );
+
+        this.components.addAll(componentsAsUnions);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder addActionRows(@Nonnull Collection<? extends ActionRow> components)
+    {
+        Checks.noneNull(components, "ComponentLayouts");
+        Checks.checkComponents(
+                "Provided component is invalid for messages!",
+                components,
+                Component::isMessageCompatible
+        );
+        Checks.check(
+                this.components.size() + components.size() <= Message.MAX_COMPONENT_COUNT,
+                "Cannot add more than %d component layouts", Message.MAX_COMPONENT_COUNT
+        );
+        List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(
+                components,
+                MessageTopLevelComponentUnion.class
+        );
+
+        this.messageFlags |= Message.MessageFlag.IS_COMPONENTS_V2.getValue();
 
         this.components.addAll(componentsAsUnions);
         return this;

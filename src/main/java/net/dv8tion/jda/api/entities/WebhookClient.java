@@ -358,7 +358,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
+    WebhookMessageCreateAction<T> sendMessageComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * Send a message to this webhook.
@@ -392,14 +392,55 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
+    default WebhookMessageCreateAction<T> sendMessageComponentTree(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
         Checks.notNull(component, "MessageTopLevelComponents");
         Checks.noneNull(other, "MessageTopLevelComponents");
         List<MessageTopLevelComponent> componentList = new ArrayList<>();
         componentList.add(component);
         Collections.addAll(componentList, other);
-        return sendMessageComponents(componentList);
+        return sendMessageComponentTree(componentList);
+    }
+
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  components
+     *         {@link LayoutComponent LayoutComponents} to use
+     *
+     * @throws IllegalArgumentException
+     *         If any of the components are null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
+     *
+     * @deprecated
+     *         Replaced with {@link #sendMessageActionRows(Collection)}
+     */
+    @Nonnull
+    @CheckReturnValue
+    @Deprecated
+    @ForRemoval
+    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
+    {
+        Checks.noneNull(components, "LayoutComponents");
+        return sendMessageActionRows(ComponentsUtil.ensureIsActionRow(components));
     }
 
     /**
@@ -432,7 +473,8 @@ public interface WebhookClient<T> extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
      *
-     * @deprecated Replaced with {@link #sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)}
+     * @deprecated
+     *         Replaced with {@link #sendMessageActionRows(ActionRow, ActionRow...)}
      */
     @Nonnull
     @CheckReturnValue
@@ -446,7 +488,7 @@ public interface WebhookClient<T> extends ISnowflake
         List<MessageTopLevelComponent> componentList = new ArrayList<>();
         componentList.add(ComponentsUtil.ensureIsActionRow(component));
         Collections.addAll(componentList, ComponentsUtil.ensureIsActionRow(other));
-        return sendMessageComponents(componentList);
+        return sendMessageComponentTree(componentList);
     }
 
     /**
@@ -469,31 +511,59 @@ public interface WebhookClient<T> extends ISnowflake
      *     <br>If this message was blocked by the harmful link filter</li>
      * </ul>
      *
-     * @param  component
-     *         {@link LayoutComponent} to use
-     * @param  other
-     *         Additional {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT} in total)
+     * @param  components
+     *         {@link ActionRow ActionRows} to use
      *
      * @throws IllegalArgumentException
      *         If any of the components are null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
-     *
-     * @deprecated Replaced with {@link #sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)}
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull ActionRow component, @Nonnull ActionRow... other)
-    {
-        Checks.notNull(component, "LayoutComponent");
-        Checks.noneNull(other, "LayoutComponents");
+    WebhookMessageCreateAction<T> sendMessageActionRows(@Nonnull Collection<? extends ActionRow> components);
 
-        List<MessageTopLevelComponent> componentList = new ArrayList<>();
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_FOLLOW_UP_MESSAGES_HIT MAX_FOLLOW_UP_MESSAGES_HIT}
+     *     <br>If this is an {@link InteractionHook InteractionHook} and you sent more than 5 follow ups in a guild the bot isn't in.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  component
+     *         {@link ActionRow} to use
+     * @param  other
+     *         Additional {@link ActionRow ActionRows} to use (up to {@value Message#MAX_COMPONENT_COUNT} in total)
+     *
+     * @throws IllegalArgumentException
+     *         If any of the components are null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageCreateAction<T> sendMessageActionRows(@Nonnull ActionRow component, @Nonnull ActionRow... other)
+    {
+        Checks.notNull(component, "ActionRow");
+        Checks.noneNull(other, "ActionRows");
+
+        List<ActionRow> componentList = new ArrayList<>();
         componentList.add(component);
         Collections.addAll(componentList, other);
-        return sendMessageComponents(componentList);
+        return sendMessageActionRows(componentList);
     }
 
     /**
@@ -951,7 +1021,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components);
+    WebhookMessageEditAction<T> editMessageComponentTreeById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -982,9 +1052,9 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default WebhookMessageEditAction<T> editMessageComponentTreeById(long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        return editMessageComponentsById(Long.toUnsignedString(messageId), components);
+        return editMessageComponentTreeById(Long.toUnsignedString(messageId), components);
     }
 
     /**
@@ -1016,10 +1086,44 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull MessageTopLevelComponent... components)
+    default WebhookMessageEditAction<T> editMessageComponentTreeById(@Nonnull String messageId, @Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "MessageTopLevelComponents");
-        return editMessageComponentsById(messageId, Arrays.asList(components));
+        return editMessageComponentTreeById(messageId, Arrays.asList(components));
+    }
+
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  components
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
+     *
+     * @return {@link WebhookMessageEditAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageEditAction<T> editMessageComponentTreeById(long messageId, @Nonnull MessageTopLevelComponent... components)
+    {
+        return editMessageComponentTreeById(Long.toUnsignedString(messageId), components);
     }
 
     /**
@@ -1049,7 +1153,87 @@ public interface WebhookClient<T> extends ISnowflake
      *
      * @return {@link WebhookMessageEditAction}
      *
-     * @deprecated Replaced with {@link #editMessageComponentsById(String, MessageTopLevelComponent...)}
+     * @deprecated
+     *         Replaced with {@link #editMessageActionRowsById(String, Collection)}
+     */
+    @Nonnull
+    @CheckReturnValue
+    @Deprecated
+    @ForRemoval
+    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent<?>> components)
+    {
+        Checks.noneNull(components, "LayoutComponent");
+        return editMessageComponentTreeById(messageId, ComponentsUtil.ensureIsActionRow(components));
+    }
+
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  components
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
+     *
+     * @return {@link WebhookMessageEditAction}
+     *
+     * @deprecated
+     *         Replaced with {@link #editMessageActionRowsById(long, Collection)}
+     */
+    @Nonnull
+    @CheckReturnValue
+    @Deprecated
+    @ForRemoval
+    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent<?>> components)
+    {
+        Checks.noneNull(components, "LayoutComponent");
+        return editMessageComponentTreeById(messageId, ComponentsUtil.ensureIsActionRow(components));
+    }
+
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  components
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
+     *
+     * @return {@link WebhookMessageEditAction}
+     *
+     * @deprecated         Replaced with {@link #editMessageActionRowsById(String, ActionRow...)}
      */
     @Nonnull
     @CheckReturnValue
@@ -1058,7 +1242,7 @@ public interface WebhookClient<T> extends ISnowflake
     default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent<?>... components)
     {
         Checks.noneNull(components, "LayoutComponent");
-        return editMessageComponentsById(messageId, Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
+        return editMessageComponentTreeById(messageId, Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
     }
 
     /**
@@ -1088,80 +1272,8 @@ public interface WebhookClient<T> extends ISnowflake
      *
      * @return {@link WebhookMessageEditAction}
      *
-     * @deprecated Replaced with {@link #editMessageComponentsById(String, MessageTopLevelComponent...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ActionRow... components)
-    {
-        Checks.noneNull(components, "LayoutComponent");
-        return editMessageComponentsById(messageId, Arrays.asList(components));
-    }
-
-    /**
-     * Edit an existing message sent by this webhook.
-     *
-     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     * </ul>
-     *
-     * @param  messageId
-     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
-     * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
-     *         </ul>
-     *
-     * @return {@link WebhookMessageEditAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull MessageTopLevelComponent... components)
-    {
-        return editMessageComponentsById(Long.toUnsignedString(messageId), components);
-    }
-
-    /**
-     * Edit an existing message sent by this webhook.
-     *
-     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     * </ul>
-     *
-     * @param  messageId
-     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
-     * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
-     *         </ul>
-     *
-     * @return {@link WebhookMessageEditAction}
-     *
-     * @deprecated Replaced with {@link #editMessageComponentsById(long, MessageTopLevelComponent...)}
+     * @deprecated
+     *         Replaced with {@link #editMessageActionRowsById(long, ActionRow...)}
      */
     @Nonnull
     @CheckReturnValue
@@ -1170,7 +1282,7 @@ public interface WebhookClient<T> extends ISnowflake
     default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull LayoutComponent<?>... components)
     {
         Checks.noneNull(components, "LayoutComponent");
-        return editMessageComponentsById(messageId, Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
+        return editMessageComponentTreeById(messageId, Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
     }
 
     /**
@@ -1189,7 +1301,7 @@ public interface WebhookClient<T> extends ISnowflake
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
+     *         The {@link ActionRow ActionRows} for this message
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -1199,17 +1311,118 @@ public interface WebhookClient<T> extends ISnowflake
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
-     *
-     * @deprecated Replaced with {@link #editMessageComponentsById(long, MessageTopLevelComponent...)}
      */
     @Nonnull
     @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull ActionRow... components)
+    default WebhookMessageEditAction<T> editMessageActionRowsById(@Nonnull String messageId, @Nonnull Collection<? extends ActionRow> components)
     {
         Checks.noneNull(components, "LayoutComponent");
-        return editMessageComponentsById(messageId, Arrays.asList(components));
+        return editMessageComponentTreeById(messageId, components);
+    }
+
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  components
+     *         The new {@link ActionRow ActionRows} for this message
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
+     *
+     * @return {@link WebhookMessageEditAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageEditAction<T> editMessageActionRowsById(long messageId, @Nonnull Collection<? extends ActionRow> components)
+    {
+        Checks.noneNull(components, "LayoutComponent");
+        return editMessageComponentTreeById(messageId, components);
+    }
+
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  components
+     *         The new {@link ActionRow ActionRows} for this message
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
+     *
+     * @return {@link WebhookMessageEditAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageEditAction<T> editMessageActionRowsById(@Nonnull String messageId, @Nonnull ActionRow... components)
+    {
+        Checks.noneNull(components, "LayoutComponent");
+        return editMessageComponentTreeById(messageId, Arrays.asList(components));
+    }
+
+    /**
+     * Edit an existing message sent by this webhook.
+     *
+     * <p>If this is an {@link InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
+     * @param  components
+     *         The new {@link ActionRow ActionRows} for this message
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *         </ul>
+     *
+     * @return {@link WebhookMessageEditAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageEditAction<T> editMessageActionRowsById(long messageId, @Nonnull ActionRow... components)
+    {
+        Checks.noneNull(components, "LayoutComponent");
+        return editMessageComponentTreeById(messageId, Arrays.asList(components));
     }
 
 

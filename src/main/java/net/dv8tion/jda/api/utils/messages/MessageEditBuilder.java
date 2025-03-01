@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -33,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Builder specialized for building a {@link MessageEditData}.
@@ -220,18 +220,19 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder useComponentsV2(boolean useComponentsV2)
+    public MessageEditBuilder setComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        super.useComponentsV2(useComponentsV2);
+        super.setComponentTree(components);
+        configuredFields |= COMPONENTS;
         configuredFields |= FLAGS;
         return this;
     }
 
     @Nonnull
     @Override
-    public MessageEditBuilder setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public MessageEditBuilder setActionRows(@Nonnull Collection<? extends ActionRow> components)
     {
-        super.setComponents(components);
+        super.setActionRows(components);
         configuredFields |= COMPONENTS;
         return this;
     }
@@ -259,11 +260,11 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             this.setEmbeds(data.getEmbeds());
         if (data.isSet(COMPONENTS))
         {
-            final List<MessageTopLevelComponentUnion> components = data.getComponents().stream()
-//                  // TODO-components-v2 - restore
-//                   .map(LayoutComponent::createCopy)
-                    .collect(Collectors.toList());
-            this.setComponents(components);
+            if (data.isUsingComponentsV2())
+                setComponentTree(data.getComponents());
+            else
+                // TODO-components-v2 fix with data.getActionRows();
+                setActionRows((Collection<? extends ActionRow>) (Collection<?>) data.getComponents());
         }
         if (data.isSet(ATTACHMENTS))
             this.setAttachments(data.getAttachments());
