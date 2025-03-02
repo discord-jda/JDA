@@ -1,6 +1,7 @@
 package net.dv8tion.jda.internal.interactions.components.section;
 
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
@@ -23,7 +24,7 @@ import java.util.function.Function;
 
 public class SectionImpl
         extends AbstractComponentImpl
-        implements Section, ContainerChildComponentUnion, IReplacerAware<Section>
+        implements Section, MessageTopLevelComponentUnion, ContainerChildComponentUnion, IReplacerAware<Section>
 {
     private final int uniqueId;
     private final List<SectionContentComponentUnion> components;
