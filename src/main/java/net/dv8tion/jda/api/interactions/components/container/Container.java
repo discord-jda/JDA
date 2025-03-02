@@ -93,6 +93,10 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     @Override
     Container withDisabled(boolean disabled);
 
+    @Nonnull
+    @Override
+    Container createCopy();
+
     // TODO-components-v2 docs
     @Nonnull
     @Unmodifiable

@@ -173,7 +173,7 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     @Override
     public ActionRow createCopy()
     {
-        return ActionRow.of(components);
+        return new ActionRowImpl(components, uniqueId);
     }
 
     // TODO after removal, make this immutable starting from the constructor
