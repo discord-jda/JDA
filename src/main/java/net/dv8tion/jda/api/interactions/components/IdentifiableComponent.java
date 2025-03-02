@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
 // TODO-components-v2 docs
 public interface IdentifiableComponent extends Component
 {
@@ -27,4 +30,9 @@ public interface IdentifiableComponent extends Component
      * @return The unique identifier of this component, or {@code -1} if not assigned yet
      */
     int getUniqueId();
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    IdentifiableComponent withUniqueId(int uniqueId);
 }

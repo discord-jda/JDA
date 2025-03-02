@@ -45,6 +45,7 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
 
     // TODO-components-v2 docs
     @Nonnull
+    @Override
     @CheckReturnValue
     Container withUniqueId(int uniqueId);
 

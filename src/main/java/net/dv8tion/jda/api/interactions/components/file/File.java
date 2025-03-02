@@ -10,8 +10,8 @@ import javax.annotation.Nonnull;
 
 public interface File extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
-    // TODO-components-v2 docs
     @Nonnull
+    @Override
     @CheckReturnValue
     File withUniqueId(int uniqueId);
 

@@ -154,6 +154,7 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     @Override
     public ActionRow withUniqueId(int uniqueId)
     {
+        Checks.notNegative(uniqueId, "Unique ID");
         return new ActionRowImpl(getComponents(), uniqueId);
     }
 

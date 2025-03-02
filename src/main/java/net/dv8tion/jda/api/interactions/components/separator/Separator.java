@@ -32,8 +32,8 @@ public interface Separator extends Component, IdentifiableComponent, MessageTopL
         return new SeparatorImpl(spacing, isDivider);
     }
 
-    // TODO-components-v2 docs
     @Nonnull
+    @Override
     @CheckReturnValue
     Separator withUniqueId(int uniqueId);
 

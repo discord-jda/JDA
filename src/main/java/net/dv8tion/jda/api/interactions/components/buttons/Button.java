@@ -221,7 +221,9 @@ public interface Button extends ActionComponent, IdentifiableComponent, ActionRo
         return new ButtonImpl(id, getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
-    // TODO-components-v2 docs
+    @Nonnull
+    @Override
+    @CheckReturnValue
     default Button withUniqueId(int uniqueId)
     {
         // This is not done in checkValid() because the button gets constructed with an invalid unique ID on purpose

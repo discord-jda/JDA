@@ -185,8 +185,8 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
         }
     }
 
-    // TODO-components-v2 docs
     @Nonnull
+    @Override
     @CheckReturnValue
     ActionRow withUniqueId(int uniqueId);
 
