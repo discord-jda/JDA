@@ -113,7 +113,8 @@ public abstract class SelectMenuImpl extends AbstractComponentImpl implements Se
     {
         return new EntityString(SelectMenu.class)
                 .setType(getType())
-                .addMetadata("id", id)
+                .addMetadata("id", uniqueId)
+                .addMetadata("custom id", id)
                 .addMetadata("placeholder", placeholder)
                 .toString();
     }

@@ -8,11 +8,13 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MediaGalleryImpl
@@ -94,5 +96,28 @@ public class MediaGalleryImpl
         if (uniqueId >= 0)
             json.put("id", uniqueId);
         return json;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof MediaGalleryImpl)) return false;
+        MediaGalleryImpl that = (MediaGalleryImpl) o;
+        return uniqueId == that.uniqueId && Objects.equals(items, that.items);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(uniqueId, items);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .addMetadata("id", uniqueId)
+                .addMetadata("items", items)
+                .toString();
     }
 }

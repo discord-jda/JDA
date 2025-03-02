@@ -11,15 +11,13 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 public class SectionImpl
@@ -206,5 +204,28 @@ public class SectionImpl
         if (accessory != null)
             json.put("accessory", accessory);
         return json;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof SectionImpl)) return false;
+        SectionImpl that = (SectionImpl) o;
+        return uniqueId == that.uniqueId && Objects.equals(components, that.components) && Objects.equals(accessory, that.accessory);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(uniqueId, components, accessory);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .addMetadata("id", uniqueId)
+                .addMetadata("components", components)
+                .toString();
     }
 }

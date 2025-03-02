@@ -4,9 +4,11 @@ import net.dv8tion.jda.api.interactions.components.ResolvedMedia;
 import net.dv8tion.jda.api.interactions.components.media_gallery.MediaGalleryItem;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.components.ResolvedMediaImpl;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class MediaGalleryItemImpl implements MediaGalleryItem
 {
@@ -84,5 +86,30 @@ public class MediaGalleryItemImpl implements MediaGalleryItem
     {
         return DataObject.empty()
                 .put("media", DataObject.empty().put("url", url));
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof MediaGalleryItemImpl)) return false;
+        MediaGalleryItemImpl that = (MediaGalleryItemImpl) o;
+        return spoiler == that.spoiler && Objects.equals(url, that.url) && Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(url, description, spoiler);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .addMetadata("url", url)
+                .addMetadata("media", media)
+                .addMetadata("spoiler", spoiler)
+                .addMetadata("description", description)
+                .toString();
     }
 }

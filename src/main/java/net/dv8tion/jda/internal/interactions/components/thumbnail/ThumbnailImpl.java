@@ -7,9 +7,11 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.ResolvedMediaImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class ThumbnailImpl
         extends AbstractComponentImpl
@@ -141,5 +143,31 @@ public class ThumbnailImpl
         if (description != null)
             json.put("description", description);
         return json;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof ThumbnailImpl)) return false;
+        ThumbnailImpl thumbnail = (ThumbnailImpl) o;
+        return uniqueId == thumbnail.uniqueId && spoiler == thumbnail.spoiler && Objects.equals(url, thumbnail.url) && Objects.equals(description, thumbnail.description);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(uniqueId, url, description, spoiler);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .addMetadata("id", uniqueId)
+                .addMetadata("url", url)
+                .addMetadata("media", media)
+                .addMetadata("spoiler", spoiler)
+                .addMetadata("description", description)
+                .toString();
     }
 }

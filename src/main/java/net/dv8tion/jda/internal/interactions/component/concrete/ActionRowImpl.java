@@ -227,6 +227,7 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     public String toString()
     {
         return new EntityString(this)
+                .addMetadata("id", uniqueId)
                 .addMetadata("components", components)
                 .toString();
     }

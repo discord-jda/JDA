@@ -6,8 +6,10 @@ import net.dv8tion.jda.api.interactions.components.separator.Separator;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class SeparatorImpl
         extends AbstractComponentImpl
@@ -110,5 +112,29 @@ public class SeparatorImpl
         if (uniqueId >= 0)
             json.put("id", uniqueId);
         return json;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof SeparatorImpl)) return false;
+        SeparatorImpl separator = (SeparatorImpl) o;
+        return uniqueId == separator.uniqueId && isDivider == separator.isDivider && spacing == separator.spacing;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(uniqueId, spacing, isDivider);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .addMetadata("id", uniqueId)
+                .addMetadata("divider", isDivider)
+                .addMetadata("spacing", spacing)
+                .toString();
     }
 }
