@@ -17,6 +17,14 @@ public class TextDisplayImpl
     private final int uniqueId;
     private final String content;
 
+    public TextDisplayImpl(DataObject data)
+    {
+        this(
+                data.getInt("id"),
+                data.getString("content")
+        );
+    }
+
     public TextDisplayImpl(String content)
     {
         this(-1, content);

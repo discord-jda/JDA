@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.components.container;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -46,6 +47,13 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     static Container of(@Nonnull ContainerChildComponent component, @Nonnull ContainerChildComponent... components)
     {
         return of(Helpers.mergeVararg(component, components));
+    }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    static Container fromData(@Nonnull DataObject data)
+    {
+        return ContainerImpl.fromData(data);
     }
 
     // TODO-components-v2 docs

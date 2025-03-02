@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryCompo
 import net.dv8tion.jda.api.interactions.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
+import net.dv8tion.jda.internal.interactions.components.ResolvedMediaImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -16,18 +17,31 @@ public class ThumbnailImpl
 {
     private final int uniqueId;
     private final String url;
+    private final ResolvedMedia media;
     private final String description;
     private final boolean spoiler;
 
-    public ThumbnailImpl(String url)
+    public ThumbnailImpl(DataObject data)
     {
-        this(-1, url, null, false);
+        this(
+                data.getInt("id"),
+                data.getObject("media").getString("url"),
+                new ResolvedMediaImpl(data.getObject("media")),
+                data.getString("description", null),
+                data.getBoolean("spoiler", false)
+        );
     }
 
-    private ThumbnailImpl(int uniqueId, String url, String description, boolean spoiler)
+    public ThumbnailImpl(String url)
+    {
+        this(-1, url, null, null, false);
+    }
+
+    private ThumbnailImpl(int uniqueId, String url, ResolvedMedia media, String description, boolean spoiler)
     {
         this.uniqueId = uniqueId;
         this.url = url;
+        this.media = media;
         this.description = description;
         this.spoiler = spoiler;
     }
@@ -44,7 +58,7 @@ public class ThumbnailImpl
     public Thumbnail withUniqueId(int uniqueId)
     {
         Checks.notNegative(uniqueId, "Unique ID");
-        return new ThumbnailImpl(uniqueId, url, description, spoiler);
+        return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
     }
 
     @Nonnull
@@ -52,21 +66,21 @@ public class ThumbnailImpl
     public Thumbnail withUrl(@Nonnull String url)
     {
         Checks.notNull(url, "URL");
-        return new ThumbnailImpl(uniqueId, url, description, spoiler);
+        return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
     }
 
     @Nonnull
     @Override
     public Thumbnail withDescription(String description)
     {
-        return new ThumbnailImpl(uniqueId, url, description, spoiler);
+        return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
     }
 
     @Nonnull
     @Override
     public Thumbnail withSpoiler(boolean spoiler)
     {
-        return new ThumbnailImpl(uniqueId, url, description, spoiler);
+        return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
     }
 
     @Override

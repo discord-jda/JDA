@@ -2,6 +2,7 @@ package net.dv8tion.jda.internal.interactions.components;
 
 import net.dv8tion.jda.api.interactions.components.ResolvedMedia;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 
@@ -12,6 +13,18 @@ public class ResolvedMediaImpl implements ResolvedMedia
     private final int width, height;
     private final String contentType;
     private final LoadingState loadingState;
+
+    public ResolvedMediaImpl(DataObject data)
+    {
+        this(
+                data.getString("url"),
+                data.getString("proxy_url"),
+                data.getInt("width"),
+                data.getInt("height"),
+                data.getString("content_type"),
+                LoadingState.fromKey(data.getInt("loading_state"))
+        );
+    }
 
     public ResolvedMediaImpl(String url, String proxyUrl, int width, int height, String contentType, LoadingState loadingState)
     {

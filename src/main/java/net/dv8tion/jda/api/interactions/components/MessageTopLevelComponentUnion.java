@@ -26,6 +26,13 @@ import net.dv8tion.jda.api.interactions.components.text_display.TextDisplay;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.UnknownComponentImpl;
+import net.dv8tion.jda.internal.interactions.component.concrete.ActionRowImpl;
+import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
+import net.dv8tion.jda.internal.interactions.components.file.FileImpl;
+import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryImpl;
+import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
+import net.dv8tion.jda.internal.interactions.components.separator.SeparatorImpl;
+import net.dv8tion.jda.internal.interactions.components.text_display.TextDisplayImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -68,21 +75,37 @@ public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent,
     @Nonnull
     Container asContainer();
 
-    static MessageTopLevelComponentUnion fromData(DataObject data) {
+    @Nonnull
+    static MessageTopLevelComponentUnion fromData(@Nonnull DataObject data)
+    {
         Checks.notNull(data, "Data");
 
         int rawType = data.getInt("type", -1);
         Component.Type type = Component.Type.fromKey(rawType);
 
-        switch (type) {
-            case ACTION_ROW:
-                return (MessageTopLevelComponentUnion) ActionRow.fromData(data);
-            default:
-                return new UnknownComponentImpl();
+        switch (type)
+        {
+        case ACTION_ROW:
+            return ActionRowImpl.fromData(data);
+        case SECTION:
+            return SectionImpl.fromData(data);
+        case TEXT_DISPLAY:
+            return new TextDisplayImpl(data);
+        case MEDIA_GALLERY:
+            return new MediaGalleryImpl(data);
+        case SEPARATOR:
+            return new SeparatorImpl(data);
+        case FILE:
+            return new FileImpl(data);
+        case CONTAINER:
+            return ContainerImpl.fromData(data);
+        default:
+            return new UnknownComponentImpl();
         }
     }
 
-    static List<MessageTopLevelComponentUnion> fromData(DataArray data) {
+    static List<MessageTopLevelComponentUnion> fromData(DataArray data)
+    {
         Checks.notNull(data, "Data");
 
         return data

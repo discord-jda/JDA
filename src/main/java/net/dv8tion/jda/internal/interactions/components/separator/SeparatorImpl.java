@@ -17,6 +17,15 @@ public class SeparatorImpl
     private final Spacing spacing;
     private final boolean isDivider;
 
+    public SeparatorImpl(DataObject obj)
+    {
+        this(
+                obj.getInt("id"),
+                Spacing.fromKey(obj.getInt("spacing", 1)),
+                obj.getBoolean("divider", true)
+        );
+    }
+
     public SeparatorImpl(Spacing spacing, boolean isDivider)
     {
         this(-1, spacing, isDivider);

@@ -52,6 +52,20 @@ public class ContainerImpl
         return new ContainerImpl(children);
     }
 
+    public static ContainerImpl fromData(DataObject data)
+    {
+        Checks.notNull(data, "Data");
+        if (data.getInt("type", 0) != Type.CONTAINER.getKey())
+            throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.CONTAINER.getKey() + " Found: " + data.getInt("type"));
+
+        final int uniqueId = data.getInt("id");
+        final List<ContainerChildComponentUnion> components = ContainerChildComponentUnion.fromData(data.getArray("components"));
+        final boolean spoiler = data.getBoolean("spoiler", false);
+        final Integer accentColor = (Integer) data.opt("accent_color").orElse(null);
+
+        return new ContainerImpl(uniqueId, components, spoiler, accentColor);
+    }
+
     @Nonnull
     @Override
     public Type getType()

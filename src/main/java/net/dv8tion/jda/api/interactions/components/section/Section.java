@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -49,6 +50,13 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
         Checks.notNull(component, "Components");
         Checks.noneNull(components, "Components");
         return of(Helpers.mergeVararg(component, components));
+    }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    static Section fromData(@Nonnull DataObject data)
+    {
+        return SectionImpl.fromData(data);
     }
 
     @Nonnull

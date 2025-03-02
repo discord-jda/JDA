@@ -24,8 +24,20 @@ import net.dv8tion.jda.api.interactions.components.media_gallery.MediaGallery;
 import net.dv8tion.jda.api.interactions.components.section.Section;
 import net.dv8tion.jda.api.interactions.components.separator.Separator;
 import net.dv8tion.jda.api.interactions.components.text_display.TextDisplay;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.component.UnknownComponentImpl;
+import net.dv8tion.jda.internal.interactions.component.concrete.ActionRowImpl;
+import net.dv8tion.jda.internal.interactions.components.file.FileImpl;
+import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryImpl;
+import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
+import net.dv8tion.jda.internal.interactions.components.separator.SeparatorImpl;
+import net.dv8tion.jda.internal.interactions.components.text_display.TextDisplayImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a union of {@link Component components} that can be either
@@ -58,4 +70,39 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, C
 
     @Nonnull
     File asFile();
+
+    @Nonnull
+    static ContainerChildComponentUnion fromData(@Nonnull DataObject data)
+    {
+        Checks.notNull(data, "Data");
+
+        switch (Component.Type.fromKey(data.getInt("type")))
+        {
+        case ACTION_ROW:
+            return ActionRowImpl.fromData(data);
+        case SECTION:
+            return SectionImpl.fromData(data);
+        case TEXT_DISPLAY:
+            return new TextDisplayImpl(data);
+        case MEDIA_GALLERY:
+            return new MediaGalleryImpl(data);
+        case FILE:
+            return new FileImpl(data);
+        case SEPARATOR:
+            return new SeparatorImpl(data);
+        default:
+            return new UnknownComponentImpl();
+        }
+    }
+
+    @Nonnull
+    static List<ContainerChildComponentUnion> fromData(@Nonnull DataArray data)
+    {
+        Checks.notNull(data, "Data");
+
+        return data
+                .stream(DataArray::getObject)
+                .map(ContainerChildComponentUnion::fromData)
+                .collect(Collectors.toList());
+    }
 }
