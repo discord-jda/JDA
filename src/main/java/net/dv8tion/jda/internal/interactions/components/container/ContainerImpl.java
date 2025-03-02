@@ -83,7 +83,7 @@ public class ContainerImpl
 
     @Nonnull
     @Override
-    public LayoutComponent<ContainerChildComponentUnion> withDisabled(boolean disabled)
+    public Container withDisabled(boolean disabled)
     {
         return IReplacerAware.doReplace(
                 ContainerChildComponent.class,
@@ -95,14 +95,14 @@ public class ContainerImpl
 
     @Nonnull
     @Override
-    public LayoutComponent<ContainerChildComponentUnion> asDisabled()
+    public Container asDisabled()
     {
         return this;
     }
 
     @Nonnull
     @Override
-    public LayoutComponent<ContainerChildComponentUnion> asEnabled()
+    public Container asEnabled()
     {
         return this;
     }
