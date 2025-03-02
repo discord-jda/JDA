@@ -42,8 +42,8 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
         return of(Arrays.asList(children));
     }
 
-    // TODO-components-v2 docs
     @Nonnull
+    @Override
     @CheckReturnValue
     Section withUniqueId(int uniqueId);
 

@@ -34,8 +34,8 @@ public interface MediaGallery extends Component, IdentifiableComponent, MessageT
         return new MediaGalleryImpl(items);
     }
 
-    // TODO-components-v2 docs
     @Nonnull
+    @Override
     @CheckReturnValue
     MediaGallery withUniqueId(int uniqueId);
 

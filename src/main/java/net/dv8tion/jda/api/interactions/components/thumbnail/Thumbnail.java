@@ -31,8 +31,8 @@ public interface Thumbnail extends SectionAccessoryComponent, IdentifiableCompon
         return new ThumbnailImpl(url);
     }
 
-    // TODO-components-v2 docs
     @Nonnull
+    @Override
     @CheckReturnValue
     Thumbnail withUniqueId(int uniqueId);
 

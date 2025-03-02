@@ -33,8 +33,8 @@ public interface TextDisplay extends Component, IdentifiableComponent, MessageTo
         return new TextDisplayImpl(content);
     }
 
-    // TODO-components-v2 docs
     @Nonnull
+    @Override
     @CheckReturnValue
     TextDisplay withUniqueId(int uniqueId);
 
