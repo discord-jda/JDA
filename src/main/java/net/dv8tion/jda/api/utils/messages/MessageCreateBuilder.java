@@ -205,8 +205,6 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
                 MessageTopLevelComponentUnion.class
         );
 
-        this.messageFlags |= Message.MessageFlag.IS_COMPONENTS_V2.getValue();
-
         this.components.addAll(componentsAsUnions);
         return this;
     }
