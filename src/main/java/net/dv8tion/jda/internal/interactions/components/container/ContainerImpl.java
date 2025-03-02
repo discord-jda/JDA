@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
@@ -21,6 +22,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class ContainerImpl
         extends AbstractComponentImpl
@@ -213,5 +215,30 @@ public class ContainerImpl
         if (accentColor != null)
             json.put("accent_color", accentColor & 0xFFFFFF);
         return json;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof ContainerImpl)) return false;
+        ContainerImpl that = (ContainerImpl) o;
+        return uniqueId == that.uniqueId && spoiler == that.spoiler && Objects.equals(components, that.components) && Objects.equals(accentColor, that.accentColor);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(uniqueId, components, spoiler, accentColor);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .addMetadata("id", uniqueId)
+                .addMetadata("accentColor", accentColor)
+                .addMetadata("spoiler", spoiler)
+                .addMetadata("components", components)
+                .toString();
     }
 }

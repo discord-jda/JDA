@@ -3,8 +3,10 @@ package net.dv8tion.jda.internal.interactions.components;
 import net.dv8tion.jda.api.interactions.components.ResolvedMedia;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class ResolvedMediaImpl implements ResolvedMedia
 {
@@ -81,5 +83,29 @@ public class ResolvedMediaImpl implements ResolvedMedia
     public LoadingState getLoadingState()
     {
         return loadingState;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof ResolvedMediaImpl)) return false;
+        ResolvedMediaImpl that = (ResolvedMediaImpl) o;
+        return Objects.equals(url, that.url) && loadingState == that.loadingState;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(url, loadingState);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+                .setType(loadingState)
+                // url is already shown by the classes containing resolved medias
+                .addMetadata("proxy_url", url)
+                .toString();
     }
 }

@@ -226,7 +226,8 @@ public class ButtonImpl extends AbstractComponentImpl implements Button, ActionR
     {
         return new EntityString(this)
                 .setName(label)
-                .addMetadata("id", id)
+                .addMetadata("id", uniqueId)
+                .addMetadata("custom id", id)
                 .toString();
     }
 }
