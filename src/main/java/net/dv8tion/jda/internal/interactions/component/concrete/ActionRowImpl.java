@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
-import net.dv8tion.jda.internal.interactions.component.UnknownComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -41,32 +40,13 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     }
 
     @Nonnull
-    public static ActionRow fromData(@Nonnull DataObject data)
+    public static ActionRowImpl fromData(@Nonnull DataObject data)
     {
         Checks.notNull(data, "Data");
-        if (data.getInt("type", 0) != 1)
-            throw new IllegalArgumentException("Data has incorrect type. Expected: 1 Found: " + data.getInt("type"));
-        List<ActionRowChildComponentUnion> components = data.getArray("components")
-                .stream(DataArray::getObject)
-                .map(obj -> {
-                    switch (Component.Type.fromKey(obj.getInt("type")))
-                    {
-                        case BUTTON:
-                            return new ButtonImpl(obj);
-                        case STRING_SELECT:
-                            return new StringSelectMenuImpl(obj);
-                        case TEXT_INPUT:
-                            return new TextInputImpl(obj);
-                        case USER_SELECT:
-                        case ROLE_SELECT:
-                        case CHANNEL_SELECT:
-                        case MENTIONABLE_SELECT:
-                            return new EntitySelectMenuImpl(obj);
-                        default:
-                            return new UnknownComponentImpl();
-                    }
-                })
-                .collect(Collectors.toList());
+        if (data.getInt("type", 0) != Type.ACTION_ROW.getKey())
+            throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.ACTION_ROW.getKey() + " Found: " + data.getInt("type"));
+        List<ActionRowChildComponentUnion> components = ActionRowChildComponentUnion.fromData(data.getArray("components"));
+
         return new ActionRowImpl(
                 components,
                 // Absent in modals

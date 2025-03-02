@@ -50,6 +50,19 @@ public class SectionImpl
         return new SectionImpl(children, null);
     }
 
+    public static SectionImpl fromData(DataObject data)
+    {
+        Checks.notNull(data, "Data");
+        if (data.getInt("type", 0) != Type.SECTION.getKey())
+            throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.SECTION.getKey() + " Found: " + data.getInt("type"));
+
+        final int uniqueId = data.getInt("id");
+        final List<SectionContentComponentUnion> components = SectionContentComponentUnion.fromData(data.getArray("components"));
+        final SectionAccessoryComponentUnion accessory = SectionAccessoryComponentUnion.fromData(data.getObject("accessory"));
+
+        return new SectionImpl(uniqueId, components, accessory);
+    }
+
     @Nonnull
     @Override
     public Type getType()

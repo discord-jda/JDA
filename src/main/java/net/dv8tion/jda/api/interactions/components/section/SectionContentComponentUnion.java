@@ -16,8 +16,42 @@
 
 package net.dv8tion.jda.api.interactions.components.section;
 
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.component.UnknownComponentImpl;
+import net.dv8tion.jda.internal.interactions.components.text_display.TextDisplayImpl;
+import net.dv8tion.jda.internal.utils.Checks;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public interface SectionContentComponentUnion extends SectionContentComponent, ComponentUnion
 {
+    @Nonnull
+    static SectionContentComponentUnion fromData(@Nonnull DataObject data)
+    {
+        Checks.notNull(data, "Data");
+
+        switch (Component.Type.fromKey(data.getInt("type")))
+        {
+        case TEXT_DISPLAY:
+            return new TextDisplayImpl(data);
+        default:
+            return new UnknownComponentImpl();
+        }
+    }
+
+    @Nonnull
+    static List<SectionContentComponentUnion> fromData(@Nonnull DataArray data)
+    {
+        Checks.notNull(data, "Data");
+
+        return data
+                .stream(DataArray::getObject)
+                .map(SectionContentComponentUnion::fromData)
+                .collect(Collectors.toList());
+    }
 }

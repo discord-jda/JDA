@@ -13,6 +13,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MediaGalleryImpl
         extends AbstractComponentImpl
@@ -20,6 +21,17 @@ public class MediaGalleryImpl
 {
     private final int uniqueId;
     private final List<MediaGalleryItem> items;
+
+    public MediaGalleryImpl(DataObject data)
+    {
+        this(
+                data.getInt("id"),
+                data.getArray("items")
+                        .stream(DataArray::getObject)
+                        .map(MediaGalleryItemImpl::new)
+                        .collect(Collectors.toList())
+        );
+    }
 
     public MediaGalleryImpl(Collection<? extends MediaGalleryItem> items)
     {

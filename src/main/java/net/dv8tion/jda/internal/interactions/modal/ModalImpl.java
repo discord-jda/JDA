@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -39,10 +38,9 @@ public class ModalImpl implements Modal
     {
         this.id = object.getString("custom_id");
         this.title = object.getString("title");
-        this.components = object.optArray("components").orElseGet(DataArray::empty)
-                .stream(DataArray::getObject)
+        this.components = object.optArray("components")
                 .map(ModalTopLevelComponentUnion::fromData)
-                .collect(Helpers.toUnmodifiableList());
+                .orElseGet(Collections::emptyList);
     }
 
     public ModalImpl(String id, String title, List<ModalTopLevelComponentUnion> components)

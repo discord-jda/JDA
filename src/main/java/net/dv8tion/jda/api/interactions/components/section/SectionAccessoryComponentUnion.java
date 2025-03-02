@@ -20,8 +20,16 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.thumbnail.Thumbnail;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.component.UnknownComponentImpl;
+import net.dv8tion.jda.internal.interactions.component.concrete.ButtonImpl;
+import net.dv8tion.jda.internal.interactions.components.thumbnail.ThumbnailImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a union of {@link Component components} that can be either
@@ -38,4 +46,31 @@ public interface SectionAccessoryComponentUnion extends SectionAccessoryComponen
 
     @Nonnull
     Thumbnail asThumbnail();
+
+    @Nonnull
+    static SectionAccessoryComponentUnion fromData(@Nonnull DataObject data)
+    {
+        Checks.notNull(data, "Data");
+
+        switch (Component.Type.fromKey(data.getInt("type")))
+        {
+        case BUTTON:
+            return new ButtonImpl(data);
+        case THUMBNAIL:
+            return new ThumbnailImpl(data);
+        default:
+            return new UnknownComponentImpl();
+        }
+    }
+
+    @Nonnull
+    static List<SectionAccessoryComponentUnion> fromData(@Nonnull DataArray data)
+    {
+        Checks.notNull(data, "Data");
+
+        return data
+                .stream(DataArray::getObject)
+                .map(SectionAccessoryComponentUnion::fromData)
+                .collect(Collectors.toList());
+    }
 }
