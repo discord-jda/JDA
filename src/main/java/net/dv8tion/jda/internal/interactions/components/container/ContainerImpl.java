@@ -1,7 +1,6 @@
 package net.dv8tion.jda.internal.interactions.components.container;
 
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.Container;
@@ -174,9 +173,9 @@ public class ContainerImpl
 
     @Nonnull
     @Override
-    public LayoutComponent<ContainerChildComponentUnion> createCopy()
+    public Container createCopy()
     {
-        return null;
+        return this;
     }
 
     @Nullable
