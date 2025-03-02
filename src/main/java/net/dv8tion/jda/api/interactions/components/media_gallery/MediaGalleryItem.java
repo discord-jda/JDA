@@ -55,7 +55,7 @@ public interface MediaGalleryItem extends SerializableData
     ResolvedMedia getResolvedMedia();
 
     // TODO-components-v2 docs
-    @Nonnull
+    @Nullable
     String getDescription();
 
     // TODO-components-v2 docs
