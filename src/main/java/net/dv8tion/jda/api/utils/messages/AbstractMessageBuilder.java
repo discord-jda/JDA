@@ -179,7 +179,10 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
         List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(components, MessageTopLevelComponentUnion.class);
 
-        this.messageFlags |= Message.MessageFlag.IS_COMPONENTS_V2.getValue();
+        // We want to avoid setting the flag if an empty list was attempted to be set
+        // This is particularly useful for libraries which sets components / component trees regardless of if there are any to be set
+        if (!componentsAsUnions.isEmpty())
+            this.messageFlags |= Message.MessageFlag.IS_COMPONENTS_V2.getValue();
 
         this.components.clear();
         this.components.addAll(componentsAsUnions);
