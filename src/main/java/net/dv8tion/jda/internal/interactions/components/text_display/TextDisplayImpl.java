@@ -30,14 +30,9 @@ public class TextDisplayImpl
 
     @Nonnull
     @Override
-    public DataObject toData()
+    public Type getType()
     {
-        final DataObject json = DataObject.empty()
-                .put("type", getType().getKey())
-                .put("content", content);
-        if (uniqueId >= 0)
-            json.put("id", uniqueId);
-        return json;
+        return Type.TEXT_DISPLAY;
     }
 
     @Nonnull
@@ -45,6 +40,14 @@ public class TextDisplayImpl
     public TextDisplay withUniqueId(int uniqueId)
     {
         Checks.notNegative(uniqueId, "Unique ID");
+        return new TextDisplayImpl(uniqueId, content);
+    }
+
+    @Nonnull
+    @Override
+    public TextDisplay withContent(@Nonnull String content)
+    {
+        Checks.notNull(content, "Content");
         return new TextDisplayImpl(uniqueId, content);
     }
 
@@ -56,9 +59,9 @@ public class TextDisplayImpl
 
     @Nonnull
     @Override
-    public Type getType()
+    public String getContent()
     {
-        return Type.TEXT_DISPLAY;
+        return content;
     }
 
     @Override
@@ -75,8 +78,13 @@ public class TextDisplayImpl
 
     @Nonnull
     @Override
-    public String getContent()
+    public DataObject toData()
     {
-        return content;
+        final DataObject json = DataObject.empty()
+                .put("type", getType().getKey())
+                .put("content", content);
+        if (uniqueId >= 0)
+            json.put("id", uniqueId);
+        return json;
     }
 }

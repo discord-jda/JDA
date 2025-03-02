@@ -1,5 +1,6 @@
 package net.dv8tion.jda.internal.interactions.components.thumbnail;
 
+import net.dv8tion.jda.api.interactions.components.ResolvedMedia;
 import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.interactions.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -33,9 +34,24 @@ public class ThumbnailImpl
 
     @Nonnull
     @Override
+    public Type getType()
+    {
+        return Type.THUMBNAIL;
+    }
+
+    @Nonnull
+    @Override
     public Thumbnail withUniqueId(int uniqueId)
     {
         Checks.notNegative(uniqueId, "Unique ID");
+        return new ThumbnailImpl(uniqueId, url, description, spoiler);
+    }
+
+    @Nonnull
+    @Override
+    public Thumbnail withUrl(@Nonnull String url)
+    {
+        Checks.notNull(url, "URL");
         return new ThumbnailImpl(uniqueId, url, description, spoiler);
     }
 
@@ -59,6 +75,20 @@ public class ThumbnailImpl
         return uniqueId;
     }
 
+    @Nonnull
+    @Override
+    public String getUrl()
+    {
+        return url;
+    }
+
+    @Nullable
+    @Override
+    public ResolvedMedia getResolvedMedia()
+    {
+        return null;
+    }
+
     @Nullable
     @Override
     public String getDescription()
@@ -70,13 +100,6 @@ public class ThumbnailImpl
     public boolean isSpoiler()
     {
         return spoiler;
-    }
-
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.THUMBNAIL;
     }
 
     @Override

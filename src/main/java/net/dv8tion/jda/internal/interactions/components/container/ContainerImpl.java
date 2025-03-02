@@ -3,6 +3,7 @@ package net.dv8tion.jda.internal.interactions.components.container;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
@@ -26,19 +27,19 @@ public class ContainerImpl
         implements Container, MessageTopLevelComponentUnion, IReplacerAware<Container>
 {
     private final int uniqueId;
-    private final List<ContainerChildComponentUnion> children;
+    private final List<ContainerChildComponentUnion> components;
     private final boolean spoiler;
     private final Integer accentColor;
 
-    private ContainerImpl(Collection<ContainerChildComponentUnion> children)
+    private ContainerImpl(Collection<ContainerChildComponentUnion> components)
     {
-        this(-1, children, false, null);
+        this(-1, components, false, null);
     }
 
-    private ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> children, boolean spoiler, Integer accentColor)
+    private ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> components, boolean spoiler, Integer accentColor)
     {
         this.uniqueId = uniqueId;
-        this.children = Helpers.copyAsUnmodifiableList(children);
+        this.components = Helpers.copyAsUnmodifiableList(components);
         this.spoiler = spoiler;
         this.accentColor = accentColor;
     }
@@ -53,68 +54,43 @@ public class ContainerImpl
 
     @Nonnull
     @Override
+    public Type getType()
+    {
+        return Type.CONTAINER;
+    }
+
+    @Nonnull
+    @Override
     public Container withUniqueId(int uniqueId)
     {
         Checks.notNegative(uniqueId, "Unique ID");
-        return new ContainerImpl(uniqueId, children, spoiler, accentColor);
+        return new ContainerImpl(uniqueId, components, spoiler, accentColor);
     }
 
     @Nonnull
     @Override
     public Container withSpoiler(boolean spoiler)
     {
-        return new ContainerImpl(uniqueId, children, spoiler, accentColor);
+        return new ContainerImpl(uniqueId, components, spoiler, accentColor);
     }
 
     @Nonnull
     @Override
     public Container withAccentColor(int accentColor)
     {
-        return new ContainerImpl(uniqueId, children, spoiler, accentColor);
-    }
-
-    @Override
-    public int getUniqueId()
-    {
-        return uniqueId;
-    }
-
-    @Override
-    public Container replace(ComponentReplacer replacer)
-    {
-        return IReplacerAware.doReplace(
-                ContainerChildComponent.class,
-                getComponents(),
-                replacer,
-                ContainerImpl::new
-        );
-    }
-
-    @Nonnull
-    @Override
-    public List<ContainerChildComponentUnion> getComponents()
-    {
-        return children;
-    }
-
-    @Nullable
-    @Override
-    public Integer getAccentColorRaw()
-    {
-        return accentColor;
-    }
-
-    @Override
-    public boolean isSpoiler()
-    {
-        return spoiler;
+        return new ContainerImpl(uniqueId, components, spoiler, accentColor);
     }
 
     @Nonnull
     @Override
     public LayoutComponent<ContainerChildComponentUnion> withDisabled(boolean disabled)
     {
-        return this;
+        return IReplacerAware.doReplace(
+                ContainerChildComponent.class,
+                components,
+                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)),
+                components -> new ContainerImpl(uniqueId, components, spoiler, accentColor)
+        );
     }
 
     @Nonnull
@@ -132,9 +108,46 @@ public class ContainerImpl
     }
 
     @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
+    }
+
+    @Override
+    public Container replace(ComponentReplacer replacer)
+    {
+        return IReplacerAware.doReplace(
+                ContainerChildComponent.class,
+                getComponents(),
+                replacer,
+                components -> new ContainerImpl(uniqueId, components, spoiler, accentColor)
+        );
+    }
+
+    @Nonnull
+    @Override
+    public List<ContainerChildComponentUnion> getComponents()
+    {
+        return components;
+    }
+
+    @Nullable
+    @Override
+    public Integer getAccentColorRaw()
+    {
+        return accentColor;
+    }
+
+    @Override
+    public boolean isSpoiler()
+    {
+        return spoiler;
+    }
+
+    @Override
     public boolean isEmpty()
     {
-        return children.isEmpty();
+        return components.isEmpty();
     }
 
     @Override
@@ -171,13 +184,6 @@ public class ContainerImpl
     public Iterator<ContainerChildComponentUnion> iterator()
     {
         return getComponents().iterator();
-    }
-
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.CONTAINER;
     }
 
     @Nonnull

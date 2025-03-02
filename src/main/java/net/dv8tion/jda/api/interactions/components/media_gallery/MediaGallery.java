@@ -21,24 +21,42 @@ import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryImpl;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.List;
 
+// TODO-components-v2 docs
 public interface MediaGallery extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
-    static MediaGallery of(MediaGalleryItem... items)
+    // TODO-components-v2 docs
+    @Nonnull
+    static MediaGallery of(@Nonnull Collection<? extends MediaGalleryItem> items)
     {
+        Checks.noneNull(items, "Items");
         return new MediaGalleryImpl(items);
     }
 
+    // TODO-components-v2 docs
+    @Nonnull
+    static MediaGallery of(@Nonnull MediaGalleryItem item, @Nonnull MediaGalleryItem... items)
+    {
+        Checks.notNull(item, "Item");
+        Checks.noneNull(items, "Items");
+        return of(Helpers.mergeVararg(item, items));
+    }
+
+    // TODO-components-v2 docs
     @Nonnull
     @Override
     @CheckReturnValue
     MediaGallery withUniqueId(int uniqueId);
 
+    // TODO-components-v2 docs
     @Nonnull
     @Unmodifiable
     List<MediaGalleryItem> getItems();

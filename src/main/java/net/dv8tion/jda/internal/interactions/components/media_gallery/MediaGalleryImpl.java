@@ -11,7 +11,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class MediaGalleryImpl
@@ -21,15 +21,22 @@ public class MediaGalleryImpl
     private final int uniqueId;
     private final List<MediaGalleryItem> items;
 
-    public MediaGalleryImpl(MediaGalleryItem... items)
+    public MediaGalleryImpl(Collection<? extends MediaGalleryItem> items)
     {
-        this(-1, Arrays.asList(items));
+        this(-1, items);
     }
 
-    private MediaGalleryImpl(int uniqueId, List<MediaGalleryItem> items)
+    private MediaGalleryImpl(int uniqueId, Collection<? extends MediaGalleryItem> items)
     {
         this.uniqueId = uniqueId;
         this.items = Helpers.copyAsUnmodifiableList(items);
+    }
+
+    @Nonnull
+    @Override
+    public Type getType()
+    {
+        return Type.MEDIA_GALLERY;
     }
 
     @Nonnull
@@ -51,13 +58,6 @@ public class MediaGalleryImpl
     public List<MediaGalleryItem> getItems()
     {
         return items;
-    }
-
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.MEDIA_GALLERY;
     }
 
     @Override

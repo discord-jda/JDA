@@ -60,6 +60,14 @@ public interface SelectMenu extends ActionComponent, IdentifiableComponent, Acti
      */
     int OPTIONS_MAX_AMOUNT = 25;
 
+    @Nonnull
+    @Override
+    SelectMenu withDisabled(boolean disabled);
+
+    @Nonnull
+    @Override
+    SelectMenu withUniqueId(int uniqueId);
+
     /**
      * Placeholder which is displayed when no selections have been made yet.
      *
