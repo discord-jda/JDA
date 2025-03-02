@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
+import net.dv8tion.jda.internal.interactions.component.UnknownComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -62,10 +63,9 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
                         case MENTIONABLE_SELECT:
                             return new EntitySelectMenuImpl(obj);
                         default:
-                            return null;
+                            return new UnknownComponentImpl();
                     }
                 })
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         return new ActionRowImpl(
                 components,
