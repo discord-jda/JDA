@@ -41,16 +41,27 @@ public interface ResolvedMedia
         LOADING_NOT_FOUND(3),
         ;
 
-        private final int value;
+        private final int key;
 
-        LoadingState(int value)
+        LoadingState(int key)
         {
-            this.value = value;
+            this.key = key;
         }
 
-        public int getValue()
+        public static LoadingState fromKey(int value)
         {
-            return value;
+            for (LoadingState state : values())
+            {
+                if (state.getKey() == value)
+                    return state;
+            }
+
+            return null;
+        }
+
+        public int getKey()
+        {
+            return key;
         }
     }
 }
