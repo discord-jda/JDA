@@ -21,14 +21,26 @@ import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.interactions.components.separator.SeparatorImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+// TODO-components-v2 docs
 public interface Separator extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
-    static Separator create(boolean isDivider, Spacing spacing)
+    // TODO-components-v2 docs
+    @Nonnull
+    static Separator createDivider(@Nonnull Spacing spacing)
     {
+        return create(true, spacing);
+    }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    static Separator create(boolean isDivider, @Nonnull Spacing spacing)
+    {
+        Checks.notNull(spacing, "Spacing");
         return new SeparatorImpl(spacing, isDivider);
     }
 
@@ -37,10 +49,24 @@ public interface Separator extends Component, IdentifiableComponent, MessageTopL
     @CheckReturnValue
     Separator withUniqueId(int uniqueId);
 
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Separator withDivider(boolean divider);
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Separator withSpacing(@Nonnull Spacing spacing);
+
+    // TODO-components-v2 docs
+    boolean isDivider();
+
+    // TODO-components-v2 docs
+    @Nonnull
     Spacing getSpacing();
 
-    boolean hasDivider();
-
+    // TODO-components-v2 docs
     enum Spacing {
         UNKNOWN(-1),
         SMALL(1),

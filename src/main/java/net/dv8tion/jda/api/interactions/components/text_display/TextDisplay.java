@@ -22,14 +22,19 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.components.section.SectionContentComponent;
 import net.dv8tion.jda.internal.interactions.components.text_display.TextDisplayImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
+// TODO-components-v2 docs
 public interface TextDisplay extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, SectionContentComponent
 {
-    static TextDisplay create(String content)
+    // TODO-components-v2 docs
+    @Nonnull
+    static TextDisplay create(@Nonnull String content)
     {
+        Checks.notNull(content, "Content");
         return new TextDisplayImpl(content);
     }
 
@@ -38,6 +43,12 @@ public interface TextDisplay extends Component, IdentifiableComponent, MessageTo
     @CheckReturnValue
     TextDisplay withUniqueId(int uniqueId);
 
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    TextDisplay withContent(@Nonnull String content);
+
+    // TODO-components-v2 docs
     @Nonnull
     String getContent();
 }

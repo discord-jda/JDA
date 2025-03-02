@@ -17,17 +17,23 @@
 package net.dv8tion.jda.api.interactions.components.thumbnail;
 
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
+import net.dv8tion.jda.api.interactions.components.ResolvedMedia;
 import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponent;
 import net.dv8tion.jda.internal.interactions.components.thumbnail.ThumbnailImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+// TODO-components-v2 docs
 public interface Thumbnail extends SectionAccessoryComponent, IdentifiableComponent
 {
-    static Thumbnail fromUrl(String url)
+    // TODO-components-v2 docs
+    @Nonnull
+    static Thumbnail fromUrl(@Nonnull String url)
     {
+        Checks.notNull(url, "URL");
         return new ThumbnailImpl(url);
     }
 
@@ -39,12 +45,25 @@ public interface Thumbnail extends SectionAccessoryComponent, IdentifiableCompon
     // TODO-components-v2 docs
     @Nonnull
     @CheckReturnValue
+    Thumbnail withUrl(@Nonnull String url);
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
     Thumbnail withDescription(@Nullable String description);
 
     // TODO-components-v2 docs
     @Nonnull
     @CheckReturnValue
     Thumbnail withSpoiler(boolean spoiler);
+
+    // TODO-components-v2 docs
+    @Nonnull
+    String getUrl();
+
+    // TODO-components-v2 docs
+    @Nullable
+    ResolvedMedia getResolvedMedia();
 
     // TODO-components-v2 docs
     @Nullable

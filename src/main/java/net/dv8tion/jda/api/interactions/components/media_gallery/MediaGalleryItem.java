@@ -16,13 +16,48 @@
 
 package net.dv8tion.jda.api.interactions.components.media_gallery;
 
+import net.dv8tion.jda.api.interactions.components.ResolvedMedia;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryItemImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+// TODO-components-v2 docs
 public interface MediaGalleryItem extends SerializableData
 {
-    static MediaGalleryItem fromUrl(String url)
+    // TODO-components-v2 docs
+    @Nonnull
+    static MediaGalleryItem fromUrl(@Nonnull String url)
     {
+        Checks.notNull(url, "URL");
         return new MediaGalleryItemImpl(url);
     }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    MediaGalleryItem withDescription(@Nonnull String description);
+
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    MediaGalleryItem withSpoiler(boolean spoiler);
+
+    // TODO-components-v2 docs
+    @Nonnull
+    String getUrl();
+
+    // TODO-components-v2 docs
+    @Nullable
+    ResolvedMedia getResolvedMedia();
+
+    // TODO-components-v2 docs
+    @Nonnull
+    String getDescription();
+
+    // TODO-components-v2 docs
+    boolean isSpoiler();
 }

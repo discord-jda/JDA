@@ -21,26 +21,31 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+// TODO-components-v2 docs
 public interface Container extends LayoutComponent<ContainerChildComponentUnion>, IdentifiableComponent, MessageTopLevelComponent
 {
-    static Container of(Collection<? extends ContainerChildComponent> children)
+    // TODO-components-v2 docs
+    @Nonnull
+    static Container of(@Nonnull Collection<? extends ContainerChildComponent> children)
     {
         return ContainerImpl.of(children);
     }
 
-    static Container of(ContainerChildComponent... children)
+    // TODO-components-v2 docs
+    @Nonnull
+    static Container of(@Nonnull ContainerChildComponent component, @Nonnull ContainerChildComponent... components)
     {
-        return of(Arrays.asList(children));
+        return of(Helpers.mergeVararg(component, components));
     }
 
     // TODO-components-v2 docs
@@ -68,6 +73,19 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     @CheckReturnValue
     Container withSpoiler(boolean spoiler);
 
+    @Nonnull
+    @Override
+    Container asEnabled();
+
+    @Nonnull
+    @Override
+    Container asDisabled();
+
+    @Nonnull
+    @Override
+    Container withDisabled(boolean disabled);
+
+    // TODO-components-v2 docs
     @Nonnull
     @Unmodifiable
     List<ContainerChildComponentUnion> getComponents();

@@ -31,9 +31,31 @@ public class SeparatorImpl
 
     @Nonnull
     @Override
+    public Type getType()
+    {
+        return Type.SEPARATOR;
+    }
+
+    @Nonnull
+    @Override
     public Separator withUniqueId(int uniqueId)
     {
         Checks.notNegative(uniqueId, "Unique ID");
+        return new SeparatorImpl(uniqueId, spacing, isDivider);
+    }
+
+    @Nonnull
+    @Override
+    public Separator withDivider(boolean divider)
+    {
+        return new SeparatorImpl(uniqueId, spacing, divider);
+    }
+
+    @Nonnull
+    @Override
+    public Separator withSpacing(@Nonnull Spacing spacing)
+    {
+        Checks.notNull(spacing, "Spacing");
         return new SeparatorImpl(uniqueId, spacing, isDivider);
     }
 
@@ -44,22 +66,16 @@ public class SeparatorImpl
     }
 
     @Override
-    public Spacing getSpacing()
-    {
-        return spacing;
-    }
-
-    @Override
-    public boolean hasDivider()
+    public boolean isDivider()
     {
         return isDivider;
     }
 
     @Nonnull
     @Override
-    public Type getType()
+    public Spacing getSpacing()
     {
-        return Type.SEPARATOR;
+        return spacing;
     }
 
     @Override

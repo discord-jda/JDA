@@ -1,7 +1,7 @@
 package net.dv8tion.jda.internal.interactions.components.section;
 
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.section.*;
@@ -26,18 +26,18 @@ public class SectionImpl
         implements Section, ContainerChildComponentUnion, IReplacerAware<Section>
 {
     private final int uniqueId;
-    private final List<SectionContentComponentUnion> children;
+    private final List<SectionContentComponentUnion> components;
     private final SectionAccessoryComponentUnion accessory;
 
-    public SectionImpl(Collection<SectionContentComponentUnion> children, SectionAccessoryComponentUnion accessory)
+    public SectionImpl(Collection<SectionContentComponentUnion> components, SectionAccessoryComponentUnion accessory)
     {
-        this(-1, children, accessory);
+        this(-1, components, accessory);
     }
 
-    private SectionImpl(int uniqueId, Collection<SectionContentComponentUnion> children, SectionAccessoryComponentUnion accessory)
+    private SectionImpl(int uniqueId, Collection<SectionContentComponentUnion> components, SectionAccessoryComponentUnion accessory)
     {
         this.uniqueId = uniqueId;
-        this.children = Helpers.copyAsUnmodifiableList(children);
+        this.components = Helpers.copyAsUnmodifiableList(components);
         this.accessory = accessory;
     }
 
@@ -51,16 +51,51 @@ public class SectionImpl
 
     @Nonnull
     @Override
+    public Type getType()
+    {
+        return Type.SECTION;
+    }
+
+    @Nonnull
+    @Override
     public Section withUniqueId(int uniqueId)
     {
         Checks.notNegative(uniqueId, "Unique ID");
-        return new SectionImpl(uniqueId, children, accessory);
+        return new SectionImpl(uniqueId, components, accessory);
     }
 
+    @Nonnull
     @Override
-    public int getUniqueId()
+    public Section withDisabled(boolean disabled)
     {
-        return uniqueId;
+        return IReplacerAware.doReplace(
+                SectionContentComponent.class,
+                components,
+                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)),
+                components -> new SectionImpl(uniqueId, components, accessory)
+        );
+    }
+
+    @Nonnull
+    @Override
+    public Section asDisabled()
+    {
+        return withDisabled(true);
+    }
+
+    @Nonnull
+    @Override
+    public Section asEnabled()
+    {
+        return withDisabled(false);
+    }
+
+    @Nonnull
+    @Override
+    public Section withAccessory(@Nullable SectionAccessoryComponent accessory)
+    {
+        // TODO-components-v2 Check union
+        return new SectionImpl(uniqueId, components, (SectionAccessoryComponentUnion) accessory);
     }
 
     @Override
@@ -83,11 +118,17 @@ public class SectionImpl
         return new SectionImpl(newContent, newAccessory);
     }
 
+    @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
+    }
+
     @Nonnull
     @Override
     public List<SectionContentComponentUnion> getComponents()
     {
-        return children;
+        return components;
     }
 
     @Nullable
@@ -97,31 +138,10 @@ public class SectionImpl
         return accessory;
     }
 
-    @Nonnull
-    @Override
-    public LayoutComponent withDisabled(boolean disabled)
-    {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public LayoutComponent asDisabled()
-    {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public LayoutComponent asEnabled()
-    {
-        return null;
-    }
-
     @Override
     public boolean isEmpty()
     {
-        return children.isEmpty() && accessory == null;
+        return components.isEmpty() && accessory == null;
     }
 
     @Override
@@ -132,9 +152,9 @@ public class SectionImpl
 
     @Nonnull
     @Override
-    public LayoutComponent createCopy()
+    public Section createCopy()
     {
-        return null;
+        return this;
     }
 
     @Nullable
@@ -155,23 +175,9 @@ public class SectionImpl
 
     @Nonnull
     @Override
-    public Iterator iterator()
+    public Iterator<SectionContentComponentUnion> iterator()
     {
-        return children.iterator();
-    }
-
-    @Nonnull
-    @Override
-    public Type getType()
-    {
-        return Type.SECTION;
-    }
-
-    @Override
-    public Section withAccessory(@Nullable SectionAccessoryComponent accessory)
-    {
-        // TODO-components-v2 Check union
-        return new SectionImpl(uniqueId, children, (SectionAccessoryComponentUnion) accessory);
+        return components.iterator();
     }
 
     @Nonnull

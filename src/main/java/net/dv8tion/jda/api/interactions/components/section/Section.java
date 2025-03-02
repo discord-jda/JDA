@@ -21,25 +21,34 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+// TODO-components-v2 docs
 public interface Section extends LayoutComponent<SectionContentComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
-    static Section of(Collection<? extends SectionContentComponent> children)
+    // TODO-components-v2 docs
+    @Nonnull
+    static Section of(@Nonnull Collection<? extends SectionContentComponent> components)
     {
-        return SectionImpl.of(children);
+        Checks.noneNull(components, "Components");
+        return SectionImpl.of(components);
     }
 
-    static Section of(SectionContentComponent... children)
+    // TODO-components-v2 docs
+    @Nonnull
+    static Section of(@Nonnull SectionContentComponent component, @Nonnull SectionContentComponent... components)
     {
-        return of(Arrays.asList(children));
+        Checks.notNull(component, "Components");
+        Checks.noneNull(components, "Components");
+        return of(Helpers.mergeVararg(component, components));
     }
 
     @Nonnull
@@ -47,13 +56,33 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     @CheckReturnValue
     Section withUniqueId(int uniqueId);
 
+    // TODO-components-v2 docs
+    @Nonnull
+    @CheckReturnValue
+    Section withAccessory(@Nullable SectionAccessoryComponent accessory);
+
+    @Nonnull
+    @Override
+    Section withDisabled(boolean disabled);
+
+    @Nonnull
+    @Override
+    Section asDisabled();
+
+    @Nonnull
+    @Override
+    Section asEnabled();
+
+    @Nonnull
+    @Override
+    Section createCopy();
+
+    // TODO-components-v2 docs
     @Nonnull
     @Unmodifiable
     List<SectionContentComponentUnion> getComponents();
 
+    // TODO-components-v2 docs
     @Nullable
     SectionAccessoryComponentUnion getAccessory();
-
-    //TODO maybe this should be part of a builder? maybe not as there's not many things to configure
-    Section withAccessory(@Nullable SectionAccessoryComponent accessory);
 }

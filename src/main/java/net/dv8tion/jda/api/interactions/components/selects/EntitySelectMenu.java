@@ -94,6 +94,13 @@ public interface EntitySelectMenu extends SelectMenu
         return createCopy().setDisabled(disabled).build();
     }
 
+    @Nonnull
+    @Override
+    default EntitySelectMenu withUniqueId(int uniqueId)
+    {
+        return createCopy().setUniqueId(uniqueId).build();
+    }
+
     /**
      * The {@link SelectTarget SelectTargets} supported by this menu.
      * <br>If the targets include {@link SelectTarget#CHANNEL}, then they are also filtered by {@link #getChannelTypes()}.
