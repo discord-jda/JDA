@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
@@ -32,7 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class ButtonImpl extends AbstractComponentImpl implements Button, ActionRowChildComponentUnion
+public class ButtonImpl extends AbstractComponentImpl implements Button, ActionRowChildComponentUnion, SectionAccessoryComponentUnion
 {
     private final String id;
     private final int uniqueId;
