@@ -52,7 +52,7 @@ public class MediaGalleryItemImpl implements MediaGalleryItem
         return null;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public String getDescription()
     {
