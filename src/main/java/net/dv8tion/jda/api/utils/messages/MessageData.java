@@ -57,7 +57,7 @@ public interface MessageData
     List<MessageEmbed> getEmbeds();
 
     /**
-     * The configured message components, this is the opposite of {@link MessageRequest#setComponentTree(Collection)} and only returns what was set using that setter.
+     * The configured message components, this is the opposite of {@link MessageRequest#setComponents(Collection)} and only returns what was set using that setter.
      *
      * <p>For message edit requests, this will not be the current components of the message.
      *

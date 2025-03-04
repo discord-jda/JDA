@@ -759,10 +759,10 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         MessageEditActionImpl action = editRequest();
-        action.setComponentTree(components);
+        action.setComponents(components);
 
         if (isWebhookRequest())
             return action.withHook(webhook);

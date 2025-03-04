@@ -16,13 +16,11 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
@@ -30,7 +28,6 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.ComponentsUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -103,6 +100,18 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     static void setDefaultMentionRepliedUser(boolean mention)
     {
         AllowedMentionsData.setDefaultMentionRepliedUser(mention);
+    }
+
+    // TODO-components-v2 - docs
+    static void setDefaultUseComponentsV2(boolean use)
+    {
+        AbstractMessageBuilder.isDefaultUseComponentsV2 = use;
+    }
+
+    // TODO-components-v2 - docs
+    static boolean isDefaultUseComponentsV2()
+    {
+        return AbstractMessageBuilder.isDefaultUseComponentsV2;
     }
 
     /**
@@ -209,7 +218,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @return The same instance for chaining
      */
     @Nonnull
-    R setComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components);
+    R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * The {@link MessageTopLevelComponent MessageTopLevelComponents} that should be attached to the message.
@@ -246,181 +255,25 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setComponentTree(@Nonnull MessageTopLevelComponent... components)
+    default R setComponents(@Nonnull MessageTopLevelComponent... components)
     {
-        return setComponentTree(Arrays.asList(components));
+        return setComponents(Arrays.asList(components));
     }
 
-    /**
-     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
-     * <br>You can call this method without anything to remove all components from the message.
-     *
-     * <p>The most commonly used layout is {@link ActionRow}.
-     *
-     * <p><b>Example: Set action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
-     *     ActionRow.of(button1, button2)) // second row (shows below the first)
-     *   .queue();
-     * }</pre>
-     *
-     * <p><b>Example: Remove action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents()
-     *   .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @deprecated
-     *         Replaced with {@link #setActionRows(Collection)}
-     */
+    // TODO-components-v2
     @Nonnull
-    @Deprecated
-    @ForRemoval
-    default R setComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        return setActionRows(ComponentsUtil.ensureIsActionRow(components));
-    }
+    R useComponentsV2(boolean use);
 
-    /**
-     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
-     * <br>You can call this method without anything to remove all components from the message.
-     *
-     * <p>The most commonly used layout is {@link ActionRow}.
-     *
-     * <p><b>Example: Set action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
-     *     ActionRow.of(button1, button2)) // second row (shows below the first)
-     *   .queue();
-     * }</pre>
-     *
-     * <p><b>Example: Remove action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents()
-     *   .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @deprecated
-     *         Replaced with {@link #setActionRows(ActionRow...)}
-     */
+    // TODO-components-v2
     @Nonnull
-    @Deprecated
-    @ForRemoval
-    default R setComponents(@Nonnull LayoutComponent<?>... components)
+    default R useComponentsV2()
     {
-        return setActionRows(ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
-     * <br>You can call this method without anything to remove all components from the message.
-     *
-     * <p>The most commonly used layout is {@link ActionRow}.
-     *
-     * <p><b>Example: Set action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
-     *     ActionRow.of(button1, button2)) // second row (shows below the first)
-     *   .queue();
-     * }</pre>
-     *
-     * <p><b>Example: Remove action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents()
-     *   .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     */
-    @Nonnull
-    R setActionRows(@Nonnull Collection<? extends ActionRow> components);
-
-    /**
-     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
-     * <br>You can call this method without anything to remove all components from the message.
-     *
-     * <p>The most commonly used layout is {@link ActionRow}.
-     *
-     * <p><b>Example: Set action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
-     *     ActionRow.of(button1, button2)) // second row (shows below the first)
-     *   .queue();
-     * }</pre>
-     *
-     * <p><b>Example: Remove action rows</b><br>
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents()
-     *   .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     */
-    @Nonnull
-    default R setActionRows(@Nonnull ActionRow... components)
-    {
-        return setComponentTree(Arrays.asList(components));
+        return useComponentsV2(true);
     }
 
     /**
      * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setActionRows(ActionRow...)} instead.
+     * <br>To remove components, you should use {@link #setComponents(Collection)} instead.
      *
      * <p><b>Example</b><br>
      *
@@ -451,19 +304,19 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @return The same instance for chaining
      *
      * @deprecated
-     *         Replace with {@link #setActionRows(ActionRow...) setActionRows(ActionRow.of(components))}
+     *         Replace with {@link #setComponents(MessageTopLevelComponent...) setComponents(ActionRow.of(components))}
      */
     @Nonnull
     @Deprecated
-    @ReplaceWith("setActionRows(ActionRow.of(components))")
+    @ReplaceWith("setComponents(ActionRow.of(components))")
     default R setActionRow(@Nonnull Collection<? extends ItemComponent> components)
     {
-        return setActionRows(ActionRow.of(components));
+        return setComponents(ActionRow.of(components));
     }
 
     /**
      * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setActionRows(ActionRow...)} instead.
+     * <br>To remove components, you should use {@link #setComponents(MessageTopLevelComponent...)} instead.
      *
      * <p><b>Example</b><br>
      *
@@ -494,14 +347,14 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @return The same instance for chaining
      *
      * @deprecated
-     *         Replace with {@link #setActionRows(ActionRow...) setActionRows(ActionRow.of(components))}
+     *         Replace with {@link #setComponents(MessageTopLevelComponent...) setActionRows(ActionRow.of(components))}
      */
     @Nonnull
     @Deprecated
-    @ReplaceWith("setActionRows(ActionRow.of(components))")
+    @ReplaceWith("setComponents(ActionRow.of(components))")
     default R setActionRow(@Nonnull ItemComponent... components)
     {
-        return setActionRows(ActionRow.of(components));
+        return setComponents(ActionRow.of(components));
     }
 
     /**

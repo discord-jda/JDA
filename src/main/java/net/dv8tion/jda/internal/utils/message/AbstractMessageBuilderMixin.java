@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.AbstractMessageBuilder;
@@ -71,17 +70,17 @@ public interface AbstractMessageBuilderMixin<R extends MessageRequest<R>, B exte
 
     @Nonnull
     @Override
-    default R setComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        getBuilder().setComponentTree(components);
+        getBuilder().setComponents(components);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    default R setActionRows(@Nonnull Collection<? extends ActionRow> components)
+    default R useComponentsV2(boolean use)
     {
-        getBuilder().setActionRows(components);
+        getBuilder().useComponentsV2(use);
         return (R) this;
     }
 

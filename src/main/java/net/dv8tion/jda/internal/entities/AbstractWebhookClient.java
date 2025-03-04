@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
@@ -89,16 +88,9 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageCreateAction<T> sendMessageComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        return sendRequest().setComponentTree(components);
-    }
-
-    @Nonnull
-    @Override
-    public WebhookMessageCreateAction<T> sendMessageActionRows(@Nonnull Collection<? extends ActionRow> components)
-    {
-        return sendRequest().addActionRows(components);
+        return sendRequest().setComponents(components);
     }
 
     @Nonnull
@@ -132,10 +124,10 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageEditAction<T> editMessageComponentTreeById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "Components");
-        return editRequest(messageId).setComponentTree(components);
+        return editRequest(messageId).setComponents(components);
     }
 
     @Nonnull

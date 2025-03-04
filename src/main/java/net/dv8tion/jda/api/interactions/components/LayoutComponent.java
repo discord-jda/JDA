@@ -43,7 +43,7 @@ import java.util.stream.StreamSupport;
  *
  * @see ActionRow
  */
-public interface LayoutComponent<T extends Component> extends SerializableData, Iterable<T>, Component, IDisableable
+public interface LayoutComponent<T extends Component> extends SerializableData, Iterable<T>, MessageTopLevelComponent, Component, IDisableable
 {
     // TODO-components-v2 - im not sure that we want to keep this.
     default Stream<T> iterableStream() {
