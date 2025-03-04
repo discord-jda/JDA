@@ -40,12 +40,13 @@ public class SectionImpl
         this.accessory = accessory;
     }
 
-    public static Section of(Collection<? extends SectionContentComponent> _children)
+    public static Section of(SectionAccessoryComponent _accessory, Collection<? extends SectionContentComponent> _children)
     {
         final Collection<SectionContentComponentUnion> children = UnionUtil.membersToUnion(_children);
+        final SectionAccessoryComponentUnion accessory = UnionUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);
         // TODO-components-v2 - checks
 
-        return new SectionImpl(children, null);
+        return new SectionImpl(children, accessory);
     }
 
     public static SectionImpl fromData(DataObject data)
@@ -102,14 +103,6 @@ public class SectionImpl
         return withDisabled(false);
     }
 
-    @Nonnull
-    @Override
-    public Section withAccessory(@Nullable SectionAccessoryComponent accessory)
-    {
-        // TODO-components-v2 Check union
-        return new SectionImpl(uniqueId, components, (SectionAccessoryComponentUnion) accessory);
-    }
-
     @Override
     public Section replace(ComponentReplacer replacer)
     {
@@ -143,7 +136,7 @@ public class SectionImpl
         return components;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public SectionAccessoryComponentUnion getAccessory()
     {

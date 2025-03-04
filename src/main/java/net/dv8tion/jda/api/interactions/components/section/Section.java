@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,19 +36,21 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
 {
     // TODO-components-v2 docs
     @Nonnull
-    static Section of(@Nonnull Collection<? extends SectionContentComponent> components)
+    static Section of(@Nonnull SectionAccessoryComponent accessory, @Nonnull Collection<? extends SectionContentComponent> components)
     {
+        Checks.notNull(accessory, "Accessory");
         Checks.noneNull(components, "Components");
-        return SectionImpl.of(components);
+        return SectionImpl.of(accessory, components);
     }
 
     // TODO-components-v2 docs
     @Nonnull
-    static Section of(@Nonnull SectionContentComponent component, @Nonnull SectionContentComponent... components)
+    static Section of(@Nonnull SectionAccessoryComponent accessory, @Nonnull SectionContentComponent component, @Nonnull SectionContentComponent... components)
     {
-        Checks.notNull(component, "Components");
+        Checks.notNull(accessory, "Accessory");
+        Checks.notNull(component, "Component");
         Checks.noneNull(components, "Components");
-        return of(Helpers.mergeVararg(component, components));
+        return of(accessory, Helpers.mergeVararg(component, components));
     }
 
     // TODO-components-v2 docs
@@ -63,11 +64,6 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     @Override
     @CheckReturnValue
     Section withUniqueId(int uniqueId);
-
-    // TODO-components-v2 docs
-    @Nonnull
-    @CheckReturnValue
-    Section withAccessory(@Nullable SectionAccessoryComponent accessory);
 
     @Nonnull
     @Override
@@ -91,6 +87,6 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     List<SectionContentComponentUnion> getComponents();
 
     // TODO-components-v2 docs
-    @Nullable
+    @Nonnull
     SectionAccessoryComponentUnion getAccessory();
 }
