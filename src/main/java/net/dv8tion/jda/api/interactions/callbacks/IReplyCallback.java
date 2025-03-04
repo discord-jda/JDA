@@ -357,7 +357,7 @@ public interface IReplyCallback extends IDeferrableCallback
     @CheckReturnValue
     default ReplyCallbackAction replyComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        return deferReply().setComponentTree(components);
+        return deferReply().setComponents(components);
     }
 
     /**
@@ -531,7 +531,7 @@ public interface IReplyCallback extends IDeferrableCallback
     default ReplyCallbackAction replyActionRows(@Nonnull Collection<? extends ActionRow> components)
     {
         Checks.noneNull(components, "ActionRows");
-        return deferReply().setActionRows(components);
+        return deferReply().setComponents(components);
     }
 
     /**

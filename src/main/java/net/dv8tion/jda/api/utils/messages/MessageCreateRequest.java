@@ -16,21 +16,18 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import okhttp3.MediaType;
 
 import javax.annotation.Nonnull;
@@ -121,7 +118,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Appends the provided {@link MessageTopLevelComponent MessageTopLevelComponents} to the request.
-     * <br>Use {@link #setComponentTree(Collection)} instead, to replace the components entirely.
+     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
@@ -146,11 +143,11 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    ActionRow
      */
     @Nonnull
-    R addComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components);
+    R addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * Appends the provided {@link MessageTopLevelComponent MessageTopLevelComponents} to the request.
-     * <br>Use {@link #setComponentTree(Collection)} instead, to replace the components entirely.
+     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
@@ -175,144 +172,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    ActionRow
      */
     @Nonnull
-    default R addComponentTree(@Nonnull MessageTopLevelComponent... components)
+    default R addComponents(@Nonnull MessageTopLevelComponent... components)
     {
-        return addComponentTree(Arrays.asList(components));
-    }
-
-    /**
-     * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
-     *
-     * <p><b>Example</b><br>
-     * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addComponents(ActionRow.of(button1, button2))
-     *        .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The layout components to add
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @see    ActionRow
-     *
-     * @deprecated
-     *         Replaced with {@link #addActionRows(Collection)}
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval
-    default R addComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        return addComponentTree(ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
-     *
-     * <p><b>Example</b><br>
-     * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addComponents(ActionRow.of(button1, button2))
-     *        .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The layout components to add
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @see    ActionRow
-     *
-     * @deprecated
-     *         Replaced with {@link #addActionRows(ActionRow...)}
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval
-    default R addComponents(@Nonnull LayoutComponent<?>... components)
-    {
-        return addComponentTree(Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
-    }
-
-    /**
-     * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setActionRows(Collection)} instead, to replace the components entirely.
-     *
-     * <p><b>Example</b><br>
-     * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addComponents(ActionRow.of(button1, button2))
-     *        .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The layout components to add
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @see    ActionRow
-     */
-    @Nonnull
-    R addActionRows(@Nonnull Collection<? extends ActionRow> components);
-
-    /**
-     * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
-     * <br>Use {@link #setActionRows(Collection)} instead, to replace the components entirely.
-     *
-     * <p><b>Example</b><br>
-     * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addComponents(ActionRow.of(button1, button2))
-     *        .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The layout components to add
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @see    ActionRow
-     */
-    @Nonnull
-    default R addActionRows(@Nonnull ActionRow... components)
-    {
-        return addActionRows(Arrays.asList(components));
+        return addComponents(Arrays.asList(components));
     }
 
     /**
@@ -343,14 +205,14 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    ActionRow#of(ActionRowChildComponent...)
      *
      * @deprecated
-     *         Replace with {@link #addActionRows(ActionRow...) addActionRows(ActionRow.of(components))}
+     *         Replace with {@link #addComponents(MessageTopLevelComponent...) addComponents(ActionRow.of(components))}
      */
     @Nonnull
     @Deprecated
     @ReplaceWith("setActionRows(ActionRow.of(components))")
     default R addActionRow(@Nonnull Collection<? extends ItemComponent> components)
     {
-        return addActionRows(ActionRow.of(components));
+        return addComponents(ActionRow.of(components));
     }
 
     /**
@@ -381,14 +243,14 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    ActionRow#of(ActionRowChildComponent...)
      *
      * @deprecated
-     *         Replace with {@link #addActionRows(ActionRow...) addActionRows(ActionRow.of(components))}
+     *         Replace with {@link #addComponents(MessageTopLevelComponent...) addActionRows(ActionRow.of(components))}
      */
     @Nonnull
     @Deprecated
     @ReplaceWith("setActionRows(ActionRow.of(components))")
     default R addActionRow(@Nonnull ItemComponent... components)
     {
-        return addActionRows(ActionRow.of(components));
+        return addComponents(ActionRow.of(components));
     }
 
     /**
@@ -525,16 +387,13 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     {
         Checks.notNull(data, "MessageCreateData");
 
-        if (data.isUsingComponentsV2())
-            setComponentTree(data.getComponents());
-        else
-            // TODO-components-v2 - fix by adding getActionRows(), maybe the method should be gated to isUsingComponentsV2()
-            setActionRows((Collection<? extends ActionRow>) (Collection<?>) data.getComponents());
         return setContent(data.getContent())
                 .setAllowedMentions(data.getAllowedMentions())
                 .mentionUsers(data.getMentionedUsers())
                 .mentionRoles(data.getMentionedRoles())
                 .mentionRepliedUser(data.isMentionRepliedUser())
+                .setComponents(data.getComponents())
+                .useComponentsV2(data.isUsingComponentsV2())
                 .setEmbeds(data.getEmbeds())
                 .setTTS(data.isTTS())
                 .setSuppressEmbeds(data.isSuppressEmbeds())
@@ -553,12 +412,10 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .stream()
                 .filter(e -> e.getType() == EmbedType.RICH)
                 .collect(Collectors.toList());
-        if (message.isUsingComponentsV2())
-            setComponentTree(message.getComponents());
-        else
-            setActionRows(message.getActionRows());
         return setContent(message.getContentRaw())
                 .setEmbeds(embeds)
+                .setComponents(message.getComponents())
+                .useComponentsV2(message.isUsingComponentsV2())
                 .setTTS(message.isTTS())
                 .setSuppressedNotifications(message.isSuppressedNotifications())
                 .setVoiceMessage(message.isVoiceMessage())
@@ -592,11 +449,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
             setEmbeds(data.getEmbeds());
         if (data.isSet(MessageEditBuilder.COMPONENTS))
         {
-            if (data.isUsingComponentsV2())
-                setComponentTree(data.getComponents());
-            else
-                // TODO-components-v2 fix with data.getActionRows();
-                setActionRows((Collection<? extends ActionRow>) (Collection<?>) data.getComponents());
+            setComponents(data.getComponents());
+            useComponentsV2(data.isUsingComponentsV2());
         }
         if (data.isSet(MessageEditBuilder.ATTACHMENTS))
             setFiles(data.getFiles());

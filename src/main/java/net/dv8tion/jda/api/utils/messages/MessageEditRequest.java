@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -206,16 +205,14 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
     @Nonnull
     default R applyCreateData(@Nonnull MessageCreateData data)
     {
-        if (data.isUsingComponentsV2())
-            setComponentTree(data.getComponents());
-        else
-            setActionRows((Collection<? extends ActionRow>) (Collection<?>) data.getComponents());
         return setReplace(true)
                 .setContent(data.getContent())
                 .setAllowedMentions(data.getAllowedMentions())
                 .mentionUsers(data.getMentionedUsers())
                 .mentionRoles(data.getMentionedRoles())
                 .mentionRepliedUser(data.isMentionRepliedUser())
+                .setComponents(data.getComponents())
+                .useComponentsV2(data.isUsingComponentsV2())
                 .setEmbeds(data.getEmbeds())
                 .setFiles(data.getFiles());
     }

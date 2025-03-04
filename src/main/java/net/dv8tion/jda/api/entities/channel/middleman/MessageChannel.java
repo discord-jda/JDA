@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.entities.channel.middleman;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel;
@@ -24,7 +23,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.ParsingException;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -55,7 +53,7 @@ import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePagination
 import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.ComponentsUtil;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -628,10 +626,10 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "MessageTopLevelComponents");
-        return new MessageCreateActionImpl(this).setComponentTree(components);
+        return new MessageCreateActionImpl(this).setComponents(components);
     }
 
     /**
@@ -672,204 +670,11 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponentTree(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
+    default MessageCreateAction sendMessageComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
-        Checks.notNull(component, "MessageTopLevelComponents");
+        Checks.notNull(component, "MessageTopLevelComponent");
         Checks.noneNull(other, "MessageTopLevelComponents");
-        List<MessageTopLevelComponent> components = new ArrayList<>(1 + other.length);
-        components.add(component);
-        Collections.addAll(components, other);
-        return new MessageCreateActionImpl(this).setComponentTree(components);
-    }
-
-    /**
-     * Send a message to this channel.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>if this channel was deleted</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
-     *         does not share any Guilds with the recipient User</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  components
-     *         {@link LayoutComponent LayoutComponents} to send
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a {@link PrivateChannel} and the recipient is a bot
-     * @throws IllegalArgumentException
-     *         If any of the components is null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageCreateAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #sendMessageActionRows(Collection)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        Checks.noneNull(components, "LayoutComponents");
-        return sendMessageActionRows(ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * Send a message to this channel.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>if this channel was deleted</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
-     *         does not share any Guilds with the recipient User</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  component
-     *         {@link LayoutComponent} to send
-     * @param  other
-     *         Additional {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a {@link PrivateChannel} and the recipient is a bot
-     * @throws IllegalArgumentException
-     *         If any of the components is null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageCreateAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #sendMessageActionRows(ActionRow, ActionRow...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageCreateAction sendMessageComponents(@Nonnull LayoutComponent<?> component, @Nonnull LayoutComponent<?>... other)
-    {
-        Checks.notNull(component, "LayoutComponent");
-        Checks.noneNull(other, "LayoutComponents");
-        List<MessageTopLevelComponent> components = new ArrayList<>(1 + other.length);
-        components.add(ComponentsUtil.ensureIsActionRow(component));
-        Collections.addAll(components, ComponentsUtil.ensureIsActionRow(other));
-        return new MessageCreateActionImpl(this).setComponentTree(components);
-    }
-
-    /**
-     * Send a message to this channel.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>if this channel was deleted</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
-     *         does not share any Guilds with the recipient User</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  components
-     *         {@link ActionRow ActionRows} to send
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a {@link PrivateChannel} and the recipient is a bot
-     * @throws IllegalArgumentException
-     *         If any of the components is null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageCreateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction sendMessageActionRows(@Nonnull Collection<? extends ActionRow> components)
-    {
-        Checks.noneNull(components, "ActionRows");
-        return new MessageCreateActionImpl(this).setActionRows(components);
-    }
-
-    /**
-     * Send a message to this channel.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>if this channel was deleted</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
-     *         does not share any Guilds with the recipient User</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  component
-     *         {@link LayoutComponent} to send
-     * @param  other
-     *         Additional {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a {@link PrivateChannel} and the recipient is a bot
-     * @throws IllegalArgumentException
-     *         If any of the components is null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageCreateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction sendMessageActionRows(@Nonnull ActionRow component, @Nonnull ActionRow... other)
-    {
-        Checks.notNull(component, "ActionRow");
-        Checks.noneNull(other, "ActionRows");
-        List<ActionRow> components = new ArrayList<>(1 + other.length);
-        components.add(component);
-        Collections.addAll(components, other);
-        return new MessageCreateActionImpl(this).setActionRows(components);
+        return new MessageCreateActionImpl(this).setComponents(Helpers.mergeVararg(component, other));
     }
 
     /**
@@ -3332,11 +3137,11 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentTreeById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noneNull(components, "Components");
-        return new MessageEditActionImpl(this, messageId).setComponentTree(components);
+        return new MessageEditActionImpl(this, messageId).setComponents(components);
     }
 
     /**
@@ -3393,9 +3198,9 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentTreeById(long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        return editMessageComponentTreeById(Long.toUnsignedString(messageId), components);
+        return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
 
     /**
@@ -3454,10 +3259,10 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentTreeById(@Nonnull String messageId, @Nonnull MessageTopLevelComponent... components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
-        return editMessageComponentTreeById(messageId, Arrays.asList(components));
+        return editMessageComponentsById(messageId, Arrays.asList(components));
     }
 
     /**
@@ -3513,518 +3318,11 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentTreeById(long messageId, @Nonnull MessageTopLevelComponent... components)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
-        return editMessageComponentTreeById(messageId, Arrays.asList(components));
+        return editMessageComponentsById(messageId, Arrays.asList(components));
     }
-
-
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws UnsupportedOperationException
-     *         If the component layout is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageEditAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #editMessageActionRowsById(String, Collection)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageActionRowsById(messageId, ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws UnsupportedOperationException
-     *         If the component layout is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageEditAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #editMessageActionRowsById(long, Collection)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageActionRowsById(messageId, ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws UnsupportedOperationException
-     *         If the component layout is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageEditAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #editMessageActionRowsById(String, ActionRow...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent<?>... components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageActionRowsById(messageId, Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws UnsupportedOperationException
-     *         If the component layout is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageEditAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #editMessageActionRowsById(long, ActionRow...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull LayoutComponent<?>... components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageActionRowsById(messageId, Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws UnsupportedOperationException
-     *         If the component layout is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageEditAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditAction editMessageActionRowsById(@Nonnull String messageId, @Nonnull Collection<? extends ActionRow> components)
-    {
-        Checks.noneNull(components, "Components");
-        return new MessageEditActionImpl(this, messageId).setActionRows(components);
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws UnsupportedOperationException
-     *         If the component layout is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageEditAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditAction editMessageActionRowsById(long messageId, @Nonnull Collection<? extends ActionRow> components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageComponentTreeById(messageId, components);
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws UnsupportedOperationException
-     *         If the component layout is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageEditAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditAction editMessageActionRowsById(@Nonnull String messageId, @Nonnull ActionRow... components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageActionRowsById(messageId, Arrays.asList(components));
-    }
-
-    /**
-     * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
-     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
-     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
-     *         Discord does not allow editing of other users' Messages!</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
-     *
-     * @param  messageId
-     *         The id referencing the Message that should be edited
-     * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
-     *
-     * @throws UnsupportedOperationException
-     *         If the component layout is a custom implementation that is not supported by this interface
-     * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
-     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link MessageEditAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditAction editMessageActionRowsById(long messageId, @Nonnull ActionRow... components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageComponentTreeById(messageId, Arrays.asList(components));
-    }
-
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.

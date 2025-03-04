@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -220,20 +219,18 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
 
     @Nonnull
     @Override
-    public MessageEditBuilder setComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    public MessageEditBuilder setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        super.setComponentTree(components);
+        super.setComponents(components);
         configuredFields |= COMPONENTS;
-        configuredFields |= FLAGS;
         return this;
     }
 
     @Nonnull
     @Override
-    public MessageEditBuilder setActionRows(@Nonnull Collection<? extends ActionRow> components)
-    {
-        super.setActionRows(components);
-        configuredFields |= COMPONENTS;
+    public MessageEditBuilder useComponentsV2(boolean use) {
+        super.useComponentsV2(use);
+        configuredFields |= FLAGS;
         return this;
     }
 
@@ -259,13 +256,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (data.isSet(EMBEDS))
             this.setEmbeds(data.getEmbeds());
         if (data.isSet(COMPONENTS))
-        {
-            if (data.isUsingComponentsV2())
-                setComponentTree(data.getComponents());
-            else
-                // TODO-components-v2 fix with data.getActionRows();
-                setActionRows((Collection<? extends ActionRow>) (Collection<?>) data.getComponents());
-        }
+            this.setComponents(data.getComponents());
         if (data.isSet(ATTACHMENTS))
             this.setAttachments(data.getAttachments());
         if (data.isSet(MENTIONS))

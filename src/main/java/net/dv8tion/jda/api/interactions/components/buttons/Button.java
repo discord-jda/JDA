@@ -73,7 +73,7 @@ import javax.annotation.Nullable;
  * <img alt="ButtonExample" src="https://raw.githubusercontent.com/discord-jda/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  *
  * @see ActionRow#of(ActionRowChildComponent...)
- * @see ReplyCallbackAction#addComponentTree(net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent...)
+ * @see ReplyCallbackAction#addComponents(net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent...)
  */
 public interface Button extends ActionComponent, IdentifiableComponent, ActionRowChildComponent, SectionAccessoryComponent
 {

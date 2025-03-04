@@ -26,9 +26,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -161,26 +159,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @Override
-    default MessageCreateAction sendMessageComponentTree(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
+    default MessageCreateAction sendMessageComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
         checkCanSendMessage();
-        return MessageChannelUnion.super.sendMessageComponentTree(component, other);
-    }
-
-    @Nonnull
-    @Override
-    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        checkCanSendMessage();
-        return MessageChannelUnion.super.sendMessageComponents(components);
-    }
-
-    @Nonnull
-    @Override
-    default MessageCreateAction sendMessageActionRows(@Nonnull Collection<? extends ActionRow> components)
-    {
-        checkCanSendMessage();
-        return MessageChannelUnion.super.sendMessageActionRows(components);
+        return MessageChannelUnion.super.sendMessageComponents(component, other);
     }
 
     @Nonnull
@@ -357,10 +339,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentTreeById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         checkCanSendMessage();
-        return MessageChannelUnion.super.editMessageComponentTreeById(messageId, components);
+        return MessageChannelUnion.super.editMessageComponentsById(messageId, components);
     }
 
     @Nonnull

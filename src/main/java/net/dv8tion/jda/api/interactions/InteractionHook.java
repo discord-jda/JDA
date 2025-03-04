@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.interactions;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -25,7 +24,6 @@ import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.response.InteractionCallbackResponse;
@@ -36,7 +34,6 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.ComponentsUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -190,7 +187,7 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -224,7 +221,7 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -251,14 +248,14 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        return editMessageComponentTreeById("@original", components);
+        return editMessageComponentsById("@original", components);
     }
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -285,164 +282,14 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalComponentTree(@Nonnull MessageTopLevelComponent... components)
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull MessageTopLevelComponent... components)
     {
-        return editMessageComponentTreeById("@original", components);
+        return editMessageComponentsById("@original", components);
     }
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
-     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
-     *
-     * <p>This method will be delayed until the interaction is acknowledged.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided components are null, or more than 5 layouts are provided
-     *
-     * @return {@link WebhookMessageEditAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #editOriginalActionRows(Collection)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        Checks.noneNull(components, "LayoutComponents");
-        return editMessageComponentTreeById("@original", ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
-     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
-     *
-     * <p>This method will be delayed until the interaction is acknowledged.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided components are null, or more than 5 layouts are provided
-     *
-     * @return {@link WebhookMessageEditAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #editOriginalActionRows(ActionRow...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull LayoutComponent<?>... components)
-    {
-        Checks.noneNull(components, "LayoutComponents");
-        return editMessageComponentTreeById("@original", Arrays.asList(ComponentsUtil.ensureIsActionRow(components)));
-    }
-
-    /**
-     * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
-     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
-     *
-     * <p>This method will be delayed until the interaction is acknowledged.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  components
-     *         The new {@link ActionRow ActionRows} for this message
-     *
-     * @throws IllegalArgumentException
-     *         If the provided components are null, or more than 5 layouts are provided
-     *
-     * @return {@link WebhookMessageEditAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalActionRows(@Nonnull Collection<? extends ActionRow> components)
-    {
-        Checks.noneNull(components, "ActionRows");
-        return editMessageActionRowsById("@original", components);
-    }
-
-    /**
-     * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
-     * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
-     *
-     * <p>This method will be delayed until the interaction is acknowledged.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
-     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The message for that id does not exist</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  components
-     *         The new {@link ActionRow ActionRows} for this message
-     *
-     * @throws IllegalArgumentException
-     *         If the provided components are null, or more than 5 layouts are provided
-     *
-     * @return {@link WebhookMessageEditAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalActionRows(@Nonnull ActionRow... components)
-    {
-        Checks.noneNull(components, "ActionRows");
-        return editMessageComponentTreeById("@original", Arrays.asList(components));
-    }
-
-    /**
-     * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -476,7 +323,7 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -510,7 +357,7 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -544,7 +391,7 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -581,7 +428,7 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -635,7 +482,7 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link IMessageEditCallback#editComponentTree(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link IMessageEditCallback#editComponents(Collection)} and {@link IMessageEditCallback#deferEdit()} this will be the message the components are attached to.
      * For {@link IReplyCallback#deferReply()} and {@link IReplyCallback#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.

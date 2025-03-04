@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -40,7 +39,10 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
-import net.dv8tion.jda.api.interactions.components.*;
+import net.dv8tion.jda.api.interactions.components.ComponentIterator;
+import net.dv8tion.jda.api.interactions.components.ComponentTree;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -64,7 +66,6 @@ import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelM
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.MultipartBody;
 import org.jetbrains.annotations.Unmodifiable;
@@ -688,7 +689,7 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Layouts of interactive components, usually {@link ActionRow ActionRows}.
-     * <br>You can use {@link MessageRequest#setComponentTree(MessageTopLevelComponent...)} to update these.
+     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
@@ -751,7 +752,7 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Rows of interactive components such as {@link Button Buttons}.
-     * <br>You can use {@link MessageRequest#setComponentTree(MessageTopLevelComponent...)} to update these.
+     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
@@ -1084,11 +1085,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageEditAction}
      *
-     * @see    MessageChannel#editMessageComponentTreeById(long, Collection)
+     * @see    MessageChannel#editMessageComponentsById(long, Collection)
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditAction editMessageComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components);
+    MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * Edits this message using the provided {@link MessageTopLevelComponent MessageTopLevelComponents}.
@@ -1124,200 +1125,14 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageEditAction}
      *
-     * @see    MessageChannel#editMessageComponentTreeById(long, Collection)
+     * @see    MessageChannel#editMessageComponentsById(long, Collection)
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentTree(@Nonnull MessageTopLevelComponent... components)
+    default MessageEditAction editMessageComponents(@Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
-        return editMessageComponentTree(Arrays.asList(components));
-    }
-
-    /**
-     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a system message
-     * @throws IllegalStateException
-     *         If the message is not authored by this bot
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
-     *
-     * @return {@link MessageEditAction}
-     *
-     * @see    MessageChannel#editMessageComponentTreeById(long, Collection)
-     *
-     * @deprecated
-     *         Replaced with {@link #editMessageActionRows(Collection)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageActionRows(ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a system message
-     * @throws IllegalStateException
-     *         If the message is not authored by this bot
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
-     *
-     * @return {@link MessageEditAction}
-     *
-     * @see    MessageChannel#editMessageComponentTreeById(long, Collection)
-     *
-     * @deprecated
-     *         Replaced with {@link #editMessageActionRows(ActionRow...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageEditAction editMessageComponents(@Nonnull LayoutComponent<?>... components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageActionRows(ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * Edits this message using the provided {@link ActionRow ActionRows}.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  components
-     *         The new {@link ActionRow ActionRows} of the message, empty list to remove all components
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a system message
-     * @throws IllegalStateException
-     *         If the message is not authored by this bot
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link ActionRow#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
-     *
-     * @return {@link MessageEditAction}
-     *
-     * @see    MessageChannel#editMessageComponentTreeById(long, Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditAction editMessageActionRows(@Nonnull Collection<? extends ActionRow> components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageComponentTree(components);
-    }
-
-    /**
-     * Edits this message using the provided {@link ActionRow ActionRows}.
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link Guild Guild}
-     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
-     *         was revoked in the {@link GuildMessageChannel}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
-     *
-     * @param  components
-     *         The new {@link ActionRow ActionRows} of the message, empty list to remove all components
-     *
-     * @throws UnsupportedOperationException
-     *         If this is a system message
-     * @throws IllegalStateException
-     *         If the message is not authored by this bot
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link ActionRow#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *         </ul>
-     *
-     * @return {@link MessageEditAction}
-     *
-     * @see    MessageChannel#editMessageComponentTreeById(long, Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageEditAction editMessageActionRows(@Nonnull ActionRow... components)
-    {
-        Checks.noneNull(components, "Components");
-        return editMessageComponentTree(Arrays.asList(components));
+        return editMessageComponents(Arrays.asList(components));
     }
 
     /**
@@ -1770,10 +1585,10 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponentTree(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    default MessageCreateAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "MessageTopLevelComponents");
-        return getChannel().sendMessageComponentTree(components).setMessageReference(this);
+        return getChannel().sendMessageComponents(components).setMessageReference(this);
     }
 
     /**
@@ -1797,174 +1612,22 @@ public interface Message extends ISnowflake, Formattable
      *         Any addition {@link MessageTopLevelComponent MessageTopLevelComponents} to send
      *
      * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageComponentTree(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
+     *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
      * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageComponentTree(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
+     *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
      *
      * @return {@link MessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponentTree(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
+    default MessageCreateAction replyComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
         Checks.notNull(component, "MessageTopLevelComponents");
         Checks.noneNull(other, "MessageTopLevelComponents");
         List<MessageTopLevelComponent> components = new ArrayList<>(1 + other.length);
         components.add(component);
         Collections.addAll(components, other);
-        return replyComponentTree(components);
-    }
-
-    /**
-     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If this message no longer exists</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  components
-     *         The {@link LayoutComponent LayoutComponents} to send
-     *
-     * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
-     * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
-     *
-     * @return {@link MessageCreateAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #replyActionRows(Collection)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageCreateAction replyComponents(@Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        Checks.noneNull(components, "LayoutComponent");
-        return replyActionRows(ComponentsUtil.ensureIsActionRow(components));
-    }
-
-    /**
-     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If this message no longer exists</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  component
-     *         The {@link LayoutComponent} to send
-     * @param  other
-     *         Any addition {@link LayoutComponent LayoutComponents} to send
-     *
-     * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
-     * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
-     *
-     * @return {@link MessageCreateAction}
-     *
-     * @deprecated
-     *         Replaced with {@link #replyActionRows(ActionRow, ActionRow...)}
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    default MessageCreateAction replyComponents(@Nonnull LayoutComponent<?> component, @Nonnull LayoutComponent<?>... other)
-    {
-        Checks.notNull(component, "LayoutComponent");
-        Checks.noneNull(other, "LayoutComponents");
-        return replyActionRows(ComponentsUtil.ensureIsActionRow(component), ComponentsUtil.ensureIsActionRow(other));
-    }
-
-    /**
-     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If this message no longer exists</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  components
-     *         The {@link ActionRow ActionRows} to send
-     *
-     * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageActionRows(ActionRow, ActionRow...)} throws
-     * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageActionRows(ActionRow, ActionRow...)} throws
-     *
-     * @return {@link MessageCreateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction replyActionRows(@Nonnull Collection<? extends ActionRow> components)
-    {
-        Checks.noneNull(components, "ActionRows");
-        return getChannel().sendMessageActionRows(components).setMessageReference(this);
-    }
-
-    /**
-     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If this message no longer exists</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  component
-     *         The {@link ActionRow} to send
-     * @param  other
-     *         Any addition {@link ActionRow LayoutComponents} to send
-     *
-     * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageActionRows(ActionRow, ActionRow...)} throws
-     * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageActionRows(ActionRow, ActionRow...)} throws
-     *
-     * @return {@link MessageCreateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction replyActionRows(@Nonnull ActionRow component, @Nonnull ActionRow... other)
-    {
-        Checks.notNull(component, "ActionRow");
-        Checks.noneNull(other, "ActionRows");
-
-        List<ActionRow> componentList = new ArrayList<>();
-        componentList.add(component);
-        Collections.addAll(componentList, other);
-        return replyActionRows(componentList);
+        return replyComponents(components);
     }
 
     /**
