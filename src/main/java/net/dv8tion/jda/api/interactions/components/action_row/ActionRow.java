@@ -191,11 +191,11 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
     ActionRow withUniqueId(int uniqueId);
 
     /**
-     * List representation of this component layout.
+     * Returns the components contained in this action row.
      * <br>This list is modifiable, <b>but will not be in a later release</b>.
      * <br>Updating the list will log a warning.
      *
-     * @return {@link List} of components in this layout
+     * @return {@link List} of {@link ActionRowChildComponentUnion} contained in this action row
      */
     @Nonnull
     List<ActionRowChildComponentUnion> getComponents();

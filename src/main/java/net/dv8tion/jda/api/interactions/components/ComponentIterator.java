@@ -81,7 +81,7 @@ public class ComponentIterator implements Iterator<Component>
         } else if (component instanceof Section) {
             Section section = (Section) component;
 
-            List<Component> sectionComponents = new ArrayList<>(section.getComponents());
+            List<Component> sectionComponents = new ArrayList<>(section.getContentComponents());
             sectionComponents.add(section.getAccessory());
 
             return sectionComponents.iterator();

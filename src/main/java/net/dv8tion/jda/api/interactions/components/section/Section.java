@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.components.section;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
@@ -28,7 +30,9 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 // TODO-components-v2 docs
@@ -81,10 +85,26 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     @Override
     Section createCopy();
 
-    // TODO-components-v2 docs
+    /**
+     * Returns an immutable list with the components contained by this section.
+     *
+     * @return {@link List} of {@link SectionContentComponentUnion} in this section
+     */
     @Nonnull
     @Unmodifiable
-    List<SectionContentComponentUnion> getComponents();
+    List<SectionContentComponentUnion> getContentComponents();
+
+    @Nonnull
+    @Override
+    @Unmodifiable
+    @Deprecated
+    @ForRemoval
+    default List<? extends Component> getComponents()
+    {
+        final List<Component> list = new ArrayList<>(getContentComponents());
+        list.add(getAccessory());
+        return Collections.unmodifiableList(list);
+    }
 
     // TODO-components-v2 docs
     @Nonnull

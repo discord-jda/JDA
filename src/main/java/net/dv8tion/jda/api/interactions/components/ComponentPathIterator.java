@@ -66,7 +66,7 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
         } else if (component instanceof Section) {
             Section section = (Section) component;
 
-            stack.push(new CollectionAttributeIterator(componentWithPath.path, "components", section.getComponents()));
+            stack.push(new CollectionAttributeIterator(componentWithPath.path, "components", section.getContentComponents()));
             stack.push(singleAttributeIterator(componentWithPath.path, "accessory", section.getAccessory()));
         }
 
