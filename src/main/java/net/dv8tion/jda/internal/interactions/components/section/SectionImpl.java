@@ -14,6 +14,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnionUtil;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -108,7 +109,7 @@ public class SectionImpl
     {
         final List<SectionContentComponentUnion> newContent = IReplacerAware.doReplace(
                 SectionContentComponent.class,
-                getComponents(),
+                getContentComponents(),
                 replacer,
                 Function.identity()
         );
@@ -131,7 +132,8 @@ public class SectionImpl
 
     @Nonnull
     @Override
-    public List<SectionContentComponentUnion> getComponents()
+    @Unmodifiable
+    public List<SectionContentComponentUnion> getContentComponents()
     {
         return components;
     }
@@ -191,7 +193,7 @@ public class SectionImpl
     {
         final DataObject json = DataObject.empty();
         json.put("type", getType().getKey());
-        json.put("components", DataArray.fromCollection(getComponents()));
+        json.put("components", DataArray.fromCollection(getContentComponents()));
         if (uniqueId >= 0)
             json.put("id", uniqueId);
         if (accessory != null)

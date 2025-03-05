@@ -97,7 +97,11 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     @Override
     Container createCopy();
 
-    // TODO-components-v2 docs
+    /**
+     * Returns an immutable list with the components contained by this container.
+     *
+     * @return {@link List} of {@link ContainerChildComponentUnion} in this container
+     */
     @Nonnull
     @Unmodifiable
     List<ContainerChildComponentUnion> getComponents();
