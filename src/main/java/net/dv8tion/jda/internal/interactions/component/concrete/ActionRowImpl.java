@@ -16,27 +16,33 @@ import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnionUtil;
+import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, MessageTopLevelComponentUnion, ModalTopLevelComponentUnion, ContainerChildComponentUnion, IReplacerAware<ActionRow>
 {
+    private static final Logger LOG = JDALogger.getLog(ActionRow.class);
+
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
 
     private ActionRowImpl() {
         this.uniqueId = -1;
-        this.components = new ArrayList<>();
+        this.components = new LogOnModificationList();
     }
 
     private ActionRowImpl(List<ActionRowChildComponentUnion> components, int uniqueId) {
         this.uniqueId = uniqueId;
-        this.components = new ArrayList<>(components);
+        this.components = new LogOnModificationList(components);
     }
 
     @Nonnull
@@ -247,5 +253,98 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
             return false;
 
         return components.equals(((ActionRowImpl) obj).components);
+    }
+
+    private static class LogOnModificationList extends AbstractList<ActionRowChildComponentUnion> {
+
+        private final List<ActionRowChildComponentUnion> list = new ArrayList<>();
+
+        public LogOnModificationList()
+        {
+        }
+
+        public LogOnModificationList(List<ActionRowChildComponentUnion> components)
+        {
+            list.addAll(components);
+        }
+
+        @Override
+        public ActionRowChildComponentUnion get(int index)
+        {
+            return list.get(index);
+        }
+
+        @Override
+        public ActionRowChildComponentUnion set(int index, ActionRowChildComponentUnion element)
+        {
+            logModifiedRow();
+            return list.set(index, element);
+        }
+
+        @Override
+        public void add(int index, ActionRowChildComponentUnion element)
+        {
+            logModifiedRow();
+            list.add(index, element);
+        }
+
+        @Override
+        public int size()
+        {
+            return list.size();
+        }
+
+        @Override
+        public boolean remove(Object o)
+        {
+            logModifiedRow();
+            return list.remove(o);
+        }
+
+        @Override
+        public boolean addAll(int index, Collection<? extends ActionRowChildComponentUnion> c)
+        {
+            logModifiedRow();
+            return list.addAll(index, c);
+        }
+
+        @Override
+        public void replaceAll(@Nonnull UnaryOperator<ActionRowChildComponentUnion> operator)
+        {
+            logModifiedRow();
+            list.replaceAll(operator);
+        }
+
+        @Override
+        public boolean removeAll(@Nonnull Collection<?> c)
+        {
+            logModifiedRow();
+            return list.removeAll(c);
+        }
+
+        @Override
+        public boolean retainAll(@Nonnull Collection<?> c)
+        {
+            logModifiedRow();
+            return list.retainAll(c);
+        }
+
+        @Override
+        public boolean removeIf(@Nonnull Predicate<? super ActionRowChildComponentUnion> filter)
+        {
+            logModifiedRow();
+            return list.removeIf(filter);
+        }
+
+        @Override
+        public void sort(Comparator<? super ActionRowChildComponentUnion> c)
+        {
+            logModifiedRow();
+            list.sort(c);
+        }
+    }
+
+    private static void logModifiedRow() {
+        LOG.warn("ActionRow(s) will become immutable in a later release, please update your code, instead replacing the action row with its new components.", new Exception());
     }
 }
