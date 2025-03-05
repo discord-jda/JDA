@@ -21,7 +21,9 @@ import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.interactions.components.section.Section;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -34,6 +36,8 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -43,12 +47,52 @@ import java.util.stream.StreamSupport;
  * <p>Components must always be contained within such a layout.
  *
  * @see ActionRow
+ *
+ * @deprecated
+ *      Will be removed in a future release, please use {@link ActionRow} instead.
  */
+@Deprecated
+@ForRemoval
 public interface LayoutComponent<T extends Component> extends SerializableData, Iterable<T>, MessageTopLevelComponent, ModalTopLevelComponent, Component, IDisableable
 {
-    // TODO-components-v2 - im not sure that we want to keep this.
+    /**
+     * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
+     */
+    @Deprecated
+    @ForRemoval
     default Stream<T> iterableStream() {
         return StreamSupport.stream(spliterator(), false);
+    }
+
+    /**
+     * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
+     */
+    @Nonnull
+    @Override
+    @Deprecated
+    @ForRemoval
+    Iterator<T> iterator();
+
+    /**
+     * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
+     */
+    @Override
+    @Deprecated
+    @ForRemoval
+    default void forEach(Consumer<? super T> action)
+    {
+        Iterable.super.forEach(action);
+    }
+
+    /**
+     * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
+     */
+    @Override
+    @Deprecated
+    @ForRemoval
+    default Spliterator<T> spliterator()
+    {
+        return Iterable.super.spliterator();
     }
 
     /**
@@ -58,12 +102,11 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * @return {@link List} of components in this layout
      *
      * @deprecated
-     *         Moved to the subclasses {@link ActionRow},
-     *         {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
-     *         {@link net.dv8tion.jda.api.interactions.components.container.Container Container}
+     *         Moved to the subclasses: {@link ActionRow#getComponents()},
+     *         {@link Section#getContentComponents()},
+     *         {@link Container#getComponents()}
      *         This will be removed as it is unclear what this method returns for some component types,
-     *         like {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
-     *         which also contains an accessory, would it be included? or not? does it get included recursively?
+     *         like {@link Section}, which also contains an accessory, would it be included? or not? does it get included recursively?
      */
     @Nonnull
     @Deprecated
@@ -76,10 +119,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * @return Immutable {@link List} copy of {@link ActionComponent ActionComponents} in this layout
      *
      * @deprecated
-     *         Replace with the getters from a more concrete component type, such as {@link ActionRow}.
-     *         This will be removed as it is unclear what this method returns for some component types,
-     *         like {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
-     *         which also contains an accessory, would it be included? or not? does it get included recursively?
+     *         Moved to {@link ActionRow#getActionComponents()}
      */
     @Nonnull
     @Unmodifiable
@@ -99,10 +139,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * @return Immutable {@link List} of {@link Button Buttons}
      *
      * @deprecated
-     *         Replace with the getters from a more concrete component type, such as {@link ActionRow}.
-     *         This will be removed as it is unclear what this method returns for some component types,
-     *         like {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
-     *         which also contains an accessory, would it be included? or not? does it get included recursively?
+     *         Moved to {@link ActionRow#getButtons()}
      */
     @Nonnull
     @Unmodifiable
@@ -138,44 +175,14 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
         return getActionComponents().stream().noneMatch(ActionComponent::isDisabled);
     }
 
-    /**
-     * Returns a new instance of this LayoutComponent with all components set to disabled/enabled.
-     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #iterator()}
-     * or {@link #iterableStream()}.
-     *
-     * @param  disabled
-     *         True if the components should be set to disabled, false if they should be enabled
-     *
-     * @return The new layout component with all components updated
-     *
-     * @see    ActionComponent#withDisabled(boolean)
-     */
     @Nonnull
     @CheckReturnValue
     LayoutComponent<T> withDisabled(boolean disabled);
 
-    /**
-     * Returns a new instance of this LayoutComponent with all components set to disabled.
-     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #iterator()}
-     * or {@link #iterableStream()}.
-     *
-     * @return The new layout component with all components updated
-     *
-     * @see    ActionComponent#asDisabled()
-     */
     @Nonnull
     @CheckReturnValue
     LayoutComponent<T> asDisabled();
 
-    /**
-     * Returns a new instance of this LayoutComponent with all components set to enabled.
-     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #iterator()}
-     * or {@link #iterableStream()}.
-     *
-     * @return The new layout component with all components updated
-     *
-     * @see    ActionComponent#asEnabled()
-     */
     @Nonnull
     @CheckReturnValue
     LayoutComponent<T> asEnabled();
@@ -185,7 +192,12 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * <br>This is <b>not always</b> the same as {@code getComponents().isEmpty()}.
      *
      * @return True, if this layout has no components
+     *
+     * @deprecated
+     *         Will be removed in a future release, as empty layout cannot be created.
      */
+    @Deprecated
+    @ForRemoval
     boolean isEmpty();
 
     /**
@@ -195,7 +207,12 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * been exceeded.
      *
      * @return True, if this layout is valid
+     *
+     * @deprecated
+     *         Moved to {@link ActionRow#isValid()}
      */
+    @Deprecated
+    @ForRemoval
     boolean isValid();
 
     /**

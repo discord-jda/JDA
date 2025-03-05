@@ -16,23 +16,22 @@
 
 package net.dv8tion.jda.api.interactions.components.action_row;
 
-import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.api.interactions.components.*;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.concrete.ActionRowImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * One row of action components.
@@ -201,18 +200,39 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
     List<ActionRowChildComponentUnion> getComponents();
 
     /**
-     * Check whether this layout is empty.
-     * <br>Identical to {@code getComponents().isEmpty()}
+     * Returns an immutable list of {@link ActionComponent ActionComponents} in this row.
      *
-     * @return True, if this layout has no components
+     * @return Immutable {@link List} copy of {@link ActionComponent ActionComponents} in this row
      */
-    default boolean isEmpty()
+    @Nonnull
+    @Unmodifiable
+    default List<ActionComponent> getActionComponents()
     {
-        return getComponents().isEmpty();
+        return getComponents().stream()
+                .filter(ActionComponent.class::isInstance)
+                .map(ActionComponent.class::cast)
+                .collect(Helpers.toUnmodifiableList());
+    }
+
+    /**
+     * Returns an immutable list of {@link Button Buttons} in this row.
+     *
+     * @return Immutable {@link List} of {@link Button Buttons}
+     */
+    @Nonnull
+    @Unmodifiable
+    default List<Button> getButtons()
+    {
+        return getComponents().stream()
+                .filter(Button.class::isInstance)
+                .map(Button.class::cast)
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
     @Override
+    @Deprecated
+    @ForRemoval
     ActionRow createCopy();
 
     @Override
@@ -245,25 +265,12 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
     @Override
     ActionRow withDisabled(boolean disabled);
 
-    @Override
-    default boolean isValid()
-    {
-        if (isEmpty())
-            return false;
-
-        List<ActionRowChildComponentUnion> components = getComponents();
-        Map<Component.Type, List<ActionRowChildComponentUnion>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
-        if (groups.size() > 1) // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
-            return false;
-
-        for (Map.Entry<Component.Type, List<ActionRowChildComponentUnion>> entry : groups.entrySet())
-        {
-            Component.Type type = entry.getKey();
-            List<ActionRowChildComponentUnion> list = entry.getValue();
-            if (list.size() > getMaxAllowed(type))
-                return false;
-        }
-
-        return true;
-    }
+    /**
+     * Check whether this row has a valid configuration.
+     *
+     * <p>This primarily checks the number of components in a single row.
+     *
+     * @return True, if this action row is valid
+     */
+    boolean isValid();
 }
