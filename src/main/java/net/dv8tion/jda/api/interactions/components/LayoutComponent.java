@@ -199,8 +199,13 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * <br>This does not create copies of the contained components.
      *
      * @return A copy of this {@link LayoutComponent}
+     *
+     * @deprecated
+     *         For removal, all components will be immutable, so this method is not required
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
     LayoutComponent<T> createCopy();
 
     /**
