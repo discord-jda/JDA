@@ -53,9 +53,9 @@ public interface Component extends SerializableData
 
     /**
      * Whether this Component is compatible with {@link net.dv8tion.jda.api.entities.Message Messages}.
-     * <br>If the component in question is a {@link LayoutComponent}, this also checks every component inside it.
+     * <br>If the component in question contains other components, this also checks every component inside it.
      *
-     * @return True, if this Component is compatible with messages.
+     * @return True, if this Component (and its children) is compatible with messages.
      */
     default boolean isMessageCompatible()
     {
@@ -64,9 +64,9 @@ public interface Component extends SerializableData
 
     /**
      * Whether this Component is compatible with {@link Modal Modals}.
-     * <br>If the component in question is a {@link LayoutComponent}, this also checks every component inside it.
+     * <br>If the component in question contains other components, this also checks every component inside it.
      *
-     * @return True, if this Component is compatible with modals.
+     * @return True, if this Component (and its children) is compatible with modals.
      */
     default boolean isModalCompatible()
     {

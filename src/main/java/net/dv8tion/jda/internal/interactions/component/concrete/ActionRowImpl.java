@@ -230,6 +230,34 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     }
 
     @Override
+    public boolean isEmpty()
+    {
+        return components.isEmpty();
+    }
+
+    public boolean isValid()
+    {
+        // TODO remove this check once this class is completely immutable
+        if (isEmpty())
+            return false;
+
+        List<ActionRowChildComponentUnion> components = getComponents();
+        Map<Component.Type, List<ActionRowChildComponentUnion>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
+        if (groups.size() > 1) // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
+            return false;
+
+        for (Map.Entry<Component.Type, List<ActionRowChildComponentUnion>> entry : groups.entrySet())
+        {
+            Component.Type type = entry.getKey();
+            List<ActionRowChildComponentUnion> list = entry.getValue();
+            if (list.size() > ActionRow.getMaxAllowed(type))
+                return false;
+        }
+
+        return true;
+    }
+
+    @Override
     public String toString()
     {
         return new EntityString(this)
