@@ -70,24 +70,6 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
     @ForRemoval
     List<? extends Component> getComponents();
 
-    @Override
-    default boolean isMessageCompatible()
-    {
-        if (!getType().isMessageCompatible())
-            return false;
-
-        return iterableStream().allMatch(Component::isMessageCompatible);
-    }
-
-    @Override
-    default boolean isModalCompatible()
-    {
-        if (!getType().isModalCompatible())
-            return false;
-
-        return iterableStream().allMatch(Component::isModalCompatible);
-    }
-
     /**
      * Immutable filtered copy of {@link #iterableStream()} elements which are {@link ActionComponent ActionComponents}.
      *

@@ -89,18 +89,6 @@ public class SeparatorImpl
         return spacing;
     }
 
-    @Override
-    public boolean isMessageCompatible()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isModalCompatible()
-    {
-        return false;
-    }
-
     @Nonnull
     @Override
     public DataObject toData()

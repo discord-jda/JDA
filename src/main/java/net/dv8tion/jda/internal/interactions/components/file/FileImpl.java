@@ -97,18 +97,6 @@ public class FileImpl extends AbstractComponentImpl implements File, MessageTopL
         return spoiler;
     }
 
-    @Override
-    public boolean isMessageCompatible()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isModalCompatible()
-    {
-        return false;
-    }
-
     @Nonnull
     @Override
     public DataObject toData()

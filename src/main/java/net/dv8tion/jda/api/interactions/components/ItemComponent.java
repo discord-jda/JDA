@@ -41,16 +41,4 @@ public interface ItemComponent extends ActionRowChildComponent
     {
         return getType().getMaxPerRow();
     }
-
-    @Override
-    default boolean isModalCompatible()
-    {
-        return getType().isModalCompatible();
-    }
-
-    @Override
-    default boolean isMessageCompatible()
-    {
-        return getType().isMessageCompatible();
-    }
 }

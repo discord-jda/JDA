@@ -74,18 +74,6 @@ public class TextDisplayImpl
         return content;
     }
 
-    @Override
-    public boolean isMessageCompatible()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isModalCompatible()
-    {
-        return false;
-    }
-
     @Nonnull
     @Override
     public DataObject toData()

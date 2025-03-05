@@ -64,6 +64,26 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
         return SectionImpl.fromData(data);
     }
 
+    @Override
+    default boolean isMessageCompatible()
+    {
+        if (!getType().isMessageCompatible())
+            return false;
+
+        return getContentComponents().stream().allMatch(Component::isMessageCompatible)
+                && getAccessory().isMessageCompatible();
+    }
+
+    @Override
+    default boolean isModalCompatible()
+    {
+        if (!getType().isModalCompatible())
+            return false;
+
+        return getContentComponents().stream().allMatch(Component::isModalCompatible)
+                && getAccessory().isModalCompatible();
+    }
+
     @Nonnull
     @Override
     @CheckReturnValue
