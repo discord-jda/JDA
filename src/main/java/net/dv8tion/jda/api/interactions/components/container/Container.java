@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.interactions.components.container;
 
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
@@ -34,7 +33,7 @@ import java.util.Collection;
 import java.util.List;
 
 // TODO-components-v2 docs
-public interface Container extends LayoutComponent<ContainerChildComponentUnion>, IdentifiableComponent, MessageTopLevelComponent
+public interface Container extends IdentifiableComponent, MessageTopLevelComponent
 {
     // TODO-components-v2 docs
     @Nonnull
@@ -99,22 +98,6 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     @Nonnull
     @CheckReturnValue
     Container withSpoiler(boolean spoiler);
-
-    @Nonnull
-    @Override
-    Container asEnabled();
-
-    @Nonnull
-    @Override
-    Container asDisabled();
-
-    @Nonnull
-    @Override
-    Container withDisabled(boolean disabled);
-
-    @Nonnull
-    @Override
-    Container createCopy();
 
     /**
      * Returns an immutable list with the components contained by this container.

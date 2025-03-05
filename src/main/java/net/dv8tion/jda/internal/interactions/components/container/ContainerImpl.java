@@ -1,8 +1,6 @@
 package net.dv8tion.jda.internal.interactions.components.container;
 
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
@@ -19,7 +17,6 @@ import net.dv8tion.jda.internal.utils.UnionUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -98,32 +95,6 @@ public class ContainerImpl
         return new ContainerImpl(uniqueId, components, spoiler, accentColor);
     }
 
-    @Nonnull
-    @Override
-    public Container withDisabled(boolean disabled)
-    {
-        return IReplacerAware.doReplace(
-                ContainerChildComponent.class,
-                components,
-                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)),
-                components -> new ContainerImpl(uniqueId, components, spoiler, accentColor)
-        );
-    }
-
-    @Nonnull
-    @Override
-    public Container asDisabled()
-    {
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public Container asEnabled()
-    {
-        return this;
-    }
-
     @Override
     public int getUniqueId()
     {
@@ -159,48 +130,6 @@ public class ContainerImpl
     public boolean isSpoiler()
     {
         return spoiler;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return components.isEmpty();
-    }
-
-    @Override
-    public boolean isValid()
-    {
-        return false;
-    }
-
-    @Nonnull
-    @Override
-    public Container createCopy()
-    {
-        return this;
-    }
-
-    @Nullable
-    @Override
-    @Deprecated
-    public ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
-    {
-        throw new UnsupportedOperationException("This layout is immutable, use ComponentTree#replace instead");
-    }
-
-    @Nullable
-    @Override
-    @Deprecated
-    public ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent)
-    {
-        throw new UnsupportedOperationException("This layout is immutable, use ComponentTree#replace instead");
-    }
-
-    @Nonnull
-    @Override
-    public Iterator<ContainerChildComponentUnion> iterator()
-    {
-        return getComponents().iterator();
     }
 
     @Nonnull
