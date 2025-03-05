@@ -57,7 +57,10 @@ public interface Component extends SerializableData
      *
      * @return True, if this Component is compatible with messages.
      */
-    boolean isMessageCompatible();
+    default boolean isMessageCompatible()
+    {
+        return getType().isMessageCompatible();
+    }
 
     /**
      * Whether this Component is compatible with {@link Modal Modals}.
@@ -65,7 +68,10 @@ public interface Component extends SerializableData
      *
      * @return True, if this Component is compatible with modals.
      */
-    boolean isModalCompatible();
+    default boolean isModalCompatible()
+    {
+        return getType().isModalCompatible();
+    }
 
     // TODO-components-v2- docs
     // TODO-components-v2 - this clashes with SelectMenu.createCopy.

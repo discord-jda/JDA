@@ -26,14 +26,4 @@ public interface UnknownComponent extends Component
     {
         return Type.UNKNOWN;
     }
-
-    @Override
-    default boolean isMessageCompatible() {
-        return false;
-    }
-
-    @Override
-    default boolean isModalCompatible() {
-        return false;
-    }
 }

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.container;
 
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
@@ -54,6 +55,24 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
     static Container fromData(@Nonnull DataObject data)
     {
         return ContainerImpl.fromData(data);
+    }
+
+    @Override
+    default boolean isMessageCompatible()
+    {
+        if (!getType().isMessageCompatible())
+            return false;
+
+        return getComponents().stream().allMatch(Component::isMessageCompatible);
+    }
+
+    @Override
+    default boolean isModalCompatible()
+    {
+        if (!getType().isModalCompatible())
+            return false;
+
+        return getComponents().stream().allMatch(Component::isModalCompatible);
     }
 
     // TODO-components-v2 docs

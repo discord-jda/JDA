@@ -89,14 +89,4 @@ public interface ActionComponent extends ItemComponent, IDisableable
     @Nonnull
     @CheckReturnValue
     ActionComponent withDisabled(boolean disabled);
-
-    @Override
-    default boolean isMessageCompatible() {
-        return getType().isMessageCompatible();
-    }
-
-    @Override
-    default boolean isModalCompatible() {
-        return getType().isModalCompatible();
-    }
 }
