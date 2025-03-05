@@ -38,9 +38,9 @@ public interface Container extends LayoutComponent<ContainerChildComponentUnion>
 {
     // TODO-components-v2 docs
     @Nonnull
-    static Container of(@Nonnull Collection<? extends ContainerChildComponent> children)
+    static Container of(@Nonnull Collection<? extends ContainerChildComponent> components)
     {
-        return ContainerImpl.of(children);
+        return ContainerImpl.of(components);
     }
 
     // TODO-components-v2 docs

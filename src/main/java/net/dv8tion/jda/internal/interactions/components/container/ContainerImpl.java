@@ -45,12 +45,14 @@ public class ContainerImpl
         this.accentColor = accentColor;
     }
 
-    public static Container of(Collection<? extends ContainerChildComponent> _children)
+    public static Container of(Collection<? extends ContainerChildComponent> _components)
     {
-        final Collection<ContainerChildComponentUnion> children = UnionUtil.membersToUnion(_children);
+        Checks.notEmpty(_components, "Components");
+        Checks.noneNull(_components, "Components");
+        final Collection<ContainerChildComponentUnion> components = UnionUtil.membersToUnion(_components);
         // TODO-components-v2 - checks
 
-        return new ContainerImpl(children);
+        return new ContainerImpl(components);
     }
 
     public static ContainerImpl fromData(DataObject data)
