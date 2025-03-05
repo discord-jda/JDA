@@ -192,7 +192,8 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
 
     /**
      * List representation of this component layout.
-     * <br>This list is modifiable. Note that empty layouts are not supported.
+     * <br>This list is modifiable, <b>but will not be in a later release</b>.
+     * <br>Updating the list will log a warning.
      *
      * @return {@link List} of components in this layout
      */
