@@ -1,8 +1,6 @@
 package net.dv8tion.jda.internal.interactions.components.section;
 
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.section.*;
@@ -17,8 +15,10 @@ import net.dv8tion.jda.internal.utils.UnionUtil;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class SectionImpl
@@ -82,32 +82,6 @@ public class SectionImpl
         return new SectionImpl(uniqueId, components, accessory);
     }
 
-    @Nonnull
-    @Override
-    public Section withDisabled(boolean disabled)
-    {
-        return IReplacerAware.doReplace(
-                SectionContentComponent.class,
-                components,
-                ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)),
-                components -> new SectionImpl(uniqueId, components, accessory)
-        );
-    }
-
-    @Nonnull
-    @Override
-    public Section asDisabled()
-    {
-        return withDisabled(true);
-    }
-
-    @Nonnull
-    @Override
-    public Section asEnabled()
-    {
-        return withDisabled(false);
-    }
-
     @Override
     public Section replace(ComponentReplacer replacer)
     {
@@ -147,48 +121,6 @@ public class SectionImpl
     public SectionAccessoryComponentUnion getAccessory()
     {
         return accessory;
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return components.isEmpty() && accessory == null;
-    }
-
-    @Override
-    public boolean isValid()
-    {
-        return true;
-    }
-
-    @Nonnull
-    @Override
-    public Section createCopy()
-    {
-        return this;
-    }
-
-    @Nullable
-    @Override
-    @Deprecated
-    public ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
-    {
-        throw new UnsupportedOperationException("This layout is immutable, use ComponentTree#replace instead");
-    }
-
-    @Nullable
-    @Override
-    @Deprecated
-    public ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent)
-    {
-        throw new UnsupportedOperationException("This layout is immutable, use ComponentTree#replace instead");
-    }
-
-    @Nonnull
-    @Override
-    public Iterator<SectionContentComponentUnion> iterator()
-    {
-        return components.iterator();
     }
 
     @Nonnull

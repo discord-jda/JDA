@@ -16,10 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.components.section;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -30,13 +28,11 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 // TODO-components-v2 docs
-public interface Section extends LayoutComponent<SectionContentComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
+public interface Section extends IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
     // TODO-components-v2 docs
     @Nonnull
@@ -90,22 +86,6 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     @CheckReturnValue
     Section withUniqueId(int uniqueId);
 
-    @Nonnull
-    @Override
-    Section withDisabled(boolean disabled);
-
-    @Nonnull
-    @Override
-    Section asDisabled();
-
-    @Nonnull
-    @Override
-    Section asEnabled();
-
-    @Nonnull
-    @Override
-    Section createCopy();
-
     /**
      * Returns an immutable list with the components contained by this section.
      *
@@ -114,18 +94,6 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     @Nonnull
     @Unmodifiable
     List<SectionContentComponentUnion> getContentComponents();
-
-    @Nonnull
-    @Override
-    @Unmodifiable
-    @Deprecated
-    @ForRemoval
-    default List<? extends Component> getComponents()
-    {
-        final List<Component> list = new ArrayList<>(getContentComponents());
-        list.add(getAccessory());
-        return Collections.unmodifiableList(list);
-    }
 
     // TODO-components-v2 docs
     @Nonnull
