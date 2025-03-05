@@ -44,6 +44,7 @@ public interface Section extends LayoutComponent<SectionContentComponentUnion>, 
     {
         Checks.notNull(accessory, "Accessory");
         Checks.noneNull(components, "Components");
+        Checks.notEmpty(components, "Components");
         return SectionImpl.of(accessory, components);
     }
 

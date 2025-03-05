@@ -41,13 +41,17 @@ public class SectionImpl
         this.accessory = accessory;
     }
 
-    public static Section of(SectionAccessoryComponent _accessory, Collection<? extends SectionContentComponent> _children)
+    public static Section of(SectionAccessoryComponent _accessory, Collection<? extends SectionContentComponent> _components)
     {
-        final Collection<SectionContentComponentUnion> children = UnionUtil.membersToUnion(_children);
+        Checks.notNull(_accessory, "Accessory");
+        Checks.notEmpty(_components, "Components");
+        Checks.noneNull(_components, "Components");
+
+        final Collection<SectionContentComponentUnion> components = UnionUtil.membersToUnion(_components);
         final SectionAccessoryComponentUnion accessory = UnionUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);
         // TODO-components-v2 - checks
 
-        return new SectionImpl(children, accessory);
+        return new SectionImpl(components, accessory);
     }
 
     public static SectionImpl fromData(DataObject data)
