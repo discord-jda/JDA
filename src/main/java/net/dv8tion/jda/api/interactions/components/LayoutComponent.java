@@ -56,12 +56,17 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      *
      * @return {@link List} of components in this layout
      *
-     * @deprecated Moved to the subclasses {@link ActionRow},
-     * {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
-     * {@link net.dv8tion.jda.api.interactions.components.container.Container Container}
+     * @deprecated
+     *         Moved to the subclasses {@link ActionRow},
+     *         {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
+     *         {@link net.dv8tion.jda.api.interactions.components.container.Container Container}
+     *         This will be removed as it is unclear what this method returns for some component types,
+     *         like {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
+     *         which also contains an accessory, would it be included? or not? does it get included recursively?
      */
     @Nonnull
     @Deprecated
+    @ForRemoval
     List<? extends Component> getComponents();
 
     @Override
@@ -86,9 +91,17 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * Immutable filtered copy of {@link #iterableStream()} elements which are {@link ActionComponent ActionComponents}.
      *
      * @return Immutable {@link List} copy of {@link ActionComponent ActionComponents} in this layout
+     *
+     * @deprecated
+     *         Replace with the getters from a more concrete component type, such as {@link ActionRow}.
+     *         This will be removed as it is unclear what this method returns for some component types,
+     *         like {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
+     *         which also contains an accessory, would it be included? or not? does it get included recursively?
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<ActionComponent> getActionComponents()
     {
         return iterableStream()
@@ -101,9 +114,17 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * List of buttons in this component layout.
      *
      * @return Immutable {@link List} of {@link Button Buttons}
+     *
+     * @deprecated
+     *         Replace with the getters from a more concrete component type, such as {@link ActionRow}.
+     *         This will be removed as it is unclear what this method returns for some component types,
+     *         like {@link net.dv8tion.jda.api.interactions.components.section.Section Section},
+     *         which also contains an accessory, would it be included? or not? does it get included recursively?
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<Button> getButtons()
     {
         return iterableStream()
