@@ -17,12 +17,9 @@
 package net.dv8tion.jda.internal.utils;
 
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 
 public class ComponentsUtil
 {
@@ -42,30 +39,5 @@ public class ComponentsUtil
         }
 
         return false;
-    }
-
-    // These methods are for compatibility purposes only, can remove after removing the remaining components V1 stuff
-    @Nonnull
-    public static ActionRow ensureIsActionRow(@Nonnull LayoutComponent<?> component)
-    {
-        Checks.check(component instanceof ActionRow, "This deprecated compatibility method does not accept anything other than ActionRow, please use the replacement");
-        return (ActionRow) component;
-    }
-
-    @Nonnull
-    public static ActionRow[] ensureIsActionRow(@Nonnull LayoutComponent<?>... components)
-    {
-        for (LayoutComponent<?> component : components)
-            ensureIsActionRow(component);
-        return (ActionRow[]) components;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nonnull
-    public static Collection<ActionRow> ensureIsActionRow(@Nonnull Collection<? extends LayoutComponent<?>> components)
-    {
-        for (LayoutComponent<?> component : components)
-            ensureIsActionRow(component);
-        return (Collection<ActionRow>) components;
     }
 }
