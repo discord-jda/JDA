@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.MessageComponentTree;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.AttachedFile;
 
@@ -67,6 +68,13 @@ public interface MessageData
      */
     @Nonnull
     List<MessageTopLevelComponentUnion> getComponents();
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    default MessageComponentTree getComponentTree()
+    {
+        return MessageComponentTree.of(getComponents());
+    }
 
     // TODO-components-v2 - docs
     boolean isUsingComponentsV2();
