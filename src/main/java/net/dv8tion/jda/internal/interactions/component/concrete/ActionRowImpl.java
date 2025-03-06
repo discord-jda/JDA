@@ -35,14 +35,15 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
 
-    private ActionRowImpl() {
-        this.uniqueId = -1;
-        this.components = new LogOnModificationList();
+    private ActionRowImpl(Collection<ActionRowChildComponentUnion> components)
+    {
+        this(components, -1);
     }
 
-    private ActionRowImpl(List<ActionRowChildComponentUnion> components, int uniqueId) {
+    private ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
+    {
         this.uniqueId = uniqueId;
-        this.components = new LogOnModificationList(components);
+        this.components = new LogOnModificationList(new ArrayList<>(components));
     }
 
     @Nonnull
@@ -68,8 +69,7 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
 
         Checks.check(!components.isEmpty(), "Cannot have empty row!");
 
-        ActionRowImpl row = new ActionRowImpl();
-        row.components.addAll(components);
+        ActionRowImpl row = new ActionRowImpl(components);
         if (!row.isValid())
         {
             Map<Component.Type, List<ActionRowChildComponentUnion>> grouped = components.stream().collect(Collectors.groupingBy(Component::getType));
@@ -283,7 +283,8 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
         return components.equals(((ActionRowImpl) obj).components);
     }
 
-    private static class LogOnModificationList extends AbstractList<ActionRowChildComponentUnion> {
+    private static class LogOnModificationList extends AbstractList<ActionRowChildComponentUnion>
+    {
 
         private final List<ActionRowChildComponentUnion> list = new ArrayList<>();
 
@@ -372,7 +373,8 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
         }
     }
 
-    private static void logModifiedRow() {
+    private static void logModifiedRow()
+    {
         LOG.warn("ActionRow(s) will become immutable in a later release, please update your code, instead replacing the action row with its new components.", new Exception());
     }
 }
