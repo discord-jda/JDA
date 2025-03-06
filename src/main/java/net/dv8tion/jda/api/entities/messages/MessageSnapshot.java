@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Message.MessageFlag;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
+import net.dv8tion.jda.api.interactions.components.MessageComponentTree;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -194,6 +195,13 @@ public class MessageSnapshot
     public List<MessageTopLevelComponentUnion> getComponents()
     {
         return components;
+    }
+
+    // TODO-components-v2 - docs
+    @Nonnull
+    public MessageComponentTree getComponentTree()
+    {
+        return MessageComponentTree.of(components);
     }
 
     /**

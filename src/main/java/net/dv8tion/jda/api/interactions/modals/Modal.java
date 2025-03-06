@@ -116,6 +116,13 @@ public interface Modal extends SerializableData
     @Nonnull
     List<ModalTopLevelComponentUnion> getComponents();
 
+    // TODO-components-v2 - docs
+    @Nonnull
+    default ModalComponentTree getComponentTree()
+    {
+        return ModalComponentTree.of(getComponents());
+    }
+
     /**
      * Creates a new preconfigured {@link Modal.Builder} with the same settings used for this modal.
      * <br>This can be useful to create an updated version of this modal without needing to rebuild it from scratch.
