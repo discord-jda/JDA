@@ -73,11 +73,6 @@ public interface Component extends SerializableData
         return getType().isModalCompatible();
     }
 
-    // TODO-components-v2- docs
-    // TODO-components-v2 - this clashes with SelectMenu.createCopy.
-//    @Nonnull
-//    Component createCopy();
-
     /**
      * The component types
      */
