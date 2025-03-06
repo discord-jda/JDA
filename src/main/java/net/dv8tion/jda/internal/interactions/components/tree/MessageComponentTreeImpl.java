@@ -1,9 +1,9 @@
-package net.dv8tion.jda.internal.interactions.components;
+package net.dv8tion.jda.internal.interactions.components.tree;
 
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.interactions.components.utils.MessageComponentTree;
+import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
 import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
