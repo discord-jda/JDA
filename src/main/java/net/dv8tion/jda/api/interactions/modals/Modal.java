@@ -217,8 +217,8 @@ public interface Modal extends SerializableData
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If any of the provided layouts are null</li>
-         *             <li>If any of the provided components are not compatible with Modals</li>
+         *             <li>If {@code null} is provided</li>
+         *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible() compatible with modals}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining
@@ -245,8 +245,8 @@ public interface Modal extends SerializableData
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If any of the provided layouts are null</li>
-         *             <li>If any of the provided components are not compatible with Modals</li>
+         *             <li>If {@code null} is provided</li>
+         *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible() compatible with modals}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining
@@ -265,6 +265,29 @@ public interface Modal extends SerializableData
 
             this.components.addAll(membersToUnion(components));
             return this;
+        }
+
+        /**
+         * Adds {@link ModalTopLevelComponent components} to this modal
+         *
+         * @param  tree
+         *         {@link ModalComponentTree} to add to the modal, containing up to {@value MAX_COMPONENTS} total
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If {@code null} is provided</li>
+         *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible() compatible with modals}</li>
+         *         </ul>
+         *
+         * @return The same builder instance for chaining
+         *
+         * @see    Component#isModalCompatible()
+         */
+        @Nonnull
+        public Builder addComponents(@Nonnull ModalComponentTree tree)
+        {
+            Checks.notNull(tree, "ModalComponentTree");
+            return addComponents(tree.getComponents());
         }
 
         /**

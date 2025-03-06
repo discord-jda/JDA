@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.MessageComponentTree;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
@@ -211,8 +212,11 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
+     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
+     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return The same instance for chaining
@@ -248,8 +252,11 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
+     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
+     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return The same instance for chaining
@@ -258,6 +265,50 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     default R setComponents(@Nonnull MessageTopLevelComponent... components)
     {
         return setComponents(Arrays.asList(components));
+    }
+
+    /**
+     * The {@link MessageTopLevelComponent MessageTopLevelComponents} that should be attached to the message.
+     * <br>You can call this method without anything to remove all components from the message.
+     *
+     * <p>The most commonly used layout is {@link ActionRow}.
+     *
+     * <p><b>Example: Set action rows</b><br>
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setComponents(
+     *     ActionRow.of(selectMenu) // first row
+     *     ActionRow.of(button1, button2)) // second row (shows below the first)
+     *   .queue();
+     * }</pre>
+     *
+     * <p><b>Example: Remove action rows</b><br>
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setComponents()
+     *   .queue();
+     * }</pre>
+     *
+     * @param  tree
+     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
+     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
+     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
+     *         </ul>
+     *
+     * @return The same instance for chaining
+     */
+    @Nonnull
+    default R setComponents(@Nonnull MessageComponentTree tree)
+    {
+        Checks.notNull(tree, "MessageComponentTree");
+        return setComponents(tree.getComponents());
     }
 
     // TODO-components-v2
