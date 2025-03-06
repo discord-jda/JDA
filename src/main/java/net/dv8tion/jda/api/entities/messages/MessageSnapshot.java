@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.utils.MessageComponentTree;
+import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;

@@ -1,9 +1,10 @@
-package net.dv8tion.jda.api.interactions.components.utils;
+package net.dv8tion.jda.api.interactions.components.tree;
 
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.internal.interactions.components.ComponentTreeImpl;
+import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
+import net.dv8tion.jda.internal.interactions.components.tree.ComponentTreeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 import org.jetbrains.annotations.Unmodifiable;

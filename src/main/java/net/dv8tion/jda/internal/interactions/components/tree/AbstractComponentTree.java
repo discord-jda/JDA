@@ -1,9 +1,9 @@
-package net.dv8tion.jda.internal.interactions.components;
+package net.dv8tion.jda.internal.interactions.components.tree;
 
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
 import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.interactions.components.utils.ComponentTree;
+import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
