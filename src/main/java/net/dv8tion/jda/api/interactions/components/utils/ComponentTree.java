@@ -10,8 +10,10 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 
 // TODO-components-v2 - docs
 public interface ComponentTree<E extends ComponentUnion>
@@ -29,6 +31,30 @@ public interface ComponentTree<E extends ComponentUnion>
     @Nonnull
     @Unmodifiable
     List<E> getComponents();
+
+    @Nonnull
+    default <T extends Component> List<T> findAll(@Nonnull Class<? super T> type)
+    {
+        return findAll(type, c -> true);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    default <T extends Component> List<T> findAll(@Nonnull Class<? super T> type, @Nonnull Predicate<? super T> filter)
+    {
+        final List<T> elements = new ArrayList<>();
+        final ComponentIterator iterator = ComponentIterator.create(getComponents());
+        while (iterator.hasNext())
+        {
+            final Component component = iterator.next();
+            if (!type.isInstance(component)) continue;
+
+            final T t = (T) component;
+            if (filter.test(t))
+                elements.add(t);
+        }
+        return elements;
+    }
 
     @Nonnull
     @CheckReturnValue
