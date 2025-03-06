@@ -159,10 +159,10 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @Override
-    default MessageCreateAction sendMessageComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
+    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         checkCanSendMessage();
-        return MessageChannelUnion.super.sendMessageComponents(component, other);
+        return MessageChannelUnion.super.sendMessageComponents(components);
     }
 
     @Nonnull
