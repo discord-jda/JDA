@@ -1,5 +1,6 @@
-package net.dv8tion.jda.api.interactions.components;
+package net.dv8tion.jda.api.interactions.components.utils;
 
+import net.dv8tion.jda.api.interactions.components.ComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import org.jetbrains.annotations.Unmodifiable;
 

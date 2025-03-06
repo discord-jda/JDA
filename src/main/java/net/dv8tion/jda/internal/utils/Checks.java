@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.ComponentPathIterator;
+import net.dv8tion.jda.api.interactions.components.utils.ComponentPathIterator;
 import org.intellij.lang.annotations.PrintFormat;
 import org.jetbrains.annotations.Contract;
 

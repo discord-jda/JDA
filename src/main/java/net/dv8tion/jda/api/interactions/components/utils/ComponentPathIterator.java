@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.components;
+package net.dv8tion.jda.api.interactions.components.utils;
 
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.section.Section;
