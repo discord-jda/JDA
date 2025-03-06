@@ -4257,6 +4257,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The target Member cannot be unbanned due to a permission discrepancy</li>
      *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_BAN UNKNOWN_BAN}
+     *     <br>The specified User is not banned from the current Guild</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
      *     <br>The specified User does not exist</li>
      * </ul>
