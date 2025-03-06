@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.interactions.components.selects;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.components.ComponentTree;
+import net.dv8tion.jda.api.interactions.components.MessageComponentTree;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -84,7 +84,7 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
     default RestAction<Void> editSelectMenu(@Nullable SelectMenu newMenu)
     {
         final Message message = getMessage();
-        final ComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getSelectMenu(), newMenu));
+        final MessageComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getSelectMenu(), newMenu));
 
         if (isAcknowledged())
             return getHook().editMessageComponentsById(message.getId(), newTree.getComponents()).map(it -> null);

@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.interactions.components.buttons;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.components.ComponentTree;
+import net.dv8tion.jda.api.interactions.components.MessageComponentTree;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -68,7 +68,7 @@ public interface ButtonInteraction extends ComponentInteraction
     default RestAction<Void> editButton(@Nullable Button newButton)
     {
         final Message message = getMessage();
-        final ComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getButton(), newButton));
+        final MessageComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getButton(), newButton));
 
         if (isAcknowledged())
             return getHook().editMessageComponentsById(message.getId(), newTree.getComponents()).map(it -> null);
