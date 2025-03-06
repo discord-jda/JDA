@@ -1,5 +1,7 @@
-package net.dv8tion.jda.api.interactions.components;
+package net.dv8tion.jda.api.interactions.components.utils;
 
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.internal.interactions.components.MessageComponentTreeImpl;
 

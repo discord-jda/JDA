@@ -49,7 +49,7 @@ public interface IDisableable extends Component
      *
      * @return The new component in an enabled/disabled state
      *
-     * @see net.dv8tion.jda.api.interactions.components.ComponentTree#replace(net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer) ComponentTree.replace(ComponentReplacer)
+     * @see net.dv8tion.jda.api.interactions.components.utils.ComponentTree#replace(net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer) ComponentTree.replace(ComponentReplacer)
      */
     @Nonnull
     @CheckReturnValue
@@ -61,7 +61,7 @@ public interface IDisableable extends Component
      *
      * @return The new component in a disabled state
      *
-     * @see net.dv8tion.jda.api.interactions.components.ComponentTree#replace(net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer) ComponentTree.replace(ComponentReplacer)
+     * @see net.dv8tion.jda.api.interactions.components.utils.ComponentTree#replace(net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer) ComponentTree.replace(ComponentReplacer)
      */
     @Nonnull
     @CheckReturnValue
@@ -73,7 +73,7 @@ public interface IDisableable extends Component
      *
      * @return The new component in an enabled state
      *
-     * @see net.dv8tion.jda.api.interactions.components.ComponentTree#replace(net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer) ComponentTree.replace(ComponentReplacer)
+     * @see net.dv8tion.jda.api.interactions.components.utils.ComponentTree#replace(net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer) ComponentTree.replace(ComponentReplacer)
      */
     @Nonnull
     @CheckReturnValue
