@@ -20,13 +20,13 @@ import java.util.function.Predicate;
 public interface ComponentTree<E extends ComponentUnion>
 {
     @Nonnull
-    static <E extends Component, T extends ComponentUnion> ComponentTree<T> of(@Nonnull Class<T> componentType, @Nonnull Collection<E> components)
+    static <E extends Component, T extends ComponentUnion> ComponentTree<T> of(@Nonnull Class<T> unionType, @Nonnull Collection<E> components)
     {
-        Checks.notNull(componentType, "Component type");
+        Checks.notNull(unionType, "Component union type");
         Checks.notNull(components, "Components");
         for (E component : components)
-            Checks.check(componentType.isInstance(component), "Component %s is not a subclass of %s", component, componentType);
-        return new ComponentTreeImpl<>(componentType, UnionUtil.membersToUnion(components));
+            Checks.check(unionType.isInstance(component), "Component %s is not a subclass of %s", component, unionType);
+        return new ComponentTreeImpl<>(unionType, UnionUtil.membersToUnion(components));
     }
 
     @Nonnull
