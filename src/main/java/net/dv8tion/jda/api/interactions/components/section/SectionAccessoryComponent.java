@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.thumbnail.Thumbnail;
 
 /**
- * Includes:
+ * Represents a component that can be set as a {@link Section} accessory, this includes:
  * <ul>
  *     <li>{@link Button}</li>
  *     <li>{@link Thumbnail}</li>

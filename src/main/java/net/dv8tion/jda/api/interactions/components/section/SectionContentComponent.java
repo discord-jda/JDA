@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.text_display.TextDisplay;
 
 /**
- * Includes:
- * <ol>
+ * Represents a component that can be added to a {@link Section}, this includes:
+ * <ul>
  *     <li>{@link TextDisplay}</li>
  * </ol>
  */

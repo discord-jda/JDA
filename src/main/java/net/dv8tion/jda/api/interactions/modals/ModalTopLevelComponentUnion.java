@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a union of {@link Component components} that can be either
+ * Represents a union of {@link ModalTopLevelComponent ModalTopLevelComponents} that can be either
  * <ul>
  *     <li>{@link ActionRow}</li>
  *     <li>{@link UnknownComponent UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>

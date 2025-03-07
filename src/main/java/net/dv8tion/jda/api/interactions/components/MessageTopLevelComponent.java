@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.interactions.components.separator.Separator;
 import net.dv8tion.jda.api.interactions.components.text_display.TextDisplay;
 
 /**
- * Includes:
+ * Represents a component that can be added directly to a message, this includes:
  * <ul>
  *     <li>{@link ActionRow}</li>
  *     <li>{@link Section}</li>

@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a union of {@link Component components} that can be either
+ * Represents a union of {@link MessageTopLevelComponent MessageTopLevelComponents} that can be either
  * <ul>
  *     <li>{@link ActionRow}</li>
  *     <li>{@link Section}</li>

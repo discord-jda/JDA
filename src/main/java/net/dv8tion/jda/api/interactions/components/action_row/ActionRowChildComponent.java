@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.selects.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selects.StringSelectMenu;
 
 /**
- * Includes
+ * Represents a component that can be added to an {@link ActionRow}, this includes:
  * <ul>
  *     <li>{@link Button}</li>
  *     <li>{@link StringSelectMenu}</li>

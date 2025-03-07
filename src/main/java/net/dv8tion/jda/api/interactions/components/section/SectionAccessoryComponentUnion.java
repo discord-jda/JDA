@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a union of {@link Component components} that can be either
+ * Represents a union of {@link SectionAccessoryComponent SectionAccessoryComponents} that can be either
  * <ul>
  *     <li>{@link Button}</li>
  *     <li>{@link Thumbnail}</li>

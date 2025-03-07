@@ -16,6 +16,22 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponentUnion;
+import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
+import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponentUnion;
+import net.dv8tion.jda.api.interactions.components.section.SectionContentComponentUnion;
+import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
+
+/**
+ * Represents a union of {@link Component Components}.
+ *
+ * @see ActionRowChildComponentUnion
+ * @see ContainerChildComponentUnion
+ * @see SectionContentComponentUnion
+ * @see SectionAccessoryComponentUnion
+ * @see MessageTopLevelComponentUnion
+ * @see ModalTopLevelComponentUnion
+ */
 public interface ComponentUnion extends Component
 {
     default boolean isUnknownComponent() {
