@@ -42,6 +42,7 @@ public class SectionImpl
         Checks.notNull(_accessory, "Accessory");
         Checks.notEmpty(_components, "Components");
         Checks.noneNull(_components, "Components");
+        Checks.check(_components.size() <= MAX_COMPONENTS, "A section can only contain %d components, provided: %d", MAX_COMPONENTS, _components.size());
 
         final Collection<SectionContentComponentUnion> components = UnionUtil.membersToUnion(_components);
         final SectionAccessoryComponentUnion accessory = UnionUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);

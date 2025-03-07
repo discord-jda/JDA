@@ -34,11 +34,13 @@ import java.util.List;
 public interface MediaGallery extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
     // TODO-components-v2 docs
+    int MAX_ITEMS = 10;
+
+    // TODO-components-v2 docs
     @Nonnull
     static MediaGallery of(@Nonnull Collection<? extends MediaGalleryItem> items)
     {
-        Checks.noneNull(items, "Items");
-        return new MediaGalleryImpl(items);
+        return MediaGalleryImpl.of(items);
     }
 
     // TODO-components-v2 docs
