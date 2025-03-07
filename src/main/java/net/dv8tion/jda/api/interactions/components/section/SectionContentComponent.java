@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.interactions.components.text_display.TextDisplay;
  * Represents a component that can be added to a {@link Section}, this includes:
  * <ul>
  *     <li>{@link TextDisplay}</li>
- * </ol>
+ * </ul>
  */
 public interface SectionContentComponent extends Component
 {
