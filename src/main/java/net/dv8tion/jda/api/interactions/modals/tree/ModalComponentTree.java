@@ -10,7 +10,11 @@ import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 
-// TODO-components-v2 - docs
+/**
+ * Specialization of {@link ComponentTree} for {@link ModalTopLevelComponentUnion top-level modal components}
+ *
+ * @see ComponentTree
+ */
 public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponentUnion>
 {
     @Nonnull
@@ -21,12 +25,34 @@ public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponent
     @Override
     ModalComponentTree replace(ComponentReplacer replacer);
 
+    /**
+     * Creates a {@link ModalComponentTree} from the given top-level modal components.
+     *
+     * @param  components
+     *         List of components to construct the tree from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return A {@link ModalComponentTree} containing the given components
+     */
     @Nonnull
     static ModalComponentTree of(@Nonnull Collection<? extends ModalTopLevelComponent> components)
     {
         return ModalComponentTreeImpl.of(components);
     }
 
+    /**
+     * Creates a {@link ModalComponentTree} from the given top-level modal components.
+     *
+     * @param  components
+     *         List of components to construct the tree from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return A {@link ModalComponentTree} containing the given components
+     */
     @Nonnull
     static ModalComponentTree of(@Nonnull ModalTopLevelComponent... components)
     {

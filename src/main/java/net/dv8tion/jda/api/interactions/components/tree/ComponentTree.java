@@ -19,9 +19,29 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-// TODO-components-v2 - docs
+/**
+ * Represents a tree of components, in which you can find, replace or remove components recursively.
+ *
+ * <p>As with every component, component trees are immutable and will return a new instance on every mutating call.
+ *
+ * @param <E> Type of components contained by this tree
+ */
 public interface ComponentTree<E extends ComponentUnion>
 {
+    /**
+     * Creates a {@link ComponentTree} from the given components,
+     * and checks their compatibility.
+     *
+     * @param  unionType
+     *         The union type expected from the components
+     * @param  components
+     *         List of components to construct the tree from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided, or if one of the component is not of the provided union type
+     *
+     * @return A {@link ComponentTree} containing the given components
+     */
     @Nonnull
     static <E extends Component, T extends ComponentUnion> ComponentTree<T> of(@Nonnull Class<T> unionType, @Nonnull Collection<E> components)
     {
@@ -32,6 +52,17 @@ public interface ComponentTree<E extends ComponentUnion>
         return new ComponentTreeImpl<>(unionType, UnionUtil.membersToUnion(components));
     }
 
+    /**
+     * Creates a {@link ComponentTree} from the given components.
+     *
+     * @param  components
+     *         List of components to construct the tree from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return A {@link ComponentTree} containing the given components
+     */
     @Nonnull
     static ComponentTree<ComponentUnion> of(@Nonnull Collection<? extends Component> components)
     {
@@ -39,28 +70,82 @@ public interface ComponentTree<E extends ComponentUnion>
         return new ComponentTreeImpl<>(ComponentUnion.class, UnionUtil.membersToUnion(components));
     }
 
+    /**
+     * Creates a {@link MessageComponentTree} from the given top-level message components.
+     * <br>This is a shortcut for {@code MessageComponentTree.of(components)}.
+     *
+     * @param  components
+     *         List of components to construct the tree from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return A {@link MessageComponentTree} containing the given components
+     */
     @Nonnull
     static MessageComponentTree forMessage(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return MessageComponentTree.of(components);
     }
 
+    /**
+     * Creates a {@link ModalComponentTree} from the given top-level message components.
+     * <br>This is a shortcut for {@code ModalComponentTree.of(components)}.
+     *
+     * @param  components
+     *         List of components to construct the tree from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return A {@link ModalComponentTree} containing the given components
+     */
     @Nonnull
     static ModalComponentTree forModal(@Nonnull Collection<? extends ModalTopLevelComponent> components)
     {
         return ModalComponentTree.of(components);
     }
 
+    /**
+     * Unmodifiable list of components contained by this tree.
+     *
+     * @return An unmodifiable list of components in this tree
+     */
     @Nonnull
     @Unmodifiable
     List<E> getComponents();
 
+    /**
+     * Finds all components with the given type, recursively.
+     * <br>This is a shortcut for {@code findAll(type, _ -> true)}
+     *
+     * @param  type
+     *         The type of components to search for
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return A modifiable list of components with the specified type
+     */
     @Nonnull
     default <T extends Component> List<T> findAll(@Nonnull Class<T> type)
     {
         return findAll(type, c -> true);
     }
 
+    /**
+     * Finds all components with the given type and satisfying the filter, recursively.
+     *
+     * @param  type
+     *         The type of components to search for
+     * @param  filter
+     *         The component filter to apply
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return A modifiable list of components satisfying the type and filter
+     */
     @Nonnull
     default <T extends Component> List<T> findAll(@Nonnull Class<T> type, @Nonnull Predicate<? super T> filter)
     {
@@ -74,10 +159,30 @@ public interface ComponentTree<E extends ComponentUnion>
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Replaces and/or removes components using the provided {@link ComponentReplacer},
+     * and construct a new tree from the result.
+     *
+     * @param  replacer
+     *         The {@link ComponentReplacer} to apply
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return A new tree with the new components
+     *
+     * @see ComponentReplacer
+     */
     @Nonnull
     @CheckReturnValue
     ComponentTree<E> replace(ComponentReplacer replacer);
 
+    /**
+     * Disables all components which {@linkplain net.dv8tion.jda.api.interactions.components.attribute.IDisableable can be disabled},
+     * and constructs a new tree from the result.
+     *
+     * @return A new tree with all components disabled.
+     */
     @Nonnull
     @CheckReturnValue
     ComponentTree<E> disableAll();

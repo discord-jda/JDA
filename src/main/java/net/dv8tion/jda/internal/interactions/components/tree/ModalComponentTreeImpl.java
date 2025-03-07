@@ -32,6 +32,7 @@ public class ModalComponentTreeImpl extends AbstractComponentTree<ModalTopLevelC
     @Override
     public ModalComponentTree replace(ComponentReplacer replacer)
     {
+        Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(
                 ModalTopLevelComponent.class,
                 components,

@@ -32,6 +32,7 @@ public class MessageComponentTreeImpl extends AbstractComponentTree<MessageTopLe
     @Override
     public MessageComponentTree replace(ComponentReplacer replacer)
     {
+        Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(
                 MessageTopLevelComponent.class,
                 components,
