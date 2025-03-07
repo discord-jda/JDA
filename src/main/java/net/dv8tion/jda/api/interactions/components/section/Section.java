@@ -19,9 +19,11 @@ package net.dv8tion.jda.api.interactions.components.section;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
+import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -34,7 +36,7 @@ import java.util.Collection;
 import java.util.List;
 
 // TODO-components-v2 docs
-public interface Section extends IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, IReplaceable
+public interface Section extends IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
     // TODO-components-v2 docs
     @Nonnull
@@ -92,6 +94,30 @@ public interface Section extends IdentifiableComponent, MessageTopLevelComponent
     @CheckReturnValue
     Section withUniqueId(int uniqueId);
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default Section withDisabled(boolean disabled)
+    {
+        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default Section asDisabled()
+    {
+        return withDisabled(true);
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default Section asEnabled()
+    {
+        return withDisabled(false);
+    }
+
     /**
      * Returns an immutable list with the components contained by this section.
      *
@@ -104,4 +130,17 @@ public interface Section extends IdentifiableComponent, MessageTopLevelComponent
     // TODO-components-v2 docs
     @Nonnull
     SectionAccessoryComponentUnion getAccessory();
+
+    @Override
+    default boolean isDisabled()
+    {
+        final SectionAccessoryComponentUnion accessory = getAccessory();
+        if (accessory instanceof IDisableable && ((IDisableable) accessory).isEnabled())
+            return false;
+
+        return ComponentIterator.createStream(getContentComponents())
+                .filter(IDisableable.class::isInstance)
+                .map(IDisableable.class::cast)
+                .allMatch(IDisableable::isDisabled);
+    }
 }

@@ -30,15 +30,15 @@ public class ComponentIterator implements Iterator<Component>
 {
     private final Stack<Iterator<? extends Component>> stack = new Stack<>();
 
-    protected ComponentIterator(List<? extends Component> components) {
+    protected ComponentIterator(Collection<? extends Component> components) {
         stack.push(components.iterator());
     }
 
-    public static ComponentIterator create(List<? extends Component> components) {
+    public static ComponentIterator create(Collection<? extends Component> components) {
         return new ComponentIterator(components);
     }
 
-    public static Stream<Component> createStream(List<? extends Component> components) {
+    public static Stream<Component> createStream(Collection<? extends Component> components) {
         Spliterator<Component> spliterator = Spliterators.spliteratorUnknownSize(create(components), Spliterator.ORDERED);
         return StreamSupport.stream(spliterator, false);
     }

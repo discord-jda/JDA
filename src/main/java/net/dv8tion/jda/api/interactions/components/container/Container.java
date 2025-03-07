@@ -19,8 +19,10 @@ package net.dv8tion.jda.api.interactions.components.container;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
+import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -35,7 +37,7 @@ import java.util.Collection;
 import java.util.List;
 
 // TODO-components-v2 docs
-public interface Container extends IdentifiableComponent, MessageTopLevelComponent, IReplaceable
+public interface Container extends IdentifiableComponent, MessageTopLevelComponent, IReplaceable, IDisableable
 {
     // TODO-components-v2 docs
     @Nonnull
@@ -105,6 +107,30 @@ public interface Container extends IdentifiableComponent, MessageTopLevelCompone
     @CheckReturnValue
     Container withSpoiler(boolean spoiler);
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default Container withDisabled(boolean disabled)
+    {
+        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default Container asDisabled()
+    {
+        return withDisabled(true);
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default Container asEnabled()
+    {
+        return withDisabled(false);
+    }
+
     /**
      * Returns an immutable list with the components contained by this container.
      *
@@ -113,6 +139,15 @@ public interface Container extends IdentifiableComponent, MessageTopLevelCompone
     @Nonnull
     @Unmodifiable
     List<ContainerChildComponentUnion> getComponents();
+
+    @Override
+    default boolean isDisabled()
+    {
+        return ComponentIterator.createStream(getComponents())
+                .filter(IDisableable.class::isInstance)
+                .map(IDisableable.class::cast)
+                .allMatch(IDisableable::isDisabled);
+    }
 
     /**
      * The color of the stripe/border on the side of the container.
