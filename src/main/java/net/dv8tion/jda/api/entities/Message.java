@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
@@ -704,7 +705,15 @@ public interface Message extends ISnowflake, Formattable
     @Unmodifiable
     List<MessageTopLevelComponentUnion> getComponents();
 
-    // TODO-components-v2 docs
+    /**
+     * Whether this message can contain V2 components.
+     * <br>This checks for {@link MessageFlag#IS_COMPONENTS_V2}.
+     *
+     * @return {@code true} if this message has the components V2 flag
+     *
+     * @see MessageRequest#useComponentsV2()
+     * @see MessageRequest#useComponentsV2(boolean)
+     */
     boolean isUsingComponentsV2();
 
     /**
@@ -2693,7 +2702,27 @@ public interface Message extends ISnowflake, Formattable
          * The Message is a voice message, containing an audio attachment
          */
         IS_VOICE_MESSAGE(13),
-        // TODO-components-v2 - docs
+        /**
+         * Indicates this message is using V2 components.
+         *
+         * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
+         * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+         * <br>They also allow you to use a larger choice of components,
+         * such as any component extending {@link MessageTopLevelComponent},
+         * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+         *
+         * <p>This however comes with a few drawbacks:
+         * <ul>
+         *     <li>You cannot send content, embeds, polls or stickers</li>
+         *     <li>It does not support audio files</li>
+         *     <li>It does not support text preview for files</li>
+         *     <li>URLs don't create embeds</li>
+         * </ul>
+         *
+         * @see MessageRequest#useComponentsV2()
+         * @see MessageRequest#useComponentsV2(boolean)
+         * @see MessageRequest#setDefaultUseComponentsV2(boolean)
+         */
         IS_COMPONENTS_V2(15);
 
         private final int value;
