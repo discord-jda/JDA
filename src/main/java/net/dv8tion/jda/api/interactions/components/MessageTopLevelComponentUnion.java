@@ -104,7 +104,8 @@ public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent,
         }
     }
 
-    static List<MessageTopLevelComponentUnion> fromData(DataArray data)
+    @Nonnull
+    static List<MessageTopLevelComponentUnion> fromData(@Nonnull DataArray data)
     {
         Checks.notNull(data, "Data");
 

@@ -64,6 +64,7 @@ public interface ResolvedMedia
             this.key = key;
         }
 
+        @Nonnull
         public static LoadingState fromKey(int value)
         {
             for (LoadingState state : values())
@@ -72,7 +73,7 @@ public interface ResolvedMedia
                     return state;
             }
 
-            return null;
+            return LoadingState.UNKNOWN;
         }
 
         public int getKey()

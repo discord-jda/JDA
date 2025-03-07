@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.section.Section;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
@@ -34,11 +35,13 @@ public class ComponentIterator implements Iterator<Component>
         stack.push(components.iterator());
     }
 
-    public static ComponentIterator create(Collection<? extends Component> components) {
+    @Nonnull
+    public static ComponentIterator create(@Nonnull Collection<? extends Component> components) {
         return new ComponentIterator(components);
     }
 
-    public static Stream<Component> createStream(Collection<? extends Component> components) {
+    @Nonnull
+    public static Stream<Component> createStream(@Nonnull Collection<? extends Component> components) {
         Spliterator<Component> spliterator = Spliterators.spliteratorUnknownSize(create(components), Spliterator.ORDERED);
         return StreamSupport.stream(spliterator, false);
     }
@@ -49,6 +52,7 @@ public class ComponentIterator implements Iterator<Component>
         return !stack.isEmpty();
     }
 
+    @Nonnull
     @Override
     public Component next() {
         if (!hasNext()) {

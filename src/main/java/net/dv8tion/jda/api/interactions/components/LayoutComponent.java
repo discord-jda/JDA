@@ -59,6 +59,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
     /**
      * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
      */
+    @Nonnull
     @Deprecated
     @ForRemoval
     default Stream<T> iterableStream() {
@@ -80,7 +81,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
     @Override
     @Deprecated
     @ForRemoval
-    default void forEach(Consumer<? super T> action)
+    default void forEach(@Nonnull Consumer<? super T> action)
     {
         Iterable.super.forEach(action);
     }
@@ -88,6 +89,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
     /**
      * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
      */
+    @Nonnull
     @Override
     @Deprecated
     @ForRemoval

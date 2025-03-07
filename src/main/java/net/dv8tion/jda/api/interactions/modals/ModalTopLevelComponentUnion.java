@@ -41,7 +41,8 @@ public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, Com
     @Nonnull
     ActionRow asActionRow();
 
-    static ModalTopLevelComponentUnion fromData(DataObject data) {
+    @Nonnull
+    static ModalTopLevelComponentUnion fromData(@Nonnull DataObject data) {
         Checks.notNull(data, "Data");
 
         int rawType = data.getInt("type", -1);
@@ -55,7 +56,8 @@ public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, Com
         }
     }
 
-    static List<ModalTopLevelComponentUnion> fromData(DataArray data) {
+    @Nonnull
+    static List<ModalTopLevelComponentUnion> fromData(@Nonnull DataArray data) {
         Checks.notNull(data, "Data");
 
         return data
