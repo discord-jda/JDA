@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.container.Container;
 import net.dv8tion.jda.api.interactions.components.section.Section;
 import org.apache.commons.collections4.iterators.SingletonIterator;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -34,11 +35,13 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
         stack.push(new CollectionAttributeIterator(rootName, "components", components));
     }
 
-    public static ComponentPathIterator create(String rootName, Collection<? extends Component> components) {
+    @Nonnull
+    public static ComponentPathIterator create(@Nonnull String rootName, @Nonnull Collection<? extends Component> components) {
         return new ComponentPathIterator(rootName, components);
     }
 
-    public static Stream<ComponentWithPath> createStream(String rootName, Collection<? extends Component> components) {
+    @Nonnull
+    public static Stream<ComponentWithPath> createStream(@Nonnull String rootName, @Nonnull Collection<? extends Component> components) {
         Spliterator<ComponentWithPath> spliterator = Spliterators.spliteratorUnknownSize(create(rootName, components), Spliterator.ORDERED);
         return StreamSupport.stream(spliterator, false);
     }
@@ -49,6 +52,7 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
         return !stack.isEmpty();
     }
 
+    @Nonnull
     @Override
     public ComponentWithPath next() {
         if (!hasNext()) {
@@ -108,6 +112,7 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
             return this.nestedIterator.hasNext();
         }
 
+        @Nonnull
         @Override
         public ComponentWithPath next()
         {
