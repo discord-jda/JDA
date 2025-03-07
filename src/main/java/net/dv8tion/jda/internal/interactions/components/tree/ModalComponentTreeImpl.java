@@ -1,9 +1,10 @@
-package net.dv8tion.jda.internal.interactions.components;
+package net.dv8tion.jda.internal.interactions.components.tree;
 
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
@@ -17,11 +18,13 @@ public class ModalComponentTreeImpl extends AbstractComponentTree<ModalTopLevelC
         super(components);
     }
 
-    public static ModalComponentTree of(Collection<? extends ModalTopLevelComponent> _components)
+    @Nonnull
+    public static ModalComponentTree of(@Nonnull Collection<? extends ModalTopLevelComponent> _components)
     {
-        final Collection<ModalTopLevelComponentUnion> components = UnionUtil.membersToUnion(_components);
-        // TODO-components-v2 - checks?
+        // Empty trees are allowed
+        Checks.noneNull(_components, "Components");
 
+        final Collection<ModalTopLevelComponentUnion> components = UnionUtil.membersToUnion(_components);
         return new ModalComponentTreeImpl(components);
     }
 

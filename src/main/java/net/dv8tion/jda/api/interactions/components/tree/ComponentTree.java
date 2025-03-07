@@ -26,7 +26,7 @@ public interface ComponentTree<E extends ComponentUnion>
     static <E extends Component, T extends ComponentUnion> ComponentTree<T> of(@Nonnull Class<T> unionType, @Nonnull Collection<E> components)
     {
         Checks.notNull(unionType, "Component union type");
-        Checks.notNull(components, "Components");
+        Checks.noneNull(components, "Components");
         for (E component : components)
             Checks.check(unionType.isInstance(component), "Component %s is not a subclass of %s", component, unionType);
         return new ComponentTreeImpl<>(unionType, UnionUtil.membersToUnion(components));
@@ -35,7 +35,7 @@ public interface ComponentTree<E extends ComponentUnion>
     @Nonnull
     static ComponentTree<ComponentUnion> of(@Nonnull Collection<? extends Component> components)
     {
-        Checks.notNull(components, "Components");
+        Checks.noneNull(components, "Components");
         return new ComponentTreeImpl<>(ComponentUnion.class, UnionUtil.membersToUnion(components));
     }
 
