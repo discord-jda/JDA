@@ -43,6 +43,7 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -1178,11 +1179,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageEditAction}
      *
-     * @see    MessageChannel#editMessageComponentsById(long, MessageComponentTree)
+     * @see    MessageChannel#editMessageComponentsById(long, ComponentTree)
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponents(@Nonnull MessageComponentTree tree)
+    default MessageEditAction editMessageComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "MessageComponentTree");
         return editMessageComponents(tree.getComponents());
@@ -1702,15 +1703,15 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link MessageComponentTree} to send
      *
      * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageComponents(MessageComponentTree)} throws
+     *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws
      * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageComponents(MessageComponentTree)} throws
+     *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws
      *
      * @return {@link MessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponents(@Nonnull MessageComponentTree tree)
+    default MessageCreateAction replyComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "MessageComponentTree");
         return replyComponents(tree.getComponents());

@@ -23,9 +23,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
-import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
+import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -186,7 +187,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
 
     /**
      * Appends the provided {@link MessageTopLevelComponent MessageTopLevelComponents} to the request.
-     * <br>Use {@link #setComponents(MessageComponentTree)} instead, to replace the components entirely.
+     * <br>Use {@link #setComponents(ComponentTree)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
      * Sending a message with multiple action rows:
@@ -214,7 +215,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    ActionRow
      */
     @Nonnull
-    default R addComponents(@Nonnull MessageComponentTree tree)
+    default R addComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         return addComponents(tree.getComponents());
     }

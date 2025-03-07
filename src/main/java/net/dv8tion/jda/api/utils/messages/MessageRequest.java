@@ -22,9 +22,10 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
-import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
+import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -305,7 +306,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setComponents(@Nonnull MessageComponentTree tree)
+    default R setComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "MessageComponentTree");
         return setComponents(tree.getComponents());

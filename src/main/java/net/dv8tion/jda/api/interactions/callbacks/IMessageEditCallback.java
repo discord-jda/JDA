@@ -20,8 +20,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
-import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
+import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
@@ -218,7 +219,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull MessageComponentTree tree)
+    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "MessageComponentTree");
         return editComponents(tree.getComponents());

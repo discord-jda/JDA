@@ -21,7 +21,9 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
@@ -450,7 +452,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull MessageComponentTree tree)
+    default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "MessageComponentTree");
         return replyComponents(tree.getComponents());
