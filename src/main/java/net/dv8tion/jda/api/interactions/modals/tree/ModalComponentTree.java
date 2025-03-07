@@ -1,4 +1,4 @@
-package net.dv8tion.jda.api.interactions.modals.utils;
+package net.dv8tion.jda.api.interactions.modals.tree;
 
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;

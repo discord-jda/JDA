@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.api.interactions.components.text_input.TextInput;
 import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
-import net.dv8tion.jda.api.interactions.modals.utils.ModalComponentTree;
+import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
