@@ -19,10 +19,12 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.text_input.TextInput;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
+import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.interactions.components.section.SectionAccessoryComponent;
+import net.dv8tion.jda.api.interactions.components.section.SectionContentComponent;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.Nonnull;
@@ -35,11 +37,12 @@ import javax.annotation.Nonnull;
  * <br><p>Not every component can be used in {@link net.dv8tion.jda.api.entities.Message Messages} or {@link Modal Modals}.
  * Use {@link Type#isMessageCompatible()} and {@link Type#isModalCompatible()} to check whether a component can be used.
  *
- * @see ActionRow
- *
- * @see Button
- * @see SelectMenu
- * @see TextInput
+ * @see MessageTopLevelComponent
+ * @see ModalTopLevelComponent
+ * @see ActionRowChildComponent
+ * @see ContainerChildComponent
+ * @see SectionContentComponent
+ * @see SectionAccessoryComponent
  */
 public interface Component extends SerializableData
 {
