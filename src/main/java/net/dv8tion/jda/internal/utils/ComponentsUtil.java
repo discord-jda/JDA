@@ -44,7 +44,7 @@ public class ComponentsUtil
         if (toUnionClass.isInstance(component))
         {
             final T union = toUnionClass.cast(component);
-            Checks.check(union.isUnknownComponent(), "Cannot provide UnknownComponent");
+            Checks.check(!union.isUnknownComponent(), "Cannot provide UnknownComponent");
             return union;
         }
 
