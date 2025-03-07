@@ -21,12 +21,14 @@ public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponent
     @Override
     ModalComponentTree replace(ComponentReplacer replacer);
 
-    static ModalComponentTree of(Collection<? extends ModalTopLevelComponent> components)
+    @Nonnull
+    static ModalComponentTree of(@Nonnull Collection<? extends ModalTopLevelComponent> components)
     {
         return ModalComponentTreeImpl.of(components);
     }
 
-    static ModalComponentTree of(ModalTopLevelComponent... components)
+    @Nonnull
+    static ModalComponentTree of(@Nonnull ModalTopLevelComponent... components)
     {
         return of(Arrays.asList(components));
     }

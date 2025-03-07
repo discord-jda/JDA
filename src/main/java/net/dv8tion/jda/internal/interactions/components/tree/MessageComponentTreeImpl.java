@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
@@ -17,11 +18,13 @@ public class MessageComponentTreeImpl extends AbstractComponentTree<MessageTopLe
         super(components);
     }
 
-    public static MessageComponentTree of(Collection<? extends MessageTopLevelComponent> _components)
+    @Nonnull
+    public static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> _components)
     {
-        final Collection<MessageTopLevelComponentUnion> components = UnionUtil.membersToUnion(_components);
-        // TODO-components-v2 - checks?
+        // Empty trees are allowed
+        Checks.noneNull(_components, "Components");
 
+        final Collection<MessageTopLevelComponentUnion> components = UnionUtil.membersToUnion(_components);
         return new MessageComponentTreeImpl(components);
     }
 

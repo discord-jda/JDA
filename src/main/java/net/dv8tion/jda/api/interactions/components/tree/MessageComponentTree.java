@@ -23,12 +23,14 @@ public interface MessageComponentTree extends ComponentTree<MessageTopLevelCompo
     @CheckReturnValue
     MessageComponentTree disableAll();
 
-    static MessageComponentTree of(Collection<? extends MessageTopLevelComponent> components)
+    @Nonnull
+    static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return MessageComponentTreeImpl.of(components);
     }
 
-    static MessageComponentTree of(MessageTopLevelComponent... components)
+    @Nonnull
+    static MessageComponentTree of(@Nonnull MessageTopLevelComponent... components)
     {
         return of(Arrays.asList(components));
     }
