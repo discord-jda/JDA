@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ComponentsUtil;
 
 import javax.annotation.Nonnull;
@@ -23,6 +24,7 @@ public final class ComponentTreeImpl<E extends ComponentUnion> extends AbstractC
     @Override
     public ComponentTree<E> replace(ComponentReplacer replacer)
     {
+        Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(
                 componentType,
                 components,
