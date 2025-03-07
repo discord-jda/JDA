@@ -46,7 +46,6 @@ public class SectionImpl
 
         final Collection<SectionContentComponentUnion> components = UnionUtil.membersToUnion(_components);
         final SectionAccessoryComponentUnion accessory = UnionUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);
-        // TODO-components-v2 - checks
 
         return new SectionImpl(components, accessory);
     }

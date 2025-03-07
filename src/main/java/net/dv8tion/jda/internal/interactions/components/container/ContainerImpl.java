@@ -43,9 +43,8 @@ public class ContainerImpl
         Checks.notEmpty(_components, "Components");
         Checks.noneNull(_components, "Components");
         Checks.check(_components.size() <= MAX_COMPONENTS, "A container can only contain %d components, provided: %d", MAX_COMPONENTS, _components.size());
-        final Collection<ContainerChildComponentUnion> components = UnionUtil.membersToUnion(_components);
-        // TODO-components-v2 - checks
 
+        final Collection<ContainerChildComponentUnion> components = UnionUtil.membersToUnion(_components);
         return new ContainerImpl(components);
     }
 

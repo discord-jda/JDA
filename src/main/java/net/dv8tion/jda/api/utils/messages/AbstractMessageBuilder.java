@@ -179,8 +179,6 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
             components,
             Component::isMessageCompatible
         );
-        // TODO-components-v2 outdated check, move to build()
-        Checks.check(components.size() <= Message.MAX_COMPONENT_COUNT, "Cannot send more than %d component layouts in a message!", Message.MAX_COMPONENT_COUNT);
 
         List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(components, MessageTopLevelComponentUnion.class);
 
