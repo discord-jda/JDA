@@ -13,11 +13,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
-import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.UnionUtil;
+import net.dv8tion.jda.internal.utils.*;
 import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
@@ -28,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
-public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, MessageTopLevelComponentUnion, ModalTopLevelComponentUnion, ContainerChildComponentUnion, IReplacerAware<ActionRow>
+public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, MessageTopLevelComponentUnion, ModalTopLevelComponentUnion, ContainerChildComponentUnion
 {
     private static final Logger LOG = JDALogger.getLog(ActionRow.class);
 
@@ -125,10 +121,13 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
         return components;
     }
 
+    @Nonnull
     @Override
-    public ActionRow replace(ComponentReplacer replacer)
+    public ActionRow replace(@Nonnull ComponentReplacer replacer)
     {
-        return IReplacerAware.doReplace(
+        Checks.notNull(replacer, "ComponentReplacer");
+
+        return ComponentsUtil.doReplace(
                 ActionRowChildComponent.class,
                 getComponents(),
                 replacer,

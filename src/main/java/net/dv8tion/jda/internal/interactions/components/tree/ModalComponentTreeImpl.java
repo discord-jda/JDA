@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.modals.utils.ModalComponentTree;
-import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
@@ -29,7 +29,7 @@ public class ModalComponentTreeImpl extends AbstractComponentTree<ModalTopLevelC
     @Override
     public ModalComponentTree replace(ComponentReplacer replacer)
     {
-        return IReplacerAware.doReplace(
+        return ComponentsUtil.doReplace(
                 ModalTopLevelComponent.class,
                 components,
                 replacer,

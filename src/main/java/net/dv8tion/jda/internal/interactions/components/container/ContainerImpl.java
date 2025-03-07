@@ -8,11 +8,7 @@ import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
-import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.UnionUtil;
+import net.dv8tion.jda.internal.utils.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,7 +18,7 @@ import java.util.Objects;
 
 public class ContainerImpl
         extends AbstractComponentImpl
-        implements Container, MessageTopLevelComponentUnion, IReplacerAware<Container>
+        implements Container, MessageTopLevelComponentUnion
 {
     private final int uniqueId;
     private final List<ContainerChildComponentUnion> components;
@@ -101,10 +97,13 @@ public class ContainerImpl
         return uniqueId;
     }
 
+    @Nonnull
     @Override
-    public Container replace(ComponentReplacer replacer)
+    public Container replace(@Nonnull ComponentReplacer replacer)
     {
-        return IReplacerAware.doReplace(
+        Checks.notNull(replacer, "ComponentReplacer");
+
+        return ComponentsUtil.doReplace(
                 ContainerChildComponent.class,
                 getComponents(),
                 replacer,

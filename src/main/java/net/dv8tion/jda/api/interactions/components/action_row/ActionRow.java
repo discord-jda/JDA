@@ -20,6 +20,8 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.interactions.components.*;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.concrete.ActionRowImpl;
@@ -39,7 +41,7 @@ import java.util.List;
  * @see ActionRowChildComponent
  * @see LayoutComponent
  */
-public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent
+public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable
 {
     /**
      * Load ActionRow from serialized representation.
@@ -252,6 +254,10 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
 
         return getComponents().stream().allMatch(Component::isModalCompatible);
     }
+
+    @Nonnull
+    @Override
+    ActionRow replace(@Nonnull ComponentReplacer replacer);
 
     @Nonnull
     @Override

@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
-import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
@@ -29,7 +29,7 @@ public class MessageComponentTreeImpl extends AbstractComponentTree<MessageTopLe
     @Override
     public MessageComponentTree replace(ComponentReplacer replacer)
     {
-        return IReplacerAware.doReplace(
+        return ComponentsUtil.doReplace(
                 MessageTopLevelComponent.class,
                 components,
                 replacer,
