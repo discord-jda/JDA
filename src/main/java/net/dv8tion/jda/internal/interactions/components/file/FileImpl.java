@@ -88,7 +88,7 @@ public class FileImpl extends AbstractComponentImpl implements File, MessageTopL
     @Override
     public ResolvedMedia getResolvedMedia()
     {
-        return null;
+        return media;
     }
 
     @Override

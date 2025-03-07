@@ -64,7 +64,7 @@ public class MediaGalleryItemImpl implements MediaGalleryItem
     @Override
     public ResolvedMedia getResolvedMedia()
     {
-        return null;
+        return media;
     }
 
     @Nullable

@@ -102,7 +102,7 @@ public class ThumbnailImpl
     @Override
     public ResolvedMedia getResolvedMedia()
     {
-        return null;
+        return media;
     }
 
     @Nullable
