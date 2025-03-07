@@ -2,8 +2,11 @@ package net.dv8tion.jda.api.interactions.components.tree;
 
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
+import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
+import net.dv8tion.jda.api.interactions.modals.utils.ModalComponentTree;
 import net.dv8tion.jda.internal.interactions.components.tree.ComponentTreeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnionUtil;
@@ -27,6 +30,25 @@ public interface ComponentTree<E extends ComponentUnion>
         for (E component : components)
             Checks.check(unionType.isInstance(component), "Component %s is not a subclass of %s", component, unionType);
         return new ComponentTreeImpl<>(unionType, UnionUtil.membersToUnion(components));
+    }
+
+    @Nonnull
+    static ComponentTree<ComponentUnion> of(@Nonnull Collection<? extends Component> components)
+    {
+        Checks.notNull(components, "Components");
+        return new ComponentTreeImpl<>(ComponentUnion.class, UnionUtil.membersToUnion(components));
+    }
+
+    @Nonnull
+    static MessageComponentTree forMessage(@Nonnull Collection<? extends MessageTopLevelComponent> components)
+    {
+        return MessageComponentTree.of(components);
+    }
+
+    @Nonnull
+    static ModalComponentTree forModal(@Nonnull Collection<? extends ModalTopLevelComponent> components)
+    {
+        return ModalComponentTree.of(components);
     }
 
     @Nonnull
