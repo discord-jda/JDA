@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions.components.section;
 
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
+import net.dv8tion.jda.api.interactions.components.text_display.TextDisplay;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.UnknownComponentImpl;
@@ -28,6 +29,13 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a union of {@link SectionContentComponent SectionContentComponents} that can be either
+ * <ul>
+ *     <li>{@link TextDisplay}</li>
+ *     <li>{@link net.dv8tion.jda.api.interactions.components.UnknownComponent UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
+ * </ul>
+ */
 public interface SectionContentComponentUnion extends SectionContentComponent, ComponentUnion
 {
     @Nonnull
