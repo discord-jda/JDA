@@ -24,9 +24,11 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
@@ -735,7 +737,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull MessageComponentTree tree)
+    default MessageCreateAction sendMessageComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "MessageComponentTree");
         return sendMessageComponents(tree.getComponents());
@@ -3470,7 +3472,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull MessageComponentTree tree)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "MessageComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
@@ -3536,7 +3538,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull MessageComponentTree tree)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "MessageComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
