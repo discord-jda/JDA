@@ -21,9 +21,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
-import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
@@ -33,10 +31,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackA
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import net.dv8tion.jda.api.utils.messages.MessageEditData;
-import net.dv8tion.jda.api.utils.messages.MessagePollBuilder;
-import net.dv8tion.jda.api.utils.messages.MessagePollData;
+import net.dv8tion.jda.api.utils.messages.*;
 import net.dv8tion.jda.internal.requests.IncomingWebhookClientImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -350,16 +345,14 @@ public interface WebhookClient<T> extends ISnowflake
      * </ul>
      *
      * @param  components
-     *         {@link MessageTopLevelComponent MessageTopLevelComponent} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
@@ -389,18 +382,16 @@ public interface WebhookClient<T> extends ISnowflake
      * </ul>
      *
      * @param  component
-     *         {@link MessageTopLevelComponent} to use
+     *         The {@link MessageTopLevelComponent} to send
      * @param  other
-     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT} in total)
+     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
@@ -435,16 +426,14 @@ public interface WebhookClient<T> extends ISnowflake
      * </ul>
      *
      * @param  tree
-     *         {@link MessageComponentTree} to send
+     *         The {@link ComponentTree} to send,
+     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
@@ -899,16 +888,14 @@ public interface WebhookClient<T> extends ISnowflake
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
@@ -933,16 +920,14 @@ public interface WebhookClient<T> extends ISnowflake
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
@@ -970,16 +955,14 @@ public interface WebhookClient<T> extends ISnowflake
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
@@ -1008,16 +991,14 @@ public interface WebhookClient<T> extends ISnowflake
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
@@ -1045,16 +1026,14 @@ public interface WebhookClient<T> extends ISnowflake
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  tree
-     *         The new component tree
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
@@ -1083,16 +1062,14 @@ public interface WebhookClient<T> extends ISnowflake
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  tree
-     *         The new component tree
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}

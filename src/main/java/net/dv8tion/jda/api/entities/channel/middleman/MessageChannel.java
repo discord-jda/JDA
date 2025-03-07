@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
-import net.dv8tion.jda.api.interactions.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -49,6 +48,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -616,7 +616,9 @@ public interface MessageChannel extends Channel, Formattable
      * }</pre>
      *
      * @param  components
-     *         {@link MessageTopLevelComponent MessageTopLevelComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
@@ -624,10 +626,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
@@ -665,9 +663,11 @@ public interface MessageChannel extends Channel, Formattable
      * </ul>
      *
      * @param  component
-     *         {@link MessageTopLevelComponent} to send
+     *         The {@link MessageTopLevelComponent} to send
      * @param  other
-     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
@@ -675,10 +675,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
@@ -717,7 +713,9 @@ public interface MessageChannel extends Channel, Formattable
      * </ul>
      *
      * @param  tree
-     *         {@link MessageComponentTree} to send
+     *         The {@link ComponentTree} to send,
+     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
@@ -725,10 +723,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
@@ -3077,7 +3071,9 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link MessageTopLevelComponent MessageTopLevelComponents} for the edited message, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3085,10 +3081,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3145,7 +3137,9 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link MessageTopLevelComponent MessageTopLevelComponents} for the edited message, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3153,10 +3147,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3210,7 +3200,9 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link MessageTopLevelComponent MessageTopLevelComponents} for the edited message, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3218,10 +3210,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3276,7 +3264,9 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link MessageTopLevelComponent MessageTopLevelComponents} for the edited message, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3284,10 +3274,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3342,7 +3328,9 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  tree
-     *         The component tree for the edited message
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3350,10 +3338,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3408,7 +3392,9 @@ public interface MessageChannel extends Channel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  tree
-     *         The component tree for the edited message
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3416,10 +3402,6 @@ public interface MessageChannel extends Channel, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have

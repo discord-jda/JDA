@@ -1071,7 +1071,9 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The new {@link MessageTopLevelComponent MessageTopLevelComponents} of the message, or an empty list to remove all components
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1081,10 +1083,6 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link MessageEditAction}
@@ -1114,7 +1112,9 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The new {@link MessageTopLevelComponent MessageTopLevelComponents} of the message, empty list to remove all components
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1124,10 +1124,6 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link MessageEditAction}
@@ -1143,7 +1139,7 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Edits this message using the provided {@link MessageComponentTree}.
+     * Edits this message using the provided {@link ComponentTree}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1161,7 +1157,9 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  tree
-     *         The new {@link MessageComponentTree} of the message, can be empty to remove components
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1171,10 +1169,6 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return {@link MessageEditAction}
@@ -1629,6 +1623,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
@@ -1663,7 +1659,9 @@ public interface Message extends ISnowflake, Formattable
      * @param  component
      *         The {@link MessageTopLevelComponent} to send
      * @param  other
-     *         Any addition {@link MessageTopLevelComponent MessageTopLevelComponents} to send
+     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to send
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
@@ -1700,7 +1698,9 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  tree
-     *         The {@link MessageComponentTree} to send
+     *         The {@link ComponentTree} to send,
+     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws

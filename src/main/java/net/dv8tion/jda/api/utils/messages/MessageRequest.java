@@ -208,16 +208,14 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * }</pre>
      *
      * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return The same instance for chaining
@@ -248,16 +246,14 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * }</pre>
      *
      * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return The same instance for chaining
@@ -291,16 +287,14 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * }</pre>
      *
      * @param  tree
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The new {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
-     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2},
-     *                 if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are provided</li>
-     *             <li>When using {@linkplain net.dv8tion.jda.api.utils.messages.MessageRequest#useComponentsV2(boolean) components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are provided</li>
      *         </ul>
      *
      * @return The same instance for chaining
@@ -344,7 +338,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * }</pre><br>
      *
      * @param  components
-     *         The {@link ActionRowChildComponent ActionRowChildComponents} for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link ActionRowChildComponent ActionRowChildComponents} for the message (up to 5)
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -387,7 +381,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * }</pre><br>
      *
      * @param  components
-     *         The {@link ActionRowChildComponent ActionRowChildComponents} for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link ActionRowChildComponent ActionRowChildComponents} for the message (up to 5)
      *
      * @throws IllegalArgumentException
      *         <ul>
