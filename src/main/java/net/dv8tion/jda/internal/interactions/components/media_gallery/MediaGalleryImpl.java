@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.media_gallery.MediaGallery;
 import net.dv8tion.jda.api.interactions.components.media_gallery.MediaGalleryItem;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
@@ -80,6 +81,16 @@ public class MediaGalleryImpl
     public List<MediaGalleryItem> getItems()
     {
         return items;
+    }
+
+    @Override
+    public List<FileUpload> getFiles()
+    {
+        return items.stream()
+                .filter(MediaGalleryItemFileUpload.class::isInstance)
+                .map(MediaGalleryItemFileUpload.class::cast)
+                .map(MediaGalleryItemFileUpload::getFile)
+                .collect(Collectors.toList());
     }
 
     @Nonnull

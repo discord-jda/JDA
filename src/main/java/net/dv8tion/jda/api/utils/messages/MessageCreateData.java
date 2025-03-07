@@ -20,15 +20,19 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Output of a {@link MessageCreateBuilder} and used for sending messages to channels/webhooks/interactions.
@@ -56,7 +60,13 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
-        this.files = Collections.unmodifiableList(files);
+        this.files = Stream.concat(
+                files.stream(),
+                ComponentIterator.createStream(components)
+                        .filter(AbstractComponentImpl.class::isInstance)
+                        .map(AbstractComponentImpl.class::cast)
+                        .flatMap(c -> c.getFiles().stream())
+        ).collect(Helpers.toUnmodifiableList());
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
         this.poll = poll;
