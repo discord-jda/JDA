@@ -179,6 +179,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
             components,
             Component::isMessageCompatible
         );
+        // TODO-components-v2 outdated check, move to build()
         Checks.check(components.size() <= Message.MAX_COMPONENT_COUNT, "Cannot send more than %d component layouts in a message!", Message.MAX_COMPONENT_COUNT);
 
         List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(components, MessageTopLevelComponentUnion.class);
@@ -267,13 +268,17 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
      *             <li>If the builder is {@link #isEmpty() empty}</li>
      *             <li>If the content set is longer than {@value Message#MAX_CONTENT_LENGTH}</li>
      *             <li>If more than {@value Message#MAX_EMBED_COUNT} embeds are set</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are set</li>
+     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} top-level components are set</li>
+     *             <li>When {@linkplain #isUsingComponentsV2() using components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are set</li>
+     *             <li>When {@linkplain #isUsingComponentsV2() using components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are set</li>
      *         </ul>
      *         For {@link MessageEditBuilder}
      *         <ul>
      *             <li>If the content set is longer than {@value Message#MAX_CONTENT_LENGTH}</li>
      *             <li>If more than {@value Message#MAX_EMBED_COUNT} embeds are set</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are set</li>
+     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} top-level components are set</li>
+     *             <li>When {@linkplain #isUsingComponentsV2() using components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} top-level components are set</li>
+     *             <li>When {@linkplain #isUsingComponentsV2() using components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are set</li>
      *         </ul>
      *
      * @return The validated data instance

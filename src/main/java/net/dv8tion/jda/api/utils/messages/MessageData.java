@@ -76,7 +76,14 @@ public interface MessageData
         return MessageComponentTree.of(getComponents());
     }
 
-    // TODO-components-v2 - docs
+    /**
+     * Whether this message is using components V2.
+     *
+     * @return {@code true} if this is using components V2
+     *
+     * @see MessageRequest#useComponentsV2()
+     * @see MessageRequest#useComponentsV2(boolean)
+     */
     boolean isUsingComponentsV2();
 
     // Returns attachment interface for abstraction purposes, however you can only abstract the setter to allow FileUploads
