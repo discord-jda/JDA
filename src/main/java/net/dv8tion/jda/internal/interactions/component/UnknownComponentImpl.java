@@ -36,10 +36,17 @@ public class UnknownComponentImpl extends AbstractComponentImpl implements
         SectionAccessoryComponentUnion,
         ContainerChildComponentUnion
 {
+    private final DataObject data;
+
+    public UnknownComponentImpl(DataObject data)
+    {
+        this.data = data;
+    }
+
     @Override
     @Nonnull
     public DataObject toData()
     {
-        throw new IllegalStateException("Unknown component cannot be converted to DataObject");
+        return data;
     }
 }

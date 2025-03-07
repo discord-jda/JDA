@@ -40,7 +40,7 @@ public interface SectionContentComponentUnion extends SectionContentComponent, C
         case TEXT_DISPLAY:
             return new TextDisplayImpl(data);
         default:
-            return new UnknownComponentImpl();
+            return new UnknownComponentImpl(data);
         }
     }
 

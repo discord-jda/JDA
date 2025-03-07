@@ -59,7 +59,7 @@ public interface SectionAccessoryComponentUnion extends SectionAccessoryComponen
         case THUMBNAIL:
             return new ThumbnailImpl(data);
         default:
-            return new UnknownComponentImpl();
+            return new UnknownComponentImpl(data);
         }
     }
 
