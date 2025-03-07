@@ -7,7 +7,10 @@ import net.dv8tion.jda.api.interactions.components.section.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
-import net.dv8tion.jda.internal.utils.*;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
+import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
@@ -44,8 +47,8 @@ public class SectionImpl
         Checks.noneNull(_components, "Components");
         Checks.check(_components.size() <= MAX_COMPONENTS, "A section can only contain %d components, provided: %d", MAX_COMPONENTS, _components.size());
 
-        final Collection<SectionContentComponentUnion> components = UnionUtil.membersToUnion(_components);
-        final SectionAccessoryComponentUnion accessory = UnionUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);
+        final Collection<SectionContentComponentUnion> components = ComponentsUtil.membersToUnion(_components, SectionContentComponentUnion.class);
+        final SectionAccessoryComponentUnion accessory = ComponentsUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);
 
         return new SectionImpl(components, accessory);
     }

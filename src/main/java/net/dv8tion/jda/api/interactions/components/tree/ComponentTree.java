@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
 import net.dv8tion.jda.internal.interactions.components.tree.ComponentTreeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.UnionUtil;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
@@ -47,9 +47,7 @@ public interface ComponentTree<E extends ComponentUnion>
     {
         Checks.notNull(unionType, "Component union type");
         Checks.noneNull(components, "Components");
-        for (E component : components)
-            Checks.check(unionType.isInstance(component), "Component %s is not a subclass of %s", component, unionType);
-        return new ComponentTreeImpl<>(unionType, UnionUtil.membersToUnion(components));
+        return new ComponentTreeImpl<>(unionType, ComponentsUtil.membersToUnion(components, unionType));
     }
 
     /**
@@ -67,7 +65,7 @@ public interface ComponentTree<E extends ComponentUnion>
     static ComponentTree<ComponentUnion> of(@Nonnull Collection<? extends Component> components)
     {
         Checks.noneNull(components, "Components");
-        return new ComponentTreeImpl<>(ComponentUnion.class, UnionUtil.membersToUnion(components));
+        return new ComponentTreeImpl<>(ComponentUnion.class, ComponentsUtil.membersToUnion(components, ComponentUnion.class));
     }
 
     /**

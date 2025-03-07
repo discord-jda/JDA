@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.utils;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
+import net.dv8tion.jda.api.interactions.components.UnknownComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
@@ -34,6 +35,34 @@ import java.util.stream.Collectors;
 
 public class ComponentsUtil
 {
+    /**
+     * Checks the component has the target union type, and isn't an {@link UnknownComponent},
+     * throws {@link IllegalArgumentException} otherwise.
+     */
+    public static <T extends ComponentUnion> T safeUnionCast(String componentCategory, Component component, Class<T> toUnionClass)
+    {
+        if (toUnionClass.isInstance(component))
+        {
+            final T union = toUnionClass.cast(component);
+            Checks.check(union.isUnknownComponent(), "Cannot provide UnknownComponent");
+            return union;
+        }
+
+        String cleanedClassName = component.getClass().getSimpleName().replace("Impl", "");
+        throw new IllegalArgumentException(Helpers.format("Cannot convert " + componentCategory + " of type %s to %s!", cleanedClassName, toUnionClass.getSimpleName()));
+    }
+
+    /**
+     * Checks all the components has the target union type, and isn't an {@link UnknownComponent},
+     * throws {@link IllegalArgumentException} otherwise.
+     */
+    public static <TMember extends Component, TUnion extends ComponentUnion> List<TUnion> membersToUnion(Collection<? extends TMember> members, Class<TUnion> clazz) {
+        return members
+                .stream()
+                .map(c -> safeUnionCast("component", c, clazz))
+                .collect(Collectors.toList());
+    }
+
     /** Checks whether the provided component has the {@code identifier} as its custom id, url or SKU id */
     public static boolean isSameIdentifier(@Nonnull ActionComponent component, @Nonnull String identifier)
     {

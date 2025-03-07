@@ -23,7 +23,10 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.internal.utils.*;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -169,7 +172,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
                 components,
                 Component::isMessageCompatible
         );
-        List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(
+        List<MessageTopLevelComponentUnion> componentsAsUnions = ComponentsUtil.membersToUnion(
                 components,
                 MessageTopLevelComponentUnion.class
         );

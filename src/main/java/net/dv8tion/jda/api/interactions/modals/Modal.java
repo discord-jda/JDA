@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.UnionUtil;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -437,7 +437,7 @@ public interface Modal extends SerializableData
         }
 
         private static Collection<ModalTopLevelComponentUnion> membersToUnion(Collection<? extends ModalTopLevelComponent> members) {
-            return UnionUtil.componentMembersToUnionWithUnknownValidation(members, ModalTopLevelComponentUnion.class);
+            return ComponentsUtil.membersToUnion(members, ModalTopLevelComponentUnion.class);
         }
     }
 }
