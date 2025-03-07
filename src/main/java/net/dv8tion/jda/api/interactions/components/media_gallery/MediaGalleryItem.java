@@ -17,7 +17,9 @@
 package net.dv8tion.jda.api.interactions.components.media_gallery;
 
 import net.dv8tion.jda.api.interactions.components.ResolvedMedia;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryItemFileUpload;
 import net.dv8tion.jda.internal.interactions.components.media_gallery.MediaGalleryItemImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -34,6 +36,14 @@ public interface MediaGalleryItem extends SerializableData
     {
         Checks.notNull(url, "URL");
         return new MediaGalleryItemImpl(url);
+    }
+
+    // TODO-components-v2 docs
+    @Nonnull
+    static MediaGalleryItem fromFile(@Nonnull FileUpload file)
+    {
+        Checks.notNull(file, "FileUpload");
+        return new MediaGalleryItemFileUpload(file);
     }
 
     // TODO-components-v2 docs
