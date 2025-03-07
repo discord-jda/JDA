@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponentUnion;
-import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
@@ -16,7 +15,6 @@ import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.*;
 import org.slf4j.Logger;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
@@ -141,37 +139,6 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     {
         Checks.notNegative(uniqueId, "Unique ID");
         return new ActionRowImpl(getComponents(), uniqueId);
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public ActionRow withDisabled(boolean disabled)
-    {
-        return of(
-            components.stream()
-                .map(c -> {
-                    if (c instanceof IDisableable)
-                        return (ActionRowChildComponentUnion) ((IDisableable) c).withDisabled(disabled);
-                    return c;
-                })
-                .collect(Collectors.toList()));
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public ActionRow asDisabled()
-    {
-        return withDisabled(true);
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public ActionRow asEnabled()
-    {
-        return withDisabled(false);
     }
 
     @Nonnull

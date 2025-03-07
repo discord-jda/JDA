@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions.components.action_row;
 
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.interactions.components.*;
+import net.dv8tion.jda.api.interactions.components.attribute.IDisableable;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
@@ -257,19 +258,32 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ActionRow replace(@Nonnull ComponentReplacer replacer);
 
     @Nonnull
     @Override
-    ActionRow asDisabled();
+    @CheckReturnValue
+    default ActionRow withDisabled(boolean disabled)
+    {
+        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
+    }
 
     @Nonnull
     @Override
-    ActionRow asEnabled();
+    @CheckReturnValue
+    default ActionRow asDisabled()
+    {
+        return withDisabled(true);
+    }
 
     @Nonnull
     @Override
-    ActionRow withDisabled(boolean disabled);
+    @CheckReturnValue
+    default ActionRow asEnabled()
+    {
+        return withDisabled(false);
+    }
 
     /**
      * Check whether this row has a valid configuration.
