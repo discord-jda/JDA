@@ -23,10 +23,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.IOUtil;
-import net.dv8tion.jda.internal.utils.UnionUtil;
+import net.dv8tion.jda.internal.utils.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -172,10 +169,6 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
                 components,
                 Component::isMessageCompatible
         );
-        Checks.check(
-                this.components.size() + components.size() <= Message.MAX_COMPONENT_COUNT,
-            "Cannot add more than %d component layouts", Message.MAX_COMPONENT_COUNT
-        );
         List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(
                 components,
                 MessageTopLevelComponentUnion.class
@@ -271,13 +264,42 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     @Override
     public boolean isValid()
     {
-        return !isEmpty() && embeds.size() <= Message.MAX_EMBED_COUNT
-                          && components.size() <= Message.MAX_COMPONENT_COUNT
-                          && Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH;
+        if (isUsingComponentsV2())
+            return isV2Valid();
+        else
+            return isV1Valid();
+    }
+
+    private boolean isV1Valid()
+    {
+        return !isEmpty()
+                && embeds.size() <= Message.MAX_EMBED_COUNT
+                && components.size() <= Message.MAX_COMPONENT_COUNT
+                && !ComponentsUtil.hasIllegalV1Components(components)
+                && Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH;
+    }
+
+    private boolean isV2Valid()
+    {
+        return Helpers.isBlank(content)
+                && embeds.isEmpty()
+                && poll == null
+                && !components.isEmpty()
+                && components.size() <= Message.MAX_COMPONENT_COUNT_COMPONENTS_V2
+                && ComponentsUtil.getComponentTreeSize(components) <= Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE;
     }
 
     @Nonnull
     public MessageCreateData build()
+    {
+        if (isUsingComponentsV2())
+            return buildV2();
+        else
+            return buildV1();
+    }
+
+    @Nonnull
+    private MessageCreateData buildV1()
     {
         // Copy to prevent modifying data after building
         String content = this.content.toString().trim();
@@ -297,9 +319,34 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
 
         if (components.size() > Message.MAX_COMPONENT_COUNT)
-            throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
-        // TODO-components-v2 - Implement mutual exclusion of content/embeds, and components v2
+            throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " top-level components, provided " + components.size());
+        final List<? extends Component> illegalV1Components = ComponentsUtil.getIllegalV1Components(components);
+        if (!illegalV1Components.isEmpty())
+            throw new IllegalStateException("Cannot build message with components other than ActionRow while using components V1, see #useComponentsV2, provided: " + illegalV1Components);
+
         return new MessageCreateData(content, embeds, files, components, mentions, poll, tts, messageFlags);
+    }
+
+    @Nonnull
+    private MessageCreateData buildV2()
+    {
+        // Copy to prevent modifying data after building
+        List<FileUpload> files = new ArrayList<>(this.files);
+        List<MessageTopLevelComponentUnion> components = new ArrayList<>(this.components);
+        AllowedMentionsData mentions = this.mentions.copy();
+
+        if (content.length() > 0 || !embeds.isEmpty() || poll != null)
+            throw new IllegalStateException("Cannot build a message with components V2 enabled while having content, embeds, or poll");
+
+        if (components.isEmpty())
+            throw new IllegalStateException("Cannot build message with no V2 components, or did you forget to disable them?");
+        if (components.size() > Message.MAX_COMPONENT_COUNT_COMPONENTS_V2)
+            throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT_COMPONENTS_V2 + " top-level components, provided " + components.size());
+        final long componentTreeSize = ComponentsUtil.getComponentTreeSize(components);
+        if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
+            throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE + " total components, provided " + componentTreeSize);
+
+        return new MessageCreateData("", Collections.emptyList(), files, components, mentions, poll, tts, messageFlags);
     }
 
     @Nonnull
