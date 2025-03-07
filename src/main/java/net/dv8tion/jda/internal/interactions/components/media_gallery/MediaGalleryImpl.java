@@ -35,7 +35,7 @@ public class MediaGalleryImpl
         );
     }
 
-    public MediaGalleryImpl(Collection<? extends MediaGalleryItem> items)
+    private MediaGalleryImpl(Collection<? extends MediaGalleryItem> items)
     {
         this(-1, items);
     }
@@ -44,6 +44,14 @@ public class MediaGalleryImpl
     {
         this.uniqueId = uniqueId;
         this.items = Helpers.copyAsUnmodifiableList(items);
+    }
+
+    @Nonnull
+    public static MediaGallery of(@Nonnull Collection<? extends MediaGalleryItem> items)
+    {
+        Checks.noneNull(items, "Items");
+        Checks.check(items.size() <= MAX_ITEMS, "A media gallery can only contain %d items, provided: %d", MAX_ITEMS, items.size());
+        return new MediaGalleryImpl(items);
     }
 
     @Nonnull

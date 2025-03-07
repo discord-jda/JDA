@@ -40,6 +40,9 @@ import java.util.List;
 public interface Container extends IdentifiableComponent, MessageTopLevelComponent, IReplaceable, IDisableable
 {
     // TODO-components-v2 docs
+    int MAX_COMPONENTS = 10;
+
+    // TODO-components-v2 docs
     @Nonnull
     static Container of(@Nonnull Collection<? extends ContainerChildComponent> components)
     {

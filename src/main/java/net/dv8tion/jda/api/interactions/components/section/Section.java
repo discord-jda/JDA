@@ -39,6 +39,9 @@ import java.util.List;
 public interface Section extends IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
     // TODO-components-v2 docs
+    int MAX_COMPONENTS = 3;
+
+    // TODO-components-v2 docs
     @Nonnull
     static Section of(@Nonnull SectionAccessoryComponent accessory, @Nonnull Collection<? extends SectionContentComponent> components)
     {
