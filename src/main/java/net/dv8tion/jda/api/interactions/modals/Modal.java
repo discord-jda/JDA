@@ -247,11 +247,6 @@ public interface Modal extends SerializableData
             return addComponents(Arrays.asList(components));
         }
 
-//        public Builder addComponents(@Nonnull ModalTopLevelComponentUnion... components) {
-//            Checks.noneNull(components, "Components");
-//            return addComponents((List<? extends ModalTopLevelComponent>) Arrays.asList(components));
-//        }
-
         /**
          * Adds {@link ModalTopLevelComponent components} to this modal
          *
