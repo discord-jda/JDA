@@ -197,7 +197,11 @@ public class MessageSnapshot
         return components;
     }
 
-    // TODO-components-v2 - docs
+    /**
+     * A {@link MessageComponentTree} constructed from {@link #getComponents()}.
+     *
+     * @return {@link MessageComponentTree}
+     */
     @Nonnull
     public MessageComponentTree getComponentTree()
     {

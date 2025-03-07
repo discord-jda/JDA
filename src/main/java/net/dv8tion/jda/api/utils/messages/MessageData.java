@@ -69,7 +69,11 @@ public interface MessageData
     @Nonnull
     List<MessageTopLevelComponentUnion> getComponents();
 
-    // TODO-components-v2 - docs
+    /**
+     * A {@link MessageComponentTree} constructed from {@link #getComponents()}.
+     *
+     * @return {@link MessageComponentTree}
+     */
     @Nonnull
     default MessageComponentTree getComponentTree()
     {

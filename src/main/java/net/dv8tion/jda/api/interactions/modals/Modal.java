@@ -120,7 +120,11 @@ public interface Modal extends SerializableData
     @Nonnull
     List<ModalTopLevelComponentUnion> getComponents();
 
-    // TODO-components-v2 - docs
+    /**
+     * A {@link ModalComponentTree} constructed from {@link #getComponents()}.
+     *
+     * @return {@link ModalComponentTree}
+     */
     @Nonnull
     default ModalComponentTree getComponentTree()
     {

@@ -707,7 +707,11 @@ public interface Message extends ISnowflake, Formattable
     // TODO-components-v2 docs
     boolean isUsingComponentsV2();
 
-    // TODO-components-v2 - docs
+    /**
+     * A {@link MessageComponentTree} constructed from {@link #getComponents()}.
+     *
+     * @return {@link MessageComponentTree}
+     */
     @Nonnull
     default MessageComponentTree getComponentTree()
     {
