@@ -202,7 +202,7 @@ public interface Message extends ISnowflake, Formattable
     int MAX_COMPONENT_COUNT_COMPONENTS_V2 = 10;
 
     /**
-     * The maximum amount of {@link net.dv8tion.jda.api.interactions.components.Component components} that can be added to a message} including nested components. ({@value})
+     * The maximum amount of {@link net.dv8tion.jda.api.interactions.components.Component components} that can be added to a message including nested components. ({@value})
      */
     int MAX_COMPONENT_COUNT_IN_COMPONENT_TREE = 30;
 
