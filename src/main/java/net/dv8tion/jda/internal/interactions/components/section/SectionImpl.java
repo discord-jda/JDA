@@ -7,11 +7,7 @@ import net.dv8tion.jda.api.interactions.components.section.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
-import net.dv8tion.jda.internal.interactions.components.replacer.IReplacerAware;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.UnionUtil;
+import net.dv8tion.jda.internal.utils.*;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
@@ -23,7 +19,7 @@ import java.util.function.Function;
 
 public class SectionImpl
         extends AbstractComponentImpl
-        implements Section, MessageTopLevelComponentUnion, ContainerChildComponentUnion, IReplacerAware<Section>
+        implements Section, MessageTopLevelComponentUnion, ContainerChildComponentUnion
 {
     private final int uniqueId;
     private final List<SectionContentComponentUnion> components;
@@ -82,17 +78,20 @@ public class SectionImpl
         return new SectionImpl(uniqueId, components, accessory);
     }
 
+    @Nonnull
     @Override
-    public Section replace(ComponentReplacer replacer)
+    public Section replace(@Nonnull ComponentReplacer replacer)
     {
-        final List<SectionContentComponentUnion> newContent = IReplacerAware.doReplace(
+        Checks.notNull(replacer, "ComponentReplacer");
+
+        final List<SectionContentComponentUnion> newContent = ComponentsUtil.doReplace(
                 SectionContentComponent.class,
                 getContentComponents(),
                 replacer,
                 Function.identity()
         );
 
-        final SectionAccessoryComponentUnion newAccessory = accessory != null ? IReplacerAware.doReplace(
+        final SectionAccessoryComponentUnion newAccessory = accessory != null ? ComponentsUtil.doReplace(
                 SectionAccessoryComponent.class,
                 Collections.singletonList(accessory),
                 replacer,

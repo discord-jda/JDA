@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.IdentifiableComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.components.section.SectionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -32,7 +34,7 @@ import java.util.Collection;
 import java.util.List;
 
 // TODO-components-v2 docs
-public interface Section extends IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
+public interface Section extends IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, IReplaceable
 {
     // TODO-components-v2 docs
     @Nonnull
@@ -80,6 +82,10 @@ public interface Section extends IdentifiableComponent, MessageTopLevelComponent
         return getContentComponents().stream().allMatch(Component::isModalCompatible)
                 && getAccessory().isModalCompatible();
     }
+
+    @Nonnull
+    @Override
+    Section replace(@Nonnull ComponentReplacer replacer);
 
     @Nonnull
     @Override
