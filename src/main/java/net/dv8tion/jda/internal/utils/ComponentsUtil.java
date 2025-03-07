@@ -19,14 +19,18 @@ package net.dv8tion.jda.internal.utils;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentUnion;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.replacer.IReplaceable;
+import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ComponentsUtil
 {
@@ -75,5 +79,21 @@ public class ComponentsUtil
         }
 
         return finisher.apply(newComponents);
+    }
+
+    public static long getComponentTreeSize(@Nonnull Collection<? extends Component> tree)
+    {
+        return ComponentIterator.createStream(tree).count();
+    }
+
+    @Nonnull
+    public static List<? extends Component> getIllegalV1Components(@Nonnull Collection<? extends Component> components)
+    {
+        return components.stream().filter(c -> !(c instanceof ActionRow)).collect(Collectors.toList());
+    }
+
+    public static boolean hasIllegalV1Components(@Nonnull Collection<? extends Component> components)
+    {
+        return !getIllegalV1Components(components).isEmpty();
     }
 }

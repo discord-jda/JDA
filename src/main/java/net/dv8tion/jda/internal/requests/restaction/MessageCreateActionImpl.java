@@ -77,6 +77,9 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
     @Override
     protected RequestBody finalizeData()
     {
+        if (builder.isUsingComponentsV2())
+            Checks.check(stickers.isEmpty(), "Cannot send stickers when using Components V2!");
+
         if (builder.isEmpty())
         {
             // Special cases where builder is empty but can still send message on this endpoint

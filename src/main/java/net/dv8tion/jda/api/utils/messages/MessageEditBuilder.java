@@ -19,11 +19,13 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
@@ -276,11 +278,35 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     @Override
     public boolean isValid()
     {
+        if (isUsingComponentsV2())
+            return isV2Valid();
+        else
+            return isV1Valid();
+    }
+
+    private boolean isV1Valid()
+    {
+        if (isSet(CONTENT) && Helpers.codePointLength(content) > Message.MAX_CONTENT_LENGTH)
+            return false;
         if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT)
             return false;
-        if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
+        if (isSet(COMPONENTS) && (components.size() > Message.MAX_COMPONENT_COUNT || ComponentsUtil.hasIllegalV1Components(components)))
             return false;
-        return !isSet(CONTENT) || Helpers.codePointLength(content) <= Message.MAX_CONTENT_LENGTH;
+
+        return true;
+    }
+
+    private boolean isV2Valid()
+    {
+        if (isSet(EMBEDS) && !embeds.isEmpty())
+            return false;
+        if (isSet(COMPONENTS) && (components.size() > Message.MAX_COMPONENT_COUNT_COMPONENTS_V2
+                || ComponentsUtil.getComponentTreeSize(components) > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE))
+            return false;
+        if (isSet(CONTENT) && !Helpers.isBlank(content))
+            return false;
+
+        return true;
     }
 
     private boolean isSet(int flag)
@@ -291,6 +317,15 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     @Nonnull
     @Override
     public MessageEditData build()
+    {
+        if (isUsingComponentsV2())
+            return buildV2();
+        else
+            return buildV1();
+    }
+
+    @Nonnull
+    private MessageEditData buildV1()
     {
         // Copy to prevent modifying data after building
         String content = this.content.toString().trim();
@@ -306,11 +341,41 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (isSet(EMBEDS) && embeds.size() > Message.MAX_EMBED_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_EMBED_COUNT + " embeds, provided " + embeds.size());
 
-        if (isSet(COMPONENTS) && components.size() > Message.MAX_COMPONENT_COUNT)
-            throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
+        if (isSet(COMPONENTS))
+        {
+            if (components.size() > Message.MAX_COMPONENT_COUNT)
+                throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " top-level components, provided " + components.size());
+            final List<? extends Component> illegalComponents = ComponentsUtil.getIllegalV1Components(components);
+            if (!illegalComponents.isEmpty())
+                throw new IllegalStateException("Cannot build message with components other than ActionRow while using components V1, see #useComponentsV2, provided: " + illegalComponents);
+        }
 
-        // TODO-components-v2 - Implement mutual exclusion of content/embeds, and components v2
         return new MessageEditData(configuredFields, messageFlags, replace, content, embeds, attachments, components, mentions);
+    }
+
+    @Nonnull
+    private MessageEditData buildV2()
+    {
+        // Copy to prevent modifying data after building
+        List<AttachedFile> attachments = new ArrayList<>(this.attachments);
+        List<MessageTopLevelComponentUnion> components = new ArrayList<>(this.components);
+        AllowedMentionsData mentions = this.mentions.copy();
+
+        if ((isSet(CONTENT) && content.length() > 0) || (isSet(EMBEDS) && !embeds.isEmpty()))
+            throw new IllegalStateException("Cannot build a message with components V2 enabled while having content or embeds");
+
+        if (isSet(COMPONENTS))
+        {
+            if (components.isEmpty())
+                throw new IllegalStateException("Cannot build message with no V2 components, or did you forget to disable them?");
+            if (components.size() > Message.MAX_COMPONENT_COUNT_COMPONENTS_V2)
+                throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT_COMPONENTS_V2 + " top-level components, provided " + components.size());
+            final long componentTreeSize = ComponentsUtil.getComponentTreeSize(components);
+            if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
+                throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE + " total components, provided " + componentTreeSize);
+        }
+
+        return new MessageEditData(configuredFields, messageFlags, replace, "", Collections.emptyList(), attachments, components, mentions);
     }
 
     @Nonnull
