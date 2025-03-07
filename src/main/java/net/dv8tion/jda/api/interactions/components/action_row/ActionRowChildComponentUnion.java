@@ -73,7 +73,7 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, C
         case MENTIONABLE_SELECT:
             return new EntitySelectMenuImpl(data);
         default:
-            return new UnknownComponentImpl();
+            return new UnknownComponentImpl(data);
         }
     }
 

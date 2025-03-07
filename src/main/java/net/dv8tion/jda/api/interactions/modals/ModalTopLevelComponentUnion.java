@@ -51,7 +51,7 @@ public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, Com
             case ACTION_ROW:
                 return (ModalTopLevelComponentUnion) ActionRow.fromData(data);
             default:
-                return new UnknownComponentImpl();
+                return new UnknownComponentImpl(data);
         }
     }
 

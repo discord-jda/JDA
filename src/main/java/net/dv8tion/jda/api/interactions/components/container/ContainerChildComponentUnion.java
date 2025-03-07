@@ -91,7 +91,7 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, C
         case SEPARATOR:
             return new SeparatorImpl(data);
         default:
-            return new UnknownComponentImpl();
+            return new UnknownComponentImpl(data);
         }
     }
 

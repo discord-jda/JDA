@@ -100,7 +100,7 @@ public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent,
         case CONTAINER:
             return ContainerImpl.fromData(data);
         default:
-            return new UnknownComponentImpl();
+            return new UnknownComponentImpl(data);
         }
     }
 
