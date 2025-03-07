@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.UnionUtil;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -180,7 +180,7 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
             Component::isMessageCompatible
         );
 
-        List<MessageTopLevelComponentUnion> componentsAsUnions = UnionUtil.componentMembersToUnionWithUnknownValidation(components, MessageTopLevelComponentUnion.class);
+        List<MessageTopLevelComponentUnion> componentsAsUnions = ComponentsUtil.membersToUnion(components, MessageTopLevelComponentUnion.class);
 
         this.components.clear();
         this.components.addAll(componentsAsUnions);

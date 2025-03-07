@@ -12,7 +12,10 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
-import net.dv8tion.jda.internal.utils.*;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
+import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -58,11 +61,10 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     @Nonnull
     public static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> _components)
     {
-        Collection<ActionRowChildComponentUnion> components = UnionUtil.membersToUnion(_components);
-        Checks.noneNull(components, "Components");
+        Checks.noneNull(_components, "Components");
+        Checks.check(!_components.isEmpty(), "Cannot have empty row!");
 
-        Checks.check(!components.isEmpty(), "Cannot have empty row!");
-
+        Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
         ActionRowImpl row = new ActionRowImpl(components);
         if (!row.isValid())
         {
@@ -79,8 +81,8 @@ public class ActionRowImpl extends AbstractComponentImpl implements ActionRow, M
     @Nonnull
     public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> _components)
     {
-        Collection<ActionRowChildComponentUnion> components = UnionUtil.membersToUnion(_components);
-        Checks.noneNull(components, "Components");
+        Checks.noneNull(_components, "Components");
+        Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
 
         List<ActionRow> rows = new ArrayList<>();
         // The current action row we are building

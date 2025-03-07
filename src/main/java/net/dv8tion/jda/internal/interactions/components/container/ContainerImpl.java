@@ -8,7 +8,10 @@ import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
-import net.dv8tion.jda.internal.utils.*;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ComponentsUtil;
+import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,7 +47,7 @@ public class ContainerImpl
         Checks.noneNull(_components, "Components");
         Checks.check(_components.size() <= MAX_COMPONENTS, "A container can only contain %d components, provided: %d", MAX_COMPONENTS, _components.size());
 
-        final Collection<ContainerChildComponentUnion> components = UnionUtil.membersToUnion(_components);
+        final Collection<ContainerChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ContainerChildComponentUnion.class);
         return new ContainerImpl(components);
     }
 
