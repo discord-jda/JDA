@@ -20,6 +20,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
@@ -104,13 +105,28 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
         AllowedMentionsData.setDefaultMentionRepliedUser(mention);
     }
 
-    // TODO-components-v2 - docs
+    /**
+     * Sets whether V2 components will be used by default.
+     * <br>When enabled, {@link #useComponentsV2()} gets called for every message builder.
+     *
+     * <p>This can still be overridden by calling {@link #useComponentsV2(boolean)} manually.
+     *
+     * @param  use
+     *         {@code true} to enable V2 components by default, {@code false} to disabled them by default.
+     */
     static void setDefaultUseComponentsV2(boolean use)
     {
         AbstractMessageBuilder.isDefaultUseComponentsV2 = use;
     }
 
-    // TODO-components-v2 - docs
+    /**
+     * Whether V2 components are used by default.
+     * <br>When enabled, {@link #useComponentsV2()} gets called for every message builder.
+     *
+     * <p>This can still be overridden by calling {@link #useComponentsV2(boolean)} manually.
+     *
+     * @return {@code true} if every message will use Components V2 by default, {@code false} if not
+     */
     static boolean isDefaultUseComponentsV2()
     {
         return AbstractMessageBuilder.isDefaultUseComponentsV2;
@@ -306,11 +322,58 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
         return setComponents(tree.getComponents());
     }
 
-    // TODO-components-v2
+    /**
+     * Sets whether this message is allowed to use V2 components.
+     *
+     * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
+     * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     * <br>They also allow you to use a larger choice of components,
+     * such as any component extending {@link MessageTopLevelComponent},
+     * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+     *
+     * <p>This however comes with a few drawbacks:
+     * <ul>
+     *     <li>You cannot send content, embeds, polls or stickers</li>
+     *     <li>It does not support audio files</li>
+     *     <li>It does not support text preview for files</li>
+     *     <li>URLs don't create embeds</li>
+     * </ul>
+     *
+     * <p>A default value can be set in {@link #setDefaultUseComponentsV2(boolean)}.
+     *
+     * @param  use
+     *         {@code true} to enable V2 components, {@code false} to disabled them.
+     *
+     * @return The same instance for chaining
+     *
+     * @see    MessageTopLevelComponent
+     * @see    #setDefaultUseComponentsV2(boolean)
+     */
     @Nonnull
     R useComponentsV2(boolean use);
 
-    // TODO-components-v2
+    /**
+     * Enables using V2 components.
+     * <br>This is a shortcut for {@code useComponentV2(true)}
+     *
+     * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
+     * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     * <br>They also allow you to use a larger choice of components,
+     * such as any component extending {@link MessageTopLevelComponent},
+     * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+     *
+     * <p>This however comes with a few drawbacks:
+     * <ul>
+     *     <li>You cannot send content, embeds, polls or stickers</li>
+     *     <li>It does not support audio files</li>
+     *     <li>It does not support text preview for files</li>
+     *     <li>URLs don't create embeds</li>
+     * </ul>
+     *
+     * @return The same instance for chaining
+     *
+     * @see    MessageTopLevelComponent
+     */
     @Nonnull
     default R useComponentsV2()
     {
