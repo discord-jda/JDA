@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
-import net.dv8tion.jda.api.interactions.modals.utils.ModalComponentTree;
+import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
 import net.dv8tion.jda.internal.interactions.components.tree.ComponentTreeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnionUtil;
