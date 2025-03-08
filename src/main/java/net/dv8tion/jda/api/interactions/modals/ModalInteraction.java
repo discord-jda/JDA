@@ -85,6 +85,29 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
     }
 
     /**
+     * Convenience method to get a {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMapping} by its numeric id from the List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings}
+     *
+     * <p>Returns null if no component with that id has been found
+     *
+     * @param  id
+     *         The numeric id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is null
+     *
+     * @return ModalMapping with this numeric id, or null if not found
+     *
+     * @see    #getValues()
+     */
+    @Nullable
+    default ModalMapping getValue(int id)
+    {
+        return getValues().stream()
+                .filter(mapping -> mapping.getUniqueId() == id)
+                .findFirst().orElse(null);
+    }
+
+    /**
      * Message this modal came from, if it was a reply to a {@link ComponentInteraction ComponentInteraction}.
      *
      * @return The message the component is attached to, or {@code null}
