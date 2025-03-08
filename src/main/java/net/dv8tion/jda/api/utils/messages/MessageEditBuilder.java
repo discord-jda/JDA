@@ -300,9 +300,15 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     {
         if (isSet(EMBEDS) && !embeds.isEmpty())
             return false;
-        if (isSet(COMPONENTS) && (components.size() > Message.MAX_COMPONENT_COUNT_COMPONENTS_V2
-                || ComponentsUtil.getComponentTreeSize(components) > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE))
-            return false;
+        if (isSet(COMPONENTS))
+        {
+            if (components.size() > Message.MAX_COMPONENT_COUNT_COMPONENTS_V2)
+                return false;
+            if (ComponentsUtil.getComponentTreeSize(components) > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
+                return false;
+            if (ComponentsUtil.getComponentTreeLength(components) > Message.MAX_CONTENT_LENGTH_COMPONENT_V2)
+                return false;
+        }
         if (isSet(CONTENT) && !Helpers.isBlank(content))
             return false;
 
@@ -373,6 +379,9 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             final long componentTreeSize = ComponentsUtil.getComponentTreeSize(components);
             if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
                 throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE + " total components, provided " + componentTreeSize);
+            final long componentTreeLength = ComponentsUtil.getComponentTreeLength(components);
+            if (componentTreeLength > Message.MAX_CONTENT_LENGTH_COMPONENT_V2)
+                throw new IllegalStateException("Cannot build message with over " + Message.MAX_CONTENT_LENGTH_COMPONENT_V2 + " total characters, provided " + componentTreeLength);
         }
 
         return new MessageEditData(configuredFields, messageFlags, replace, "", Collections.emptyList(), attachments, components, mentions);

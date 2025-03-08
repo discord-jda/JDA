@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -106,5 +107,17 @@ public class ComponentsUtil
     public static boolean hasIllegalV1Components(@Nonnull Collection<? extends Component> components)
     {
         return !getIllegalV1Components(components).isEmpty();
+    }
+
+    public static long getComponentTreeLength(@Nonnull Collection<? extends Component> components)
+    {
+        return ComponentIterator.createStream(components)
+                .mapToInt(c ->
+                {
+                    if (c instanceof TextDisplay)
+                        return ((TextDisplay) c).getContent().length();
+                    return 0;
+                })
+                .sum();
     }
 }

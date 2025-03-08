@@ -289,7 +289,8 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
                 && poll == null
                 && !components.isEmpty()
                 && components.size() <= Message.MAX_COMPONENT_COUNT_COMPONENTS_V2
-                && ComponentsUtil.getComponentTreeSize(components) <= Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE;
+                && ComponentsUtil.getComponentTreeSize(components) <= Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE
+                && ComponentsUtil.getComponentTreeLength(components) <= Message.MAX_CONTENT_LENGTH_COMPONENT_V2;
     }
 
     @Nonnull
@@ -348,6 +349,9 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         final long componentTreeSize = ComponentsUtil.getComponentTreeSize(components);
         if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE + " total components, provided " + componentTreeSize);
+        final long componentTreeLength = ComponentsUtil.getComponentTreeLength(components);
+        if (componentTreeLength > Message.MAX_CONTENT_LENGTH_COMPONENT_V2)
+            throw new IllegalStateException("Cannot build message with over " + Message.MAX_CONTENT_LENGTH_COMPONENT_V2 + " total characters, provided " + componentTreeLength);
 
         return new MessageCreateData("", Collections.emptyList(), files, components, mentions, poll, tts, messageFlags);
     }
