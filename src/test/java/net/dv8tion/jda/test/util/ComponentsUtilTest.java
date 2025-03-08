@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.test.util;
 
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.internal.utils.ComponentsUtil;
+import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.button.ButtonStyle;
+import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

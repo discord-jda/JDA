@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * Interaction on a {@link Modal}
  *
- * <p>If the modal of this interaction was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction},
+ * <p>If the modal of this interaction was a reply to a {@link ComponentInteraction ComponentInteraction},
  * you can also use {@link #deferEdit()} to edit the original message that contained the component instead of replying.
  *
  * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -84,7 +85,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
     }
 
     /**
-     * Message this modal came from, if it was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction}.
+     * Message this modal came from, if it was a reply to a {@link ComponentInteraction ComponentInteraction}.
      *
      * @return The message the component is attached to, or {@code null}
      */

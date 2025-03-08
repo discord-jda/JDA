@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.callbacks.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.components.button.ButtonInteraction;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalInteraction;
 import net.dv8tion.jda.internal.utils.ChannelUtil;
@@ -35,7 +36,7 @@ import java.util.List;
 /**
  * Abstract representation for any kind of Discord interaction.
  * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction Slash-Commands},
- * {@link net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction Buttons} or {@link ModalInteraction Modals}.
+ * {@link ButtonInteraction Buttons} or {@link ModalInteraction Modals}.
  *
  * <p>To properly handle an interaction you must acknowledge it.
  * Each interaction has different callbacks which acknowledge the interaction. These are added by the individual {@code I...Callback} interfaces:

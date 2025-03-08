@@ -18,8 +18,9 @@ package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.ActionComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 
 /**
  * Component which can be inserted into a {@link LayoutComponent}.

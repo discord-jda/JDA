@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.test.interactions;
 
+import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.button.ButtonStyle;
 import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.internal.interactions.component.concrete.ButtonImpl;
+import net.dv8tion.jda.internal.components.button.ButtonImpl;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -29,7 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.*;
+import static net.dv8tion.jda.api.components.button.ButtonStyle.*;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.params.provider.Arguments.arguments;

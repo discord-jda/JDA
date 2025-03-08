@@ -15,6 +15,13 @@
  */
 package net.dv8tion.jda.api.entities.channel.middleman;
 
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.selects.SelectMenu;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -26,12 +33,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.ParsingException;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selects.SelectMenu;
-import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -625,7 +626,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
@@ -674,7 +675,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
@@ -722,7 +723,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
@@ -3036,7 +3037,7 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
@@ -3080,7 +3081,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3102,7 +3103,7 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
@@ -3146,7 +3147,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3166,7 +3167,7 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
@@ -3209,7 +3210,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3230,7 +3231,7 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
@@ -3273,7 +3274,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3294,7 +3295,7 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
@@ -3337,7 +3338,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
@@ -3358,7 +3359,7 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
@@ -3401,7 +3402,7 @@ public interface MessageChannel extends Channel, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have

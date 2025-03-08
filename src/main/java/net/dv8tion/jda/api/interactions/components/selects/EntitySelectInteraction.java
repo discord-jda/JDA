@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.selects;
 
+import net.dv8tion.jda.api.components.selects.EntitySelectMenu;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Mentions;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
