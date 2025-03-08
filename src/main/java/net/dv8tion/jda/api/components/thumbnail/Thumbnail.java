@@ -91,7 +91,7 @@ public interface Thumbnail extends SectionAccessoryComponent
      *         The new description
      *
      * @throws IllegalArgumentException
-     *         If {@code null} is provided, or the description is longer than {@value #MAX_DESCRIPTION_LENGTH} characters.
+     *         If the description is longer than {@value #MAX_DESCRIPTION_LENGTH} characters.
      *
      * @return The new {@link Thumbnail}
      */

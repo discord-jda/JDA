@@ -86,13 +86,13 @@ public interface MediaGalleryItem extends SerializableData
      *         The new description
      *
      * @throws IllegalArgumentException
-     *         If {@code null} is provided, or the description is longer than {@value #MAX_DESCRIPTION_LENGTH} characters.
+     *         If the description is longer than {@value #MAX_DESCRIPTION_LENGTH} characters.
      *
      * @return The new {@link MediaGalleryItem}
      */
     @Nonnull
     @CheckReturnValue
-    MediaGalleryItem withDescription(@Nonnull String description);
+    MediaGalleryItem withDescription(@Nullable String description);
 
     /**
      * Creates a new {@link MediaGalleryItem} with the provided spoiler status.
