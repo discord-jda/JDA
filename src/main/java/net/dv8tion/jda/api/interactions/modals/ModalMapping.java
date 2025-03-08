@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -47,9 +49,26 @@ public class ModalMapping
      * The custom id of this component
      *
      * @return The custom id of this component
+     *
+     * @deprecated
+     *         Replaced with {@link #getCustomId()}
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getCustomId()")
     public String getId()
+    {
+        return id;
+    }
+
+    /**
+     * The custom id of the component owning this data
+     *
+     * @return The custom id of the component
+     */
+    @Nonnull
+    public String getCustomId()
     {
         return id;
     }

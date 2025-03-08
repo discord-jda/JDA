@@ -65,7 +65,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      *
      * <p>Returns null if no component with that id has been found
      *
-     * @param  id
+     * @param  customId
      *         The custom id
      *
      * @throws IllegalArgumentException
@@ -76,11 +76,11 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      * @see    #getValues()
      */
     @Nullable
-    default ModalMapping getValue(@Nonnull String id)
+    default ModalMapping getValue(@Nonnull String customId)
     {
-        Checks.notNull(id, "ID");
+        Checks.notNull(customId, "ID");
         return getValues().stream()
-                .filter(mapping -> mapping.getId().equals(id))
+                .filter(mapping -> mapping.getCustomId().equals(customId))
                 .findFirst().orElse(null);
     }
 
