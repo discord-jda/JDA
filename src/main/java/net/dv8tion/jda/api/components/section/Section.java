@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.components.section;
 
 import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.ComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
@@ -24,6 +25,7 @@ import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -34,33 +36,86 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
-// TODO-components-v2 docs
+/**
+ * Component which contains main content on the left and an accessory on the right.
+ *
+ * <p>This can contain up to {@value #MAX_COMPONENTS} {@link SectionContentComponent}.
+ *
+ * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
+ *
+ * @see SectionContentComponent
+ * @see SectionContentComponentUnion
+ * @see SectionAccessoryComponent
+ * @see SectionAccessoryComponentUnion
+ */
 public interface Section extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
-    // TODO-components-v2 docs
+    /**
+     * How many {@link SectionContentComponent} can be in this section.
+     */
     int MAX_COMPONENTS = 3;
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link Section} from the given accessory and components.
+     *
+     * @param  accessory
+     *         The accessory of this section
+     * @param  components
+     *         The components to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value #MAX_COMPONENTS} components are provided</li>
+     *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
+     *         </ul>
+     *
+     * @return The new {@link Section}
+     */
     @Nonnull
     static Section of(@Nonnull SectionAccessoryComponent accessory, @Nonnull Collection<? extends SectionContentComponent> components)
     {
-        Checks.notNull(accessory, "Accessory");
-        Checks.noneNull(components, "Components");
-        Checks.notEmpty(components, "Components");
         return SectionImpl.of(accessory, components);
     }
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link Section} from the given accessory and components.
+     *
+     * @param  accessory
+     *         The accessory of this section
+     * @param  component
+     *         The component to add
+     * @param  components
+     *         Additional components to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value #MAX_COMPONENTS} components are provided</li>
+     *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
+     *         </ul>
+     *
+     * @return The new {@link Section}
+     */
     @Nonnull
     static Section of(@Nonnull SectionAccessoryComponent accessory, @Nonnull SectionContentComponent component, @Nonnull SectionContentComponent... components)
     {
-        Checks.notNull(accessory, "Accessory");
         Checks.notNull(component, "Component");
         Checks.noneNull(components, "Components");
         return of(accessory, Helpers.mergeVararg(component, components));
     }
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link Section} from the given {@link DataObject}.
+     *
+     * @param  data
+     *         The data to construct the section from
+     *
+     * @throws IllegalArgumentException
+     *         If the data does not represent a {@link Section}
+     *
+     * @return The new {@link Section}
+     */
     @Nonnull
     static Section fromData(@Nonnull DataObject data)
     {
@@ -129,7 +184,11 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
     @Unmodifiable
     List<SectionContentComponentUnion> getContentComponents();
 
-    // TODO-components-v2 docs
+    /**
+     * The accessory of this section.
+     *
+     * @return Accessory of this section
+     */
     @Nonnull
     SectionAccessoryComponentUnion getAccessory();
 
