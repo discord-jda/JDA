@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.components.container;
 
 import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.ComponentUnion;
 import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
@@ -35,27 +36,77 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 
-// TODO-components-v2 docs
+/**
+ * Component which groups components vertically, you can specify an accent color, similar to embeds,
+ * and mark the container as a spoiler.
+ *
+ * <p>This can contain up to {@value #MAX_COMPONENTS} {@link ContainerChildComponent}.
+ *
+ * @see ContainerChildComponent
+ * @see ContainerChildComponentUnion
+ */
 public interface Container extends IdentifiableComponent, MessageTopLevelComponent, IReplaceable, IDisableable
 {
-    // TODO-components-v2 docs
+    /**
+     * How many {@link ContainerChildComponent} can be in this {@link Container}.
+     */
     int MAX_COMPONENTS = 10;
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link Container} from the given components.
+     *
+     * @param  components
+     *         The components to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value #MAX_COMPONENTS} components are provided</li>
+     *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
+     *         </ul>
+     *
+     * @return The new {@link Container}
+     */
     @Nonnull
     static Container of(@Nonnull Collection<? extends ContainerChildComponent> components)
     {
         return ContainerImpl.of(components);
     }
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link Container} from the given components.
+     *
+     * @param  component
+     *         The first component
+     * @param  components
+     *         Additional components to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value #MAX_COMPONENTS} components are provided</li>
+     *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
+     *         </ul>
+     *
+     * @return The new {@link Container}
+     */
     @Nonnull
     static Container of(@Nonnull ContainerChildComponent component, @Nonnull ContainerChildComponent... components)
     {
         return of(Helpers.mergeVararg(component, components));
     }
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link Container} from the given {@link DataObject}.
+     *
+     * @param  data
+     *         The data to construct the {@link Container} from
+     *
+     * @throws IllegalArgumentException
+     *         If the data does not represent a {@link Container}
+     *
+     * @return The new {@link Container}
+     */
     @Nonnull
     static Container fromData(@Nonnull DataObject data)
     {
@@ -84,18 +135,32 @@ public interface Container extends IdentifiableComponent, MessageTopLevelCompone
     @Override
     Container replace(@Nonnull ComponentReplacer replacer);
 
-    // TODO-components-v2 docs
     @Nonnull
     @Override
     @CheckReturnValue
     Container withUniqueId(int uniqueId);
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link Container} with the specified accent color, which appears on the side.
+     *
+     * @param  accentColor
+     *         The new accent color, or {@code null} to remove it
+     *
+     * @return The new {@link Container}
+     */
     @Nonnull
     @CheckReturnValue
     Container withAccentColor(@Nullable Integer accentColor);
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link Container} with the specified accent color, which appears on the side.
+     * <br>Note that the {@link Color#getAlpha() alpha component} will be removed, making the color opaque.
+     *
+     * @param  accentColor
+     *         The new accent color, or {@code null} to remove it
+     *
+     * @return The new {@link Container}
+     */
     @Nonnull
     @CheckReturnValue
     default Container withAccentColor(@Nullable Color accentColor)
@@ -103,7 +168,15 @@ public interface Container extends IdentifiableComponent, MessageTopLevelCompone
         return withAccentColor(accentColor == null ? null : accentColor.getRGB());
     }
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link Container} with the specified spoiler status.
+     * <br>Spoilers are hidden until the user clicks on it.
+     *
+     * @param  spoiler
+     *         The new spoiler status
+     *
+     * @return The new {@link Container}
+     */
     @Nonnull
     @CheckReturnValue
     Container withSpoiler(boolean spoiler);
@@ -152,9 +225,9 @@ public interface Container extends IdentifiableComponent, MessageTopLevelCompone
 
     /**
      * The color of the stripe/border on the side of the container.
-     * <br>If the color is 0 (no color), this will return null.
+     * <br>If no accent color has been set, this will return null.
      *
-     * @return Possibly-null Color.
+     * @return Possibly-null {@link Color}.
      */
     @Nullable
     default Color getAccentColor()
@@ -166,11 +239,15 @@ public interface Container extends IdentifiableComponent, MessageTopLevelCompone
      * The raw RGB color value for the stripe/border on the side of the container.
      * <br>If no accent color has been set, this will return null.
      *
-     * @return The raw RGB color value or null.
+     * @return The raw RGB color value or {@code null}.
      */
     @Nullable
     Integer getAccentColorRaw();
 
-    // TODO-components-v2 docs
+    /**
+     * Whether this container is hidden until the user clicks on it.
+     *
+     * @return {@code true} if this is hidden by default, {@code false} otherwise
+     */
     boolean isSpoiler();
 }
