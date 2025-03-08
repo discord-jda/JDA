@@ -50,7 +50,7 @@ import java.util.List;
 public interface Container extends MessageTopLevelComponent, IReplaceable, IDisableable
 {
     /**
-     * How many {@link ContainerChildComponent} can be in this {@link Container}.
+     * How many {@link ContainerChildComponent} can be in this container.
      */
     int MAX_COMPONENTS = 10;
 
