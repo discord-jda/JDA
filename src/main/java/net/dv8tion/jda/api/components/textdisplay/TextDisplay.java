@@ -20,16 +20,36 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.section.SectionContentComponent;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.textdisplay.TextDisplayImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-// TODO-components-v2 docs
+/**
+ * A component to display text, supports Markdown.
+ *
+ * <p>This component has no content length limit, however,
+ * you are still limited to the {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2} total characters,
+ * as imposed by {@linkplain MessageRequest#useComponentsV2() components V2}.
+ *
+ * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
+ */
 public interface TextDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent, SectionContentComponent
 {
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link TextDisplay} from the given content.
+     *
+     * @param  content
+     *         The content of the text display
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link TextDisplay}
+     */
     @Nonnull
     static TextDisplay create(@Nonnull String content)
     {
@@ -42,12 +62,26 @@ public interface TextDisplay extends Component, MessageTopLevelComponent, Contai
     @CheckReturnValue
     TextDisplay withUniqueId(int uniqueId);
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link TextDisplay} with the specified content.
+     *
+     * <p>While there are no per-component limit,
+     * you are still limited to the {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2} total character limit.
+     *
+     * @param  content
+     *         The new content
+     *
+     * @return The new {@link TextDisplay}
+     */
     @Nonnull
     @CheckReturnValue
     TextDisplay withContent(@Nonnull String content);
 
-    // TODO-components-v2 docs
+    /**
+     * The content of this {@link TextDisplay}.
+     *
+     * @return The content
+     */
     @Nonnull
     String getContent();
 }
