@@ -58,11 +58,6 @@ public interface FileDisplay extends Component, IdentifiableComponent, MessageTo
     @CheckReturnValue
     FileDisplay withUniqueId(int uniqueId);
 
-    // TODO-components-v2 docs
-    @Nonnull
-    @CheckReturnValue
-    FileDisplay withUrl(@Nonnull String url);
-
     /**
      * Creates a new {@link FileDisplay} with the provided spoiler status.
      * <br>Spoilers are hidden until the user clicks on it.

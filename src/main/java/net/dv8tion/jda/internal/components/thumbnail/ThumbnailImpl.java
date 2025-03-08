@@ -81,14 +81,6 @@ public class ThumbnailImpl
 
     @Nonnull
     @Override
-    public Thumbnail withUrl(@Nonnull String url)
-    {
-        Checks.notNull(url, "URL");
-        return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
-    }
-
-    @Nonnull
-    @Override
     public Thumbnail withDescription(String description)
     {
         Checks.notNull(description, "Description");
