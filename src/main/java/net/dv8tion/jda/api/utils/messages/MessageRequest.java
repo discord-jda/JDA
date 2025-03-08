@@ -330,6 +330,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <br>They also allow you to use a larger choice of components,
      * such as any component extending {@link MessageTopLevelComponent},
      * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+     * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
      *
      * <p>This however comes with a few drawbacks:
      * <ul>
@@ -361,6 +362,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <br>They also allow you to use a larger choice of components,
      * such as any component extending {@link MessageTopLevelComponent},
      * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+     * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
      *
      * <p>This however comes with a few drawbacks:
      * <ul>
