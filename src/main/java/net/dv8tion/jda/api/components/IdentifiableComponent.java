@@ -19,19 +19,34 @@ package net.dv8tion.jda.api.components;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-// TODO-components-v2 docs
+/**
+ * Represents a components which contains a unique 32 bit identifier.
+ *
+ * <p>These identifiers can be set manually or automatically assigned by Discord,
+ * and are useful to identify <b>any</b> component.
+ */
 public interface IdentifiableComponent extends Component
 {
     /**
      * The unique identifier of this component.
-     * <br>Can be set manually or automatically assigned by Discord.
+     * <br>Can be set manually or automatically assigned by Discord (starting from {@code 1}).
      * If it has not been assigned yet, this will return {@code -1}.
      *
      * @return The unique identifier of this component, or {@code -1} if not assigned yet
      */
     int getUniqueId();
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new component with the provided ID.
+     *
+     * @param  uniqueId
+     *         The new ID, must not be negative
+     *
+     * @throws IllegalArgumentException
+     *         If the ID is negative
+     *
+     * @return The new component
+     */
     @Nonnull
     @CheckReturnValue
     IdentifiableComponent withUniqueId(int uniqueId);
