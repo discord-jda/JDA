@@ -177,17 +177,19 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
      */
     static int getMaxAllowed(Component.Type type)
     {
-        switch (type) {
-            case BUTTON:
-                return 5;
-            case STRING_SELECT:
-            case USER_SELECT:
-            case ROLE_SELECT:
-            case MENTIONABLE_SELECT:
-            case CHANNEL_SELECT:
-                return 1;
-            default:
-                return 0;
+        switch (type)
+        {
+        case BUTTON:
+            return 5;
+        case STRING_SELECT:
+        case USER_SELECT:
+        case ROLE_SELECT:
+        case MENTIONABLE_SELECT:
+        case CHANNEL_SELECT:
+        case TEXT_INPUT:
+            return 1;
+        default:
+            return 0;
         }
     }
 
