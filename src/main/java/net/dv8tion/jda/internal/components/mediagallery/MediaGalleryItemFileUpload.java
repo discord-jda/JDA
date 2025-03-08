@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
@@ -48,6 +49,8 @@ public class MediaGalleryItemFileUpload implements MediaGalleryItem
     @Override
     public MediaGalleryItem withDescription(@Nonnull String description)
     {
+        Checks.notNull(description, "Description");
+        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
         return new MediaGalleryItemFileUpload(file, description, spoiler);
     }
 
@@ -101,7 +104,9 @@ public class MediaGalleryItemFileUpload implements MediaGalleryItem
     public DataObject toData()
     {
         return DataObject.empty()
-                .put("media", DataObject.empty().put("url", getUrl()));
+                .put("media", DataObject.empty().put("url", getUrl()))
+                .put("description", getDescription())
+                .put("spoiler", isSpoiler());
     }
 
     @Override
