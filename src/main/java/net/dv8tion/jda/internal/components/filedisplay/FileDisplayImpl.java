@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
@@ -70,6 +71,7 @@ public class FileDisplayImpl extends AbstractComponentImpl implements FileDispla
     @Override
     public FileDisplay withUniqueId(int uniqueId)
     {
+        Checks.notNegative(uniqueId, "Unique ID");
         return new FileDisplayImpl(uniqueId, url, media, spoiler);
     }
 
@@ -77,6 +79,7 @@ public class FileDisplayImpl extends AbstractComponentImpl implements FileDispla
     @Override
     public FileDisplay withUrl(@Nonnull String url)
     {
+        Checks.notNull(url, "URL");
         return new FileDisplayImpl(uniqueId, url, media, spoiler);
     }
 
