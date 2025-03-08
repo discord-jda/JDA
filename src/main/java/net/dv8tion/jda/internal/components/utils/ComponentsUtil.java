@@ -16,12 +16,10 @@
 
 package net.dv8tion.jda.internal.components.utils;
 
-import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.button.Button;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
@@ -63,24 +61,6 @@ public class ComponentsUtil
                 .stream()
                 .map(c -> safeUnionCast("component", c, clazz))
                 .collect(Collectors.toList());
-    }
-
-    /** Checks whether the provided component has the {@code identifier} as its custom id, url or SKU id */
-    public static boolean isSameIdentifier(@Nonnull ActionComponent component, @Nonnull String identifier)
-    {
-        if (identifier.equals(component.getCustomId()))
-            return true;
-
-        if (component instanceof Button)
-        {
-            final Button button = (Button) component;
-            if (identifier.equals(button.getUrl()))
-                return true;
-            if (button.getSku() != null)
-                return identifier.equals(button.getSku().getId());
-        }
-
-        return false;
     }
 
     @SuppressWarnings("unchecked")
