@@ -31,7 +31,6 @@ public class ResolvedMediaImpl implements ResolvedMedia
     private final String proxyUrl;
     private final int width, height;
     private final String contentType;
-    private final LoadingState loadingState;
 
     public ResolvedMediaImpl(DataObject data)
     {
@@ -40,19 +39,17 @@ public class ResolvedMediaImpl implements ResolvedMedia
                 data.getString("proxy_url"),
                 data.getInt("width"),
                 data.getInt("height"),
-                data.getString("content_type", null),
-                LoadingState.fromKey(data.getInt("loading_state"))
+                data.getString("content_type", null)
         );
     }
 
-    public ResolvedMediaImpl(String url, String proxyUrl, int width, int height, String contentType, LoadingState loadingState)
+    public ResolvedMediaImpl(String url, String proxyUrl, int width, int height, String contentType)
     {
         this.url = url;
         this.proxyUrl = proxyUrl;
         this.width = width;
         this.height = height;
         this.contentType = contentType;
-        this.loadingState = loadingState;
     }
 
     @Nonnull
@@ -95,32 +92,24 @@ public class ResolvedMediaImpl implements ResolvedMedia
         return contentType;
     }
 
-    @Nonnull
-    @Override
-    public LoadingState getLoadingState()
-    {
-        return loadingState;
-    }
-
     @Override
     public boolean equals(Object o)
     {
         if (!(o instanceof ResolvedMediaImpl)) return false;
         ResolvedMediaImpl that = (ResolvedMediaImpl) o;
-        return Objects.equals(url, that.url) && loadingState == that.loadingState;
+        return Objects.equals(url, that.url);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(url, loadingState);
+        return Objects.hash(url);
     }
 
     @Override
     public String toString()
     {
         return new EntityString(this)
-                .setType(loadingState)
                 // url is already shown by the classes containing resolved medias
                 .addMetadata("proxy_url", url)
                 .toString();
