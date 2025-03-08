@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.components.button;
 
 import net.dv8tion.jda.api.components.ActionComponent;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
@@ -76,7 +75,7 @@ import javax.annotation.Nullable;
  * @see ActionRow#of(ActionRowChildComponent...)
  * @see ReplyCallbackAction#addComponents(MessageTopLevelComponent...)
  */
-public interface Button extends ActionComponent, IdentifiableComponent, ActionRowChildComponent, SectionAccessoryComponent
+public interface Button extends ActionComponent, ActionRowChildComponent, SectionAccessoryComponent
 {
     /**
      * The maximum length a button label can have
@@ -155,7 +154,7 @@ public interface Button extends ActionComponent, IdentifiableComponent, ActionRo
     @CheckReturnValue
     default Button withDisabled(boolean disabled)
     {
-        return new ButtonImpl(getId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji()).checkValid();
+        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji()).checkValid();
     }
 
     /**
@@ -173,7 +172,7 @@ public interface Button extends ActionComponent, IdentifiableComponent, ActionRo
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        return new ButtonImpl(getId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji).checkValid();
+        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji).checkValid();
     }
 
     /**
@@ -196,7 +195,7 @@ public interface Button extends ActionComponent, IdentifiableComponent, ActionRo
     @CheckReturnValue
     default Button withLabel(@Nonnull String label)
     {
-        return new ButtonImpl(getId(), getUniqueId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getCustomId(), getUniqueId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -230,7 +229,7 @@ public interface Button extends ActionComponent, IdentifiableComponent, ActionRo
         // This is not done in checkValid() because the button gets constructed with an invalid unique ID on purpose
         // (as Discord generates one if none was passed)
         Checks.notNegative(uniqueId, "Unique ID");
-        return new ButtonImpl(getId(), uniqueId, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getCustomId(), uniqueId, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -253,7 +252,7 @@ public interface Button extends ActionComponent, IdentifiableComponent, ActionRo
     @CheckReturnValue
     default Button withUrl(@Nonnull String url)
     {
-        return new ButtonImpl(getId(), getUniqueId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -271,7 +270,7 @@ public interface Button extends ActionComponent, IdentifiableComponent, ActionRo
     @CheckReturnValue
     default Button withSku(@Nonnull SkuSnowflake sku)
     {
-        return new ButtonImpl(getId(), getUniqueId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -304,7 +303,7 @@ public interface Button extends ActionComponent, IdentifiableComponent, ActionRo
             throw new IllegalArgumentException("You cannot change a premium button to another style!");
         if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM)
             throw new IllegalArgumentException("You cannot change a styled button to a premium button!");
-        return new ButtonImpl(getId(), getUniqueId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        return new ButtonImpl(getCustomId(), getUniqueId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**

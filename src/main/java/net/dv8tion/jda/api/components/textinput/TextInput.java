@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.components.textinput;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -68,7 +70,8 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
      * @return The custom id of this component.
      */
     @Nonnull
-    String getId();
+    @Override
+    String getCustomId();
 
     /**
      * The label of this TextInput component.
@@ -140,6 +143,10 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
 
     @Nonnull
     @Override
+    TextInput withUniqueId(int uniqueId);
+
+    @Nonnull
+    @Override
     default Type getType()
     {
         return Type.TEXT_INPUT;
@@ -177,6 +184,7 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
     class Builder
     {
         private String id;
+        private int uniqueId;
         private String label;
         private String value;
         private String placeholder;
@@ -194,7 +202,7 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
 
         /**
          * Sets the id for this TextInput
-         * <br>This is used to uniquely identify it.
+         * <br>This can be used to uniquely identify it, or pass data to other handlers.
          *
          * @param  id
          *         The id to set
@@ -213,6 +221,26 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
             Checks.notBlank(id, "ID");
             Checks.notLonger(id, MAX_ID_LENGTH, "ID");
             this.id = id;
+            return this;
+        }
+
+        /**
+         * Sets the unique ID for this TextInput
+         * <br>This is used to uniquely identify it.
+         *
+         * @param  uniqueId
+         *         The unique id to set
+         *
+         * @throws IllegalArgumentException
+         *         If the id is negative
+         *
+         * @return The same Builder for chaining convenience.
+         */
+        @Nonnull
+        public Builder setUniqueId(int uniqueId)
+        {
+            Checks.notNegative(uniqueId, "Unique ID");
+            this.uniqueId = uniqueId;
             return this;
         }
 
@@ -428,11 +456,38 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
          * The custom id
          *
          * @return Custom id
+         *
+         * @deprecated
+         *         Replaced with {@link #getCustomId()}
          */
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getCustomId()")
         public String getId()
         {
             return id;
+        }
+
+        /**
+         * The custom id
+         *
+         * @return Custom id
+         */
+        @Nonnull
+        public String getCustomId()
+        {
+            return id;
+        }
+
+        /**
+         * The numeric unique ID
+         *
+         * @return Unique ID
+         */
+        public int getUniqueId()
+        {
+            return uniqueId;
         }
 
         /**
@@ -507,7 +562,7 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
             if (maxLength < minLength && maxLength != -1)
                 throw new IllegalStateException("maxLength cannot be smaller than minLength!");
 
-            return new TextInputImpl(id, style, label, minLength, maxLength, required, value, placeholder);
+            return new TextInputImpl(id, uniqueId, style, label, minLength, maxLength, required, value, placeholder);
         }
     }
 }

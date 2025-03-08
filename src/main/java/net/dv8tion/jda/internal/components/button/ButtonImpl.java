@@ -126,7 +126,7 @@ public class ButtonImpl extends AbstractComponentImpl implements Button, ActionR
 
     @Nullable
     @Override
-    public String getId()
+    public String getCustomId()
     {
         return id;
     }

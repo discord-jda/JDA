@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
@@ -29,6 +30,7 @@ import javax.annotation.Nullable;
 public class TextInputImpl extends AbstractComponentImpl implements TextInput, ActionRowChildComponentUnion
 {
     private final String id;
+    private final int uniqueId;
     private final TextInputStyle style;
     private final String label;
     private final int minLength;
@@ -41,6 +43,7 @@ public class TextInputImpl extends AbstractComponentImpl implements TextInput, A
     {
         this(
                 object.getString("custom_id"),
+                object.getInt("id"),
                 TextInputStyle.fromKey(object.getInt("style", -1)),
                 object.getString("label", null),
                 object.getInt("min_length", -1),
@@ -52,10 +55,11 @@ public class TextInputImpl extends AbstractComponentImpl implements TextInput, A
     }
 
     public TextInputImpl(
-            String id, TextInputStyle style, String label, int minLength,
+            String id, int uniqueId, TextInputStyle style, String label, int minLength,
             int maxLength, boolean required, String value, String placeholder)
     {
         this.id = id;
+        this.uniqueId = uniqueId;
         this.style = style;
         this.label = label;
         this.minLength = minLength;
@@ -67,6 +71,14 @@ public class TextInputImpl extends AbstractComponentImpl implements TextInput, A
 
     @Nonnull
     @Override
+    public TextInput withUniqueId(int uniqueId)
+    {
+        Checks.notNegative(uniqueId, "Unique ID");
+        return new TextInputImpl(id, uniqueId, style, label, minLength, maxLength, required, value, placeholder);
+    }
+
+    @Nonnull
+    @Override
     public TextInputStyle getStyle()
     {
         return style;
@@ -74,9 +86,15 @@ public class TextInputImpl extends AbstractComponentImpl implements TextInput, A
 
     @Nonnull
     @Override
-    public String getId()
+    public String getCustomId()
     {
         return id;
+    }
+
+    @Override
+    public int getUniqueId()
+    {
+        return uniqueId;
     }
 
     @Nonnull

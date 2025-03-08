@@ -68,7 +68,7 @@ public class ComponentsUtil
     /** Checks whether the provided component has the {@code identifier} as its custom id, url or SKU id */
     public static boolean isSameIdentifier(@Nonnull ActionComponent component, @Nonnull String identifier)
     {
-        if (identifier.equals(component.getId()))
+        if (identifier.equals(component.getCustomId()))
             return true;
 
         if (component instanceof Button)

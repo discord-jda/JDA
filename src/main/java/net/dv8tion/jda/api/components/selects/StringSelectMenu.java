@@ -114,7 +114,7 @@ public interface StringSelectMenu extends SelectMenu
     default Builder createCopy()
     {
         //noinspection ConstantConditions
-        Builder builder = create(getId());
+        Builder builder = create(getCustomId());
         builder.setRequiredRange(getMinValues(), getMaxValues());
         builder.setPlaceholder(getPlaceholder());
         builder.addOptions(getOptions());
@@ -126,7 +126,7 @@ public interface StringSelectMenu extends SelectMenu
      * Creates a new {@link Builder} for a select menu with the provided custom id.
      *
      * @param  customId
-     *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
+     *         The id used to identify this menu with {@link ActionComponent#getCustomId()} for component interactions
      *
      * @throws IllegalArgumentException
      *         If the provided id is null, empty, or longer than {@value #ID_MAX_LENGTH} characters

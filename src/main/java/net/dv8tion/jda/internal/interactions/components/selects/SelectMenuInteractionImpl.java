@@ -39,7 +39,7 @@ public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu> extends
                     .flatMap(row -> row.getComponents().stream())
                     .filter(type::isInstance)
                     .map(type::cast)
-                    .filter(c -> customId.equals(c.getId()))
+                    .filter(c -> customId.equals(c.getCustomId()))
                     .findFirst()
                     .orElse(null);
         }

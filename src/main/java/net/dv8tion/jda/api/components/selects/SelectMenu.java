@@ -16,8 +16,9 @@
 
 package net.dv8tion.jda.api.components.selects;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.interactions.components.selects.SelectMenuInteraction;
@@ -44,7 +45,7 @@ import java.util.Collection;
  * @see EntitySelectMenu
  * @see SelectMenuInteraction
  */
-public interface SelectMenu extends ActionComponent, IdentifiableComponent, ActionRowChildComponent
+public interface SelectMenu extends ActionComponent, ActionRowChildComponent
 {
     /**
      * The maximum length a select menu id can have
@@ -68,6 +69,10 @@ public interface SelectMenu extends ActionComponent, IdentifiableComponent, Acti
     @Nonnull
     @Override
     SelectMenu withUniqueId(int uniqueId);
+
+    @Nonnull
+    @Override
+    String getCustomId();
 
     /**
      * Placeholder which is displayed when no selections have been made yet.
@@ -264,14 +269,35 @@ public interface SelectMenu extends ActionComponent, IdentifiableComponent, Acti
          * The custom id used to identify the select menu.
          *
          * @return The custom id
+         *
+         * @deprecated
+         *         Replaced with {@link #getCustomId()}
          */
         @Nonnull
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("getCustomId()")
         public String getId()
         {
             return customId;
         }
 
-        // TODO-components-v2 docs
+        /**
+         * The custom id used to identify the select menu.
+         *
+         * @return The custom id
+         */
+        @Nonnull
+        public String getCustomId()
+        {
+            return customId;
+        }
+
+        /**
+         * The numeric id used to identify the select menu.
+         *
+         * @return The numeric id
+         */
         public int getUniqueId()
         {
             return uniqueId;

@@ -820,7 +820,7 @@ public interface Message extends ISnowflake, Formattable
     {
         Checks.notNull(id, "Button ID");
         return getButtons().stream()
-                .filter(it -> id.equals(it.getId()))
+                .filter(it -> id.equals(it.getCustomId()))
                 .findFirst().orElse(null);
     }
 
