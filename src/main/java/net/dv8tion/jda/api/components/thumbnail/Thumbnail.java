@@ -26,10 +26,27 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-// TODO-components-v2 docs
+/**
+ * Component displaying a thumbnail, you can mark it as a spoiler and set a description.
+ */
 public interface Thumbnail extends SectionAccessoryComponent, IdentifiableComponent
 {
-    // TODO-components-v2 docs
+    /**
+     * The maximum amount of characters a thumbnail's description can have.
+     */
+    int MAX_DESCRIPTION_LENGTH = 256;
+
+    /**
+     * Constructs a new {@link Thumbnail} from the given URL.
+     *
+     * @param  url
+     *         The URL of the thumbnail to display
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link Thumbnail}
+     */
     @Nonnull
     static Thumbnail fromUrl(@Nonnull String url)
     {
@@ -47,29 +64,69 @@ public interface Thumbnail extends SectionAccessoryComponent, IdentifiableCompon
     @CheckReturnValue
     Thumbnail withUrl(@Nonnull String url);
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link Thumbnail} with the provided description.
+     * <br>The description is known as an "alternative text",
+     * and must not exceed {@value #MAX_DESCRIPTION_LENGTH} characters.
+     *
+     * @param  description
+     *         The new description
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided, or the description is longer than {@value #MAX_DESCRIPTION_LENGTH} characters.
+     *
+     * @return The new {@link Thumbnail}
+     */
     @Nonnull
     @CheckReturnValue
     Thumbnail withDescription(@Nullable String description);
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link Thumbnail} with the provided spoiler status.
+     * <br>Spoilers are hidden until the user clicks on it.
+     *
+     * @param  spoiler
+     *         The new spoiler status
+     *
+     * @return The new {@link Thumbnail}
+     */
     @Nonnull
     @CheckReturnValue
     Thumbnail withSpoiler(boolean spoiler);
 
-    // TODO-components-v2 docs
+    /**
+     * The URL of this thumbnail, this is always where the file originally came from.
+     * <br>This can be either {@code attachment://filename.extension} or an actual URL.
+     *
+     * <p>If you want to download the file, you should use {@link #getResolvedMedia()} then {@link ResolvedMedia#getProxy()},
+     * to avoid connecting your bot to unknown servers.
+     *
+     * @return The URL of this thumbnail
+     */
     @Nonnull
     String getUrl();
 
-    // TODO-components-v2 docs
+    /**
+     * The media resolved from this thumbnail, this is only available if you receive this component from Discord.
+     *
+     * @return Possibly-null {@link ResolvedMedia}
+     */
     @Nullable
     ResolvedMedia getResolvedMedia();
 
-    // TODO-components-v2 docs
+    /**
+     * The description of this thumbnail, or {@code null} if none has been set.
+     *
+     * @return Possibly-null description
+     */
     @Nullable
     String getDescription();
 
-    // TODO-components-v2 docs
+    /**
+     * Whether this thumbnail is hidden until the user clicks on it.
+     *
+     * @return {@code true} if this is hidden by default, {@code false} otherwise
+     */
     boolean isSpoiler();
 
 }
