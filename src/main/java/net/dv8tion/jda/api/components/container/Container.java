@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -94,15 +93,14 @@ public interface Container extends IdentifiableComponent, MessageTopLevelCompone
     // TODO-components-v2 docs
     @Nonnull
     @CheckReturnValue
-    Container withAccentColor(int accentColor);
+    Container withAccentColor(@Nullable Integer accentColor);
 
     // TODO-components-v2 docs
     @Nonnull
     @CheckReturnValue
-    default Container withAccentColor(@Nonnull Color accentColor)
+    default Container withAccentColor(@Nullable Color accentColor)
     {
-        Checks.notNull(accentColor, "Accent color");
-        return withAccentColor(accentColor.getRGB());
+        return withAccentColor(accentColor == null ? null : accentColor.getRGB());
     }
 
     // TODO-components-v2 docs
