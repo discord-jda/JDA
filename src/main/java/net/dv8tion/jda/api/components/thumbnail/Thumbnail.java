@@ -59,11 +59,6 @@ public interface Thumbnail extends SectionAccessoryComponent, IdentifiableCompon
     @CheckReturnValue
     Thumbnail withUniqueId(int uniqueId);
 
-    // TODO-components-v2 docs
-    @Nonnull
-    @CheckReturnValue
-    Thumbnail withUrl(@Nonnull String url);
-
     /**
      * Creates a new {@link Thumbnail} with the provided description.
      * <br>The description is known as an "alternative text",

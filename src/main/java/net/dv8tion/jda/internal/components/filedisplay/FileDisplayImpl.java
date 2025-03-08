@@ -77,14 +77,6 @@ public class FileDisplayImpl extends AbstractComponentImpl implements FileDispla
 
     @Nonnull
     @Override
-    public FileDisplay withUrl(@Nonnull String url)
-    {
-        Checks.notNull(url, "URL");
-        return new FileDisplayImpl(uniqueId, url, media, spoiler);
-    }
-
-    @Nonnull
-    @Override
     public FileDisplay withSpoiler(boolean spoiler)
     {
         return new FileDisplayImpl(uniqueId, url, media, spoiler);
