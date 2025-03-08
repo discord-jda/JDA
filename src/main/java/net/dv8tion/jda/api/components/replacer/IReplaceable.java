@@ -20,9 +20,28 @@ import net.dv8tion.jda.api.components.Component;
 
 import javax.annotation.Nonnull;
 
-// TODO-components-v2 - docs
+/**
+ * Component which supports its children being replaced.
+ *
+ * <p>This is equivalent to {@link net.dv8tion.jda.api.components.tree.ComponentTree#replace(ComponentReplacer) ComponentTree.replace(ComponentReplacer)},
+ * but on a smaller scope.
+ */
 public interface IReplaceable
 {
+    /**
+     * Replaces and/or removes children components using the provided {@link ComponentReplacer},
+     * and construct a new component from the result.
+     *
+     * @param  replacer
+     *         The {@link ComponentReplacer} to apply
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new, updated component
+     *
+     * @see ComponentReplacer
+     */
     @Nonnull
     Component replace(@Nonnull ComponentReplacer replacer);
 }
