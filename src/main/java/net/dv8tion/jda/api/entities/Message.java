@@ -169,6 +169,16 @@ public interface Message extends ISnowflake, Formattable
      */
     int MAX_CONTENT_LENGTH = 2000;
 
+    /**
+     * The maximum amount of characters sendable in one message. ({@value})
+     * <br>This only applies when {@linkplain #isUsingComponentsV2() V2 Components} are enabled.
+     *
+     * <p>Unlike {@link #MAX_CONTENT_LENGTH}, the amount of characters is calculated from all the components.
+     *
+     * @see MessageRequest#useComponentsV2()
+     */
+    int MAX_CONTENT_LENGTH_COMPONENT_V2 = 4000;
+
    /**
     * The maximum amount of reactions that can be added to one message ({@value})
     *
@@ -2710,6 +2720,7 @@ public interface Message extends ISnowflake, Formattable
          * <br>They also allow you to use a larger choice of components,
          * such as any component extending {@link MessageTopLevelComponent},
          * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+         * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
          *
          * <p>This however comes with a few drawbacks:
          * <ul>
