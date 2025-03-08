@@ -43,42 +43,4 @@ public interface ResolvedMedia
     // TODO-components-v2 docs
     @Nullable
     String getContentType();
-
-    // TODO-components-v2 docs
-    @Nonnull
-    LoadingState getLoadingState();
-
-    // TODO-components-v2 docs
-    enum LoadingState
-    {
-        UNKNOWN(0),
-        LOADING(1),
-        LOADING_SUCCESS(2),
-        LOADING_NOT_FOUND(3),
-        ;
-
-        private final int key;
-
-        LoadingState(int key)
-        {
-            this.key = key;
-        }
-
-        @Nonnull
-        public static LoadingState fromKey(int value)
-        {
-            for (LoadingState state : values())
-            {
-                if (state.getKey() == value)
-                    return state;
-            }
-
-            return LoadingState.UNKNOWN;
-        }
-
-        public int getKey()
-        {
-            return key;
-        }
-    }
 }
