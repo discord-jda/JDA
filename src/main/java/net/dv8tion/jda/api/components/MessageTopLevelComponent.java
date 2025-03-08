@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.components;
 
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.container.Container;
-import net.dv8tion.jda.api.components.file.File;
+import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.separator.Separator;
@@ -32,7 +32,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
  *     <li>{@link TextDisplay}</li>
  *     <li>{@link MediaGallery}</li>
  *     <li>{@link Separator}</li>
- *     <li>{@link File}</li>
+ *     <li>{@link FileDisplay}</li>
  *     <li>{@link Container}</li>
  * </ul>
  */

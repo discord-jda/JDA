@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.file.File;
+import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.separator.Separator;
@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.UnknownComponentImpl;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
-import net.dv8tion.jda.internal.components.file.FileImpl;
+import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.internal.components.separator.SeparatorImpl;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  *     <li>{@link TextDisplay}</li>
  *     <li>{@link MediaGallery}</li>
  *     <li>{@link Separator}</li>
- *     <li>{@link File}</li>
+ *     <li>{@link FileDisplay}</li>
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
@@ -70,7 +70,7 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, C
     Separator asSeparator();
 
     @Nonnull
-    File asFile();
+    FileDisplay asFile();
 
     @Nonnull
     static ContainerChildComponentUnion fromData(@Nonnull DataObject data)
@@ -87,8 +87,8 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, C
             return new TextDisplayImpl(data);
         case MEDIA_GALLERY:
             return new MediaGalleryImpl(data);
-        case FILE:
-            return new FileImpl(data);
+        case FILE_DISPLAY:
+            return new FileDisplayImpl(data);
         case SEPARATOR:
             return new SeparatorImpl(data);
         default:
