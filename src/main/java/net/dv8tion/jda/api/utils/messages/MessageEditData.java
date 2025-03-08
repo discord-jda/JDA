@@ -16,17 +16,17 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.interactions.component.AbstractComponentImpl;
+import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 

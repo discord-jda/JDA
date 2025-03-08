@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.api.interactions.modals.tree;
 
-import net.dv8tion.jda.api.interactions.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
+import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
-import net.dv8tion.jda.internal.interactions.components.tree.ModalComponentTreeImpl;
+import net.dv8tion.jda.internal.components.tree.ModalComponentTreeImpl;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;

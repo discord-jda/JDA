@@ -17,16 +17,16 @@
 package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
-import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -138,7 +138,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return The same instance for chaining
@@ -168,7 +168,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return The same instance for chaining
@@ -201,7 +201,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return The same instance for chaining

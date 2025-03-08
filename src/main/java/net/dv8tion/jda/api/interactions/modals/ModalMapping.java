@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
+import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 

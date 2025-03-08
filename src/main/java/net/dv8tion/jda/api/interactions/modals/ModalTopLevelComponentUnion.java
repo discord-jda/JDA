@@ -16,13 +16,13 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
-import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.ComponentUnion;
-import net.dv8tion.jda.api.interactions.components.UnknownComponent;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.ComponentUnion;
+import net.dv8tion.jda.api.components.UnknownComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.component.UnknownComponentImpl;
+import net.dv8tion.jda.internal.components.UnknownComponentImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * Represents a union of {@link ModalTopLevelComponent ModalTopLevelComponents} that can be either
  * <ul>
  *     <li>{@link ActionRow}</li>
- *     <li>{@link UnknownComponent UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
+ *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
 public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, ComponentUnion

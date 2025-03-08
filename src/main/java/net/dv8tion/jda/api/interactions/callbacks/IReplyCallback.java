@@ -16,13 +16,14 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -350,7 +351,7 @@ public interface IReplyCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link ReplyCallbackAction}
@@ -394,7 +395,7 @@ public interface IReplyCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link ReplyCallbackAction}
@@ -438,7 +439,7 @@ public interface IReplyCallback extends IDeferrableCallback
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link ReplyCallbackAction}

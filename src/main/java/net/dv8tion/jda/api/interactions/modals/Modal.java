@@ -17,20 +17,20 @@
 package net.dv8tion.jda.api.interactions.modals;
 
 import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
-import net.dv8tion.jda.api.interactions.components.text_input.TextInput;
-import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
+import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.ComponentsUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -73,7 +73,7 @@ import java.util.stream.Collectors;
  * }}</pre>
  *
  * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link TextInput TextInputs} are allowed at this time.</b>
- * You can check whether a component is supported via {@link net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible}.
+ * You can check whether a component is supported via {@link Component.Type#isModalCompatible}.
  *
  * @see    ModalInteractionEvent
  */
@@ -233,7 +233,7 @@ public interface Modal extends SerializableData
          * @throws IllegalArgumentException
          *         <ul>
          *             <li>If {@code null} is provided</li>
-         *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible() compatible with modals}</li>
+         *             <li>If any of the provided components are not {@linkplain Component.Type#isModalCompatible() compatible with modals}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining
@@ -256,7 +256,7 @@ public interface Modal extends SerializableData
          * @throws IllegalArgumentException
          *         <ul>
          *             <li>If {@code null} is provided</li>
-         *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible() compatible with modals}</li>
+         *             <li>If any of the provided components are not {@linkplain Component.Type#isModalCompatible() compatible with modals}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining
@@ -288,7 +288,7 @@ public interface Modal extends SerializableData
          * @throws IllegalArgumentException
          *         <ul>
          *             <li>If {@code null} is provided</li>
-         *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible() compatible with modals}</li>
+         *             <li>If any of the provided components are not {@linkplain Component.Type#isModalCompatible() compatible with modals}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining

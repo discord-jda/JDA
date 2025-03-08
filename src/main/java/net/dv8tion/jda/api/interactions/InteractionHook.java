@@ -17,6 +17,10 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -24,9 +28,6 @@ import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.components.tree.ComponentTree;
 import net.dv8tion.jda.api.interactions.response.InteractionCallbackResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
@@ -248,7 +249,7 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
@@ -287,7 +288,7 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
@@ -326,7 +327,7 @@ public interface InteractionHook extends WebhookClient<Message>
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the provided components are not {@linkplain net.dv8tion.jda.api.interactions.components.Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}

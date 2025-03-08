@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
-import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 
 /**
  * Represents a component that can be added directly to a modal, this includes:
