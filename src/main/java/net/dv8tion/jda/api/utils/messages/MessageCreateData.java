@@ -26,13 +26,12 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 /**
  * Output of a {@link MessageCreateBuilder} and used for sending messages to channels/webhooks/interactions.
@@ -60,13 +59,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
-        this.files = Stream.concat(
-                files.stream(),
-                ComponentIterator.createStream(components)
-                        .filter(FileContainerMixin.class::isInstance)
-                        .map(FileContainerMixin.class::cast)
-                        .flatMap(FileContainerMixin::getFiles)
-        ).collect(Helpers.toUnmodifiableList());
+        this.files = Collections.unmodifiableList(files);
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
         this.poll = poll;
@@ -382,6 +375,22 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     public List<FileUpload> getFiles()
     {
         return files;
+    }
+
+    /**
+     * Returns the {@link FileUpload FileUploads} that are added indirectly to this message,
+     * such as from V2 components and embeds.
+     *
+     * @return The list of additional file uploads
+     */
+    @Nonnull
+    public List<FileUpload> getAdditionalFiles()
+    {
+        return ComponentIterator.createStream(components)
+                .filter(FileContainerMixin.class::isInstance)
+                .map(FileContainerMixin.class::cast)
+                .flatMap(FileContainerMixin::getFiles)
+                .collect(Collectors.toList());
     }
 
     @Override
