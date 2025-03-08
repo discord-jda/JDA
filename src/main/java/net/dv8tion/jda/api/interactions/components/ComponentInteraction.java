@@ -50,6 +50,19 @@ public interface ComponentInteraction extends IReplyCallback, IMessageEditCallba
     String getComponentId();
 
     /**
+     * The numeric component ID provided to the component when it was originally created.
+     * <br>This value is typically used to uniquely identify the component.
+     *
+     * @return The unique, numeric component ID
+     *
+     * @see    ActionComponent#getUniqueId()
+     */
+    default int getUniqueId()
+    {
+        return getComponent().getUniqueId();
+    }
+
+    /**
      * The {@link ActionComponent} instance.
      *
      * @return The {@link ActionComponent}
