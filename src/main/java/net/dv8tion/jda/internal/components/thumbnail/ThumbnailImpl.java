@@ -81,10 +81,10 @@ public class ThumbnailImpl
 
     @Nonnull
     @Override
-    public Thumbnail withDescription(String description)
+    public Thumbnail withDescription(@Nullable String description)
     {
-        Checks.notNull(description, "Description");
-        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+        if (description != null)
+            Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
         return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
     }
 

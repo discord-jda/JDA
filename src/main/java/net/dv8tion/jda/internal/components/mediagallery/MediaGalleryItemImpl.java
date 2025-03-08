@@ -58,10 +58,10 @@ public class MediaGalleryItemImpl implements MediaGalleryItem
 
     @Nonnull
     @Override
-    public MediaGalleryItem withDescription(@Nonnull String description)
+    public MediaGalleryItem withDescription(@Nullable String description)
     {
-        Checks.notNull(description, "Description");
-        Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+        if (description != null)
+            Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
         return new MediaGalleryItemImpl(url, description, media, spoiler);
     }
 
