@@ -32,7 +32,7 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
 
@@ -64,13 +64,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
-        this.files = Stream.concat(
-                files.stream(),
-                ComponentIterator.createStream(components)
-                        .filter(FileContainerMixin.class::isInstance)
-                        .map(FileContainerMixin.class::cast)
-                        .flatMap(FileContainerMixin::getFiles)
-        ).collect(Helpers.toUnmodifiableList());
+        this.files = Collections.unmodifiableList(files);
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
         this.messageFlags = messageFlags;
@@ -370,6 +364,22 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
                 .filter(FileUpload.class::isInstance)
                 .map(FileUpload.class::cast)
                 .collect(Helpers.toUnmodifiableList());
+    }
+
+    /**
+     * Returns the {@link FileUpload FileUploads} that are added indirectly to this message,
+     * such as from V2 components and embeds.
+     *
+     * @return The list of additional file uploads
+     */
+    @Nonnull
+    public synchronized List<FileUpload> getAdditionalFiles()
+    {
+        return ComponentIterator.createStream(components)
+                .filter(FileContainerMixin.class::isInstance)
+                .map(FileContainerMixin.class::cast)
+                .flatMap(FileContainerMixin::getFiles)
+                .collect(Collectors.toList());
     }
 
     @Override

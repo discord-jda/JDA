@@ -87,7 +87,7 @@ public class MessageEditCallbackActionImpl extends DeferrableCallbackActionImpl 
         try (MessageEditData data = builder.build())
         {
             json.put("data", data);
-            return getMultipartBody(data.getFiles(), json);
+            return getMultipartBody(data.getFiles(), data.getAdditionalFiles(), json);
         }
     }
 }
