@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
@@ -40,6 +41,8 @@ import java.util.List;
  * and mark the container as a spoiler.
  *
  * <p>This can contain up to {@value #MAX_COMPONENTS} {@link ContainerChildComponent}.
+ *
+ * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  *
  * @see ContainerChildComponent
  * @see ContainerChildComponentUnion
