@@ -44,6 +44,15 @@ public interface CallbackResponseUnion
     Message asMessage();
 
     /**
+     * Whether this callback response contains a {@link Message}.
+     *
+     * @return True, if this callback response contains a Message
+     *
+     * @see    InteractionCallbackAction.ResponseType#doesCallbackResponseContainMessage()
+     */
+    boolean hasMessage();
+
+    /**
      * Returns the {@link InteractionCallbackAction.ResponseType ResponseType} that was used for replying to the interaction.
      *
      * @return ResponseType that was used for replying to the interaction.

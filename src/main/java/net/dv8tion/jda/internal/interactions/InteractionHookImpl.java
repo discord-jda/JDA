@@ -148,9 +148,15 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     @Override
     public CallbackResponseUnion getCallbackResponse()
     {
-        if (callbackResponse == null)
+        if (!hasCallbackResponse())
             throw new IllegalStateException("Cannot get callback response. Has this interaction been acknowledged yet?");
         return callbackResponse;
+    }
+
+    @Override
+    public boolean hasCallbackResponse()
+    {
+        return callbackResponse != null;
     }
 
     @Override

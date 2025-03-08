@@ -44,10 +44,15 @@ public class CallbackResponseImpl implements CallbackResponseUnion
     @Override
     public Message asMessage()
     {
-        if (message == null)
+        if (!hasMessage())
             throw new IllegalStateException("Callback response of type " + type + " does not contain a Message!");
-
         return message;
+    }
+
+    @Override
+    public boolean hasMessage()
+    {
+        return message != null;
     }
 
     @Nonnull

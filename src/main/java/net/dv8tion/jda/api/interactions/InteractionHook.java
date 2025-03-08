@@ -96,9 +96,21 @@ public interface InteractionHook extends WebhookClient<Message>
      *         If this interaction has not yet been acknowledged.
      *
      * @return {@link CallbackResponseUnion}
+     *
+     * @see    #hasCallbackResponse()
      */
     @Nonnull
     CallbackResponseUnion getCallbackResponse();
+
+    /**
+     * Whether this InteractionHook contains a {@link CallbackResponseUnion callback response}.
+     * <br>This will be <code>false</code> if the interaction has not yet been acknowledged.
+     *
+     * @return True, if this InteractionHook contains a callback response
+     *
+     * @see    #getCallbackResponse()
+     */
+    boolean hasCallbackResponse();
 
     /**
      * The unix millisecond timestamp for the expiration of this interaction hook.
