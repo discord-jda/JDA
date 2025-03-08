@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.internal.components.filedisplay.FileDisplayFileUpload;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -51,6 +54,27 @@ public interface FileDisplay extends Component, IdentifiableComponent, MessageTo
     {
         Checks.notNull(url, "URL");
         return new FileDisplayImpl(url);
+    }
+
+    /**
+     * Constructs a new {@link FileDisplay} from the {@link FileUpload}.
+     *
+     * <p>This will automatically add the file when building the message,
+     * as such you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
+     *
+     * @param  file
+     *         The {@link FileUpload} to display
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link FileDisplay}
+     */
+    @Nonnull
+    static FileDisplay fromFile(@Nonnull FileUpload file)
+    {
+        Checks.notNull(file, "FileUpload");
+        return new FileDisplayFileUpload(file);
     }
 
     @Nonnull

@@ -19,6 +19,9 @@ package net.dv8tion.jda.api.components.thumbnail;
 import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponent;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.internal.components.thumbnail.ThumbnailFileUpload;
 import net.dv8tion.jda.internal.components.thumbnail.ThumbnailImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -52,6 +55,27 @@ public interface Thumbnail extends SectionAccessoryComponent, IdentifiableCompon
     {
         Checks.notNull(url, "URL");
         return new ThumbnailImpl(url);
+    }
+
+    /**
+     * Constructs a new {@link Thumbnail} from the {@link FileUpload}.
+     *
+     * <p>This will automatically add the file when building the message,
+     * as such you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
+     *
+     * @param  file
+     *         The {@link FileUpload} to display
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link Thumbnail}
+     */
+    @Nonnull
+    static Thumbnail fromFile(@Nonnull FileUpload file)
+    {
+        Checks.notNull(file, "FileUpload");
+        return new ThumbnailFileUpload(file);
     }
 
     @Nonnull
