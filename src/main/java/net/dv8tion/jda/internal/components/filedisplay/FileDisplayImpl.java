@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.components.file;
+package net.dv8tion.jda.internal.components.filedisplay;
 
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
-import net.dv8tion.jda.api.components.file.File;
+import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
@@ -29,14 +29,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class FileImpl extends AbstractComponentImpl implements File, MessageTopLevelComponentUnion, ContainerChildComponentUnion
+public class FileDisplayImpl extends AbstractComponentImpl implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion
 {
     private final int uniqueId;
     private final String url;
     private final ResolvedMedia media;
     private final boolean spoiler;
 
-    public FileImpl(DataObject data)
+    public FileDisplayImpl(DataObject data)
     {
         this(
                 data.getInt("id"),
@@ -46,12 +46,12 @@ public class FileImpl extends AbstractComponentImpl implements File, MessageTopL
         );
     }
 
-    public FileImpl(String url)
+    public FileDisplayImpl(String url)
     {
         this(-1, url, null, false);
     }
 
-    private FileImpl(int uniqueId, String url, ResolvedMedia media, boolean spoiler)
+    private FileDisplayImpl(int uniqueId, String url, ResolvedMedia media, boolean spoiler)
     {
         this.uniqueId = uniqueId;
         this.url = url;
@@ -63,28 +63,28 @@ public class FileImpl extends AbstractComponentImpl implements File, MessageTopL
     @Override
     public Type getType()
     {
-        return Type.FILE;
+        return Type.FILE_DISPLAY;
     }
 
     @Nonnull
     @Override
-    public File withUniqueId(int uniqueId)
+    public FileDisplay withUniqueId(int uniqueId)
     {
-        return new FileImpl(uniqueId, url, media, spoiler);
+        return new FileDisplayImpl(uniqueId, url, media, spoiler);
     }
 
     @Nonnull
     @Override
-    public File withUrl(@Nonnull String url)
+    public FileDisplay withUrl(@Nonnull String url)
     {
-        return new FileImpl(uniqueId, url, media, spoiler);
+        return new FileDisplayImpl(uniqueId, url, media, spoiler);
     }
 
     @Nonnull
     @Override
-    public File withSpoiler(boolean spoiler)
+    public FileDisplay withSpoiler(boolean spoiler)
     {
-        return new FileImpl(uniqueId, url, media, spoiler);
+        return new FileDisplayImpl(uniqueId, url, media, spoiler);
     }
 
     @Override
@@ -129,8 +129,8 @@ public class FileImpl extends AbstractComponentImpl implements File, MessageTopL
     @Override
     public boolean equals(Object o)
     {
-        if (!(o instanceof FileImpl)) return false;
-        FileImpl file = (FileImpl) o;
+        if (!(o instanceof FileDisplayImpl)) return false;
+        FileDisplayImpl file = (FileDisplayImpl) o;
         return uniqueId == file.uniqueId && spoiler == file.spoiler && Objects.equals(url, file.url);
     }
 

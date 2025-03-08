@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.button.Button;
 import net.dv8tion.jda.api.components.container.Container;
-import net.dv8tion.jda.api.components.file.File;
+import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selects.EntitySelectMenu;
@@ -101,9 +101,9 @@ public abstract class AbstractComponentImpl
     }
 
     @Nonnull
-    public File asFile()
+    public FileDisplay asFile()
     {
-        return toComponentType(File.class);
+        return toComponentType(FileDisplay.class);
     }
 
     @Nonnull

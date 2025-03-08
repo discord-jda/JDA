@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.components.file;
+package net.dv8tion.jda.api.components.filedisplay;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
-import net.dv8tion.jda.internal.components.file.FileImpl;
+import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -29,30 +29,30 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // TODO-components-v2 docs
-public interface File extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
+public interface FileDisplay extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
     // TODO-components-v2 docs
     @Nonnull
-    static File fromUrl(@Nonnull String url)
+    static FileDisplay fromUrl(@Nonnull String url)
     {
         Checks.notNull(url, "URL");
-        return new FileImpl(url);
+        return new FileDisplayImpl(url);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    File withUniqueId(int uniqueId);
+    FileDisplay withUniqueId(int uniqueId);
 
     // TODO-components-v2 docs
     @Nonnull
     @CheckReturnValue
-    File withUrl(@Nonnull String url);
+    FileDisplay withUrl(@Nonnull String url);
 
     // TODO-components-v2 docs
     @Nonnull
     @CheckReturnValue
-    File withSpoiler(boolean spoiler);
+    FileDisplay withSpoiler(boolean spoiler);
 
     // TODO-components-v2 docs
     @Nonnull

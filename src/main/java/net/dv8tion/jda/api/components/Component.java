@@ -102,7 +102,7 @@ public interface Component extends SerializableData
         TEXT_DISPLAY(10, true, false),
         THUMBNAIL(11, true, false),
         MEDIA_GALLERY(12, true, false),
-        FILE(13, true, false),
+        FILE_DISPLAY(13, true, false),
         SEPARATOR(14, true, false),
         CONTAINER(17, true, false),
         ;
