@@ -133,8 +133,8 @@ public class FileDisplayImpl extends AbstractComponentImpl implements FileDispla
     public boolean equals(Object o)
     {
         if (!(o instanceof FileDisplayImpl)) return false;
-        FileDisplayImpl file = (FileDisplayImpl) o;
-        return uniqueId == file.uniqueId && spoiler == file.spoiler && Objects.equals(url, file.url);
+        FileDisplayImpl fileDisplay = (FileDisplayImpl) o;
+        return uniqueId == fileDisplay.uniqueId && spoiler == fileDisplay.spoiler && Objects.equals(url, fileDisplay.url);
     }
 
     @Override
