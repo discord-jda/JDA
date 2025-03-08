@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -33,10 +34,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MediaGalleryImpl
         extends AbstractComponentImpl
-        implements MediaGallery, MessageTopLevelComponentUnion, ContainerChildComponentUnion
+        implements MediaGallery, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin
 {
     private final int uniqueId;
     private final List<MediaGalleryItem> items;
@@ -100,13 +102,12 @@ public class MediaGalleryImpl
     }
 
     @Override
-    public List<FileUpload> getFiles()
+    public Stream<FileUpload> getFiles()
     {
         return items.stream()
                 .filter(MediaGalleryItemFileUpload.class::isInstance)
                 .map(MediaGalleryItemFileUpload.class::cast)
-                .map(MediaGalleryItemFileUpload::getFile)
-                .collect(Collectors.toList());
+                .map(MediaGalleryItemFileUpload::getFile);
     }
 
     @Nonnull

@@ -29,12 +29,9 @@ import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.UnionUtil;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.List;
 
 public abstract class AbstractComponentImpl
 {
@@ -114,10 +111,5 @@ public abstract class AbstractComponentImpl
 
     protected <T extends Component> T toComponentType(Class<T> type) {
         return UnionUtil.safeUnionCast("component", this, type);
-    }
-
-    public List<FileUpload> getFiles()
-    {
-        return Collections.emptyList();
     }
 }
