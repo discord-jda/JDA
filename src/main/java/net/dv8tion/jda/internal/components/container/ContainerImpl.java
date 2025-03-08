@@ -105,7 +105,7 @@ public class ContainerImpl
 
     @Nonnull
     @Override
-    public Container withAccentColor(int accentColor)
+    public Container withAccentColor(@Nullable Integer accentColor)
     {
         return new ContainerImpl(uniqueId, components, spoiler, accentColor);
     }
