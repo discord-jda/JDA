@@ -54,9 +54,9 @@ public abstract class SelectMenuImpl extends AbstractComponentImpl implements Se
         this.disabled = disabled;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public String getId()
+    public String getCustomId()
     {
         return id;
     }

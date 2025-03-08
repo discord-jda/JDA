@@ -124,7 +124,7 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         if (!(obj instanceof EntitySelectMenu))
             return false;
         EntitySelectMenu other = (EntitySelectMenu) obj;
-        return Objects.equals(id, other.getId())
+        return Objects.equals(id, other.getCustomId())
                 && Objects.equals(placeholder, other.getPlaceholder())
                 && minValues == other.getMinValues()
                 && maxValues == other.getMaxValues()

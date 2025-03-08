@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 public interface IdentifiableComponent extends Component
 {
     /**
-     * The unique identifier of this component.
+     * The unique, numeric identifier of this component.
      * <br>Can be set manually or automatically assigned by Discord (starting from {@code 1}).
      * If it has not been assigned yet, this will return {@code -1}.
      *
@@ -37,7 +37,7 @@ public interface IdentifiableComponent extends Component
     int getUniqueId();
 
     /**
-     * Creates a new component with the provided ID.
+     * Creates a new component with the provided numeric ID.
      *
      * @param  uniqueId
      *         The new ID, must not be negative

@@ -148,7 +148,7 @@ public interface EntitySelectMenu extends SelectMenu
     default Builder createCopy()
     {
         //noinspection ConstantConditions
-        Builder builder = create(getId(), getEntityTypes());
+        Builder builder = create(getCustomId(), getEntityTypes());
         EnumSet<ChannelType> channelTypes = getChannelTypes();
         if (!channelTypes.isEmpty())
             builder.setChannelTypes(channelTypes);
@@ -163,7 +163,7 @@ public interface EntitySelectMenu extends SelectMenu
      * Creates a new {@link Builder} for a select menu with the provided custom id.
      *
      * @param  customId
-     *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
+     *         The id used to identify this menu with {@link ActionComponent#getCustomId()} for component interactions
      * @param  types
      *         The supported {@link SelectTarget SelectTargets}
      *
@@ -186,7 +186,7 @@ public interface EntitySelectMenu extends SelectMenu
      * Creates a new {@link Builder} for a select menu with the provided custom id.
      *
      * @param  customId
-     *         The id used to identify this menu with {@link ActionComponent#getId()} for component interactions
+     *         The id used to identify this menu with {@link ActionComponent#getCustomId()} for component interactions
      * @param  type
      *         The first supported {@link SelectTarget}
      * @param  types
