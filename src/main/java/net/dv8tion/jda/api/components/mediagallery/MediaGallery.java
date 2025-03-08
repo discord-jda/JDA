@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.components.mediagallery;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
@@ -31,7 +30,7 @@ import java.util.Collection;
 import java.util.List;
 
 // TODO-components-v2 docs
-public interface MediaGallery extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
+public interface MediaGallery extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
     // TODO-components-v2 docs
     int MAX_ITEMS = 10;

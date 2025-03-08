@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 /**
  * Component which supports interactions via {@link ComponentInteraction}.
  */
-public interface ActionComponent extends ItemComponent, IdentifiableComponent, IDisableable
+public interface ActionComponent extends ItemComponent, IDisableable
 {
     /**
      * An unique component ID or {@code null}.
@@ -48,7 +48,7 @@ public interface ActionComponent extends ItemComponent, IdentifiableComponent, I
      * @return The component ID or null if not present
      *
      * @see    ComponentInteraction#getComponentId()
-     * @see    IdentifiableComponent#getUniqueId()
+     * @see    Component#getUniqueId()
      *
      * @deprecated
      *         Replaced with {@link #getCustomId()}
@@ -76,7 +76,7 @@ public interface ActionComponent extends ItemComponent, IdentifiableComponent, I
      * @return The component ID or null if not present
      *
      * @see    ComponentInteraction#getComponentId()
-     * @see    IdentifiableComponent#getUniqueId()
+     * @see    Component#getUniqueId()
      */
     @Nullable
     String getCustomId();

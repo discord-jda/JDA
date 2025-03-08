@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.components.container;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ComponentUnion;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
@@ -45,7 +44,7 @@ import java.util.List;
  * @see ContainerChildComponent
  * @see ContainerChildComponentUnion
  */
-public interface Container extends IdentifiableComponent, MessageTopLevelComponent, IReplaceable, IDisableable
+public interface Container extends MessageTopLevelComponent, IReplaceable, IDisableable
 {
     /**
      * How many {@link ContainerChildComponent} can be in this {@link Container}.

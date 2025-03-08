@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.components.section;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
@@ -36,7 +35,7 @@ import java.util.Collection;
 import java.util.List;
 
 // TODO-components-v2 docs
-public interface Section extends IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
+public interface Section extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
     // TODO-components-v2 docs
     int MAX_COMPONENTS = 3;

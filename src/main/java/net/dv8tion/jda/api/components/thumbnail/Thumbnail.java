@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.components.thumbnail;
 
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -32,7 +31,7 @@ import javax.annotation.Nullable;
 /**
  * Component displaying a thumbnail, you can mark it as a spoiler and set a description.
  */
-public interface Thumbnail extends SectionAccessoryComponent, IdentifiableComponent
+public interface Thumbnail extends SectionAccessoryComponent
 {
     /**
      * The maximum amount of characters a thumbnail's description can have.

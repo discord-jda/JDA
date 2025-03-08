@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.components.separator;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.internal.components.separator.SeparatorImpl;
@@ -27,7 +26,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 // TODO-components-v2 docs
-public interface Separator extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
+public interface Separator extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
     // TODO-components-v2 docs
     @Nonnull
