@@ -37,8 +37,8 @@ public class ResolvedMediaImpl implements ResolvedMedia
         this(
                 data.getString("url"),
                 data.getString("proxy_url"),
-                data.getInt("width"),
-                data.getInt("height"),
+                data.getInt("width", 0),
+                data.getInt("height", 0),
                 data.getString("content_type", null)
         );
     }
