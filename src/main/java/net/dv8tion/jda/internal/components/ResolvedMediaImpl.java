@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class ResolvedMediaImpl implements ResolvedMedia
@@ -39,7 +40,7 @@ public class ResolvedMediaImpl implements ResolvedMedia
                 data.getString("proxy_url"),
                 data.getInt("width"),
                 data.getInt("height"),
-                data.getString("content_type"),
+                data.getString("content_type", null),
                 LoadingState.fromKey(data.getInt("loading_state"))
         );
     }
@@ -87,7 +88,7 @@ public class ResolvedMediaImpl implements ResolvedMedia
         return height;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public String getContentType()
     {

@@ -41,7 +41,7 @@ public interface ResolvedMedia
     int getHeight();
 
     // TODO-components-v2 docs
-    @Nonnull
+    @Nullable
     String getContentType();
 
     // TODO-components-v2 docs
