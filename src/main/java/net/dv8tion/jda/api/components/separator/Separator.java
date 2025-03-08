@@ -19,23 +19,69 @@ package net.dv8tion.jda.api.components.separator;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.separator.SeparatorImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-// TODO-components-v2 docs
+/**
+ * A component to separate content vertically, you can change its size and make it invisible.
+ *
+ * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
+ */
 public interface Separator extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new, visible {@link Separator} from the given content.
+     * <br>This is equivalent to {@code create(true, spacing)}.
+     *
+     * @param  spacing
+     *         The spacing provided by the separator
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link Separator}
+     */
     @Nonnull
     static Separator createDivider(@Nonnull Spacing spacing)
     {
         return create(true, spacing);
     }
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new, invisible {@link Separator} from the given content.
+     * <br>This is equivalent to {@code create(false, spacing)}.
+     *
+     * @param  spacing
+     *         The spacing provided by the separator
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link Separator}
+     */
+    @Nonnull
+    static Separator createInvisible(@Nonnull Spacing spacing)
+    {
+        return create(false, spacing);
+    }
+
+    /**
+     * Constructs a new {@link Separator} from the given content.
+     *
+     * @param  isDivider
+     *         Whether the separator is visible
+     * @param  spacing
+     *         The spacing provided by the separator
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link Separator}
+     */
     @Nonnull
     static Separator create(boolean isDivider, @Nonnull Spacing spacing)
     {
@@ -48,24 +94,48 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
     @CheckReturnValue
     Separator withUniqueId(int uniqueId);
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link Separator} with the provided divider status.
+     *
+     * @param  divider
+     *         The new divider status, {@code true} to make it visible, {@code false} is invisible
+     *
+     * @return The new {@link Separator}
+     */
     @Nonnull
     @CheckReturnValue
     Separator withDivider(boolean divider);
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link Separator} with the provided spacing.
+     *
+     * @param  spacing
+     *         The new spacing
+     *
+     * @return The new {@link Separator}
+     */
     @Nonnull
     @CheckReturnValue
     Separator withSpacing(@Nonnull Spacing spacing);
 
-    // TODO-components-v2 docs
+    /**
+     * Whether this separator is visible or not.
+     *
+     * @return {@code true} if this separate is a divider, and thus visible, {@code false} otherwise
+     */
     boolean isDivider();
 
-    // TODO-components-v2 docs
+    /**
+     * The spacing of this separator.
+     *
+     * @return The spacing
+     */
     @Nonnull
     Spacing getSpacing();
 
-    // TODO-components-v2 docs
+    /**
+     * Represents the amount of spacing a separator will create.
+     */
     enum Spacing {
         UNKNOWN(-1),
         SMALL(1),
@@ -79,11 +149,11 @@ public interface Separator extends Component, MessageTopLevelComponent, Containe
         }
 
         /**
-         * Raw int representing this SeparatorSpacing
+         * Raw int representing this spacing
          *
          * <p>This returns -1 if it's of type {@link #UNKNOWN}.
          *
-         * @return Raw int representing this SeparatorSpacing
+         * @return Raw int representing this Spacing
          */
         public int getKey()
         {
