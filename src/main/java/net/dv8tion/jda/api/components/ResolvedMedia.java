@@ -19,28 +19,73 @@ package net.dv8tion.jda.api.components;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-// TODO-components-v2 docs
+/**
+ * A media resolved by Discord including some metadata,
+ * typically comes from {@linkplain net.dv8tion.jda.api.entities.Message.MessageFlag#IS_COMPONENTS_V2 V2 Components}.
+ */
 public interface ResolvedMedia
 {
-    // TODO-components-v2 docs
+    /**
+     * The URL of this media, this is always where the file originally came from.
+     * <br>This can be either {@code attachment://filename.extension} or an actual URL.
+     *
+     * <p>If you want to download the file, you should use {@link #getProxy()},
+     * to avoid connecting your bot to unknown servers.
+     *
+     * @return The URL of this media
+     */
     @Nonnull
     String getUrl();
 
-    // TODO-components-v2 docs
+    /**
+     * The URL of this media, proxied by Discord's CDN.
+     *
+     * <p>This URL may be invalid if the media failed to load.
+     *
+     * @return The proxy URL of this media
+     */
     @Nonnull
     String getProxyUrl();
 
+    /**
+     * An {@link AttachmentProxy} for this media.
+     * <br>This allows you to easily download the media.
+     *
+     * <p>This proxy may not be usable if the media failed to load.
+     *
+     * @return The {@link AttachmentProxy} of this media
+     */
     @Nonnull
     AttachmentProxy getProxy();
 
-    // TODO-components-v2 docs
+    /**
+     * The width of this media, if available, or {@code 0}.
+     *
+     * <p>This may be {@code 0} if the media failed to load.
+     *
+     * @return Width of this media, or {@code 0}
+     */
     int getWidth();
 
-    // TODO-components-v2 docs
+    /**
+     * The height of this media, if available, or {@code 0}.
+     *
+     * <p>This may be {@code 0} if the media failed to load.
+     *
+     * @return Height of this media, or {@code 0}
+     */
     int getHeight();
 
-    // TODO-components-v2 docs
+    /**
+     * The <a href="https://en.wikipedia.org/wiki/Media_type" target="_blank">MIME type</a> of this media,
+     * if available, or {@code null}.
+     *
+     * <p>This may be absent if the media failed to load.
+     *
+     * @return The MIME type of this media, or {@code null}
+     */
     @Nullable
     String getContentType();
 }
