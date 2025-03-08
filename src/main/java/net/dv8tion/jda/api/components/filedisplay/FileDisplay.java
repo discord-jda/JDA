@@ -28,10 +28,24 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-// TODO-components-v2 docs
+/**
+ * Component displaying a file, you can mark it as a spoiler.
+ *
+ * <p><b>Note:</b> Audio files and text files cannot be <i>previewed</i>.
+ */
 public interface FileDisplay extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
 {
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link FileDisplay} from the given URL.
+     *
+     * @param  url
+     *         The URL of the file to display
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link FileDisplay}
+     */
     @Nonnull
     static FileDisplay fromUrl(@Nonnull String url)
     {
@@ -49,19 +63,43 @@ public interface FileDisplay extends Component, IdentifiableComponent, MessageTo
     @CheckReturnValue
     FileDisplay withUrl(@Nonnull String url);
 
-    // TODO-components-v2 docs
+    /**
+     * Creates a new {@link FileDisplay} with the provided spoiler status.
+     * <br>Spoilers are hidden until the user clicks on it.
+     *
+     * @param  spoiler
+     *         The new spoiler status
+     *
+     * @return The new {@link FileDisplay}
+     */
     @Nonnull
     @CheckReturnValue
     FileDisplay withSpoiler(boolean spoiler);
 
-    // TODO-components-v2 docs
+    /**
+     * The URL of this file, this is always where the file originally came from.
+     * <br>This can be either {@code attachment://filename.extension} or an actual URL.
+     *
+     * <p>If you want to download the file, you should use {@link #getResolvedMedia()} then {@link ResolvedMedia#getProxy()},
+     * to avoid connecting your bot to unknown servers.
+     *
+     * @return The URL of this file
+     */
     @Nonnull
     String getUrl();
 
-    // TODO-components-v2 docs
+    /**
+     * The media resolved from this file, this is only available if you receive this component from Discord.
+     *
+     * @return Possibly-null {@link ResolvedMedia}
+     */
     @Nullable
     ResolvedMedia getResolvedMedia();
 
-    // TODO-components-v2 docs
+    /**
+     * Whether this file is hidden until the user clicks on it.
+     *
+     * @return {@code true} if this is hidden by default, {@code false} otherwise
+     */
     boolean isSpoiler();
 }
