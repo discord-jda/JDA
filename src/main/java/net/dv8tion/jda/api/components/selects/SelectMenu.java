@@ -148,7 +148,17 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
             return (B) this;
         }
 
-        // TODO-components-v2 docs
+        /**
+         * Changes the numeric ID used to identify the select menu.
+         *
+         * @param  uniqueId
+         *         The new ID, must not be negative
+         *
+         * @throws IllegalArgumentException
+         *         If the ID is negative
+         *
+         * @return The same builder instance for chaining
+         */
         @Nonnull
         public B setUniqueId(int uniqueId)
         {
