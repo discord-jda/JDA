@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.components.actionrow;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.button.Button;
@@ -46,7 +45,7 @@ import java.util.List;
  * @see ActionRowChildComponent
  * @see LayoutComponent
  */
-public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, IdentifiableComponent, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable
+public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable
 {
     /**
      * Load ActionRow from serialized representation.

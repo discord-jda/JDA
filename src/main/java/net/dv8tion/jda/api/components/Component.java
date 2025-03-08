@@ -27,12 +27,17 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
  * Component of a Message or Modal.
  * <br>These are used to extend messages with interactive elements such as buttons or select menus.
  * Components are also the primary building blocks for {@link Modal Modals}.
+ *
+ * <p>All components include a unique, positive, integer ID.
+ * <br>These identifiers can be set manually or automatically assigned by Discord,
+ * and are useful to identify <b>any</b> component.
  *
  * <br><p>Not every component can be used in {@link net.dv8tion.jda.api.entities.Message Messages} or {@link Modal Modals}.
  * Use {@link Type#isMessageCompatible()} and {@link Type#isModalCompatible()} to check whether a component can be used.
@@ -53,6 +58,30 @@ public interface Component extends SerializableData
      */
     @Nonnull
     Type getType();
+
+    /**
+     * The unique, numeric identifier of this component.
+     * <br>Can be set manually or automatically assigned by Discord (starting from {@code 1}).
+     * If it has not been assigned yet, this will return {@code -1}.
+     *
+     * @return The unique identifier of this component, or {@code -1} if not assigned yet
+     */
+    int getUniqueId();
+
+    /**
+     * Creates a new component with the provided numeric ID.
+     *
+     * @param  uniqueId
+     *         The new ID, must not be negative
+     *
+     * @throws IllegalArgumentException
+     *         If the ID is negative
+     *
+     * @return The new component
+     */
+    @Nonnull
+    @CheckReturnValue
+    Component withUniqueId(int uniqueId);
 
     /**
      * Whether this Component is compatible with {@link net.dv8tion.jda.api.entities.Message Messages}.

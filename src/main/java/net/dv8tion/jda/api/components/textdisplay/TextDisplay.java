@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.components.textdisplay;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.section.SectionContentComponent;
@@ -28,7 +27,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 // TODO-components-v2 docs
-public interface TextDisplay extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent, SectionContentComponent
+public interface TextDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent, SectionContentComponent
 {
     // TODO-components-v2 docs
     @Nonnull

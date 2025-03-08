@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.components.filedisplay;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
@@ -36,7 +35,7 @@ import javax.annotation.Nullable;
  *
  * <p><b>Note:</b> Audio files and text files cannot be <i>previewed</i>.
  */
-public interface FileDisplay extends Component, IdentifiableComponent, MessageTopLevelComponent, ContainerChildComponent
+public interface FileDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
     /**
      * Constructs a new {@link FileDisplay} from the given URL.

@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.components.replacer;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.IdentifiableComponent;
 import net.dv8tion.jda.api.components.button.Button;
 import net.dv8tion.jda.api.components.selects.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selects.SelectMenu;
@@ -62,16 +61,16 @@ public interface ComponentReplacer
 
     // TODO-components-v2 - docs
     @Nonnull
-    static ComponentReplacer byId(@Nonnull IdentifiableComponent oldComponent, @Nullable IdentifiableComponent newComponent)
+    static ComponentReplacer byId(@Nonnull Component oldComponent, @Nullable Component newComponent)
     {
         return byId(oldComponent.getUniqueId(), newComponent);
     }
 
     // TODO-components-v2 - docs
     @Nonnull
-    static ComponentReplacer byId(int id, @Nullable IdentifiableComponent newComponent)
+    static ComponentReplacer byId(int id, @Nullable Component newComponent)
     {
-        return of(IdentifiableComponent.class,
+        return of(Component.class,
                 component -> component.getUniqueId() == id,
                 component -> newComponent);
     }
