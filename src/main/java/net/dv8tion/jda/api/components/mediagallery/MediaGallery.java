@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.components.mediagallery;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -29,20 +30,56 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 
-// TODO-components-v2 docs
+/**
+ * Component which displays a group of images, videos or gifs into a gallery grid.
+ *
+ * <p>This can contain up to {@value #MAX_ITEMS} {@link MediaGalleryItem}.
+ *
+ * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
+ */
 public interface MediaGallery extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
-    // TODO-components-v2 docs
+    /**
+     * How many {@link MediaGalleryItem} can be in a media gallery.
+     */
     int MAX_ITEMS = 10;
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link MediaGallery} from the given items.
+     *
+     * @param  items
+     *         The items to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value #MAX_ITEMS} items are provided</li>
+     *         </ul>
+     *
+     * @return The new {@link MediaGallery}
+     */
     @Nonnull
     static MediaGallery of(@Nonnull Collection<? extends MediaGalleryItem> items)
     {
         return MediaGalleryImpl.of(items);
     }
 
-    // TODO-components-v2 docs
+    /**
+     * Constructs a new {@link MediaGallery} from the given items.
+     *
+     * @param  item
+     *         The item to add
+     * @param  items
+     *         Additional items to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If more than {@value #MAX_ITEMS} items are provided</li>
+     *         </ul>
+     *
+     * @return The new {@link MediaGallery}
+     */
     @Nonnull
     static MediaGallery of(@Nonnull MediaGalleryItem item, @Nonnull MediaGalleryItem... items)
     {
@@ -51,13 +88,16 @@ public interface MediaGallery extends Component, MessageTopLevelComponent, Conta
         return of(Helpers.mergeVararg(item, items));
     }
 
-    // TODO-components-v2 docs
     @Nonnull
     @Override
     @CheckReturnValue
     MediaGallery withUniqueId(int uniqueId);
 
-    // TODO-components-v2 docs
+    /**
+     * Returns an immutable list with the items contained by this media gallery.
+     *
+     * @return {@link List} of {@link MediaGalleryItem} in this media gallery
+     */
     @Nonnull
     @Unmodifiable
     List<MediaGalleryItem> getItems();
