@@ -112,7 +112,7 @@ public class FileDisplayFileUpload extends AbstractComponentImpl implements File
                 .put("type", getType().getKey())
                 .put("file", DataObject.empty().put("url", getUrl()))
                 .put("spoiler", spoiler);
-        if (uniqueId >= -1)
+        if (uniqueId >= 0)
             json.put("id", uniqueId);
         return json;
     }
