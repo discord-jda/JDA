@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.components.AbstractComponentImpl;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
@@ -67,9 +67,9 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         this.files = Stream.concat(
                 files.stream(),
                 ComponentIterator.createStream(components)
-                        .filter(AbstractComponentImpl.class::isInstance)
-                        .map(AbstractComponentImpl.class::cast)
-                        .flatMap(c -> c.getFiles().stream())
+                        .filter(FileContainerMixin.class::isInstance)
+                        .map(FileContainerMixin.class::cast)
+                        .flatMap(FileContainerMixin::getFiles)
         ).collect(Helpers.toUnmodifiableList());
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;

@@ -22,18 +22,18 @@ import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class ThumbnailFileUpload
         extends AbstractComponentImpl
-        implements Thumbnail, SectionAccessoryComponentUnion
+        implements Thumbnail, SectionAccessoryComponentUnion, FileContainerMixin
 {
     private final int uniqueId;
     private final FileUpload file;
@@ -98,9 +98,9 @@ public class ThumbnailFileUpload
     }
 
     @Override
-    public List<FileUpload> getFiles()
+    public Stream<FileUpload> getFiles()
     {
-        return Collections.singletonList(file);
+        return Stream.of(file);
     }
 
     @Nullable
