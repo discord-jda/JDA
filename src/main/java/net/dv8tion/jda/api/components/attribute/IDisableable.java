@@ -21,7 +21,9 @@ import net.dv8tion.jda.api.components.Component;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-// TODO-components-v2 - docs
+/**
+ * Component which supports being disabled, or having its children be disabled.
+ */
 public interface IDisableable extends Component
 {
     /**
