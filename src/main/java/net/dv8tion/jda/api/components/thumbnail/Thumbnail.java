@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.thumbnail.ThumbnailFileUpload;
 import net.dv8tion.jda.internal.components.thumbnail.ThumbnailImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -30,6 +31,8 @@ import javax.annotation.Nullable;
 
 /**
  * Component displaying a thumbnail, you can mark it as a spoiler and set a description.
+ *
+ * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} to be enabled!
  */
 public interface Thumbnail extends SectionAccessoryComponent
 {

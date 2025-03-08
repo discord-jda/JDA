@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayFileUpload;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -34,6 +35,8 @@ import javax.annotation.Nullable;
  * Component displaying a file, you can mark it as a spoiler.
  *
  * <p><b>Note:</b> Audio files and text files cannot be <i>previewed</i>.
+ *
+ * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  */
 public interface FileDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
