@@ -73,7 +73,7 @@ public class TextDisplayImpl
     @Override
     public TextDisplay withContent(@Nonnull String content)
     {
-        Checks.notNull(content, "Content");
+        Checks.notBlank(content, "Content");
         return new TextDisplayImpl(uniqueId, content);
     }
 

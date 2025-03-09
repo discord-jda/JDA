@@ -53,7 +53,7 @@ public interface TextDisplay extends Component, MessageTopLevelComponent, Contai
     @Nonnull
     static TextDisplay create(@Nonnull String content)
     {
-        Checks.notNull(content, "Content");
+        Checks.notBlank(content, "Content");
         return new TextDisplayImpl(content);
     }
 
