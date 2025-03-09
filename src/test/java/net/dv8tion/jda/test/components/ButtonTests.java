@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test.interactions;
+package net.dv8tion.jda.test.components;
 
 import net.dv8tion.jda.api.components.button.Button;
 import net.dv8tion.jda.api.components.button.ButtonStyle;
