@@ -166,6 +166,22 @@ dependencies {
     testImplementation(libs.commons.lang3)
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
+
+    // OpenRewrite
+    // Import Rewrite's bill of materials.
+    testImplementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.3.0"))
+
+    // rewrite-java dependencies only necessary for Java Recipe development
+    testImplementation("org.openrewrite:rewrite-java")
+
+    // This is supposed to only be the version that corresponds to the current Java version,
+    // but as there are no toolchain, we include all, they can coexist safely tho.
+    testRuntimeOnly("org.openrewrite:rewrite-java-8")
+    testRuntimeOnly("org.openrewrite:rewrite-java-11")
+    testRuntimeOnly("org.openrewrite:rewrite-java-17")
+
+    // For authoring tests for any kind of Recipe
+    testImplementation("org.openrewrite:rewrite-test")
 }
 
 fun isNonStable(version: String): Boolean {

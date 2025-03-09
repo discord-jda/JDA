@@ -1,0 +1,98 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: net.dv8tion.MigrateComponentsV2
+description: Migrate to the Components V2 update.
+recipeList:
+    - net.dv8tion.MigrateComponentsV2Packages
+    - net.dv8tion.MigrateComponentsV2CustomIdGetters
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: net.dv8tion.MigrateComponentsV2Packages
+description: Migrate to Components V2 packages.
+recipeList:
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.ActionComponent
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.ActionComponent
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.ActionRow
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.actionrow.ActionRow
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.Component
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.Component
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.Component.Type
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.Component.Type
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.buttons.Button
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.button.Button
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.button.ButtonInteraction
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.button.ButtonStyle
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.EntitySelectInteraction
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selects.EntitySelectInteraction
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.EntitySelectMenu
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.Builder
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.EntitySelectMenu.Builder
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.DefaultValue
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.EntitySelectMenu.DefaultValue
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.EntitySelectMenu.SelectTarget
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.SelectMenu
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.SelectMenu
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.SelectMenu.Builder
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selects.SelectMenuInteraction
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.SelectOption
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.SelectOption
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selects.StringSelectInteraction
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.StringSelectMenu
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.Builder
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.selects.StringSelectMenu.Builder
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.text.TextInput
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.textinput.TextInput
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.text.TextInput.Builder
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.textinput.TextInput.Builder
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.components.textinput.TextInputStyle
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: net.dv8tion.MigrateComponentsV2CustomIdGetters
+description: Migrate component's "getId" to "getCustomId".
+recipeList:
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: net.dv8tion.jda.api.components.ActionComponent getId()
+      newMethodName: getCustomId
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: net.dv8tion.jda.api.interactions.modals.ModalMapping getId()
+      newMethodName: getCustomId
+#  Bugged due to inner classes
+#  - org.openrewrite.java.ChangeMethodName:
+#      methodPattern: net.dv8tion.jda.api.components.selects.SelectMenu.Builder getId()
+#      newMethodName: getCustomId
+#  - org.openrewrite.java.ChangeMethodName:
+#      methodPattern: net.dv8tion.jda.api.components.textinput.TextInput.Builder getId()
+#      newMethodName: getCustomId
