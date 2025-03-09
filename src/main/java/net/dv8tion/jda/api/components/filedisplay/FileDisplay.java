@@ -54,7 +54,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
     @Nonnull
     static FileDisplay fromUrl(@Nonnull String url)
     {
-        Checks.notNull(url, "URL");
+        Checks.notBlank(url, "URL");
         return new FileDisplayImpl(url);
     }
 

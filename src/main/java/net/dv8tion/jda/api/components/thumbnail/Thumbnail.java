@@ -55,7 +55,7 @@ public interface Thumbnail extends SectionAccessoryComponent
     @Nonnull
     static Thumbnail fromUrl(@Nonnull String url)
     {
-        Checks.notNull(url, "URL");
+        Checks.notBlank(url, "URL");
         return new ThumbnailImpl(url);
     }
 

@@ -52,7 +52,7 @@ public interface MediaGalleryItem extends SerializableData
     @Nonnull
     static MediaGalleryItem fromUrl(@Nonnull String url)
     {
-        Checks.notNull(url, "URL");
+        Checks.notBlank(url, "URL");
         return new MediaGalleryItemImpl(url);
     }
 

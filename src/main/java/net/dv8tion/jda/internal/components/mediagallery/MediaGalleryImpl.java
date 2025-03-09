@@ -69,6 +69,7 @@ public class MediaGalleryImpl
     public static MediaGallery of(@Nonnull Collection<? extends MediaGalleryItem> items)
     {
         Checks.noneNull(items, "Items");
+        Checks.notEmpty(items, "Items");
         Checks.check(items.size() <= MAX_ITEMS, "A media gallery can only contain %d items, provided: %d", MAX_ITEMS, items.size());
         return new MediaGalleryImpl(items);
     }

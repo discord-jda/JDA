@@ -84,7 +84,10 @@ public class ThumbnailImpl
     public Thumbnail withDescription(@Nullable String description)
     {
         if (description != null)
+        {
+            Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+        }
         return new ThumbnailImpl(uniqueId, url, media, description, spoiler);
     }
 

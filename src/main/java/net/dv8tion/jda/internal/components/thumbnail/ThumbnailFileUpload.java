@@ -73,7 +73,10 @@ public class ThumbnailFileUpload
     public Thumbnail withDescription(@Nullable String description)
     {
         if (description != null)
+        {
+            Checks.notBlank(description, "Description");
             Checks.notLonger(description, MAX_DESCRIPTION_LENGTH, "Description");
+        }
         return new ThumbnailFileUpload(uniqueId, file, description, spoiler);
     }
 
