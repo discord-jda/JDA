@@ -311,6 +311,8 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         }
         if (isSet(CONTENT) && !Helpers.isBlank(content))
             return false;
+        if (isReplace() && components.isEmpty())
+            return false;
 
         return true;
     }
