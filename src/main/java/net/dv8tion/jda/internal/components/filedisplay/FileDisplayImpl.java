@@ -30,7 +30,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class FileDisplayImpl extends AbstractComponentImpl implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion
+public class FileDisplayImpl
+        extends AbstractComponentImpl
+        implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion
 {
     private final int uniqueId;
     private final String url;

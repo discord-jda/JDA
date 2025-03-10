@@ -25,7 +25,9 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class SelectMenuImpl extends AbstractComponentImpl implements SelectMenu, ActionRowChildComponentUnion
+public abstract class SelectMenuImpl
+        extends AbstractComponentImpl
+        implements SelectMenu, ActionRowChildComponentUnion
 {
     protected final String id, placeholder;
     protected final int uniqueId;

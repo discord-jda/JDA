@@ -26,7 +26,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public class MessageComponentTreeImpl extends AbstractComponentTree<MessageTopLevelComponentUnion> implements MessageComponentTree
+public class MessageComponentTreeImpl
+        extends AbstractComponentTree<MessageTopLevelComponentUnion>
+        implements MessageComponentTree
 {
     private MessageComponentTreeImpl(Collection<MessageTopLevelComponentUnion> components)
     {

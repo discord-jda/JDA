@@ -33,7 +33,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class ButtonImpl extends AbstractComponentImpl implements Button, ActionRowChildComponentUnion, SectionAccessoryComponentUnion
+public class ButtonImpl
+        extends AbstractComponentImpl
+        implements Button, ActionRowChildComponentUnion, SectionAccessoryComponentUnion
 {
     private final String id;
     private final int uniqueId;
