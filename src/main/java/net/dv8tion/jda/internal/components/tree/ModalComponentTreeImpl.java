@@ -26,7 +26,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public class ModalComponentTreeImpl extends AbstractComponentTree<ModalTopLevelComponentUnion> implements ModalComponentTree
+public class ModalComponentTreeImpl
+        extends AbstractComponentTree<ModalTopLevelComponentUnion>
+        implements ModalComponentTree
 {
     private ModalComponentTreeImpl(Collection<ModalTopLevelComponentUnion> components)
     {

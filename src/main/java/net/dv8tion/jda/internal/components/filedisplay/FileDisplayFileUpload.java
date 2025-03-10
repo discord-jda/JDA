@@ -32,7 +32,9 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class FileDisplayFileUpload extends AbstractComponentImpl implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin
+public class FileDisplayFileUpload
+        extends AbstractComponentImpl
+        implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin
 {
     private final int uniqueId;
     private final FileUpload file;

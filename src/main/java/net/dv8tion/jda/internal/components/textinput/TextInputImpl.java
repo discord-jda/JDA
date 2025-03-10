@@ -27,7 +27,9 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TextInputImpl extends AbstractComponentImpl implements TextInput, ActionRowChildComponentUnion
+public class TextInputImpl
+        extends AbstractComponentImpl
+        implements TextInput, ActionRowChildComponentUnion
 {
     private final String id;
     private final int uniqueId;
