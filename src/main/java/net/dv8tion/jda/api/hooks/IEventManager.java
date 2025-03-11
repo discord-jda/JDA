@@ -43,6 +43,7 @@ import java.util.List;
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager
  * @see net.dv8tion.jda.api.hooks.AnnotatedEventManager
  */
+@FunctionalInterface
 public interface IEventManager
 {
     /**
@@ -55,7 +56,9 @@ public interface IEventManager
      * @throws java.lang.UnsupportedOperationException
      *         If the implementation does not support this method
      */
-    void register(@Nonnull Object listener);
+    default void register(@Nonnull Object listener) {
+        throw new UnsupportedOperationException("register is not supported by this IEventManager");
+    }
 
     /**
      * Removes the specified listener
@@ -66,7 +69,9 @@ public interface IEventManager
      * @throws java.lang.UnsupportedOperationException
      *         If the implementation does not support this method
      */
-    void unregister(@Nonnull Object listener);
+    default void unregister(@Nonnull Object listener) {
+        throw new UnsupportedOperationException("unregister is not supported by this IEventManager");
+    }
 
     /**
      * Handles the provided {@link net.dv8tion.jda.api.events.GenericEvent GenericEvent}.
@@ -88,5 +93,7 @@ public interface IEventManager
      * @return A list of listeners that have already been registered
      */
     @Nonnull
-    List<Object> getRegisteredListeners();
+    default List<Object> getRegisteredListeners() {
+        throw new UnsupportedOperationException("getRegisteredListeners is not supported by this IEventManager");
+    }
 }
