@@ -44,8 +44,8 @@ public abstract class AbstractComponentTree<E extends ComponentUnion> implements
 
     @Nonnull
     @Override
-    public ComponentTree<E> disableAll()
+    public ComponentTree<E> withDisabled(boolean disabled)
     {
-        return replace(ComponentReplacer.of(IDisableable.class, c -> true, IDisableable::asDisabled));
+        return replace(ComponentReplacer.of(IDisableable.class, c -> true, c -> c.withDisabled(disabled)));
     }
 }

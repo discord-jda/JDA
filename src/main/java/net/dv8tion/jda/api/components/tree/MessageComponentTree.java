@@ -41,7 +41,23 @@ public interface MessageComponentTree extends ComponentTree<MessageTopLevelCompo
     @Nonnull
     @Override
     @CheckReturnValue
-    MessageComponentTree disableAll();
+    MessageComponentTree withDisabled(boolean disabled);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default MessageComponentTree asDisabled()
+    {
+        return (MessageComponentTree) ComponentTree.super.asDisabled();
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default MessageComponentTree asEnabled()
+    {
+        return (MessageComponentTree) ComponentTree.super.asEnabled();
+    }
 
     /**
      * Creates a {@link MessageComponentTree} from the given top-level message components.

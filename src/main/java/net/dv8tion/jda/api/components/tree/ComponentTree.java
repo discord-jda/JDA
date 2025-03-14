@@ -192,6 +192,16 @@ public interface ComponentTree<E extends ComponentUnion>
     ComponentTree<E> replace(ComponentReplacer replacer);
 
     /**
+     * Enables or disables all components which {@linkplain net.dv8tion.jda.api.components.attribute.IDisableable can be enabled/disabled},
+     * and constructs a new tree from the result.
+     *
+     * @return A new tree with all components enabled/disabled.
+     */
+    @Nonnull
+    @CheckReturnValue
+    ComponentTree<E> withDisabled(boolean disabled);
+
+    /**
      * Disables all components which {@linkplain net.dv8tion.jda.api.components.attribute.IDisableable can be disabled},
      * and constructs a new tree from the result.
      *
@@ -199,5 +209,21 @@ public interface ComponentTree<E extends ComponentUnion>
      */
     @Nonnull
     @CheckReturnValue
-    ComponentTree<E> disableAll();
+    default ComponentTree<E> asDisabled()
+    {
+        return withDisabled(true);
+    }
+
+    /**
+     * Enables all components which {@linkplain net.dv8tion.jda.api.components.attribute.IDisableable can be enabled},
+     * and constructs a new tree from the result.
+     *
+     * @return A new tree with all components enabled.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ComponentTree<E> asEnabled()
+    {
+        return withDisabled(false);
+    }
 }

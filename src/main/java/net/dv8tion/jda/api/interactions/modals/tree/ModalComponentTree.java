@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.internal.components.tree.ModalComponentTreeImpl;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,11 +36,28 @@ public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponent
 {
     @Nonnull
     @Override
-    ModalComponentTree disableAll();
+    ModalComponentTree replace(ComponentReplacer replacer);
 
     @Nonnull
     @Override
-    ModalComponentTree replace(ComponentReplacer replacer);
+    @CheckReturnValue
+    ModalComponentTree withDisabled(boolean disabled);
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default ModalComponentTree asDisabled()
+    {
+        return (ModalComponentTree) ComponentTree.super.asDisabled();
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    default ModalComponentTree asEnabled()
+    {
+        return (ModalComponentTree) ComponentTree.super.asEnabled();
+    }
 
     /**
      * Creates a {@link ModalComponentTree} from the given top-level modal components.
