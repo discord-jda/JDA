@@ -60,8 +60,8 @@ public class MessageComponentTreeImpl
 
     @Nonnull
     @Override
-    public MessageComponentTree disableAll()
+    public MessageComponentTree withDisabled(boolean disabled)
     {
-        return (MessageComponentTree) super.disableAll();
+        return (MessageComponentTree) super.withDisabled(disabled);
     }
 }

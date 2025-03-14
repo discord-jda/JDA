@@ -60,8 +60,8 @@ public class ModalComponentTreeImpl
 
     @Nonnull
     @Override
-    public ModalComponentTree disableAll()
+    public ModalComponentTree withDisabled(boolean disabled)
     {
-        return (ModalComponentTree) super.disableAll();
+        return (ModalComponentTree) super.withDisabled(disabled);
     }
 }
