@@ -141,7 +141,6 @@ public interface InteractionHook extends WebhookClient<Message>
 
     /**
      * Retrieves the original reply to this interaction.
-     * <br>This doesn't work for ephemeral messages and will always cause an unknown message error response.
      *
      * @return {@link RestAction} - Type: {@link Message}
      */
@@ -412,7 +411,7 @@ public interface InteractionHook extends WebhookClient<Message>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *         the message it referred to has already been deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
@@ -466,7 +465,7 @@ public interface InteractionHook extends WebhookClient<Message>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *         the message it referred to has already been deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
