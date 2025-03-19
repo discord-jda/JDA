@@ -228,7 +228,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     {
         // This is not done in checkValid() because the button gets constructed with an invalid unique ID on purpose
         // (as Discord generates one if none was passed)
-        Checks.notNegative(uniqueId, "Unique ID");
+        Checks.positive(uniqueId, "Unique ID");
         return new ButtonImpl(getCustomId(), uniqueId, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 

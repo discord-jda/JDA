@@ -67,7 +67,7 @@ public class SeparatorImpl
     @Override
     public Separator withUniqueId(int uniqueId)
     {
-        Checks.notNegative(uniqueId, "Unique ID");
+        Checks.positive(uniqueId, "Unique ID");
         return new SeparatorImpl(uniqueId, spacing, isDivider);
     }
 
