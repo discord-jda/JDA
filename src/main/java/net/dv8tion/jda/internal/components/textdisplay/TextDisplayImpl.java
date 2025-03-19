@@ -65,7 +65,7 @@ public class TextDisplayImpl
     @Override
     public TextDisplay withUniqueId(int uniqueId)
     {
-        Checks.notNegative(uniqueId, "Unique ID");
+        Checks.positive(uniqueId, "Unique ID");
         return new TextDisplayImpl(uniqueId, content);
     }
 

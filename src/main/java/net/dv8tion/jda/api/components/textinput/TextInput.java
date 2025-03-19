@@ -239,7 +239,7 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
         @Nonnull
         public Builder setUniqueId(int uniqueId)
         {
-            Checks.notNegative(uniqueId, "Unique ID");
+            Checks.positive(uniqueId, "Unique ID");
             this.uniqueId = uniqueId;
             return this;
         }

@@ -92,7 +92,7 @@ public class ContainerImpl
     @Override
     public Container withUniqueId(int uniqueId)
     {
-        Checks.notNegative(uniqueId, "Unique ID");
+        Checks.positive(uniqueId, "Unique ID");
         return new ContainerImpl(uniqueId, components, spoiler, accentColor);
     }
 

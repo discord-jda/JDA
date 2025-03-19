@@ -162,7 +162,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
         @Nonnull
         public B setUniqueId(int uniqueId)
         {
-            Checks.notNegative(uniqueId, "Unique ID");
+            Checks.positive(uniqueId, "Unique ID");
             this.uniqueId = uniqueId;
             return (B) this;
         }
