@@ -117,8 +117,9 @@ public interface ThreadChannel extends GuildMessageChannel, IMemberContainer, IS
     /**
      * Whether this thread is locked or not.
      *
-     * <p>Locked threads cannot have new messages posted to them, or members join or leave them.
-     * Threads can only be locked and unlocked by moderators.
+     * <p>Locked threads make its members unable to post new messages unless they are moderators. Actions such as react to messages, leave, get removed and get invited to the thread remain unaffected.
+     * <br>Threads can only be locked and unlocked by moderators.
+     *
      *
      * @return true if this thread is locked, false otherwise.
      *
