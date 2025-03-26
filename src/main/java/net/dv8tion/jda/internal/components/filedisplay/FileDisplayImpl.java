@@ -20,19 +20,23 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import okhttp3.HttpUrl;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class FileDisplayImpl
         extends AbstractComponentImpl
-        implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion
+        implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin
 {
     private final int uniqueId;
     private final String url;
@@ -92,11 +96,17 @@ public class FileDisplayImpl
         return url;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public ResolvedMedia getResolvedMedia()
     {
         return media;
+    }
+
+    @Override
+    public Stream<FileUpload> getFiles() {
+        // TODO replace with proxy.downloadAsFileUpload(Helpers.getLastPathSegment()) when https://github.com/discord-jda/JDA/pull/2782 is merged
+        return Stream.of(FileUpload.fromStreamSupplier(getFileName(), () -> media.getProxy().download().join()));
     }
 
     @Override
@@ -111,11 +121,19 @@ public class FileDisplayImpl
     {
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
-                .put("file", DataObject.empty().put("url", url))
+                .put("file", DataObject.empty().put("url", "attachment://" + getFileName()))
                 .put("spoiler", spoiler);
         if (uniqueId >= 0)
             json.put("id", uniqueId);
         return json;
+    }
+
+    private String getFileName() {
+        final HttpUrl parsedUrl = HttpUrl.parse(media.getUrl());
+        Checks.check(parsedUrl != null, "URL '%s' is invalid", url);
+
+        final List<String> segments = parsedUrl.pathSegments();
+        return segments.get(segments.size() - 1);
     }
 
     @Override
