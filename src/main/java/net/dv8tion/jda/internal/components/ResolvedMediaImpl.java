@@ -70,7 +70,7 @@ public class ResolvedMediaImpl implements ResolvedMedia
     @Override
     public AttachmentProxy getProxy()
     {
-        return new AttachmentProxy(proxyUrl);
+        return new AttachmentProxy(width > 0 && height > 0 ? proxyUrl : url);
     }
 
     @Override
