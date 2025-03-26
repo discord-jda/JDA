@@ -32,11 +32,13 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
         PrivateChannel,
         PrivateChannelMixin<DetachedPrivateChannelImpl>
 {
+    private final User user;
     private long latestMessageId;
 
-    public DetachedPrivateChannelImpl(JDA api, long id)
+    public DetachedPrivateChannelImpl(JDA api, long id, @Nullable User user)
     {
         super(id, api);
+        this.user = user;
     }
 
     @Nonnull
@@ -63,7 +65,7 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
     @Override
     public User getUser()
     {
-        return null;
+        return user;
     }
 
     @Nonnull

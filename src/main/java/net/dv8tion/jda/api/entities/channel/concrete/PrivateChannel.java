@@ -58,9 +58,6 @@ public interface PrivateChannel extends MessageChannel
      *
      * <br>This method fetches the channel from the API and retrieves the User from that.
      *
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         For channels from interactions with context type {@link net.dv8tion.jda.api.interactions.InteractionContextType#PRIVATE_CHANNEL PRIVATE_CHANNEL}
-     *
      * @return A {@link RestAction RestAction} to retrieve the {@link User User} that this {@link PrivateChannel PrivateChannel} communicates with.
      */
     @Nonnull

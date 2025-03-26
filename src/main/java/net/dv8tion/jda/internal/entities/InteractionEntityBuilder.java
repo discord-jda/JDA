@@ -258,16 +258,17 @@ public class InteractionEntityBuilder extends AbstractEntityBuilder
 
         final PrivateChannelMixin<?> channel;
         if (recipientObj != null) {
-            // We only get recipient in Bot DMs and Group DMs
-            if (interactionUser.getIdLong() == recipientObj.getLong("id")) {
+            // Let's try not to DM ourselves
+            if (api.getSelfUser().getIdLong() == recipientObj.getLong("id"))
                 channel = new PrivateChannelImpl(getJDA(), channelId, interactionUser);
-            } else {
-                // Friend DMs don't have recipients
-                throw new IllegalArgumentException("Recipient should only be present in Bot DMs");
+            else
+            {
+                // This still needs to be detached, as there is no open channel between the bot and the friend,
+                channel = new DetachedPrivateChannelImpl(getJDA(), channelId, entityBuilder.createUser(recipientObj));
             }
         } else {
-            // Friend DMs, no info
-            channel = new DetachedPrivateChannelImpl(getJDA(), channelId);
+            LOG.warn("Private channel has no recipient and will fallback to a detached PrivateChannel with no user, please report to the devs, channel JSON: {}", json.toPrettyString());
+            channel = new DetachedPrivateChannelImpl(getJDA(), channelId, null);
         }
         configurePrivateChannel(json, channel);
         return channel;
