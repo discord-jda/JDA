@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayFileUpload;
-import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -40,24 +39,6 @@ import javax.annotation.Nullable;
  */
 public interface FileDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
-    /**
-     * Constructs a new {@link FileDisplay} from the given URL.
-     *
-     * @param  url
-     *         The URL of the file to display
-     *
-     * @throws IllegalArgumentException
-     *         If {@code null} is provided
-     *
-     * @return The new {@link FileDisplay}
-     */
-    @Nonnull
-    static FileDisplay fromUrl(@Nonnull String url)
-    {
-        Checks.notBlank(url, "URL");
-        return new FileDisplayImpl(url);
-    }
-
     /**
      * Constructs a new {@link FileDisplay} from the {@link FileUpload}.
      *
