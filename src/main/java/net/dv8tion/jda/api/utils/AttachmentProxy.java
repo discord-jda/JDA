@@ -59,6 +59,8 @@ public class AttachmentProxy extends FileProxy
      *
      * @param  url
      *         The URL to download the attachment from
+     * @param  fileName
+     *         An optional file name for {@link #downloadAsFileUpload(int, int)}
      *
      * @throws IllegalArgumentException
      *         If the provided URL is null
