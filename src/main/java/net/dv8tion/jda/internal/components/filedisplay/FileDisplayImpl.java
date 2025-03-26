@@ -49,11 +49,6 @@ public class FileDisplayImpl
         );
     }
 
-    public FileDisplayImpl(String url)
-    {
-        this(-1, url, null, false);
-    }
-
     private FileDisplayImpl(int uniqueId, String url, ResolvedMedia media, boolean spoiler)
     {
         this.uniqueId = uniqueId;
