@@ -22,6 +22,7 @@ import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,8 @@ import java.util.concurrent.CompletableFuture;
  */
 public class AttachmentProxy extends FileProxy
 {
+    private final String fileName;
+
     /**
      * Constructs a new {@link AttachmentProxy} for the provided URL.
      *
@@ -48,7 +51,22 @@ public class AttachmentProxy extends FileProxy
      */
     public AttachmentProxy(@Nonnull String url)
     {
+        this(url, null);
+    }
+
+    /**
+     * Constructs a new {@link AttachmentProxy} for the provided URL.
+     *
+     * @param  url
+     *         The URL to download the attachment from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided URL is null
+     */
+    public AttachmentProxy(@Nonnull String url, @Nullable String fileName)
+    {
         super(url);
+        this.fileName = fileName;
     }
 
     /**
@@ -258,6 +276,40 @@ public class AttachmentProxy extends FileProxy
     public CompletableFuture<Icon> downloadAsIcon(int width, int height)
     {
         return downloadAsIcon(getUrl(width, height));
+    }
+
+    /**
+     * Returns a {@link FileUpload} which supplies a data stream of this attachment,
+     * with the original attachment's file name and at the specified size.
+     * <br>The returned {@link FileUpload} can be reused safely, and does not need to be closed.
+     *
+     * <p>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size.
+     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded.
+     *
+     * @param  width
+     *         The width of this image, must be positive
+     * @param  height
+     *         The height of this image, must be positive
+     *
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The requested width is negative or 0</li>
+     *             <li>The requested height is negative or 0</li>
+     *         </ul>
+     * @throws IllegalStateException
+     *         If the original attachment's name is not known,
+     *         this can happen if this isn't from a {@link net.dv8tion.jda.api.entities.Message.Attachment Message.Attachment}
+     *
+     * @return {@link FileUpload} from this attachment.
+     */
+    @Nonnull
+    public FileUpload downloadAsFileUpload(int width, int height)
+    {
+        if (fileName == null)
+            throw new IllegalStateException("The file name is not available for this AttachmentProxy");
+
+        return downloadAsFileUpload(fileName, width, height);
     }
 
     /**

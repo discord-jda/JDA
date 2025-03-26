@@ -2675,7 +2675,7 @@ public interface Message extends ISnowflake, Formattable
         @Nonnull
         public AttachmentProxy getProxy()
         {
-            return new AttachmentProxy(width > 0 && height > 0 ? proxyUrl : url);
+            return new AttachmentProxy(width > 0 && height > 0 ? proxyUrl : url, fileName);
         }
 
         /**
