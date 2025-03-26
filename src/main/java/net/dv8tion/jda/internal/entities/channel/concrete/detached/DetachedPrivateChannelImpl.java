@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.PrivateChannelMixin;
 
@@ -66,21 +65,6 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
     public User getUser()
     {
         return user;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<User> retrieveUser()
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public String getName()
-    {
-        //don't break or override the contract of @NonNull
-        return "";
     }
 
     @Override
