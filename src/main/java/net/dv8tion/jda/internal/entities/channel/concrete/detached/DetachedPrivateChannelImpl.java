@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.concrete.PrivateChannelMixin;
 
@@ -32,11 +31,13 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
         PrivateChannel,
         PrivateChannelMixin<DetachedPrivateChannelImpl>
 {
+    private final User user;
     private long latestMessageId;
 
-    public DetachedPrivateChannelImpl(JDA api, long id)
+    public DetachedPrivateChannelImpl(JDA api, long id, @Nullable User user)
     {
         super(id, api);
+        this.user = user;
     }
 
     @Nonnull
@@ -63,22 +64,7 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
     @Override
     public User getUser()
     {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<User> retrieveUser()
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public String getName()
-    {
-        //don't break or override the contract of @NonNull
-        return "";
+        return user;
     }
 
     @Override

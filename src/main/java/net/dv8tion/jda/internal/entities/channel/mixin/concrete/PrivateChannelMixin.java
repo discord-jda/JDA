@@ -16,12 +16,51 @@
 
 package net.dv8tion.jda.internal.entities.channel.mixin.concrete;
 
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+
+import javax.annotation.Nonnull;
 
 public interface PrivateChannelMixin<T extends PrivateChannelMixin<T>>
     extends PrivateChannel,
         MessageChannelMixin<T>
 {
 
+    @Nonnull
+    @Override
+    default String getName()
+    {
+        User user = getUser();
+        if (user == null)
+        {
+            //don't break or override the contract of @NonNull
+            return "";
+        }
+        return user.getName();
+    }
+
+    @Nonnull
+    @Override
+    default RestAction<User> retrieveUser()
+    {
+        User user = getUser();
+        if (user != null)
+            return new CompletedRestAction<>(getJDA(), user);
+        //even if the user blocks the bot, this does not fail.
+        return retrievePrivateChannel()
+                .map(PrivateChannel::getUser);
+    }
+
+    @Nonnull
+    default RestAction<PrivateChannel> retrievePrivateChannel()
+    {
+        Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> ((JDAImpl) getJDA()).getEntityBuilder().createPrivateChannel(response.getObject()));
+    }
 }
