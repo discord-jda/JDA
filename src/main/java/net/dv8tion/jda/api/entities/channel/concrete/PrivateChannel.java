@@ -26,14 +26,8 @@ import javax.annotation.Nullable;
 /**
  * Represents the connection used for direct messaging.
  *
- * <p>This channel may communicate with different users in interactions triggered by user-installed apps:
- * <ul>
- *     <li>In bot DMs, this channel will send messages to the interaction caller.</li>
- *     <li>In friend DMs, this channel will send messages to that friend,
- *         from the bot itself, this is different from where the interaction was executed.
- *         <br>Note: As friend DMs are detached channels, you will need to retrieve an open channel from the user first.
- *     </li>
- * </ul>
+ * <p>When this channel comes from a user-installed interaction, bots cannot send messages outside their own DMs.
+ * <br>For friend DMs, you can open a private channel directly with the user.
  *
  * @see User#openPrivateChannel()
  */
