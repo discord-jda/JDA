@@ -43,7 +43,6 @@ import java.util.List;
  * One row of action components.
  *
  * @see ActionRowChildComponent
- * @see LayoutComponent
  */
 public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable
 {
