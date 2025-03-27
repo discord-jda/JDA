@@ -18,6 +18,13 @@ package net.dv8tion.jda.api.components;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Represents a component which has an unknown type.
+ *
+ * <p>Such components can be received and sent back, but cannot be modified in any way.
+ *
+ * @see ComponentUnion#isUnknownComponent()
+ */
 public interface UnknownComponent extends Component
 {
     @Override
