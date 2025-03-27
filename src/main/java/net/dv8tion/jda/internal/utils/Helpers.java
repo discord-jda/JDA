@@ -21,6 +21,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -322,6 +323,21 @@ public final class Helpers
     public static <E extends Enum<E>> Set<E> unmodifiableEnumSet(E first, E... rest)
     {
         return Collections.unmodifiableSet(EnumSet.of(first, rest));
+    }
+
+    public static <E> List<E> copyAsUnmodifiableList(Collection<? extends E> items)
+    {
+        return Collections.unmodifiableList(new ArrayList<>(items));
+    }
+
+    @Nonnull
+    @SafeVarargs
+    public static <E> List<E> mergeVararg(@Nonnull E first, @Nonnull E... other)
+    {
+        List<E> list = new ArrayList<>(other.length + 1);
+        list.add(first);
+        Collections.addAll(list, other);
+        return list;
     }
 
     public static <T> Collector<T, ?, DataArray> toDataArray()

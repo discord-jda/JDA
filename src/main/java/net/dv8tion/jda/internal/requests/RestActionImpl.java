@@ -264,12 +264,12 @@ public class RestActionImpl<T> implements RestAction<T>
     }
 
     @Nonnull
-    protected RequestBody getMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nonnull DataObject json)
+    protected RequestBody getMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nonnull List<? extends AttachedFile> additionalFiles, @Nonnull DataObject json)
     {
         RequestBody payloadJson = getRequestBody(json);
-        if (files.isEmpty())
+        if (files.isEmpty() && additionalFiles.isEmpty())
             return payloadJson;
-        return AttachedFile.createMultipartBody(files, payloadJson).build();
+        return AttachedFile.createMultipartBody(files, additionalFiles, payloadJson).build();
     }
 
     private CheckWrapper getFinisher()
