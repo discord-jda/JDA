@@ -164,7 +164,7 @@ public static void main(String[] args) {
     Commands.slash("say", "Makes the bot say what you tell it to")
       .addOption(STRING, "content", "What the bot should say", true), // Accepting a user input
     Commands.slash("leave", "Makes the bot leave the server")
-      .setGuildOnly(true) // this doesn't make sense in DMs
+      .setContexts(InteractionContextType.GUILD) // this doesn't make sense in DMs
       .setDefaultPermissions(DefaultMemberPermissions.DISABLED) // only admins should be able to use this command.
   );
 
