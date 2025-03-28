@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -208,8 +210,9 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
     @Nonnull
     default R applyCreateData(@Nonnull MessageCreateData data)
     {
-        final List<LayoutComponent> layoutComponents = data.getComponents().stream()
-                .map(LayoutComponent::createCopy)
+        final List<MessageTopLevelComponentUnion> components = data.getComponents().stream()
+//                // TODO-components-v2 - restore
+//                .map(LayoutComponent::createCopy)
                 .collect(Collectors.toList());
         return setReplace(true)
                 .setContent(data.getContent())
@@ -218,7 +221,7 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
                 .mentionRoles(data.getMentionedRoles())
                 .mentionRepliedUser(data.isMentionRepliedUser())
                 .setEmbeds(data.getEmbeds())
-                .setComponents(layoutComponents)
+                .setComponents(components)
                 .setFiles(data.getFiles());
     }
 
