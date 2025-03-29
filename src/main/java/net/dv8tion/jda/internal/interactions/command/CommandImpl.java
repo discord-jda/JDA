@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.PrimaryEntryPointCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -39,6 +40,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -59,6 +61,7 @@ public class CommandImpl implements Command
     private final String name, description;
     private final LocalizationMap nameLocalizations;
     private final LocalizationMap descriptionLocalizations;
+    private final PrimaryEntryPointCommandData.Handler handler;
     private final List<Command.Option> options;
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
@@ -77,6 +80,9 @@ public class CommandImpl implements Command
         this.nameLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "name_localizations");
         this.description = json.getString("description", "");
         this.descriptionLocalizations = LocalizationUtils.unmodifiableFromProperty(json, "description_localizations");
+        this.handler = json.hasKey("handler")
+                ? PrimaryEntryPointCommandData.Handler.fromValue(json.getLong("handler"))
+                : null;
         this.type = Command.Type.fromId(json.getInt("type", 1));
         this.id = json.getUnsignedLong("id");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
@@ -209,6 +215,13 @@ public class CommandImpl implements Command
     public LocalizationMap getDescriptionLocalizations()
     {
         return descriptionLocalizations;
+    }
+
+    @Nullable
+    @Override
+    public PrimaryEntryPointCommandData.Handler getHandler()
+    {
+        return handler;
     }
 
     @Nonnull

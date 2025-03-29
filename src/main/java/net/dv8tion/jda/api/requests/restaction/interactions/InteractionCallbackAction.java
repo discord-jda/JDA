@@ -65,6 +65,8 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
          */
         @Deprecated
         PREMIUM_REQUIRED(10),
+        /** Launch the app's activity */
+        LAUNCH_ACTIVITY(12),
         ;
         private final int raw;
 
