@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.exceptions.FirstAcknowledgementException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -40,9 +41,17 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class InteractionImpl implements Interaction
 {
+    // Enables recording where the first ack is done,
+    // to help with debugging when an interaction is acknowledged twice
+    private static boolean recordAckTraces = false;
+    private static ScheduledFuture<?> scheduledRecordDeactivation;
+    private Throwable firstAckTrace = null;
+
     protected final long id;
     protected final long channelId;
     protected final int type;
@@ -139,11 +148,41 @@ public class InteractionImpl implements Interaction
     public synchronized void releaseHook(boolean success) {}
 
     // Ensures that one cannot acknowledge an interaction twice
-    public synchronized boolean ack()
+    @Nullable
+    public synchronized IllegalStateException tryAck()
     {
-        boolean wasAck = isAck;
-        this.isAck = true;
-        return wasAck;
+        // If not already acknowledged => no exception
+        if (!isAck)
+        {
+            // Store where the first ack was made, so we can use show it on the 2nd ack
+            if (recordAckTraces)
+                firstAckTrace = new FirstAcknowledgementException();
+            isAck = true;
+            return null;
+        }
+
+        // Enable saving stack traces of acknowledgements.
+        // On future acknowledgements, the stack trace of the first ack will be kept, and added to the second ack,
+        // so the user doesn't have to figure out where the first ack was at.
+        if (firstAckTrace == null)
+        {
+            recordAckTraces = true;
+
+            // Stop recording after 15 minutes if the issue was not reproduced
+            if (scheduledRecordDeactivation != null)
+                scheduledRecordDeactivation.cancel(false);
+            scheduledRecordDeactivation = api.getGatewayPool().schedule(() ->
+            {
+                recordAckTraces = false;
+            }, 15, TimeUnit.MINUTES);
+            return new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once! Retry using this interaction for more details.");
+        }
+        else
+        {
+            recordAckTraces = false;
+            scheduledRecordDeactivation.cancel(false);
+            return new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!", firstAckTrace);
+        }
     }
 
     @Override
