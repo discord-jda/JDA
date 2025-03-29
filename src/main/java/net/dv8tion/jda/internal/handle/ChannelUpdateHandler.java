@@ -288,7 +288,7 @@ public class ChannelUpdateHandler extends SocketHandler
         {
             if (type != 1)
             {
-                EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
+                EntityBuilder.LOG.debug("Ignoring unknown permission override of type '{}'. JSON: {}", type, override);
                 return false;
             }
             else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES) && overrideId != api.getSelfUser().getIdLong())
