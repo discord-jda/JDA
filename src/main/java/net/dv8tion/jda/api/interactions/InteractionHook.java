@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.response.CallbackResponseUnion;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
@@ -38,6 +39,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -76,6 +78,39 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     Interaction getInteraction();
+
+    /**
+     * The {@link CallbackResponseUnion callback response} created by interaction replies like {@link IReplyCallback#reply(String)}
+     * or interaction updates like {@link IMessageEditCallback#editMessage(String)}.
+     *
+     * <p><b>Example</b>
+     * <pre>
+     * {@code
+     * event.reply("foobar").queue(hook -> {
+     *     var messageId = hook.getCallbackResponse().asMessage().getIdLong();
+     *     System.out.println(messageId);
+     * });}
+     * </pre>
+     *
+     * @throws IllegalStateException
+     *         If this interaction has not yet been acknowledged.
+     *
+     * @return {@link CallbackResponseUnion}
+     *
+     * @see    #hasCallbackResponse()
+     */
+    @Nonnull
+    CallbackResponseUnion getCallbackResponse();
+
+    /**
+     * Whether this InteractionHook contains a {@link CallbackResponseUnion callback response}.
+     * <br>This will be <code>false</code> if the interaction has not yet been acknowledged.
+     *
+     * @return True, if this InteractionHook contains a callback response
+     *
+     * @see    #getCallbackResponse()
+     */
+    boolean hasCallbackResponse();
 
     /**
      * The unix millisecond timestamp for the expiration of this interaction hook.
