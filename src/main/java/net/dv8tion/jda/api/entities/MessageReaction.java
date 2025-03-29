@@ -348,12 +348,45 @@ public class MessageReaction
      * </ul>
      *
      * @return {@link ReactionPaginationAction ReactionPaginationAction}
+     *
+     * @see    #retrieveUsers(ReactionType)
      */
     @Nonnull
     @CheckReturnValue
     public ReactionPaginationAction retrieveUsers()
     {
         return new ReactionPaginationActionImpl(this);
+    }
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.api.entities.User Users} that
+     * already reacted with this MessageReaction.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message this reaction was attached to got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel this reaction was used in got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the channel/guild</li>
+     * </ul>
+     *
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @return {@link ReactionPaginationAction ReactionPaginationAction}
+     *
+     * @see    #retrieveUsers()
+     */
+    @Nonnull
+    @CheckReturnValue
+    public ReactionPaginationAction retrieveUsers(@Nonnull ReactionType type)
+    {
+        Checks.notNull(type, "Type");
+        return new ReactionPaginationActionImpl(this, type);
     }
 
     /**
@@ -511,6 +544,16 @@ public class MessageReaction
      */
     public enum ReactionType
     {
-        NORMAL, SUPER
+        NORMAL(0), SUPER(1);
+
+        private final int value;
+        ReactionType(int type) {
+            this.value = type;
+        }
+
+        public int getValue()
+        {
+            return value;
+        }
     }
 }
