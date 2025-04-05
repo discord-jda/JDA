@@ -67,6 +67,13 @@ public class DetachedPrivateChannelImpl extends AbstractChannelImpl<DetachedPriv
         return user;
     }
 
+    @Nonnull
+    @Override
+    public String getName()
+    {
+        return PrivateChannelMixin.super.getName();
+    }
+
     @Override
     public long getLatestMessageIdLong()
     {
