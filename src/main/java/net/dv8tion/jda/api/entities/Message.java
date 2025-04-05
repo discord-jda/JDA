@@ -17,6 +17,14 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
+import net.dv8tion.jda.api.components.tree.MessageComponentTree;
+import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
@@ -39,9 +47,6 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
@@ -164,6 +169,16 @@ public interface Message extends ISnowflake, Formattable
      */
     int MAX_CONTENT_LENGTH = 2000;
 
+    /**
+     * The maximum amount of characters sendable in one message. ({@value})
+     * <br>This only applies when {@linkplain #isUsingComponentsV2() V2 Components} are enabled.
+     *
+     * <p>Unlike {@link #MAX_CONTENT_LENGTH}, the amount of characters is calculated from all the components.
+     *
+     * @see MessageRequest#useComponentsV2()
+     */
+    int MAX_CONTENT_LENGTH_COMPONENT_V2 = 4000;
+
    /**
     * The maximum amount of reactions that can be added to one message ({@value})
     *
@@ -188,9 +203,19 @@ public interface Message extends ISnowflake, Formattable
     int MAX_STICKER_COUNT = 3;
 
     /**
-     * The maximum amount of {@link LayoutComponent LayoutComponents} that can be added to a message ({@value})
+     * The maximum amount of {@link MessageTopLevelComponent MessageTopLevelComponents} that can be added to a message's {@link #getComponents() root component list} when using the legacy component system.  ({@value})
      */
     int MAX_COMPONENT_COUNT = 5;
+
+    /**
+     * The maximum amount of {@link MessageTopLevelComponent MessageTopLevelComponents} that can be added to a message's {@link #getComponents() root component list} when using the {@link MessageRequest#useComponentsV2() V2 component system}.  ({@value})
+     */
+    int MAX_COMPONENT_COUNT_COMPONENTS_V2 = 10;
+
+    /**
+     * The maximum amount of {@link Component components} that can be added to a message including nested components. ({@value})
+     */
+    int MAX_COMPONENT_COUNT_IN_COMPONENT_TREE = 30;
 
     /**
      * The maximum character length for a {@link #getNonce() nonce} ({@value})
@@ -676,11 +701,11 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Layouts of interactive components, usually {@link ActionRow ActionRows}.
-     * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.
+     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
-     * @return Immutable {@link List} of {@link LayoutComponent}
+     * @return Immutable {@link List} of {@link MessageTopLevelComponent}
      *
      * @see    #getActionRows()
      * @see    #getButtons()
@@ -688,7 +713,29 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @Unmodifiable
-    List<LayoutComponent> getComponents();
+    List<MessageTopLevelComponentUnion> getComponents();
+
+    /**
+     * Whether this message can contain V2 components.
+     * <br>This checks for {@link MessageFlag#IS_COMPONENTS_V2}.
+     *
+     * @return {@code true} if this message has the components V2 flag
+     *
+     * @see MessageRequest#useComponentsV2()
+     * @see MessageRequest#useComponentsV2(boolean)
+     */
+    boolean isUsingComponentsV2();
+
+    /**
+     * A {@link MessageComponentTree} constructed from {@link #getComponents()}.
+     *
+     * @return {@link MessageComponentTree}
+     */
+    @Nonnull
+    default MessageComponentTree getComponentTree()
+    {
+        return MessageComponentTree.of(getComponents());
+    }
 
     /**
      * The {@link MessagePoll} attached to this message.
@@ -729,7 +776,7 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Rows of interactive components such as {@link Button Buttons}.
-     * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.
+     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
@@ -742,8 +789,7 @@ public interface Message extends ISnowflake, Formattable
     @Unmodifiable
     default List<ActionRow> getActionRows()
     {
-        return getComponents()
-                .stream()
+        return ComponentIterator.createStream(getComponents())
                 .filter(ActionRow.class::isInstance)
                 .map(ActionRow.class::cast)
                 .collect(Helpers.toUnmodifiableList());
@@ -760,10 +806,10 @@ public interface Message extends ISnowflake, Formattable
     @Unmodifiable
     default List<Button> getButtons()
     {
-        return getComponents().stream()
-                .map(LayoutComponent::getButtons)
-                .flatMap(List::stream)
-                .collect(Helpers.toUnmodifiableList());
+        return ComponentIterator.createStream(getComponents())
+                .filter(Button.class::isInstance)
+                .map(Button.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -784,7 +830,7 @@ public interface Message extends ISnowflake, Formattable
     {
         Checks.notNull(id, "Button ID");
         return getButtons().stream()
-                .filter(it -> id.equals(it.getId()))
+                .filter(it -> id.equals(it.getCustomId()))
                 .findFirst().orElse(null);
     }
 
@@ -1030,7 +1076,7 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
+     * Edits this message using the provided {@link MessageTopLevelComponent MessageTopLevelComponents}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1048,7 +1094,9 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, or an empty list to remove all components
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1057,8 +1105,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link MessageEditAction}
@@ -1067,10 +1114,10 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
-     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
+     * Edits this message using the provided {@link MessageTopLevelComponent MessageTopLevelComponents}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1088,7 +1135,9 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1097,8 +1146,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link MessageEditAction}
@@ -1107,10 +1155,55 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponents(@Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponents(@Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponents(Arrays.asList(components));
+    }
+
+    /**
+     * Edits this message using the provided {@link ComponentTree}.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  tree
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    MessageChannel#editMessageComponentsById(long, ComponentTree)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditAction editMessageComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    {
+        Checks.notNull(tree, "MessageComponentTree");
+        return editMessageComponents(tree.getComponents());
     }
 
     /**
@@ -1537,45 +1630,6 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If this message no longer exists</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  component
-     *         The {@link LayoutComponent} to send
-     * @param  other
-     *         Any addition {@link LayoutComponent LayoutComponents} to send
-     *
-     * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
-     * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
-     *
-     * @return {@link MessageCreateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
-    {
-        Checks.notNull(component, "LayoutComponents");
-        Checks.noneNull(other, "LayoutComponents");
-        List<LayoutComponent> components = new ArrayList<>(1 + other.length);
-        components.add(component);
-        Collections.addAll(components, other);
-        return replyComponents(components);
-    }
-
-    /**
      * Shortcut for {@code getChannel().sendMessageComponents(components).setMessageReference(this)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -1591,7 +1645,9 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The {@link LayoutComponent LayoutComponents} to send
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
@@ -1602,9 +1658,86 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default MessageCreateAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
+        Checks.noneNull(components, "MessageTopLevelComponents");
         return getChannel().sendMessageComponents(components).setMessageReference(this);
+    }
+
+    /**
+     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  component
+     *         The {@link MessageTopLevelComponent} to send
+     * @param  other
+     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to send
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
+    {
+        Checks.notNull(component, "MessageTopLevelComponents");
+        Checks.noneNull(other, "MessageTopLevelComponents");
+        List<MessageTopLevelComponent> components = new ArrayList<>(1 + other.length);
+        components.add(component);
+        Collections.addAll(components, other);
+        return replyComponents(components);
+    }
+
+    /**
+     * Shortcut for {@code getChannel().sendMessageComponents(tree).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  tree
+     *         The {@link ComponentTree} to send,
+     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    {
+        Checks.notNull(tree, "MessageComponentTree");
+        return replyComponents(tree.getComponents());
     }
 
     /**
@@ -2353,7 +2486,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
      *
-     * @deprecated Replaced with {@link #getInteractionMetadata()}
+     * @deprecated
+     *         Replaced with {@link #getInteractionMetadata()}
      */
     @Nullable
     @Deprecated
@@ -2529,7 +2663,30 @@ public interface Message extends ISnowflake, Formattable
         /**
          * The Message is a voice message, containing an audio attachment
          */
-        IS_VOICE_MESSAGE(13);
+        IS_VOICE_MESSAGE(13),
+        /**
+         * Indicates this message is using V2 components.
+         *
+         * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
+         * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+         * <br>They also allow you to use a larger choice of components,
+         * such as any component extending {@link MessageTopLevelComponent},
+         * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+         * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
+         *
+         * <p>This however comes with a few drawbacks:
+         * <ul>
+         *     <li>You cannot send content, embeds, polls or stickers</li>
+         *     <li>It does not support audio files</li>
+         *     <li>It does not support text preview for files</li>
+         *     <li>URLs don't create embeds</li>
+         * </ul>
+         *
+         * @see MessageRequest#useComponentsV2()
+         * @see MessageRequest#useComponentsV2(boolean)
+         * @see MessageRequest#setDefaultUseComponentsV2(boolean)
+         */
+        IS_COMPONENTS_V2(15);
 
         private final int value;
 

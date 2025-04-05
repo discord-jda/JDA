@@ -54,7 +54,7 @@ public class WebhookMessageEditActionImpl<T>
         try (MessageEditData data = builder.build())
         {
             DataObject payload = data.toData();
-            return getMultipartBody(data.getFiles(), payload);
+            return getMultipartBody(data.getFiles(), data.getAdditionalFiles(), payload);
         }
     }
 

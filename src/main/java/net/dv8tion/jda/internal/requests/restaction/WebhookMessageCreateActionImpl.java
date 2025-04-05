@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.ThreadCreateMetadata;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -140,7 +139,6 @@ public class WebhookMessageCreateActionImpl<T>
     {
         try (MessageCreateData data = builder.build())
         {
-            List<FileUpload> files = data.getFiles();
             DataObject json = data.toData();
             if (ephemeral)
                 json.put("flags", json.getInt("flags", 0) | MessageFlag.EPHEMERAL.getValue());
@@ -158,7 +156,7 @@ public class WebhookMessageCreateActionImpl<T>
                     json.put("applied_tags", tags.stream().map(ForumTagSnowflake::getId).collect(Helpers.toDataArray()));
             }
 
-            return getMultipartBody(files, json);
+            return getMultipartBody(data.getFiles(), data.getAdditionalFiles(), json);
         }
     }
 

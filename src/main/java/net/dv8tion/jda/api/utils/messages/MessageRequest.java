@@ -16,12 +16,17 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -101,6 +106,33 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     }
 
     /**
+     * Sets whether V2 components will be used by default.
+     * <br>When enabled, {@link #useComponentsV2()} gets called for every message builder.
+     *
+     * <p>This can still be overridden by calling {@link #useComponentsV2(boolean)} manually.
+     *
+     * @param  use
+     *         {@code true} to enable V2 components by default, {@code false} to disabled them by default.
+     */
+    static void setDefaultUseComponentsV2(boolean use)
+    {
+        AbstractMessageBuilder.isDefaultUseComponentsV2 = use;
+    }
+
+    /**
+     * Whether V2 components are used by default.
+     * <br>When enabled, {@link #useComponentsV2()} gets called for every message builder.
+     *
+     * <p>This can still be overridden by calling {@link #useComponentsV2(boolean)} manually.
+     *
+     * @return {@code true} if every message will use Components V2 by default, {@code false} if not
+     */
+    static boolean isDefaultUseComponentsV2()
+    {
+        return AbstractMessageBuilder.isDefaultUseComponentsV2;
+    }
+
+    /**
      * Returns the default mention behavior for replies.
      * <br>If this is {@code true} then all replies will mention the author of the target message by default.
      * You can specify this individually with {@link #mentionRepliedUser(boolean)} for each message.
@@ -168,14 +200,14 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     }
 
     /**
-     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
+     * The {@link MessageTopLevelComponent MessageTopLevelComponents} that should be attached to the message.
      * <br>You can use {@link Collections#emptyList()} to remove all components from the message.
      *
      * <p>The most commonly used layout is {@link ActionRow}.
      *
      * <p><b>Example: Set action rows</b><br>
      * <pre>{@code
-     * final List<LayoutComponent> list = new ArrayList<>();
+     * final List<MessageTopLevelComponent> list = new ArrayList<>();
      * list.add(ActionRow.of(selectMenu); // first row
      * list.add(ActionRow.of(button1, button2)); // second row (shows below the first)
      *
@@ -192,22 +224,23 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * }</pre>
      *
      * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    R setComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
-     * The {@link LayoutComponent LayoutComponents} that should be attached to the message.
+     * The {@link MessageTopLevelComponent MessageTopLevelComponents} that should be attached to the message.
      * <br>You can call this method without anything to remove all components from the message.
      *
      * <p>The most commonly used layout is {@link ActionRow}.
@@ -229,71 +262,129 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * }</pre>
      *
      * @param  components
-     *         The components for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setComponents(@Nonnull LayoutComponent... components)
+    default R setComponents(@Nonnull MessageTopLevelComponent... components)
     {
         return setComponents(Arrays.asList(components));
     }
 
     /**
-     * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setComponents(LayoutComponent...)} instead.
+     * The {@link MessageTopLevelComponent MessageTopLevelComponents} that should be attached to the message.
+     * <br>You can call this method without anything to remove all components from the message.
      *
-     * <p><b>Example</b><br>
+     * <p>The most commonly used layout is {@link ActionRow}.
      *
+     * <p><b>Example: Set action rows</b><br>
      * <pre>{@code
-     * final List<ItemComponent> list = new ArrayList<>();
-     * list.add(button1);
-     * list.add(button2);
-     *
      * channel.sendMessage("Content is still required")
-     *   .setActionRow(list)
+     *   .setComponents(
+     *     ActionRow.of(selectMenu) // first row
+     *     ActionRow.of(button1, button2)) // second row (shows below the first)
      *   .queue();
      * }</pre>
      *
-     * is equivalent to:
-     *
+     * <p><b>Example: Remove action rows</b><br>
      * <pre>{@code
-     * final List<LayoutComponent> list = new ArrayList<>();
-     * list.add(ActionRow.of(button1, button2));
-     *
      * channel.sendMessage("Content is still required")
-     *   .setComponents(list)
+     *   .setComponents()
      *   .queue();
-     * }</pre><br>
+     * }</pre>
      *
-     * @param  components
-     *         The {@link ItemComponent ItemComponents} for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     * @param  tree
+     *         The new {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return The same instance for chaining
      */
     @Nonnull
-    default R setActionRow(@Nonnull Collection<? extends ItemComponent> components)
+    default R setComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        return setComponents(ActionRow.of(components));
+        Checks.notNull(tree, "MessageComponentTree");
+        return setComponents(tree.getComponents());
+    }
+
+    /**
+     * Sets whether this message is allowed to use V2 components.
+     *
+     * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
+     * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     * <br>They also allow you to use a larger choice of components,
+     * such as any component extending {@link MessageTopLevelComponent},
+     * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+     * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
+     *
+     * <p>This however comes with a few drawbacks:
+     * <ul>
+     *     <li>You cannot send content, embeds, polls or stickers</li>
+     *     <li>It does not support audio files</li>
+     *     <li>It does not support text preview for files</li>
+     *     <li>URLs don't create embeds</li>
+     * </ul>
+     *
+     * <p>A default value can be set in {@link #setDefaultUseComponentsV2(boolean)}.
+     *
+     * @param  use
+     *         {@code true} to enable V2 components, {@code false} to disabled them.
+     *
+     * @return The same instance for chaining
+     *
+     * @see    MessageTopLevelComponent
+     * @see    #setDefaultUseComponentsV2(boolean)
+     */
+    @Nonnull
+    R useComponentsV2(boolean use);
+
+    /**
+     * Enables using V2 components.
+     * <br>This is a shortcut for {@code useComponentV2(true)}
+     *
+     * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
+     * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     * <br>They also allow you to use a larger choice of components,
+     * such as any component extending {@link MessageTopLevelComponent},
+     * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+     * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
+     *
+     * <p>This however comes with a few drawbacks:
+     * <ul>
+     *     <li>You cannot send content, embeds, polls or stickers</li>
+     *     <li>It does not support audio files</li>
+     *     <li>It does not support text preview for files</li>
+     *     <li>URLs don't create embeds</li>
+     * </ul>
+     *
+     * @return The same instance for chaining
+     *
+     * @see    MessageTopLevelComponent
+     */
+    @Nonnull
+    default R useComponentsV2()
+    {
+        return useComponentsV2(true);
     }
 
     /**
      * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setComponents(LayoutComponent...)} instead.
+     * <br>To remove components, you should use {@link #setComponents(Collection)} instead.
      *
      * <p><b>Example</b><br>
      *
@@ -312,18 +403,66 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * }</pre><br>
      *
      * @param  components
-     *         The {@link ItemComponent ItemComponents} for the message (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         The {@link ActionRowChildComponent ActionRowChildComponents} for the message (up to 5)
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
+     *             <li>If any component is not {@link ActionRowChildComponent#isMessageCompatible() message compatible}</li>
+     *             <li>In all the same cases as {@link ActionRow#of(ActionRowChildComponent...)} throws an exception</li>
      *         </ul>
      *
      * @return The same instance for chaining
+     *
+     * @deprecated
+     *         Replace with {@link #setComponents(MessageTopLevelComponent...) setComponents(ActionRow.of(components))}
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setComponents(ActionRow.of(components))")
+    default R setActionRow(@Nonnull Collection<? extends ItemComponent> components)
+    {
+        return setComponents(ActionRow.of(components));
+    }
+
+    /**
+     * Convenience method to set the components of a message to a single {@link ActionRow} of components.
+     * <br>To remove components, you should use {@link #setComponents(MessageTopLevelComponent...)} instead.
+     *
+     * <p><b>Example</b><br>
+     *
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setActionRow(button1, button2)
+     *   .queue();
+     * }</pre>
+     *
+     * is equivalent to:
+     *
+     * <pre>{@code
+     * channel.sendMessage("Content is still required")
+     *   .setComponents(ActionRow.of(button1, button2))
+     *   .queue();
+     * }</pre><br>
+     *
+     * @param  components
+     *         The {@link ActionRowChildComponent ActionRowChildComponents} for the message (up to 5)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any component is not {@link ActionRowChildComponent#isMessageCompatible() message compatible}</li>
+     *             <li>In all the same cases as {@link ActionRow#of(ActionRowChildComponent...)} throws an exception</li>
+     *         </ul>
+     *
+     * @return The same instance for chaining
+     *
+     * @deprecated
+     *         Replace with {@link #setComponents(MessageTopLevelComponent...) setActionRows(ActionRow.of(components))}
+     */
+    @Nonnull
+    @Deprecated
+    @ReplaceWith("setComponents(ActionRow.of(components))")
     default R setActionRow(@Nonnull ItemComponent... components)
     {
         return setComponents(ActionRow.of(components));
