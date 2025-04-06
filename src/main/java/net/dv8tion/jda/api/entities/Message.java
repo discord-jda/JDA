@@ -39,8 +39,10 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.ComponentIterator;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -77,6 +79,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Represents a Text message received from Discord.
@@ -188,9 +191,19 @@ public interface Message extends ISnowflake, Formattable
     int MAX_STICKER_COUNT = 3;
 
     /**
-     * The maximum amount of {@link LayoutComponent LayoutComponents} that can be added to a message ({@value})
+     * The maximum amount of {@link net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent MessageTopLevelComponents} that can be added to a message's {@link #getComponents() root component list} when using the legacy component system.  ({@value})
      */
     int MAX_COMPONENT_COUNT = 5;
+
+    /**
+     * The maximum amount of {@link net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent MessageTopLevelComponents} that can be added to a message's {@link #getComponents() root component list} when using the V2 component system.  ({@value})
+     */
+    int MAX_COMPONENT_COUNT_COMPONENTS_V2 = 10;
+
+    /**
+     * The maximum amount of {@link net.dv8tion.jda.api.interactions.components.Component components} that can be added to a message} including nested components. ({@value})
+     */
+    int MAX_COMPONENT_COUNT_IN_COMPONENT_TREE = 10;
 
     /**
      * The maximum character length for a {@link #getNonce() nonce} ({@value})
@@ -676,11 +689,11 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Layouts of interactive components, usually {@link ActionRow ActionRows}.
-     * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.
+     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
-     * @return Immutable {@link List} of {@link LayoutComponent}
+     * @return Immutable {@link List} of {@link MessageTopLevelComponent}
      *
      * @see    #getActionRows()
      * @see    #getButtons()
@@ -688,7 +701,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @Unmodifiable
-    List<LayoutComponent> getComponents();
+    List<MessageTopLevelComponentUnion> getComponents();
 
     /**
      * The {@link MessagePoll} attached to this message.
@@ -729,7 +742,7 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Rows of interactive components such as {@link Button Buttons}.
-     * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.
+     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
@@ -742,8 +755,7 @@ public interface Message extends ISnowflake, Formattable
     @Unmodifiable
     default List<ActionRow> getActionRows()
     {
-        return getComponents()
-                .stream()
+        return ComponentIterator.createStream(getComponents())
                 .filter(ActionRow.class::isInstance)
                 .map(ActionRow.class::cast)
                 .collect(Helpers.toUnmodifiableList());
@@ -760,10 +772,10 @@ public interface Message extends ISnowflake, Formattable
     @Unmodifiable
     default List<Button> getButtons()
     {
-        return getComponents().stream()
-                .map(LayoutComponent::getButtons)
-                .flatMap(List::stream)
-                .collect(Helpers.toUnmodifiableList());
+        return ComponentIterator.createStream(getComponents())
+                .filter(Button.class::isInstance)
+                .map(Button.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -1030,7 +1042,7 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
+     * Edits this message using the provided {@link MessageTopLevelComponent MessageTopLevelComponents}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1048,7 +1060,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, or an empty list to remove all components
+     *         The new {@link MessageTopLevelComponent MessageTopLevelComponents} of the message, or an empty list to remove all components
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1057,7 +1069,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
      *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
      *         </ul>
      *
@@ -1067,10 +1079,10 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
-     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
+     * Edits this message using the provided {@link MessageTopLevelComponent MessageTopLevelComponents}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1088,7 +1100,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
+     *         The new {@link MessageTopLevelComponent MessageTopLevelComponents} of the message, empty list to remove all components
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1097,7 +1109,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
      *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
      *         </ul>
      *
@@ -1107,7 +1119,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponents(@Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponents(@Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponents(Arrays.asList(components));
@@ -1552,24 +1564,24 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  component
-     *         The {@link LayoutComponent} to send
+     *         The {@link MessageTopLevelComponent} to send
      * @param  other
-     *         Any addition {@link LayoutComponent LayoutComponents} to send
+     *         Any addition {@link MessageTopLevelComponent MessageTopLevelComponents} to send
      *
      * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
+     *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
      * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
+     *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
      *
      * @return {@link MessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    default MessageCreateAction replyComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
-        Checks.notNull(component, "LayoutComponents");
-        Checks.noneNull(other, "LayoutComponents");
-        List<LayoutComponent> components = new ArrayList<>(1 + other.length);
+        Checks.notNull(component, "MessageTopLevelComponents");
+        Checks.noneNull(other, "MessageTopLevelComponents");
+        List<MessageTopLevelComponent> components = new ArrayList<>(1 + other.length);
         components.add(component);
         Collections.addAll(components, other);
         return replyComponents(components);
@@ -1591,7 +1603,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The {@link LayoutComponent LayoutComponents} to send
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
@@ -1602,7 +1614,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default MessageCreateAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return getChannel().sendMessageComponents(components).setMessageReference(this);
     }

@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.utils.messages;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -48,7 +48,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<AttachedFile> files;
-    private final List<LayoutComponent> components;
+    private final List<MessageTopLevelComponentUnion> components;
     private final int messageFlags;
 
     private final boolean isReplace;
@@ -56,7 +56,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
 
     protected MessageEditData(
             int configuredFields, int messageFlags, boolean isReplace, String content,
-            List<MessageEmbed> embeds, List<AttachedFile> files, List<LayoutComponent> components,
+            List<MessageEmbed> embeds, List<AttachedFile> files, List<MessageTopLevelComponentUnion> components,
             AllowedMentionsData mentions)
     {
         this.content = content;
@@ -245,7 +245,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      * @return The components or an empty list if none were set
      */
     @Nonnull
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return components;
     }

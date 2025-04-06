@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -160,7 +160,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @NotNull
     @Override
-    default MessageCreateAction sendMessageComponents(@NotNull LayoutComponent component, @NotNull LayoutComponent... other)
+    default MessageCreateAction sendMessageComponents(@NotNull MessageTopLevelComponent component, @NotNull MessageTopLevelComponent... other)
     {
         checkCanSendMessage();
         return MessageChannelUnion.super.sendMessageComponents(component, other);
@@ -168,7 +168,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @Override
-    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         checkCanSendMessage();
         return MessageChannelUnion.super.sendMessageComponents(components);
@@ -348,7 +348,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         checkCanSendMessage();
         return MessageChannelUnion.super.editMessageComponentsById(messageId, components);

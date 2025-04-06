@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRowChildComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -114,7 +116,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     }
 
     /**
-     * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
+     * Appends the provided {@link MessageTopLevelComponent MessageTopLevelComponents} to the request.
      * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
@@ -131,7 +133,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
      *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
      *         </ul>
      *
@@ -140,10 +142,10 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    ActionRow
      */
     @Nonnull
-    R addComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    R addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
-     * Appends the provided {@link LayoutComponent LayoutComponents} to the request.
+     * Appends the provided {@link MessageTopLevelComponent MessageTopLevelComponents} to the request.
      * <br>Use {@link #setComponents(Collection)} instead, to replace the components entirely.
      *
      * <p><b>Example</b><br>
@@ -160,7 +162,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
      *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
      *         </ul>
      *
@@ -169,7 +171,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    ActionRow
      */
     @Nonnull
-    default R addComponents(@Nonnull LayoutComponent... components)
+    default R addComponents(@Nonnull MessageTopLevelComponent... components)
     {
         return addComponents(Arrays.asList(components));
     }
@@ -187,12 +189,12 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * }</pre>
      *
      * @param  components
-     *         The {@link ItemComponent components} to add to the action row, must not be empty
+     *         The {@link ActionRowChildComponent components} to add to the action row, must not be empty
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link Component#isMessageCompatible() message compatible}</li>
      *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
      *             <li>In all the same cases as {@link ActionRow#of(Collection)} throws an exception</li>
      *         </ul>
@@ -200,9 +202,14 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @return The same instance for chaining
      *
      * @see    ActionRow#of(Collection)
+     *
+     * @deprecated
+     *         Replace with {@link #addComponents(MessageTopLevelComponent...) addComponents(ActionRow.of(components))}
      */
     @Nonnull
-    default R addActionRow(@Nonnull Collection<? extends ItemComponent> components)
+    @Deprecated
+    @ReplaceWith("#addComponents(ActionRow.of(components))")
+    default R addActionRow(@Nonnull Collection<? extends ActionRowChildComponent> components)
     {
         return addComponents(ActionRow.of(components));
     }
@@ -220,22 +227,27 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * }</pre>
      *
      * @param  components
-     *         The {@link ItemComponent components} to add to the action row, must not be empty
+     *         The {@link ActionRowChildComponent components} to add to the action row, must not be empty
      *
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link ItemComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link Component#isMessageCompatible() message compatible}</li>
      *             <li>If the accumulated list of components is longer than {@value Message#MAX_COMPONENT_COUNT}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ItemComponent...)} throws an exception</li>
+     *             <li>In all the same cases as {@link ActionRow#of(ActionRowChildComponent...)} throws an exception</li>
      *         </ul>
      *
      * @return The same instance for chaining
      *
-     * @see    ActionRow#of(ItemComponent...)
+     * @see    ActionRow#of(ActionRowChildComponent...)
+     *
+     * @deprecated
+     *         Replace with {@link #addComponents(MessageTopLevelComponent...) addComponents(ActionRow.of(components))}
      */
     @Nonnull
-    default R addActionRow(@Nonnull ItemComponent... components)
+    @Deprecated
+    @ReplaceWith("#addComponents(ActionRow.of(components))")
+    default R addActionRow(@Nonnull ActionRowChildComponent... components)
     {
         return addComponents(ActionRow.of(components));
     }
@@ -374,8 +386,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     {
         Checks.notNull(data, "MessageCreateData");
 
-        final List<LayoutComponent> layoutComponents = data.getComponents().stream()
-                .map(LayoutComponent::createCopy)
+        final List<MessageTopLevelComponent> MessageTopLevelComponents = data.getComponents().stream()
+//                // TODO-components-v2 - restore
+//                .map(MessageTopLevelComponent::createCopy)
                 .collect(Collectors.toList());
         return setContent(data.getContent())
                 .setAllowedMentions(data.getAllowedMentions())
@@ -387,7 +400,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setSuppressEmbeds(data.isSuppressEmbeds())
                 .setSuppressedNotifications(data.isSuppressedNotifications())
                 .setVoiceMessage(data.isVoiceMessage())
-                .setComponents(layoutComponents)
+                .setComponents(MessageTopLevelComponents)
                 .setPoll(data.getPoll())
                 .setFiles(data.getFiles());
     }
@@ -437,10 +450,11 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
             setEmbeds(data.getEmbeds());
         if (data.isSet(MessageEditBuilder.COMPONENTS))
         {
-            final List<LayoutComponent> layoutComponents = data.getComponents().stream()
-                    .map(LayoutComponent::createCopy)
+            final List<MessageTopLevelComponent> MessageTopLevelComponents = data.getComponents().stream()
+                    // TODO-components-v2 - restore
+//                    .map(MessageTopLevelComponent::createCopy)
                     .collect(Collectors.toList());
-            setComponents(layoutComponents);
+            setComponents(MessageTopLevelComponents);
         }
         if (data.isSet(MessageEditBuilder.ATTACHMENTS))
             setFiles(data.getFiles());

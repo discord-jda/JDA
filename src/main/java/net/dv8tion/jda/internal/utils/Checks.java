@@ -24,9 +24,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.ComponentPathIterator;
 import org.intellij.lang.annotations.PrintFormat;
 import org.jetbrains.annotations.Contract;
 
@@ -243,30 +242,13 @@ public class Checks
         }
     }
 
-    public static void checkDuplicateIds(Stream<? extends LayoutComponent> layouts)
-    {
-        Stream<String> stream = layouts.flatMap(row -> row.getComponents().stream())
-                .filter(ActionComponent.class::isInstance)
-                .map(ActionComponent.class::cast)
-                .map(ActionComponent::getId)
-                .filter(Objects::nonNull);
-
-        checkUnique(stream,
-                "Cannot have components with duplicate custom IDs. Id: \"%s\" appeared %d times!",
-                (count, value) -> new Object[]{ value, count }
-        );
-    }
-
     public static void checkComponents(String errorMessage, Collection<? extends Component> components, Predicate<Component> predicate)
     {
         StringBuilder sb = new StringBuilder();
 
-        int idx = 0;
-        for (Component component : components)
-        {
-            handleComponent(component, predicate, sb, "root.components[" + idx + "]");
-            idx++;
-        }
+        ComponentPathIterator.createStream("root", components)
+                .filter(c -> !predicate.test(c.component))
+                .forEach(c -> sb.append(" - ").append(c.path).append("\n"));
 
         if (sb.length() > 0)
             throw new IllegalArgumentException(errorMessage + "\n" + sb.toString().trim());
@@ -275,22 +257,6 @@ public class Checks
     public static void checkComponents(String errorMessage, Component[] components, Predicate<Component> predicate)
     {
         checkComponents(errorMessage, Arrays.asList(components), predicate);
-    }
-
-    private static void handleComponent(Component component, Predicate<Component> predicate, StringBuilder sb, String path)
-    {
-        if (!predicate.test(component))
-            sb.append(" - ").append(path).append(" - <").append(component.getType()).append(">\n");
-
-        if (component instanceof LayoutComponent)
-        {
-            int idx = 0;
-            for (Component child : (LayoutComponent) component)
-            {
-                handleComponent(child, predicate, sb, path + ".components[" + idx + "]");
-                idx++;
-            }
-        }
     }
 
     // Permission checks
