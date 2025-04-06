@@ -23,14 +23,12 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.IDescribedCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
@@ -42,7 +40,7 @@ import java.util.function.Predicate;
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
  */
-public interface SlashCommandData extends CommandData
+public interface SlashCommandData extends CommandData, IDescribedCommandData
 {
     @Nonnull
     @Override
@@ -98,75 +96,17 @@ public interface SlashCommandData extends CommandData
     @Override
     SlashCommandData setNSFW(boolean nsfw);
 
-    /**
-     * Configure the description
-     *
-     * @param  description
-     *         The description, 1-{@value #MAX_DESCRIPTION_LENGTH} characters
-     *
-     * @throws IllegalArgumentException
-     *         If the name is null or not between 1-{@value #MAX_DESCRIPTION_LENGTH} characters
-     *
-     * @return The builder, for chaining
-     */
     @Nonnull
+    @Override
     SlashCommandData setDescription(@Nonnull String description);
 
-    /**
-     * Sets a {@link DiscordLocale language-specific} localizations of this command's description.
-     *
-     * @param  locale
-     *         The locale to associate the translated description with
-     *
-     * @param  description
-     *         The translated description to put
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the locale is null</li>
-     *             <li>If the description is null</li>
-     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
-     *             <li>If the description does not pass the corresponding {@link #setDescription(String) description check}</li>
-     *         </ul>
-     *
-     * @return This builder instance, for chaining
-     */
     @Nonnull
+    @Override
     SlashCommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
 
-    /**
-     * Sets multiple {@link DiscordLocale language-specific} localizations of this command's description.
-     *
-     * @param  map
-     *         The map from which to transfer the translated descriptions
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the map is null</li>
-     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
-     *             <li>If the map contains a description which does not pass the corresponding {@link #setDescription(String) description check}</li>
-     *         </ul>
-     *
-     * @return This builder instance, for chaining
-     */
     @Nonnull
+    @Override
     SlashCommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map);
-
-    /**
-     * The configured description
-     *
-     * @return The description
-     */
-    @Nonnull
-    String getDescription();
-
-    /**
-     * The localizations of this command's description for {@link DiscordLocale various languages}.
-     *
-     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
-     */
-    @Nonnull
-    LocalizationMap getDescriptionLocalizations();
 
     /**
      * Removes all options that evaluate to {@code true} under the provided {@code condition}.
@@ -624,14 +564,10 @@ public interface SlashCommandData extends CommandData
         if (command.getType() != Command.Type.SLASH)
             throw new IllegalArgumentException("Cannot convert command of type " + command.getType() + " to SlashCommandData!");
 
-        CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
-        data.setContexts(command.getContexts());
-        data.setIntegrationTypes(command.getIntegrationTypes());
-        data.setNSFW(command.isNSFW());
-        data.setDefaultPermissions(command.getDefaultPermissions());
-        //Command localizations are unmodifiable, make a copy
-        data.setNameLocalizations(command.getNameLocalizations().toMap());
-        data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
+        CommandDataImpl data = new CommandDataImpl(Command.Type.SLASH, command.getName(), command.getDescription());
+        CommandDataImpl.applyBaseData(data, command);
+        CommandDataImpl.applyDescribedCommandData(data, command);
+
         command.getOptions()
                 .stream()
                 .map(OptionData::fromOption)
@@ -670,59 +606,29 @@ public interface SlashCommandData extends CommandData
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
-        if (commandType != Command.Type.SLASH)
-            throw new IllegalArgumentException("Cannot convert command of type " + commandType + " to SlashCommandData!");
+        Checks.check(commandType == Command.Type.SLASH, "Cannot convert command '" + name + "' of type " + commandType + " to SlashCommandData!");
 
-        String description = object.getString("description");
+        CommandDataImpl data = new CommandDataImpl(Command.Type.SLASH, name, object.getString("description"));
+
+        CommandDataImpl.applyBaseData(data, object);
+        CommandDataImpl.applyDescribedCommandData(data, object);
+
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
-        CommandDataImpl command = new CommandDataImpl(name, description);
-        if (!object.isNull("contexts"))
-        {
-            command.setContexts(object.getArray("contexts")
-                    .stream(DataArray::getString)
-                    .map(InteractionContextType::fromKey)
-                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
-        }
-        else if (!object.isNull("dm_permission"))
-            command.setGuildOnly(!object.getBoolean("dm_permission"));
-        else
-            command.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
-
-        if (!object.isNull("integration_types"))
-        {
-            command.setIntegrationTypes(object.getArray("integration_types")
-                    .stream(DataArray::getString)
-                    .map(IntegrationType::fromKey)
-                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
-        }
-        else
-            command.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
-
-        command.setNSFW(object.getBoolean("nsfw"));
-
-        command.setDefaultPermissions(
-                object.isNull("default_member_permissions")
-                        ? DefaultMemberPermissions.ENABLED
-                        : DefaultMemberPermissions.enabledFor(object.getLong("default_member_permissions"))
-        );
-
-        command.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
-        command.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
         options.stream(DataArray::getObject).forEach(opt ->
         {
             OptionType type = OptionType.fromKey(opt.getInt("type"));
             switch (type)
             {
             case SUB_COMMAND:
-                command.addSubcommands(SubcommandData.fromData(opt));
+                data.addSubcommands(SubcommandData.fromData(opt));
                 break;
             case SUB_COMMAND_GROUP:
-                command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
+                data.addSubcommandGroups(SubcommandGroupData.fromData(opt));
                 break;
             default:
-                command.addOptions(OptionData.fromData(opt));
+                data.addOptions(OptionData.fromData(opt));
             }
         });
-        return command;
+        return data;
     }
 }

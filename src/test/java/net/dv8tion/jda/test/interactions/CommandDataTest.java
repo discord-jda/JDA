@@ -70,7 +70,7 @@ public class CommandDataTest
     @Test
     void testNormal()
     {
-        CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
+        CommandData command = new CommandDataImpl(Command.Type.SLASH, "ban", "Ban a user from this server")
                 .setContexts(InteractionContextType.GUILD)
                 .setIntegrationTypes(IntegrationType.USER_INSTALL)
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
@@ -98,7 +98,7 @@ public class CommandDataTest
     @Test
     void testDeprecatedGuildOnly()
     {
-        CommandDataImpl command = new CommandDataImpl("ban", "Ban a user from this server")
+        CommandDataImpl command = new CommandDataImpl(Command.Type.SLASH, "ban", "Ban a user from this server")
                 .setGuildOnly(true);
 
         assertThat(command.toData())
@@ -123,7 +123,7 @@ public class CommandDataTest
     @Test
     void testDefaultMemberPermissions()
     {
-        CommandData command = new CommandDataImpl("ban", "Ban a user from this server")
+        CommandData command = new CommandDataImpl(Command.Type.SLASH, "ban", "Ban a user from this server")
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED);
 
         assertThat(command.toData().get("default_member_permissions")).isEqualTo("0");
@@ -136,7 +136,7 @@ public class CommandDataTest
     @Test
     void testSubcommand()
     {
-        CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
+        CommandDataImpl command = new CommandDataImpl(Command.Type.SLASH, "mod", "Moderation commands")
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
                     .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                     .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
@@ -160,7 +160,7 @@ public class CommandDataTest
     @Test
     void testSubcommandGroup()
     {
-        CommandDataImpl command = new CommandDataImpl("mod", "Moderation commands")
+        CommandDataImpl command = new CommandDataImpl(Command.Type.SLASH, "mod", "Moderation commands")
                 .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
                     .addSubcommands(new SubcommandData("add", "Ban a user from this server")
                         .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
@@ -189,7 +189,7 @@ public class CommandDataTest
     @Test
     void testRequiredThrows()
     {
-        CommandDataImpl command = new CommandDataImpl("ban", "Simple ban command");
+        CommandDataImpl command = new CommandDataImpl(Command.Type.SLASH, "ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
         assertThatIllegalArgumentException()
@@ -207,7 +207,7 @@ public class CommandDataTest
     @Test
     void testNameChecks()
     {
-        assertStringChecks("Name", input -> new CommandDataImpl(input, "Valid description"))
+        assertStringChecks("Name", input -> new CommandDataImpl(Command.Type.SLASH, input, "Valid description"))
             .checksNotNull()
             .checksRange(1, 32)
             .checksLowercaseOnly()
@@ -225,7 +225,7 @@ public class CommandDataTest
             .checksLowercaseOnly()
             .checksRegex("invalid name", Checks.ALPHANUMERIC_WITH_DASH);
 
-        assertStringChecks("Description", input -> new CommandDataImpl("valid_name", input))
+        assertStringChecks("Description", input -> new CommandDataImpl(Command.Type.SLASH, "valid_name", input))
             .checksNotNull()
             .checksRange(1, 100);
 

@@ -56,7 +56,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private static final int INTEGRATION_TYPES_SET    = 1 << 7;
     private final Guild guild;
     private int mask = 0;
-    private CommandDataImpl data = new CommandDataImpl(UNDEFINED, UNDEFINED);
+    private CommandDataImpl data = new CommandDataImpl(Command.Type.SLASH, UNDEFINED, UNDEFINED);
 
     public CommandEditActionImpl(JDA api, String id)
     {
@@ -185,7 +185,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction clearOptions()
     {
-        data = new CommandDataImpl(data.getName(), data.getDescription());
+        data = new CommandDataImpl(Command.Type.SLASH, data.getName(), data.getDescription());
         mask &= ~OPTIONS_SET;
         return this;
     }
@@ -243,7 +243,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         if (isUnchanged(INTEGRATION_TYPES_SET))
             json.remove("integration_types");
         mask = 0;
-        data = new CommandDataImpl(UNDEFINED, UNDEFINED);
+        data = new CommandDataImpl(Command.Type.SLASH, UNDEFINED, UNDEFINED);
         return getRequestBody(json);
     }
 
