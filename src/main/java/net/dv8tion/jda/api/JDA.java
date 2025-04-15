@@ -1888,7 +1888,7 @@ public interface JDA extends IGuildChannelContainer<Channel> {
      * the application that owns the logged in Bot-Account.
      *
      * <br>Because of how SKUs and subscription systems work, you will see two SKUs for a subscription offering.
-     * For integration and testing entitlements for Subscriptions, you should use the SKU with type: {@link SKUType#SUBSCRIPTION}.
+     * For integration and testing entitlements for Subscriptions, you should use the SKU with type: {@link net.dv8tion.jda.api.entities.SKUType#SUBSCRIPTION}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link SKU List of SKUs}
      *         <br>The {@link SKU SKUs} of the bot's application.
