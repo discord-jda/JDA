@@ -89,6 +89,7 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -1132,11 +1133,12 @@ public class JDAImpl implements JDA {
     public RestAction<List<SKU>> retrieveSKUList()
     {
         Route.CompiledRoute route = Route.Applications.GET_SKUS.compile(getSelfUser().getApplicationId());
-        return new RestActionImpl<>(this, route, (response, request) ->
-        {
-            // Todo create parser
-            return null;
-        });
+        return new RestActionImpl<>(this, route,
+                (response, request) ->
+                        response.getArray()
+                                .stream(DataArray::getObject)
+                                .map(EntityBuilder::createSKU)
+                                .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull

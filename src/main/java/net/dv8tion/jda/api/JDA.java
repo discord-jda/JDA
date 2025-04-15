@@ -1884,11 +1884,14 @@ public interface JDA extends IGuildChannelContainer<Channel> {
     RestAction<ApplicationInfo> retrieveApplicationInfo();
 
     /**
-     * Retrieves the {@link SKU s SKUs} for
+     * Retrieves all {@link SKU SKUs} for
      * the application that owns the logged in Bot-Account.
      *
+     * <br>Because of how SKUs and subscription systems work, you will see two SKUs for a subscription offering.
+     * For integration and testing entitlements for Subscriptions, you should use the SKU with type: {@link SKUType#SUBSCRIPTION}.
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link SKU List of SKUs}
-     *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
+     *         <br>The {@link SKU SKUs} of the bot's application.
      */
     @Nonnull
     @CheckReturnValue
