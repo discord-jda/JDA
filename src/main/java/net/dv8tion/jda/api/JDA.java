@@ -1884,6 +1884,17 @@ public interface JDA extends IGuildChannelContainer<Channel> {
     RestAction<ApplicationInfo> retrieveApplicationInfo();
 
     /**
+     * Retrieves the {@link SKU s SKUs} for
+     * the application that owns the logged in Bot-Account.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link SKU List of SKUs}
+     *         <br>The {@link ApplicationInfo ApplicationInfo} of the bot's application.
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<SKU>> retrieveSKUList();
+
+    /**
      * A {@link net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction PaginationAction} implementation
      * which allows you to {@link Iterable iterate} over {@link Entitlement}s that are applicable to the logged in application.
      *

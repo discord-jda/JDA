@@ -1129,6 +1129,17 @@ public class JDAImpl implements JDA {
     }
 
     @Nonnull
+    public RestAction<List<SKU>> retrieveSKUList()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_SKUS.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            // Todo create parser
+            return null;
+        });
+    }
+
+    @Nonnull
     @Override
     public EntitlementPaginationAction retrieveEntitlements() {
         return new EntitlementPaginationActionImpl(this);
