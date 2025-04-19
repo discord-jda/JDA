@@ -1676,7 +1676,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     /**
      * Retrieves all {@link ScheduledEvent ScheduledEvents} for this guild.
      *
-     * @param includeUserCount Whether to include user counts for the {@link ScheduledEvent ScheduledEvents}.
+     * @param  includeUserCount
+     *         Whether to include user counts for the {@link ScheduledEvent ScheduledEvents}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
