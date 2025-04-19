@@ -49,6 +49,7 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> ext
     @Override
     default RestAction<List<Webhook>> retrieveWebhooks()
     {
+        checkAttached();
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Channels.GET_WEBHOOKS.compile(getId());
@@ -84,6 +85,7 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> ext
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
 
+        checkAttached();
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         return new WebhookActionImpl(getJDA(), this, name);
@@ -95,6 +97,7 @@ public interface IWebhookContainerMixin<T extends IWebhookContainerMixin<T>> ext
     {
         Checks.isSnowflake(id, "Webhook ID");
 
+        checkAttached();
         checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);

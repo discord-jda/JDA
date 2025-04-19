@@ -53,6 +53,7 @@ public interface StandardGuildMessageChannel extends StandardGuildChannel, Guild
 
     @Nonnull
     @Override
+    @CheckReturnValue
     StandardGuildMessageChannelManager<?, ?> getManager();
 
     /**

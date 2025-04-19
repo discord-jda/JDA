@@ -15,15 +15,11 @@
  */
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.stream.Collectors;
 
 /**
  * Represents the bit offsets used by Discord for Permissions.
@@ -33,19 +29,18 @@ public enum Permission
     // General Server / Channel Permissions
     MANAGE_CHANNEL(                      4, true,  true,  "Manage Channels"),
     MANAGE_SERVER(                       5, true,  false, "Manage Server"),
-    VIEW_AUDIT_LOGS(                     7, true,  false, "View Audit Logs"),
-    VIEW_CHANNEL(                       10, true,  true,  "View Channel(s)"),
+    VIEW_AUDIT_LOGS(                     7, true,  false, "View Audit Log"),
+    VIEW_CHANNEL(                       10, true,  true,  "View Channels"),
     VIEW_GUILD_INSIGHTS(                19, true,  false, "View Server Insights"),
     MANAGE_ROLES(                       28, true,  false, "Manage Roles"),
     MANAGE_PERMISSIONS(                 28, false, true,  "Manage Permissions"),
     MANAGE_WEBHOOKS(                    29, true,  true,  "Manage Webhooks"),
-    @Deprecated
-    @ForRemoval(deadline = "5.0.0")
-    @ReplaceWith("MANAGE_GUILD_EXPRESSIONS")
-    MANAGE_EMOJIS_AND_STICKERS(         30, true,  false, "Manage Emojis and Stickers"),
-    MANAGE_GUILD_EXPRESSIONS(           30, true,  false, "Manage Emojis, Stickers, and Soundboards"),
+    MANAGE_GUILD_EXPRESSIONS(           30, true,  false, "Manage Expressions"),
     MANAGE_EVENTS(                      33, true,  true,  "Manage Events"),
+    USE_EMBEDDED_ACTIVITIES(            39, true,  true,  "Use Activities"),
     VIEW_CREATOR_MONETIZATION_ANALYTICS(41, true,  false, "View Creator Analytics"),
+    CREATE_GUILD_EXPRESSIONS(           43, true,  false, "Create Expressions"),
+    CREATE_SCHEDULED_EVENTS(            44, true,  false, "Create Events"),
 
     // Membership Permissions
     CREATE_INSTANT_INVITE(0, true, true,  "Create Instant Invite"),
@@ -68,6 +63,8 @@ public enum Permission
     USE_APPLICATION_COMMANDS(    31, true, true, "Use Application Commands"),
     MESSAGE_EXT_STICKER(         37, true, true, "Use External Stickers"),
     MESSAGE_ATTACH_VOICE_MESSAGE(46, true, true, "Send Voice Messages"),
+    MESSAGE_SEND_POLLS(          49, true, true, "Create Polls"),
+    USE_EXTERNAL_APPLICATIONS(   50, true, true, "Use External Apps"),
 
     // Thread Permissions
     MANAGE_THREADS(          34, true, true, "Manage Threads"),
@@ -84,9 +81,9 @@ public enum Permission
     VOICE_DEAF_OTHERS(        23, true, true, "Deafen Members"),
     VOICE_MOVE_OTHERS(        24, true, true, "Move Members"),
     VOICE_USE_VAD(            25, true, true, "Use Voice Activity"),
-    VOICE_START_ACTIVITIES(   39, true, true, "Use Activities"),
     VOICE_USE_SOUNDBOARD(     42, true, true, "Use Soundboard"),
     VOICE_USE_EXTERNAL_SOUNDS(45, true, true, "Use External Sounds"),
+    VOICE_SET_STATUS(         48, true, true, "Set Voice Channel Status"),
 
     // Stage Channel Permissions
     REQUEST_TO_SPEAK(      32, true, true, "Request to Speak"),
@@ -102,41 +99,6 @@ public enum Permission
      */
     // This is an optimization suggested by Effective Java 3rd Edition - Item 54
     public static final Permission[] EMPTY_PERMISSIONS = new Permission[0];
-
-    /**
-     * Represents a raw set of all permissions
-     */
-    public static final long ALL_PERMISSIONS = Permission.getRaw(Permission.values());
-
-    /**
-     * All permissions that apply to a channel
-     */
-    public static final long ALL_CHANNEL_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
-            .filter(Permission::isChannel).collect(Collectors.toSet()));
-
-    /**
-     * All Guild specific permissions which are only available to roles
-     */
-    public static final long ALL_GUILD_PERMISSIONS = Permission.getRaw(Arrays.stream(values())
-            .filter(Permission::isGuild).collect(Collectors.toSet()));
-
-    /**
-     * All text channel specific permissions which are only available in text channel permission overrides
-     */
-    public static final long ALL_TEXT_PERMISSIONS
-            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_SEND, MESSAGE_TTS, MESSAGE_MANAGE,
-                                MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_EMOJI, MESSAGE_EXT_STICKER,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
-                                MANAGE_THREADS, CREATE_PUBLIC_THREADS, CREATE_PRIVATE_THREADS, MESSAGE_SEND_IN_THREADS, MESSAGE_ATTACH_VOICE_MESSAGE);
-
-    /**
-     * All voice channel specific permissions which are only available in voice channel permission overrides
-     */
-    public static final long ALL_VOICE_PERMISSIONS
-            = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
-                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD,
-                                PRIORITY_SPEAKER, REQUEST_TO_SPEAK, VOICE_START_ACTIVITIES,
-                                VOICE_USE_SOUNDBOARD, VOICE_USE_EXTERNAL_SOUNDS);
 
     private final int offset;
     private final long raw;
@@ -206,26 +168,6 @@ public enum Permission
     public boolean isChannel()
     {
         return isChannel;
-    }
-
-    /**
-     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel TextChannels}
-     *
-     * @return True, if and only if this permission can only be applied to text channels
-     */
-    public boolean isText()
-    {
-        return (raw & ALL_TEXT_PERMISSIONS) == raw;
-    }
-
-    /**
-     * Whether this permission is specifically for {@link net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel VoiceChannels}
-     *
-     * @return True, if and only if this permission can only be applied to voice channels
-     */
-    public boolean isVoice()
-    {
-        return (raw & ALL_VOICE_PERMISSIONS) == raw;
     }
 
     /**

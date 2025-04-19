@@ -79,11 +79,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 {
     public static final ThreadLocal<Boolean> WS_THREAD = ThreadLocal.withInitial(() -> false);
     public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
-    public static final int IDENTIFY_DELAY = 5;
-    public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
     protected static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
-    protected static final long IDENTIFY_BACKOFF = TimeUnit.SECONDS.toMillis(SessionController.IDENTIFY_DELAY); // same as 1000 * IDENTIFY_DELAY
+    protected static final long IDENTIFY_BACKOFF = TimeUnit.SECONDS.toMillis(SessionController.IDENTIFY_DELAY);
 
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
@@ -94,6 +92,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final GatewayEncoding encoding;
 
     public WebSocket socket;
+    protected String traceMetadata = null;
     protected volatile String sessionId = null;
     protected final Object readLock = new Object();
     protected Decompressor decompressor;
@@ -801,15 +800,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         locked("Interrupted while trying to invalidate chunk/sync queue", chunkSyncQueue::clear);
 
-        api.getTextChannelsView().clear();
-        api.getVoiceChannelsView().clear();
-        api.getCategoriesView().clear();
-        api.getNewsChannelView().clear();
-        api.getPrivateChannelsView().clear();
-        api.getStageChannelView().clear();
-        api.getThreadChannelsView().clear();
-        api.getForumChannelsView().clear();
-        api.getMediaChannelsView().clear();
+        api.getChannelsView().clear();
 
         api.getGuildsView().clear();
         api.getUsersView().clear();
@@ -988,10 +979,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     handlers.get("READY").handle(responseTotal, raw);
                     sessionId = content.getString("session_id");
                     resumeUrl = content.getString("resume_gateway_url", null);
+                    traceMetadata = content.opt("_trace").map(String::valueOf).orElse(null);
+                    LOG.debug("Received READY with _trace {}", traceMetadata);
                     break;
                 case "RESUMED":
                     reconnectTimeoutS = 2;
                     sentAuthInfo = true;
+                    traceMetadata = content.opt("_trace").map(String::valueOf).orElse(traceMetadata);
                     if (!processingReady)
                     {
                         initiating = false;
@@ -1098,7 +1092,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
+    public void handleCallbackError(WebSocket websocket, Throwable cause) throws Exception
+    {
+        handleError(cause);
+    }
+
+    @Override
     public void onError(WebSocket websocket, WebSocketException cause) throws Exception
+    {
+        handleError(cause);
+    }
+
+    private void handleError(Throwable cause)
     {
         if (cause.getCause() instanceof SocketTimeoutException)
         {
@@ -1110,7 +1115,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
-            LOG.error("There was an error in the WebSocket connection", cause);
+            LOG.error("There was an error in the WebSocket connection. Trace: {}", traceMetadata, cause);
             api.handleEvent(new ExceptionEvent(api, cause, true));
         }
     }
@@ -1234,7 +1239,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         //This will only be used by GuildDeleteHandler to ensure that
         // no further voice state updates are sent for this Guild
-        //TODO: users may still queue new requests via the old AudioManager, how could we prevent this?
         return locked("There was an error cleaning up audio connections for deleted guild", () -> queuedAudioConnections.remove(guildId));
     }
 
@@ -1370,6 +1374,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("CHANNEL_CREATE",                         new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                         new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                         new ChannelUpdateHandler(api));
+        handlers.put("ENTITLEMENT_CREATE",                     new EntitlementCreateHandler(api));
+        handlers.put("ENTITLEMENT_UPDATE",                     new EntitlementUpdateHandler(api));
+        handlers.put("ENTITLEMENT_DELETE",                     new EntitlementDeleteHandler(api));
         handlers.put("GUILD_AUDIT_LOG_ENTRY_CREATE",           new GuildAuditLogEntryCreateHandler(api));
         handlers.put("GUILD_BAN_ADD",                          new GuildBanHandler(api, true));
         handlers.put("GUILD_BAN_REMOVE",                       new GuildBanHandler(api, false));
@@ -1401,6 +1408,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("MESSAGE_REACTION_REMOVE",                new MessageReactionHandler(api, false));
         handlers.put("MESSAGE_REACTION_REMOVE_ALL",            new MessageReactionBulkRemoveHandler(api));
         handlers.put("MESSAGE_REACTION_REMOVE_EMOJI",          new MessageReactionClearEmojiHandler(api));
+        handlers.put("MESSAGE_POLL_VOTE_ADD",                  new MessagePollVoteHandler(api, true));
+        handlers.put("MESSAGE_POLL_VOTE_REMOVE",               new MessagePollVoteHandler(api, false));
         handlers.put("MESSAGE_UPDATE",                         new MessageUpdateHandler(api));
         handlers.put("PRESENCE_UPDATE",                        new PresenceUpdateHandler(api));
         handlers.put("READY",                                  new ReadyHandler(api));
@@ -1417,6 +1426,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("USER_UPDATE",                            new UserUpdateHandler(api));
         handlers.put("VOICE_SERVER_UPDATE",                    new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",                     new VoiceStateUpdateHandler(api));
+        handlers.put("VOICE_CHANNEL_STATUS_UPDATE",            new VoiceChannelStatusUpdateHandler(api));
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);

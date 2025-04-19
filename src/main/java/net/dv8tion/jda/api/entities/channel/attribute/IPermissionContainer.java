@@ -21,13 +21,13 @@ import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IPermissionContainerManager;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represents a {@link GuildChannel} that uses {@link net.dv8tion.jda.api.entities.PermissionOverride Permission Overrides}.
@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
  */
 public interface IPermissionContainer extends GuildChannel
 {
-    //TODO-v5: Docs
     @Override
     @Nonnull
+    @CheckReturnValue
     IPermissionContainerManager<?, ?> getManager();
 
     /**
@@ -54,6 +54,8 @@ public interface IPermissionContainer extends GuildChannel
      *
      * @throws IllegalArgumentException
      *         If the provided permission holder is null, or from a different guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      *         relating to the provided Member or Role.
@@ -71,10 +73,14 @@ public interface IPermissionContainer extends GuildChannel
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
      * Without that CacheFlag, this list will only contain overrides for the currently logged in account and roles.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @Unmodifiable
     List<PermissionOverride> getPermissionOverrides();
 
     /**
@@ -83,32 +89,40 @@ public interface IPermissionContainer extends GuildChannel
      *
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Member Member}
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @Unmodifiable
     default List<PermissionOverride> getMemberPermissionOverrides()
     {
-        return Collections.unmodifiableList(getPermissionOverrides().stream()
+        return getPermissionOverrides().stream()
                 .filter(PermissionOverride::isMemberOverride)
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
      * Gets all of the {@link net.dv8tion.jda.api.entities.Role Role} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link GuildChannel GuildChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Role Roles}
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
+    @Unmodifiable
     default List<PermissionOverride> getRolePermissionOverrides()
     {
-        return Collections.unmodifiableList(getPermissionOverrides().stream()
+        return getPermissionOverrides().stream()
                 .filter(PermissionOverride::isRoleOverride)
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -122,6 +136,8 @@ public interface IPermissionContainer extends GuildChannel
      *         If we don't have the permission to {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS MANAGE_PERMISSIONS}
      * @throws java.lang.IllegalArgumentException
      *         If the provided permission holder is null or not from this guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction}
      *         <br>With the current settings of an existing override or a fresh override with no permissions set

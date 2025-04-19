@@ -16,8 +16,6 @@
 package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
@@ -36,6 +34,7 @@ import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.concurrent.CountingThreadFactory;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
@@ -82,8 +81,23 @@ public class  DefaultShardManagerBuilder
     protected IntFunction<? extends Activity> activityProvider = null;
     protected IntFunction<? extends ConcurrentMap<String, String>> contextProvider = null;
     protected IntFunction<? extends IEventManager> eventManagerProvider = null;
-    protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider = null;
-    protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider = null;
+    protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitSchedulerProvider = ThreadPoolProvider.lazy(
+        (total) -> Executors.newScheduledThreadPool(Math.max(2, 2 * (int) Math.log(total)), new CountingThreadFactory(() -> "JDA", "RateLimit-Scheduler", true))
+    );
+    protected ThreadPoolProvider<? extends ExecutorService> rateLimitElasticProvider = ThreadPoolProvider.lazy(
+        (total) -> {
+            ExecutorService pool = Executors.newCachedThreadPool(new CountingThreadFactory(() -> "JDA", "RateLimit-Elastic", true));
+            if (pool instanceof ThreadPoolExecutor)
+            {
+                ((ThreadPoolExecutor) pool).setCorePoolSize(Math.max(1, (int) Math.log(total)));
+                ((ThreadPoolExecutor) pool).setKeepAliveTime(2, TimeUnit.MINUTES);
+            }
+            return pool;
+        }
+    );
+    protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider = ThreadPoolProvider.lazy(
+        (total) -> Executors.newScheduledThreadPool(Math.max(1, (int) Math.log(total)), new CountingThreadFactory(() -> "JDA", "Gateway"))
+    );
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> eventPoolProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider = null;
@@ -541,34 +555,6 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setEventPassthrough(boolean enable)
     {
         return setFlag(ConfigFlag.EVENT_PASSTHROUGH, enable);
-    }
-
-    /**
-     * Whether the rate-limit should be relative to the current time plus latency.
-     * <br>By default we use the {@code X-RateLimit-Rest-After} header to determine when
-     * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
-     * to the latency which is ignored by the reset-after relative delay.
-     *
-     * <p>When disabled, we will use the {@code X-RateLimit-Reset} absolute timestamp instead which accounts for
-     * latency but requires a properly NTP synchronized clock to be present.
-     * If your system does have this feature you might gain a little quicker rate-limit handling than the default allows.
-     *
-     * <p>Default: <b>true</b>
-     *
-     * @param  enable
-     *         True, if the relative {@code X-RateLimit-Reset-After} header should be used.
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     *
-     * @since  4.1.0
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval(deadline = "5.1.0")
-    @ReplaceWith("setRestConfig(new RestConfig().setRelativeRateLimit(enable))")
-    public DefaultShardManagerBuilder setRelativeRateLimit(boolean enable)
-    {
-        return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
     }
 
     /**
@@ -1301,15 +1287,15 @@ public class  DefaultShardManagerBuilder
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
+     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitSchedulerProvider(ThreadPoolProvider)}.
      * <br><b>This automatically disables the automatic shutdown of the rate-limit pool, you can enable
-     * it using {@link #setRateLimitPool(ScheduledExecutorService, boolean) setRateLimiPool(executor, true)}</b>
+     * it using {@link #setRateLimitScheduler(ScheduledExecutorService, boolean) setRateLimiPool(executor, true)}</b>
      *
      * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
-     * and similar methods.
+     * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * } log({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -1317,22 +1303,22 @@ public class  DefaultShardManagerBuilder
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setRateLimitPool(@Nullable ScheduledExecutorService pool)
+    public DefaultShardManagerBuilder setRateLimitScheduler(@Nullable ScheduledExecutorService pool)
     {
-        return setRateLimitPool(pool, pool == null);
+        return setRateLimitScheduler(pool, pool == null);
     }
 
     /**
      * Sets the {@link ScheduledExecutorService ScheduledExecutorService} that should be used in
      * the JDA rate-limit handler. Changing this can drastically change the JDA behavior for RestAction execution
      * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
-     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitPoolProvider(ThreadPoolProvider)}.
+     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitSchedulerProvider(ThreadPoolProvider)}.
      *
      * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
-     * and similar methods.
+     * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * } log({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  pool
      *         The thread-pool to use for rate-limit handling
@@ -1342,9 +1328,9 @@ public class  DefaultShardManagerBuilder
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setRateLimitPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
+    public DefaultShardManagerBuilder setRateLimitScheduler(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
     {
-        return setRateLimitPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
+        return setRateLimitSchedulerProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
     }
 
     /**
@@ -1354,9 +1340,9 @@ public class  DefaultShardManagerBuilder
      *
      * <p>This is used mostly by the Rate-Limiter to handle backoff delays by using scheduled executions.
      * Besides that it is also used by planned execution for {@link net.dv8tion.jda.api.requests.RestAction#queueAfter(long, TimeUnit)}
-     * and similar methods.
+     * and similar methods. Requests are handed off to the {@link #setRateLimitElastic(ExecutorService) elastic pool} for blocking execution.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 5 threads (per shard).
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code 2 * } log({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  provider
      *         The thread-pool provider to use for rate-limit handling
@@ -1364,9 +1350,78 @@ public class  DefaultShardManagerBuilder
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setRateLimitPoolProvider(@Nullable ThreadPoolProvider<? extends ScheduledExecutorService> provider)
+    public DefaultShardManagerBuilder setRateLimitSchedulerProvider(@Nullable ThreadPoolProvider<? extends ScheduledExecutorService> provider)
     {
-        this.rateLimitPoolProvider = provider;
+        this.rateLimitSchedulerProvider = provider;
+        return this;
+    }
+
+    /**
+     * Sets the {@link ExecutorService} that should be used in
+     * the JDA request handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitElasticProvider(ThreadPoolProvider)}.
+     * <br><b>This automatically disables the automatic shutdown of the rate-limit elastic pool, you can enable
+     * it using {@link #setRateLimitElastic(ExecutorService, boolean) setRateLimitElastic(executor, true)}</b>
+     *
+     * <p>This is used mostly by the Rate-Limiter to execute the blocking HTTP requests at runtime.
+     *
+     * <p>Default: {@link Executors#newCachedThreadPool()} shared between all shards.
+     *
+     * @param  pool
+     *         The thread-pool to use for executing http requests
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setRateLimitElastic(@Nullable ExecutorService pool)
+    {
+        return setRateLimitElastic(pool, pool == null);
+    }
+
+    /**
+     * Sets the {@link ExecutorService} that should be used in
+     * the JDA request handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     * <br>This will override the rate-limit pool provider set from {@link #setRateLimitElasticProvider(ThreadPoolProvider)}.
+     * <br><b>This automatically disables the automatic shutdown of the rate-limit elastic pool, you can enable
+     * it using {@link #setRateLimitElastic(ExecutorService, boolean) setRateLimitElastic(executor, true)}</b>
+     *
+     * <p>This is used mostly by the Rate-Limiter to execute the blocking HTTP requests at runtime.
+     *
+     * <p>Default: {@link Executors#newCachedThreadPool()} shared between all shards.
+     *
+     * @param  pool
+     *         The thread-pool to use for executing http requests
+     * @param  automaticShutdown
+     *         Whether {@link net.dv8tion.jda.api.JDA#shutdown()} should automatically shutdown this pool
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setRateLimitElastic(@Nullable ExecutorService pool, boolean automaticShutdown)
+    {
+        return setRateLimitElasticProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
+    }
+
+    /**
+     * Sets the {@link ExecutorService} that should be used in
+     * the JDA request handler. Changing this can drastically change the JDA behavior for RestAction execution
+     * and should be handled carefully. <b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>This is used mostly by the Rate-Limiter to execute the blocking HTTP requests at runtime.
+     *
+     * <p>Default: {@link Executors#newCachedThreadPool()} shared between all shards.
+     *
+     * @param  provider
+     *         The thread-pool provider to use for executing http requests
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setRateLimitElasticProvider(@Nullable ThreadPoolProvider<? extends ExecutorService> provider)
+    {
+        this.rateLimitElasticProvider = provider;
         return this;
     }
 
@@ -1389,7 +1444,7 @@ public class  DefaultShardManagerBuilder
      * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
      * have to be sent.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code log}({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  pool
      *         The thread-pool to use for main WebSocket workers
@@ -1419,7 +1474,7 @@ public class  DefaultShardManagerBuilder
      * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
      * have to be sent.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code log}({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  pool
      *         The thread-pool to use for main WebSocket workers
@@ -1450,7 +1505,7 @@ public class  DefaultShardManagerBuilder
      * Once a new payload is sent we switch to "rapid mode" which means more tasks will be submitted until no more payloads
      * have to be sent.
      *
-     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread (per shard)
+     * <p>Default: Shared {@link ScheduledThreadPoolExecutor} with ({@code log}({@link #setShardsTotal(int) shard_total})) threads.
      *
      * @param  provider
      *         The thread-pool provider to use for main WebSocket workers
@@ -1542,6 +1597,8 @@ public class  DefaultShardManagerBuilder
      * <p>The executor will not be shutdown automatically when the shard is shutdown.
      * To shut it down automatically use {@link #setEventPool(ExecutorService, boolean)}.
      *
+     * <p>Default: Disabled
+     *
      * @param  executor
      *         The executor for the event proxy, or null to use calling thread
      *
@@ -1558,6 +1615,8 @@ public class  DefaultShardManagerBuilder
     /**
      * Sets the {@link ExecutorService ExecutorService} that should be used by the
      * event proxy to schedule events. This will be done on the calling thread by default.
+     *
+     * <p>Default: Disabled
      *
      * @param  executor
      *         The executor for the event proxy, or null to use calling thread
@@ -1583,7 +1642,7 @@ public class  DefaultShardManagerBuilder
      * <p>This is used to handle callbacks of {@link RestAction#queue()}, similarly it is used to
      * finish {@link RestAction#submit()} and {@link RestAction#complete()} tasks which build on queue.
      *
-     * <p>Default: {@link ForkJoinPool#commonPool()}
+     * <p>Default: Disabled
      *
      * @param  provider
      *         The thread-pool provider to use for callback handling
@@ -1959,7 +2018,7 @@ public class  DefaultShardManagerBuilder
     {
         this.intents = GatewayIntent.ALL_INTENTS;
         if (intents != null)
-            this.intents &= ~GatewayIntent.getRaw(intents);
+            this.intents = 1 | (GatewayIntent.ALL_INTENTS & ~GatewayIntent.getRaw(intents));
         return this;
     }
 
@@ -2051,7 +2110,7 @@ public class  DefaultShardManagerBuilder
         Checks.notNull(intent, "Intent");
         Checks.noneNull(intents, "Intent");
         EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
-        return setDisabledIntents(EnumSet.complementOf(set));
+        return setEnabledIntents(set);
     }
 
     /**
@@ -2078,11 +2137,9 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents)
     {
         if (intents == null || intents.isEmpty())
-            setDisabledIntents(EnumSet.allOf(GatewayIntent.class));
-        else if (intents instanceof EnumSet)
-            setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
+            this.intents = 1;
         else
-            setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+            this.intents = 1 | GatewayIntent.getRaw(intents);
         return this;
     }
 
@@ -2239,7 +2296,7 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setActivityProvider(activityProvider);
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
-        final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, audioPoolProvider, threadFactory);
+        final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitSchedulerProvider, rateLimitElasticProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, audioPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, restConfigProvider, chunkingFilter);
@@ -2304,6 +2361,7 @@ public class  DefaultShardManagerBuilder
                 throw new IllegalArgumentException("Cannot use CacheFlag." + flag + " without GatewayIntent." + intent + "!");
         }
     }
+
     //Avoid having multiple anonymous classes
     private static class ThreadPoolProviderImpl<T extends ExecutorService> implements ThreadPoolProvider<T>
     {

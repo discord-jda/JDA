@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,6 +60,7 @@ import java.util.List;
 public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateData, MessageCreateBuilder> implements MessageCreateRequest<MessageCreateBuilder>
 {
     private final List<FileUpload> files = new ArrayList<>(10);
+    private MessagePollData poll;
     private boolean tts;
 
     public MessageCreateBuilder() {}
@@ -180,7 +182,10 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
             Checks.noneNull(files, "Files");
         this.files.clear();
         if (files != null)
+        {
             this.files.addAll(files);
+            this.setVoiceMessageIfApplicable(files);
+        }
         return this;
     }
 
@@ -191,12 +196,28 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         return Collections.unmodifiableList(files);
     }
 
+    @Nullable
+    @Override
+    public MessagePollData getPoll()
+    {
+        return poll;
+    }
+
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setPoll(@Nullable MessagePollData poll)
+    {
+        this.poll = poll;
+        return this;
+    }
+
     @Nonnull
     @Override
     public MessageCreateBuilder addFiles(@Nonnull Collection<? extends FileUpload> files)
     {
         Checks.noneNull(files, "Files");
         this.files.addAll(files);
+        this.setVoiceMessageIfApplicable(files);
         return this;
     }
 
@@ -212,17 +233,28 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
     @Override
     public MessageCreateBuilder setSuppressedNotifications(boolean suppressed)
     {
-        if(suppressed)
+        if (suppressed)
             messageFlags |= Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
         else
             messageFlags &= ~Message.MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue();
         return this;
     }
 
+    @Nonnull
+    @Override
+    public MessageCreateBuilder setVoiceMessage(boolean voiceMessage)
+    {
+        if (voiceMessage)
+            messageFlags |= Message.MessageFlag.IS_VOICE_MESSAGE.getValue();
+        else
+            messageFlags &= ~Message.MessageFlag.IS_VOICE_MESSAGE.getValue();
+        return this;
+    }
+
     @Override
     public boolean isEmpty()
     {
-        return Helpers.isBlank(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty();
+        return Helpers.isBlank(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty() && poll == null;
     }
 
     @Override
@@ -243,8 +275,8 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         List<LayoutComponent> components = new ArrayList<>(this.components);
         AllowedMentionsData mentions = this.mentions.copy();
 
-        if (content.isEmpty() && embeds.isEmpty() && files.isEmpty() && components.isEmpty())
-            throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, components, or files");
+        if (content.isEmpty() && embeds.isEmpty() && files.isEmpty() && components.isEmpty() && poll == null)
+            throw new IllegalStateException("Cannot build an empty message. You need at least one of content, embeds, components, poll, or files");
 
         int length = Helpers.codePointLength(content);
         if (length > Message.MAX_CONTENT_LENGTH)
@@ -255,7 +287,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
         if (components.size() > Message.MAX_COMPONENT_COUNT)
             throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT + " component layouts, provided " + components.size());
-        return new MessageCreateData(content, embeds, files, components, mentions, tts, messageFlags);
+        return new MessageCreateData(content, embeds, files, components, mentions, poll, tts, messageFlags);
     }
 
     @Nonnull
@@ -274,5 +306,11 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
         files.forEach(IOUtil::silentClose);
         files.clear();
         return this;
+    }
+
+    private void setVoiceMessageIfApplicable(@NotNull Collection<? extends FileUpload> files)
+    {
+        if (files.stream().anyMatch(FileUpload::isVoiceMessage))
+            this.setVoiceMessage(true);
     }
 }

@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.CacheRestAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -66,6 +67,7 @@ public interface RichCustomEmoji extends CustomEmoji
      * @return An immutable list of the roles this emoji is active for (all roles if empty)
      */
     @Nonnull
+    @Unmodifiable
     List<Role> getRoles();
 
     /**

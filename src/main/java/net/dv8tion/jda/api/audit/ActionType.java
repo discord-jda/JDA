@@ -18,8 +18,11 @@ package net.dv8tion.jda.api.audit;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.ScheduledEvent;
+import net.dv8tion.jda.api.entities.channel.attribute.IVoiceStatusChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+
+import javax.annotation.Nonnull;
 
 /**
  * ActionTypes for {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntry} instances
@@ -550,7 +553,7 @@ public enum ActionType
      * <p><b>Possible Keys</b><br>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_NAME THREAD_NAME}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_SLOWMODE THREAD_SLOWMODE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_SLOWMODE CHANNEL_SLOWMODE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_ARCHIVED THREAD_ARCHIVED}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_AUTO_ARCHIVE_DURATION THREAD_AUTO_ARCHIVE_DURATION}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_LOCKED THREAD_LOCKED}</li>
@@ -566,7 +569,7 @@ public enum ActionType
      * <p><b>Possible Keys</b><br>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_NAME THREAD_NAME}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_SLOWMODE THREAD_SLOWMODE}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_SLOWMODE CHANNEL_SLOWMODE}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_ARCHIVED THREAD_ARCHIVED}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_AUTO_ARCHIVE_DURATION THREAD_AUTO_ARCHIVE_DURATION}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#THREAD_LOCKED THREAD_LOCKED}</li>
@@ -635,6 +638,27 @@ public enum ActionType
      */
     AUTO_MODERATION_MEMBER_TIMEOUT(    145, TargetType.MEMBER),
 
+    /**
+     * A user updated the {@link IVoiceStatusChannel#getStatus() status} of a voice channel.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link AuditLogKey#CHANNEL_VOICE_STATUS CHANNEL_VOICE_STATUS}</li>
+     *     <li>{@link AuditLogKey#CHANNEL_ID CHANNEL_ID}</li>
+     * </ul>
+     */
+    VOICE_CHANNEL_STATUS_UPDATE(192, TargetType.CHANNEL),
+
+    /**
+     * A user removed the {@link IVoiceStatusChannel#getStatus() status} of a voice channel.
+     *
+     * <p><b>Possible Keys</b><br>
+     * <ul>
+     *     <li>{@link AuditLogKey#CHANNEL_ID CHANNEL_ID}</li>
+     * </ul>
+     */
+    VOICE_CHANNEL_STATUS_DELETE(193, TargetType.CHANNEL),
+
     UNKNOWN(-1, TargetType.UNKNOWN);
 
     private final int key;
@@ -662,11 +686,13 @@ public enum ActionType
      *
      * @return {@link net.dv8tion.jda.api.audit.TargetType TargetType}
      */
+    @Nonnull
     public TargetType getTargetType()
     {
         return target;
     }
 
+    @Nonnull
     public static ActionType from(int key)
     {
         for (ActionType type : values())

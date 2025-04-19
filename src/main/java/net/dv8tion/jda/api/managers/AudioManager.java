@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
@@ -143,27 +142,6 @@ public interface AudioManager
     EnumSet<SpeakingMode> getSpeakingMode();
 
     /**
-     * Configures the delay between the last provided frame and removing the speaking indicator.
-     * <br>This can be useful for send systems that buffer a certain interval of audio frames that will be sent.
-     * By default the delay is 200 milliseconds which is also the minimum delay.
-     *
-     * <p>If the delay is less than 200 milliseconds it will use the minimum delay. The provided delay
-     * will be aligned to the audio frame length of 20 milliseconds by means of integer division. This means
-     * it will be rounded down to the next biggest multiple of 20.
-     *
-     * <p>Note that this delay is not reliable and operates entirely based on the send system polling times
-     * which can cause it to be released earlier or later than the provided delay specifies.
-     *
-     * @param millis
-     *        The delay that should be used, in milliseconds
-     *
-     * @since 4.0.0
-     */
-    @Deprecated
-    @ForRemoval
-    void setSpeakingDelay(int millis);
-
-    /**
      * Gets the {@link net.dv8tion.jda.api.JDA JDA} instance that this AudioManager is a part of.
      *
      * @return The corresponding JDA instance
@@ -220,14 +198,14 @@ public interface AudioManager
     /**
      * Sets the {@link net.dv8tion.jda.api.audio.AudioSendHandler}
      * that the manager will use to provide audio data to an audio connection.
-     * <br>The handler provided here will persist between audio connection connect and disconnects.
+     * <br>The handler provided here will persist between audio connection connects and disconnects.
      * Furthermore, you don't need to have an audio connection to set a handler.
-     * When JDA sets up a new audio connection it will use the handler provided here.
+     * When JDA sets up a new audio connection, it will use the handler provided here.
      * <br>Setting this to null will remove the audio handler.
      *
-     * <p>JDA recommends <a href="https://github.com/sedmelluq/lavaplayer" target="_blank">LavaPlayer</a>
+     * <p>JDA recommends <a href="https://github.com/lavalink-devs/lavaplayer" target="_blank">LavaPlayer</a>
      * as an {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler}.
-     * It provides a <a href="https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda" target="_blank">demo</a> targeted at JDA users.
+     * It provides a <a href="https://github.com/lavalink-devs/lavaplayer/tree/main/demo-jda" target="_blank">demo</a> targeted at JDA users.
      *
      * @param handler
      *        The {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler} used to provide audio data.

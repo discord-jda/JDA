@@ -18,15 +18,14 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Discord Application from its bot's point of view.
@@ -115,7 +114,7 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
-     * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
+     * <br>The scope {@code "bot"} is always applied.
      *
      * @param  scopes
      *         The scopes to use with {@link #getInviteUrl(Permission...)} and the likes
@@ -134,7 +133,7 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
-     * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
+     * <br>The scope {@code "bot"} is always applied.
      *
      * @param  scopes
      *         The scopes to use with {@link #getInviteUrl(Permission...)} and the likes
@@ -313,7 +312,42 @@ public interface ApplicationInfo extends ISnowflake
      * @return Immutable list containing the tags of this bot's application
      */
     @Nonnull
+    @Unmodifiable
     List<String> getTags();
+
+    /**
+     * A {@link java.util.List} containing the OAuth2 redirect URIs of this bot's application.
+     *
+     * <p>This List is empty if no redirect URIs are set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * @return Immutable list containing the OAuth2 redirect URIs of this bot's application
+     */
+    @Nonnull
+    @Unmodifiable
+    List<String> getRedirectUris();
+
+    /**
+     * The interaction endpoint URL of this bot's application.
+     *
+     * <p>This returns {@code null} if no interaction endpoint URL is set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * <p>A non-null value means your bot will no longer receive {@link net.dv8tion.jda.api.interactions.Interaction interactions}
+     * through JDA, such as slash commands, components and modals.
+     *
+     * @return Interaction endpoint URL of this bot's application, or {@code null} if it has not been set
+     */
+    @Nullable
+    String getInteractionsEndpointUrl();
+
+    /**
+     * The role connections (linked roles) verification URL of this bot's application.
+     *
+     * <p>This returns {@code null} if no role connection verification URL is set in the <a href="https://discord.com/developers/applications" target="_blank">Developer Portal</a>.
+     *
+     * @return Role connections verification URL of this bot's application, or {@code null} if it has not been set
+     */
+    @Nullable
+    String getRoleConnectionsVerificationUrl();
 
     /**
      * The custom Authorization URL of this bot's application.
@@ -333,6 +367,7 @@ public interface ApplicationInfo extends ISnowflake
      * @return Immutable list of scopes the default authorization URL is set up with.
      */
     @Nonnull
+    @Unmodifiable
     List<String> getScopes();
 
     /**
@@ -370,6 +405,64 @@ public interface ApplicationInfo extends ISnowflake
      * @return The bitset
      */
     long getFlagsRaw();
+
+    /**
+     * The approximate count of users that have installed this application,
+     * or {@code -1} if it is unknown.
+     *
+     * @return The approximate count of users that have installed this application.
+     */
+    long getUserInstallCount();
+
+    /**
+     * The configurations for each {@link IntegrationType} set on the application.
+     *
+     * @return The configurations for each integration type
+     */
+    @Nonnull
+    Map<IntegrationType, IntegrationTypeConfiguration> getIntegrationTypesConfig();
+
+    /**
+     * Configuration of a single {@link IntegrationType}.
+     *
+     * @see ApplicationInfo#getIntegrationTypesConfig()
+     */
+    interface IntegrationTypeConfiguration
+    {
+        /**
+         * The OAuth2 install parameters for the default in-app authorization link.
+         * <br>When a user invites your application in the Discord app, these will be the parameters of the invite url.
+         *
+         * @return The OAuth2 install parameters for the default in-app authorization link
+         */
+        @Nullable
+        InstallParameters getInstallParameters();
+    }
+
+    /**
+     * OAuth2 install parameter for the default in-app authorization link.
+     *
+     * @see IntegrationTypeConfiguration#getInstallParameters()
+     */
+    interface InstallParameters
+    {
+        /**
+         * Gets the required scopes granted to the bot when invited.
+         *
+         * @return The required scopes granted to the bot when invited
+         */
+        @Nonnull
+        List<String> getScopes();
+
+        /**
+         * Gets the permissions your bot asks for when invited.
+         * <br><b>Note:</b> Users can choose to disable permissions before and after inviting your bot.
+         *
+         * @return The permissions your bot asks for when invited
+         */
+        @Nonnull
+        Set<Permission> getPermissions();
+    }
 
     /**
      * Flag constants corresponding to the <a href="https://discord.com/developers/docs/resources/application#application-object-application-flags" target="_blank">Discord Enum</a>

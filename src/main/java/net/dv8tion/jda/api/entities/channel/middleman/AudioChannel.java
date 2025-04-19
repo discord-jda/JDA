@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.StageChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.channel.middleman.AudioChannelManager;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -50,6 +51,7 @@ public interface AudioChannel extends StandardGuildChannel
 {
     @Override
     @Nonnull
+    @CheckReturnValue
     AudioChannelManager<?, ?> getManager();
 
     /**

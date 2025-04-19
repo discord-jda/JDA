@@ -38,14 +38,17 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     WebhookAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     WebhookAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     WebhookAction deadline(long timestamp);
 
     /**

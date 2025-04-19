@@ -70,6 +70,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     WebhookManager reset(long fields);
 
     /**
@@ -90,6 +91,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     WebhookManager reset(long... fields);
 
     /**

@@ -84,6 +84,7 @@ public interface RichPresence extends Activity
      * @see    ActivityFlag
      * @see    ActivityFlag#getFlags(int)
      */
+    @Nonnull
     EnumSet<ActivityFlag> getFlagSet();
 
     /**

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.ICategorizableChannelManager;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -31,12 +32,27 @@ import javax.annotation.Nullable;
  * @see Category
  * @see net.dv8tion.jda.api.entities.Guild#getCategories()
  */
-public interface ICategorizableChannel extends GuildChannel, IPermissionContainer
+public interface ICategorizableChannel extends GuildChannel, IPermissionContainer, IPositionableChannel
 {
-    //TODO-v5: Docs
     @Override
     @Nonnull
+    @CheckReturnValue
     ICategorizableChannelManager<?, ?> getManager();
+
+    /**
+     * Computes the relative position of this channel in the {@link #getParentCategory() parent category}.
+     * <br>This is effectively the same as {@code getParentCategory().getChannels().indexOf(channel)}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return The relative position in the parent category, or {@code -1} if no parent is set
+     */
+    default int getPositionInCategory()
+    {
+        Category parent = getParentCategory();
+        return parent == null ? -1 : parent.getChannels().indexOf(this);
+    }
 
     /**
      * Get the snowflake of the {@link Category} that contains this channel.
@@ -69,6 +85,9 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      * <br>Note that a {@link Category Category} will
      * always return {@code null} for this method as nested categories are not supported.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return Possibly-null {@link Category Category} for this GuildChannel
      */
     @Nullable
@@ -83,6 +102,9 @@ public interface ICategorizableChannel extends GuildChannel, IPermissionContaine
      *
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled.
      * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this CacheFlag by default.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this channel is synced with its parent category
      *

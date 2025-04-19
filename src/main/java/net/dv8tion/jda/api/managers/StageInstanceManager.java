@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.managers;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.StageInstance;
 
 import javax.annotation.CheckReturnValue;
@@ -42,7 +43,13 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
 {
     /** Used to reset the topic field */
     long TOPIC         = 1;
-    /** Used to reset the privacy level field */
+    /**
+     * Used to reset the privacy level field
+     *
+     * @deprecated Obsolete.
+     */
+    @Deprecated
+    @ForRemoval(deadline = "5.3.0")
     long PRIVACY_LEVEL = 1 << 1;
 
     /**
@@ -63,6 +70,7 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     StageInstanceManager reset(long fields);
 
     /**
@@ -82,6 +90,7 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     StageInstanceManager reset(long... fields);
 
     /**
@@ -107,22 +116,4 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
     @Nonnull
     @CheckReturnValue
     StageInstanceManager setTopic(@Nullable String topic);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel PrivacyLevel} for this stage instance.
-     * <br>This indicates whether guild lurkers are allowed to join the stage instance or only guild members.
-     *
-     * @param  level
-     *         The privacy level
-     *
-     * @throws IllegalArgumentException
-     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN},
-     *         or {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#PUBLIC PUBLIC}.
-     *
-     * @return StageInstanceManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    @SuppressWarnings("deprecation")
-    StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level);
 }

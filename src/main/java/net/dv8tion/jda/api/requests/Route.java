@@ -45,6 +45,16 @@ public class Route
         public static final Route GET_BOT_APPLICATION =             new Route(GET, "oauth2/applications/@me");
         public static final Route GET_ROLE_CONNECTION_METADATA =    new Route(GET, "applications/{application_id}/role-connections/metadata");
         public static final Route UPDATE_ROLE_CONNECTION_METADATA = new Route(PUT, "applications/{application_id}/role-connections/metadata");
+        public static final Route GET_ENTITLEMENTS =                new Route(GET, "applications/{application_id}/entitlements");
+        public static final Route GET_ENTITLEMENT =                 new Route(GET, "applications/{application_id}/entitlements/{entitlement_id}");
+        public static final Route CONSUME_ENTITLEMENT =             new Route(POST, "applications/{application_id}/entitlements/{entitlement_id}/consume");
+        public static final Route CREATE_TEST_ENTITLEMENT =         new Route(POST, "applications/{application_id}/entitlements");
+        public static final Route DELETE_TEST_ENTITLEMENT =         new Route(DELETE, "applications/{application_id}/entitlements/{entitlement_id}");
+        public static final Route GET_APPLICATION_EMOJIS =          new Route(GET, "applications/{application_id}/emojis");
+        public static final Route GET_APPLICATION_EMOJI =           new Route(GET, "applications/{application_id}/emojis/{emoji_id}");
+        public static final Route CREATE_APPLICATION_EMOJI =        new Route(POST, "applications/{application_id}/emojis");
+        public static final Route MODIFY_APPLICATION_EMOJI =        new Route(PATCH, "applications/{application_id}/emojis/{emoji_id}");
+        public static final Route DELETE_APPLICATION_EMOJI =        new Route(DELETE, "applications/{application_id}/emojis/{emoji_id}");
     }
 
     public static class Interactions
@@ -103,6 +113,7 @@ public class Route
         public static final Route GET_BAN =            new Route(GET,    "guilds/{guild_id}/bans/{user_id}");
         public static final Route UNBAN =              new Route(DELETE, "guilds/{guild_id}/bans/{user_id}");
         public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}");
+        public static final Route BULK_BAN =           new Route(POST,   "guilds/{guild_id}/bulk-ban");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}");
         public static final Route ADD_MEMBER =         new Route(PUT,    "guilds/{guild_id}/members/{user_id}");
@@ -116,6 +127,7 @@ public class Route
         public static final Route GET_GUILD_EMOJIS =   new Route(GET,    "guilds/{guild_id}/emojis");
         public static final Route GET_AUDIT_LOGS =     new Route(GET,    "guilds/{guild_id}/audit-logs");
         public static final Route GET_VOICE_REGIONS =  new Route(GET,    "guilds/{guild_id}/regions");
+        public static final Route GET_VOICE_STATE =    new Route(GET,    "guilds/{guild_id}/voice-states/{user_id}");
         public static final Route UPDATE_VOICE_STATE = new Route(PATCH,  "guilds/{guild_id}/voice-states/{user_id}");
 
         public static final Route GET_INTEGRATIONS =   new Route(GET,    "guilds/{guild_id}/integrations");
@@ -204,6 +216,7 @@ public class Route
         public static final Route CREATE_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}");
         public static final Route MODIFY_PERM_OVERRIDE = new Route(PUT,    "channels/{channel_id}/permissions/{permoverride_id}");
         public static final Route DELETE_PERM_OVERRIDE = new Route(DELETE, "channels/{channel_id}/permissions/{permoverride_id}");
+        public static final Route SET_STATUS =           new Route(PUT,    "channels/{channel_id}/voice-status");
 
         public static final Route SEND_TYPING =          new Route(POST,   "channels/{channel_id}/typing");
         public static final Route GET_PERMISSIONS =      new Route(GET,    "channels/{channel_id}/permissions");
@@ -260,6 +273,9 @@ public class Route
 
         public static final Route GET_MESSAGE =     new Route(GET,  "channels/{channel_id}/messages/{message_id}");
         public static final Route DELETE_MESSAGES = new Route(POST, "channels/{channel_id}/messages/bulk-delete");
+
+        public static final Route END_POLL =               new Route(POST, "channels/{channel_id}/polls/{message_id}/expire");
+        public static final Route GET_POLL_ANSWER_VOTERS = new Route(GET,  "channels/{channel_id}/polls/{message_id}/answers/{answer_id}");
     }
 
     public static class Invites

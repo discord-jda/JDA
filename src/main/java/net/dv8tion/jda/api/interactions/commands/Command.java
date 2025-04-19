@@ -16,11 +16,14 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
@@ -34,6 +37,7 @@ import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -151,6 +155,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @return Immutable list of command options
      */
     @Nonnull
+    @Unmodifiable
     List<Option> getOptions();
 
     /**
@@ -159,6 +164,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @return Immutable list of subcommands
      */
     @Nonnull
+    @Unmodifiable
     List<Subcommand> getSubcommands();
 
     /**
@@ -167,6 +173,7 @@ public interface Command extends ISnowflake, ICommandReference
      * @return Immutable list of subcommand groups
      */
     @Nonnull
+    @Unmodifiable
     List<SubcommandGroup> getSubcommandGroups();
 
     /**
@@ -225,8 +232,28 @@ public interface Command extends ISnowflake, ICommandReference
      * <br>Always true for guild commands.
      *
      * @return True, if this command is restricted to guilds.
+     *
+     * @deprecated Replaced with {@link #getContexts()}
      */
+    @Deprecated
+    @ReplaceWith("getContexts().equals(EnumSet.of(InteractionContextType.GUILD))")
     boolean isGuildOnly();
+
+    /**
+     * The contexts in which this command can be used.
+     *
+     * @return The contexts in which this command can be used
+     */
+    @Nonnull
+    EnumSet<InteractionContextType> getContexts();
+
+    /**
+     * Gets the integration types on which this command can be installed on.
+     *
+     * @return The integration types on which this command can be installed on
+     */
+    @Nonnull
+    EnumSet<IntegrationType> getIntegrationTypes();
 
     /**
      * Whether this command is restricted to NSFW (age-restricted) channels.
@@ -422,6 +449,7 @@ public interface Command extends ISnowflake, ICommandReference
          *
          * @return The Choice instance, for chaining
          */
+        @Nonnull
         public Choice setName(@Nonnull String name)
         {
             checkName(name);
@@ -739,6 +767,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return Immutable {@link Set} of {@link ChannelType}
          */
         @Nonnull
+        @Unmodifiable
         public Set<ChannelType> getChannelTypes()
         {
             return channelTypes;
@@ -803,6 +832,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return Immutable {@link List} of {@link Choice}
          */
         @Nonnull
+        @Unmodifiable
         public List<Choice> getChoices()
         {
             return choices;
@@ -932,6 +962,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return Immutable list of Options
          */
         @Nonnull
+        @Unmodifiable
         public List<Option> getOptions()
         {
             return options;
@@ -1052,6 +1083,7 @@ public interface Command extends ISnowflake, ICommandReference
          * @return Immutable {@link List} of {@link Subcommand}
          */
         @Nonnull
+        @Unmodifiable
         public List<Subcommand> getSubcommands()
         {
             return subcommands;

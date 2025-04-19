@@ -17,10 +17,11 @@
 package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Component Interaction for a {@link StringSelectMenu}.
@@ -36,15 +37,17 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
      * @return {@link List} of {@link SelectOption#getValue()}
      */
     @Nonnull
+    @Unmodifiable
     List<String> getValues();
 
     /**
      * This resolves the selected {@link #getValues() values} to the representative {@link SelectOption SelectOption} instances.
      * <br>It is recommended to check {@link #getValues()} directly instead of using the options.
      *
-     * @return {@link List} of the selected options
+     * @return Immutable {@link List} of the selected options
      */
     @Nonnull
+    @Unmodifiable
     default List<SelectOption> getSelectedOptions()
     {
         StringSelectMenu menu = getComponent();
@@ -52,6 +55,6 @@ public interface StringSelectInteraction extends SelectMenuInteraction<String, S
         return menu.getOptions()
                 .stream()
                 .filter(it -> values.contains(it.getValue()))
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 }

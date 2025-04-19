@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities.emoji;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -278,5 +279,19 @@ public class RichCustomEmojiImpl implements RichCustomEmoji, EmojiUnion
     public CustomEmoji asCustom()
     {
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public RichCustomEmoji asRich()
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ApplicationEmoji asApplication()
+    {
+        throw new IllegalStateException("Cannot convert RichCustomEmoji to ApplicationEmoji!");
     }
 }

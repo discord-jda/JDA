@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.managers.channel.attribute.IPostContainerManager;
 import net.dv8tion.jda.api.requests.restaction.ForumPostAction;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -61,6 +62,7 @@ public interface IPostContainer extends IThreadContainer
 
     @Nonnull
     @Override
+    @CheckReturnValue
     IPostContainerManager<?, ?> getManager();
 
     /**
@@ -86,6 +88,7 @@ public interface IPostContainer extends IThreadContainer
      * @return Immutable {@link List} of {@link ForumTag}
      */
     @Nonnull
+    @Unmodifiable
     default List<ForumTag> getAvailableTags()
     {
         return getAvailableTagCache().asList();
@@ -111,6 +114,7 @@ public interface IPostContainer extends IThreadContainer
      * @return Immutable {@link List} of {@link ForumTag} with the given name
      */
     @Nonnull
+    @Unmodifiable
     default List<ForumTag> getAvailableTagsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getAvailableTagCache().getElementsByName(name, ignoreCase);
@@ -225,6 +229,8 @@ public interface IPostContainer extends IThreadContainer
      *             <li>If null is provided</li>
      *             <li>If the name is empty or longer than {@value Channel#MAX_NAME_LENGTH} characters</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link ForumPostAction}
      */

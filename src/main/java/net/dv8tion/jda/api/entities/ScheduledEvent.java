@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.managers.ScheduledEventManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ScheduledEventMembersPaginationAction;
 import net.dv8tion.jda.api.utils.ImageProxy;
 
 import javax.annotation.CheckReturnValue;
@@ -37,6 +37,12 @@ import java.time.OffsetDateTime;
  */
 public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent>
 {
+
+    /**
+     * Template for {@link #getJumpUrl()}. Args: .../guild_id/event_id
+     */
+    String JUMP_URL = "https://discord.com/events/%s/%s";
+
     /**
      * The maximum allowed length for an event's name.
      */
@@ -202,11 +208,19 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent>
     String getLocation();
 
     /**
+     * Returns the jump-to URL of the event. Clicking this URL in the Discord client will open the event.
+     *
+     * @return A String representing the jump-to URL of the event.
+     */
+    @Nonnull
+    String getJumpUrl();
+
+    /**
      * Deletes this Scheduled Event.
      *
      * <p>Possible ErrorResponses include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT UNKNOWN_SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SCHEDULED_EVENT UNKNOWN_SCHEDULED_EVENT}
      *     <br>If the the event was already deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
@@ -234,7 +248,7 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent>
      *
      * <p>Possible ErrorResponses include:
      * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#SCHEDULED_EVENT}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_SCHEDULED_EVENT}
      *     <br>If the the event was already deleted.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
@@ -291,6 +305,7 @@ public interface ScheduledEvent extends ISnowflake, Comparable<ScheduledEvent>
      * @return The ScheduledEventManager of this event
      */
     @Nonnull
+    @CheckReturnValue
     ScheduledEventManager getManager();
 
     /**

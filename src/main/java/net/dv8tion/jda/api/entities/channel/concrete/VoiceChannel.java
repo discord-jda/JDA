@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.attribute.IAgeRestrictedChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IVoiceStatusChannel;
 import net.dv8tion.jda.api.entities.channel.attribute.IWebhookContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -47,7 +49,7 @@ import javax.annotation.Nonnull;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel
+public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel, AudioChannel, IWebhookContainer, IAgeRestrictedChannel, ISlowmodeChannel, IVoiceStatusChannel
 {
     /**
      * The maximum limit you can set with {@link VoiceChannelManager#setUserLimit(int)}. ({@value})
@@ -56,10 +58,12 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
 
     @Nonnull
     @Override
+    @CheckReturnValue
     ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     default ChannelAction<VoiceChannel> createCopy()
     {
         return createCopy(getGuild());
@@ -67,5 +71,6 @@ public interface VoiceChannel extends StandardGuildChannel, GuildMessageChannel,
 
     @Nonnull
     @Override
+    @CheckReturnValue
     VoiceChannelManager getManager();
 }

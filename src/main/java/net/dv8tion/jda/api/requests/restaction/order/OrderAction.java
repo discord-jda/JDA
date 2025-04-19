@@ -17,7 +17,9 @@
 package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.Unmodifiable;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -47,14 +49,17 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     M setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     M timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     M deadline(long timestamp);
 
     /**
@@ -72,6 +77,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @return Immutable List representing the current order
      */
     @Nonnull
+    @Unmodifiable
     List<T> getCurrentOrder();
 
     /**
@@ -91,6 +97,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #getSelectedEntity()
      */
     @Nonnull
+    @CheckReturnValue
     M selectPosition(int selectedPosition);
 
     /**
@@ -109,6 +116,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #getSelectedEntity()
      */
     @Nonnull
+    @CheckReturnValue
     M selectPosition(@Nonnull T selectedEntity);
 
     /**
@@ -147,6 +155,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #moveTo(int)
      */
     @Nonnull
+    @CheckReturnValue
     M moveUp(int amount);
 
     /**
@@ -166,6 +175,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #moveTo(int)
      */
     @Nonnull
+    @CheckReturnValue
     M moveDown(int amount);
 
     /**
@@ -189,6 +199,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #moveAbove(Object)
      */
     @Nonnull
+    @CheckReturnValue
     M moveTo(int position);
 
     /**
@@ -209,6 +220,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #moveAbove(Object)
      */
     @Nonnull
+    @CheckReturnValue
     M moveBelow(@Nonnull T other);
 
     /**
@@ -229,6 +241,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #moveBelow(Object)
      */
     @Nonnull
+    @CheckReturnValue
     M moveAbove(@Nonnull T other);
 
     /**
@@ -246,6 +259,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @return The current OrderAction sub-implementation instance
      */
     @Nonnull
+    @CheckReturnValue
     M swapPosition(int swapPosition);
 
     /**
@@ -267,6 +281,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    #swapPosition(int)
      */
     @Nonnull
+    @CheckReturnValue
     M swapPosition(@Nonnull T swapEntity);
 
     /**
@@ -278,6 +293,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    java.util.Collections#reverse(java.util.List)
      */
     @Nonnull
+    @CheckReturnValue
     M reverseOrder();
 
     /**
@@ -289,6 +305,7 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    java.util.Collections#shuffle(java.util.List)
      */
     @Nonnull
+    @CheckReturnValue
     M shuffleOrder();
 
     /**
@@ -307,5 +324,6 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      * @see    java.util.ArrayList#sort(java.util.Comparator)
      */
     @Nonnull
+    @CheckReturnValue
     M sortOrder(@Nonnull final Comparator<T> comparator);
 }

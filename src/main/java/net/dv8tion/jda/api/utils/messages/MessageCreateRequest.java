@@ -25,8 +25,10 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
+import okhttp3.MediaType;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -298,6 +300,27 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     List<FileUpload> getAttachments();
 
     /**
+     * The poll attached to this message
+     *
+     * @return The attached poll, or null if no poll is present
+     */
+    @Nullable
+    MessagePollData getPoll();
+
+    /**
+     * Add a poll to this message.
+     *
+     * @param  poll
+     *         The poll to send
+     *
+     * @return The same instance for chaining
+     *
+     * @see    MessagePollBuilder
+     */
+    @Nonnull
+    R setPoll(@Nullable MessagePollData poll);
+
+    /**
      * Whether the message should use <em>Text-to-Speech</em> (TTS).
      *
      * <p>Requires {@link net.dv8tion.jda.api.Permission#MESSAGE_TTS Permission.MESSAGE_TTS} to be enabled.
@@ -317,10 +340,23 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @param  suppressed
      *         True, if this message should not trigger push/desktop notifications
      *
-     * @return The same reply action, for chaining convenience
+     * @return The same instance for chaining
      */
     @Nonnull
     R setSuppressedNotifications(boolean suppressed);
+
+    /**
+     * Whether this message should be considered a voice message.
+     * <br>Voice messages must upload a valid voice message attachment, using {@link FileUpload#asVoiceMessage(MediaType, byte[], double)}.
+     *
+     * @param  voiceMessage
+     *         True, if this message is a voice message.
+     *         Turned on automatically if attachment is a valid voice message attachment.
+     *
+     * @return The same instance for chaining
+     */
+    @Nonnull
+    R setVoiceMessage(boolean voiceMessage);
 
     /**
      * Applies the provided {@link MessageCreateData} to this request.
@@ -350,7 +386,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setTTS(data.isTTS())
                 .setSuppressEmbeds(data.isSuppressEmbeds())
                 .setSuppressedNotifications(data.isSuppressedNotifications())
+                .setVoiceMessage(data.isVoiceMessage())
                 .setComponents(layoutComponents)
+                .setPoll(data.getPoll())
                 .setFiles(data.getFiles());
     }
 
@@ -367,7 +405,9 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
                 .setEmbeds(embeds)
                 .setTTS(message.isTTS())
                 .setSuppressedNotifications(message.isSuppressedNotifications())
-                .setComponents(message.getActionRows());
+                .setVoiceMessage(message.isVoiceMessage())
+                .setComponents(message.getActionRows())
+                .setPoll(message.getPoll() != null ? MessagePollData.from(message.getPoll()) : null);
     }
 
     /**

@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.exceptions;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that we received a {@code 429: Too Many Requests} response
  */
@@ -45,6 +47,7 @@ public class RateLimitedException extends Exception
      *
      * @return The corresponding route
      */
+    @Nonnull
     public String getRateLimitedRoute()
     {
         return rateLimitedRoute;

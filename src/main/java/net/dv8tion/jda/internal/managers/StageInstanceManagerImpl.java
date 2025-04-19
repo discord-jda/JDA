@@ -31,7 +31,6 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
     private final StageInstance instance;
 
     private String topic;
-    private StageInstance.PrivacyLevel privacyLevel;
 
     public StageInstanceManagerImpl(StageInstance instance)
     {
@@ -62,27 +61,12 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
         return this;
     }
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("deprecation")
-    public StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
-    {
-        Checks.notNull(level, "PrivacyLevel");
-        Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "PrivacyLevel must not be UNKNOWN!");
-        Checks.check(level != StageInstance.PrivacyLevel.PUBLIC, "Cannot create PUBLIC stage instances anymore.");
-        this.privacyLevel = level;
-        set |= PRIVACY_LEVEL;
-        return this;
-    }
-
     @Override
     protected RequestBody finalizeData()
     {
         DataObject body = DataObject.empty();
         if (shouldUpdate(TOPIC) && topic != null)
             body.put("topic", topic);
-        if (shouldUpdate(PRIVACY_LEVEL))
-            body.put("privacy_level", privacyLevel.getKey());
         return getRequestBody(body);
     }
 }

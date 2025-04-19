@@ -17,10 +17,7 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.ISnowflake;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -33,6 +30,7 @@ import net.dv8tion.jda.internal.utils.ChannelUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Abstract representation for any kind of Discord interaction.
@@ -97,6 +95,21 @@ public interface Interaction extends ISnowflake
      */
     @Nullable
     Guild getGuild();
+
+    /**
+     * Whether this interaction happened in an attached guild.
+     *
+     * @return {@code true}, if this interaction happened in an attached guild
+     *
+     * @see Guild#isDetached()
+     */
+    default boolean isFromAttachedGuild()
+    {
+        final Guild guild = getGuild();
+        if (guild == null)
+            return false;
+        return !guild.isDetached();
+    }
 
     /**
      * Whether this interaction came from a {@link Guild}.
@@ -230,6 +243,31 @@ public interface Interaction extends ISnowflake
             throw new IllegalStateException("This interaction did not happen in a guild");
         return getGuild().getLocale();
     }
+
+    /**
+     * Returns the list of {@link Entitlement entitlements} for the current guild and user.
+     * <br>If this interaction is not from a guild, it will only contain entitlements of the user.
+     *
+     * @return The {@link List List} of {@link Entitlement Entitlement}
+     */
+    @Nonnull
+    List<Entitlement> getEntitlements();
+
+    /**
+     * Gets the context in which this command was executed.
+     *
+     * @return The context in which this command was executed
+     */
+    @Nonnull
+    InteractionContextType getContext();
+
+    /**
+     * Returns the integration owners of this interaction, which depends on how the app was installed.
+     *
+     * @return The integration owners of this interaction
+     */
+    @Nonnull
+    IntegrationOwners getIntegrationOwners();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this interaction

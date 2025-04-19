@@ -54,6 +54,7 @@ public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
      *
      * @return The removed roles
      */
+    @Nonnull
     public List<Role> getRoles()
     {
         return removedRoles;

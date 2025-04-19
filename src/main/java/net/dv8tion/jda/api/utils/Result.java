@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
@@ -250,6 +251,7 @@ public class Result<T>
      *
      * @return The result value
      */
+    @UnknownNullability
     public T get()
     {
         if (isFailure())

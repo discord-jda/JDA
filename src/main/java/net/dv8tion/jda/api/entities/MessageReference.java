@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -38,6 +39,7 @@ import javax.annotation.Nullable;
  */
 public class MessageReference
 {
+    private final int type;
     private final long messageId;
     private final long channelId;
     private final long guildId;
@@ -47,8 +49,9 @@ public class MessageReference
     private final Guild guild;
     private Message referencedMessage;
 
-    public MessageReference(long messageId, long channelId, long guildId, @Nullable Message referencedMessage, JDA api)
+    public MessageReference(int type, long messageId, long channelId, long guildId, @Nullable Message referencedMessage, JDA api)
     {
+        this.type = type;
         this.messageId = messageId;
         this.channelId = channelId;
         this.guildId = guildId;
@@ -100,6 +103,7 @@ public class MessageReference
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
      */
     @Nonnull
+    @CheckReturnValue
     public RestAction<Message> resolve()
     {
         return resolve(true);
@@ -144,6 +148,7 @@ public class MessageReference
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
      */
     @Nonnull
+    @CheckReturnValue
     public RestAction<Message> resolve(boolean update)
     {
         checkPermission(Permission.VIEW_CHANNEL);
@@ -211,6 +216,27 @@ public class MessageReference
     public Guild getGuild()
     {
         return guild;
+    }
+
+    /**
+     * The message reference type id
+     *
+     * @return The raw type id
+     */
+    public int getTypeRaw()
+    {
+        return type;
+    }
+
+    /**
+     * The type of this message reference
+     *
+     * @return The {@link MessageReferenceType} or {@link MessageReferenceType#UNKNOWN}
+     */
+    @Nonnull
+    public MessageReferenceType getType()
+    {
+        return MessageReferenceType.fromId(type);
     }
 
     /**
@@ -297,5 +323,54 @@ public class MessageReference
         Checks.checkAccess(selfMember, guildChannel);
         if (!selfMember.hasPermission(guildChannel, permission))
             throw new InsufficientPermissionException(guildChannel, permission);
+    }
+
+    /**
+     * The type of message reference
+     */
+    public enum MessageReferenceType
+    {
+        /** This message reference indicates a replied to message */
+        DEFAULT(0),
+        /** This message reference indicates a forwarded message */
+        FORWARD(1),
+
+        UNKNOWN(-1);
+
+        private final int id;
+
+        MessageReferenceType(int id)
+        {
+            this.id = id;
+        }
+
+        /**
+         * Convert the raw type id to the message reference type enum
+         *
+         * @param  id
+         *         Raw type id
+         *
+         * @return Enum constant of the reference type or {@link #UNKNOWN}
+         */
+        @Nonnull
+        public static MessageReferenceType fromId(int id)
+        {
+            for (MessageReferenceType type : values())
+            {
+                if (type.id == id)
+                    return type;
+            }
+            return UNKNOWN;
+        }
+
+        /**
+         * The raw type id used in the API.
+         *
+         * @return The raw type id
+         */
+        public int getId()
+        {
+            return id;
+        }
     }
 }

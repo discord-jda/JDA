@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities.channel.attribute;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.attribute.IPositionableChannelManager;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -30,12 +31,10 @@ import javax.annotation.Nonnull;
  */
 public interface IPositionableChannel extends GuildChannel
 {
-    //TODO-v5: Docs
     @Override
     @Nonnull
+    @CheckReturnValue
     IPositionableChannelManager<?, ?> getManager();
-
-    //TODO-v5: We should probably introduce getPositionInCategory (name pending) that returns index in Category#getChannels or -1
 
     /**
      * The position of this channel in the channel list of the guild.
@@ -46,6 +45,8 @@ public interface IPositionableChannel extends GuildChannel
      *
      * @throws IllegalStateException
      *         If this channel is not in the guild cache
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return Zero-based int of position of the GuildChannel.
      */

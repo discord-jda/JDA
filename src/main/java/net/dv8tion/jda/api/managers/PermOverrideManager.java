@@ -72,6 +72,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     PermOverrideManager reset(long fields);
 
     /**
@@ -92,6 +93,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     PermOverrideManager reset(long... fields);
 
     /**

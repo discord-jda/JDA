@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -44,14 +45,17 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     PermissionOverrideAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     PermissionOverrideAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     PermissionOverrideAction deadline(long timestamp);
 
     /**
@@ -61,6 +65,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The current PermissionOverrideAction for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     default PermissionOverrideAction reset()
     {
         return resetAllow().resetDeny();
@@ -73,6 +78,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The current PermissionOverrideAction for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     PermissionOverrideAction resetAllow();
 
     /**
@@ -82,16 +88,16 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @return The current PermissionOverrideAction for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     PermissionOverrideAction resetDeny();
 
-    //TODO-v5: Should probably be IPermissionContainer?
     /**
-     * The {@link GuildChannel} this will be created in
+     * The {@link IPermissionContainer} this will be created in
      *
      * @return The channel
      */
     @Nonnull
-    GuildChannel getChannel();
+    IPermissionContainer getChannel();
 
     /**
      * The {@link Role} for this override

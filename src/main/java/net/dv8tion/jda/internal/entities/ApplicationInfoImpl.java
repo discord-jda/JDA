@@ -21,15 +21,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 public class ApplicationInfoImpl implements ApplicationInfo
 {
@@ -47,14 +45,21 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final User owner;
     private final ApplicationTeam team;
     private final List<String> tags;
+    private final List<String> redirectUris;
+    private final String interactionsEndpointUrl;
+    private final String roleConnectionsVerificationUrl;
     private final String customAuthUrl;
     private final long defaultAuthUrlPerms;
     private final List<String> defaultAuthUrlScopes;
+    private final long approxUserInstallCount;
+    private final Map<IntegrationType, IntegrationTypeConfiguration> integrationTypesConfig;
     private String scopes = "bot";
 
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id, long flags,
-            boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team,
-            List<String> tags, String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes)
+                               boolean isBotPublic, String name, String termsOfServiceUrl, String privacyPolicyUrl, User owner, ApplicationTeam team,
+                               List<String> tags, List<String> redirectUris, String interactionsEndpointUrl, String roleConnectionsVerificationUrl,
+                               String customAuthUrl, long defaultAuthUrlPerms, List<String> defaultAuthUrlScopes,
+                               long approxUserInstallCount, Map<IntegrationType, IntegrationTypeConfiguration> integrationTypesConfig)
     {
         this.api = api;
         this.description = description;
@@ -69,9 +74,14 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.owner = owner;
         this.team = team;
         this.tags = Collections.unmodifiableList(tags);
+        this.redirectUris = Collections.unmodifiableList(redirectUris);
+        this.interactionsEndpointUrl = interactionsEndpointUrl;
+        this.roleConnectionsVerificationUrl = roleConnectionsVerificationUrl;
         this.customAuthUrl = customAuthUrl;
         this.defaultAuthUrlPerms = defaultAuthUrlPerms;
         this.defaultAuthUrlScopes = Collections.unmodifiableList(defaultAuthUrlScopes);
+        this.approxUserInstallCount = approxUserInstallCount;
+        this.integrationTypesConfig = integrationTypesConfig;
     }
 
     @Override
@@ -207,6 +217,27 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return tags;
     }
 
+    @Nonnull
+    @Override
+    public List<String> getRedirectUris()
+    {
+        return redirectUris;
+    }
+
+    @Nullable
+    @Override
+    public String getInteractionsEndpointUrl()
+    {
+        return interactionsEndpointUrl;
+    }
+
+    @Nullable
+    @Override
+    public String getRoleConnectionsVerificationUrl()
+    {
+        return roleConnectionsVerificationUrl;
+    }
+
     @Nullable
     @Override
     public String getCustomAuthorizationUrl()
@@ -241,9 +272,64 @@ public class ApplicationInfoImpl implements ApplicationInfo
     }
 
     @Override
+    public long getUserInstallCount()
+    {
+        return approxUserInstallCount;
+    }
+
+    @Nonnull
+    @Override
+    public Map<IntegrationType, IntegrationTypeConfiguration> getIntegrationTypesConfig()
+    {
+        return integrationTypesConfig;
+    }
+
+    @Override
     public String toString()
     {
         return new EntityString(this).toString();
     }
 
+    static class IntegrationTypeConfigurationImpl implements IntegrationTypeConfiguration
+    {
+        private final InstallParameters installParameters;
+
+        IntegrationTypeConfigurationImpl(InstallParameters installParameters) 
+        {
+            this.installParameters = installParameters;
+        }
+
+        @Nullable
+        @Override
+        public InstallParameters getInstallParameters()
+        {
+            return installParameters;
+        }
+    }
+
+    static class InstallParametersImpl implements InstallParameters
+    {
+        private final List<String> scopes;
+        private final Set<Permission> permissions;
+
+        InstallParametersImpl(List<String> scopes, Set<Permission> permissions)
+        {
+            this.scopes = Collections.unmodifiableList(scopes);
+            this.permissions = Collections.unmodifiableSet(permissions);
+        }
+
+        @Nonnull
+        @Override
+        public List<String> getScopes()
+        {
+            return scopes;
+        }
+
+        @Nonnull
+        @Override
+        public Set<Permission> getPermissions()
+        {
+            return permissions;
+        }
+    }
 }

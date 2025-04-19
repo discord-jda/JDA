@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
@@ -64,6 +65,7 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
      * @see    ForumTagSnowflake#fromId(long)
      */
     @Nonnull
+    @CheckReturnValue
     ForumPostAction setTags(@Nonnull Collection<? extends ForumTagSnowflake> tags);
 
     /**
@@ -82,6 +84,7 @@ public interface ForumPostAction extends AbstractThreadCreateAction<ForumPost, F
      * @see    ForumTagSnowflake#fromId(long)
      */
     @Nonnull
+    @CheckReturnValue
     default ForumPostAction setTags(@Nonnull ForumTagSnowflake... tags)
     {
         Checks.noneNull(tags, "Tags");

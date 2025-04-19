@@ -18,13 +18,16 @@ package net.dv8tion.jda.internal.audio;
 
 import net.dv8tion.jda.api.utils.data.DataArray;
 
+import java.util.EnumSet;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 public enum AudioEncryption
 {
-    // these are ordered by priority, lite > suffix > normal
-    // we prefer lite because it uses only 4 bytes for its nonce while the others use 24 bytes
-    XSALSA20_POLY1305_LITE,
-    XSALSA20_POLY1305_SUFFIX,
-    XSALSA20_POLY1305;
+    // ordered by priority descending
+    AEAD_AES256_GCM_RTPSIZE,
+    AEAD_XCHACHA20_POLY1305_RTPSIZE;
 
     private final String key;
 
@@ -53,5 +56,27 @@ public enum AudioEncryption
             catch (IllegalArgumentException ignored) {}
         }
         return encryption;
+    }
+
+    public static EnumSet<AudioEncryption> fromArray(DataArray modes)
+    {
+        return modes.stream(DataArray::getString)
+                .map(mode -> mode.toLowerCase(Locale.ROOT))
+                .map(AudioEncryption::forMode)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(AudioEncryption.class)));
+    }
+
+    public static AudioEncryption forMode(String mode)
+    {
+        switch (mode)
+        {
+        case "aead_aes256_gcm_rtpsize":
+            return AEAD_AES256_GCM_RTPSIZE;
+        case "aead_xchacha20_poly1305_rtpsize":
+            return AEAD_XCHACHA20_POLY1305_RTPSIZE;
+        default:
+            return null;
+        }
     }
 }

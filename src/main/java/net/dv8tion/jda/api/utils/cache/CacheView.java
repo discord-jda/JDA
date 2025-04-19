@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.cache;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.ClosableIterator;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UnifiedCacheViewImpl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -70,6 +72,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Immutable list of cached elements
      */
     @Nonnull
+    @Unmodifiable
     List<T> asList();
 
     /**
@@ -79,6 +82,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Immutable set of cached elements
      */
     @Nonnull
+    @Unmodifiable
     Set<T> asSet();
 
     /**
@@ -140,6 +144,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @see    #acceptStream(Consumer)
      */
+    @UnknownNullability
     default <R> R applyStream(@Nonnull Function<? super Stream<T>, ? extends R> action)
     {
         Checks.notNull(action, "Action");
@@ -224,6 +229,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Immutable list of elements with the given name
      */
     @Nonnull
+    @Unmodifiable
     List<T> getElementsByName(@Nonnull String name, boolean ignoreCase);
 
     /**
@@ -240,6 +246,7 @@ public interface CacheView<T> extends Iterable<T>
      * @return Immutable list of elements with the given name
      */
     @Nonnull
+    @Unmodifiable
     default List<T> getElementsByName(@Nonnull String name)
     {
         return getElementsByName(name, false);

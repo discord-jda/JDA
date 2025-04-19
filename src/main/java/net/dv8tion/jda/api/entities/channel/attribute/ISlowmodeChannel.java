@@ -17,10 +17,11 @@
 package net.dv8tion.jda.api.entities.channel.attribute;
 
 import net.dv8tion.jda.api.entities.channel.ChannelField;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.managers.channel.ChannelManager;
 import net.dv8tion.jda.api.managers.channel.attribute.ISlowmodeChannelManager;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -59,6 +60,8 @@ public interface ISlowmodeChannel extends GuildChannel
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The {@link ISlowmodeChannelManager} of this {@link ISlowmodeChannel}
      *
@@ -67,5 +70,6 @@ public interface ISlowmodeChannel extends GuildChannel
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     ISlowmodeChannelManager<?, ?> getManager();
 }

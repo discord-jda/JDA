@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.utils;
 
+import javax.annotation.Nonnull;
+
 /**
  * Compression algorithms that can be used with JDA.
  *
@@ -41,6 +43,7 @@ public enum Compression
      *
      * @return The query key
      */
+    @Nonnull
     public String getKey()
     {
         return key;

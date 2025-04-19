@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -31,23 +29,25 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.messages.MessagePoll;
+import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.Sticker;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
-import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.AttachmentProxy;
@@ -55,23 +55,25 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.api.utils.messages.MessagePollData;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
-import net.dv8tion.jda.internal.requests.FunctionalCallback;
+import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
+import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -141,21 +143,11 @@ public interface Message extends ISnowflake, Formattable
     String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
 
     /**
-     * The maximum sendable file size (25 MiB)
+     * The maximum sendable file size (10 MiB)
      *
      *  @see MessageRequest#setFiles(Collection)
      */
-    int MAX_FILE_SIZE = 25 << 20;
-
-    /**
-     * The maximum sendable file size for nitro (50 MiB)
-     *
-     * @see MessageRequest#setFiles(Collection)
-     *
-     * @deprecated Self-bots are not supported anymore and the value is outdated.
-     */
-    @Deprecated
-    int MAX_FILE_SIZE_NITRO = 50 << 20;
+    int MAX_FILE_SIZE = 10 << 20;
 
     /**
      * The maximum amount of files sendable within a single message ({@value})
@@ -276,6 +268,14 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
      *
+     * <p>This will have different meaning depending on the message {@link #getType() type}.
+     * The following are the message types where a reference will be present:
+     * <ul>
+     *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
+     *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link MessageType#CONTEXT_COMMAND CONTEXT_COMMAND} (message context command)</li>
+     * </ul>
+     *
      * <p>You can access all the information about a reference through this object.
      * Additionally, you can retrieve the referenced Message if discord did not load it in time. This can be done with {@link MessageReference#resolve()}.
      *
@@ -287,9 +287,15 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Referenced message.
      *
-     * <p>This will have different meaning depending on the {@link #getType() type} of message.
-     * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
-     * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
+     * <p>This will have different meaning depending on the message {@link #getType() type}.
+     * The following are the message types where a reference can be present:
+     * <ul>
+     *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
+     *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link MessageType#CONTEXT_COMMAND CONTEXT_COMMAND} (message context command)</li>
+     * </ul>
+     *
+     * <p>This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      *
      * <p>This differs from a {@link MessageReference}, which contains the raw IDs attached to the reference, and allows you to retrieve the referenced message
      *
@@ -350,7 +356,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.
      * <br><b>This is only valid if the Message was actually sent in a GuildMessageChannel.</b> This will return {@code null}
-     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook.
+     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook (including apps).
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
@@ -451,6 +457,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of invite codes
      */
     @Nonnull
+    @Unmodifiable
     List<String> getInvites();
 
     /**
@@ -497,8 +504,8 @@ public interface Message extends ISnowflake, Formattable
     ChannelType getChannelType();
 
     /**
-     * Indicates if this Message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} instead of a
-     * {@link User User}.
+     * Indicates if this Message was sent either by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or an app,
+     * instead of a {@link User User}.
      * <br>Useful if you want to ignore non-users.
      *
      * @return True if this message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
@@ -653,6 +660,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
     @Nonnull
+    @Unmodifiable
     List<Attachment> getAttachments();
 
     /**
@@ -663,6 +671,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all given MessageEmbeds.
      */
     @Nonnull
+    @Unmodifiable
     List<MessageEmbed> getEmbeds();
 
     /**
@@ -678,7 +687,45 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
+    @Unmodifiable
     List<LayoutComponent> getComponents();
+
+    /**
+     * The {@link MessagePoll} attached to this message.
+     *
+     * @return Possibly-null poll instance for this message
+     *
+     * @see    #endPoll()
+     */
+    @Nullable
+    MessagePoll getPoll();
+
+    /**
+     * End the poll attached to this message.
+     *
+     * @throws IllegalStateException
+     *         If this poll was not sent by the currently logged in account or no poll was attached to this message
+     *
+     * @return {@link AuditableRestAction} - Type: {@link Message}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Message> endPoll();
+
+    /**
+     * Paginate the users who voted for a poll answer.
+     *
+     * @param  answerId
+     *         The id of the poll answer, usually the ordinal position of the answer (first is 1)
+     *
+     * @return {@link PollVotersPaginationAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default PollVotersPaginationAction retrievePollVoters(long answerId)
+    {
+        return new PollVotersPaginationActionImpl(getJDA(), getChannelId(), getId(), answerId);
+    }
 
     /**
      * Rows of interactive components such as {@link Button Buttons}.
@@ -692,13 +739,14 @@ public interface Message extends ISnowflake, Formattable
      * @see    #getButtonById(String)
      */
     @Nonnull
+    @Unmodifiable
     default List<ActionRow> getActionRows()
     {
         return getComponents()
                 .stream()
                 .filter(ActionRow.class::isInstance)
                 .map(ActionRow.class::cast)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -709,12 +757,13 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons}
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtons()
     {
         return getComponents().stream()
                 .map(LayoutComponent::getButtons)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -728,7 +777,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         If the id is null
      *
-     * @return The {@link Button} or null of no button with that ID is present on this message
+     * @return The {@link Button} or null if no button with that ID is present on this message
      */
     @Nullable
     default Button getButtonById(@Nonnull String id)
@@ -755,6 +804,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons} with the specified label
      */
     @Nonnull
+    @Unmodifiable
     default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
     {
         Checks.notNull(label, "Label");
@@ -765,7 +815,7 @@ public interface Message extends ISnowflake, Formattable
             filter = b -> label.equals(b.getLabel());
         return getButtons().stream()
                 .filter(filter)
-                .collect(Collectors.toList());
+                .collect(Helpers.toUnmodifiableList());
     }
 
     /**
@@ -776,6 +826,7 @@ public interface Message extends ISnowflake, Formattable
      * @see    MessageReaction
      */
     @Nonnull
+    @Unmodifiable
     List<MessageReaction> getReactions();
 
     /**
@@ -785,7 +836,21 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable list of all StickerItems in this message.
      */
     @Nonnull
+    @Unmodifiable
     List<StickerItem> getStickers();
+
+    /**
+     * The {@link MessageSnapshot MessageSnaphots} attached to this message.
+     *
+     * <p>This is used primarily for message forwarding.
+     * The content of the forwarded message is provided as a snapshot at the time of forwarding.
+     * When the message is edited or deleted, this snapshot remains unchanged.
+     *
+     * @return Immutable {@link List} of {@link MessageSnapshot}
+     */
+    @Nonnull
+    @Unmodifiable
+    List<MessageSnapshot> getMessageSnapshots();
 
     /**
      * Defines whether or not this Message triggers TTS (Text-To-Speech).
@@ -1359,6 +1424,48 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
+     * Shortcut for {@code getChannel().sendMessagePoll(data).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#POLL_INVALID_CHANNEL_TYPE POLL_INVALID_CHANNEL_TYPE}
+     *     <br>This channel does not allow polls</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#POLL_WITH_UNUSABLE_EMOJI POLL_WITH_UNUSABLE_EMOJI}
+     *     <br>This poll uses an external emoji that the bot is not allowed to use</li>
+     * </ul>
+     *
+     * @param  poll
+     *         The poll to send
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessage(MessageCreateData)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessage(MessageCreateData)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyPoll(@Nonnull MessagePollData poll)
+    {
+        return getChannel().sendMessagePoll(poll).setMessageReference(this);
+    }
+
+    /**
      * Shortcut for {@code getChannel().sendMessageEmbeds(embed, other).setMessageReference(this)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -1596,6 +1703,40 @@ public interface Message extends ISnowflake, Formattable
     default MessageCreateAction replyFiles(@Nonnull Collection<? extends FileUpload> files)
     {
         return getChannel().sendFiles(files).setMessageReference(this);
+    }
+
+    /**
+     * Forwards this message into the provided channel.
+     *
+     * <p><b>A message forward request cannot contain additional content.</b>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} from forwarding include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REFERENCED_MESSSAGE_NOT_FOUND REFERENCED_MESSSAGE_NOT_FOUND}
+     *     <br>If the provided reference cannot be resolved to a message</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#FORWARD_CANNOT_HAVE_CONTENT FORWARD_CANNOT_HAVE_CONTENT}
+     *     <br>If additional content is sent alongside a forwarded message</li>
+     * </ul>
+     *
+     * @param  channel
+     *         The target channel to forward to
+     *
+     * @throws InsufficientPermissionException
+     *         If the bot is missing {@link Permission#MESSAGE_SEND} in the target channel
+     * @throws IllegalArgumentException
+     *         If the target channel is null
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction forwardTo(@Nonnull MessageChannel channel)
+    {
+        Checks.notNull(channel, "Target channel");
+        if (channel instanceof MessageChannelMixin)
+            ((MessageChannelMixin<?>) channel).checkCanSendMessage();
+        return new MessageCreateActionImpl(channel)
+                .setMessageReference(MessageReference.MessageReferenceType.FORWARD, this);
     }
 
     /**
@@ -1989,6 +2130,10 @@ public interface Message extends ISnowflake, Formattable
     /**
      * This obtains the {@link User users} who reacted using the given {@link Emoji}.
      *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsers(Emoji, MessageReaction.ReactionType) retrieveReactionUsers(emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
+     *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
      * <p>Using this data, we can obtain a {@link ReactionPaginationAction}
@@ -2023,7 +2168,51 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji);
+    default ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
+    {
+        return retrieveReactionUsers(emoji, MessageReaction.ReactionType.NORMAL);
+    }
+
+    /**
+     * This obtains the {@link User users} who reacted using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction}
+     * of the users who've reacted to this message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildChannel}
+     *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link GuildChannel} and the
+     *         logged in account does not have {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided null is provided.
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
+     *
+     * @return The {@link ReactionPaginationAction} of the users who reacted with the provided emoji
+     */
+    @Nonnull
+    @CheckReturnValue
+    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type);
 
     /**
      * This obtains the {@link MessageReaction} for the given {@link Emoji} on this message.
@@ -2178,6 +2367,13 @@ public interface Message extends ISnowflake, Formattable
     boolean isSuppressedNotifications();
 
     /**
+     * Whether this message is a voice message.
+     *
+     * @return True, if this is a voice message
+     */
+    boolean isVoiceMessage();
+
+    /**
      * Returns a possibly {@code null} {@link ThreadChannel ThreadChannel} that was started from this message.
      * This can be {@code null} due to no ThreadChannel being started from it or the ThreadChannel later being deleted.
      *
@@ -2204,9 +2400,21 @@ public interface Message extends ISnowflake, Formattable
      * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
+     *
+     * @deprecated Replaced with {@link #getInteractionMetadata()}
      */
     @Nullable
+    @Deprecated
     Interaction getInteraction();
+
+    /**
+     * Returns the interaction metadata,
+     * available when the message is a response or a followup to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
+     *
+     * @return The {@link InteractionMetadata} of this message, or {@code null}
+     */
+    @Nullable
+    InteractionMetadata getInteractionMetadata();
 
     /**
      * Creates a new, public {@link ThreadChannel} spawning/starting at this {@link Message} inside the {@link IThreadContainer} this message was sent in.
@@ -2249,8 +2457,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return A specific {@link ThreadChannelAction} that may be used to configure the new ThreadChannel before its creation.
      */
+    @Nonnull
     @CheckReturnValue
-    ThreadChannelAction createThreadChannel(String name);
+    ThreadChannelAction createThreadChannel(@Nonnull String name);
 
     /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
@@ -2567,263 +2776,6 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Enqueues a request to retrieve the contents of this Attachment.
-         * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void printContents(Message.Attachment attachment)
-         * {
-         *     attachment.retrieveInputStream().thenAccept(in -> {
-         *         StringBuilder builder = new StringBuilder();
-         *         byte[] buf = byte[1024];
-         *         int count = 0;
-         *         while ((count = in.read(buf)) > 0)
-         *         {
-         *             builder.append(new String(buf, 0, count));
-         *         }
-         *         in.close();
-         *         System.out.println(builder);
-         *     }).exceptionally(t -> { // handle failure
-         *         t.printStackTrace();
-         *         return null;
-         *     });
-         * }
-         * }</pre>
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.InputStream}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#download()}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getProxy().download()")
-        public CompletableFuture<InputStream> retrieveInputStream() // it is expected that the response is closed by the callback!
-        {
-            CompletableFuture<InputStream> future = new CompletableFuture<>();
-            Request req = getRequest();
-            OkHttpClient httpClient = getJDA().getHttpClient();
-            httpClient.newCall(req).enqueue(FunctionalCallback
-                .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
-                .onSuccess((call, response) -> {
-                    if (response.isSuccessful())
-                    {
-                        InputStream body = IOUtil.getBody(response);
-                        if (!future.complete(body))
-                            IOUtil.silentClose(response);
-                    }
-                    else
-                    {
-                        future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
-                        IOUtil.silentClose(response);
-                    }
-                }).build());
-            return future;
-        }
-
-        /**
-         * Downloads the attachment into the current working directory using the file name provided by {@link #getFileName()}.
-         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void saveLocally(Message.Attachment attachment)
-         * {
-         *     attachment.downloadToFile()
-         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
-         *         .exceptionally(t ->
-         *         { // handle failure
-         *             t.printStackTrace();
-         *             return null;
-         *         });
-         * }
-         * }</pre>
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getProxy().downloadToFile()")
-        public CompletableFuture<File> downloadToFile() // using relative path
-        {
-            return downloadToFile(getFileName());
-        }
-
-        /**
-         * Downloads the attachment to a file at the specified path (relative or absolute).
-         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void saveLocally(Message.Attachment attachment)
-         * {
-         *     attachment.downloadToFile("/tmp/" + attachment.getFileName())
-         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
-         *         .exceptionally(t ->
-         *         { // handle failure
-         *             t.printStackTrace();
-         *             return null;
-         *         });
-         * }
-         * }</pre>
-         *
-         * @param  path
-         *         The path to save the file to
-         *
-         * @throws java.lang.IllegalArgumentException
-         *         If the provided path is null
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getProxy().downloadToFile(new File(String))")
-        public CompletableFuture<File> downloadToFile(String path)
-        {
-            Checks.notNull(path, "Path");
-            return downloadToFile(new File(path));
-        }
-
-        /**
-         * Downloads the attachment to a file at the specified path (relative or absolute).
-         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void saveLocally(Message.Attachment attachment)
-         * {
-         *     attachment.downloadToFile(new File("/tmp/" + attachment.getFileName()))
-         *         .thenAccept(file -> System.out.println("Saved attachment to " + file.getName()))
-         *         .exceptionally(t ->
-         *         { // handle failure
-         *             t.printStackTrace();
-         *             return null;
-         *         });
-         * }
-         * }</pre>
-         *
-         * @param  file
-         *         The file to write to
-         *
-         * @throws java.lang.IllegalArgumentException
-         *         If the provided file is null or cannot be written to
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadToFile(File)}
-         */
-        @SuppressWarnings("ResultOfMethodCallIgnored")
-        @Nonnull
-        @ForRemoval
-        @ReplaceWith("getProxy().downloadToFile(File)")
-        public CompletableFuture<File> downloadToFile(File file)
-        {
-            Checks.notNull(file, "File");
-            try
-            {
-                if (!file.exists())
-                    file.createNewFile();
-                else
-                    Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
-            }
-            catch (IOException e)
-            {
-                throw new IllegalArgumentException("Cannot create file", e);
-            }
-
-            return retrieveInputStream().thenApplyAsync((stream) -> {
-                try (FileOutputStream out = new FileOutputStream(file))
-                {
-                    byte[] buf = new byte[1024];
-                    int count;
-                    while ((count = stream.read(buf)) > 0)
-                    {
-                        out.write(buf, 0, count);
-                    }
-                    return file;
-                }
-                catch (IOException e)
-                {
-                    throw new UncheckedIOException(e);
-                }
-                finally
-                {
-                    IOUtil.silentClose(stream);
-                }
-            }, getJDA().getCallbackPool());
-        }
-
-        /**
-         * Retrieves the image of this attachment and provides an {@link net.dv8tion.jda.api.entities.Icon} equivalent.
-         * <br>Useful with {@link net.dv8tion.jda.api.managers.AccountManager#setAvatar(Icon)}.
-         * <br>This will download the file using the {@link net.dv8tion.jda.api.JDA#getCallbackPool() callback pool}.
-         * Alternatively you can use {@link #retrieveInputStream()} and use a continuation with a different executor.
-         *
-         * <p><b>Example</b><br>
-         * <pre>{@code
-         * public void changeAvatar(Message.Attachment attachment)
-         * {
-         *     attachment.retrieveAsIcon().thenCompose(icon -> {
-         *         SelfUser self = attachment.getJDA().getSelfUser();
-         *         AccountManager manager = self.getManager();
-         *         return manager.setAvatar(icon).submit();
-         *     }).exceptionally(t -> {
-         *         t.printStackTrace();
-         *         return null;
-         *     });
-         * }
-         * }</pre>
-         *
-         * @throws java.lang.IllegalStateException
-         *         If this is not an image ({@link #isImage()})
-         *
-         * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
-         *
-         * @deprecated Replaced by {@link #getProxy}, see {@link AttachmentProxy#downloadAsIcon()}
-         */
-        @Nonnull
-        @ReplaceWith("getProxy().downloadAsIcon()")
-        public CompletableFuture<Icon> retrieveAsIcon()
-        {
-            if (!isImage())
-                throw new IllegalStateException("Cannot create an Icon out of this attachment. This is not an image.");
-            return retrieveInputStream().thenApplyAsync((stream) ->
-            {
-                try
-                {
-                    return Icon.from(stream);
-                }
-                catch (IOException e)
-                {
-                    throw new UncheckedIOException(e);
-                }
-                finally
-                {
-                    IOUtil.silentClose(stream);
-                }
-            }, getJDA().getCallbackPool());
-        }
-
-        protected Request getRequest()
-        {
-            return new Request.Builder()
-                .url(getUrl())
-                .addHeader("user-agent", RestConfig.USER_AGENT)
-                .addHeader("accept-encoding", "gzip, deflate")
-                .build();
-        }
-
-        /**
          * The size of the attachment in bytes.
          * <br>Example: if {@code getSize()} returns 1024, then the attachment is 1024 bytes, or 1KiB, in size.
          *
@@ -2954,7 +2906,10 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     *
+     * @deprecated Replaced with {@link InteractionMetadata}
      */
+    @Deprecated
     class Interaction implements ISnowflake
     {
         private final long id;
@@ -3032,6 +2987,180 @@ public interface Message extends ISnowflake, Formattable
         public Member getMember()
         {
             return member;
+        }
+    }
+
+    /**
+     * Metadata about the interaction, including the source of the interaction and relevant server and user IDs.
+     *
+     * @see Message#getInteractionMetadata()
+     */
+    class InteractionMetadata implements ISnowflake
+    {
+        private final long id;
+        private final int type;
+        private final User user;
+        private final IntegrationOwners integrationOwners;
+        private final long originalResponseMessageId;
+        private final long interactedMessageId;
+        private final InteractionMetadata triggeringInteraction;
+        private final User targetUser;
+        private final long targetMessageId;
+
+        public InteractionMetadata(long id, int type, User user, IntegrationOwners integrationOwners, long originalResponseMessageId, long interactedMessageId, InteractionMetadata triggeringInteraction, User targetUser, long targetMessageId)
+        {
+            this.id = id;
+            this.type = type;
+            this.user = user;
+            this.integrationOwners = integrationOwners;
+            this.originalResponseMessageId = originalResponseMessageId;
+            this.interactedMessageId = interactedMessageId;
+            this.triggeringInteraction = triggeringInteraction;
+            this.targetUser = targetUser;
+            this.targetMessageId = targetMessageId;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        /**
+         * The raw interaction type.
+         * <br>It is recommended to use {@link #getType()} instead.
+         *
+         * @return The raw interaction type
+         */
+        public int getTypeRaw()
+        {
+            return type;
+        }
+
+        /**
+         * The {@link net.dv8tion.jda.api.interactions.InteractionType} for this interaction.
+         *
+         * @return The {@link net.dv8tion.jda.api.interactions.InteractionType} or {@link net.dv8tion.jda.api.interactions.InteractionType#UNKNOWN}
+         */
+        @Nonnull
+        public InteractionType getType()
+        {
+            return InteractionType.fromKey(type);
+        }
+
+        /**
+         * The {@link User} who caused this interaction.
+         *
+         * @return The {@link User}
+         */
+        @Nonnull
+        public User getUser()
+        {
+            return user;
+        }
+
+        /**
+         * Returns the integration owners of this interaction, which depends on how the app was installed.
+         *
+         * @return The integration owners of this interaction
+         */
+        @Nonnull
+        public IntegrationOwners getIntegrationOwners()
+        {
+            return integrationOwners;
+        }
+
+        /**
+         * The ID of the original response message, present only on followup messages.
+         *
+         * @return The ID of the original response message, or {@code 0}
+         */
+        public long getOriginalResponseMessageIdLong()
+        {
+            return originalResponseMessageId;
+        }
+
+        /**
+         * The ID of the original response message, present only on followup messages.
+         *
+         * @return The ID of the original response message, or {@code null}
+         */
+        @Nullable
+        public String getOriginalResponseMessageId()
+        {
+            if (originalResponseMessageId == 0) return null;
+            return Long.toUnsignedString(originalResponseMessageId);
+        }
+
+        /**
+         * The ID of the message containing the component which created this message.
+         *
+         * @return the ID of the message containing the component which created this message, or {@code 0}
+         */
+        public long getInteractedMessageIdLong()
+        {
+            return interactedMessageId;
+        }
+
+        /**
+         * The ID of the message containing the component which created this message.
+         *
+         * @return the ID of the message containing the component which created this message, or {@code null}
+         */
+        @Nullable
+        public String getInteractedMessageId()
+        {
+            if (interactedMessageId == 0) return null;
+            return Long.toUnsignedString(interactedMessageId);
+        }
+
+        /**
+         * Metadata for the interaction that was used to open the modal,
+         * present only on modal submit interactions.
+         *
+         * @return Metadata for the interaction that was used to open the modal, or {@code null}
+         */
+        @Nullable
+        public InteractionMetadata getTriggeringInteraction()
+        {
+            return triggeringInteraction;
+        }
+
+        /**
+         * The user the command was run on, present only on user interaction commands.
+         *
+         * @return The user the command was run on, or {@code null}
+         */
+        @Nullable
+        public User getTargetUser()
+        {
+            return targetUser;
+        }
+
+        /**
+         * The ID of the message the command was run on, present only on message interaction commands.
+         *
+         * <p>If this is present, {@link Message#getMessageReference()} will also be present.
+         *
+         * @return The ID of the message the command was run on, or {@code 0}
+         */
+        public long getTargetMessageIdLong()
+        {
+            return targetMessageId;
+        }
+
+        /**
+         * The ID of the message the command was run on, present only on message interaction commands.
+         *
+         * <p>If this is present, {@link Message#getMessageReference()} will also be present.
+         *
+         * @return The ID of the message the command was run on, or {@code null}
+         */
+        @Nullable
+        public String getTargetMessageId()
+        {
+            if (targetMessageId == 0) return null;
+            return Long.toUnsignedString(targetMessageId);
         }
     }
 }

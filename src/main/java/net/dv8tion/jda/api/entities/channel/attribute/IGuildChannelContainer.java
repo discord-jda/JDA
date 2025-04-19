@@ -25,8 +25,10 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
+import net.dv8tion.jda.api.utils.cache.ChannelCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,8 +47,23 @@ import java.util.List;
  * <p>For the most efficient usage, it is recommended to use {@link CacheView} getters such as {@link #getTextChannelCache()}.
  * List getters usually require making a snapshot copy of the underlying cache view, which may introduce an undesirable performance hit.
  */
-public interface IGuildChannelContainer
+public interface IGuildChannelContainer<C extends Channel>
 {
+    /**
+     * Unified cache of all channels associated with this shard or guild.
+     *
+     * <p>This {@link ChannelCacheView} stores all channels in individually typed maps based on {@link ChannelType}.
+     * You can use {@link ChannelCacheView#getElementById(ChannelType, long)} or {@link ChannelCacheView#ofType(Class)} to filter
+     * out more specific types.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
+     * @return {@link ChannelCacheView}
+     */
+    @Nonnull
+    ChannelCacheView<C> getChannelCache();
+
     /**
      * Get a channel of the specified type by id.
      *
@@ -63,11 +80,13 @@ public interface IGuildChannelContainer
      *
      * @throws IllegalArgumentException
      *         If null is provided, or the id is not a valid snowflake
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return The casted channel, if it exists and is assignable to the provided class, or null
      */
     @Nullable
-    default <T extends Channel> T getChannelById(@Nonnull Class<T> type, @Nonnull String id)
+    default <T extends C> T getChannelById(@Nonnull Class<T> type, @Nonnull String id)
     {
         return getChannelById(type, MiscUtil.parseSnowflake(id));
     }
@@ -88,15 +107,16 @@ public interface IGuildChannelContainer
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return The casted channel, if it exists and is assignable to the provided class, or null
      */
     @Nullable
-    default <T extends Channel> T getChannelById(@Nonnull Class<T> type, long id)
+    default <T extends C> T getChannelById(@Nonnull Class<T> type, long id)
     {
         Checks.notNull(type, "Class");
-        GuildChannel channel = getGuildChannelById(id);
-        return type.isInstance(channel) ? type.cast(channel) : null;
+        return getChannelCache().ofType(type).getElementById(id);
     }
 
     /**
@@ -126,6 +146,8 @@ public interface IGuildChannelContainer
      *         If the provided ID is null
      * @throws java.lang.NumberFormatException
      *         If the provided ID is not a snowflake
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return The GuildChannel or null
      */
@@ -159,29 +181,16 @@ public interface IGuildChannelContainer
      * @param  id
      *         The ID of the channel
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return The GuildChannel or null
      */
     @Nullable
     default GuildChannel getGuildChannelById(long id)
     {
-        //TODO-v5-unified-channel-cache
-        GuildChannel channel = getTextChannelById(id);
-        if (channel == null)
-            channel = getNewsChannelById(id);
-        if (channel == null)
-            channel = getVoiceChannelById(id);
-        if (channel == null)
-            channel = getStageChannelById(id);
-        if (channel == null)
-            channel = getCategoryById(id);
-        if (channel == null)
-            channel = getThreadChannelById(id);
-        if (channel == null)
-            channel = getForumChannelById(id);
-        if (channel == null)
-            channel = getMediaChannelById(id);
-
-        return channel;
+        C channel = getChannelCache().getElementById(id);
+        return channel instanceof GuildChannel ? (GuildChannel) channel : null;
     }
 
     /**
@@ -217,6 +226,8 @@ public interface IGuildChannelContainer
      *         If the provided ID is null
      * @throws java.lang.NumberFormatException
      *         If the provided ID is not a snowflake
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return The GuildChannel or null
      */
@@ -255,34 +266,16 @@ public interface IGuildChannelContainer
      * @param  id
      *         The ID of the channel
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return The GuildChannel or null
      */
     @Nullable
     default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
     {
-        Checks.notNull(type, "ChannelType");
-        switch (type)
-        {
-        case NEWS:
-            return getNewsChannelById(id);
-        case TEXT:
-            return getTextChannelById(id);
-        case VOICE:
-            return getVoiceChannelById(id);
-        case STAGE:
-            return getStageChannelById(id);
-        case CATEGORY:
-            return getCategoryById(id);
-        case FORUM:
-            return getForumChannelById(id);
-        case MEDIA:
-            return getMediaChannelById(id);
-        }
-
-        if (type.isThread())
-            return getThreadChannelById(id);
-
-        return null;
+        C channel = getChannelCache().getElementById(type, id);
+        return channel instanceof GuildChannel ? (GuildChannel) channel : null;
     }
 
 
@@ -299,6 +292,9 @@ public interface IGuildChannelContainer
      * For a guild, this would mean it only returns channels within the same guild.
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -322,9 +318,13 @@ public interface IGuildChannelContainer
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all StageChannel names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getStageChannelCache().getElementsByName(name, ignoreCase);
@@ -346,13 +346,15 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Possibly-null {@link StageChannel StageChannel} with matching id.
      */
     @Nullable
     default StageChannel getStageChannelById(@Nonnull String id)
     {
-        return getStageChannelCache().getElementById(id);
+        return (StageChannel) getChannelCache().getElementById(ChannelType.STAGE, id);
     }
 
     /**
@@ -369,12 +371,15 @@ public interface IGuildChannelContainer
      * @param  id
      *         The id of the {@link StageChannel StageChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-null {@link StageChannel StageChannel} with matching id.
      */
     @Nullable
     default StageChannel getStageChannelById(long id)
     {
-        return getStageChannelCache().getElementById(id);
+        return (StageChannel) getChannelCache().getElementById(ChannelType.STAGE, id);
     }
 
     /**
@@ -393,9 +398,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return An immutable List of {@link StageChannel StageChannels}.
      */
     @Nonnull
+    @Unmodifiable
     default List<StageChannel> getStageChannels()
     {
         return getStageChannelCache().asList();
@@ -416,6 +425,9 @@ public interface IGuildChannelContainer
      * For a guild, this would mean it only returns channels within the same guild.
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -441,9 +453,13 @@ public interface IGuildChannelContainer
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all ThreadChannel names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<ThreadChannel> getThreadChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getThreadChannelCache().getElementsByName(name, ignoreCase);
@@ -467,13 +483,15 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
      */
     @Nullable
     default ThreadChannel getThreadChannelById(@Nonnull String id)
     {
-        return getThreadChannelCache().getElementById(id);
+        return (ThreadChannel) getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
     }
 
     /**
@@ -492,12 +510,15 @@ public interface IGuildChannelContainer
      * @param  id
      *         The id of the {@link ThreadChannel ThreadChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-null {@link ThreadChannel ThreadChannel} with matching id.
      */
     @Nullable
     default ThreadChannel getThreadChannelById(long id)
     {
-        return getThreadChannelCache().getElementById(id);
+        return (ThreadChannel) getChannelCache().getElementById(ChannelType.GUILD_PUBLIC_THREAD, id);
     }
 
     /**
@@ -517,9 +538,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return An immutable List of {@link ThreadChannel ThreadChannels}.
      */
     @Nonnull
+    @Unmodifiable
     default List<ThreadChannel> getThreadChannels()
     {
         return getThreadChannelCache().asList();
@@ -539,6 +564,9 @@ public interface IGuildChannelContainer
      * For a guild, this would mean it only returns channels within the same guild.
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -564,10 +592,13 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Immutable list of all categories matching the provided name
      */
     @Nonnull
+    @Unmodifiable
     default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getCategoryCache().getElementsByName(name, ignoreCase);
@@ -589,13 +620,15 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Possibly-null {@link Category Category} for the provided ID.
      */
     @Nullable
     default Category getCategoryById(@Nonnull String id)
     {
-        return getCategoryCache().getElementById(id);
+        return (Category) getChannelCache().getElementById(ChannelType.CATEGORY, id);
     }
 
     /**
@@ -612,12 +645,15 @@ public interface IGuildChannelContainer
      * @param  id
      *         The snowflake ID of the wanted Category
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-null {@link Category Category} for the provided ID.
      */
     @Nullable
     default Category getCategoryById(long id)
     {
-        return getCategoryCache().getElementById(id);
+        return (Category) getChannelCache().getElementById(ChannelType.CATEGORY, id);
     }
 
     /**
@@ -636,9 +672,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return An immutable list of all {@link Category Categories} in this Guild.
      */
     @Nonnull
+    @Unmodifiable
     default List<Category> getCategories()
     {
         return getCategoryCache().asList();
@@ -658,6 +698,9 @@ public interface IGuildChannelContainer
      * For a guild, this would mean it only returns channels within the same guild.
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -681,9 +724,13 @@ public interface IGuildChannelContainer
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all TextChannels names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<TextChannel> getTextChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getTextChannelCache().getElementsByName(name, ignoreCase);
@@ -705,13 +752,15 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Possibly-null {@link TextChannel TextChannel} with matching id.
      */
     @Nullable
     default TextChannel getTextChannelById(@Nonnull String id)
     {
-        return getTextChannelCache().getElementById(id);
+        return (TextChannel) getChannelCache().getElementById(ChannelType.TEXT, id);
     }
 
     /**
@@ -728,12 +777,15 @@ public interface IGuildChannelContainer
      * @param  id
      *         The id of the {@link TextChannel TextChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-null {@link TextChannel TextChannel} with matching id.
      */
     @Nullable
     default TextChannel getTextChannelById(long id)
     {
-        return getTextChannelCache().getElementById(id);
+        return (TextChannel) getChannelCache().getElementById(ChannelType.TEXT, id);
     }
 
     /**
@@ -752,9 +804,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return An immutable List of all {@link TextChannel TextChannels} in this Guild.
      */
     @Nonnull
+    @Unmodifiable
     default List<TextChannel> getTextChannels()
     {
         return getTextChannelCache().asList();
@@ -774,6 +830,9 @@ public interface IGuildChannelContainer
      * For a guild, this would mean it only returns channels within the same guild.
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -797,9 +856,13 @@ public interface IGuildChannelContainer
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all NewsChannels names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<NewsChannel> getNewsChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getNewsChannelCache().getElementsByName(name, ignoreCase);
@@ -821,13 +884,15 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Possibly-null {@link NewsChannel NewsChannel} with matching id.
      */
     @Nullable
     default NewsChannel getNewsChannelById(@Nonnull String id)
     {
-        return getNewsChannelCache().getElementById(id);
+        return (NewsChannel) getChannelCache().getElementById(ChannelType.NEWS, id);
     }
 
     /**
@@ -844,12 +909,15 @@ public interface IGuildChannelContainer
      * @param  id
      *         The id of the {@link NewsChannel NewsChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-null {@link NewsChannel NewsChannel} with matching id.
      */
     @Nullable
     default NewsChannel getNewsChannelById(long id)
     {
-        return getNewsChannelCache().getElementById(id);
+        return (NewsChannel) getChannelCache().getElementById(ChannelType.NEWS, id);
     }
 
     /**
@@ -868,9 +936,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return An immutable List of all {@link NewsChannel NewsChannels} in this Guild.
      */
     @Nonnull
+    @Unmodifiable
     default List<NewsChannel> getNewsChannels()
     {
         return getNewsChannelCache().asList();
@@ -890,6 +962,9 @@ public interface IGuildChannelContainer
      * For a guild, this would mean it only returns channels within the same guild.
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -913,9 +988,13 @@ public interface IGuildChannelContainer
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all VoiceChannel names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<VoiceChannel> getVoiceChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
@@ -937,13 +1016,15 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Possibly-null {@link VoiceChannel VoiceChannel} with matching id.
      */
     @Nullable
     default VoiceChannel getVoiceChannelById(@Nonnull String id)
     {
-        return getVoiceChannelCache().getElementById(id);
+        return (VoiceChannel) getChannelCache().getElementById(ChannelType.VOICE, id);
     }
 
     /**
@@ -960,12 +1041,15 @@ public interface IGuildChannelContainer
      * @param  id
      *         The id of the {@link VoiceChannel VoiceChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-null {@link VoiceChannel VoiceChannel} with matching id.
      */
     @Nullable
     default VoiceChannel getVoiceChannelById(long id)
     {
-        return getVoiceChannelCache().getElementById(id);
+        return (VoiceChannel) getChannelCache().getElementById(ChannelType.VOICE, id);
     }
 
     /**
@@ -984,9 +1068,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return An immutable List of {@link VoiceChannel VoiceChannels}.
      */
     @Nonnull
+    @Unmodifiable
     default List<VoiceChannel> getVoiceChannels()
     {
         return getVoiceChannelCache().asList();
@@ -1005,6 +1093,9 @@ public interface IGuildChannelContainer
      * For a guild, this would mean it only returns channels within the same guild.
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link SnowflakeCacheView SnowflakeCacheView}
      */
@@ -1028,9 +1119,13 @@ public interface IGuildChannelContainer
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all ForumChannel names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<ForumChannel> getForumChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getForumChannelCache().getElementsByName(name, ignoreCase);
@@ -1052,13 +1147,15 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Possibly-null {@link ForumChannel} with matching id.
      */
     @Nullable
     default ForumChannel getForumChannelById(@Nonnull String id)
     {
-        return getForumChannelCache().getElementById(id);
+        return (ForumChannel) getChannelCache().getElementById(ChannelType.FORUM, id);
     }
 
     /**
@@ -1075,12 +1172,15 @@ public interface IGuildChannelContainer
      * @param  id
      *         The id of the {@link ForumChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-null {@link ForumChannel} with matching id.
      */
     @Nullable
     default ForumChannel getForumChannelById(long id)
     {
-        return getForumChannelCache().getElementById(id);
+        return (ForumChannel) getChannelCache().getElementById(ChannelType.FORUM, id);
     }
 
     /**
@@ -1098,9 +1198,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return An immutable List of {@link ForumChannel}.
      */
     @Nonnull
+    @Unmodifiable
     default List<ForumChannel> getForumChannels()
     {
         return getForumChannelCache().asList();
@@ -1119,6 +1223,9 @@ public interface IGuildChannelContainer
      * For a guild, this would mean it only returns channels within the same guild.
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return {@link SnowflakeCacheView SnowflakeCacheView}
      */
@@ -1142,9 +1249,13 @@ public interface IGuildChannelContainer
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-empty immutable list of all ForumChannel names that match the provided name.
      */
     @Nonnull
+    @Unmodifiable
     default List<MediaChannel> getMediaChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getMediaChannelCache().getElementsByName(name, ignoreCase);
@@ -1166,13 +1277,15 @@ public interface IGuildChannelContainer
      *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
      *
      * @return Possibly-null {@link MediaChannel} with matching id.
      */
     @Nullable
     default MediaChannel getMediaChannelById(@Nonnull String id)
     {
-        return getMediaChannelCache().getElementById(id);
+        return (MediaChannel) getChannelCache().getElementById(ChannelType.MEDIA, id);
     }
 
     /**
@@ -1189,12 +1302,15 @@ public interface IGuildChannelContainer
      * @param  id
      *         The id of the {@link MediaChannel}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return Possibly-null {@link MediaChannel} with matching id.
      */
     @Nullable
     default MediaChannel getMediaChannelById(long id)
     {
-        return getMediaChannelCache().getElementById(id);
+        return (MediaChannel) getChannelCache().getElementById(ChannelType.MEDIA, id);
     }
 
     /**
@@ -1212,9 +1328,13 @@ public interface IGuildChannelContainer
      * <br>If this is called on {@link JDA} or {@link ShardManager}, this may return null immediately after building, because the cache isn't initialized yet.
      * To make sure the cache is initialized after building your {@link JDA} instance, you can use {@link JDA#awaitReady()}.
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link net.dv8tion.jda.api.entities.detached.IDetachableEntity#isDetached() detached}
+     *
      * @return An immutable List of {@link MediaChannel}.
      */
     @Nonnull
+    @Unmodifiable
     default List<MediaChannel> getMediaChannels()
     {
         return getMediaChannelCache().asList();

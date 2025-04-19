@@ -297,6 +297,7 @@ public interface Webhook extends ISnowflake, WebhookClient<Message>
      * @return The {@link WebhookManager WebhookManager} for this Webhook
      */
     @Nonnull
+    @CheckReturnValue
     WebhookManager getManager();
 
     /**

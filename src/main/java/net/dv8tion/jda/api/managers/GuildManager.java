@@ -78,6 +78,8 @@ public interface GuildManager extends Manager<GuildManager>
     long BOOST_PROGRESS_BAR_ENABLED = 1 << 14;
     /** Used to add or remove modifiable features (such as {@code "INVITES_DISABLED"}) */
     long FEATURES = 1 << 15;
+    /** Used to rest the safety alerts channel field */
+    long SAFETY_ALERTS_CHANNEL = 1 << 16;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -109,6 +111,7 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildManager reset(long fields);
 
     /**
@@ -140,6 +143,7 @@ public interface GuildManager extends Manager<GuildManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     GuildManager reset(long... fields);
 
     /**
@@ -258,6 +262,22 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setCommunityUpdatesChannel(@Nullable TextChannel communityUpdatesChannel);
+
+    /**
+     * Sets the safety alerts {@link TextChannel} of this {@link Guild Guild}.
+     *
+     * @param  safetyAlertsChannel
+     *         The new safety alerts channel for this {@link Guild}
+     *         or {@code null} to reset
+     *
+     * @throws IllegalArgumentException
+     *         If the provided channel is not from this guild
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setSafetyAlertsChannel(@Nullable TextChannel safetyAlertsChannel);
 
     /**
      * Sets the afk {@link net.dv8tion.jda.api.entities.Guild.Timeout Timeout} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.

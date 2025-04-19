@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -67,14 +68,13 @@ public class SubcommandData implements SerializableData
     protected void checkName(@Nonnull String name)
     {
         Checks.inRange(name, 1, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
     }
 
     protected void checkDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(description, 100, "Description");
+        Checks.inRange(description, 1, 100, "Description");
     }
 
     /**
@@ -422,6 +422,7 @@ public class SubcommandData implements SerializableData
      * @return Immutable list of {@link OptionData}
      */
     @Nonnull
+    @Unmodifiable
     public List<OptionData> getOptions()
     {
         return Collections.unmodifiableList(options);

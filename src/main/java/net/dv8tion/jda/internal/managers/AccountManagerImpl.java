@@ -35,6 +35,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
 
     protected String name;
     protected Icon avatar;
+    protected Icon banner;
 
     /**
      * Creates a new AccountManager instance
@@ -63,6 +64,8 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         super.reset(fields);
         if ((fields & AVATAR) == AVATAR)
             avatar = null;
+        if ((fields & BANNER) == BANNER)
+            banner = null;
         return this;
     }
 
@@ -87,7 +90,6 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
 
     @Nonnull
     @Override
-    @Deprecated
     @CheckReturnValue
     public AccountManagerImpl setName(@Nonnull String name)
     {
@@ -110,19 +112,27 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public AccountManager setBanner(Icon banner)
+    {
+        this.banner = banner;
+        set |= BANNER;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
         DataObject body = DataObject.empty();
 
-        //Required fields. Populate with current values..
-        body.put("username", getSelfUser().getName());
-        body.put("avatar", getSelfUser().getAvatarId());
-
         if (shouldUpdate(NAME))
             body.put("username", name);
         if (shouldUpdate(AVATAR))
             body.put("avatar", avatar == null ? null : avatar.getEncoding());
+        if (shouldUpdate(BANNER))
+            body.put("banner", banner == null ? null : banner.getEncoding());
 
         reset();
         return getRequestBody(body);
@@ -131,8 +141,6 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Override
     protected void handleSuccess(Response response, Request<Void> request)
     {
-//        String newToken = response.getObject().getString("token").replace("Bot ", "");
-//        api.setToken(newToken);
         request.onSuccess(null);
     }
 }

@@ -47,14 +47,17 @@ public interface RoleAction extends AuditableRestAction<Role>
 {
     @Nonnull
     @Override
+    @CheckReturnValue
     RoleAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     RoleAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
+    @CheckReturnValue
     RoleAction deadline(long timestamp);
 
     /**

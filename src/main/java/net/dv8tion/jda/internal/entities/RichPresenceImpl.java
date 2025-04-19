@@ -99,6 +99,7 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
         return flags;
     }
 
+    @Nonnull
     @Override
     public EnumSet<ActivityFlag> getFlagSet()
     {

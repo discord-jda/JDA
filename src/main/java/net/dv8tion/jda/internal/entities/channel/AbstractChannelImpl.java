@@ -77,6 +77,13 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
     }
 
     @Nonnull
+    @Override
+    public GroupChannel asGroupChannel()
+    {
+        return ChannelUtil.safeChannelCast(this, GroupChannel.class);
+    }
+
+    @Nonnull
     public TextChannel asTextChannel()
     {
         return ChannelUtil.safeChannelCast(this, TextChannel.class);

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.entities.channel.middleman;
 
-import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.StandardGuildMessageChannelMixin;
 
 import javax.annotation.Nullable;
@@ -29,7 +29,7 @@ public abstract class AbstractStandardGuildMessageChannelImpl<T extends Abstract
     protected long latestMessageId;
     protected int defaultThreadSlowmode;
 
-    public AbstractStandardGuildMessageChannelImpl(long id, GuildImpl guild)
+    public AbstractStandardGuildMessageChannelImpl(long id, Guild guild)
     {
         super(id, guild);
     }

@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.requests;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Member;
@@ -98,21 +97,22 @@ public enum GatewayIntent
      */
     GUILD_MEMBERS(1),
     /**
-     * Ban events.
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0-beta.4")
-    @ReplaceWith("GUILD_MODERATION")
-    GUILD_BANS(2),
-    /**
      * Moderation events, such as ban/unban/audit-log.
      */
     GUILD_MODERATION(2),
     /**
      * Custom emoji and sticker add/update/delete events.
+     *
+     * @deprecated Replaced with {@link #GUILD_EXPRESSIONS}
      */
+    @ForRemoval(deadline = "5.3.0")
+    @ReplaceWith("GUILD_EXPRESSIONS")
+    @Deprecated
     GUILD_EMOJIS_AND_STICKERS(3),
+    /**
+     * Custom emoji, sticker and soundboard sound add/update/delete events.
+     */
+    GUILD_EXPRESSIONS(3),
 //    /**
 //     * Integration events. (unused)
 //     */
@@ -193,6 +193,16 @@ public enum GatewayIntent
      * Events related to {@link net.dv8tion.jda.api.entities.automod.AutoModResponse AutoModResponse} triggers.
      */
     AUTO_MODERATION_EXECUTION(21),
+
+    /**
+     * Events for poll votes in {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     */
+    GUILD_MESSAGE_POLLS(24),
+
+    /**
+     * Events for poll votes in {@link net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel PrivateChannels}.
+     */
+    DIRECT_MESSAGE_POLLS(25),
 
     ;
 
@@ -408,7 +418,7 @@ public enum GatewayIntent
             else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event) || GuildAuditLogEntryCreateEvent.class.isAssignableFrom(event))
                 intents.add(GUILD_MODERATION);
             else if (GenericEmojiEvent.class.isAssignableFrom(event) || GenericGuildStickerEvent.class.isAssignableFrom(event))
-                intents.add(GUILD_EMOJIS_AND_STICKERS);
+                intents.add(GUILD_EXPRESSIONS);
             else if (GenericScheduledEventUpdateEvent.class.isAssignableFrom(event))
                 intents.add(SCHEDULED_EVENTS);
             else if (GenericGuildInviteEvent.class.isAssignableFrom(event))

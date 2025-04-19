@@ -18,24 +18,19 @@ package net.dv8tion.jda.internal.entities.channel.concrete;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.Region;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.requests.Route;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IAgeRestrictedChannelMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.ISlowmodeChannelMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IWebhookContainerMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildMessageChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.VoiceChannelMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.VoiceChannelManagerImpl;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -46,15 +41,12 @@ import java.util.List;
 
 public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChannelImpl> implements
         VoiceChannel,
-        GuildMessageChannelMixin<VoiceChannelImpl>,
-        AudioChannelMixin<VoiceChannelImpl>,
-        IWebhookContainerMixin<VoiceChannelImpl>,
-        IAgeRestrictedChannelMixin<VoiceChannelImpl>,
-        ISlowmodeChannelMixin<VoiceChannelImpl>
+        VoiceChannelMixin<VoiceChannelImpl>
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
 
     private String region;
+    private String status = "";
     private long latestMessageId;
     private int bitrate;
     private int userLimit;
@@ -64,6 +56,19 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     public VoiceChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
+    }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public GuildImpl getGuild()
+    {
+        return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
@@ -105,13 +110,6 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
     }
 
     @Override
-    public boolean canTalk(@Nonnull Member member)
-    {
-        Checks.notNull(member, "Member");
-        return member.hasPermission(this, Permission.MESSAGE_SEND);
-    }
-
-    @Override
     public long getLatestMessageIdLong()
     {
         return latestMessageId;
@@ -126,40 +124,32 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
 
     @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild)
+    public VoiceChannelManager getManager()
     {
-        Checks.notNull(guild, "Guild");
-
-        ChannelAction<VoiceChannel> action = guild.createVoiceChannel(name)
-                .setBitrate(bitrate)
-                .setUserlimit(userLimit);
-
-        if (region != null)
-        {
-            action.setRegion(Region.fromKey(region));
-        }
-
-        if (guild.equals(getGuild()))
-        {
-            Category parent = getParentCategory();
-            if (parent != null)
-                action.setParent(parent);
-            for (PermissionOverride o : overrides.valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-            }
-        }
-        return action;
+        return new VoiceChannelManagerImpl(this);
     }
 
     @Nonnull
     @Override
-    public VoiceChannelManager getManager()
+    public String getStatus()
     {
-        return new VoiceChannelManagerImpl(this);
+        return status;
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> modifyStatus(@Nonnull String status)
+    {
+        Checks.notLonger(status, MAX_STATUS_LENGTH, "Voice Status");
+        checkCanAccess();
+        if (this.equals(getGuild().getSelfMember().getVoiceState().getChannel()))
+            checkPermission(Permission.VOICE_SET_STATUS);
+        else
+            checkCanManage();
+
+        Route.CompiledRoute route = Route.Channels.SET_STATUS.compile(getId());
+        DataObject body = DataObject.empty().put("status", status);
+        return new AuditableRestActionImpl<>(api, route, body);
     }
 
     @Override
@@ -210,11 +200,10 @@ public class VoiceChannelImpl extends AbstractStandardGuildChannelImpl<VoiceChan
         return this;
     }
 
-    // -- Abstract Hooks --
-
     @Override
-    protected void onPositionChange()
+    public VoiceChannelImpl setStatus(String status)
     {
-        getGuild().getVoiceChannelsView().clearCachedLists();
+        this.status = status;
+        return this;
     }
 }

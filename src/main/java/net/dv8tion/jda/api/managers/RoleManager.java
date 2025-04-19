@@ -83,6 +83,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     RoleManager reset(long fields);
 
     /**
@@ -106,6 +107,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     RoleManager reset(long... fields);
 
     /**
@@ -133,7 +135,7 @@ public interface RoleManager extends Manager<RoleManager>
     /**
      * Sets the <b><u>name</u></b> of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
      *
-     * <p>A role name <b>must not</b> be {@code null} nor less than 1 characters or more than 32 characters long!
+     * <p>A role name <b>must not</b> be {@code null} nor less than 1 character or more than 100 characters long!
      *
      * @param  name
      *         The new name for the selected {@link net.dv8tion.jda.api.entities.Role Role}

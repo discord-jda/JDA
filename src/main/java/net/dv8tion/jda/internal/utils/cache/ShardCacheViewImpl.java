@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
 
@@ -35,7 +36,6 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -314,9 +314,9 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
         @Override
         public List<JDA> getElementsByName(@Nonnull String name, boolean ignoreCase)
         {
-            return Collections.unmodifiableList(distinctStream()
+            return distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
         }
 
         @Override

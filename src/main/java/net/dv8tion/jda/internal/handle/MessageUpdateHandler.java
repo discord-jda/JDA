@@ -17,20 +17,14 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageEmbedEvent;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-
-import java.util.LinkedList;
 
 public class MessageUpdateHandler extends SocketHandler
 {
@@ -72,15 +66,7 @@ public class MessageUpdateHandler extends SocketHandler
                 WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
                 return null;
             }
-            else if (!content.isNull("embeds"))
-            {
-                //Received update with no "type" field which means its an update for a rich embed message
-                handleMessageEmbed(content);
-                return null;
-            }
         }
-        else if (!content.isNull("embeds"))
-            return handleMessageEmbed(content);
         return null;
     }
 
@@ -135,43 +121,6 @@ public class MessageUpdateHandler extends SocketHandler
                 new MessageUpdateEvent(
                         getJDA(), responseNumber,
                         message));
-        return null;
-    }
-
-    private Long handleMessageEmbed(DataObject content)
-    {
-        EntityBuilder builder = getJDA().getEntityBuilder();
-        final long messageId = content.getLong("id");
-        final long channelId = content.getLong("channel_id");
-        LinkedList<MessageEmbed> embeds = new LinkedList<>();
-
-        MessageChannel channel = getJDA().getChannelById(MessageChannel.class, channelId);
-        if (channel == null)
-        {
-            Guild guild = getJDA().getGuildById(content.getUnsignedLong("guild_id", 0L));
-            if (guild != null)
-            {
-                GuildChannel guildChannel = guild.getGuildChannelById(channelId);
-                if (guildChannel != null)
-                {
-                    WebSocketClient.LOG.debug("Discarding MESSAGE_UPDATE event for unexpected channel type. Channel: {}", guildChannel);
-                    return null;
-                }
-            }
-
-            getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");
-            return null;
-        }
-
-        DataArray embedsJson = content.getArray("embeds");
-        for (int i = 0; i < embedsJson.length(); i++)
-            embeds.add(builder.createMessageEmbed(embedsJson.getObject(i)));
-
-        getJDA().handleEvent(
-            new MessageEmbedEvent(
-                getJDA(), responseNumber,
-                messageId, channel, embeds));
         return null;
     }
 }

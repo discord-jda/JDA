@@ -15,7 +15,9 @@
  */
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.ScheduledEvent;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -89,6 +91,7 @@ public interface ScheduledEventAction extends FluentAuditableRestAction<Schedule
      * @return The current ScheduledEventAction, for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     ScheduledEventAction setName(@Nonnull String name);
 
     /**
@@ -124,6 +127,7 @@ public interface ScheduledEventAction extends FluentAuditableRestAction<Schedule
      * @return The current ScheduledEventAction, for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     ScheduledEventAction setStartTime(@Nonnull TemporalAccessor startTime);
 
     /**
@@ -143,6 +147,7 @@ public interface ScheduledEventAction extends FluentAuditableRestAction<Schedule
      * @return The current ScheduledEventAction, for chaining convenience
      */
     @Nonnull
+    @CheckReturnValue
     ScheduledEventAction setEndTime(@Nullable TemporalAccessor endTime);
 
     /**

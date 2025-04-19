@@ -31,6 +31,7 @@ import net.dv8tion.jda.internal.interactions.component.EntitySelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -123,6 +124,7 @@ public interface EntitySelectMenu extends SelectMenu
      * @return Immutable list of {@link DefaultValue default values}
      */
     @Nonnull
+    @Unmodifiable
     List<DefaultValue> getDefaultValues();
 
     /**
@@ -133,6 +135,7 @@ public interface EntitySelectMenu extends SelectMenu
      */
     @Nonnull
     @CheckReturnValue
+    @Override
     default Builder createCopy()
     {
         //noinspection ConstantConditions
@@ -345,7 +348,7 @@ public interface EntitySelectMenu extends SelectMenu
          * Creates a default value of type {@link SelectTarget#USER} with the provided id.
          *
          * @param  id
-         *         The role id
+         *         The user id
          *
          * @return The default value
          */
@@ -359,7 +362,7 @@ public interface EntitySelectMenu extends SelectMenu
          * Creates a default value of type {@link SelectTarget#USER} with the provided id.
          *
          * @param  id
-         *         The role id
+         *         The user id
          *
          * @throws IllegalArgumentException
          *         If the provided id is not a valid snowflake
@@ -376,7 +379,7 @@ public interface EntitySelectMenu extends SelectMenu
          * Creates a default value of type {@link SelectTarget#CHANNEL} with the provided id.
          *
          * @param  id
-         *         The role id
+         *         The channel id
          *
          * @return The default value
          */
@@ -390,7 +393,7 @@ public interface EntitySelectMenu extends SelectMenu
          * Creates a default value of type {@link SelectTarget#CHANNEL} with the provided id.
          *
          * @param  id
-         *         The role id
+         *         The channel id
          *
          * @throws IllegalArgumentException
          *         If the provided id is not a valid snowflake

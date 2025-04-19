@@ -47,6 +47,7 @@ public enum ClientType
      *
      * @return The raw key
      */
+    @Nonnull
     public String getKey()
     {
         return key;

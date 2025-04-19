@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.annotations.UnknownNullability;
+
 import java.io.IOException;
 
 /**
@@ -27,5 +29,6 @@ import java.io.IOException;
 @FunctionalInterface
 public interface IOFunction<T, R>
 {
+    @UnknownNullability
     R apply(T t) throws IOException;
 }

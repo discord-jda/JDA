@@ -26,6 +26,9 @@ import javax.annotation.Nullable;
 /**
  * Represents the connection used for direct messaging.
  *
+ * <p>When this channel comes from a user-installed interaction, bots cannot send messages outside their own DMs.
+ * <br>For friend DMs, you can open a private channel directly with the user.
+ *
  * @see User#openPrivateChannel()
  */
 public interface PrivateChannel extends MessageChannel
@@ -39,6 +42,8 @@ public interface PrivateChannel extends MessageChannel
      *     <li>A reaction is added</li>
      *     <li>A message is deleted</li>
      *     <li>This account sends a message to a user from another shard (not shard 0)</li>
+     *     <li>This account receives an interaction response, happens when using an user-installed interaction</li>
+     *     <li>This channel represents a DM channel between friends, happens when using an user-installed interaction</li>
      * </ul>
      * The consequence of this is that for any message this bot receives from a guild or from other users, the user will not be null.
      *

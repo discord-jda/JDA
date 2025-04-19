@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.sticker;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.ImageProxy;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,6 +41,7 @@ public interface StickerPack extends ISnowflake
      * @return Immutable List of {@link StandardSticker StandardStickers}
      */
     @Nonnull
+    @Unmodifiable
     List<StandardSticker> getStickers();
 
     /**

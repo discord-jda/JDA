@@ -33,12 +33,14 @@ import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.messages.MessagePoll;
+import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
@@ -51,7 +53,9 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.ErrorMapper;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageEditActionImpl;
@@ -94,15 +98,18 @@ public class ReceivedMessage implements Message
     protected final String content;
     protected final String nonce;
     protected final MessageActivity activity;
+    protected final MessagePoll poll;
     protected final OffsetDateTime editedTime;
     protected final Mentions mentions;
     protected final Message.Interaction interaction;
+    protected final Message.InteractionMetadata interactionMetadata;
     protected final ThreadChannel startedThread;
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<StickerItem> stickers;
     protected final List<LayoutComponent> components;
+    protected final List<MessageSnapshot> messageSnapshots;
 
     protected WebhookClient<Message> webhook;
 
@@ -115,10 +122,10 @@ public class ReceivedMessage implements Message
     public ReceivedMessage(
             long id, long channelId, long guildId, JDA jda, Guild guild, MessageChannel channel, MessageType type, MessageReference messageReference,
             boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
-            String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
+            String content, String nonce, User author, Member member, MessageActivity activity, MessagePoll poll, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
-            List<StickerItem> stickers, List<ActionRow> components,
-            int flags, Message.Interaction interaction, ThreadChannel startedThread, int position)
+            List<StickerItem> stickers, List<LayoutComponent> components, List<MessageSnapshot> messageSnapshots,
+            int flags, Message.Interaction interaction, Message.InteractionMetadata interactionMetadata, ThreadChannel startedThread, int position)
     {
         this.id = id;
         this.channelId = channelId;
@@ -144,10 +151,13 @@ public class ReceivedMessage implements Message
         this.embeds = Collections.unmodifiableList(embeds);
         this.stickers = Collections.unmodifiableList(stickers);
         this.components = Collections.unmodifiableList(components);
+        this.messageSnapshots = Collections.unmodifiableList(messageSnapshots);
         this.flags = flags;
         this.interaction = interaction;
+        this.interactionMetadata = interactionMetadata;
         this.startedThread = startedThread;
         this.position = position;
+        this.poll = poll;
     }
 
     private void checkSystem(String comment)
@@ -344,15 +354,18 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
 
         if (hasChannel())
-            return getChannel().retrieveReactionUsersById(id, emoji);
+            return getChannel().retrieveReactionUsersById(id, emoji, type);
 
-        return new ReactionPaginationActionImpl(this, emoji.getAsReactionCode());
+        Checks.notNull(type, "ReactionType");
+        Checks.notNull(emoji, "Emoji");
+
+        return new ReactionPaginationActionImpl(this, emoji.getAsReactionCode(), type);
     }
 
     @Nullable
@@ -378,6 +391,13 @@ public class ReceivedMessage implements Message
     public Interaction getInteraction()
     {
         return interaction;
+    }
+
+    @Nullable
+    @Override
+    public InteractionMetadata getInteractionMetadata()
+    {
+        return interactionMetadata;
     }
 
     @Override
@@ -610,6 +630,29 @@ public class ReceivedMessage implements Message
         return components;
     }
 
+    @Override
+    public MessagePoll getPoll()
+    {
+        checkIntent();
+        return poll;
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Message> endPoll()
+    {
+        checkUser();
+        if (poll == null)
+            throw new IllegalStateException("This message does not contain a poll");
+        return new AuditableRestActionImpl<>(getJDA(), Route.Messages.END_POLL.compile(getChannelId(), getId()), (response, request) -> {
+            JDAImpl jda = (JDAImpl) getJDA();
+            EntityBuilder entityBuilder = jda.getEntityBuilder();
+            if (hasChannel())
+                return entityBuilder.createMessageWithChannel(response.getObject(), channel, false);
+            return entityBuilder.createMessageFromWebhook(response.getObject(), hasGuild() ? getGuild() : null);
+        });
+    }
+
     @Nonnull
     @Override
     public Mentions getMentions()
@@ -629,6 +672,13 @@ public class ReceivedMessage implements Message
     public List<StickerItem> getStickers()
     {
         return this.stickers;
+    }
+
+    @Nonnull
+    @Override
+    public List<MessageSnapshot> getMessageSnapshots()
+    {
+        return messageSnapshots;
     }
 
     @Override
@@ -774,7 +824,9 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
-            return new AuditableRestActionImpl<>(getJDA(), route);
+            final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
+            action.setErrorMapper(getUnknownWebhookErrorMapper());
+            return action;
         }
 
         SelfUser self = getJDA().getSelfUser();
@@ -808,7 +860,7 @@ public class ReceivedMessage implements Message
         Route.CompiledRoute route;
         if (isWebhookRequest())
         {
-            route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
+            route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), getId());
         }
         else
         {
@@ -839,7 +891,9 @@ public class ReceivedMessage implements Message
             newFlags &= ~suppressionValue;
         DataObject body = DataObject.empty().put("flags", newFlags);
 
-        return new AuditableRestActionImpl<>(api, route, body);
+        final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(api, route, body);
+        action.setErrorMapper(getUnknownWebhookErrorMapper());
+        return action;
     }
 
     @Nonnull
@@ -900,6 +954,12 @@ public class ReceivedMessage implements Message
         return (this.flags & MessageFlag.NOTIFICATIONS_SUPPRESSED.getValue()) != 0;
     }
 
+    @Override
+    public boolean isVoiceMessage()
+    {
+        return (this.flags & MessageFlag.IS_VOICE_MESSAGE.getValue()) != 0;
+    }
+
     @Nullable
     @Override
     public ThreadChannel getStartedThread()
@@ -908,7 +968,7 @@ public class ReceivedMessage implements Message
     }
 
     @Override
-    public ThreadChannelAction createThreadChannel(String name)
+    public ThreadChannelAction createThreadChannel(@Nonnull String name)
     {
         return getGuildChannel().asThreadContainer().createThreadChannel(name, this.getIdLong());
     }
@@ -980,8 +1040,27 @@ public class ReceivedMessage implements Message
     @Nonnull
     private MessageEditActionImpl editRequest()
     {
-        return hasChannel()
+        final MessageEditActionImpl messageEditAction = hasChannel()
                 ? new MessageEditActionImpl(getChannel(), getId())
                 : new MessageEditActionImpl(getJDA(), hasGuild() ? getGuild() : null, getChannelId(), getId());
+
+        messageEditAction.setErrorMapper(getUnknownWebhookErrorMapper());
+        return messageEditAction;
+    }
+
+    private ErrorMapper getUnknownWebhookErrorMapper()
+    {
+        if (!isWebhookRequest())
+            return null;
+
+        return (response, request, exception) ->
+        {
+            if (webhook instanceof InteractionHookImpl
+                    && !((InteractionHookImpl) webhook).isAck()
+                    && exception.getErrorResponse() == ErrorResponse.UNKNOWN_WEBHOOK)
+                return new IllegalStateException("Sending a webhook request requires the interaction to be acknowledged before expiration", exception);
+            else
+                return null;
+        };
     }
 }

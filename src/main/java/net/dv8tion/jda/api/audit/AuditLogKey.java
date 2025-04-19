@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api.audit;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
 import net.dv8tion.jda.api.entities.automod.AutoModTriggerType;
@@ -35,6 +32,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.internal.utils.EntityString;
+
+import javax.annotation.Nonnull;
 
 /**
  * Enum of possible/expected keys that can be provided
@@ -241,6 +240,14 @@ public enum AuditLogKey
     CHANNEL_TOPIC("topic"),
 
     /**
+     * Change of the {@link VoiceChannel#getStatus() VoiceChannel.getStatus()} value.
+     * <br>Only for {@link ChannelType#VOICE ChannelType.VOICE}
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    CHANNEL_VOICE_STATUS("status"),
+
+    /**
      * Change of the {@link ISlowmodeChannel#getSlowmode()} value.
      *
      * <p>Expected type: <b>Integer</b>
@@ -345,19 +352,6 @@ public enum AuditLogKey
      * <p>Expected type: <b>String</b>
      */
     THREAD_NAME("name"),
-
-    /**
-     * Change of the {@link ISlowmodeChannel#getSlowmode()} value.
-     *
-     * <p>Expected type: <b>Integer</b>
-     *
-     * @deprecated Use {@link #CHANNEL_SLOWMODE} instead
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("5.0.0")
-    @ReplaceWith("CHANNEL_SLOWMODE")
-    THREAD_SLOWMODE("rate_limit_per_user"),
 
     /**
      * Change of the {@link ThreadChannel#getAutoArchiveDuration() ThreadChannel.getAutoArchiveDuration()} value.
@@ -694,11 +688,13 @@ public enum AuditLogKey
         this.key = key;
     }
 
+    @Nonnull
     public String getKey()
     {
         return key;
     }
 
+    @Nonnull
     @Override
     public String toString()
     {

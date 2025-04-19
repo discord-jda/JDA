@@ -25,13 +25,13 @@ import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.UnifiedMemberCacheView;
 import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheView<T>
@@ -100,10 +100,10 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
     @Override
     public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase)
     {
-        return Collections.unmodifiableList(distinctStream()
+        return distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
                 .distinct()
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Nonnull
@@ -163,46 +163,46 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         @Override
         public List<Member> getElementsById(long id)
         {
-            return Collections.unmodifiableList(distinctStream()
+            return distinctStream()
                 .map(view -> view.getElementById(id))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
         }
 
         @Nonnull
         @Override
         public List<Member> getElementsByUsername(@Nonnull String name, boolean ignoreCase)
         {
-            return Collections.unmodifiableList(distinctStream()
+            return distinctStream()
                 .flatMap(view -> view.getElementsByUsername(name, ignoreCase).stream())
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
         }
 
         @Nonnull
         @Override
         public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
         {
-            return Collections.unmodifiableList(distinctStream()
+            return distinctStream()
                 .flatMap(view -> view.getElementsByNickname(name, ignoreCase).stream())
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
         }
 
         @Nonnull
         @Override
         public List<Member> getElementsWithRoles(@Nonnull Role... roles)
         {
-            return Collections.unmodifiableList(distinctStream()
+            return distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
         }
 
         @Nonnull
         @Override
         public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles)
         {
-            return Collections.unmodifiableList(distinctStream()
+            return distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
-                .collect(Collectors.toList()));
+                .collect(Helpers.toUnmodifiableList());
         }
     }
 }

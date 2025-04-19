@@ -100,6 +100,7 @@ public interface StringSelectMenu extends SelectMenu
      */
     @Nonnull
     @CheckReturnValue
+    @Override
     default Builder createCopy()
     {
         //noinspection ConstantConditions

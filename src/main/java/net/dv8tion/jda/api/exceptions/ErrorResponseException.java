@@ -64,7 +64,18 @@ public class ErrorResponseException extends RuntimeException
         this.errorResponse = errorResponse;
         this.code = code;
         this.meaning = meaning;
-        this.schemaErrors = schemaErrors;
+        this.schemaErrors = Collections.unmodifiableList(schemaErrors);
+    }
+
+    private ErrorResponseException(String message, ErrorResponseException cause)
+    {
+        super(cause.code + ": " + message, cause);
+
+        this.response = cause.response;
+        this.errorResponse = cause.errorResponse;
+        this.code = cause.code;
+        this.meaning = cause.meaning;
+        this.schemaErrors = cause.schemaErrors;
     }
 
     /**
@@ -84,6 +95,7 @@ public class ErrorResponseException extends RuntimeException
      *
      * @return Never-null meaning of this error.
      */
+    @Nonnull
     public String getMeaning()
     {
         return meaning;
@@ -107,6 +119,7 @@ public class ErrorResponseException extends RuntimeException
      *
      * @return {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}
      */
+    @Nonnull
     public ErrorResponse getErrorResponse()
     {
         return errorResponse;
@@ -117,6 +130,7 @@ public class ErrorResponseException extends RuntimeException
      *
      * @return {@link net.dv8tion.jda.api.requests.Response Response}
      */
+    @Nonnull
     public Response getResponse()
     {
         return response;
@@ -134,7 +148,14 @@ public class ErrorResponseException extends RuntimeException
         return schemaErrors;
     }
 
-    public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
+    @Nonnull
+    public static ErrorResponseException create(@Nonnull String message, @Nonnull ErrorResponseException cause)
+    {
+        return new ErrorResponseException(message, cause);
+    }
+
+    @Nonnull
+    public static ErrorResponseException create(@Nonnull ErrorResponse errorResponse, @Nonnull Response response)
     {
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();

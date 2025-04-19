@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Blocking;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -248,13 +249,20 @@ public interface RestRateLimiter
      */
     class RateLimitConfig
     {
-        private final ScheduledExecutorService pool;
+        private final ScheduledExecutorService scheduler;
+        private final ExecutorService elastic;
         private final GlobalRateLimit globalRateLimit;
         private final boolean isRelative;
 
-        public RateLimitConfig(@Nonnull ScheduledExecutorService pool, @Nonnull GlobalRateLimit globalRateLimit, boolean isRelative)
+        public RateLimitConfig(@Nonnull ScheduledExecutorService scheduler, @Nonnull GlobalRateLimit globalRateLimit, boolean isRelative)
         {
-            this.pool = pool;
+            this(scheduler, scheduler, globalRateLimit, isRelative);
+        }
+
+        public RateLimitConfig(@Nonnull ScheduledExecutorService scheduler, @Nonnull ExecutorService elastic, @Nonnull GlobalRateLimit globalRateLimit, boolean isRelative)
+        {
+            this.scheduler = scheduler;
+            this.elastic = elastic;
             this.globalRateLimit = globalRateLimit;
             this.isRelative = isRelative;
         }
@@ -265,9 +273,23 @@ public interface RestRateLimiter
          * @return The {@link ScheduledExecutorService}
          */
         @Nonnull
-        public ScheduledExecutorService getPool()
+        public ScheduledExecutorService getScheduler()
         {
-            return pool;
+            return scheduler;
+        }
+
+        /**
+         * The elastic {@link ExecutorService} used to execute rate-limit tasks.
+         * <br>This pool can potentially scale up and down depending on use.
+         *
+         * <p>It is also possible that this pool is identical to {@link #getScheduler()}.
+         *
+         * @return The elastic {@link ExecutorService}
+         */
+        @Nonnull
+        public ExecutorService getElastic()
+        {
+            return elastic;
         }
 
         /**

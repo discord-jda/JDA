@@ -96,22 +96,22 @@ public enum MessageType
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_DISQUALIFIED(14, true, false),
+    GUILD_DISCOVERY_DISQUALIFIED(14, true, true),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_REQUALIFIED(15, true, false),
+    GUILD_DISCOVERY_REQUALIFIED(15, true, true),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16, true, false),
+    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16, true, true),
 
     /**
      * System message related to discovery qualifications.
      */
-    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17, true, false),
+    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17, true, true),
 
     /**
      * This is sent to a TextChannel when a message thread is created if the message from which the thread was started is "old".
@@ -194,6 +194,55 @@ public enum MessageType
      * Sent to the {@link Guild#getSystemChannel() system channel} when a guild administrator subscribes to the premium plan of an application.
      */
     GUILD_APPLICATION_PREMIUM_SUBSCRIPTION(32, true, true),
+
+//    /**
+//     * Sent when an application is added as integration to a private channel or group channel.
+//     */
+//    PRIVATE_CHANNEL_INTEGRATION_ADDED(33, true, true),
+//
+//    /**
+//     * Sent when an application integration is removed from a private channel or group channel.
+//     */
+//    PRIVATE_CHANNEL_INTEGRATION_REMOVED(34, true, true),
+
+//    /**
+//     * Unclear what this is for or if its used at all
+//     */
+//    PREMIUM_REFERRAL(35, true, true),
+
+    /**
+     * Sent when a moderator activates a temporary security measure, such as pausing invites or direct messages.
+     * <br>The message content is an ISO 8601 timestamp, which indicates when the action expires and disables the security measures automatically.
+     *
+     * @see java.time.OffsetDateTime#parse(CharSequence)
+     */
+    GUILD_INCIDENT_ALERT_MODE_ENABLED(36, true, true),
+
+    /**
+     * Sent when a moderator deactivates a temporary security measure, such as pausing invites or direct messages.
+     */
+    GUILD_INCIDENT_ALERT_MODE_DISABLED(37, true, true),
+
+    /**
+     * Sent when a moderator reports a raid in a guild.
+     * <br>The message author is the reporter.
+     */
+    GUILD_INCIDENT_REPORT_RAID(38, true, true),
+
+    /**
+     * Sent when a moderator reports a raid as a false alarm in a guild.
+     */
+    GUILD_INCIDENT_REPORT_FALSE_ALARM(39, true, true),
+
+    /**
+     * Sent when a user purchases a product sold in a guild
+     */
+    PURCHASE_NOTIFICATION(44, true, true),
+
+    /**
+     * Sent when a poll completed in the channel.
+     */
+    POLL_RESULT(46, true, true),
 
     /**
      * Unknown MessageType.

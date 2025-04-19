@@ -18,18 +18,23 @@ package net.dv8tion.jda.internal.utils;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nullable;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.ToLongFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class has major inspiration from <a href="https://commons.apache.org/proper/commons-lang/" target="_blank">Lang 3</a>
@@ -223,6 +228,11 @@ public final class Helpers
         return out.toArray(new String[0]);
     }
 
+    public static boolean equals(String a, String b, boolean ignoreCase)
+    {
+        return ignoreCase ? a == b || (a != null && b != null && a.equalsIgnoreCase(b)) : Objects.equals(a, b);
+    }
+
     // ## CollectionUtils ##
 
     public static boolean deepEquals(Collection<?> first, Collection<?> second)
@@ -279,6 +289,23 @@ public final class Helpers
         return map;
     }
 
+    public static <I, O> Function<I, Result<O>> tryMap(Function<I, O> mapper)
+    {
+        return element -> Result.defer(() -> mapper.apply(element));
+    }
+
+    public static <I, O> Stream<O> mapGracefully(Stream<I> stream, Function<I, O> mapper, String errorDescription)
+    {
+        return stream
+            .map(tryMap(mapper))
+            .peek(result -> {
+                if (result.isFailure())
+                    JDAImpl.LOG.error(errorDescription, result.getFailure());
+            })
+            .filter(Result::isSuccess)
+            .map(Result::get);
+    }
+
     // ## ExceptionUtils ##
 
     public static <T extends Throwable> T appendCause(T throwable, Throwable cause)
@@ -307,8 +334,42 @@ public final class Helpers
         return Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList);
     }
 
+    public static <E extends Enum<E>> Collector<E, ?, Set<E>> toUnmodifiableEnumSet(Class<E> enumType)
+    {
+        return Collectors.collectingAndThen(Collectors.toCollection(() -> EnumSet.noneOf(enumType)), Collections::unmodifiableSet);
+    }
+
+    @SafeVarargs
+    public static <E extends Enum<E>> Set<E> unmodifiableEnumSet(E first, E... rest)
+    {
+        return Collections.unmodifiableSet(EnumSet.of(first, rest));
+    }
+
     public static <T> Collector<T, ?, DataArray> toDataArray()
     {
         return Collector.of(DataArray::empty, DataArray::add, DataArray::addAll);
+    }
+
+    public static String durationToString(Duration duration, TimeUnit resolutionUnit)
+    {
+        long actual = resolutionUnit.convert(duration.getSeconds(), TimeUnit.SECONDS);
+        String raw = actual + " " + resolutionUnit.toString().toLowerCase(Locale.ROOT);
+
+        long days = duration.toDays();
+        long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() - TimeUnit.DAYS.toSeconds(days) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+
+        StringJoiner joiner = new StringJoiner(" ");
+        if (days > 0)
+            joiner.add(days + " days");
+        if (hours > 0)
+            joiner.add(hours + " hours");
+        if (minutes > 0)
+            joiner.add(minutes + " minutes");
+        if (seconds > 0)
+            joiner.add(seconds + " seconds");
+
+        return raw + " (" + joiner + ")";
     }
 }

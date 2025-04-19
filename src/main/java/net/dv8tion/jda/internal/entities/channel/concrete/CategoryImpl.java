@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities.channel.concrete;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -29,18 +28,15 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractGuildChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPositionableChannelMixin;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.CategoryMixin;
 import net.dv8tion.jda.internal.managers.channel.concrete.CategoryManagerImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
 
 public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> implements
         Category,
-        IPositionableChannelMixin<CategoryImpl>,
-        IPermissionContainerMixin<CategoryImpl>
+        CategoryMixin<CategoryImpl>
 {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
@@ -49,6 +45,19 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> impleme
     public CategoryImpl(long id, GuildImpl guild)
     {
         super(id, guild);
+    }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public GuildImpl getGuild()
+    {
+        return (GuildImpl) super.getGuild();
     }
 
     @Nonnull
@@ -124,25 +133,6 @@ public class CategoryImpl extends AbstractGuildChannelImpl<CategoryImpl> impleme
     public CategoryOrderAction modifyVoiceChannelPositions()
     {
         return getGuild().modifyVoiceChannelPositions(this);
-    }
-
-    @Nonnull
-    @Override
-    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
-    {
-        Checks.notNull(guild, "Guild");
-        ChannelAction<Category> action = guild.createCategory(name);
-        if (guild.equals(getGuild()))
-        {
-            for (PermissionOverride o : overrides.valueCollection())
-            {
-                if (o.isMemberOverride())
-                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-                else
-                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
-            }
-        }
-        return action;
     }
 
     @Nonnull

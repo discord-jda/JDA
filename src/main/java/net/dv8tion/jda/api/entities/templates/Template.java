@@ -97,6 +97,7 @@ public class Template
      *         <br>The Template object
      */
     @Nonnull
+    @CheckReturnValue
     public static RestAction<Template> resolve(final JDA api, final String code)
     {
         Checks.notEmpty(code, "code");
@@ -270,6 +271,7 @@ public class Template
      * @return The TemplateManager of this Template
      */
     @Nonnull
+    @CheckReturnValue
     public TemplateManager getManager()
     {
         checkInteraction();

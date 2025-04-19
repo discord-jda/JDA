@@ -84,6 +84,7 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     AutoModRuleManager reset(long fields);
 
     /**
@@ -108,6 +109,7 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
      */
     @Nonnull
     @Override
+    @CheckReturnValue
     AutoModRuleManager reset(long... fields);
 
     /**

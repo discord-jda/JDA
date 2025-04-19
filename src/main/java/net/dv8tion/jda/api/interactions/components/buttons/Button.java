@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.components.buttons;
 
+import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -91,7 +92,8 @@ public interface Button extends ActionComponent
     int URL_MAX_LENGTH = 512;
 
     /**
-     * The visible text on the button.
+     * The visible text on the button,
+     * or an empty string if this is a {@link ButtonStyle#PREMIUM PREMIUM}-style button.
      *
      * @return The button label
      */
@@ -113,6 +115,14 @@ public interface Button extends ActionComponent
      */
     @Nullable
     String getUrl();
+
+    /**
+     * The target SKU for this button, if it is a {@link ButtonStyle#PREMIUM PREMIUM}-style Button.
+     *
+     * @return The target SKU or {@code null}
+     */
+    @Nullable
+    SkuSnowflake getSku();
 
     /**
      * The emoji attached to this button.
@@ -143,7 +153,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withDisabled(boolean disabled)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), disabled, getEmoji());
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), disabled, getEmoji()).checkValid();
     }
 
     /**
@@ -152,13 +162,16 @@ public interface Button extends ActionComponent
      * @param  emoji
      *         The emoji to use
      *
+     * @throws IllegalArgumentException
+     *         If this is a {@link ButtonStyle#PREMIUM PREMIUM}-styled button
+     *
      * @return New button with emoji
      */
     @Nonnull
     @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji);
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), emoji).checkValid();
     }
 
     /**
@@ -169,6 +182,7 @@ public interface Button extends ActionComponent
      *
      * @throws IllegalArgumentException
      *         <ul>
+     *             <li>If this is a {@link ButtonStyle#PREMIUM PREMIUM}-styled button</li>
      *             <li>If the provided {@code label} is null or empty.</li>
      *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
      *             is exceeded.</li>
@@ -180,9 +194,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withLabel(@Nonnull String label)
     {
-        Checks.notEmpty(label, "Label");
-        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(getId(), label, getStyle(), getUrl(), isDisabled(), getEmoji());
+        return new ButtonImpl(getId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -193,6 +205,7 @@ public interface Button extends ActionComponent
      *
      * @throws IllegalArgumentException
      *         <ul>
+     *             <li>If this is a {@link ButtonStyle#LINK LINK}-styled or {@link ButtonStyle#PREMIUM PREMIUM}-styled button</li>
      *             <li>If the provided {@code id} is null or empty.</li>
      *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
      *             is exceeded.</li>
@@ -204,9 +217,7 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withId(@Nonnull String id)
     {
-        Checks.notEmpty(id, "ID");
-        Checks.notLonger(id, ID_MAX_LENGTH, "ID");
-        return new ButtonImpl(id, getLabel(), getStyle(), null, isDisabled(), getEmoji());
+        return new ButtonImpl(id, getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -217,6 +228,7 @@ public interface Button extends ActionComponent
      *
      * @throws IllegalArgumentException
      *         <ul>
+     *             <li>If this is not a {@link ButtonStyle#LINK LINK}-styled button</li>
      *             <li>If the provided {@code url} is null or empty.</li>
      *             <li>If the character limit for {@code url}, defined by {@link #URL_MAX_LENGTH} as {@value #URL_MAX_LENGTH},
      *             is exceeded.</li>
@@ -228,9 +240,25 @@ public interface Button extends ActionComponent
     @CheckReturnValue
     default Button withUrl(@Nonnull String url)
     {
-        Checks.notEmpty(url, "URL");
-        Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, isDisabled(), getEmoji());
+        return new ButtonImpl(getId(), getLabel(), getStyle(), url, getSku(), isDisabled(), getEmoji()).checkValid();
+    }
+
+    /**
+     * Returns a copy of this button with the provided SKU.
+     *
+     * @param  sku
+     *         The SKU to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided {@code sku} is null, or if the button is not a {@link ButtonStyle#PREMIUM PREMIUM} button
+     *
+     * @return New button with the changed url
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Button withSku(@Nonnull SkuSnowflake sku)
+    {
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), sku, isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -244,7 +272,7 @@ public interface Button extends ActionComponent
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@code style} is null.</li>
-     *             <li>If the provided {@code style} tries to change whether this button is a {@link ButtonStyle#LINK LINK} button.</li>
+     *             <li>If the provided {@code style} tries to change whether this button is a {@link ButtonStyle#LINK LINK} or {@link ButtonStyle#PREMIUM PREMIUM} button.</li>
      *         </ul>
      *
      * @return New button with the changed style
@@ -259,7 +287,11 @@ public interface Button extends ActionComponent
             throw new IllegalArgumentException("You cannot change a link button to another style!");
         if (getStyle() != ButtonStyle.LINK && style == ButtonStyle.LINK)
             throw new IllegalArgumentException("You cannot change a styled button to a link button!");
-        return new ButtonImpl(getId(), getLabel(), style, getUrl(), isDisabled(), getEmoji());
+        if (getStyle() == ButtonStyle.PREMIUM && style != ButtonStyle.PREMIUM)
+            throw new IllegalArgumentException("You cannot change a premium button to another style!");
+        if (getStyle() != ButtonStyle.PREMIUM && style == ButtonStyle.PREMIUM)
+            throw new IllegalArgumentException("You cannot change a styled button to a premium button!");
+        return new ButtonImpl(getId(), getLabel(), style, getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
     }
 
     /**
@@ -286,11 +318,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button primary(@Nonnull String id, @Nonnull String label)
     {
-        Checks.notEmpty(id, "Id");
-        Checks.notEmpty(label, "Label");
-        Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(id, label, ButtonStyle.PRIMARY, false, null);
+        return new ButtonImpl(id, label, ButtonStyle.PRIMARY, false, null).checkValid();
     }
 
     /**
@@ -317,10 +345,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button primary(@Nonnull String id, @Nonnull Emoji emoji)
     {
-        Checks.notEmpty(id, "Id");
-        Checks.notNull(emoji, "Emoji");
-        Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(id, "", ButtonStyle.PRIMARY, false, emoji);
+        return new ButtonImpl(id, null, ButtonStyle.PRIMARY, false, emoji).checkValid();
     }
 
     /**
@@ -347,11 +372,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button secondary(@Nonnull String id, @Nonnull String label)
     {
-        Checks.notEmpty(id, "Id");
-        Checks.notEmpty(label, "Label");
-        Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(id, label, ButtonStyle.SECONDARY, false, null);
+        return new ButtonImpl(id, label, ButtonStyle.SECONDARY, false, null).checkValid();
     }
 
     /**
@@ -378,10 +399,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button secondary(@Nonnull String id, @Nonnull Emoji emoji)
     {
-        Checks.notEmpty(id, "Id");
-        Checks.notNull(emoji, "Emoji");
-        Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(id, "", ButtonStyle.SECONDARY, false, emoji);
+        return new ButtonImpl(id, null, ButtonStyle.SECONDARY, false, emoji).checkValid();
     }
 
     /**
@@ -408,11 +426,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button success(@Nonnull String id, @Nonnull String label)
     {
-        Checks.notEmpty(id, "Id");
-        Checks.notEmpty(label, "Label");
-        Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(id, label, ButtonStyle.SUCCESS, false, null);
+        return new ButtonImpl(id, label, ButtonStyle.SUCCESS, false, null).checkValid();
     }
 
     /**
@@ -439,10 +453,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button success(@Nonnull String id, @Nonnull Emoji emoji)
     {
-        Checks.notEmpty(id, "Id");
-        Checks.notNull(emoji, "Emoji");
-        Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(id, "", ButtonStyle.SUCCESS, false, emoji);
+        return new ButtonImpl(id, null, ButtonStyle.SUCCESS, false, emoji).checkValid();
     }
 
     /**
@@ -469,11 +480,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button danger(@Nonnull String id, @Nonnull String label)
     {
-        Checks.notEmpty(id, "Id");
-        Checks.notEmpty(label, "Label");
-        Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(id, label, ButtonStyle.DANGER, false, null);
+        return new ButtonImpl(id, label, ButtonStyle.DANGER, false, null).checkValid();
     }
 
     /**
@@ -500,10 +507,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button danger(@Nonnull String id, @Nonnull Emoji emoji)
     {
-        Checks.notEmpty(id, "Id");
-        Checks.notNull(emoji, "Emoji");
-        Checks.notLonger(id, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(id, "", ButtonStyle.DANGER, false, emoji);
+        return new ButtonImpl(id, null, ButtonStyle.DANGER, false, emoji).checkValid();
     }
 
     /**
@@ -533,11 +537,7 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button link(@Nonnull String url, @Nonnull String label)
     {
-        Checks.notEmpty(url, "URL");
-        Checks.notEmpty(label, "Label");
-        Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
-        return new ButtonImpl(null, label, ButtonStyle.LINK, url, false, null);
+        return new ButtonImpl(null, label, ButtonStyle.LINK, url, null, false, null).checkValid();
     }
 
     /**
@@ -567,16 +567,37 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button link(@Nonnull String url, @Nonnull Emoji emoji)
     {
-        Checks.notEmpty(url, "URL");
-        Checks.notNull(emoji, "Emoji");
-        Checks.notLonger(url, URL_MAX_LENGTH, "URL");
-        return new ButtonImpl(null, "", ButtonStyle.LINK, url, false, emoji);
+        return new ButtonImpl(null, null, ButtonStyle.LINK, url, null, false, emoji).checkValid();
+    }
+
+    /**
+     * Creates a button with {@link ButtonStyle#PREMIUM PREMIUM} Style.
+     * <br>The button is enabled by default, and cannot have emojis attached to it.
+     * You can use {@link #asDisabled()} to further configure it.
+     *
+     * <p>Note that premium buttons never send a {@link ButtonInteractionEvent ButtonInteractionEvent}.
+     * These buttons only open a modal about the SKU.
+     *
+     * @param  sku
+     *         The target SKU for this button
+     *
+     * @throws IllegalArgumentException
+     *         If the provided SKU is {@code null}
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button premium(@Nonnull SkuSnowflake sku)
+    {
+        return new ButtonImpl(null, null, ButtonStyle.PREMIUM, null, sku, false, null).checkValid();
     }
 
     /**
      * Create a button with the provided {@link ButtonStyle style}, URL or ID, and label.
      * <br>The button is enabled and has no emoji attached by default.
      * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     *
+     * <p>This does not support premium buttons, use {@link #of(ButtonStyle, String, String, Emoji)} instead.
      *
      * <p>See {@link #link(String, String)} or {@link #primary(String, String)} for more details.
      *
@@ -590,6 +611,7 @@ public interface Button extends ActionComponent
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the requested style is {@link ButtonStyle#PREMIUM PREMIUM}.</li>
      *             <li>If the id is longer than {@value #ID_MAX_LENGTH}, as defined by {@link #ID_MAX_LENGTH}.</li>
      *             <li>If the url is longer than {@value #URL_MAX_LENGTH}, as defined by {@link #URL_MAX_LENGTH}.</li>
      *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
@@ -601,21 +623,18 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label)
     {
-        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
-        Checks.notNull(style, "Style");
-        Checks.notNull(label, "Label");
-        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
+        Checks.check(style != ButtonStyle.PREMIUM, "Premium buttons don't support labels");
         if (style == ButtonStyle.LINK)
             return link(idOrUrl, label);
-        Checks.notEmpty(idOrUrl, "Id");
-        Checks.notLonger(idOrUrl, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(idOrUrl, label, style, false, null);
+        return new ButtonImpl(idOrUrl, label, style, false, null).checkValid();
     }
 
     /**
      * Create a button with the provided {@link ButtonStyle style}, URL or ID, and {@link Emoji}.
      * <br>The button is enabled and has no text label.
      * To use labels you can use {@code of(style, idOrUrl, label).withEmoji(emoji)}
+     *
+     * <p>This does not support premium buttons, use {@link #of(ButtonStyle, String, String, Emoji)} instead.
      *
      * <p>See {@link #link(String, Emoji)} or {@link #primary(String, Emoji)} for more details.
      *
@@ -629,6 +648,7 @@ public interface Button extends ActionComponent
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the requested style is {@link ButtonStyle#PREMIUM PREMIUM}.</li>
      *             <li>If the id is longer than {@value #ID_MAX_LENGTH}, as defined by {@link #ID_MAX_LENGTH}.</li>
      *             <li>If the url is longer than {@value #URL_MAX_LENGTH}, as defined by {@link #URL_MAX_LENGTH}.</li>
      *         </ul>
@@ -638,14 +658,10 @@ public interface Button extends ActionComponent
     @Nonnull
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull Emoji emoji)
     {
-        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
-        Checks.notNull(style, "Style");
-        Checks.notNull(emoji, "Emoji");
+        Checks.check(style != ButtonStyle.PREMIUM, "Premium buttons don't support emojis");
         if (style == ButtonStyle.LINK)
             return link(idOrUrl, emoji);
-        Checks.notEmpty(idOrUrl, "Id");
-        Checks.notLonger(idOrUrl, ID_MAX_LENGTH, "Id");
-        return new ButtonImpl(idOrUrl, "", style, false, emoji);
+        return new ButtonImpl(idOrUrl, null, style, false, emoji).checkValid();
     }
 
     /**
@@ -653,12 +669,13 @@ public interface Button extends ActionComponent
      *
      * <p>You can use {@link #asDisabled()} to disable it.
      *
-     * <p>See {@link #link(String, String)} or {@link #primary(String, String)} for more details.
+     * <p>See {@link #link(String, String)}, {@link #premium(SkuSnowflake)}
+     * or {@link #primary(String, String)} for more details.
      *
      * @param  style
      *         The button style
-     * @param  idOrUrl
-     *         Either the ID or URL for this button
+     * @param  idOrUrlOrSku
+     *         Either the ID, URL, or SKU for this button
      * @param  label
      *         The text to display on the button
      * @param  emoji
@@ -672,17 +689,24 @@ public interface Button extends ActionComponent
      *             or you provide an ID that is null, empty or longer than {@value #ID_MAX_LENGTH} characters, as defined by {@link #ID_MAX_LENGTH}.</li>
      *             <li>The {@code label} is non-null and longer than {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}.</li>
      *             <li>The {@code label} is null/empty, and the {@code emoji} is also null.</li>
+     *             <li>A label or emoji was provided for a {@link ButtonStyle#PREMIUM PREMIUM}-style button</li>
      *         </ul>
      *
      * @return The button instance
      */
     @Nonnull
-    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nullable String label, @Nullable Emoji emoji)
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrlOrSku, @Nullable String label, @Nullable Emoji emoji)
     {
-        if (label != null)
-            return of(style, idOrUrl, label).withEmoji(emoji);
-        else if (emoji != null)
-            return of(style, idOrUrl, emoji);
-        throw new IllegalArgumentException("Cannot build a button without a label and emoji. At least one has to be provided as non-null.");
+        Checks.notNull(style, "ButtonStyle");
+
+        switch (style)
+        {
+        case LINK:
+            return new ButtonImpl(null, label, style, idOrUrlOrSku, null, false, emoji).checkValid();
+        case PREMIUM:
+            return new ButtonImpl(null, label, style, null, SkuSnowflake.fromId(idOrUrlOrSku), false, emoji).checkValid();
+        default:
+            return new ButtonImpl(idOrUrlOrSku, label, style, null, null, false, emoji).checkValid();
+        }
     }
 }

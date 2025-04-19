@@ -18,7 +18,9 @@ package net.dv8tion.jda.api.utils;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.OkHttpClient;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
@@ -45,6 +47,13 @@ public class ImageProxy extends FileProxy
     public ImageProxy(@Nonnull String url)
     {
         super(url);
+    }
+
+    @Nonnull
+    @Override
+    public ImageProxy withClient(@Nonnull OkHttpClient customHttpClient)
+    {
+        return (ImageProxy) super.withClient(customHttpClient);
     }
 
     /**
@@ -76,6 +85,7 @@ public class ImageProxy extends FileProxy
      * @return {@link CompletableFuture} which holds an {@link InputStream}, the {@link InputStream} must be closed manually.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<InputStream> download(int size)
     {
         return download(getUrl(size));
@@ -103,6 +113,7 @@ public class ImageProxy extends FileProxy
      * @return {@link CompletableFuture} which holds a {@link Path} which corresponds to the location the file has been downloaded.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Path> downloadToPath(int size)
     {
         return downloadToPath(getUrl(size));
@@ -133,6 +144,7 @@ public class ImageProxy extends FileProxy
      * @return {@link CompletableFuture} which holds a {@link File}, it is the same as the file passed in the parameters.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<File> downloadToFile(@Nonnull File file, int size)
     {
         Checks.notNull(file, "File");
@@ -167,6 +179,7 @@ public class ImageProxy extends FileProxy
      * @return {@link CompletableFuture} which holds a {@link Path}, it is the same as the path passed in the parameters.
      */
     @Nonnull
+    @CheckReturnValue
     public CompletableFuture<Path> downloadToPath(@Nonnull Path path, int size)
     {
         Checks.notNull(path, "Path");

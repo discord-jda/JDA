@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -37,18 +39,21 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public class CommandEditActionImpl extends RestActionImpl<Command> implements CommandEditAction
 {
     private static final String UNDEFINED = "undefined";
-    private static final int NAME_SET        = 1 << 0;
-    private static final int DESCRIPTION_SET = 1 << 1;
-    private static final int OPTIONS_SET     = 1 << 2;
-    private static final int PERMISSIONS_SET = 1 << 3;
-    private static final int GUILD_ONLY_SET  = 1 << 4;
-    private static final int NSFW_SET        = 1 << 5;
+    private static final int NAME_SET                 = 1 << 0;
+    private static final int DESCRIPTION_SET          = 1 << 1;
+    private static final int OPTIONS_SET              = 1 << 2;
+    private static final int PERMISSIONS_SET          = 1 << 3;
+    private static final int GUILD_ONLY_SET           = 1 << 4;
+    private static final int NSFW_SET                 = 1 << 5;
+    private static final int INTERACTION_CONTEXTS_SET = 1 << 6;
+    private static final int INTEGRATION_TYPES_SET    = 1 << 7;
     private final Guild guild;
     private int mask = 0;
     private CommandDataImpl data = new CommandDataImpl(UNDEFINED, UNDEFINED);
@@ -84,7 +89,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditAction apply(@Nonnull CommandData commandData)
     {
         Checks.notNull(commandData, "Command Data");
-        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET | PERMISSIONS_SET | GUILD_ONLY_SET | NSFW_SET;
+        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET | PERMISSIONS_SET | GUILD_ONLY_SET | NSFW_SET | INTERACTION_CONTEXTS_SET | INTEGRATION_TYPES_SET;
         this.data = (CommandDataImpl) commandData;
         return this;
     }
@@ -123,6 +128,24 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     {
         data.setGuildOnly(guildOnly);
         mask |= GUILD_ONLY_SET;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction setContexts(@Nonnull Collection<InteractionContextType> contexts)
+    {
+        data.setContexts(contexts);
+        mask |= INTERACTION_CONTEXTS_SET;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes)
+    {
+        data.setIntegrationTypes(integrationTypes);
+        mask |= INTEGRATION_TYPES_SET;
         return this;
     }
 
@@ -215,6 +238,10 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
             json.remove("dm_permission");
         if (isUnchanged(NSFW_SET))
             json.remove("nsfw");
+        if (isUnchanged(INTERACTION_CONTEXTS_SET))
+            json.remove("contexts");
+        if (isUnchanged(INTEGRATION_TYPES_SET))
+            json.remove("integration_types");
         mask = 0;
         data = new CommandDataImpl(UNDEFINED, UNDEFINED);
         return getRequestBody(json);
