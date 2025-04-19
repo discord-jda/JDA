@@ -76,8 +76,8 @@ public class GuildUpdateHandler extends SocketHandler
         String name = content.getString("name");
         String iconId = content.getString("icon", null);
         String splashId = content.getString("splash", null);
-        SecurityIncidentActions securityIncidentActions = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidentsActions).orElse(null);
-        SecurityIncidentDetections securityIncidentDetections = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidentsDetections).orElse(null);
+        SecurityIncidentActions securityIncidentActions = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidentsActions).orElse(SecurityIncidentActions.disabled());
+        SecurityIncidentDetections securityIncidentDetections = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidentsDetections).orElse(SecurityIncidentDetections.EMPTY);
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
