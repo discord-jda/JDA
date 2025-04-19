@@ -41,6 +41,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.*;
@@ -250,12 +252,27 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
     }
 
-    public SecurityIncidents createSecurityIncidents(DataObject data) {
-        SecurityIncidents enabled = SecurityIncidents.enabled(
-                data.getOffsetDateTime("invites_disabled_until", null),
-                data.getOffsetDateTime("dms_disabled_until", null)
+    public SecurityIncidentActions createSecurityIncidentsActions(DataObject data)
+    {
+        SecurityIncidentActions enabled = SecurityIncidentActions.enabled(
+            data.getOffsetDateTime("invites_disabled_until", null),
+            data.getOffsetDateTime("dms_disabled_until", null)
         );
-        return enabled.equals(SecurityIncidents.disabled()) ? null : enabled;
+        return enabled.equals(SecurityIncidentActions.disabled()) ? null : enabled;
+    }
+
+    public SecurityIncidentDetections createSecurityIncidentsDetections(DataObject data)
+    {
+        String timeDmSpamDetected = data.getString("dm_spam_detected_at", null);
+        String timeRaidDetected = data.getString("raid_detected_at", null);
+
+        if (timeRaidDetected == null && timeDmSpamDetected == null)
+            return SecurityIncidentDetections.EMPTY;
+
+        return new SecurityIncidentDetections(
+            timeDmSpamDetected == null ? 0 : Helpers.toTimestamp(timeDmSpamDetected),
+            timeRaidDetected == null ? 0 : Helpers.toTimestamp(timeRaidDetected)
+        );
     }
 
     public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members, int memberCount)
@@ -268,7 +285,8 @@ public class EntityBuilder extends AbstractEntityBuilder
         final String vanityCode = guildJson.getString("vanity_url_code", null);
         final String bannerId = guildJson.getString("banner", null);
         final String locale = guildJson.getString("preferred_locale", "en-US");
-        final SecurityIncidents securityIncidents = guildJson.optObject("incidents_data").map(this::createSecurityIncidents).orElse(null);
+        final SecurityIncidentActions securityIncidents = guildJson.optObject("incidents_data").map(this::createSecurityIncidentsActions).orElse(null);
+        final SecurityIncidentDetections securityIncidentDetections = guildJson.optObject("incidents_data").map(this::createSecurityIncidentsDetections).orElse(null);
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray threadArray = guildJson.getArray("threads");
@@ -306,7 +324,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                 .setMaxPresences(maxPresences)
                 .setOwnerId(ownerId)
                 .setAfkTimeout(Guild.Timeout.fromKey(afkTimeout))
-                .setSecurityIncidents(securityIncidents)
+                .setSecurityIncidents(securityIncidents, securityIncidentDetections)
                 .setVerificationLevel(VerificationLevel.fromKey(verificationLevel))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))

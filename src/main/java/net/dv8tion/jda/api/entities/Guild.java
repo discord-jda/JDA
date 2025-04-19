@@ -39,6 +39,8 @@ import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -1267,13 +1269,22 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     Timeout getAfkTimeout();
 
     /**
-     * The current guild {@link SecurityIncidents security incidents}.
-     * <br>Security incidents are used to temporarily disable features for the purpose of moderation.
+     * The current guild {@link SecurityIncidentActions security incident actions}.
+     * <br>Security incident actions are used to temporarily disable features for the purpose of moderation.
      *
-     * @return {@link SecurityIncidents}, or null if disabled
+     * @return {@link SecurityIncidentActions} the currect actions
      */
-    @Nullable
-    SecurityIncidents getSecurityIncidents();
+    @Nonnull
+    SecurityIncidentActions getSecurityIncidentActions();
+
+    /**
+     * The current security incident detections.
+     * <br>Discord may automatically detect spammers or raiders.
+     *
+     * @return {@link SecurityIncidentDetections} the current detections
+     */
+    @Nonnull
+    SecurityIncidentDetections getSecurityIncidentDetections();
 
     /**
      * Used to determine if the provided {@link UserSnowflake} is a member of this Guild.
@@ -4050,8 +4061,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles);
 
     /**
-     * Update the current guild {@link SecurityIncidents security incidents}.
-     * <br>Security incidents are used to temporarily disable features for the purpose of moderation.
+     * Update the current guild {@link SecurityIncidentActions security incident actions}.
+     * <br>Security incident actions are used to temporarily disable features for the purpose of moderation.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link RestAction RestAction} include the following:
@@ -4070,12 +4081,12 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * @return {@link AuditableRestAction}
      *
-     * @see    SecurityIncidents#enabled(OffsetDateTime, OffsetDateTime)
-     * @see    SecurityIncidents#disabled()
+     * @see    SecurityIncidentActions#enabled(OffsetDateTime, OffsetDateTime)
+     * @see    SecurityIncidentActions#disabled()
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidents incidents);
+    AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidentActions incidents);
 
     /**
      * Kicks the {@link UserSnowflake} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.

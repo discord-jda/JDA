@@ -17,9 +17,10 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.SecurityIncidents;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -75,7 +76,8 @@ public class GuildUpdateHandler extends SocketHandler
         String name = content.getString("name");
         String iconId = content.getString("icon", null);
         String splashId = content.getString("splash", null);
-        SecurityIncidents securityIncidents = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidents).orElse(null);
+        SecurityIncidentActions securityIncidentActions = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidentsActions).orElse(null);
+        SecurityIncidentDetections securityIncidentDetections = content.optObject("incidents_data").map(api.getEntityBuilder()::createSecurityIncidentsDetections).orElse(null);
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
@@ -317,14 +319,23 @@ public class GuildUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             guild, oldSafetyAlertsChannel));
         }
-        if (!Objects.equals(securityIncidents, guild.getSecurityIncidents()))
+        if (!Objects.equals(securityIncidentActions, guild.getSecurityIncidentActions()))
         {
-            SecurityIncidents oldIncidents = guild.getSecurityIncidents();
-            guild.setSecurityIncidents(securityIncidents);
+            SecurityIncidentActions oldIncidentActions = guild.getSecurityIncidentActions();
+            guild.setSecurityIncidents(securityIncidentActions, securityIncidentDetections);
             api.handleEvent(
-                new GuildUpdateSecurityIncidentsEvent(
+                new GuildUpdateSecurityIncidentActionsEvent(
                     getJDA(), responseNumber,
-                    guild, oldIncidents));
+                    guild, oldIncidentActions));
+        }
+        if (!Objects.equals(securityIncidentDetections, guild.getSecurityIncidentDetections()))
+        {
+            SecurityIncidentDetections oldIncidentDetections = guild.getSecurityIncidentDetections();
+            guild.setSecurityIncidents(securityIncidentActions, securityIncidentDetections);
+            api.handleEvent(
+                new GuildUpdateSecurityIncidentDetectionsEvent(
+                    getJDA(), responseNumber,
+                    guild, oldIncidentDetections));
         }
         if (content.hasKey("nsfw_level") && nsfwLevel != guild.getNSFWLevel())
         {

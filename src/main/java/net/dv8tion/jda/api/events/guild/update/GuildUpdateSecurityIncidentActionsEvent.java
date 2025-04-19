@@ -18,45 +18,45 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.SecurityIncidents;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that the {@link SecurityIncidents} of a {@link Guild Guild} changed.
+ * Indicates that the {@link SecurityIncidentActions} of a {@link Guild Guild} changed.
  *
  * <p>Can be used to detect when a guild pauses or unpauses invites.
  *
- * <p>Identifier: {@code security_incidents}
+ * <p>Identifier: {@code security_incident_actions}
  */
-public class GuildUpdateSecurityIncidentsEvent extends GenericGuildUpdateEvent<SecurityIncidents>
+public class GuildUpdateSecurityIncidentActionsEvent extends GenericGuildUpdateEvent<SecurityIncidentActions>
 {
-    public static final String IDENTIFIER = "security_incidents";
+    public static final String IDENTIFIER = "security_incident_actions";
 
-    public GuildUpdateSecurityIncidentsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable SecurityIncidents previous)
+    public GuildUpdateSecurityIncidentActionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable SecurityIncidentActions previous)
     {
-        super(api, responseNumber, guild, previous, guild.getSecurityIncidents(), IDENTIFIER);
+        super(api, responseNumber, guild, previous, guild.getSecurityIncidentActions(), IDENTIFIER);
     }
 
     /**
-     * The old security incidents, or null if disabled.
+     * The old security incident actions, or null if disabled.
      *
-     * @return The old incidents
+     * @return The old incident actions
      */
     @Nullable
-    public SecurityIncidents getOldSecurityIncidents()
+    public SecurityIncidentActions getOldSecurityIncidentActions()
     {
         return getOldValue();
     }
 
     /**
-     * The new security incidents, or null if disabled.
+     * The new security incident actions, or null if disabled.
      *
-     * @return The new incidents
+     * @return The new incident actions
      */
     @Nullable
-    public SecurityIncidents getNewSecurityIncidents()
+    public SecurityIncidentActions getNewSecurityIncidentActions()
     {
         return getNewValue();
     }

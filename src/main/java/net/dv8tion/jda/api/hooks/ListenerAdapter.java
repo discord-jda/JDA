@@ -263,7 +263,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateCommunityUpdatesChannel(@Nonnull GuildUpdateCommunityUpdatesChannelEvent event) {}
     public void onGuildUpdateSafetyAlertsChannel(@Nonnull GuildUpdateSafetyAlertsChannelEvent event) {}
     public void onGuildUpdateAfkTimeout(@Nonnull GuildUpdateAfkTimeoutEvent event) {}
-    public void onGuildUpdateSecurityIncidents(@Nonnull GuildUpdateSecurityIncidentsEvent event) {}
+    public void onGuildUpdateSecurityIncidentActions(@Nonnull GuildUpdateSecurityIncidentActionsEvent event) {}
+    public void onGuildUpdateSecurityIncidentDetections(@Nonnull GuildUpdateSecurityIncidentDetectionsEvent event) {}
     public void onGuildUpdateExplicitContentLevel(@Nonnull GuildUpdateExplicitContentLevelEvent event) {}
     public void onGuildUpdateIcon(@Nonnull GuildUpdateIconEvent event) {}
     public void onGuildUpdateMFALevel(@Nonnull GuildUpdateMFALevelEvent event) {}

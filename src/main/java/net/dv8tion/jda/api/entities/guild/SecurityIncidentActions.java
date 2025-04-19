@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.entities.guild;
 
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -24,21 +26,21 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
- * The active security incidents in a {@link Guild}.
+ * The active security incident actions in a {@link Guild}.
  *
  * <p>Security incidents are used to temporarily disable features for the purpose of moderation.
  *
  * @see #enabled(OffsetDateTime, OffsetDateTime)
  * @see #disabled()
  */
-public class SecurityIncidents
+public class SecurityIncidentActions
 {
-    private static final SecurityIncidents disabled = new SecurityIncidents(0, 0);
+    private static final SecurityIncidentActions disabled = new SecurityIncidentActions(0, 0);
 
     private final long invitesDisabledUntil;
     private final long directMessagesDisabledUntil;
 
-    private SecurityIncidents(long invitesDisabledUntil, long directMessagesDisabledUntil)
+    private SecurityIncidentActions(long invitesDisabledUntil, long directMessagesDisabledUntil)
     {
         this.invitesDisabledUntil = invitesDisabledUntil;
         this.directMessagesDisabledUntil = directMessagesDisabledUntil;
@@ -68,19 +70,19 @@ public class SecurityIncidents
 
     /**
      * Incidents state, which disables all active security incidents.
-     * <br>The resulting object is used with {@link Guild#modifySecurityIncidents(SecurityIncidents)} to update the active incidents of the guild.
+     * <br>The resulting object is used with {@link Guild#modifySecurityIncidents(SecurityIncidentActions)} to update the active incidents of the guild.
      *
      * @return The new security incidents
      */
     @Nonnull
-    public static SecurityIncidents disabled()
+    public static SecurityIncidentActions disabled()
     {
         return disabled;
     }
 
     /**
      * Incidents state, which enables security incidents based on the provided deadlines.
-     * <br>The resulting object is used with {@link Guild#modifySecurityIncidents(SecurityIncidents)} to update the active incidents of the guild.
+     * <br>The resulting object is used with {@link Guild#modifySecurityIncidents(SecurityIncidentActions)} to update the active incidents of the guild.
      *
      * @param  invitesDisabledUntil
      *         The time until invites are paused
@@ -90,13 +92,13 @@ public class SecurityIncidents
      * @return The new security incidents
      */
     @Nonnull
-    public static SecurityIncidents enabled(
+    public static SecurityIncidentActions enabled(
         @Nullable
         OffsetDateTime invitesDisabledUntil,
         @Nullable
         OffsetDateTime directMessagesDisabledUntil
     ) {
-        return new SecurityIncidents(
+        return new SecurityIncidentActions(
             invitesDisabledUntil == null ? 0 : invitesDisabledUntil.toInstant().toEpochMilli(),
             directMessagesDisabledUntil == null ? 0 : directMessagesDisabledUntil.toInstant().toEpochMilli()
         );
@@ -113,9 +115,18 @@ public class SecurityIncidents
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof SecurityIncidents))
+        if (!(obj instanceof SecurityIncidentActions))
             return false;
-        SecurityIncidents other = (SecurityIncidents) obj;
+        SecurityIncidentActions other = (SecurityIncidentActions) obj;
         return this.invitesDisabledUntil == other.invitesDisabledUntil && this.directMessagesDisabledUntil == other.directMessagesDisabledUntil;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+            .addMetadata("invitesDisabledUntil", getInvitesDisabledUntil())
+            .addMetadata("directMessagesDisabledUntil", getDirectMessagesDisabledUntil())
+            .toString();
     }
 }

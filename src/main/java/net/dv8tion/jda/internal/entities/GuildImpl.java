@@ -36,6 +36,8 @@ import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -130,7 +132,8 @@ public class GuildImpl implements Guild
     private TextChannel communityUpdatesChannel;
     private TextChannel safetyAlertsChannel;
     private Role publicRole;
-    private SecurityIncidents securityIncidents;
+    private SecurityIncidentActions securityIncidentActions = SecurityIncidentActions.disabled();
+    private SecurityIncidentDetections securityIncidentDetections = SecurityIncidentDetections.EMPTY;
     private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
@@ -718,9 +721,16 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public SecurityIncidents getSecurityIncidents()
+    public SecurityIncidentActions getSecurityIncidentActions()
     {
-        return securityIncidents;
+        return securityIncidentActions;
+    }
+
+    @Nonnull
+    @Override
+    public SecurityIncidentDetections getSecurityIncidentDetections()
+    {
+        return securityIncidentDetections;
     }
 
     @Override
@@ -1572,9 +1582,9 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidents incidents)
+    public AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidentActions incidents)
     {
-        Checks.notNull(incidents, "SecurityIncidents");
+        Checks.notNull(incidents, "SecurityIncidentActions");
         checkPermission(Permission.MANAGE_SERVER);
 
         Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD_INCIDENTS.compile(getId());
@@ -2277,9 +2287,10 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setSecurityIncidents(SecurityIncidents incidents)
+    public GuildImpl setSecurityIncidents(SecurityIncidentActions actions, SecurityIncidentDetections detections)
     {
-        this.securityIncidents = incidents;
+        this.securityIncidentActions = actions == null ? SecurityIncidentActions.disabled() : actions;
+        this.securityIncidentDetections = detections == null ? SecurityIncidentDetections.EMPTY : detections;
         return this;
     }
 
