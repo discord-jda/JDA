@@ -335,6 +335,10 @@ public class MessageReaction
      * Retrieves the {@link net.dv8tion.jda.api.entities.User Users} that
      * already reacted with this MessageReaction.
      *
+     * <br>By default, this only includes users that reacted with {@link ReactionType#NORMAL}.
+     * Use {@link #retrieveUsers(ReactionType) retrieveUsers(ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
+     *
      * <p>Possible ErrorResponses include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -546,14 +550,21 @@ public class MessageReaction
     {
         NORMAL(0), SUPER(1);
 
-        private final int value;
-        ReactionType(int type) {
-            this.value = type;
+        private final int id;
+
+        ReactionType(int id)
+        {
+            this.id = id;
         }
 
-        public int getValue()
+        /**
+         * The id used to represent this type in requests.
+         *
+         * @return The raw id value
+         */
+        public int getId()
         {
-            return value;
+            return id;
         }
     }
 }
