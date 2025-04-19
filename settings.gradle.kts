@@ -8,6 +8,11 @@ dependencyResolutionManagement {
             library("jackson-databind", "com.fasterxml.jackson.core", "jackson-databind").versionRef("jackson")
             bundle("jackson", listOf("jackson-core", "jackson-databind"))
 
+            library("junit",          "org.junit.jupiter",  "junit-jupiter"          ).version("5.12.2")
+            // See https://github.com/junit-team/junit5/issues/4374
+            library("junit-launcher", "org.junit.platform", "junit-platform-launcher").version("1.12.2")
+            bundle("junit", listOf("junit", "junit-launcher"))
+
             library("logback-classic",       "ch.qos.logback",           "logback-classic"     ).version("1.5.18")
             library("opus",                  "club.minnced",             "opus-java"           ).version("1.1.1")
             library("findbugs",              "com.google.code.findbugs", "jsr305"              ).version("3.0.2")
@@ -19,7 +24,6 @@ dependencyResolutionManagement {
             library("commons-lang3",         "org.apache.commons",       "commons-lang3"       ).version("3.17.0")
             library("assertj",               "org.assertj",              "assertj-core"        ).version("3.27.3")
             library("jetbrains-annotations", "org.jetbrains",            "annotations"         ).version("26.0.2")
-            library("junit",                 "org.junit.jupiter",        "junit-jupiter"       ).version("5.12.2")
             library("mockito",               "org.mockito",              "mockito-core"        ).version("5.17.0")
             library("reflections",           "org.reflections",          "reflections"         ).version("0.10.2")
             library("slf4j",                 "org.slf4j",                "slf4j-api"           ).version("2.0.17")

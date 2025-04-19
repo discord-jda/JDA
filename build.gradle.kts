@@ -159,7 +159,7 @@ dependencies {
         addAll(configurations["compileOnly"].allDependencies)
     }
 
-    testImplementation(libs.junit)
+    testImplementation(libs.bundles.junit)
     testImplementation(libs.reflections)
     testImplementation(libs.mockito)
     testImplementation(libs.assertj)
