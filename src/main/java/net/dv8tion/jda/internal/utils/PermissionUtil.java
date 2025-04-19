@@ -24,12 +24,14 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.DetachedEntityException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PermissionUtil
 {
@@ -38,7 +40,7 @@ public class PermissionUtil
         Arrays.stream(Permission.values())
             .filter(Permission::isChannel)
             .collect(Collectors.toList()));
-    
+
     /**
      * Checks if one given Member can interact with a 2nd given Member - in a permission sense (kick/ban/modify perms).
      * This only checks the Role-Position and does not check the actual permission (kick/ban/manage_role/...)
@@ -251,6 +253,36 @@ public class PermissionUtil
         long effectivePerms = getEffectivePermission(member);
         return isApplied(effectivePerms, Permission.ADMINISTRATOR.getRawValue())
                 || isApplied(effectivePerms, Permission.getRaw(permissions));
+    }
+
+    /**
+     * Checks if the member has any of the specified permissions. Also checks for owners and administrators.
+     *
+     * @param  member
+     *         The member whose permissions are being checked
+     * @param  permissions
+     *         The permissions being checked for
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided parameters are null, or no permissions were given
+     * @throws InsufficientPermissionException
+     *         If the member has none of the specified permissions
+     */
+    public static void requireAnyPermission(Member member, Permission... permissions)
+    {
+        Checks.notNull(member, "Member");
+        Checks.notEmpty(permissions, "Permissions");
+
+        for (Permission permission : permissions)
+        {
+            if (member.hasPermission(permission))
+                return;
+        }
+
+        String reason = Stream.of(permissions)
+                .map(Permission::name)
+                .collect(Collectors.joining(" or "));
+        throw new InsufficientPermissionException(member.getGuild(), permissions[0], "You need the " + reason + " permission to perform this action!");
     }
 
     /**

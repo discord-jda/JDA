@@ -59,6 +59,12 @@ public enum CacheFlag
      */
     STICKER(GatewayIntent.GUILD_EXPRESSIONS),
     /**
+     * Enables cache for {@link Guild#getSoundboardSoundCache()}
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
+     */
+    SOUNDBOARD_SOUNDS(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
+    /**
      * Enables cache for {@link Member#getOnlineStatus(net.dv8tion.jda.api.entities.ClientType) Member.getOnlineStatus(ClientType)}
      *
      * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.

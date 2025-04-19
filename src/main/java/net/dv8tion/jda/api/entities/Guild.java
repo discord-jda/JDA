@@ -2357,6 +2357,104 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     SnowflakeCacheView<GuildSticker> getStickerCache();
 
     /**
+     * Gets a {@link SoundboardSound} from this guild that has the same id as the
+     * one provided.
+     * <br>If there is no {@link SoundboardSound} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @param  id
+     *         the sticker id
+     *
+     * @throws NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return A Soundboard sound matching the specified id
+     */
+    @Nullable
+    default SoundboardSound getSoundboardSoundById(String id)
+    {
+        return getSoundboardSoundCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link SoundboardSound} from this guild that has the same id as the
+     * one provided.
+     * <br>If there is no {@link SoundboardSound} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @param  id
+     *         the sticker id
+     *
+     * @throws NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return A Soundboard sound matching the specified id
+     */
+    @Nullable
+    default SoundboardSound getSoundboardSoundById(long id)
+    {
+        return getSoundboardSoundCache().getElementById(id);
+    }
+
+    /**
+     * Gets all custom {@link SoundboardSound SoundboardSounds} belonging to this guild.
+     * <br>Soundboard sounds are not ordered in any specific way in the returned list.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getSoundboardSoundCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @return An immutable List of {@link SoundboardSound SoundboardSounds}.
+     */
+    @Nonnull
+    @Unmodifiable
+    default List<SoundboardSound> getSoundboardSounds()
+    {
+        return getSoundboardSoundCache().asList();
+    }
+
+    /**
+     * Gets a list of all {@link SoundboardSound SoundboardSounds} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link SoundboardSound SoundboardSounds} with the provided name, then this returns an empty list.
+     *
+     * <p>This requires the {@link CacheFlag#SOUNDBOARD_SOUNDS} to be enabled!
+     *
+     * @param  name
+     *         The name used to filter the returned {@link SoundboardSound SoundboardSounds}. Without colons.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all SoundboardSounds that match the provided name.
+     */
+    @Nonnull
+    @Unmodifiable
+    default List<SoundboardSound> getSoundboardSoundsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getSoundboardSoundCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * {@link SnowflakeCacheView} of all cached {@link SoundboardSound SoundboardSounds} of this Guild.
+     * <br>This does not include {@link JDA#retrieveDefaultSoundboardSounds() default sounds}.
+     * 
+     * <p>This will be empty if {@link CacheFlag#SOUNDBOARD_SOUNDS} is disabled!
+     *
+     * @return {@link SnowflakeCacheView} - Type: {@link SoundboardSound}
+     *
+     * @see    JDA#retrieveDefaultSoundboardSounds()
+     */
+    @Nonnull
+    SnowflakeCacheView<SoundboardSound> getSoundboardSoundCache();
+
+    /**
      * Retrieves an immutable list of Custom Emojis together with their respective creators.
      *
      * <p>Note that {@link RichCustomEmoji#getOwner()} is only available if the currently
@@ -5587,6 +5685,43 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> deleteSticker(@Nonnull StickerSnowflake id);
+
+    /**
+     * Creates a soundboard sound in the guild.
+     *
+     * <p>The returned {@link RestAction} can encounter the following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses}:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FILE_EXCEEDS_MAXIMUM_LENGTH INVALID_FILE_EXCEEDS_MAXIMUM_LENGTH}
+     *     <br>The provided file exceeds the duration of 5.2 seconds</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_SOUNDBOARD_SOUNDS MAX_SOUNDBOARD_SOUNDS}
+     *     <br>The maximum amount of soundboard sounds have been created, depends on the server boosts</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_EMOJI INVALID_EMOJI}
+     *     <br>The emoji is invalid</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>The file is too large</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FILE INVALID_FILE}
+     *     <br>The file is malformed</li>
+     * </ul>
+     *
+     * @param name
+     *        The name of the soundboard sound, must be between 2-32 characters
+     * @param file
+     *        The file to use as the sound, can be an MP3 or an OGG file
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If {@code name} is not between 2-32 characters</li>
+     *             <li>If the file is not of the correct type</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#CREATE_GUILD_EXPRESSIONS CREATE_GUILD_EXPRESSIONS} in the guild.
+     *
+     * @return {@link SoundboardSoundCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    SoundboardSoundCreateAction createSoundboardSound(@Nonnull String name, @Nonnull FileUpload file);
 
     /**
      * Creates a new {@link ScheduledEvent}.
