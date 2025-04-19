@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Message.MessageFlag;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.entities.sticker.StickerItem;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponentUnion;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
@@ -49,7 +49,7 @@ public class MessageSnapshot
     private final String content;
     private final List<Attachment> attachments;
     private final List<MessageEmbed> embeds;
-    private final List<LayoutComponent> components;
+    private final List<MessageTopLevelComponentUnion> components;
     private final List<StickerItem> stickers;
     private final long flags;
 
@@ -58,7 +58,7 @@ public class MessageSnapshot
     public MessageSnapshot(
         MessageType type, Mentions mentions, OffsetDateTime editTime, String content,
         List<Attachment> attachments,
-        List<MessageEmbed> embeds, List<LayoutComponent> components,
+        List<MessageEmbed> embeds, List<MessageTopLevelComponentUnion> components,
         List<StickerItem> stickers, long flags
     ) {
         this.type = type;
@@ -187,11 +187,11 @@ public class MessageSnapshot
      *
      * <p>Buttons and other interactive components are non-functional in forwarded messages.
      *
-     * @return Immutable {@link List} of {@link LayoutComponent}
+     * @return Immutable {@link List} of {@link MessageTopLevelComponentUnion}
      */
     @Nonnull
     @Unmodifiable
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return components;
     }

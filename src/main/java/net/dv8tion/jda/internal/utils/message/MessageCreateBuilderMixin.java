@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.utils.message;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateRequest;
@@ -49,7 +49,7 @@ public interface MessageCreateBuilderMixin<R extends MessageCreateRequest<R>> ex
 
     @Nonnull
     @Override
-    default R addComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default R addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         getBuilder().addComponents(components);
         return (R) this;

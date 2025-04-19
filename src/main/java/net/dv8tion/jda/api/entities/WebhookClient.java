@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.interactions.components.action_row.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
@@ -346,7 +346,7 @@ public interface WebhookClient<T> extends ISnowflake
      * </ul>
      *
      * @param  components
-     *         {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     *         {@link MessageTopLevelComponent MessageTopLevelComponent} to use (up to {@value Message#MAX_COMPONENT_COUNT})
      *
      * @throws IllegalArgumentException
      *         If any of the components are null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
@@ -355,7 +355,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * Send a message to this webhook.
@@ -378,9 +378,9 @@ public interface WebhookClient<T> extends ISnowflake
      * </ul>
      *
      * @param  component
-     *         {@link LayoutComponent} to use
+     *         {@link MessageTopLevelComponent} to use
      * @param  other
-     *         Additional {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT} in total)
+     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT} in total)
      *
      * @throws IllegalArgumentException
      *         If any of the components are null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
@@ -389,14 +389,14 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
-        Checks.notNull(component, "LayoutComponents");
-        Checks.noneNull(other, "LayoutComponents");
-        List<LayoutComponent> embedList = new ArrayList<>();
-        embedList.add(component);
-        Collections.addAll(embedList, other);
-        return sendMessageComponents(embedList);
+        Checks.notNull(component, "MessageTopLevelComponents");
+        Checks.noneNull(other, "MessageTopLevelComponents");
+        List<MessageTopLevelComponent> componentList = new ArrayList<>();
+        componentList.add(component);
+        Collections.addAll(componentList, other);
+        return sendMessageComponents(componentList);
     }
 
     /**
@@ -846,7 +846,7 @@ public interface WebhookClient<T> extends ISnowflake
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
      *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
      *         </ul>
      *
@@ -854,7 +854,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components);
+    WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
      * Edit an existing message sent by this webhook.
@@ -877,7 +877,7 @@ public interface WebhookClient<T> extends ISnowflake
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
      *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
      *         </ul>
      *
@@ -885,7 +885,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
@@ -911,7 +911,7 @@ public interface WebhookClient<T> extends ISnowflake
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
      *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
      *         </ul>
      *
@@ -919,9 +919,9 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
+    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull MessageTopLevelComponent... components)
     {
-        Checks.noneNull(components, "LayoutComponents");
+        Checks.noneNull(components, "MessageTopLevelComponents");
         return editMessageComponentsById(messageId, Arrays.asList(components));
     }
 
@@ -946,7 +946,7 @@ public interface WebhookClient<T> extends ISnowflake
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
+     *             <li>If any of the components is not {@link MessageTopLevelComponent#isMessageCompatible() message compatible}</li>
      *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
      *         </ul>
      *
@@ -954,7 +954,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
+    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull MessageTopLevelComponent... components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
