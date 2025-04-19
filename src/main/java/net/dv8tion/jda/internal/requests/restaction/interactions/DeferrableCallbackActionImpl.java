@@ -19,7 +19,11 @@ package net.dv8tion.jda.internal.requests.restaction.interactions;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
+import net.dv8tion.jda.internal.interactions.response.InteractionCallbackResponseImpl;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 
 public abstract class DeferrableCallbackActionImpl extends InteractionCallbackImpl<InteractionHook>
 {
@@ -41,6 +45,26 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
         // we also need to provide the hook itself to the success callback of the RestAction,
         // so we override this functionality
         interaction.releaseHook(true);
+        parseOptionalBody(response);
         request.onSuccess(hook);
+    }
+
+    private void parseOptionalBody(Response response)
+    {
+        okhttp3.Response rawResponse = response.getRawResponse();
+        if (rawResponse == null)
+            return;
+
+        ResponseBody body = rawResponse.body();
+        if (body == null)
+            return;
+
+        MediaType mediaType = body.contentType();
+        if (mediaType != null && mediaType.toString().startsWith("application/json"))
+        {
+            response.optObject()
+                .flatMap(obj -> obj.optObject("resource"))
+                .ifPresent(resource -> hook.setCallbackResponse(new InteractionCallbackResponseImpl(hook, resource)));
+        }
     }
 }

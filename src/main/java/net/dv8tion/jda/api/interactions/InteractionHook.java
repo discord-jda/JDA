@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.response.InteractionCallbackResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
@@ -76,6 +77,39 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     Interaction getInteraction();
+
+    /**
+     * The {@link InteractionCallbackResponse callback response} created by interaction replies like {@link IReplyCallback#reply(String)}
+     * or interaction updates like {@link IMessageEditCallback#editMessage(String)}.
+     *
+     * <p><b>Example</b>
+     * <pre>
+     * {@code
+     * event.reply("foobar").queue(hook -> {
+     *     var messageId = hook.getCallbackResponse().getMessage().getIdLong();
+     *     System.out.println(messageId);
+     * });}
+     * </pre>
+     *
+     * @throws IllegalStateException
+     *         If this interaction has not yet been acknowledged.
+     *
+     * @return {@link InteractionCallbackResponse}
+     *
+     * @see    #hasCallbackResponse()
+     */
+    @Nonnull
+    InteractionCallbackResponse getCallbackResponse();
+
+    /**
+     * Whether this InteractionHook contains a {@link InteractionCallbackResponse callback response}.
+     * <br>This will be <code>false</code> if the interaction has not yet been acknowledged.
+     *
+     * @return True, if this InteractionHook contains a callback response
+     *
+     * @see    #getCallbackResponse()
+     */
+    boolean hasCallbackResponse();
 
     /**
      * The unix millisecond timestamp for the expiration of this interaction hook.
