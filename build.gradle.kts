@@ -17,6 +17,7 @@
 //to build everything:             "gradlew build"
 //to build and upload everything:  "gradlew release"
 
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.gradlenexus.publishplugin.AbstractNexusStagingRepositoryTask
 import org.apache.tools.ant.filters.ReplaceTokens
@@ -27,8 +28,9 @@ plugins {
     `java-library`
     `maven-publish`
 
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    alias(libs.plugins.publish)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.versions)
 }
 
 
@@ -157,7 +159,7 @@ dependencies {
         addAll(configurations["compileOnly"].allDependencies)
     }
 
-    testImplementation(libs.junit)
+    testImplementation(libs.bundles.junit)
     testImplementation(libs.reflections)
     testImplementation(libs.mockito)
     testImplementation(libs.assertj)
@@ -166,13 +168,27 @@ dependencies {
     testImplementation(libs.archunit)
 }
 
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return isStable.not()
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        isNonStable(candidate.version)
+    }
+
+    gradleReleaseChannel = "current"
+}
+
 
 ////////////////////////////////////
 //                                //
 //    Build Task Configuration    //
 //                                //
 ////////////////////////////////////
-
 
 val jar by tasks.getting(Jar::class) {
     archiveBaseName.set(project.name)
@@ -186,7 +202,7 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     exclude("*.pom")
 }
 
-val sourcesForRelease by tasks.creating(Copy::class) {
+val sourcesForRelease by tasks.registering(Copy::class) {
     from("src/main/java") {
         include("**/JDAInfo.java")
         val tokens = mapOf(
@@ -207,16 +223,16 @@ val sourcesForRelease by tasks.creating(Copy::class) {
     includeEmptyDirs = false
 }
 
-val generateJavaSources by tasks.creating(SourceTask::class) {
+val generateJavaSources by tasks.registering(SourceTask::class) {
     val javaSources = sourceSets["main"].allJava.filter {
         it.name != "JDAInfo.java"
     }.asFileTree
 
-    source = javaSources + fileTree(sourcesForRelease.destinationDir)
+    source = javaSources + fileTree(sourcesForRelease.get().destinationDir)
     dependsOn(sourcesForRelease)
 }
 
-val noOpusJar by tasks.creating(ShadowJar::class) {
+val noOpusJar by tasks.registering(ShadowJar::class) {
     dependsOn(shadowJar)
     archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
 
@@ -230,7 +246,7 @@ val noOpusJar by tasks.creating(ShadowJar::class) {
     manifest.inheritFrom(jar.manifest)
 }
 
-val minimalJar by tasks.creating(ShadowJar::class) {
+val minimalJar by tasks.registering(ShadowJar::class) {
     dependsOn(shadowJar)
     minimize()
     archiveClassifier.set(shadowJar.archiveClassifier.get() + "-min")
@@ -248,12 +264,12 @@ val minimalJar by tasks.creating(ShadowJar::class) {
     manifest.inheritFrom(jar.manifest)
 }
 
-val sourcesJar by tasks.creating(Jar::class) {
+val sourcesJar by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
     from("src/main/java") {
         exclude("**/JDAInfo.java")
     }
-    from(sourcesForRelease.destinationDir)
+    from(sourcesForRelease.get().destinationDir)
 
     dependsOn(sourcesForRelease)
 }
@@ -290,7 +306,7 @@ val javadoc by tasks.getting(Javadoc::class) {
     }
 
     dependsOn(sourcesJar)
-    source = sourcesJar.source.asFileTree
+    source = sourcesJar.get().source.asFileTree
     exclude("MANIFEST.MF")
 
     //### excludes ###
@@ -302,7 +318,7 @@ val javadoc by tasks.getting(Javadoc::class) {
     exclude("com/iwebpp/crypto")
 }
 
-val javadocJar by tasks.creating(Jar::class) {
+val javadocJar by tasks.registering(Jar::class) {
     dependsOn(javadoc)
     archiveClassifier.set("javadoc")
     from(javadoc.destinationDir)
@@ -326,7 +342,7 @@ tasks.withType<JavaCompile> {
 
 val compileJava by tasks.getting(JavaCompile::class) {
     dependsOn(generateJavaSources)
-    source = generateJavaSources.source
+    source = generateJavaSources.get().source
 }
 
 val build by tasks.getting(Task::class) {
@@ -439,7 +455,7 @@ nexusPublishing {
 ////////////////////////////////////
 
 
-val rebuild by tasks.creating(Task::class) {
+val rebuild by tasks.registering(Task::class) {
     group = "build"
 
     dependsOn(build)
@@ -457,7 +473,7 @@ tasks.withType<AbstractNexusStagingRepositoryTask> {
     enabled = shouldPublish
 }
 
-val release by tasks.creating(Task::class) {
+val release by tasks.registering(Task::class) {
     group = "publishing"
     enabled = shouldPublish
 
@@ -467,7 +483,7 @@ val release by tasks.creating(Task::class) {
 afterEvaluate {
     val closeAndReleaseStagingRepositories by tasks.getting
     closeAndReleaseStagingRepositories.apply {
-        release.dependsOn(this)
+        release.get().dependsOn(this)
         mustRunAfter(publishingTasks)
     }
 }
