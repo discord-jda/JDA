@@ -1272,7 +1272,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * The current guild {@link SecurityIncidentActions security incident actions}.
      * <br>Security incident actions are used to temporarily disable features for the purpose of moderation.
      *
-     * @return {@link SecurityIncidentActions} the currect actions
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link SecurityIncidentActions} the current actions
      */
     @Nonnull
     SecurityIncidentActions getSecurityIncidentActions();
@@ -1280,6 +1283,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     /**
      * The current security incident detections.
      * <br>Discord may automatically detect spammers or raiders.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link SecurityIncidentDetections} the current detections
      */
@@ -4078,6 +4084,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If null is provided
      * @throws InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} Permission.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link AuditableRestAction}
      *
