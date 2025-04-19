@@ -354,15 +354,18 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
 
         if (hasChannel())
-            return getChannel().retrieveReactionUsersById(id, emoji);
+            return getChannel().retrieveReactionUsersById(id, emoji, type);
 
-        return new ReactionPaginationActionImpl(this, emoji.getAsReactionCode());
+        Checks.notNull(type, "ReactionType");
+        Checks.notNull(emoji, "Emoji");
+
+        return new ReactionPaginationActionImpl(this, emoji.getAsReactionCode(), type);
     }
 
     @Nullable

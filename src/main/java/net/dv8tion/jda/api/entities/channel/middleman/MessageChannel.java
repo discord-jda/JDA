@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda.api.entities.channel.middleman;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
@@ -2122,6 +2119,10 @@ public interface MessageChannel extends Channel, Formattable
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
      *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsersById(String, Emoji, MessageReaction.ReactionType) retrieveReactionUsersById(messageId, emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
+     *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
      * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
@@ -2164,14 +2165,15 @@ public interface MessageChannel extends Channel, Formattable
     @CheckReturnValue
     default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
-        Checks.isSnowflake(messageId, "Message ID");
-        Checks.notNull(emoji, "Emoji");
-
-        return new ReactionPaginationActionImpl(this, messageId, emoji.getAsReactionCode());
+        return retrieveReactionUsersById(messageId, emoji, MessageReaction.ReactionType.NORMAL);
     }
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsersById(long, Emoji, MessageReaction.ReactionType) retrieveReactionUsersById(messageId, emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
@@ -2220,6 +2222,110 @@ public interface MessageChannel extends Channel, Formattable
     default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji)
     {
         return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji);
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to the given message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildMessageChannel GuildMessageChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
+     *             <li>If provided {@code type} is {@code null}.</li>
+     *         </ul>
+     *
+     * @return The {@link ReactionPaginationAction} of the emoji's users.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(emoji, "Emoji");
+        Checks.notNull(type, "ReactionType");
+
+        return new ReactionPaginationActionImpl(this, messageId, emoji.getAsReactionCode(), type);
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to the given message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildMessageChannel GuildMessageChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
+     *             <li>If provided {@code type} is {@code null}.</li>
+     *         </ul>
+     *
+     * @return The {@link ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
+    {
+        return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji, type);
     }
 
     /**
