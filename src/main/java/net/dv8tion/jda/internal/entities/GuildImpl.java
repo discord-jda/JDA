@@ -2287,13 +2287,6 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setSecurityIncidents(SecurityIncidentActions actions, SecurityIncidentDetections detections)
-    {
-        this.securityIncidentActions = actions == null ? SecurityIncidentActions.disabled() : actions;
-        this.securityIncidentDetections = detections == null ? SecurityIncidentDetections.EMPTY : detections;
-        return this;
-    }
-
     public GuildImpl setSecurityIncidentActions(SecurityIncidentActions actions)
     {
         this.securityIncidentActions = actions == null ? SecurityIncidentActions.disabled() : actions;
