@@ -481,7 +481,7 @@ public interface ApplicationInfo extends ISnowflake
         GATEWAY_GUILD_MEMBERS_LIMITED(1 << 15),
         /** Indicates unusual growth of an app that prevents verification */
         VERIFICATION_PENDING_GUILD_LIMIT(1 << 16),
-        /** Indicates if an app is embedded within the Discord client (currently unavailable publicly) */
+        /** Indicates if an app is embedded within the Discord client, or is an app with an Activity */
         EMBEDDED(1 << 17),
         /** Bot can use {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT} in 100 or more guilds */
         GATEWAY_MESSAGE_CONTENT(1 << 18),

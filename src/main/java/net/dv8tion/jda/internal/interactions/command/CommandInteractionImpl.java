@@ -19,12 +19,14 @@ package net.dv8tion.jda.internal.interactions.command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.requests.restaction.interactions.LaunchActivityCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.PremiumRequiredCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.LaunchActivityCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.PremiumRequiredCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
@@ -68,5 +70,12 @@ public class CommandInteractionImpl extends DeferrableInteractionImpl implements
     public PremiumRequiredCallbackAction replyWithPremiumRequired()
     {
         return new PremiumRequiredCallbackActionImpl(this);
+    }
+
+    @Nonnull
+    @Override
+    public LaunchActivityCallbackAction replyLaunchActivity()
+    {
+        return new LaunchActivityCallbackActionImpl(this);
     }
 }
