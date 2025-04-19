@@ -18,8 +18,10 @@ package net.dv8tion.jda.internal.utils;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nullable;
 import java.time.*;
@@ -28,9 +30,11 @@ import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.ToLongFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class has major inspiration from <a href="https://commons.apache.org/proper/commons-lang/" target="_blank">Lang 3</a>
@@ -283,6 +287,23 @@ public final class Helpers
             map.put(objId, obj);
         }
         return map;
+    }
+
+    public static <I, O> Function<I, Result<O>> tryMap(Function<I, O> mapper)
+    {
+        return element -> Result.defer(() -> mapper.apply(element));
+    }
+
+    public static <I, O> Stream<O> mapGracefully(Stream<I> stream, Function<I, O> mapper, String errorDescription)
+    {
+        return stream
+            .map(tryMap(mapper))
+            .peek(result -> {
+                if (result.isFailure())
+                    JDAImpl.LOG.error(errorDescription, result.getFailure());
+            })
+            .filter(Result::isSuccess)
+            .map(Result::get);
     }
 
     // ## ExceptionUtils ##

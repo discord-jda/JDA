@@ -600,6 +600,22 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public RestAction<List<ScheduledEvent>> retrieveScheduledEvents(boolean includeUserCount)
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_SCHEDULED_EVENTS.compile(getId())
+                .withQueryParams("with_user_count", String.valueOf(includeUserCount));
+
+        EntityBuilder entityBuilder = getJDA().getEntityBuilder();
+        return new RestActionImpl<>(getJDA(), route,
+                (response, request) -> Helpers.mapGracefully(
+                        response.getArray().stream(DataArray::getObject),
+                        data -> entityBuilder.createScheduledEvent(this, data),
+                        "Failed to parse scheduled event"
+                ).collect(Helpers.toUnmodifiableList()));
+    }
+
+    @Nonnull
+    @Override
     public CacheRestAction<ScheduledEvent> retrieveScheduledEventById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
