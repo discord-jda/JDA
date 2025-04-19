@@ -16,19 +16,34 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.api.components.ActionComponent;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.attribute.IDisableable;
+import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.button.ButtonStyle;
+import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.components.section.Section;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
+import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Represents a top-level layout used for {@link ItemComponent ItemComponents} such as {@link Button Buttons}.
@@ -36,46 +51,89 @@ import java.util.stream.Collectors;
  * <p>Components must always be contained within such a layout.
  *
  * @see ActionRow
+ *
+ * @deprecated
+ *      Will be removed in a future release, please use {@link ActionRow} instead.
  */
-public interface LayoutComponent extends SerializableData, Iterable<ItemComponent>, Component
+@Deprecated
+@ForRemoval
+public interface LayoutComponent<T extends Component> extends SerializableData, Iterable<T>, MessageTopLevelComponent, ModalTopLevelComponent, Component, IDisableable
 {
     /**
-     * List representation of this component layout.
-     * <br>This list is modifiable. Note that empty layouts are not supported.
-     *
-     * @return {@link List} of components in this layout
+     * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
      */
     @Nonnull
-    List<ItemComponent> getComponents();
-
-    @Override
-    default boolean isMessageCompatible()
-    {
-        if (!getType().isMessageCompatible())
-            return false;
-
-        return getComponents().stream().allMatch(ItemComponent::isMessageCompatible);
-    }
-
-    @Override
-    default boolean isModalCompatible()
-    {
-        if (!getType().isModalCompatible())
-            return false;
-
-        return getComponents().stream().allMatch(ItemComponent::isModalCompatible);
+    @Deprecated
+    @ForRemoval
+    default Stream<T> iterableStream() {
+        return StreamSupport.stream(spliterator(), false);
     }
 
     /**
-     * Immutable filtered copy of {@link #getComponents()} elements which are {@link ActionComponent ActionComponents}.
+     * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
+     */
+    @Nonnull
+    @Override
+    @Deprecated
+    @ForRemoval
+    Iterator<T> iterator();
+
+    /**
+     * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
+     */
+    @Override
+    @Deprecated
+    @ForRemoval
+    default void forEach(@Nonnull Consumer<? super T> action)
+    {
+        Iterable.super.forEach(action);
+    }
+
+    /**
+     * @deprecated Replace it by iterating on a more precise component type, such as {@link ActionRow#getComponents() ActionRow}
+     */
+    @Nonnull
+    @Override
+    @Deprecated
+    @ForRemoval
+    default Spliterator<T> spliterator()
+    {
+        return Iterable.super.spliterator();
+    }
+
+    /**
+     * List representation of this component layout.
+     * <br>This list may be unmodifiable. Note that empty layouts are not supported.
+     *
+     * @return {@link List} of components in this layout
+     *
+     * @deprecated
+     *         Moved to the subclasses: {@link ActionRow#getComponents()},
+     *         {@link Section#getContentComponents()},
+     *         {@link Container#getComponents()}
+     *         This will be removed as it is unclear what this method returns for some component types,
+     *         like {@link Section}, which also contains an accessory, would it be included? or not? does it get included recursively?
+     */
+    @Nonnull
+    @Deprecated
+    @ForRemoval
+    List<? extends Component> getComponents();
+
+    /**
+     * Immutable filtered copy of {@link #iterableStream()} elements which are {@link ActionComponent ActionComponents}.
      *
      * @return Immutable {@link List} copy of {@link ActionComponent ActionComponents} in this layout
+     *
+     * @deprecated
+     *         Moved to {@link ActionRow#getActionComponents()}
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<ActionComponent> getActionComponents()
     {
-        return getComponents().stream()
+        return iterableStream()
                 .filter(ActionComponent.class::isInstance)
                 .map(ActionComponent.class::cast)
                 .collect(Helpers.toUnmodifiableList());
@@ -85,12 +143,17 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
      * List of buttons in this component layout.
      *
      * @return Immutable {@link List} of {@link Button Buttons}
+     *
+     * @deprecated
+     *         Moved to {@link ActionRow#getButtons()}
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<Button> getButtons()
     {
-        return getComponents().stream()
+        return iterableStream()
                 .filter(Button.class::isInstance)
                 .map(Button.class::cast)
                 .collect(Helpers.toUnmodifiableList());
@@ -118,90 +181,59 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
         return getActionComponents().stream().noneMatch(ActionComponent::isDisabled);
     }
 
-    /**
-     * Returns a new instance of this LayoutComponent with all components set to disabled/enabled.
-     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #getComponents()}.
-     *
-     * @param  disabled
-     *         True if the components should be set to disabled, false if they should be enabled
-     *
-     * @return The new layout component with all components updated
-     *
-     * @see    ActionComponent#withDisabled(boolean)
-     */
     @Nonnull
     @CheckReturnValue
-    LayoutComponent withDisabled(boolean disabled);
+    LayoutComponent<T> withDisabled(boolean disabled);
 
-    /**
-     * Returns a new instance of this LayoutComponent with all components set to disabled.
-     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #getComponents()}.
-     *
-     * @return The new layout component with all components updated
-     *
-     * @see    ActionComponent#asDisabled()
-     */
     @Nonnull
     @CheckReturnValue
-    LayoutComponent asDisabled();
+    LayoutComponent<T> asDisabled();
 
-    /**
-     * Returns a new instance of this LayoutComponent with all components set to enabled.
-     * <br>This does not modify the layout this was called on. To do this in-place, you can use {@link #getComponents()}.
-     *
-     * @return The new layout component with all components updated
-     *
-     * @see    ActionComponent#asEnabled()
-     */
     @Nonnull
     @CheckReturnValue
-    LayoutComponent asEnabled();
+    LayoutComponent<T> asEnabled();
 
     /**
      * Check whether this layout is empty.
-     * <br>Identical to {@code getComponents().isEmpty()}
+     * <br>This is <b>not always</b> the same as {@code getComponents().isEmpty()}.
      *
      * @return True, if this layout has no components
+     *
+     * @deprecated
+     *         Will be removed in a future release, as empty layout cannot be created.
      */
-    default boolean isEmpty()
-    {
-        return getComponents().isEmpty();
-    }
+    @Deprecated
+    @ForRemoval
+    boolean isEmpty();
 
     /**
      * Check whether this is a valid layout configuration.
-     * <br>This checks that there is at least one component in this layout and it does not violate {@link ItemComponent#getMaxPerRow()}.
+     * The definition of whether a LayoutComponent is valid is dependent on the specific component being validated.
+     * Typically, this includes making sure that the layout isn't empty and that its maximum allowed components haven't
+     * been exceeded.
      *
      * @return True, if this layout is valid
+     *
+     * @deprecated
+     *         Moved to {@link ActionRow#isValid()}
      */
-    default boolean isValid()
-    {
-        if (isEmpty())
-            return false;
-        List<ItemComponent> components = getComponents();
-        Map<Component.Type, List<ItemComponent>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
-        if (groups.size() > 1) // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
-            return false;
-
-        for (Map.Entry<Component.Type, List<ItemComponent>> entry : groups.entrySet())
-        {
-            Component.Type type = entry.getKey();
-            List<ItemComponent> list = entry.getValue();
-            if (list.size() > type.getMaxPerRow())
-                return false;
-        }
-
-        return true;
-    }
+    @Deprecated
+    @ForRemoval
+    boolean isValid();
 
     /**
      * Creates a copy of this {@link LayoutComponent}.
      * <br>This does not create copies of the contained components.
      *
      * @return A copy of this {@link LayoutComponent}
+     *
+     * @deprecated
+     *         For removal, all components will be immutable, so this method is not required
      */
     @Nonnull
-    LayoutComponent createCopy();
+    @Deprecated
+    @ForRemoval
+    LayoutComponent<T> createCopy();
 
     /**
      * Find and replace a component in this layout.
@@ -217,29 +249,14 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
      *         If the provided id is null
      *
      * @return The old {@link ItemComponent} that was replaced or removed
+     *
+     * @deprecated
+     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, Component)}
      */
     @Nullable
-    default ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent)
-    {
-        Checks.notNull(id, "ID");
-        List<ItemComponent> list = getComponents();
-        for (ListIterator<ItemComponent> it = list.listIterator(); it.hasNext();)
-        {
-            ItemComponent component = it.next();
-            if (!(component instanceof ActionComponent))
-                continue;
-            ActionComponent action = (ActionComponent) component;
-            if (ComponentsUtil.isSameIdentifier(action, id))
-            {
-                if (newComponent == null)
-                    it.remove();
-                else
-                    it.set(newComponent);
-                return component;
-            }
-        }
-        return null;
-    }
+    @Deprecated
+    @ForRemoval
+    ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent);
 
     /**
      * Find and replace a component in this list of layouts.
@@ -261,15 +278,20 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
      *         If the provided id or list is null or the replace operation results in an {@link #isValid() invalid} layout
      *
      * @return True, if any of the layouts was modified
+     *
+     * @deprecated
+     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, Component)}
      */
-    static boolean updateComponent(@Nonnull List<? extends LayoutComponent> layouts, @Nonnull String id, @Nullable ItemComponent newComponent)
+    @Deprecated
+    @ForRemoval
+    static boolean updateComponent(@Nonnull List<? extends LayoutComponent<?>> layouts, @Nonnull String id, @Nullable ItemComponent newComponent)
     {
         Checks.notNull(layouts, "LayoutComponent");
         Checks.notEmpty(id, "ID or URL");
-        for (Iterator<? extends LayoutComponent> it = layouts.iterator(); it.hasNext();)
+        for (Iterator<? extends LayoutComponent<?>> it = layouts.iterator(); it.hasNext();)
         {
-            LayoutComponent components = it.next();
-            ItemComponent oldComponent = components.updateComponent(id, newComponent);
+            LayoutComponent<?> components = it.next();
+            Component oldComponent = components.updateComponent(id, newComponent);
             if (oldComponent != null)
             {
                 if (components.getComponents().isEmpty())
@@ -302,26 +324,13 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
      *         If the provided component is null
      *
      * @return The old {@link ItemComponent} that was replaced or removed
+     *
+     * @deprecated
+     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(Component, Component)}
      */
     @Nullable
-    default ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
-    {
-        Checks.notNull(component, "Component to replace");
-        List<ItemComponent> list = getComponents();
-        for (ListIterator<ItemComponent> it = list.listIterator(); it.hasNext();)
-        {
-            ItemComponent item = it.next();
-            if (component.equals(item))
-            {
-                if (newComponent == null)
-                    it.remove();
-                else
-                    it.set(newComponent);
-                return component;
-            }
-        }
-        return null;
-    }
+    @Deprecated
+    ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent);
 
     /**
      * Find and replace a component in this list of layouts.
@@ -343,14 +352,18 @@ public interface LayoutComponent extends SerializableData, Iterable<ItemComponen
      *         If the provided component or list is null or the replace operation results in an {@link #isValid() invalid} layout
      *
      * @return True, if any of the layouts was modified
+     *
+     * @deprecated
+     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(Component, Component)}
      */
-    static boolean updateComponent(@Nonnull List<? extends LayoutComponent> layouts, @Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
+    @Deprecated
+    static boolean updateComponent(@Nonnull List<? extends LayoutComponent<?>> layouts, @Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
     {
         Checks.notNull(layouts, "LayoutComponent");
         Checks.notNull(component, "Component to replace");
-        for (Iterator<? extends LayoutComponent> it = layouts.iterator(); it.hasNext();)
+        for (Iterator<? extends LayoutComponent<?>> it = layouts.iterator(); it.hasNext();)
         {
-            LayoutComponent components = it.next();
+            LayoutComponent<?> components = it.next();
             ItemComponent oldComponent = components.updateComponent(component, newComponent);
             if (oldComponent != null)
             {

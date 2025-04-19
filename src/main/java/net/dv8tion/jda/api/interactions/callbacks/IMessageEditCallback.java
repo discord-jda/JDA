@@ -16,16 +16,19 @@
 
 package net.dv8tion.jda.api.interactions.callbacks;
 
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -35,8 +38,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Interactions which allow a target message to be edited on use.
@@ -133,28 +134,26 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      *
      * @param  components
-     *         The new message components, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If any of the provided LayoutComponents is null</li>
-     *             <li>If any of the provided Components are not compatible with messages</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      *
-     * @see    LayoutComponent#isMessageCompatible()
+     * @see    MessageTopLevelComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditCallbackAction editComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.noneNull(components, "Components");
-        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
-            throw new UnsupportedOperationException("The provided component layout is not supported");
-        List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return deferEdit().setComponents(actionRows);
+        return deferEdit().setComponents(components);
     }
 
     /**
@@ -167,25 +166,59 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      *
      * @param  components
-     *         The new message components, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If any of the provided LayoutComponents are null</li>
-     *             <li>If any of the provided Components are not compatible with messages</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      *
-     * @see    LayoutComponent#isMessageCompatible()
+     * @see    MessageTopLevelComponent#isMessageCompatible()
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull LayoutComponent... components)
+    default MessageEditCallbackAction editComponents(@Nonnull MessageTopLevelComponent... components)
     {
-        Checks.noneNull(components, "LayoutComponents");
+        Checks.noneNull(components, "components");
         return editComponents(Arrays.asList(components));
+    }
+
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     *
+     * @param  tree
+     *         The new {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
+     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditCallbackAction} that can be used to further update the message
+     *
+     * @see    MessageTopLevelComponent#isMessageCompatible()
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    {
+        Checks.notNull(tree, "MessageComponentTree");
+        return editComponents(tree.getComponents());
     }
 
     /**

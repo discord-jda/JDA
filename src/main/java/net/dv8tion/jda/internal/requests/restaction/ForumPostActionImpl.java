@@ -153,7 +153,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
                 json.put("applied_tags", appliedTags.toArray());
             else if (getChannel().isTagRequired())
                 throw new IllegalStateException("Cannot create posts without a tag in this forum. Apply at least one tag!");
-            return getMultipartBody(message.getFiles(), json);
+            return getMultipartBody(message.getFiles(), message.getAdditionalFiles(), json);
         }
     }
 

@@ -16,20 +16,23 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
 
@@ -48,7 +51,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<AttachedFile> files;
-    private final List<LayoutComponent> components;
+    private final List<MessageTopLevelComponentUnion> components;
     private final int messageFlags;
 
     private final boolean isReplace;
@@ -56,7 +59,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
 
     protected MessageEditData(
             int configuredFields, int messageFlags, boolean isReplace, String content,
-            List<MessageEmbed> embeds, List<AttachedFile> files, List<LayoutComponent> components,
+            List<MessageEmbed> embeds, List<AttachedFile> files, List<MessageTopLevelComponentUnion> components,
             AllowedMentionsData mentions)
     {
         this.content = content;
@@ -245,9 +248,15 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      * @return The components or an empty list if none were set
      */
     @Nonnull
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return components;
+    }
+
+    @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (messageFlags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     /**
@@ -355,6 +364,22 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
                 .filter(FileUpload.class::isInstance)
                 .map(FileUpload.class::cast)
                 .collect(Helpers.toUnmodifiableList());
+    }
+
+    /**
+     * Returns the {@link FileUpload FileUploads} that are added indirectly to this message,
+     * such as from V2 components and embeds.
+     *
+     * @return The list of additional file uploads
+     */
+    @Nonnull
+    public synchronized List<FileUpload> getAdditionalFiles()
+    {
+        return ComponentIterator.createStream(components)
+                .filter(FileContainerMixin.class::isInstance)
+                .map(FileContainerMixin.class::cast)
+                .flatMap(FileContainerMixin::getFiles)
+                .collect(Collectors.toList());
     }
 
     @Override

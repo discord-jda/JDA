@@ -16,19 +16,22 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Output of a {@link MessageCreateBuilder} and used for sending messages to channels/webhooks/interactions.
@@ -43,7 +46,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<FileUpload> files;
-    private final List<LayoutComponent> components;
+    private final List<MessageTopLevelComponentUnion> components;
     private final AllowedMentionsData mentions;
     private final MessagePollData poll;
     private final boolean tts;
@@ -51,7 +54,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
 
     protected MessageCreateData(
             String content,
-            List<MessageEmbed> embeds, List<FileUpload> files, List<LayoutComponent> components,
+            List<MessageEmbed> embeds, List<FileUpload> files, List<MessageTopLevelComponentUnion> components,
             AllowedMentionsData mentions, MessagePollData poll, boolean tts, int flags)
     {
         this.content = content;
@@ -228,9 +231,15 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return components;
+    }
+
+    @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (flags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     @Nonnull
@@ -366,6 +375,22 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     public List<FileUpload> getFiles()
     {
         return files;
+    }
+
+    /**
+     * Returns the {@link FileUpload FileUploads} that are added indirectly to this message,
+     * such as from V2 components and embeds.
+     *
+     * @return The list of additional file uploads
+     */
+    @Nonnull
+    public List<FileUpload> getAdditionalFiles()
+    {
+        return ComponentIterator.createStream(components)
+                .filter(FileContainerMixin.class::isInstance)
+                .map(FileContainerMixin.class::cast)
+                .flatMap(FileContainerMixin::getFiles)
+                .collect(Collectors.toList());
     }
 
     @Override
