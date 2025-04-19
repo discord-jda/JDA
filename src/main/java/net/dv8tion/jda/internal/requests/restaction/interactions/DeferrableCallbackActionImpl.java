@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
-import net.dv8tion.jda.internal.interactions.response.CallbackResponseImpl;
+import net.dv8tion.jda.internal.interactions.response.InteractionCallbackResponseImpl;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 
@@ -65,7 +65,7 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
             response.optObject().ifPresent(json ->
             {
                 DataObject resource = json.getObject("resource");
-                hook.setCallbackResponse(new CallbackResponseImpl(hook, resource));
+                hook.setCallbackResponse(new InteractionCallbackResponseImpl(hook, resource));
             });
         }
     }

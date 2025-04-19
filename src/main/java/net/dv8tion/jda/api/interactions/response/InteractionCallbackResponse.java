@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Interaction callback response that is created by interaction replies like
@@ -28,29 +29,15 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.interactions.InteractionHook#getCallbackResponse() InteractionHook#getCallbackResponse
  */
-public interface CallbackResponseUnion
+public interface InteractionCallbackResponse
 {
     /**
-     * Returns the {@link Message} contained in this callback response.
+     * Returns the {@link Message} contained in this callback response, or {@code null} if none was created by the response.
      *
-     * @throws IllegalStateException
-     *         If this callback response does not contain a message.
-     *
-     * @return Message contained in this callback response.
-     *
-     * @see    InteractionCallbackAction.ResponseType#doesCallbackResponseContainMessage() ResponseType#doesCallbackResponseContainMessage()
+     * @return Message contained in this callback response, or null.
      */
-    @Nonnull
-    Message asMessage();
-
-    /**
-     * Whether this callback response contains a {@link Message}.
-     *
-     * @return True, if this callback response contains a Message
-     *
-     * @see    InteractionCallbackAction.ResponseType#doesCallbackResponseContainMessage()
-     */
-    boolean hasMessage();
+    @Nullable
+    Message getMessage();
 
     /**
      * Returns the {@link InteractionCallbackAction.ResponseType ResponseType} that was used for replying to the interaction.

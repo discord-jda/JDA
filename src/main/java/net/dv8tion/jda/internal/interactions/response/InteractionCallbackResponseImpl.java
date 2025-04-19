@@ -17,42 +17,32 @@
 package net.dv8tion.jda.internal.interactions.response;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.response.CallbackResponseUnion;
+import net.dv8tion.jda.api.interactions.response.InteractionCallbackResponse;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public class CallbackResponseImpl implements CallbackResponseUnion
+public class InteractionCallbackResponseImpl implements InteractionCallbackResponse
 {
     private final InteractionCallbackAction.ResponseType type;
 
     private final Message message;
 
-    public CallbackResponseImpl(InteractionHookImpl hook, DataObject resource)
+    public InteractionCallbackResponseImpl(InteractionHookImpl hook, DataObject resource)
     {
         this.type = InteractionCallbackAction.ResponseType.fromId(resource.getInt("type", -1));
 
-        if (type.doesCallbackResponseContainMessage())
-            this.message = resource.optObject("message").map(hook::buildMessage).orElse(null);
-        else
-            this.message = null;
+        this.message = resource.optObject("message").map(hook::buildMessage).orElse(null);
     }
 
-    @Nonnull
+    @Nullable
     @Override
-    public Message asMessage()
+    public Message getMessage()
     {
-        if (!hasMessage())
-            throw new IllegalStateException("Callback response of type " + type + " does not contain a Message!");
         return message;
-    }
-
-    @Override
-    public boolean hasMessage()
-    {
-        return message != null;
     }
 
     @Nonnull

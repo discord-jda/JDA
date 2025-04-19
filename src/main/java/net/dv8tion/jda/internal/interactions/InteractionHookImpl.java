@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.InteractionExpiredException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.response.CallbackResponseUnion;
+import net.dv8tion.jda.api.interactions.response.InteractionCallbackResponse;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageDeleteAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageRetrieveAction;
@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
-import net.dv8tion.jda.internal.interactions.response.CallbackResponseImpl;
+import net.dv8tion.jda.internal.interactions.response.InteractionCallbackResponseImpl;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -57,7 +57,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     private Exception exception;
     private boolean isReady;
     private boolean ephemeral;
-    private CallbackResponseImpl callbackResponse;
+    private InteractionCallbackResponseImpl callbackResponse;
 
     public InteractionHookImpl(@Nonnull DeferrableInteractionImpl interaction, @Nonnull JDA api)
     {
@@ -129,7 +129,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         });
     }
 
-    public InteractionHookImpl setCallbackResponse(CallbackResponseImpl callbackResponse)
+    public InteractionHookImpl setCallbackResponse(InteractionCallbackResponseImpl callbackResponse)
     {
         this.callbackResponse = callbackResponse;
         return this;
@@ -146,7 +146,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public CallbackResponseUnion getCallbackResponse()
+    public InteractionCallbackResponse getCallbackResponse()
     {
         if (!hasCallbackResponse())
             throw new IllegalStateException("Cannot get callback response. Has this interaction been acknowledged yet?");
