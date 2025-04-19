@@ -254,11 +254,13 @@ public class EntityBuilder extends AbstractEntityBuilder
 
     public SecurityIncidentActions createSecurityIncidentsActions(DataObject data)
     {
-        SecurityIncidentActions enabled = SecurityIncidentActions.enabled(
-            data.getOffsetDateTime("invites_disabled_until", null),
-            data.getOffsetDateTime("dms_disabled_until", null)
-        );
-        return enabled.equals(SecurityIncidentActions.disabled()) ? null : enabled;
+        OffsetDateTime invitesDisabledUntil = data.getOffsetDateTime("invites_disabled_until", null);
+        OffsetDateTime dmsDisabledUntil = data.getOffsetDateTime("dms_disabled_until", null);
+
+        if (invitesDisabledUntil == null && dmsDisabledUntil == null)
+            return null;
+
+        return SecurityIncidentActions.enabled(invitesDisabledUntil, dmsDisabledUntil);
     }
 
     public SecurityIncidentDetections createSecurityIncidentsDetections(DataObject data)
@@ -267,7 +269,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         String timeRaidDetected = data.getString("raid_detected_at", null);
 
         if (timeRaidDetected == null && timeDmSpamDetected == null)
-            return SecurityIncidentDetections.EMPTY;
+            return null;
 
         return new SecurityIncidentDetections(
             timeDmSpamDetected == null ? 0 : Helpers.toTimestamp(timeDmSpamDetected),
@@ -285,7 +287,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         final String vanityCode = guildJson.getString("vanity_url_code", null);
         final String bannerId = guildJson.getString("banner", null);
         final String locale = guildJson.getString("preferred_locale", "en-US");
-        final SecurityIncidentActions securityIncidents = guildJson.optObject("incidents_data").map(this::createSecurityIncidentsActions).orElse(null);
+        final SecurityIncidentActions securityIncidentActions = guildJson.optObject("incidents_data").map(this::createSecurityIncidentsActions).orElse(null);
         final SecurityIncidentDetections securityIncidentDetections = guildJson.optObject("incidents_data").map(this::createSecurityIncidentsDetections).orElse(null);
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
@@ -324,7 +326,8 @@ public class EntityBuilder extends AbstractEntityBuilder
                 .setMaxPresences(maxPresences)
                 .setOwnerId(ownerId)
                 .setAfkTimeout(Guild.Timeout.fromKey(afkTimeout))
-                .setSecurityIncidents(securityIncidents, securityIncidentDetections)
+                .setSecurityIncidentActions(securityIncidentActions)
+                .setSecurityIncidentDetections(securityIncidentDetections)
                 .setVerificationLevel(VerificationLevel.fromKey(verificationLevel))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))

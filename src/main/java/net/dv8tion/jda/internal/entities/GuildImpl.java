@@ -2294,6 +2294,18 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setSecurityIncidentActions(SecurityIncidentActions actions)
+    {
+        this.securityIncidentActions = actions == null ? SecurityIncidentActions.disabled() : actions;
+        return this;
+    }
+
+    public GuildImpl setSecurityIncidentDetections(SecurityIncidentDetections detections)
+    {
+        this.securityIncidentDetections = detections == null ? SecurityIncidentDetections.EMPTY : detections;
+        return this;
+    }
+
     public GuildImpl setVerificationLevel(VerificationLevel level)
     {
         this.verificationLevel = level;

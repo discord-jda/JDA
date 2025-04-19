@@ -322,7 +322,7 @@ public class GuildUpdateHandler extends SocketHandler
         if (!Objects.equals(securityIncidentActions, guild.getSecurityIncidentActions()))
         {
             SecurityIncidentActions oldIncidentActions = guild.getSecurityIncidentActions();
-            guild.setSecurityIncidents(securityIncidentActions, securityIncidentDetections);
+            guild.setSecurityIncidentActions(securityIncidentActions);
             api.handleEvent(
                 new GuildUpdateSecurityIncidentActionsEvent(
                     getJDA(), responseNumber,
@@ -331,7 +331,7 @@ public class GuildUpdateHandler extends SocketHandler
         if (!Objects.equals(securityIncidentDetections, guild.getSecurityIncidentDetections()))
         {
             SecurityIncidentDetections oldIncidentDetections = guild.getSecurityIncidentDetections();
-            guild.setSecurityIncidents(securityIncidentActions, securityIncidentDetections);
+            guild.setSecurityIncidentDetections(securityIncidentDetections);
             api.handleEvent(
                 new GuildUpdateSecurityIncidentDetectionsEvent(
                     getJDA(), responseNumber,
