@@ -28,9 +28,9 @@ plugins {
     `java-library`
     `maven-publish`
 
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.github.ben-manes.versions") version "0.52.0"
+    alias(libs.plugins.publish)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.versions)
 }
 
 
