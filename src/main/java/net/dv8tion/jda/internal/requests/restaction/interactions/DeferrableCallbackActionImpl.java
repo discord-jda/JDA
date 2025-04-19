@@ -62,11 +62,9 @@ public abstract class DeferrableCallbackActionImpl extends InteractionCallbackIm
         MediaType mediaType = body.contentType();
         if (mediaType != null && mediaType.toString().startsWith("application/json"))
         {
-            response.optObject().ifPresent(json ->
-            {
-                DataObject resource = json.getObject("resource");
-                hook.setCallbackResponse(new InteractionCallbackResponseImpl(hook, resource));
-            });
+            response.optObject()
+                .flatMap(obj -> obj.optObject("resource"))
+                .ifPresent(resource -> hook.setCallbackResponse(new InteractionCallbackResponseImpl(hook, resource)));
         }
     }
 }
