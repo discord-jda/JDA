@@ -381,6 +381,9 @@ public class MessageReaction
      * @param  type
      *         The specific type of reaction
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If {@code null} is provided.
+     *
      * @return {@link ReactionPaginationAction ReactionPaginationAction}
      *
      * @see    #retrieveUsers()
