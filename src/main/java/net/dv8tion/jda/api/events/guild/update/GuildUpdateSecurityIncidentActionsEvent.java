@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that the {@link SecurityIncidentActions} of a {@link Guild Guild} changed.
@@ -34,7 +33,7 @@ public class GuildUpdateSecurityIncidentActionsEvent extends GenericGuildUpdateE
 {
     public static final String IDENTIFIER = "security_incident_actions";
 
-    public GuildUpdateSecurityIncidentActionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable SecurityIncidentActions previous)
+    public GuildUpdateSecurityIncidentActionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull SecurityIncidentActions previous)
     {
         super(api, responseNumber, guild, previous, guild.getSecurityIncidentActions(), IDENTIFIER);
     }
@@ -44,7 +43,7 @@ public class GuildUpdateSecurityIncidentActionsEvent extends GenericGuildUpdateE
      *
      * @return The old incident actions
      */
-    @Nullable
+    @Nonnull
     public SecurityIncidentActions getOldSecurityIncidentActions()
     {
         return getOldValue();
@@ -55,7 +54,7 @@ public class GuildUpdateSecurityIncidentActionsEvent extends GenericGuildUpdateE
      *
      * @return The new incident actions
      */
-    @Nullable
+    @Nonnull
     public SecurityIncidentActions getNewSecurityIncidentActions()
     {
         return getNewValue();
