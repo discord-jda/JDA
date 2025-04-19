@@ -27,6 +27,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
+import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.templates.Template;
@@ -395,6 +397,20 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
     @Nonnull
     @Override
     public Timeout getAfkTimeout()
+    {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public SecurityIncidentActions getSecurityIncidentActions()
+    {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public SecurityIncidentDetections getSecurityIncidentDetections()
     {
         throw detachedException();
     }
@@ -832,6 +848,13 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
     @Nonnull
     @Override
     public AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles)
+    {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidentActions incidents)
     {
         throw detachedException();
     }
