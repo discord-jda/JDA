@@ -18,7 +18,9 @@ package net.dv8tion.jda.api.events.guild.member;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -26,12 +28,15 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} member event is fired.
  * <br>Every GuildMemberEvent is an instance of this event and can be casted.
  *
+ * <p>Can be used to detect any GuildMemberEvent.
+ *
+ * <p><b>Requirements</b><br>
+ *
  * <p>Most of these events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
- *
- * <p>Can be used to detect any GuildMemberEvent.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_MEMBERS)
 public abstract class GenericGuildMemberEvent extends GenericGuildEvent
 {
     private final Member member;
