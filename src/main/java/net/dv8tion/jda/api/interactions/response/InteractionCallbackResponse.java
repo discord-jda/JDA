@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 public interface InteractionCallbackResponse
 {
     /**
-     * Returns the {@link Message} contained in this callback response, or {@code null} if none was created by the response.
+     * Returns the {@link Message} contained in this callback response, or {@code null} if none was created or updated by the response.
      *
      * @return Message contained in this callback response, or null.
      */
