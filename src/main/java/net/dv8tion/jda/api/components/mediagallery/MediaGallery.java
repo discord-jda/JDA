@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Component which displays a group of images, videos or gifs into a gallery grid.
+ * Component which displays a group of images, videos, GIFs or WEBPs into a gallery grid.
  *
  * <p>This can contain up to {@value #MAX_ITEMS} {@link MediaGalleryItem}.
  *

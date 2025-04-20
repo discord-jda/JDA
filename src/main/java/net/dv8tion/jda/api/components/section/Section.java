@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Component which contains main content on the left and an accessory on the right.
+ * Component which contains the main content on the left and an accessory on the right.
  *
  * <p>This can contain up to {@value #MAX_COMPONENTS} {@link SectionContentComponent}.
  *

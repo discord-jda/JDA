@@ -62,8 +62,8 @@ public interface Thumbnail extends SectionAccessoryComponent
     /**
      * Constructs a new {@link Thumbnail} from the {@link FileUpload}.
      *
-     * <p>This will automatically add the file when building the message,
-     * as such you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
+     * <p>This will automatically add the file when building the message;
+     * as such, you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
      *
      * @param  file
      *         The {@link FileUpload} to display
