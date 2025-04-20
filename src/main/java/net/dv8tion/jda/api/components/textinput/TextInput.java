@@ -184,7 +184,7 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
     class Builder
     {
         private String id;
-        private int uniqueId;
+        private int uniqueId = -1;
         private String label;
         private String value;
         private String placeholder;
