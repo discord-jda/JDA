@@ -5,6 +5,17 @@ description: Migrate to the Components V2 update.
 recipeList:
     - net.dv8tion.MigrateComponentsV2Packages
     - net.dv8tion.MigrateComponentsV2CustomIdGetters
+#    - net.dv8tion.MigrateComponentsV2Dependency
+
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: net.dv8tion.MigrateComponentsV2Dependency
+description: Migrate to Components V2 dependency.
+recipeList:
+  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
+      groupId: net.dv8tion
+      artifactId: JDA
+      newVersion: 5.5.X
 
 ---
 type: specs.openrewrite.org/v1beta/recipe
