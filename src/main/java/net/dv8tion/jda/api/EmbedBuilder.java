@@ -907,7 +907,7 @@ public class EmbedBuilder
         return fields;
     }
 
-    private boolean hasUrlFormat(@Nonnull String url)
+    private static boolean hasUrlFormat(@Nonnull String url)
     {
         if (url.regionMatches(true, 0, "https://", 0, "https://".length()))
         {
@@ -922,6 +922,23 @@ public class EmbedBuilder
             return url.length() > "attachment://".length();
         }
         return false;
+    }
+
+    /**
+     * Checks if the provided {@code url} is a valid http(s) or attachment url.
+     * The length of the {@code url} can't exceed {@link MessageEmbed#URL_MAX_LENGTH}.
+     * Note that this check is case-insensitive and at least one character is required
+     * after the url prefix. Meaning that "HtTpS://" will return {@code false}, while
+     * "HtTpS://a" will return {@code true}.
+     *
+     * @param url The string to check.
+     *
+     * @return {@code true} if {@code url} is a valid http(s) or attachment url,
+     * {@code false} otherwise.
+     */
+    public static boolean isUrlOrAttachment(@Nullable String url)
+    {
+        return url != null && url.length() <= MessageEmbed.URL_MAX_LENGTH && hasUrlFormat(url);
     }
 
     private void urlCheck(@Nullable String url)
