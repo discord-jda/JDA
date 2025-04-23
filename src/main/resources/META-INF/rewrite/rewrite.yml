@@ -89,10 +89,9 @@ recipeList:
   - org.openrewrite.java.ChangeMethodName:
       methodPattern: net.dv8tion.jda.api.interactions.modals.ModalMapping getId()
       newMethodName: getCustomId
-#  Bugged due to inner classes
-#  - org.openrewrite.java.ChangeMethodName:
-#      methodPattern: net.dv8tion.jda.api.components.selects.SelectMenu.Builder getId()
-#      newMethodName: getCustomId
-#  - org.openrewrite.java.ChangeMethodName:
-#      methodPattern: net.dv8tion.jda.api.components.textinput.TextInput.Builder getId()
-#      newMethodName: getCustomId
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: net.dv8tion.jda.api.components.selects.SelectMenu.Builder getId()
+      newMethodName: getCustomId
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: net.dv8tion.jda.api.components.textinput.TextInput.Builder getId()
+      newMethodName: getCustomId

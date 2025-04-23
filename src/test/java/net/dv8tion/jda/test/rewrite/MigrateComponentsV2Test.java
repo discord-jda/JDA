@@ -225,8 +225,14 @@ public class MigrateComponentsV2Test implements RewriteTest
                 )
         );
 
-        // This is bugged, most likely due to inner classes,
-        // i've tried to switch the inner class separator from . to $, same result.
+        // Nested classes are bugged.
+        //
+        // Upgrading versions (3.3.0 -> 3.6.1) had *some* improvement,
+        // but it will still *add* an import for the nested class,
+        // even though it is already qualified starting from the already-imported top-level class.
+        //
+        // Though this will happen only if the import wasn't already present,
+        // it will still produce valid code and the user can mass optimize imports when it's finished.
 //        rewriteRun(
 //                spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2"),
 //                //language=java

@@ -169,7 +169,7 @@ dependencies {
 
     // OpenRewrite
     // Import Rewrite's bill of materials.
-    testImplementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.3.0"))
+    testImplementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.6.1"))
 
     // rewrite-java dependencies only necessary for Java Recipe development
     testImplementation("org.openrewrite:rewrite-java")
