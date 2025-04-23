@@ -907,12 +907,29 @@ public class EmbedBuilder
         return fields;
     }
 
+    private boolean hasUrlFormat(@Nonnull String url)
+    {
+        if (url.regionMatches(true, 0, "https://", 0, "https://".length()))
+        {
+            return url.length() > "https://".length();
+        }
+        if (url.regionMatches(true, 0, "http://", 0, "http://".length()))
+        {
+            return url.length() > "http://".length();
+        }
+        if (url.regionMatches(true, 0, "attachment://", 0, "attachment://".length()))
+        {
+            return url.length() > "attachment://".length();
+        }
+        return false;
+    }
+
     private void urlCheck(@Nullable String url)
     {
         if (url != null)
         {
             Checks.notLonger(url, MessageEmbed.URL_MAX_LENGTH, "URL");
-            Checks.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http(s) or attachment url.");
+            Checks.check(hasUrlFormat(url), "URL must be a valid http(s) or attachment url.");
         }
     }
 }
