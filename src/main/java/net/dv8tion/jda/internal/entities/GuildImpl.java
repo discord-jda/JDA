@@ -1199,10 +1199,9 @@ public class GuildImpl implements Guild
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
-        return getMembersView().stream()
-                .map(Member::getVoiceState)
-                .filter(Objects::nonNull)
-                .collect(Helpers.toUnmodifiableList());
+        return this.voiceStateCache.applyStream(stream ->
+            stream.collect(Helpers.toUnmodifiableList())
+        );
     }
 
     @Nonnull

@@ -1021,8 +1021,8 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     int getBoostCount();
 
     /**
-     * Sorted list of {@link net.dv8tion.jda.api.entities.Member Members} that boost this guild.
-     * <br>The list is sorted by {@link net.dv8tion.jda.api.entities.Member#getTimeBoosted()} ascending.
+     * Sorted list of {@link Member Members} that boost this guild.
+     * <br>The list is sorted by {@link Member#getTimeBoosted()} ascending.
      * This means the first element will be the member who has been boosting for the longest time.
      *
      * <p>This will only check cached members!
@@ -1130,7 +1130,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
     /**
      * Provides the {@link VoiceChannel VoiceChannel} that has been set as the channel
-     * which {@link net.dv8tion.jda.api.entities.Member Members} will be moved to after they have been inactive in a
+     * which {@link Member Members} will be moved to after they have been inactive in a
      * {@link VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.
      * <br>If no channel has been set as the AFK channel, this returns {@code null}.
      * <p>
@@ -1146,7 +1146,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
     /**
      * Provides the {@link TextChannel TextChannel} that has been set as the channel
-     * which newly joined {@link net.dv8tion.jda.api.entities.Member Members} will be announced in.
+     * which newly joined {@link Member Members} will be announced in.
      * <br>If no channel has been set as the system channel, this returns {@code null}.
      * <p>
      * This value can be modified using {@link GuildManager#setSystemChannel(TextChannel)}.
@@ -1199,7 +1199,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     TextChannel getSafetyAlertsChannel();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
+     * The {@link Member Member} object for the owner of this Guild.
      * <br>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
      * Sometimes owners of guilds delete their account or get banned by Discord.
      *
@@ -1309,7 +1309,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     boolean isMember(@Nonnull UserSnowflake user);
 
     /**
-     * Gets the {@link net.dv8tion.jda.api.entities.Member Member} object of the currently logged in account in this guild.
+     * Gets the {@link Member Member} object of the currently logged in account in this guild.
      * <br>This is basically {@link net.dv8tion.jda.api.JDA#getSelfUser()} being provided to {@link #getMember(UserSnowflake)}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
@@ -1335,7 +1335,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     NSFWLevel getNSFWLevel();
 
     /**
-     * Gets the Guild specific {@link net.dv8tion.jda.api.entities.Member Member} object for the provided
+     * Gets the Guild specific {@link Member Member} object for the provided
      * {@link UserSnowflake}.
      * <br>If the user is not in this guild or currently uncached, {@code null} is returned.
      *
@@ -1350,7 +1350,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
+     * @return Possibly-null {@link Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
      *
      * @see    #retrieveMember(UserSnowflake)
      */
@@ -1358,7 +1358,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     Member getMember(@Nonnull UserSnowflake user);
 
     /**
-     * Gets a {@link net.dv8tion.jda.api.entities.Member Member} object via the id of the user. The id relates to
+     * Gets a {@link Member Member} object via the id of the user. The id relates to
      * {@link net.dv8tion.jda.api.entities.User#getId()}, and this method is similar to {@link JDA#getUserById(String)}
      * <br>This is more efficient that using {@link JDA#getUserById(String)} and {@link #getMember(UserSnowflake)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
@@ -1373,7 +1373,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} with the related {@code userId}.
+     * @return Possibly-null {@link Member Member} with the related {@code userId}.
      *
      * @see    #retrieveMemberById(String)
      */
@@ -1384,7 +1384,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Gets a {@link net.dv8tion.jda.api.entities.Member Member} object via the id of the user. The id relates to
+     * Gets a {@link Member Member} object via the id of the user. The id relates to
      * {@link net.dv8tion.jda.api.entities.User#getIdLong()}, and this method is similar to {@link JDA#getUserById(long)}
      * <br>This is more efficient that using {@link JDA#getUserById(long)} and {@link #getMember(UserSnowflake)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
@@ -1398,7 +1398,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} with the related {@code userId}.
+     * @return Possibly-null {@link Member Member} with the related {@code userId}.
      *
      * @see    #retrieveMemberById(long)
      */
@@ -1409,11 +1409,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Searches for a {@link net.dv8tion.jda.api.entities.Member} that has the matching Discord Tag.
+     * Searches for a {@link Member} that has the matching Discord Tag.
      * <br>Format has to be in the form {@code Username#Discriminator} where the
      * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
      * must be exactly 4 digits.
-     * <br>This does not check the {@link net.dv8tion.jda.api.entities.Member#getNickname() nickname} of the member
+     * <br>This does not check the {@link Member#getNickname() nickname} of the member
      * but the username.
      *
      * <p>This will only check cached members!
@@ -1431,7 +1431,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
+     * @return The {@link Member} for the discord tag or null if no member has the provided tag
      *
      * @see    net.dv8tion.jda.api.JDA#getUserByTag(String)
      */
@@ -1443,11 +1443,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Searches for a {@link net.dv8tion.jda.api.entities.Member} that has the matching Discord Tag.
+     * Searches for a {@link Member} that has the matching Discord Tag.
      * <br>Format has to be in the form {@code Username#Discriminator} where the
      * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
      * must be exactly 4 digits.
-     * <br>This does not check the {@link net.dv8tion.jda.api.entities.Member#getNickname() nickname} of the member
+     * <br>This does not check the {@link Member#getNickname() nickname} of the member
      * but the username.
      *
      * <p>This will only check cached members!
@@ -1467,7 +1467,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
+     * @return The {@link Member} for the discord tag or null if no member has the provided tag
      *
      * @see    #getMemberByTag(String)
      */
@@ -1479,7 +1479,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * A list of all {@link net.dv8tion.jda.api.entities.Member Members} in this Guild.
+     * A list of all {@link Member Members} in this Guild.
      * <br>The Members are not provided in any particular order.
      *
      * <p>This will only check cached members!
@@ -1505,9 +1505,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.Member Members} who have the same name as the one provided.
-     * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getUser()}{@link net.dv8tion.jda.api.entities.User#getName() .getName()}
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
+     * Gets a list of all {@link Member Members} who have the same name as the one provided.
+     * <br>This compares against {@link Member#getUser()}{@link net.dv8tion.jda.api.entities.User#getName() .getName()}
+     * <br>If there are no {@link Member Members} with the provided name, then this returns an empty list.
      *
      * <p>This will only check cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
@@ -1537,9 +1537,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.Member Members} who have the same nickname as the one provided.
+     * Gets a list of all {@link Member Members} who have the same nickname as the one provided.
      * <br>This compares against {@link Member#getNickname()}. If a Member does not have a nickname, the comparison results as false.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
+     * <br>If there are no {@link Member Members} with the provided name, then this returns an empty list.
      *
      * <p>This will only check cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
@@ -1564,9 +1564,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Gets a list of all {@link net.dv8tion.jda.api.entities.Member Members} who have the same effective name as the one provided.
-     * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
+     * Gets a list of all {@link Member Members} who have the same effective name as the one provided.
+     * <br>This compares against {@link Member#getEffectiveName()}.
+     * <br>If there are no {@link Member Members} with the provided name, then this returns an empty list.
      *
      * <p>This will only check cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
@@ -1593,14 +1593,14 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all {@link Role Roles} provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with all provided roles, then this returns an empty list.
+     * Gets a list of {@link Member Members} that have all {@link Role Roles} provided.
+     * <br>If there are no {@link Member Members} with all provided roles, then this returns an empty list.
      *
      * <p>This will only check cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @param  roles
-     *         The {@link Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
+     *         The {@link Role Roles} that a {@link Member Member}
      *         must have to be included in the returned list.
      *
      * @throws java.lang.IllegalArgumentException
@@ -1621,14 +1621,14 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all provided {@link Role Roles}.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with all provided roles, then this returns an empty list.
+     * Gets a list of {@link Member Members} that have all provided {@link Role Roles}.
+     * <br>If there are no {@link Member Members} with all provided roles, then this returns an empty list.
      *
      * <p>This will only check cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @param  roles
-     *         The {@link Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
+     *         The {@link Role Roles} that a {@link Member Member}
      *         must have to be included in the returned list.
      *
      * @throws java.lang.IllegalArgumentException
@@ -1652,7 +1652,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.MemberCacheView MemberCacheView} for all cached
-     * {@link net.dv8tion.jda.api.entities.Member Members} of this Guild.
+     * {@link Member Members} of this Guild.
      *
      * <p>This will only provide cached members!
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
@@ -2644,7 +2644,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>This role is special because its {@link Role#getPosition() position} is calculated as
      * {@code -1}. All other role positions are 0 or greater. This implies that the public role is <b>always</b> below
      * any custom roles created in this Guild. Additionally, all members of this guild are implied to have this role so
-     * it is not included in the list returned by {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}.
+     * it is not included in the list returned by {@link Member#getRoles() Member.getRoles()}.
      * <br>The ID of this Role is the Guild's ID thus it is equivalent to using {@link #getRoleById(long) getRoleById(getIdLong())}.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
@@ -2737,7 +2737,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
 
     /**
      * Used to leave a Guild. If the currently logged in account is the owner of this guild ({@link net.dv8tion.jda.api.entities.Guild#getOwner()})
-     * then ownership of the Guild needs to be transferred to a different {@link net.dv8tion.jda.api.entities.Member Member}
+     * then ownership of the Guild needs to be transferred to a different {@link Member Member}
      * before leaving using {@link #transferOwnership(Member)}.
      *
      * @throws java.lang.IllegalStateException
@@ -2977,15 +2977,15 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     RestAction<GuildWelcomeScreen> retrieveWelcomeScreen();
 
     /**
-     * A list containing the {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState} of every {@link net.dv8tion.jda.api.entities.Member Member}
-     * in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     * <br>This will never return an empty list because if it were empty, that would imply that there are no
-     * {@link net.dv8tion.jda.api.entities.Member Members} in this {@link net.dv8tion.jda.api.entities.Guild Guild}, which is
-     * impossible.
+     * A list containing the cached {@link GuildVoiceState} of every {@link Member}
+     * connected to an audio channel in this guild.
      *
-     * @return Never-empty immutable list containing all the {@link GuildVoiceState GuildVoiceStates} on this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <p>This requires {@link CacheFlag#VOICE_STATE} to be enabled.
+     *
+     * @return Immutable list containing all cached {@link GuildVoiceState GuildVoiceStates} for this guild.
      */
     @Nonnull
+    @Unmodifiable
     List<GuildVoiceState> getVoiceStates();
 
     /**
@@ -3840,7 +3840,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     /* From GuildController */
 
     /**
-     * Used to move a {@link net.dv8tion.jda.api.entities.Member Member} from one {@link AudioChannel AudioChannel}
+     * Used to move a {@link Member Member} from one {@link AudioChannel AudioChannel}
      * to another {@link AudioChannel AudioChannel}.
      * <br>As a note, you cannot move a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild as the one that you are moving them to.
@@ -3862,7 +3862,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
+     *         The {@link Member Member} that you are moving.
      * @param  audioChannel
      *         The destination {@link AudioChannel AudioChannel} to which the member is being
      *         moved to. Or null to perform a voice kick.
@@ -3892,7 +3892,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel);
 
     /**
-     * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link AudioChannel AudioChannel}.
+     * Used to kick a {@link Member Member} from a {@link AudioChannel AudioChannel}.
      * <br>As a note, you cannot kick a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild.
      *
@@ -3912,7 +3912,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} that you are moving.
+     *         The {@link Member Member} that you are moving.
      *
      * @throws IllegalStateException
      *         If the Member isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
@@ -3943,7 +3943,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * <p>To change the nickname for the currently logged in account
      * only the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE NICKNAME_CHANGE} is required.
-     * <br>To change the nickname of <b>any</b> {@link net.dv8tion.jda.api.entities.Member Member} for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     * <br>To change the nickname of <b>any</b> {@link Member Member} for this {@link net.dv8tion.jda.api.entities.Guild Guild}
      * the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} is required.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -3957,13 +3957,13 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} for which the nickname should be changed.
+     *         The {@link Member Member} for which the nickname should be changed.
      * @param  nickname
-     *         The new nickname of the {@link net.dv8tion.jda.api.entities.Member Member}, provide {@code null} or an
+     *         The new nickname of the {@link Member Member}, provide {@code null} or an
      *         empty String to reset the nickname
      *
      * @throws IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     *         If the specified {@link Member Member}
      *         is not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *         Or if the provided member is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -4147,7 +4147,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Kicks a {@link Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
@@ -4190,7 +4190,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(UserSnowflake) Guild.unban(UserReference)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
-     * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
+     * {@link Member Member} object (if the User was in the Guild)
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p><b>Examples</b><br>
@@ -4534,10 +4534,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> removeTimeout(@Nonnull UserSnowflake user);
 
     /**
-     * Sets the Guild Deafened state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
+     * Sets the Guild Deafened state of the {@link Member Member} based on the provided
      * boolean.
      *
-     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildDeafened() GuildVoiceState.isGuildDeafened()} value won't change
+     * <p><b>Note:</b> The Member's {@link GuildVoiceState#isGuildDeafened() GuildVoiceState.isGuildDeafened()} value won't change
      * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent GuildVoiceGuildDeafenEvent} event related to this change.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4557,7 +4557,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The {@link UserSnowflake} who's {@link GuildVoiceState} to change.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  deafen
-     *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
+     *         Whether this {@link Member Member} should be deafened or undeafened.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission
@@ -4576,10 +4576,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> deafen(@Nonnull UserSnowflake user, boolean deafen);
 
     /**
-     * Sets the Guild Muted state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
+     * Sets the Guild Muted state of the {@link Member Member} based on the provided
      * boolean.
      *
-     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildMuted() GuildVoiceState.isGuildMuted()} value won't change
+     * <p><b>Note:</b> The Member's {@link GuildVoiceState#isGuildMuted() GuildVoiceState.isGuildMuted()} value won't change
      * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent} event related to this change.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -4599,7 +4599,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         The {@link UserSnowflake} who's {@link GuildVoiceState} to change.
      *         This can be a member or user instance or {@link User#fromId(long)}.
      * @param  mute
-     *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
+     *         Whether this {@link Member Member} should be muted or unmuted.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission
@@ -4618,7 +4618,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> mute(@Nonnull UserSnowflake user, boolean mute);
 
     /**
-     * Atomically assigns the provided {@link Role Role} to the specified {@link net.dv8tion.jda.api.entities.Member Member}.
+     * Atomically assigns the provided {@link Role Role} to the specified {@link Member Member}.
      * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
      *
      * <p>If multiple roles should be added/removed (efficiently) in one request
@@ -4665,7 +4665,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> addRoleToMember(@Nonnull UserSnowflake user, @Nonnull Role role);
 
     /**
-     * Atomically removes the provided {@link Role Role} from the specified {@link net.dv8tion.jda.api.entities.Member Member}.
+     * Atomically removes the provided {@link Role Role} from the specified {@link Member Member}.
      * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
      *
      * <p>If multiple roles should be added/removed (efficiently) in one request
@@ -4712,7 +4712,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> removeRoleFromMember(@Nonnull UserSnowflake user, @Nonnull Role role);
 
     /**
-     * Modifies the {@link Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     * Modifies the {@link Role Roles} of the specified {@link Member Member}
      * by adding and removing a collection of roles.
      * <br>None of the provided roles may be the <u>Public Role</u> of the current Guild.
      * <br>If a role is both in {@code rolesToAdd} and {@code rolesToRemove} it will be removed.
@@ -4756,13 +4756,13 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * </ul>
      *
      * @param  member
-     *         The {@link net.dv8tion.jda.api.entities.Member Member} that should be modified
+     *         The {@link Member Member} that should be modified
      * @param  rolesToAdd
      *         A {@link java.util.Collection Collection} of {@link Role Roles}
-     *         to add to the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has, or null
+     *         to add to the current Roles the specified {@link Member Member} already has, or null
      * @param  rolesToRemove
      *         A {@link java.util.Collection Collection} of {@link Role Roles}
-     *         to remove from the current Roles the specified {@link net.dv8tion.jda.api.entities.Member Member} already has, or null
+     *         to remove from the current Roles the specified {@link Member Member} already has, or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
@@ -4784,7 +4784,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nullable Collection<Role> rolesToAdd, @Nullable Collection<Role> rolesToRemove);
 
     /**
-     * Modifies the complete {@link Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     * Modifies the complete {@link Role Role} set of the specified {@link Member Member}
      * <br>The provided roles will replace all current Roles of the specified Member.
      *
      * <p><b>Warning</b><br>
@@ -4815,7 +4815,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * }</pre>
      *
      * @param  member
-     *         A {@link net.dv8tion.jda.api.entities.Member Member} of which to override the Roles of
+     *         A {@link Member Member} of which to override the Roles of
      * @param  roles
      *         New collection of {@link Role Roles} for the specified Member
      *
@@ -4846,7 +4846,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     }
 
     /**
-     * Modifies the complete {@link Role Role} set of the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     * Modifies the complete {@link Role Role} set of the specified {@link Member Member}
      * <br>The provided roles will replace all current Roles of the specified Member.
      *
      * <p><u>The new roles <b>must not</b> contain the Public Role of the Guild</u>
@@ -4880,7 +4880,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * }</pre>
      *
      * @param  member
-     *         A {@link net.dv8tion.jda.api.entities.Member Member} of which to override the Roles of
+     *         A {@link Member Member} of which to override the Roles of
      * @param  roles
      *         New collection of {@link Role Roles} for the specified Member
      *
@@ -4908,7 +4908,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles);
 
     /**
-     * Transfers the Guild ownership to the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     * Transfers the Guild ownership to the specified {@link Member Member}
      * <br>Only available if the currently logged in account is the owner of this Guild
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -5907,7 +5907,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * <br>Providing {@code true} to {@link #modifyRolePositions(boolean)} will result in the ordering being
      * in ascending order, with the highest role at index {@code n - 1} and the lowest at index {@code 0}.
      *
-     * <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
+     * <br>As a note: {@link Member#getRoles() Member.getRoles()}
      * and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order, just like this method.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -5951,7 +5951,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         defined by Discord for roles, which is Descending. This means that the highest role appears at index {@code 0}
      *         and the lowest role at index {@code n - 1}. Providing {@code true} will result in the ordering being
      *         in ascending order, with the lower role at index {@code 0} and the highest at index {@code n - 1}.
-     *         <br>As a note: {@link net.dv8tion.jda.api.entities.Member#getRoles() Member.getRoles()}
+     *         <br>As a note: {@link Member#getRoles() Member.getRoles()}
      *         and {@link net.dv8tion.jda.api.entities.Guild#getRoles() Guild.getRoles()} are both in descending order.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
