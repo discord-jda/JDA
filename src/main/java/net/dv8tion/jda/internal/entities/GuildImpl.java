@@ -2432,10 +2432,15 @@ public class GuildImpl implements Guild
         memberCount++;
     }
 
-    public void onMemberRemove()
+    public void onMemberRemove(long memberId)
     {
         memberCount--;
+        this.voiceStateCache.remove(memberId);
+        if (this.memberPresences != null)
+            this.memberPresences.remove(memberId);
     }
+
+    // -- Voice State Cache Handling --
 
     public boolean shouldCacheVoiceState(long userId)
     {
@@ -2464,6 +2469,17 @@ public class GuildImpl implements Guild
             else
                 this.voiceStateCache.getMap().remove(voiceState.getIdLong());
         }
+    }
+
+    public List<Member> getConnectedMembers(GuildChannel channel)
+    {
+        return this.voiceStateCache.applyStream(stream ->
+            stream
+                .filter(state -> channel.equals(state.getChannel()))
+                .map(GuildVoiceStateImpl::getMember)
+                .filter(Objects::nonNull) // sanity filter
+                .collect(Helpers.toUnmodifiableList())
+        );
     }
 
     // -- Object overrides --

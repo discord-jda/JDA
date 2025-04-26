@@ -67,7 +67,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.concrete.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.entities.emoji.ApplicationEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl;
 import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
@@ -584,13 +583,11 @@ public class EntityBuilder extends AbstractEntityBuilder
                 getJDA().getUsersView().remove(user.getIdLong());
             }
 
-            GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
+            GuildVoiceStateImpl voiceState = member.getVoiceState();
             if (voiceState != null)
             {
-                AudioChannel connectedChannel = voiceState.getChannel();
-                if (connectedChannel instanceof AudioChannelMixin)
-                    ((AudioChannelMixin<?>) connectedChannel).getConnectedMembersMap().remove(member.getIdLong());
                 voiceState.setConnectedChannel(null);
+                guild.handleVoiceStateUpdate(voiceState);
             }
 
             return false;
@@ -685,13 +682,8 @@ public class EntityBuilder extends AbstractEntityBuilder
         GuildImpl guild = member.getGuild();
 
         final long channelId = newVoiceStateJson.getLong("channel_id");
-        AudioChannel audioChannel = (AudioChannel) guild.getGuildChannelById(channelId);
-        if (audioChannel instanceof AudioChannelMixin<?>)
-        {
-            if (guild.shouldCacheVoiceState(member.getIdLong()))
-                ((AudioChannelMixin<?>) audioChannel).getConnectedMembersMap().put(member.getIdLong(), member);
-        }
-        else
+        AudioChannel audioChannel = guild.getChannelById(AudioChannel.class, channelId);
+        if (audioChannel == null)
         {
             LOG.warn("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                     channelId, guild.getId(), member.getId());

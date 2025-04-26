@@ -24,7 +24,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 
 import java.time.OffsetDateTime;
@@ -172,12 +171,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
             if (oldChannel == null)
             {
-                ((AudioChannelMixin<?>) channel).getConnectedMembersMap().put(userId, member);
                 getJDA().getEntityBuilder().updateMemberCache(member);
             }
             else if (channel == null)
             {
-                ((AudioChannelMixin<?>) oldChannel).getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
@@ -202,8 +199,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     //If we are not already connected this will be removed by VOICE_SERVER_UPDATE
                 }
 
-                ((AudioChannelMixin<?>) channel).getConnectedMembersMap().put(userId, member);
-                ((AudioChannelMixin<?>) oldChannel).getConnectedMembersMap().remove(userId);
                 getJDA().getEntityBuilder().updateMemberCache(member);
 
             }
