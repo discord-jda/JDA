@@ -632,7 +632,6 @@ public class EntityBuilder extends AbstractEntityBuilder
 
     public MemberImpl createMember(GuildImpl guild, DataObject memberJson, DataObject voiceStateJson, DataObject presence)
     {
-        boolean playbackCache = false;
         User user = createUser(memberJson.getObject("user"));
         DataArray roleArray = memberJson.getArray("roles");
         MemberImpl member = (MemberImpl) guild.getMember(user);
@@ -665,7 +664,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
 
         // Load voice state and presence if necessary
-        if (voiceStateJson != null && member.getVoiceState() != null)
+        if (voiceStateJson != null)
             createGuildVoiceState(member, voiceStateJson);
         if (presence != null)
             createPresence(member, presence);
@@ -674,27 +673,29 @@ public class EntityBuilder extends AbstractEntityBuilder
 
     public GuildVoiceState createGuildVoiceState(MemberImpl member, DataObject voiceStateJson)
     {
-        GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
+        GuildVoiceStateImpl voiceState = member.getVoiceState();
         if (voiceState == null)
             voiceState = new GuildVoiceStateImpl(member);
         updateGuildVoiceState(voiceState, voiceStateJson, member);
         return voiceState;
     }
 
-    private void updateGuildVoiceState(GuildVoiceStateImpl oldVoiceState, DataObject newVoiceStateJson, MemberImpl member)
+    private void updateGuildVoiceState(GuildVoiceStateImpl currentVoiceState, DataObject newVoiceStateJson, MemberImpl member)
     {
-        Guild guild = member.getGuild();
+        GuildImpl guild = member.getGuild();
 
         final long channelId = newVoiceStateJson.getLong("channel_id");
         AudioChannel audioChannel = (AudioChannel) guild.getGuildChannelById(channelId);
-        if (audioChannel != null)
+        if (audioChannel instanceof AudioChannelMixin<?>)
         {
-            if (member.getVoiceState() != null)
+            if (guild.shouldCacheVoiceState(member.getIdLong()))
                 ((AudioChannelMixin<?>) audioChannel).getConnectedMembersMap().put(member.getIdLong(), member);
         }
         else
-            LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
+        {
+            LOG.warn("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                     channelId, guild.getId(), member.getId());
+        }
 
         String requestToSpeak = newVoiceStateJson.getString("request_to_speak_timestamp", null);
         OffsetDateTime timestamp = null;
@@ -702,7 +703,7 @@ public class EntityBuilder extends AbstractEntityBuilder
             timestamp = OffsetDateTime.parse(requestToSpeak);
 
         // VoiceState is considered volatile so we don't expect anything to actually exist
-        oldVoiceState.setSelfMuted(newVoiceStateJson.getBoolean("self_mute"))
+        currentVoiceState.setSelfMuted(newVoiceStateJson.getBoolean("self_mute"))
                 .setSelfDeafened(newVoiceStateJson.getBoolean("self_deaf"))
                 .setGuildMuted(newVoiceStateJson.getBoolean("mute"))
                 .setGuildDeafened(newVoiceStateJson.getBoolean("deaf"))
@@ -711,6 +712,8 @@ public class EntityBuilder extends AbstractEntityBuilder
                 .setStream(newVoiceStateJson.getBoolean("self_stream"))
                 .setRequestToSpeak(timestamp)
                 .setConnectedChannel(audioChannel);
+
+        guild.handleVoiceStateUpdate(currentVoiceState);
     }
 
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)

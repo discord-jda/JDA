@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
@@ -27,7 +26,6 @@ import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.AudioChannelMixin;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 import java.time.OffsetDateTime;
 import java.util.Objects;
@@ -47,12 +45,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return null; //unhandled for calls
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
-
-        if (content.isNull("member"))
-        {
-            WebSocketClient.LOG.debug("Discarding VOICE_STATE_UPDATE with missing member. JSON: {}", content);
-            return null;
-        }
 
         handleGuildVoiceState(content);
         return null;
@@ -80,7 +72,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             requestToSpeakTimestamp = requestToSpeakTime.toInstant().toEpochMilli();
         }
 
-        Guild guild = getJDA().getGuildById(guildId);
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
@@ -102,14 +94,17 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
 
         DataObject memberJson = content.getObject("member");
-        MemberImpl member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson);
-        // Only fire the events below if the member is cached
-        // If the member isn't cached, we would be firing every event that doesn't correspond to the default voice state
-        if (guild.getMemberById(member.getIdLong()) == null) return;
+        MemberImpl member = getJDA().getEntityBuilder().createMember(guild, memberJson);
 
-        GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
+        GuildVoiceStateImpl vState = member.getVoiceState();
         if (vState == null)
-            return;
+        {
+            if (guild.shouldCacheVoiceState(userId))
+                vState = new GuildVoiceStateImpl(member);
+            else
+                return;
+        }
+
         vState.setSessionId(sessionId); //Cant really see a reason for an event for this
         VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
         boolean isSelf = guild.getSelfMember().equals(member);
@@ -225,6 +220,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 getJDA().getDirectAudioController().update(guild, channel);
         }
 
-        ((GuildImpl) guild).updateRequestToSpeak();
+        guild.updateRequestToSpeak();
+        guild.handleVoiceStateUpdate(vState);
     }
 }

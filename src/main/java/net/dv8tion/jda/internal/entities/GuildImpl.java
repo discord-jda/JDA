@@ -114,6 +114,7 @@ public class GuildImpl implements Guild
     private final SnowflakeCacheViewImpl<GuildSticker> stickerCache = new SnowflakeCacheViewImpl<>(GuildSticker.class, GuildSticker::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
+    private final SnowflakeCacheViewImpl<GuildVoiceStateImpl> voiceStateCache = new SnowflakeCacheViewImpl<>(GuildVoiceStateImpl.class, state -> state.getMember().getEffectiveName());
 
     private CompletableFuture<Void> pendingRequestToSpeak;
 
@@ -1207,18 +1208,20 @@ public class GuildImpl implements Guild
     @Nonnull
     @Override
     @CheckReturnValue
-    public RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
+    public CacheRestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
     {
         JDAImpl jda = getJDA();
         Route.CompiledRoute route = Route.Guilds.GET_VOICE_STATE.compile(getId(), Long.toUnsignedString(id));
-        return new RestActionImpl<>(jda, route, (response, request) ->
-        {
-            EntityBuilder entityBuilder = jda.getEntityBuilder();
-            DataObject voiceStateData = response.getObject();
-            MemberImpl member = entityBuilder.createMember(this, voiceStateData.getObject("member"), null, null);
-            entityBuilder.updateMemberCache(member);
-            return entityBuilder.createGuildVoiceState(member, voiceStateData);
-        });
+        return new DeferredRestAction<>(jda, GuildVoiceState.class,
+                () -> voiceStateCache.get(id),
+                () -> new RestActionImpl<>(jda, route, (response, request) ->
+                {
+                    EntityBuilder entityBuilder = jda.getEntityBuilder();
+                    DataObject voiceStateData = response.getObject();
+                    MemberImpl member = entityBuilder.createMember(this, voiceStateData.getObject("member"), null, null);
+                    entityBuilder.updateMemberCache(member);
+                    return entityBuilder.createGuildVoiceState(member, voiceStateData);
+                }));
     }
 
     @Nonnull
@@ -2416,6 +2419,12 @@ public class GuildImpl implements Guild
         return memberPresences;
     }
 
+    @Nonnull
+    public SnowflakeCacheViewImpl<GuildVoiceStateImpl> getVoiceStateView()
+    {
+        return this.voiceStateCache;
+    }
+
     // -- Member Tracking --
 
     public void onMemberAdd()
@@ -2426,6 +2435,35 @@ public class GuildImpl implements Guild
     public void onMemberRemove()
     {
         memberCount--;
+    }
+
+    public boolean shouldCacheVoiceState(long userId)
+    {
+        return userId == api.getSelfUser().getIdLong() || api.getCacheFlags().contains(CacheFlag.VOICE_STATE);
+    }
+
+    public GuildVoiceStateImpl getVoiceState(Member member)
+    {
+        GuildVoiceStateImpl voiceState = this.voiceStateCache.getElementById(member.getIdLong());
+        if (voiceState != null)
+            return voiceState;
+        if (shouldCacheVoiceState(member.getIdLong()))
+            return new GuildVoiceStateImpl(member);
+        return null;
+    }
+
+    public void handleVoiceStateUpdate(GuildVoiceStateImpl voiceState)
+    {
+        if (!shouldCacheVoiceState(voiceState.getIdLong()))
+            return;
+
+        try (UnlockHook hook = this.voiceStateCache.writeLock())
+        {
+            if (voiceState.getChannel() != null)
+                this.voiceStateCache.getMap().put(voiceState.getIdLong(), voiceState);
+            else
+                this.voiceStateCache.getMap().remove(voiceState.getIdLong());
+        }
     }
 
     // -- Object overrides --

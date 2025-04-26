@@ -3007,7 +3007,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id);
+    CacheRestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id);
 
     /**
      * Load the member's voice state for the specified user.
