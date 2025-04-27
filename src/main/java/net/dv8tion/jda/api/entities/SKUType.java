@@ -54,9 +54,12 @@ public enum SKUType
     }
 
     /**
-     * Parse a sku type from the id
-     * @param type type id
-     * @return sku type or {@link #UNKNOWN} if the SKU is not known.
+     * Parse a SKU type from the id
+     *
+     * @param  type
+     *         The type id
+     *
+     * @return SKU type or {@link #UNKNOWN} if the SKU is not known.
      */
     public static SKUType fromId(int type)
     {
@@ -68,10 +71,11 @@ public enum SKUType
     }
 
     /**
-     * The discord id of the type
-     * @return discord id
+     * The Discord id of the SKU type
+     *
+     * @return The discord id
      */
-    public int id()
+    public int getId()
     {
         return id;
     }
