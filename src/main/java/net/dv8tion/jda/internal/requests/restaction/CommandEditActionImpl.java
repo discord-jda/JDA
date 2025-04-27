@@ -242,8 +242,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
             json.remove("contexts");
         if (isUnchanged(INTEGRATION_TYPES_SET))
             json.remove("integration_types");
-        mask = 0;
-        data = new CommandDataImpl(Command.Type.UNKNOWN, UNDEFINED);
+        reset();
         return getRequestBody(json);
     }
 
@@ -252,5 +251,11 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     {
         DataObject json = response.getObject();
         request.onSuccess(new CommandImpl(api, guild, json));
+    }
+
+    private void reset()
+    {
+        mask = 0;
+        data = new CommandDataImpl(data.getType(), UNDEFINED);
     }
 }
