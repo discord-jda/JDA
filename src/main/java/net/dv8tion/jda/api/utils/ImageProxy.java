@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -49,6 +50,13 @@ public class ImageProxy extends FileProxy
     public ImageProxy(@Nonnull String url)
     {
         super(url);
+    }
+
+    @Nonnull
+    @Override
+    public ImageProxy withClient(@Nonnull OkHttpClient customHttpClient)
+    {
+        return (ImageProxy) super.withClient(customHttpClient);
     }
 
     /**
@@ -226,5 +234,34 @@ public class ImageProxy extends FileProxy
     public CompletableFuture<Icon> downloadAsIcon(int size)
     {
         return downloadAsIcon(getUrl(size));
+    }
+
+    /**
+     * Returns a {@link FileUpload} which supplies a data stream of this attachment,
+     * with the given file name and at the specified size.
+     * <br>The returned {@link FileUpload} can be reused safely, and does not need to be closed.
+     *
+     * <p><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     *
+     * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
+     *
+     * @param  name
+     *         The name of the to-be-uploaded file
+     * @param  size
+     *         The size of this image
+     *
+     * @throws IllegalArgumentException If the file name is null or blank
+     *
+     * @return {@link FileUpload} from this attachment.
+     */
+    @Nonnull
+    public FileUpload downloadAsFileUpload(@Nonnull String name, int size)
+    {
+        final String url = getUrl(size); // So the checks are also done outside the FileUpload
+        return FileUpload.fromStreamSupplier(name, () ->
+        {
+            // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+            return download(url).join();
+        });
     }
 }

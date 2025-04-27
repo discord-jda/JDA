@@ -426,13 +426,13 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     // Allowed Mentions Methods
 
     /**
-     * Whether to mention the used, when replying to a message.
+     * Whether to mention the user, when replying to a message.
      * <br>This only matters in combination with {@link net.dv8tion.jda.api.requests.restaction.MessageCreateAction#setMessageReference(Message) MessageCreateAction.setMessageReference(...)}!
      *
      * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
      *
      * @param  mention
-     *         True, to mention the author if the referenced message
+     *         True, to mention the author in the referenced message
      *
      * @return The same instance for chaining
      */

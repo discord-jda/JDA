@@ -362,6 +362,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("rules_channel_id", rulesChannel);
         if (shouldUpdate(COMMUNITY_UPDATES_CHANNEL))
             body.put("public_updates_channel_id", communityUpdatesChannel);
+        if (shouldUpdate(SAFETY_ALERTS_CHANNEL))
+            body.put("safety_alerts_channel_id", safetyAlertsChannel);
         if (shouldUpdate(VERIFICATION_LEVEL))
             body.put("verification_level", verificationLevel);
         if (shouldUpdate(NOTIFICATION_LEVEL))

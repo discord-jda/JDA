@@ -35,7 +35,7 @@ public class PollVotersPaginationTest extends IntegrationTest
     {
         assertThatRequestFrom(newAction())
             .hasMethod(Method.GET)
-            .hasCompiledRoute("channels/381886978205155338/polls/1228092239079804968/answers/5?limit=1000&after=0")
+            .hasCompiledRoute("channels/381886978205155338/polls/1228092239079804968/answers/5?limit=100&after=0")
             .whenQueueCalled();
     }
 
@@ -45,7 +45,7 @@ public class PollVotersPaginationTest extends IntegrationTest
         long randomId = random.nextLong();
         assertThatRequestFrom(newAction().skipTo(randomId))
             .hasMethod(Method.GET)
-            .hasQueryParams("limit", "1000", "after", Long.toUnsignedString(randomId))
+            .hasQueryParams("limit", "100", "after", Long.toUnsignedString(randomId))
             .whenQueueCalled();
     }
 

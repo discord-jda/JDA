@@ -43,27 +43,45 @@ public class ReactionPaginationActionImpl
      * Creates a new PaginationAction instance
      *
      * @param reaction
-     *        The target {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction}
+     *        The target {@link MessageReaction MessageReaction}
      */
     public ReactionPaginationActionImpl(MessageReaction reaction)
     {
-        super(reaction.getJDA(), Route.Messages.GET_REACTION_USERS.compile(reaction.getChannelId(), reaction.getMessageId(), getCode(reaction)), 1, 100, 100);
+        this(reaction, MessageReaction.ReactionType.NORMAL);
+    }
+
+    /**
+     * Creates a new PaginationAction instance
+     *
+     * @param reaction
+     *        The target {@link MessageReaction MessageReaction}
+     * @param type
+     *        Type of {@link MessageReaction.ReactionType MessageReaction.ReactionType} to retrieve users for
+     */
+    public ReactionPaginationActionImpl(MessageReaction reaction, MessageReaction.ReactionType type)
+    {
+        super(reaction.getJDA(), getCompiledRoute(reaction.getChannelId(), reaction.getMessageId(), getCode(reaction), type), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = reaction;
     }
 
-    public ReactionPaginationActionImpl(Message message, String code)
+    public ReactionPaginationActionImpl(Message message, String code, MessageReaction.ReactionType type)
     {
-        super(message.getJDA(), Route.Messages.GET_REACTION_USERS.compile(message.getChannelId(), message.getId(), code), 1, 100, 100);
+        super(message.getJDA(), getCompiledRoute(message.getChannelId(), message.getId(), code, type), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
     }
 
-    public ReactionPaginationActionImpl(MessageChannel channel, String messageId, String code)
+    public ReactionPaginationActionImpl(MessageChannel channel, String messageId, String code, MessageReaction.ReactionType type)
     {
-        super(channel.getJDA(), Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code), 1, 100, 100);
+        super(channel.getJDA(), getCompiledRoute(channel.getId(), messageId, code, type), 1, 100, 100);
         super.order(PaginationOrder.FORWARD);
         this.reaction = null;
+    }
+
+    private static Route.CompiledRoute getCompiledRoute(String channelId, String messageId, String code, MessageReaction.ReactionType type)
+    {
+        return Route.Messages.GET_REACTION_USERS.compile(channelId, messageId, code).withQueryParams("type", String.valueOf(type.getId()));
     }
 
     protected static String getCode(MessageReaction reaction)

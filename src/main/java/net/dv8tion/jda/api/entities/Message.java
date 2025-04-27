@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
@@ -49,8 +50,8 @@ import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.NamedAttachmentProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -142,11 +143,11 @@ public interface Message extends ISnowflake, Formattable
     String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
 
     /**
-     * The maximum sendable file size (25 MiB)
+     * The maximum sendable file size (10 MiB)
      *
      *  @see MessageRequest#setFiles(Collection)
      */
-    int MAX_FILE_SIZE = 25 << 20;
+    int MAX_FILE_SIZE = 10 << 20;
 
     /**
      * The maximum amount of files sendable within a single message ({@value})
@@ -207,7 +208,7 @@ public interface Message extends ISnowflake, Formattable
             "(?:https?://)?" +                     // Scheme
             "(?:\\w+\\.)?" +                       // Subdomain
             "discord(?:(?:app)?\\.com" +           // Discord domain
-            "/invite|\\.gg)/(?<code>[a-z0-9-]+)" + // Path
+            "/invite[/\\\\]|\\.gg/)(?<code>[a-z0-9-]+)" + // Path
             "(?:\\?\\S*)?(?:#\\S*)?",              // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
 
@@ -267,6 +268,14 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
      *
+     * <p>This will have different meaning depending on the message {@link #getType() type}.
+     * The following are the message types where a reference will be present:
+     * <ul>
+     *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
+     *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link MessageType#CONTEXT_COMMAND CONTEXT_COMMAND} (message context command)</li>
+     * </ul>
+     *
      * <p>You can access all the information about a reference through this object.
      * Additionally, you can retrieve the referenced Message if discord did not load it in time. This can be done with {@link MessageReference#resolve()}.
      *
@@ -278,9 +287,15 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Referenced message.
      *
-     * <p>This will have different meaning depending on the {@link #getType() type} of message.
-     * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
-     * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
+     * <p>This will have different meaning depending on the message {@link #getType() type}.
+     * The following are the message types where a reference can be present:
+     * <ul>
+     *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
+     *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link MessageType#CONTEXT_COMMAND CONTEXT_COMMAND} (message context command)</li>
+     * </ul>
+     *
+     * <p>This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      *
      * <p>This differs from a {@link MessageReference}, which contains the raw IDs attached to the reference, and allows you to retrieve the referenced message
      *
@@ -341,7 +356,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.
      * <br><b>This is only valid if the Message was actually sent in a GuildMessageChannel.</b> This will return {@code null}
-     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook.
+     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook (including apps).
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
@@ -489,8 +504,8 @@ public interface Message extends ISnowflake, Formattable
     ChannelType getChannelType();
 
     /**
-     * Indicates if this Message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} instead of a
-     * {@link User User}.
+     * Indicates if this Message was sent either by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or an app,
+     * instead of a {@link User User}.
      * <br>Useful if you want to ignore non-users.
      *
      * @return True if this message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
@@ -762,7 +777,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         If the id is null
      *
-     * @return The {@link Button} or null of no button with that ID is present on this message
+     * @return The {@link Button} or null if no button with that ID is present on this message
      */
     @Nullable
     default Button getButtonById(@Nonnull String id)
@@ -1161,7 +1176,7 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages, if the interaction expired.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
@@ -1206,7 +1221,7 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages, if the interaction expired.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
@@ -1747,7 +1762,7 @@ public interface Message extends ISnowflake, Formattable
      *         or lost {@link Permission#MESSAGE_MANAGE}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages, if the interaction expired.</li>
      * </ul>
      *
      * @throws MissingAccessException
@@ -1761,8 +1776,8 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *              <li>If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
      *              {@link GuildChannel GuildChannel}.</li>
-     *              <li>If this Message is ephemeral</li>
      *              <li>If this message type cannot be deleted. (See {@link MessageType#canDelete()})</li>
+     *              <li>If this Message is ephemeral and the interaction expired.</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -2115,6 +2130,10 @@ public interface Message extends ISnowflake, Formattable
     /**
      * This obtains the {@link User users} who reacted using the given {@link Emoji}.
      *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsers(Emoji, MessageReaction.ReactionType) retrieveReactionUsers(emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
+     *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
      * <p>Using this data, we can obtain a {@link ReactionPaginationAction}
@@ -2149,7 +2168,51 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji);
+    default ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
+    {
+        return retrieveReactionUsers(emoji, MessageReaction.ReactionType.NORMAL);
+    }
+
+    /**
+     * This obtains the {@link User users} who reacted using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction}
+     * of the users who've reacted to this message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildChannel}
+     *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link GuildChannel} and the
+     *         logged in account does not have {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided null is provided.
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
+     *
+     * @return The {@link ReactionPaginationAction} of the users who reacted with the provided emoji
+     */
+    @Nonnull
+    @CheckReturnValue
+    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type);
 
     /**
      * This obtains the {@link MessageReaction} for the given {@link Emoji} on this message.
@@ -2337,9 +2400,21 @@ public interface Message extends ISnowflake, Formattable
      * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
+     *
+     * @deprecated Replaced with {@link #getInteractionMetadata()}
      */
     @Nullable
+    @Deprecated
     Interaction getInteraction();
+
+    /**
+     * Returns the interaction metadata,
+     * available when the message is a response or a followup to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
+     *
+     * @return The {@link InteractionMetadata} of this message, or {@code null}
+     */
+    @Nullable
+    InteractionMetadata getInteractionMetadata();
 
     /**
      * Creates a new, public {@link ThreadChannel} spawning/starting at this {@link Message} inside the {@link IThreadContainer} this message was sent in.
@@ -2639,16 +2714,16 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Returns an {@link AttachmentProxy} for this attachment.
+         * Returns an {@link NamedAttachmentProxy} for this attachment.
          *
-         * @return Non-null {@link AttachmentProxy} of this attachment
+         * @return Non-null {@link NamedAttachmentProxy} of this attachment
          *
          * @see    #getProxyUrl()
          */
         @Nonnull
-        public AttachmentProxy getProxy()
+        public NamedAttachmentProxy getProxy()
         {
-            return new AttachmentProxy(width > 0 && height > 0 ? proxyUrl : url);
+            return new NamedAttachmentProxy(width > 0 && height > 0 ? proxyUrl : url, fileName);
         }
 
         /**
@@ -2831,7 +2906,10 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     *
+     * @deprecated Replaced with {@link InteractionMetadata}
      */
+    @Deprecated
     class Interaction implements ISnowflake
     {
         private final long id;
@@ -2909,6 +2987,180 @@ public interface Message extends ISnowflake, Formattable
         public Member getMember()
         {
             return member;
+        }
+    }
+
+    /**
+     * Metadata about the interaction, including the source of the interaction and relevant server and user IDs.
+     *
+     * @see Message#getInteractionMetadata()
+     */
+    class InteractionMetadata implements ISnowflake
+    {
+        private final long id;
+        private final int type;
+        private final User user;
+        private final IntegrationOwners integrationOwners;
+        private final long originalResponseMessageId;
+        private final long interactedMessageId;
+        private final InteractionMetadata triggeringInteraction;
+        private final User targetUser;
+        private final long targetMessageId;
+
+        public InteractionMetadata(long id, int type, User user, IntegrationOwners integrationOwners, long originalResponseMessageId, long interactedMessageId, InteractionMetadata triggeringInteraction, User targetUser, long targetMessageId)
+        {
+            this.id = id;
+            this.type = type;
+            this.user = user;
+            this.integrationOwners = integrationOwners;
+            this.originalResponseMessageId = originalResponseMessageId;
+            this.interactedMessageId = interactedMessageId;
+            this.triggeringInteraction = triggeringInteraction;
+            this.targetUser = targetUser;
+            this.targetMessageId = targetMessageId;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        /**
+         * The raw interaction type.
+         * <br>It is recommended to use {@link #getType()} instead.
+         *
+         * @return The raw interaction type
+         */
+        public int getTypeRaw()
+        {
+            return type;
+        }
+
+        /**
+         * The {@link net.dv8tion.jda.api.interactions.InteractionType} for this interaction.
+         *
+         * @return The {@link net.dv8tion.jda.api.interactions.InteractionType} or {@link net.dv8tion.jda.api.interactions.InteractionType#UNKNOWN}
+         */
+        @Nonnull
+        public InteractionType getType()
+        {
+            return InteractionType.fromKey(type);
+        }
+
+        /**
+         * The {@link User} who caused this interaction.
+         *
+         * @return The {@link User}
+         */
+        @Nonnull
+        public User getUser()
+        {
+            return user;
+        }
+
+        /**
+         * Returns the integration owners of this interaction, which depends on how the app was installed.
+         *
+         * @return The integration owners of this interaction
+         */
+        @Nonnull
+        public IntegrationOwners getIntegrationOwners()
+        {
+            return integrationOwners;
+        }
+
+        /**
+         * The ID of the original response message, present only on followup messages.
+         *
+         * @return The ID of the original response message, or {@code 0}
+         */
+        public long getOriginalResponseMessageIdLong()
+        {
+            return originalResponseMessageId;
+        }
+
+        /**
+         * The ID of the original response message, present only on followup messages.
+         *
+         * @return The ID of the original response message, or {@code null}
+         */
+        @Nullable
+        public String getOriginalResponseMessageId()
+        {
+            if (originalResponseMessageId == 0) return null;
+            return Long.toUnsignedString(originalResponseMessageId);
+        }
+
+        /**
+         * The ID of the message containing the component which created this message.
+         *
+         * @return the ID of the message containing the component which created this message, or {@code 0}
+         */
+        public long getInteractedMessageIdLong()
+        {
+            return interactedMessageId;
+        }
+
+        /**
+         * The ID of the message containing the component which created this message.
+         *
+         * @return the ID of the message containing the component which created this message, or {@code null}
+         */
+        @Nullable
+        public String getInteractedMessageId()
+        {
+            if (interactedMessageId == 0) return null;
+            return Long.toUnsignedString(interactedMessageId);
+        }
+
+        /**
+         * Metadata for the interaction that was used to open the modal,
+         * present only on modal submit interactions.
+         *
+         * @return Metadata for the interaction that was used to open the modal, or {@code null}
+         */
+        @Nullable
+        public InteractionMetadata getTriggeringInteraction()
+        {
+            return triggeringInteraction;
+        }
+
+        /**
+         * The user the command was run on, present only on user interaction commands.
+         *
+         * @return The user the command was run on, or {@code null}
+         */
+        @Nullable
+        public User getTargetUser()
+        {
+            return targetUser;
+        }
+
+        /**
+         * The ID of the message the command was run on, present only on message interaction commands.
+         *
+         * <p>If this is present, {@link Message#getMessageReference()} will also be present.
+         *
+         * @return The ID of the message the command was run on, or {@code 0}
+         */
+        public long getTargetMessageIdLong()
+        {
+            return targetMessageId;
+        }
+
+        /**
+         * The ID of the message the command was run on, present only on message interaction commands.
+         *
+         * <p>If this is present, {@link Message#getMessageReference()} will also be present.
+         *
+         * @return The ID of the message the command was run on, or {@code null}
+         */
+        @Nullable
+        public String getTargetMessageId()
+        {
+            if (targetMessageId == 0) return null;
+            return Long.toUnsignedString(targetMessageId);
         }
     }
 }

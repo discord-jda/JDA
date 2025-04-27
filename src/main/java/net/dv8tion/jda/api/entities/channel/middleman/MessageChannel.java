@@ -15,11 +15,9 @@
  */
 package net.dv8tion.jda.api.entities.channel.middleman;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -137,6 +135,10 @@ public interface MessageChannel extends Channel, Formattable
      * <br>For {@link ThreadChannel} this method checks for {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND_IN_THREADS} instead of {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND}.
      * <br>For {@link PrivateChannel} this method checks if the user that this PrivateChannel communicates with is not a bot,
      * but it does <b>not</b> check if the said user blocked the currently logged in user or have their DMs disabled.
+     * <br>For {@link GroupChannel} this method returns false.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if we are able to read and send messages in this channel
      */
@@ -152,6 +154,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageIds
      *         The message ids to delete
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -178,6 +183,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageIds
      *         The message ids to delete
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -206,6 +214,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If one of the provided messages is from another user and cannot be deleted due to permissions
      * @throws IllegalArgumentException
      *         If one of the provided messages is from another user and cannot be deleted because this is not in a guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -236,6 +246,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If one of the provided messages is from another user and cannot be deleted due to permissions
      * @throws IllegalArgumentException
      *         If one of the provided messages is from another user and cannot be deleted because this is not in a guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -276,6 +288,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageIds
      *         The message ids to delete
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -324,6 +339,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -364,6 +381,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      *
@@ -415,6 +434,8 @@ public interface MessageChannel extends Channel, Formattable
      *         illegal conditions.  For specification of all possible
      *         formatting errors, see the <a href="../util/Formatter.html#detail">Details</a> section of the
      *         formatter class specification.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -475,6 +496,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -537,6 +560,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -578,6 +603,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -640,6 +667,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -751,6 +780,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      *
@@ -820,6 +851,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      *
@@ -871,6 +904,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
@@ -922,6 +957,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
@@ -967,6 +1004,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
@@ -1014,6 +1053,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
@@ -1133,6 +1174,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return A {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} related to this channel.
      */
@@ -1168,6 +1211,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessagePaginationAction MessagePaginationAction}
      */
@@ -1231,6 +1276,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
@@ -1297,6 +1344,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
@@ -1363,6 +1412,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
@@ -1422,6 +1473,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
@@ -1477,6 +1530,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
@@ -1535,6 +1590,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
@@ -1594,6 +1651,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
@@ -1652,6 +1711,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
@@ -1710,6 +1771,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
@@ -1772,6 +1835,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with with the first messages of this channel loaded into it.
@@ -1812,6 +1877,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
@@ -1869,6 +1936,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -1929,6 +1998,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -1978,6 +2049,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -2031,6 +2104,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code messageId} is not a valid snowflake.</li>
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -2043,6 +2118,10 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsersById(String, Emoji, MessageReaction.ReactionType) retrieveReactionUsersById(messageId, emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
@@ -2077,6 +2156,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The {@link ReactionPaginationAction} of the emoji's users.
      */
@@ -2084,14 +2165,15 @@ public interface MessageChannel extends Channel, Formattable
     @CheckReturnValue
     default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
-        Checks.isSnowflake(messageId, "Message ID");
-        Checks.notNull(emoji, "Emoji");
-
-        return new ReactionPaginationActionImpl(this, messageId, emoji.getAsReactionCode());
+        return retrieveReactionUsersById(messageId, emoji, MessageReaction.ReactionType.NORMAL);
     }
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsersById(long, Emoji, MessageReaction.ReactionType) retrieveReactionUsersById(messageId, emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
@@ -2128,6 +2210,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code messageId} is not a valid snowflake.</li>
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The {@link ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
@@ -2138,6 +2222,110 @@ public interface MessageChannel extends Channel, Formattable
     default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji)
     {
         return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji);
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to the given message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildMessageChannel GuildMessageChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
+     *             <li>If provided {@code type} is {@code null}.</li>
+     *         </ul>
+     *
+     * @return The {@link ReactionPaginationAction} of the emoji's users.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(emoji, "Emoji");
+        Checks.notNull(type, "ReactionType");
+
+        return new ReactionPaginationActionImpl(this, messageId, emoji.getAsReactionCode(), type);
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to the given message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildMessageChannel GuildMessageChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
+     *             <li>If provided {@code type} is {@code null}.</li>
+     *         </ul>
+     *
+     * @return The {@link ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
+    {
+        return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji, type);
     }
 
     /**
@@ -2174,6 +2362,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
@@ -2221,6 +2411,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
@@ -2265,6 +2457,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
@@ -2312,6 +2506,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
@@ -2340,6 +2536,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Message}{@literal >}
      *         <br>Retrieves an immutable list of pinned messages
@@ -2408,6 +2606,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2456,6 +2656,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2504,6 +2706,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2553,6 +2757,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2609,6 +2815,8 @@ public interface MessageChannel extends Channel, Formattable
      *         For specification of all possible formatting errors,
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2663,6 +2871,8 @@ public interface MessageChannel extends Channel, Formattable
      *         For specification of all possible formatting errors,
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2711,6 +2921,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2759,6 +2971,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2806,6 +3020,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2854,6 +3070,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2914,6 +3132,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2976,6 +3196,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -3035,6 +3257,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -3092,6 +3316,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -3141,6 +3367,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction} that can be used to further update the message
      *
@@ -3192,6 +3420,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction} that can be used to further update the message
      *
@@ -3243,6 +3473,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction} that can be used to further update the message
      *
@@ -3293,6 +3525,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction} that can be used to further update the message
      *

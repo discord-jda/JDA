@@ -198,14 +198,14 @@ public interface AudioManager
     /**
      * Sets the {@link net.dv8tion.jda.api.audio.AudioSendHandler}
      * that the manager will use to provide audio data to an audio connection.
-     * <br>The handler provided here will persist between audio connection connect and disconnects.
+     * <br>The handler provided here will persist between audio connection connects and disconnects.
      * Furthermore, you don't need to have an audio connection to set a handler.
-     * When JDA sets up a new audio connection it will use the handler provided here.
+     * When JDA sets up a new audio connection, it will use the handler provided here.
      * <br>Setting this to null will remove the audio handler.
      *
-     * <p>JDA recommends <a href="https://github.com/sedmelluq/lavaplayer" target="_blank">LavaPlayer</a>
+     * <p>JDA recommends <a href="https://github.com/lavalink-devs/lavaplayer" target="_blank">LavaPlayer</a>
      * as an {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler}.
-     * It provides a <a href="https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda" target="_blank">demo</a> targeted at JDA users.
+     * It provides a <a href="https://github.com/lavalink-devs/lavaplayer/tree/main/demo-jda" target="_blank">demo</a> targeted at JDA users.
      *
      * @param handler
      *        The {@link net.dv8tion.jda.api.audio.AudioSendHandler AudioSendHandler} used to provide audio data.

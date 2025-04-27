@@ -208,6 +208,8 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
     {
         Checks.notNegative(position, "Provided position");
         Checks.check(position < orderList.size(), "Provided position is too big and is out of bounds.");
+        if (selectedPosition == -1)
+            throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
 
         T selectedItem = orderList.remove(selectedPosition);
         orderList.add(position, selectedItem);
@@ -250,6 +252,8 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         Checks.notNegative(swapPosition, "Provided swapPosition");
         Checks.check(swapPosition < orderList.size(), "Provided swapPosition is too big and is out of bounds. swapPosition: "
                 + swapPosition);
+        if (selectedPosition == -1)
+            throw new IllegalStateException("Cannot move until an item has been selected. Use #selectPosition first.");
 
         T selectedItem = orderList.get(selectedPosition);
         T swapItem = orderList.get(swapPosition);

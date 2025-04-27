@@ -69,11 +69,13 @@ repositories {
 
 dependencies {
     implementation("net.dv8tion:JDA:$version") { // replace $version with the latest version
-      // Optionally disable audio natives to reduce jar size by excluding `opus-java`
+      // Optionally disable audio natives to reduce jar size by excluding `opus-java` and `tink`
       // Gradle DSL:
-      // exclude module: 'opus-java'
+      // exclude module: 'opus-java' // required for encoding audio into opus, not needed if audio is already provided in opus encoding
+      // exclude module: 'tink' // required for encrypting and decrypting audio
       // Kotlin DSL:
-      // exclude(module="opus-java")
+      // exclude(module="opus-java") // required for encoding audio into opus, not needed if audio is already provided in opus encoding
+      // exclude(module="tink") // required for encrypting and decrypting audio
     }
 }
 ```
@@ -85,14 +87,19 @@ dependencies {
     <groupId>net.dv8tion</groupId>
     <artifactId>JDA</artifactId>
     <version>$version</version> <!-- replace $version with the latest version -->
-    <!-- Optionally disable audio natives to reduce jar size by excluding `opus-java`
+    <!-- Optionally disable audio natives to reduce jar size by excluding `opus-java` and `tink` -->
     <exclusions>
+        <!-- required for encoding audio into opus, not needed if audio is already provided in opus encoding
         <exclusion>
             <groupId>club.minnced</groupId>
             <artifactId>opus-java</artifactId>
-        </exclusion>
+        </exclusion> -->
+        <!-- required for encrypting and decrypting audio
+        <exclusion>
+            <groupId>com.google.crypto.tink</groupId>
+            <artifactId>tink</artifactId>
+        </exclusion> -->
     </exclusions>
-    -->
 </dependency>
 ```
 
@@ -164,7 +171,7 @@ public static void main(String[] args) {
     Commands.slash("say", "Makes the bot say what you tell it to")
       .addOption(STRING, "content", "What the bot should say", true), // Accepting a user input
     Commands.slash("leave", "Makes the bot leave the server")
-      .setGuildOnly(true) // this doesn't make sense in DMs
+      .setContexts(InteractionContextType.GUILD) // this doesn't make sense in DMs
       .setDefaultPermissions(DefaultMemberPermissions.DISABLED) // only admins should be able to use this command.
   );
 

@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -63,24 +62,4 @@ public interface StageInstanceAction extends RestAction<StageInstance>
     @Nonnull
     @CheckReturnValue
     StageInstanceAction setTopic(@Nonnull String topic);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel PrivacyLevel} for the stage instance.
-     * <br>This indicates whether guild lurkers are allowed to join the stage instance or only guild members.
-     *
-     * @param  level
-     *         The {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel}
-     *
-     * @throws IllegalArgumentException
-     *         If the privacy level is null, {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#UNKNOWN UNKNOWN}.
-     *
-     * @return The StageInstanceAction for chaining
-     *
-     * @deprecated Obsolete.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval(deadline = "5.1.0")
-    StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level);
 }

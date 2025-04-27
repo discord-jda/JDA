@@ -26,10 +26,5 @@
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent.
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
- *
- * <p>Additionally, these events require the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
- * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
- * member was updated and gives us the updated member object. In order to fire specific events like these we
- * need to have the old member cached to compare against.
  */
 package net.dv8tion.jda.api.events.guild.voice;

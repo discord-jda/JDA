@@ -29,6 +29,8 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -673,6 +675,74 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<RichCustomEmoji> getEmojiCache()
     {
         return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmojiCache));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon)
+    {
+        Checks.inRange(name, 2, CustomEmoji.EMOJI_NAME_MAX_LENGTH, "Emoji name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Emoji name");
+        Checks.notNull(icon, "Emoji icon");
+
+        DataObject body = DataObject.empty();
+        body.put("name", name);
+        body.put("image", icon.getEncoding());
+
+        final Route.CompiledRoute route = Route.Applications.CREATE_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, body, (response, request) ->
+        {
+            final DataObject obj = response.getObject();
+            final User selfUser = getSelfUser();
+            return entityBuilder.createApplicationEmoji(this, obj, selfUser);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis()
+    {
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJIS.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            DataArray emojis = response.getObject().getArray("items");
+            List<ApplicationEmoji> list = new ArrayList<>(emojis.length());
+            for (int i = 0; i < emojis.length(); i++)
+            {
+                try
+                {
+                    final DataObject emoji = emojis.getObject(i);
+                    final User owner = emoji.optObject("user")
+                            .map(entityBuilder::createUser)
+                            .orElse(null);
+
+                    list.add(entityBuilder.createApplicationEmoji(this, emoji, owner));
+                }
+                catch (ParsingException e)
+                {
+                    LOG.error("Failed to parse application emoji with JSON: {}", emojis.getObject(i), e);
+                }
+            }
+
+            return Collections.unmodifiableList(list);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId)
+    {
+        Checks.isSnowflake(emojiId);
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_EMOJI.compile(getSelfUser().getApplicationId(), emojiId);
+        return new RestActionImpl<>(this, route, (response, request) ->
+        {
+            final DataObject emoji = response.getObject();
+            final User owner = emoji.optObject("user")
+                    .map(entityBuilder::createUser)
+                    .orElse(null);
+
+            return entityBuilder.createApplicationEmoji(this, emoji, owner);
+        });
     }
 
     @Nonnull

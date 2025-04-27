@@ -19,6 +19,7 @@ package net.dv8tion.jda.test;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -33,6 +34,7 @@ import org.mockito.Mock;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -87,6 +89,11 @@ public class IntegrationTest
                 .withNormalizedBody(this::normalizeRequestBody);
     }
 
+    protected void assertThatNoRequestsWereSent()
+    {
+        verify(requester, never()).request(any());
+    }
+
     protected <T> void whenSuccess(RestActionImpl<T> action, DataArray array, Consumer<T> assertion)
     {
         Response response = mock();
@@ -105,5 +112,10 @@ public class IntegrationTest
     protected String randomSnowflake()
     {
         return Long.toUnsignedString(random.nextLong());
+    }
+
+    protected void withCacheFlags(EnumSet<CacheFlag> flags)
+    {
+        when(jda.getCacheFlags()).thenReturn(flags);
     }
 }

@@ -31,6 +31,8 @@ import java.time.OffsetDateTime;
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.api.entities.Member Member} in a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ * 
+ * <p>Voice states are only cached while the member is connected to a channel.
  *
  * @see Member#getVoiceState()
  */
@@ -47,14 +49,14 @@ public interface GuildVoiceState extends ISnowflake
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} muted themselves.
      *
-     * @return The User's self-mute status
+     * @return The User's self-mute status, or false if the member is not connected to an audio channel
      */
     boolean isSelfMuted();
 
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} deafened themselves.
      *
-     * @return The User's self-deaf status
+     * @return The User's self-deaf status, or false if the member is not connected to an audio channel
      */
     boolean isSelfDeafened();
 
@@ -62,7 +64,7 @@ public interface GuildVoiceState extends ISnowflake
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} is muted, either
      * by choice {@link #isSelfMuted()} or muted by an admin {@link #isGuildMuted()}
      *
-     * @return the Member's mute status
+     * @return the Member's mute status, or false if the member is not connected to an audio channel
      */
     boolean isMuted();
 
@@ -70,21 +72,21 @@ public interface GuildVoiceState extends ISnowflake
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} is deafened, either
      * by choice {@link #isSelfDeafened()} or deafened by an admin {@link #isGuildDeafened()}
      *
-     * @return the Member's deaf status
+     * @return the Member's deaf status, or false if the member is not connected to an audio channel
      */
     boolean isDeafened();
 
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} got muted by an Admin
      *
-     * @return the Member's guild-mute status
+     * @return the Member's guild-mute status, or false if the member is not connected to an audio channel
      */
     boolean isGuildMuted();
 
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} got deafened by an Admin
      *
-     * @return the Member's guild-deaf status
+     * @return the Member's guild-deaf status, or false if the member is not connected to an audio channel
      */
     boolean isGuildDeafened();
 
@@ -125,7 +127,7 @@ public interface GuildVoiceState extends ISnowflake
      * You can use {@link net.dv8tion.jda.api.utils.MemberCachePolicy#VOICE MemberCachePolicy.VOICE}
      * to cache members in voice channels.
      *
-     * @return The AudioChannelUnion that the Member is connected to, or null.
+     * @return The AudioChannelUnion that the Member is connected to, or null if the member is not connected to an audio channel.
      */
     @Nullable
     AudioChannelUnion getChannel();
@@ -140,9 +142,8 @@ public interface GuildVoiceState extends ISnowflake
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Member Member} corresponding to this GuildVoiceState instance
-     * (BackReference)
      *
-     * @return the Member that holds this GuildVoiceState
+     * @return The member related to this voice state, might not be cached and thus have outdated information.
      */
     @Nonnull
     Member getMember();
@@ -159,7 +160,7 @@ public interface GuildVoiceState extends ISnowflake
     /**
      * The Session-Id for this VoiceState
      *
-     * @return The Session-Id
+     * @return The Session-Id, or null if the member is not connected to an audio channel.
      */
     @Nullable
     String getSessionId();

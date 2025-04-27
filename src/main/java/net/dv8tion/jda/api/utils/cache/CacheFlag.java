@@ -43,21 +43,23 @@ public enum CacheFlag
      * Enables cache for {@link Member#getVoiceState()}
      * <br>This will always be cached for self member.
      *
+     * <p><b>Voice states are only cached when the member is connected to an audio channel.</b>
+     *
      * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled.
      */
     VOICE_STATE(GatewayIntent.GUILD_VOICE_STATES),
     /**
      * Enables cache for {@link Guild#getEmojiCache()}
      *
-     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EXPRESSIONS GUILD_EXPRESSIONS} intent to be enabled.
      */
-    EMOJI(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
+    EMOJI(GatewayIntent.GUILD_EXPRESSIONS),
     /**
      * Enables cache for {@link Guild#getStickerCache()}
      *
-     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS_AND_STICKERS GUILD_EMOJIS_AND_STICKERS} intent to be enabled.
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EXPRESSIONS GUILD_EXPRESSIONS} intent to be enabled.
      */
-    STICKER(GatewayIntent.GUILD_EMOJIS_AND_STICKERS),
+    STICKER(GatewayIntent.GUILD_EXPRESSIONS),
     /**
      * Enables cache for {@link Member#getOnlineStatus(net.dv8tion.jda.api.entities.ClientType) Member.getOnlineStatus(ClientType)}
      *

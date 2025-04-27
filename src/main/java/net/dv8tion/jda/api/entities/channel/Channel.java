@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities.channel;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 
@@ -30,7 +31,7 @@ import java.util.Formatter;
 /**
  * Abstract Channel interface for all {@link ChannelType ChannelTypes}.
  */
-public interface Channel extends IMentionable
+public interface Channel extends IMentionable, IDetachableEntity
 {
     /**
      * The maximum length a channel name can be. ({@value #MAX_NAME_LENGTH})
@@ -51,6 +52,9 @@ public interface Channel extends IMentionable
 
     /**
      * The human readable name of this channel.
+     *
+     * <p>May be an empty string for {@link net.dv8tion.jda.api.entities.channel.concrete.GroupChannel GroupChannels}
+     * with no name (Group DMs with no name displays the recipients on the Discord client).
      *
      * @return The name of this channel
      */

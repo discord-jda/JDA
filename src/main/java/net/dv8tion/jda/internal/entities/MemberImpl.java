@@ -25,10 +25,10 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
+import net.dv8tion.jda.internal.entities.mixin.MemberMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -43,11 +43,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-public class MemberImpl implements Member
+public class MemberImpl implements Member, MemberMixin<MemberImpl>
 {
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
-    private final GuildVoiceState voiceState;
 
     private GuildImpl guild;
     private User user;
@@ -63,8 +62,12 @@ public class MemberImpl implements Member
         this.guild = guild;
         this.user = user;
         this.joinDate = 0;
-        boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
-        this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
+    }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
     }
 
     public MemberPresenceImpl getPresence()
@@ -137,9 +140,9 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public GuildVoiceState getVoiceState()
+    public GuildVoiceStateImpl getVoiceState()
     {
-        return voiceState;
+       return guild.getVoiceState(this);
     }
 
     @Nonnull
@@ -271,25 +274,9 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Collection<Permission> permissions)
-    {
-        Checks.notNull(permissions, "Permission Collection");
-
-        return hasPermission(permissions.toArray(Permission.EMPTY_PERMISSIONS));
-    }
-
-    @Override
     public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
         return PermissionUtil.checkPermission(channel.getPermissionContainer(), this, permissions);
-    }
-
-    @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
-    {
-        Checks.notNull(permissions, "Permission Collection");
-
-        return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override
@@ -401,42 +388,49 @@ public class MemberImpl implements Member
         return user.getDefaultAvatarId();
     }
 
+    @Override
     public MemberImpl setNickname(String nickname)
     {
         this.nickname = nickname;
         return this;
     }
 
+    @Override
     public MemberImpl setAvatarId(String avatarId)
     {
         this.avatarId = avatarId;
         return this;
     }
 
+    @Override
     public MemberImpl setJoinDate(long joinDate)
     {
         this.joinDate = joinDate;
         return this;
     }
 
+    @Override
     public MemberImpl setBoostDate(long boostDate)
     {
         this.boostDate = boostDate;
         return this;
     }
 
+    @Override
     public MemberImpl setTimeOutEnd(long time)
     {
         this.timeOutEnd = time;
         return this;
     }
 
+    @Override
     public MemberImpl setPending(boolean pending)
     {
         this.pending = pending;
         return this;
     }
 
+    @Override
     public MemberImpl setFlags(int flags)
     {
         this.flags = flags;

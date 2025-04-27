@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -296,7 +297,7 @@ public interface Mentions
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance. This only
      * counts direct mentions of the role and not mentions through everyone mentions.
      *
-     * <p>This is always empty in {@link PrivateChannel PrivateChannels}.
+     * <p>This is always empty in {@link PrivateChannel PrivateChannels} and {@link GroupChannel GroupChannels}.
      *
      * @return Immutable list of mentioned Members, or an empty list
      */

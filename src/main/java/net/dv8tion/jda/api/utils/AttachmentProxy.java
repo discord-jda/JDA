@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -47,6 +48,13 @@ public class AttachmentProxy extends FileProxy
     public AttachmentProxy(@Nonnull String url)
     {
         super(url);
+    }
+
+    @Nonnull
+    @Override
+    public AttachmentProxy withClient(@Nonnull OkHttpClient customHttpClient)
+    {
+        return (AttachmentProxy) super.withClient(customHttpClient);
     }
 
     /**
@@ -245,5 +253,41 @@ public class AttachmentProxy extends FileProxy
     public CompletableFuture<Icon> downloadAsIcon(int width, int height)
     {
         return downloadAsIcon(getUrl(width, height));
+    }
+
+    /**
+     * Returns a {@link FileUpload} which supplies a data stream of this attachment,
+     * with the given file name and at the specified size.
+     * <br>The returned {@link FileUpload} can be reused safely, and does not need to be closed.
+     *
+     * <p>The attachment, if an image, may be resized at any size, however if the size does not fit the ratio of the image, then it will be cropped as to fit the target size.
+     * <br>If the attachment is not an image then the size parameters are ignored and the file is downloaded.
+     *
+     * @param  name
+     *         The name of the to-be-uploaded file
+     * @param  width
+     *         The width of this image, must be positive
+     * @param  height
+     *         The height of this image, must be positive
+     *
+     * @throws IllegalArgumentException
+     *         If any of the follow checks are true
+     *         <ul>
+     *             <li>The file name is null or blank</li>
+     *             <li>The requested width is negative or 0</li>
+     *             <li>The requested height is negative or 0</li>
+     *         </ul>
+     *
+     * @return {@link FileUpload} from this attachment.
+     */
+    @Nonnull
+    public FileUpload downloadAsFileUpload(@Nonnull String name, int width, int height)
+    {
+        final String url = getUrl(width, height); // So the checks are also done outside the FileUpload
+        return FileUpload.fromStreamSupplier(name, () ->
+        {
+            // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+            return download(url).join();
+        });
     }
 }

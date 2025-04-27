@@ -98,7 +98,7 @@ public class JDABuilder
     protected GatewayEncoding encoding = GatewayEncoding.JSON;
     protected RestConfig restConfig = new RestConfig();
 
-    private JDABuilder(@Nullable String token, int intents)
+    protected JDABuilder(@Nullable String token, int intents)
     {
         this.token = token;
         this.intents = 1 | intents;
@@ -212,7 +212,7 @@ public class JDABuilder
         return create(token, intents).applyDefault();
     }
 
-    private JDABuilder applyDefault()
+    protected JDABuilder applyDefault()
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
@@ -322,7 +322,7 @@ public class JDABuilder
         return create(token, intents).applyLight();
     }
 
-    private JDABuilder applyLight()
+    protected JDABuilder applyLight()
     {
         return this.setMemberCachePolicy(MemberCachePolicy.NONE)
                    .setChunkingFilter(ChunkingFilter.NONE)
@@ -464,7 +464,7 @@ public class JDABuilder
         return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyIntents();
     }
 
-    private JDABuilder applyIntents()
+    protected JDABuilder applyIntents()
     {
         EnumSet<CacheFlag> disabledCache = EnumSet.allOf(CacheFlag.class);
         for (CacheFlag flag : CacheFlag.values())
@@ -1554,7 +1554,7 @@ public class JDABuilder
     {
         this.intents = GatewayIntent.ALL_INTENTS;
         if (intents != null)
-            this.intents &= ~GatewayIntent.getRaw(intents);
+            this.intents = 1 | (GatewayIntent.ALL_INTENTS & ~GatewayIntent.getRaw(intents));
         return this;
     }
 
@@ -1646,7 +1646,7 @@ public class JDABuilder
         Checks.notNull(intent, "Intents");
         Checks.noneNull(intents, "Intents");
         EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
-        return setDisabledIntents(EnumSet.complementOf(set));
+        return setEnabledIntents(set);
     }
 
     /**
@@ -1673,11 +1673,9 @@ public class JDABuilder
     public JDABuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents)
     {
         if (intents == null || intents.isEmpty())
-            setDisabledIntents(EnumSet.allOf(GatewayIntent.class));
-        else if (intents instanceof EnumSet)
-            setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
+            this.intents = 1;
         else
-            setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+            this.intents = 1 | GatewayIntent.getRaw(intents);
         return this;
     }
 
@@ -1859,7 +1857,7 @@ public class JDABuilder
         return this;
     }
 
-    private void checkIntents()
+    protected void checkIntents()
     {
         boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
         if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL)

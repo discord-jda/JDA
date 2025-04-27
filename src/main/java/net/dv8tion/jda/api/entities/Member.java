@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
+import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Route;
@@ -62,7 +63,7 @@ import java.util.concurrent.TimeUnit;
  * @see   Guild#getMembersWithRoles(Role...)
  * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
+public interface Member extends IMentionable, IPermissionHolder, IDetachableEntity, UserSnowflake
 {
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
@@ -165,7 +166,11 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *
      * <p>This can be used to get the Member's VoiceChannel using {@link GuildVoiceState#getChannel()}.
      *
-     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE} to be enabled!
+     * <p>Voice states are only cached while the member is connected to a channel.
+     * When the member is disconnected, this either returns null or an empty voice state.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState}
      */
@@ -178,6 +183,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *
      * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled!
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return Immutable list of {@link Activity Activities} for the user
      */
     @Nonnull
@@ -189,6 +197,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * <br>If the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} is unrecognized, will return {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}.
      *
      * <p>This will always return {@link OnlineStatus#OFFLINE} if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ONLINE_STATUS CacheFlag.ONLINE_STATUS} is disabled.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The current {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.api.entities.User User}.
      */
@@ -210,6 +221,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided type is null
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The status for that specific client or OFFLINE
      *
@@ -229,6 +242,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * active clients will not be tracked and this will always return an empty Set.
      * <br>Since a user can be connected from multiple different devices such as web and mobile,
      * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return EnumSet of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes}
      *
@@ -331,6 +347,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * <p><b>The Public Role ({@code @everyone}) is not included in the returned immutable list of roles
      * <br>It is implicit that every member holds the Public Role in a Guild thus it is not listed here!</b>
      *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Role Roles} for this Member.
      *
      * @see    Guild#addRoleToMember(UserSnowflake, Role)
@@ -393,6 +412,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         if the specified Member is null
      * @throws IllegalArgumentException
      *         if the specified Member is not from the same guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this Member is able to interact with the specified Member
      */
@@ -411,6 +432,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         if the specified Role is null
      * @throws IllegalArgumentException
      *         if the specified Role is not from the same guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this member is able to interact with the specified Role
      */
@@ -427,6 +450,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         if the specified emoji is null
      * @throws IllegalArgumentException
      *         if the specified emoji is not from the same guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this Member is able to interact with the specified emoji
      */
@@ -434,6 +459,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
 
     /**
      * Checks whether this member is the owner of its related {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this member is the owner of the attached Guild.
      */
@@ -444,6 +472,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * Membership Screening requirements.
      *
      * @incubating Discord is still trying to figure this out
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if this member hasn't passed the guild's Membership Screening requirements
      *
@@ -459,6 +490,9 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * <br>The default channel is the channel with the highest position in which the member has
      * {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} permissions. If this requirement doesn't apply for
      * any channel in the guild, this method returns {@code null}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The {@link DefaultGuildChannelUnion channel} representing the default channel for this member
      *         or null if no such channel exists.
@@ -503,6 +537,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *             <li>If the provided deletionTimeframe is longer than 7 days.</li>
      *             <li>If the provided time unit is {@code null}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link AuditableRestAction}
      *
@@ -537,6 +573,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -579,6 +617,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *             <li>The provided {@code unit} is null</li>
      *             <li>The provided {@code amount} with the {@code unit} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -616,6 +656,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *             <li>The provided {@code duration} is not positive</li>
      *             <li>The provided {@code duration} results in a date that is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -653,6 +695,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *             <li>The provided {@code temporal} is in the past</li>
      *             <li>The provided {@code temporal} is more than {@value MAX_TIME_OUT_LENGTH} days in the future</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -678,6 +722,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link Permission#MODERATE_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -715,6 +761,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         If the logged in account does not have the {@link Permission#VOICE_DEAF_OTHERS} permission.
      * @throws java.lang.IllegalStateException
      *         If the member is not currently connected to a voice channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -753,6 +801,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         If the logged in account does not have the {@link Permission#VOICE_DEAF_OTHERS} permission.
      * @throws java.lang.IllegalStateException
      *         If the member is not currently connected to a voice channel.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -797,6 +847,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
      *         <br>See {@link #canInteract(Member)}.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -822,6 +874,8 @@ public interface Member extends IMentionable, IPermissionHolder, UserSnowflake
      *         If the bot does not have {@link Permission#MODERATE_MEMBERS} in the guild
      * @throws IllegalArgumentException
      *         If {@code null} is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link AuditableRestAction}
      */

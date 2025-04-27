@@ -48,8 +48,6 @@ import java.util.List;
  *     <br>Which supports choice suggestions for auto-complete interactions via {@link IAutoCompleteCallback#replyChoices(Command.Choice...)}</li>
  *     <li>{@link IModalCallback}
  *     <br>Which supports replying using a {@link Modal} via {@link IModalCallback#replyModal(Modal)}</li>
- *     <li>{@link IPremiumRequiredReplyCallback}
- *     <br>Which will reply stating that an {@link Entitlement Entitlement} is required</li>
  * </ul>
  *
  * <p>Once the interaction is acknowledged, you can not reply with these methods again. If the interaction is a {@link IDeferrableCallback deferrable},
@@ -97,6 +95,21 @@ public interface Interaction extends ISnowflake
      */
     @Nullable
     Guild getGuild();
+
+    /**
+     * Whether this interaction happened in an attached guild.
+     *
+     * @return {@code true}, if this interaction happened in an attached guild
+     *
+     * @see Guild#isDetached()
+     */
+    default boolean isFromAttachedGuild()
+    {
+        final Guild guild = getGuild();
+        if (guild == null)
+            return false;
+        return !guild.isDetached();
+    }
 
     /**
      * Whether this interaction came from a {@link Guild}.
@@ -239,6 +252,22 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     List<Entitlement> getEntitlements();
+
+    /**
+     * Gets the context in which this command was executed.
+     *
+     * @return The context in which this command was executed
+     */
+    @Nonnull
+    InteractionContextType getContext();
+
+    /**
+     * Returns the integration owners of this interaction, which depends on how the app was installed.
+     *
+     * @return The integration owners of this interaction
+     */
+    @Nonnull
+    IntegrationOwners getIntegrationOwners();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this interaction

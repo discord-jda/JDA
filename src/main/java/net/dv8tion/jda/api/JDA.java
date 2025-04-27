@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -1751,6 +1753,64 @@ public interface JDA extends IGuildChannelContainer<Channel>
     }
 
     /**
+     * Creates a new {@link ApplicationEmoji} for this bot.
+     *
+     * <p>Note that the bot is limited to {@value ApplicationEmoji#MAX_APPLICATION_EMOJIS} Application Emojis (normal and animated).
+     *
+     * @param  name
+     *         The name for the new emoji (2-{@value CustomEmoji#EMOJI_NAME_MAX_LENGTH} characters)
+     * @param  icon
+     *         The {@link Icon} for the new emoji
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name is not alphanumeric or not between 2 and {@value CustomEmoji#EMOJI_NAME_MAX_LENGTH} characters long
+     *
+     * @return {@link RestAction} - Type: {@link ApplicationEmoji}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ApplicationEmoji> createApplicationEmoji(@Nonnull String name, @Nonnull Icon icon);
+
+    /**
+     * Retrieves a list of Application Emojis together with their respective creators.
+     *
+     * @return {@link RestAction RestAction} - Type: List of {@link ApplicationEmoji}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<ApplicationEmoji>> retrieveApplicationEmojis();
+
+    /**
+     * Retrieves an application emoji together with its respective creator.
+     *
+     * @param  emojiId
+     *         The emoji id
+     *
+     * @return {@link RestAction RestAction} - Type: {@link ApplicationEmoji}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<ApplicationEmoji> retrieveApplicationEmojiById(long emojiId)
+    {
+        return retrieveApplicationEmojiById(Long.toUnsignedString(emojiId));
+    }
+
+    /**
+     * Retrieves an application emoji together with its respective creator.
+     *
+     * @param  emojiId
+     *         The emoji id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction RestAction} - Type: {@link ApplicationEmoji}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ApplicationEmoji> retrieveApplicationEmojiById(@Nonnull String emojiId);
+
+    /**
      * Attempts to retrieve a {@link Sticker} object based on the provided snowflake reference.
      * <br>This works for both {@link StandardSticker} and {@link GuildSticker}, and you can resolve them using the provided {@link StickerUnion}.
      *
@@ -1865,7 +1925,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
     void setRequestTimeoutRetry(boolean retryOnTimeout);
 
     /**
-     * USed to determine whether or not autoReconnect is enabled for JDA.
+     * Used to determine whether or not autoReconnect is enabled for JDA.
      *
      * @return True if JDA will attempt to automatically reconnect when a connection-error is encountered.
      */

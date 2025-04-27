@@ -16,11 +16,14 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
@@ -229,8 +232,28 @@ public interface Command extends ISnowflake, ICommandReference
      * <br>Always true for guild commands.
      *
      * @return True, if this command is restricted to guilds.
+     *
+     * @deprecated Replaced with {@link #getContexts()}
      */
+    @Deprecated
+    @ReplaceWith("getContexts().equals(EnumSet.of(InteractionContextType.GUILD))")
     boolean isGuildOnly();
+
+    /**
+     * The contexts in which this command can be used.
+     *
+     * @return The contexts in which this command can be used
+     */
+    @Nonnull
+    EnumSet<InteractionContextType> getContexts();
+
+    /**
+     * Gets the integration types on which this command can be installed on.
+     *
+     * @return The integration types on which this command can be installed on
+     */
+    @Nonnull
+    EnumSet<IntegrationType> getIntegrationTypes();
 
     /**
      * Whether this command is restricted to NSFW (age-restricted) channels.
