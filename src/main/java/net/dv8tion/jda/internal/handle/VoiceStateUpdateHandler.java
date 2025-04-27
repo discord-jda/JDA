@@ -174,7 +174,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (!Objects.equals(channel, vState.getChannel()))
         {
             AudioChannel oldChannel = vState.getChannel();
-            vState.setConnectedChannel(channel);
+            vState.updateConnectedChannel(channel);
 
             if (oldChannel == null)
             {
@@ -223,6 +223,5 @@ public class VoiceStateUpdateHandler extends SocketHandler
         }
 
         guild.updateRequestToSpeak();
-        guild.handleVoiceStateUpdate(vState);
     }
 }

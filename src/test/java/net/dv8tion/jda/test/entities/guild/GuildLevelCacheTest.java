@@ -120,9 +120,8 @@ public class GuildLevelCacheTest extends IntegrationTest
             MemberImpl member = new MemberImpl(guild, user);
 
             GuildVoiceStateImpl voiceState = new GuildVoiceStateImpl(member);
-            voiceState.setConnectedChannel(channel);
+            voiceState.updateConnectedChannel(channel);
 
-            guild.handleVoiceStateUpdate(voiceState);
             assertThatVoiceStateIsNotCached(guild, member);
         }
 
@@ -134,9 +133,8 @@ public class GuildLevelCacheTest extends IntegrationTest
 
             GuildVoiceStateImpl voiceState = member.getVoiceState();
             assertThat(voiceState).isNotNull();
-            voiceState.setConnectedChannel(channel);
+            voiceState.updateConnectedChannel(channel);
 
-            guild.handleVoiceStateUpdate(voiceState);
             assertThatVoiceStateIsCached(guild, member);
         }
     }
@@ -177,9 +175,8 @@ public class GuildLevelCacheTest extends IntegrationTest
 
             GuildVoiceStateImpl voiceState = member.getVoiceState();
             assertThat(voiceState).isNotNull();
-            voiceState.setConnectedChannel(channel);
+            voiceState.updateConnectedChannel(channel);
 
-            guild.handleVoiceStateUpdate(voiceState);
             assertThatVoiceStateIsCached(guild, member);
         }
 
@@ -192,14 +189,12 @@ public class GuildLevelCacheTest extends IntegrationTest
             GuildVoiceStateImpl voiceState = member.getVoiceState();
             assertThat(voiceState).isNotNull();
 
-            voiceState.setConnectedChannel(channel);
+            voiceState.updateConnectedChannel(channel);
 
-            guild.handleVoiceStateUpdate(voiceState);
             assertThatVoiceStateIsCached(guild, member);
 
-            voiceState.setConnectedChannel(null);
+            voiceState.updateConnectedChannel(null);
 
-            guild.handleVoiceStateUpdate(voiceState);
             assertThatVoiceStateIsNotCached(guild, member);
         }
     }

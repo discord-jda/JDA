@@ -582,14 +582,6 @@ public class EntityBuilder extends AbstractEntityBuilder
                 // we no longer share any guilds/channels with this user so remove it from cache
                 getJDA().getUsersView().remove(user.getIdLong());
             }
-
-            GuildVoiceStateImpl voiceState = member.getVoiceState();
-            if (voiceState != null)
-            {
-                voiceState.setConnectedChannel(null);
-                guild.handleVoiceStateUpdate(voiceState);
-            }
-
             return false;
         }
         else if (guild.getMemberById(member.getIdLong()) != null)
@@ -703,9 +695,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                 .setSessionId(newVoiceStateJson.getString("session_id"))
                 .setStream(newVoiceStateJson.getBoolean("self_stream"))
                 .setRequestToSpeak(timestamp)
-                .setConnectedChannel(audioChannel);
-
-        guild.handleVoiceStateUpdate(currentVoiceState);
+                .updateConnectedChannel(audioChannel);
     }
 
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
