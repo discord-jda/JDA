@@ -50,8 +50,8 @@ import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.NamedAttachmentProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -2714,16 +2714,16 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Returns an {@link AttachmentProxy} for this attachment.
+         * Returns an {@link NamedAttachmentProxy} for this attachment.
          *
-         * @return Non-null {@link AttachmentProxy} of this attachment
+         * @return Non-null {@link NamedAttachmentProxy} of this attachment
          *
          * @see    #getProxyUrl()
          */
         @Nonnull
-        public AttachmentProxy getProxy()
+        public NamedAttachmentProxy getProxy()
         {
-            return new AttachmentProxy(width > 0 && height > 0 ? proxyUrl : url);
+            return new NamedAttachmentProxy(width > 0 && height > 0 ? proxyUrl : url, fileName);
         }
 
         /**
