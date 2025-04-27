@@ -657,6 +657,9 @@ public class EntityBuilder extends AbstractEntityBuilder
             createGuildVoiceState(member, voiceStateJson);
         if (presence != null)
             createPresence(member, presence);
+
+        // Make sure the voice states always have the latest member reference, even when member is uncached
+        guild.updateCacheVoiceStateMember(member);
         return member;
     }
 

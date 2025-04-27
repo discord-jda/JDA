@@ -2448,6 +2448,19 @@ public class GuildImpl implements Guild
         return null;
     }
 
+    public void updateCacheVoiceStateMember(MemberImpl member)
+    {
+        if (!shouldCacheVoiceState(member.getIdLong()))
+            return;
+
+        try (UnlockHook hook = this.voiceStateCache.writeLock())
+        {
+            GuildVoiceStateImpl voiceState = this.voiceStateCache.get(member.getIdLong());
+            if (voiceState != null)
+                voiceState.setMember(member);
+        }
+    }
+
     public void handleVoiceStateUpdate(GuildVoiceStateImpl voiceState)
     {
         if (!shouldCacheVoiceState(voiceState.getIdLong()))
