@@ -1717,19 +1717,15 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(user, "User");
 
-        Member member = resolveMember(user);
-        if (member != null)
+        if (shouldCacheVoiceState(user.getIdLong()))
         {
-            GuildVoiceState voiceState = member.getVoiceState();
-            if (voiceState != null)
-            {
-                final AudioChannelUnion channel = voiceState.getChannel();
-                if (channel == null)
-                    throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
-                if (voiceState.isGuildDeafened() == deafen)
-                    return new CompletedRestAction<>(getJDA(), null);
-                ((GuildChannelMixin<?>) channel).checkPermission(Permission.VOICE_DEAF_OTHERS);
-            }
+            GuildVoiceStateImpl voiceState = voiceStateCache.get(user.getIdLong());
+            AudioChannelUnion channel = voiceState != null ? voiceState.getChannel() : null;
+            if (channel == null)
+                throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
+            if (voiceState.isGuildDeafened() == deafen)
+                return new CompletedRestAction<>(getJDA(), null);
+            ((GuildChannelMixin<?>) channel).checkPermission(Permission.VOICE_DEAF_OTHERS);
         }
 
         DataObject body = DataObject.empty().put("deaf", deafen);
@@ -1743,19 +1739,15 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(user, "User");
 
-        Member member = resolveMember(user);
-        if (member != null)
+        if (shouldCacheVoiceState(user.getIdLong()))
         {
-            GuildVoiceState voiceState = member.getVoiceState();
-            if (voiceState != null)
-            {
-                final AudioChannelUnion channel = voiceState.getChannel();
-                if (channel == null)
-                    throw new IllegalStateException("Can only mute members who are currently in a voice channel");
-                if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
-                    return new CompletedRestAction<>(getJDA(), null);
-                ((GuildChannelMixin<?>) channel).checkPermission(Permission.VOICE_MUTE_OTHERS);
-            }
+            GuildVoiceStateImpl voiceState = voiceStateCache.get(user.getIdLong());
+            AudioChannelUnion channel = voiceState != null ? voiceState.getChannel() : null;
+            if (channel == null)
+                throw new IllegalStateException("Can only mute members who are currently in a voice channel");
+            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
+                return new CompletedRestAction<>(getJDA(), null);
+            ((GuildChannelMixin<?>) channel).checkPermission(Permission.VOICE_MUTE_OTHERS);
         }
 
         DataObject body = DataObject.empty().put("mute", mute);
