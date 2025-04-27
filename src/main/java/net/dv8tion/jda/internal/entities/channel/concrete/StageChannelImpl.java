@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.entities.channel.concrete;
 
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -28,7 +27,6 @@ import net.dv8tion.jda.api.managers.channel.concrete.StageChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.channel.middleman.AbstractStandardGuildChannelImpl;
@@ -41,8 +39,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -50,8 +46,6 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
         StageChannel,
         StageChannelMixin<StageChannelImpl>
 {
-    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
-
     private StageInstance instance;
     private String region;
     private int bitrate;
@@ -115,7 +109,7 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(new ArrayList<>(connectedMembers.valueCollection()));
+        return getGuild().getConnectedMembers(this);
     }
 
     @Nonnull
@@ -197,12 +191,6 @@ public class StageChannelImpl extends AbstractStandardGuildChannelImpl<StageChan
         if (!this.equals(guild.getSelfMember().getVoiceState().getChannel()))
             throw new IllegalStateException("Cannot cancel request to speak without being connected to the stage channel!");
         return new RestActionImpl<>(getJDA(), route, body);
-    }
-
-    @Override
-    public TLongObjectMap<Member> getConnectedMembersMap()
-    {
-        return connectedMembers;
     }
 
     @Override

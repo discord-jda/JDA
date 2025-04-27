@@ -721,7 +721,7 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
 
     @Nonnull
     @Override
-    public RestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
+    public CacheRestAction<GuildVoiceState> retrieveMemberVoiceStateById(long id)
     {
         throw detachedException();
     }

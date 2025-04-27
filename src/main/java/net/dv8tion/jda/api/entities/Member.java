@@ -166,7 +166,8 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * <p>This can be used to get the Member's VoiceChannel using {@link GuildVoiceState#getChannel()}.
      *
-     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE} to be enabled!
+     * <p>Voice states are only cached while the member is connected to a channel.
+     * When the member is disconnected, this either returns null or an empty voice state.
      *
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
