@@ -42,7 +42,7 @@ plugins {
 
 
 val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "4", revision = "0", classifier = null)
+val versionObj = Version(major = "5", minor = "5", revision = "0", classifier = null)
 val isGithubAction = System.getProperty("GITHUB_ACTION") != null || System.getenv("GITHUB_ACTION") != null
 val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
         || System.getenv("BUILD_NUMBER") != null
