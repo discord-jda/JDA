@@ -24,7 +24,6 @@ import java.util.Set;
 
 public class SKUImpl extends SkuSnowflakeImpl implements SKU
 {
-    // As described in https://discord.com/developers/docs/resources/sku#sku-object-sku-types
     private final SKUType type;
     private final String name;
     private final String slug;
