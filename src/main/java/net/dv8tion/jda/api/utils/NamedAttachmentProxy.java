@@ -75,18 +75,12 @@ public class NamedAttachmentProxy extends AttachmentProxy
      *             <li>The requested width is negative or 0</li>
      *             <li>The requested height is negative or 0</li>
      *         </ul>
-     * @throws IllegalStateException
-     *         If the original attachment's name is not known,
-     *         this can happen if this isn't from a {@link net.dv8tion.jda.api.entities.Message.Attachment Message.Attachment}
      *
      * @return {@link FileUpload} from this attachment.
      */
     @Nonnull
     public FileUpload downloadAsFileUpload(int width, int height)
     {
-        if (fileName == null)
-            throw new IllegalStateException("The file name is not available for this AttachmentProxy");
-
         return downloadAsFileUpload(fileName, width, height);
     }
 }
