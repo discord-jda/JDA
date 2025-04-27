@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
@@ -182,6 +183,24 @@ public class FileProxy
                 }).build());
 
         return new DownloadTask(newCall, future);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    protected CompletableFuture<Icon> downloadAsIcon(String url)
+    {
+        final CompletableFuture<InputStream> downloadFuture = download(url);
+        return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
+        {
+            try (final InputStream ignored = stream)
+            {
+                return Icon.from(stream);
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     @Nonnull
