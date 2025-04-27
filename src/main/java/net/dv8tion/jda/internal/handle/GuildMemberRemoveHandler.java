@@ -60,19 +60,8 @@ public class GuildMemberRemoveHandler extends SocketHandler
         try
         {
             User user = api.getEntityBuilder().createUser(content.getObject("user"));
-            MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);
 
-            if (member == null)
-            {
-                // Fire cache independent event, we can still inform the library user about the member removal
-                getJDA().handleEvent(
-                    new GuildMemberRemoveEvent(
-                        getJDA(), responseNumber,
-                        guild, user, null));
-                return null;
-            }
-
-            GuildVoiceStateImpl voiceState = member.getVoiceState();
+            GuildVoiceStateImpl voiceState = guild.getVoiceStateView().getElementById(userId);
             if (voiceState != null && voiceState.inAudioChannel()) //If this user was in an AudioChannel, fire VoiceLeaveEvent.
             {
                 AudioChannel channel = voiceState.getChannel();
@@ -81,21 +70,22 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 getJDA().handleEvent(
                     new GuildVoiceUpdateEvent(
                         getJDA(), responseNumber,
-                        member, channel));
+                        voiceState.getMember(), channel));
             }
 
-            //The user is not in a different guild that we share
+            MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);
+
             SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
             try (UnlockHook hook = userView.writeLock())
             {
-                if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
-                        && getJDA().getGuildsView().stream()
-                        .noneMatch(g -> g.getMemberById(userId) != null))
+                if (user.getMutualGuilds().isEmpty())
                 {
                     userView.remove(userId);
                     getJDA().getEventCache().clear(EventCache.Type.USER, userId);
                 }
             }
+
+
             // Cache independent event
             getJDA().handleEvent(
                 new GuildMemberRemoveEvent(
