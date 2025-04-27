@@ -185,8 +185,8 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction clearOptions()
     {
-        data = new CommandDataImpl(data.getName(), data.getDescription());
-        mask &= ~OPTIONS_SET;
+        data.removeAllOptions();
+        mask |= OPTIONS_SET;
         return this;
     }
 

@@ -433,6 +433,12 @@ public class CommandDataImpl implements SlashCommandData
         return modified;
     }
 
+    public void removeAllOptions()
+    {
+        this.options.clear();
+        this.updateAllowedOptions();
+    }
+
     // Update allowed conditions after removing options
     private void updateAllowedOptions()
     {
