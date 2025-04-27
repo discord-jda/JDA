@@ -55,19 +55,22 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private static final int INTERACTION_CONTEXTS_SET = 1 << 6;
     private static final int INTEGRATION_TYPES_SET    = 1 << 7;
     private final Guild guild;
-    private int mask = 0;
-    private CommandDataImpl data = new CommandDataImpl(Command.Type.UNKNOWN, UNDEFINED);
+
+    private int mask;
+    private CommandDataImpl data;
 
     public CommandEditActionImpl(JDA api, String id)
     {
         super(api, Route.Interactions.EDIT_COMMAND.compile(api.getSelfUser().getApplicationId(), id));
         this.guild = null;
+        this.reset();
     }
 
     public CommandEditActionImpl(Guild guild, String id)
     {
         super(guild.getJDA(), Route.Interactions.EDIT_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId(), id));
         this.guild = guild;
+        this.reset();
     }
 
     @Nonnull
@@ -82,6 +85,14 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditAction deadline(long timestamp)
     {
         return (CommandEditAction) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    public CommandEditActionImpl withType(Command.Type type)
+    {
+        this.mask = 0;
+        this.data = CommandDataImpl.of(type, UNDEFINED, UNDEFINED);
+        return this;
     }
 
     @Nonnull
@@ -256,6 +267,6 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private void reset()
     {
         mask = 0;
-        data = new CommandDataImpl(data.getType(), UNDEFINED);
+        data = CommandDataImpl.of(data.getType(), UNDEFINED, UNDEFINED);
     }
 }

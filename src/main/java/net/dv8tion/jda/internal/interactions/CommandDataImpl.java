@@ -33,6 +33,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -70,6 +71,13 @@ public class CommandDataImpl implements SlashCommandData
         Checks.notNull(type, "Command Type");
         Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
         setName(name);
+    }
+
+    public static CommandDataImpl of(@Nonnull Command.Type type, @Nonnull String name, @Nullable String description)
+    {
+        if (type == Command.Type.SLASH)
+            return new CommandDataImpl(name, description);
+        return new CommandDataImpl(type, name);
     }
 
     protected void checkType(Command.Type required, String action)
