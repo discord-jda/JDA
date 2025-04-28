@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.SKU;
 import net.dv8tion.jda.api.entities.SKUFlag;
 import net.dv8tion.jda.api.entities.SKUType;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 public class SKUImpl extends SkuSnowflakeImpl implements SKU
@@ -39,24 +40,28 @@ public class SKUImpl extends SkuSnowflakeImpl implements SKU
     }
 
     @Override
+    @Nonnull
     public SKUType getType()
     {
         return type;
     }
 
     @Override
+    @Nonnull
     public String getName()
     {
         return name;
     }
 
     @Override
+    @Nonnull
     public String getSlug()
     {
         return slug;
     }
 
     @Override
+    @Nonnull
     public Set<SKUFlag> getFlags()
     {
         return flags;

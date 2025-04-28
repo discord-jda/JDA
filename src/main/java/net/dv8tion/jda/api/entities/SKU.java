@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -27,24 +28,28 @@ public interface SKU extends SkuSnowflake
      * Type of the SKU
      * @return SKU type
      */
+    @Nonnull
     SKUType getType();
 
     /**
      * Customer-facing name of your premium offering
      * @return SKU name
      */
+    @Nonnull
     String getName();
 
     /**
      * System-generated URL slug based on the SKU's name
      * @return SKU slug
      */
+    @Nonnull
     String getSlug();
 
     /**
      * Flags can be used to differentiate user and server subscriptions
      * @return set of flags.
      */
+    @Nonnull
     Set<SKUFlag> getFlags();
 
     /**
