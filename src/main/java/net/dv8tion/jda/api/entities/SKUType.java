@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
+
 /**
  * SKU Types represent the type of the offered SKU.
  *
@@ -61,6 +63,7 @@ public enum SKUType
      *
      * @return SKU type or {@link #UNKNOWN} if the SKU is not known.
      */
+    @Nonnull
     public static SKUType fromId(int type)
     {
         for (SKUType value : values())
