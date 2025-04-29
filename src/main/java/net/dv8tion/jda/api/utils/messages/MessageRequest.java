@@ -225,8 +225,9 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -263,8 +264,9 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -304,8 +306,9 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * @param  tree
      *         The new {@link ComponentTree} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -325,8 +328,8 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     /**
      * Sets whether this message is allowed to use V2 components.
      *
-     * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
-     * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     * <p>Using V2 components removes the top-level component limit,
+     * and allows more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      * <br>They also allow you to use a larger choice of components,
      * such as any component extending {@link MessageTopLevelComponent},
      * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
@@ -357,8 +360,8 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * Enables using V2 components.
      * <br>This is a shortcut for {@code useComponentV2(true)}
      *
-     * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
-     * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     * <p>Using V2 components removes the top-level component limit,
+     * and allows more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      * <br>They also allow you to use a larger choice of components,
      * such as any component extending {@link MessageTopLevelComponent},
      * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.

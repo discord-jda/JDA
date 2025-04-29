@@ -40,8 +40,6 @@ import java.util.List;
  * Component which groups components vertically, you can specify an accent color, similar to embeds,
  * and mark the container as a spoiler.
  *
- * <p>This can contain up to {@value #MAX_COMPONENTS} {@link ContainerChildComponent}.
- *
  * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  *
  * @see ContainerChildComponent
@@ -49,11 +47,6 @@ import java.util.List;
  */
 public interface Container extends MessageTopLevelComponent, IReplaceable, IDisableable
 {
-    /**
-     * How many {@link ContainerChildComponent} can be in this container.
-     */
-    int MAX_COMPONENTS = 10;
-
     /**
      * Constructs a new {@link Container} from the given components.
      *
@@ -63,7 +56,6 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If more than {@value #MAX_COMPONENTS} components are provided</li>
      *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
      *         </ul>
      *
@@ -86,7 +78,6 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If more than {@value #MAX_COMPONENTS} components are provided</li>
      *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
      *         </ul>
      *

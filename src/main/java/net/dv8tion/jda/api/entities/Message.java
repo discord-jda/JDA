@@ -215,7 +215,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * The maximum amount of {@link Component components} that can be added to a message including nested components. ({@value})
      */
-    int MAX_COMPONENT_COUNT_IN_COMPONENT_TREE = 30;
+    int MAX_COMPONENT_COUNT_IN_COMPONENT_TREE = 40;
 
     /**
      * The maximum character length for a {@link #getNonce() nonce} ({@value})
@@ -1095,8 +1095,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1136,8 +1137,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1181,8 +1183,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param  tree
      *         The {@link ComponentTree} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1646,8 +1649,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
@@ -1683,8 +1687,9 @@ public interface Message extends ISnowflake, Formattable
      *         The {@link MessageTopLevelComponent} to send
      * @param  other
      *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to send
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
@@ -1722,8 +1727,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param  tree
      *         The {@link ComponentTree} to send,
-     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws
@@ -2715,8 +2721,8 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Indicates this message is using V2 components.
          *
-         * <p>Using V2 components allows for more top-level components ({@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2}),
-         * and more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+         * <p>Using V2 components has no top-level component limit,
+         * and allows more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
          * <br>They also allow you to use a larger choice of components,
          * such as any component extending {@link MessageTopLevelComponent},
          * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.

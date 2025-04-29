@@ -99,8 +99,6 @@ public class MessageComponentTest
                 Arguments.of(messageEdit(b -> b.useComponentsV2().setReplace(true).setFiles(EXAMPLE_FILE_UPLOAD))),
                 // Attempt to use >MAX_COMPONENT_COUNT top-level
                 Arguments.of(message(b -> b.setComponents(mergeItems(getMaxTopLevelV1(), EXAMPLE_ROW)))),
-                // Attempt to use >MAX_COMPONENT_COUNT_COMPONENTS_V2 top-level
-                Arguments.of(message(b -> b.useComponentsV2().setComponents(mergeItems(getMaxTopLevelV2(), EXAMPLE_SEPARATOR)))),
                 // Attempt to use >MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(mergeItems(getMaxTotal(), EXAMPLE_FILE_DISPLAY)))),
                 // Attempt to use >MAX_CONTENT_LENGTH_COMPONENT_V2
@@ -150,8 +148,9 @@ public class MessageComponentTest
                 Arguments.of(messageEdit(b -> b.setReplace(true).setFiles(EXAMPLE_FILE_UPLOAD))),
                 // MAX_COMPONENT_COUNT top-level
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(getMaxTopLevelV1()))),
-                // MAX_COMPONENT_COUNT_COMPONENTS_V2 top-level
-                Arguments.of(message(b -> b.useComponentsV2().setComponents(getMaxTopLevelV2()))),
+                // Add top-levels until it would break the tree size checks,
+                // to make sure the top-level size isn't checked, or at least equal to the max tree size
+                Arguments.of(message(b -> b.useComponentsV2().setComponents(getAbsurdTopLevelV2()))),
                 // MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(getMaxTotal()))),
                 // Attempt to use >MAX_CONTENT_LENGTH_COMPONENT_V2
@@ -175,23 +174,27 @@ public class MessageComponentTest
         return list;
     }
 
-    private static Collection<MessageTopLevelComponent> getMaxTopLevelV2()
+    private static Collection<MessageTopLevelComponent> getAbsurdTopLevelV2()
     {
-        final List<MessageTopLevelComponent> list = new ArrayList<>(Message.MAX_COMPONENT_COUNT_COMPONENTS_V2);
-        for (int i = 0; i < Message.MAX_COMPONENT_COUNT_COMPONENTS_V2; i++)
+        final int limit = Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE - 1;
+        final List<MessageTopLevelComponent> list = new ArrayList<>(limit);
+        for (int i = 0; i < limit; i++)
             list.add(EXAMPLE_SEPARATOR);
         return list;
     }
 
     private static Collection<MessageTopLevelComponent> getMaxTotal()
     {
+        // Artificial limit just to increase the test coverage, as it will have to count nested components
+        final int limit = 10;
+
         final List<MessageTopLevelComponent> containers = new ArrayList<>();
         final List<Separator> current = new ArrayList<>();
         // Containers + container items + to-be-inserted + 1 (new container with remaining items)
-        while (containers.size() + (containers.size() * Container.MAX_COMPONENTS) + current.size() + 1  < Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
+        while (containers.size() + (containers.size() * limit) + current.size() + 1  < Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
         {
             current.add(EXAMPLE_SEPARATOR);
-            if (current.size() == Container.MAX_COMPONENTS)
+            if (current.size() == limit)
             {
                 containers.add(Container.of(current));
                 current.clear();

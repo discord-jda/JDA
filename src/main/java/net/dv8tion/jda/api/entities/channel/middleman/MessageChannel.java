@@ -615,8 +615,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
@@ -664,8 +665,9 @@ public interface MessageChannel extends Channel, Formattable
      *         The {@link MessageTopLevelComponent} to send
      * @param  other
      *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
@@ -712,8 +714,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  tree
      *         The {@link ComponentTree} to send,
-     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
@@ -3179,8 +3182,9 @@ public interface MessageChannel extends Channel, Formattable
      *         The id referencing the Message that should be edited
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3245,8 +3249,9 @@ public interface MessageChannel extends Channel, Formattable
      *         The id referencing the Message that should be edited
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3308,8 +3313,9 @@ public interface MessageChannel extends Channel, Formattable
      *         The id referencing the Message that should be edited
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3372,8 +3378,9 @@ public interface MessageChannel extends Channel, Formattable
      *         The id referencing the Message that should be edited
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3436,8 +3443,9 @@ public interface MessageChannel extends Channel, Formattable
      *         The id referencing the Message that should be edited
      * @param  tree
      *         The {@link ComponentTree} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
@@ -3500,8 +3508,9 @@ public interface MessageChannel extends Channel, Formattable
      *         The id referencing the Message that should be edited
      * @param  tree
      *         The {@link ComponentTree} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-     *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface

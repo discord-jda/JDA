@@ -302,8 +302,6 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             return false;
         if (isSet(COMPONENTS))
         {
-            if (components.size() > Message.MAX_COMPONENT_COUNT_COMPONENTS_V2)
-                return false;
             if (ComponentsUtil.getComponentTreeSize(components) > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
                 return false;
             if (ComponentsUtil.getComponentTreeLength(components) > Message.MAX_CONTENT_LENGTH_COMPONENT_V2)
@@ -376,8 +374,6 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         {
             if (components.isEmpty())
                 throw new IllegalStateException("Cannot build message with no V2 components, or did you forget to disable them?");
-            if (components.size() > Message.MAX_COMPONENT_COUNT_COMPONENTS_V2)
-                throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT_COMPONENTS_V2 + " top-level components, provided " + components.size());
             final long componentTreeSize = ComponentsUtil.getComponentTreeSize(components);
             if (componentTreeSize > Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE)
                 throw new IllegalStateException("Cannot build message with over " + Message.MAX_COMPONENT_COUNT_IN_COMPONENT_TREE + " total components, provided " + componentTreeSize);
