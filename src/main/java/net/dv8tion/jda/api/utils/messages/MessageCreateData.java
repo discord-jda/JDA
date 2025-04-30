@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -358,13 +359,9 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
         json.put("tts", tts);
         json.put("flags", flags);
         json.put("allowed_mentions", mentions);
-        if (files != null && !files.isEmpty())
-        {
-            DataArray attachments = DataArray.empty();
-            json.put("attachments", attachments);
-            for (int i = 0; i < files.size(); i++)
-                attachments.add(files.get(i).toAttachmentData(i));
-        }
+        final List<FileUpload> additionalFiles = getAdditionalFiles();
+        if (files != null || !additionalFiles.isEmpty())
+            json.put("attachments", MessageUtil.getAttachmentsData(files, additionalFiles));
 
         return json;
     }

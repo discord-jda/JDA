@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -334,20 +335,10 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
             json.put("allowed_mentions", mentions);
         if (isSet(FLAGS))
             json.put("flags", messageFlags);
-        if (isSet(ATTACHMENTS))
-        {
-            DataArray attachments = DataArray.empty();
 
-            int fileUploadCount = 0;
-            for (AttachedFile file : files)
-            {
-                attachments.add(file.toAttachmentData(fileUploadCount));
-                if (file instanceof FileUpload)
-                    fileUploadCount++;
-            }
-
-            json.put("attachments", attachments);
-        }
+        final List<FileUpload> additionalFiles = getAdditionalFiles();
+        if (isSet(ATTACHMENTS) || !additionalFiles.isEmpty())
+            json.put("attachments", MessageUtil.getAttachmentsData(files, additionalFiles));
 
         return json;
     }
