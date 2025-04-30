@@ -348,9 +348,12 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     public DataObject toData()
     {
         DataObject json = DataObject.empty();
-        json.put("content", content);
-        json.put("poll", poll);
-        json.put("embeds", DataArray.fromCollection(embeds));
+        if (!isUsingComponentsV2())
+        {
+            json.put("content", content);
+            json.put("poll", poll);
+            json.put("embeds", DataArray.fromCollection(embeds));
+        }
         json.put("components", DataArray.fromCollection(components));
         json.put("tts", tts);
         json.put("flags", flags);
