@@ -74,7 +74,7 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} running all the provided replacers
      */
     @Nonnull
-    static ComponentReplacer all(Collection<? extends ComponentReplacer> replacers)
+    static ComponentReplacer all(@Nonnull Collection<? extends ComponentReplacer> replacers)
     {
         Checks.notEmpty(replacers, "ComponentReplacers");
         Checks.noneNull(replacers, "ComponentReplacers");
@@ -108,7 +108,7 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} running all the provided replacers
      */
     @Nonnull
-    static ComponentReplacer all(ComponentReplacer first, ComponentReplacer... others)
+    static ComponentReplacer all(@Nonnull ComponentReplacer first, @Nonnull ComponentReplacer... others)
     {
         Checks.notNull(first, "ComponentReplacer");
         Checks.noneNull(others, "ComponentReplacers");
