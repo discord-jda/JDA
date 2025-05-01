@@ -184,7 +184,7 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, C
      * @return The component as a {@link FileDisplay}
      */
     @Nonnull
-    FileDisplay asFile();
+    FileDisplay asFileDisplay();
 
     @Nonnull
     static ContainerChildComponentUnion fromData(@Nonnull DataObject data)

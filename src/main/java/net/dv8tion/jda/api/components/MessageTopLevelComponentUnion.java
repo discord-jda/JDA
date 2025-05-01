@@ -184,7 +184,7 @@ public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent,
      * @return The component as a {@link FileDisplay}
      */
     @Nonnull
-    FileDisplay asFile();
+    FileDisplay asFileDisplay();
 
     /**
      * Casts this union to a {@link Container}.

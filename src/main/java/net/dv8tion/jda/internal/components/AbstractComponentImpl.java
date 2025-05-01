@@ -98,7 +98,7 @@ public abstract class AbstractComponentImpl
     }
 
     @Nonnull
-    public FileDisplay asFile()
+    public FileDisplay asFileDisplay()
     {
         return toComponentType(FileDisplay.class);
     }
