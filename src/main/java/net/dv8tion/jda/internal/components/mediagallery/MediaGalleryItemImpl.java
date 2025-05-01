@@ -18,16 +18,20 @@ package net.dv8tion.jda.internal.components.mediagallery;
 
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-public class MediaGalleryItemImpl implements MediaGalleryItem
+public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixin
 {
     private final String url, description;
     private final ResolvedMedia media;
@@ -89,6 +93,12 @@ public class MediaGalleryItemImpl implements MediaGalleryItem
         return media;
     }
 
+    @Override
+    public Stream<FileUpload> getFiles() {
+        final String fileName = Helpers.getLastPathSegment(media.getUrl());
+        return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
+    }
+
     @Nullable
     @Override
     public String getDescription()
@@ -106,8 +116,9 @@ public class MediaGalleryItemImpl implements MediaGalleryItem
     @Override
     public DataObject toData()
     {
+        final String fileName = Helpers.getLastPathSegment(media.getUrl());
         return DataObject.empty()
-                .put("media", DataObject.empty().put("url", url))
+                .put("media", DataObject.empty().put("url", "attachment://" + fileName))
                 .put("description", description)
                 .put("spoiler", spoiler);
     }

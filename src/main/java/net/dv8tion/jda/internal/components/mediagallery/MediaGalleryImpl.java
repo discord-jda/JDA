@@ -106,9 +106,9 @@ public class MediaGalleryImpl
     public Stream<FileUpload> getFiles()
     {
         return items.stream()
-                .filter(MediaGalleryItemFileUpload.class::isInstance)
-                .map(MediaGalleryItemFileUpload.class::cast)
-                .map(MediaGalleryItemFileUpload::getFile);
+                .filter(FileContainerMixin.class::isInstance)
+                .map(FileContainerMixin.class::cast)
+                .flatMap(FileContainerMixin::getFiles);
     }
 
     @Nonnull

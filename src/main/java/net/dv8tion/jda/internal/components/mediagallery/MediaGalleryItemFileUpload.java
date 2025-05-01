@@ -20,14 +20,16 @@ import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-public class MediaGalleryItemFileUpload implements MediaGalleryItem
+public class MediaGalleryItemFileUpload implements MediaGalleryItem, FileContainerMixin
 {
     private final FileUpload file; // Contains name and description
     private final String description;
@@ -72,17 +74,17 @@ public class MediaGalleryItemFileUpload implements MediaGalleryItem
         return "attachment://" + file.getName();
     }
 
-    @Nonnull
-    public FileUpload getFile()
-    {
-        return file;
-    }
-
     @Nullable
     @Override
     public ResolvedMedia getResolvedMedia()
     {
         return null;
+    }
+
+    @Override
+    public Stream<FileUpload> getFiles()
+    {
+        return Stream.of(file);
     }
 
     @Nullable
