@@ -3134,6 +3134,15 @@ public interface MessageChannel extends Channel, Formattable
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * List<ActionRow> rows = Arrays.asList(
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * );
+     * channel.editMessageComponentsById(messageId, rows).queue();
+     * }</pre>
+     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
@@ -3152,15 +3161,6 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * List<ActionRow> rows = Arrays.asList(
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * );
-     * channel.editMessageComponentsById(messageId, rows).queue();
-     * }</pre>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
@@ -3201,6 +3201,15 @@ public interface MessageChannel extends Channel, Formattable
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * List<ActionRow> rows = Arrays.asList(
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * );
+     * channel.editMessageComponentsById(messageId, rows).queue();
+     * }</pre>
+     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
@@ -3219,15 +3228,6 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * List<ActionRow> rows = Arrays.asList(
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * );
-     * channel.editMessageComponentsById(messageId, rows).queue();
-     * }</pre>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
@@ -3266,6 +3266,14 @@ public interface MessageChannel extends Channel, Formattable
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.editMessageComponentsById(messageId,
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * ).queue();
+     * }</pre>
+     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
@@ -3284,14 +3292,6 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
@@ -3331,6 +3331,14 @@ public interface MessageChannel extends Channel, Formattable
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.editMessageComponentsById(messageId,
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * ).queue();
+     * }</pre>
+     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
@@ -3349,14 +3357,6 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
@@ -3396,6 +3396,16 @@ public interface MessageChannel extends Channel, Formattable
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.editMessageComponentsById(messageId,
+     *   MessageComponentTree.of(
+     *     ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *     ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     *   )
+     * ).queue();
+     * }</pre>
+     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
@@ -3414,14 +3424,6 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
@@ -3463,6 +3465,16 @@ public interface MessageChannel extends Channel, Formattable
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
      * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
      *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.editMessageComponentsById(messageId,
+     *   MessageComponentTree.of(
+     *     ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *     ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     *   )
+     * ).queue();
+     * }</pre>
+     *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
@@ -3481,14 +3493,6 @@ public interface MessageChannel extends Channel, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
-     *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
