@@ -22,21 +22,31 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
- * Component which supports being disabled, or having its children be disabled.
+ * Component which supports being disabled or having its children be disabled.
  */
 public interface IDisableable extends Component
 {
     /**
      * Whether this component is disabled.
-     * <br>For layout components, this means all children are disabled.
      *
-     * @return True, if this component is disabled
+     * <p>For layout components, this means all children are enabled.
+     * <br>When this returns {@code false},
+     * this does not mean {@link #isEnabled()} is {@code true}! (for example, when one component is enabled and the other is disabled)
+     *
+     * <p>You can use {@link #asDisabled()} or {@link #asEnabled()} to create enabled/disabled instances.
+     *
+     * @return {@code true}, if this component is disabled
      */
     boolean isDisabled();
 
     /**
      * Whether this component is enabled.
-     * <br>For layout components, this means all children are enabled.
+     *
+     * <p>For layout components, this means all children are enabled.
+     * <br>When this returns {@code false},
+     * this does not mean {@link #isDisabled()} is {@code true}! (for example, when one component is enabled and the other is disabled)
+     *
+     * <p>You can use {@link #asDisabled()} or {@link #asEnabled()} to create enabled/disabled instances.
      *
      * @return {@code true} if this component is enabled
      */
