@@ -43,6 +43,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -339,7 +340,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     /**
      * The roles applied to this Member.
      * <br>The roles are ordered based on their position. The highest role being at index 0
-     * and the lowest at the last index.
+     * and the lowest at the last index. Prefer {@link #getUnsortedRoles()} if the order is not relevant.
      *
      * <p>A Member's roles can be changed using the {@link Guild#addRoleToMember(UserSnowflake, Role)}, {@link Guild#removeRoleFromMember(UserSnowflake, Role)}, and {@link Guild#modifyMemberRoles(Member, Collection, Collection)}
      * methods in {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -359,6 +360,31 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     @Nonnull
     @Unmodifiable
     List<Role> getRoles();
+
+    /**
+     * The roles applied to this Member.
+     * <br>This is an unmodifiable reference to the role set of this member.
+     * This set has no defined order, use {@link #getRoles()} to get an ordered list.
+     *
+     * <p>A Member's roles can be changed using the {@link Guild#addRoleToMember(UserSnowflake, Role)}, {@link Guild#removeRoleFromMember(UserSnowflake, Role)}, and {@link Guild#modifyMemberRoles(Member, Collection, Collection)}
+     * methods in {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p><b>The Public Role ({@code @everyone}) is not included in the returned immutable set of roles
+     * <br>It is implicit that every member holds the Public Role in a Guild thus it is not listed here!</b>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return An unmodifiable reference to the Set of {@link net.dv8tion.jda.api.entities.Role Roles} for this Member.
+     *
+     * @see    #getRoles()
+     * @see    Guild#addRoleToMember(UserSnowflake, Role)
+     * @see    Guild#removeRoleFromMember(UserSnowflake, Role)
+     * @see    Guild#modifyMemberRoles(Member, Collection, Collection)
+     */
+    @Nonnull
+    @Unmodifiable
+    Set<Role> getUnsortedRoles();
 
     /**
      * The {@link java.awt.Color Color} of this Member's name in a Guild.

@@ -321,7 +321,7 @@ public class PermissionUtil
             return ALL_PERMISSIONS;
         //Default to binary OR of all global permissions in this guild
         long permission = member.getGuild().getPublicRole().getPermissionsRaw();
-        for (Role role : member.getRoles())
+        for (Role role : member.getUnsortedRoles())
         {
             permission |= role.getPermissionsRaw();
             if (isApplied(permission, Permission.ADMINISTRATOR.getRawValue()))
@@ -469,7 +469,7 @@ public class PermissionUtil
         final Guild guild = member.getGuild();
         long permission = guild.getPublicRole().getPermissionsRaw();
 
-        for (Role role : member.getRoles())
+        for (Role role : member.getUnsortedRoles())
             permission |= role.getPermissionsRaw();
 
         return permission;
@@ -654,7 +654,7 @@ public class PermissionUtil
         long allowRole = 0;
         long denyRole = 0;
         // create temporary bit containers for role cascade
-        for (Role role : member.getRoles())
+        for (Role role : member.getUnsortedRoles())
         {
             override = permsChannel.getPermissionOverride(role);
             if (override != null)

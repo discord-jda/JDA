@@ -38,10 +38,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImpl>
 {
@@ -189,6 +187,13 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Nonnull
     @Override
     public List<Role> getRoles()
+    {
+        throw detachedException();
+    }
+
+    @Nonnull
+    @Override
+    public Set<Role> getUnsortedRoles()
     {
         throw detachedException();
     }

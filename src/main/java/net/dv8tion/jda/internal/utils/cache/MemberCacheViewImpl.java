@@ -102,7 +102,7 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         List<Member> members = new ArrayList<>();
         forEach(member ->
         {
-            if (member.getRoles().containsAll(rolesWithoutPublicRole))
+            if (member.getUnsortedRoles().containsAll(rolesWithoutPublicRole))
                 members.add(member);
         });
         return members;
