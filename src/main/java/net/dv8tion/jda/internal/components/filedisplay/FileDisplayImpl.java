@@ -27,10 +27,9 @@ import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
-import okhttp3.HttpUrl;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -105,8 +104,8 @@ public class FileDisplayImpl
 
     @Override
     public Stream<FileUpload> getFiles() {
-        // TODO replace with proxy.downloadAsFileUpload(Helpers.getLastPathSegment()) when https://github.com/discord-jda/JDA/pull/2782 is merged
-        return Stream.of(FileUpload.fromStreamSupplier(getFileName(), () -> media.getProxy().download().join()));
+        final String fileName = Helpers.getLastPathSegment(media.getUrl());
+        return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
     }
 
     @Override
@@ -119,21 +118,14 @@ public class FileDisplayImpl
     @Override
     public DataObject toData()
     {
+        final String fileName = Helpers.getLastPathSegment(media.getUrl());
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
-                .put("file", DataObject.empty().put("url", "attachment://" + getFileName()))
+                .put("file", DataObject.empty().put("url", "attachment://" + fileName))
                 .put("spoiler", spoiler);
         if (uniqueId >= 0)
             json.put("id", uniqueId);
         return json;
-    }
-
-    private String getFileName() {
-        final HttpUrl parsedUrl = HttpUrl.parse(media.getUrl());
-        Checks.check(parsedUrl != null, "URL '%s' is invalid", url);
-
-        final List<String> segments = parsedUrl.pathSegments();
-        return segments.get(segments.size() - 1);
     }
 
     @Override

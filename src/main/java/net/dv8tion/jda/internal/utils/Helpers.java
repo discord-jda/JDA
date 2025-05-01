@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import okhttp3.HttpUrl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -387,5 +388,14 @@ public final class Helpers
             joiner.add(seconds + " seconds");
 
         return raw + " (" + joiner + ")";
+    }
+
+    @Nonnull
+    public static String getLastPathSegment(@Nonnull String url) {
+        final HttpUrl parsedUrl = HttpUrl.parse(url);
+        Checks.check(parsedUrl != null, "URL '%s' is invalid", url);
+
+        final List<String> segments = parsedUrl.pathSegments();
+        return segments.get(segments.size() - 1);
     }
 }
