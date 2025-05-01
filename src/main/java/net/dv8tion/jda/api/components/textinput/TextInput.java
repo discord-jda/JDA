@@ -65,7 +65,7 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
     /**
      * The custom id of this TextInput component.
      *
-     * <p>This is used to uniquely identify the TextInput. Similar to {@link net.dv8tion.jda.api.components.button.Button Buttons}.
+     * <p>This is used to uniquely identify the TextInput. Similar to {@link net.dv8tion.jda.api.components.buttons.Button Buttons}.
      *
      * @return The custom id of this component.
      */

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.components.button;
+package net.dv8tion.jda.api.components.buttons;
 
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
-import net.dv8tion.jda.internal.components.button.ButtonImpl;
+import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;

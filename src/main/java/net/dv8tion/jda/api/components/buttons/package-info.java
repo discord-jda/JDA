@@ -17,4 +17,4 @@
 /**
  * Button components.
  */
-package net.dv8tion.jda.api.components.button;
+package net.dv8tion.jda.api.components.buttons;

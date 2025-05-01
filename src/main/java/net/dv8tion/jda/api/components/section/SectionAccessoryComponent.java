@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.components.section;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 
 /**

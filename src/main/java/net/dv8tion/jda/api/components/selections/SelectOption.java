@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.components.selects;
+package net.dv8tion.jda.api.components.selections;
 
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
-import net.dv8tion.jda.api.interactions.components.selects.SelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.EntityBuilder;

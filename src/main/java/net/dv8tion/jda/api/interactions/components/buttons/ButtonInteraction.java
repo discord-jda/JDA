@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.components.selects;
+package net.dv8tion.jda.api.interactions.components.buttons;
 
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.components.selects.SelectMenu;
 import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -28,64 +28,48 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Component Interaction for a {@link SelectMenu}.
+ * Interaction on a {@link Button} component.
  *
- * @param <T>
- *        The select menu value type
- * @param <S>
- *        The type of select menu
- *
- * @see GenericSelectMenuInteractionEvent
- * @see EntitySelectInteraction
- * @see StringSelectInteraction
+ * @see ButtonInteractionEvent
  */
-public interface SelectMenuInteraction<T, S extends SelectMenu> extends ComponentInteraction
+public interface ButtonInteraction extends ComponentInteraction
 {
     @Nonnull
     @Override
-    S getComponent();
+    default Button getComponent()
+    {
+        return getButton();
+    }
 
     /**
-     * The {@link SelectMenu} this interaction belongs to.
+     * The {@link Button} this interaction belongs to.
      *
-     * @return The {@link SelectMenu}
+     * @return The {@link Button}
      *
      * @see    #getComponentId()
      */
     @Nonnull
-    default S getSelectMenu()
-    {
-        return getComponent();
-    }
+    Button getButton();
 
     /**
-     * The provided selection.
-     *
-     * @return {@link List} of {@link T}
-     */
-    @Nonnull
-    List<T> getValues();
-
-    /**
-     * Update the select menu with a new select menu instance.
+     * Update the button with a new button instance.
      *
      * <p>If this interaction is already acknowledged this will use {@link #getHook()}
      * and otherwise {@link #editComponents(Collection)} directly to acknowledge the interaction.
      *
-     * @param  newMenu
-     *         The new select menu to use, or null to remove this menu from the message entirely
+     * @param  newButton
+     *         The new button to use, or null to remove this button from the message entirely
      *
      * @return {@link RestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> editSelectMenu(@Nullable SelectMenu newMenu)
+    default RestAction<Void> editButton(@Nullable Button newButton)
     {
         final Message message = getMessage();
-        final MessageComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getSelectMenu(), newMenu));
+        final MessageComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getButton(), newButton));
 
         if (isAcknowledged())
             return getHook().editMessageComponentsById(message.getId(), newTree.getComponents()).map(it -> null);

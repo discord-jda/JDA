@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.components.selects;
+package net.dv8tion.jda.internal.components.selections;
 
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
-import net.dv8tion.jda.api.components.selects.SelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectMenu;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.EntityString;

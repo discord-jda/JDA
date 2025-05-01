@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.components.button;
+package net.dv8tion.jda.internal.components.buttons;
 
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
-import net.dv8tion.jda.api.components.button.Button;
-import net.dv8tion.jda.api.components.button.ButtonStyle;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.entities.emoji.Emoji;

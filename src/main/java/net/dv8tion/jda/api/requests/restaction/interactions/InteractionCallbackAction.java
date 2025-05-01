@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.SkuSnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
 

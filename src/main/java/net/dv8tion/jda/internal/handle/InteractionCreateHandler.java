@@ -36,9 +36,9 @@ import net.dv8tion.jda.internal.interactions.command.CommandAutoCompleteInteract
 import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
-import net.dv8tion.jda.internal.interactions.components.button.ButtonInteractionImpl;
-import net.dv8tion.jda.internal.interactions.components.selects.EntitySelectInteractionImpl;
-import net.dv8tion.jda.internal.interactions.components.selects.StringSelectInteractionImpl;
+import net.dv8tion.jda.internal.interactions.components.buttons.ButtonInteractionImpl;
+import net.dv8tion.jda.internal.interactions.components.selections.EntitySelectInteractionImpl;
+import net.dv8tion.jda.internal.interactions.components.selections.StringSelectInteractionImpl;
 import net.dv8tion.jda.internal.interactions.modal.ModalInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 

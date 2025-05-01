@@ -131,7 +131,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
     }
 
     /**
-     * @deprecated Replaced with {@link net.dv8tion.jda.api.components.button.Button#premium(net.dv8tion.jda.api.entities.SkuSnowflake) Button.premium(SkuSnowflake)},
+     * @deprecated Replaced with {@link net.dv8tion.jda.api.components.buttons.Button#premium(net.dv8tion.jda.api.entities.SkuSnowflake) Button.premium(SkuSnowflake)},
      * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
      */
     @Nonnull

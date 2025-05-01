@@ -17,9 +17,9 @@
 package net.dv8tion.jda.api.components.actionrow;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.button.Button;
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu;
-import net.dv8tion.jda.api.components.selects.StringSelectMenu;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 
 /**
  * Represents a component that can be added to an {@link ActionRow}, this includes:

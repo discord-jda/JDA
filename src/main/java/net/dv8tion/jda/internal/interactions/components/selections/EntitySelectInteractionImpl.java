@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions.components.selects;
+package net.dv8tion.jda.internal.interactions.components.selections;
 
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Mentions;
-import net.dv8tion.jda.api.interactions.components.selects.EntitySelectInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectInteraction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;

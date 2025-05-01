@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.components.selects;
+package net.dv8tion.jda.api.interactions.components.selections;
 
-import net.dv8tion.jda.api.components.selects.SelectOption;
-import net.dv8tion.jda.api.components.selects.StringSelectMenu;
+import net.dv8tion.jda.api.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;

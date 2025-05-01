@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.components.selects;
+package net.dv8tion.jda.api.components.selections;
 
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.interactions.components.selects.SelectMenuInteraction;
-import net.dv8tion.jda.api.interactions.components.selects.StringSelectInteraction;
-import net.dv8tion.jda.internal.components.selects.StringSelectMenuImpl;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction;
+import net.dv8tion.jda.internal.components.selections.StringSelectMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;

@@ -19,12 +19,12 @@ package net.dv8tion.jda.api.components.section;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
-import net.dv8tion.jda.api.components.button.Button;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.UnknownComponentImpl;
-import net.dv8tion.jda.internal.components.button.ButtonImpl;
+import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
 import net.dv8tion.jda.internal.components.thumbnail.ThumbnailImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
