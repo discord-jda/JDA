@@ -206,8 +206,14 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl>
     {
         List<Role> roleList = new ArrayList<>(roles);
         roleList.sort(Comparator.reverseOrder());
-
         return Collections.unmodifiableList(roleList);
+    }
+
+    @Nonnull
+    @Override
+    public Set<Role> getUnsortedRoles()
+    {
+        return Collections.unmodifiableSet(roles);
     }
 
     @Override

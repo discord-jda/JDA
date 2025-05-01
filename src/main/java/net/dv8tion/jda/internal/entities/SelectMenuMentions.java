@@ -299,7 +299,7 @@ public class SelectMenuMentions implements Mentions
             case ROLE:
                 if (mentionable instanceof Member)
                 {
-                    boolean mentioned = ((Member) mentionable).getRoles().stream().anyMatch(role -> isMentioned(role, Message.MentionType.ROLE));
+                    boolean mentioned = ((Member) mentionable).getUnsortedRoles().stream().anyMatch(role -> isMentioned(role, Message.MentionType.ROLE));
                     if (mentioned)
                         return true;
                 }

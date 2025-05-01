@@ -370,7 +370,7 @@ public abstract class AbstractMentions implements Mentions
             member = (Member) mentionable;
         else if (guild != null && mentionable instanceof User)
             member = guild.getMember((User) mentionable);
-        return member != null && CollectionUtils.containsAny(getRoles(), member.getRoles());
+        return member != null && CollectionUtils.containsAny(getRoles(), member.getUnsortedRoles());
     }
 
     protected boolean isSlashCommandMentioned(IMentionable mentionable)
