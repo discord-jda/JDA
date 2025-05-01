@@ -39,6 +39,28 @@ import java.util.stream.Collectors;
  */
 public interface SectionContentComponentUnion extends SectionContentComponent, ComponentUnion
 {
+    /**
+     * Casts this union to a {@link TextDisplay}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * TextDisplay textDisplay = union.asTextDisplay();
+     * TextDisplay textDisplay2 = (TextDisplay) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#TEXT_DISPLAY} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof TextDisplay</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link TextDisplay}.
+     *
+     * @return The component as a {@link TextDisplay}
+     */
+    @Nonnull
+    TextDisplay asTextDisplay();
+
     @Nonnull
     static SectionContentComponentUnion fromData(@Nonnull DataObject data)
     {

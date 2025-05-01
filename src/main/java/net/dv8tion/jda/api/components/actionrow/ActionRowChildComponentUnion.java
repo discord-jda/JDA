@@ -46,12 +46,69 @@ import java.util.stream.Collectors;
  */
 public interface ActionRowChildComponentUnion extends ActionRowChildComponent, ComponentUnion
 {
+    /**
+     * Casts this union to a {@link Button}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * Button button = union.asButton();
+     * Button button2 = (Button) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#BUTTON} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Button</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link Button}.
+     *
+     * @return The component as a {@link Button}
+     */
     @Nonnull
     Button asButton();
 
+    /**
+     * Casts this union to a {@link StringSelectMenu}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * StringSelectMenu stringSelectMenu = union.asStringSelectMenu();
+     * StringSelectMenu stringSelectMenu2 = (Button) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#STRING_SELECT} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof StringSelectMenu</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link StringSelectMenu}.
+     *
+     * @return The component as a {@link StringSelectMenu}
+     */
     @Nonnull
     StringSelectMenu asStringSelect();
 
+    /**
+     * Casts this union to a {@link StringSelectMenu}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * EntitySelectMenu entitySelectMenu = union.asEntitySelectMenu();
+     * EntitySelectMenu entitySelectMenu2 = (Button) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#MENTIONABLE_SELECT} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof EntitySelectMenu</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link EntitySelectMenu}.
+     *
+     * @return The component as a {@link EntitySelectMenu}
+     */
     @Nonnull
     EntitySelectMenu asEntitySelect();
 

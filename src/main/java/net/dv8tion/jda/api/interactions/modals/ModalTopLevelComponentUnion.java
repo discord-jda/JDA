@@ -38,6 +38,25 @@ import java.util.stream.Collectors;
  */
 public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, ComponentUnion
 {
+    /**
+     * Casts this union to a {@link ActionRow}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * ActionRow row = union.asActionRow();
+     * ActionRow row2 = (ActionRow) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#ACTION_ROW} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof ActionRow</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link ActionRow}.
+     *
+     * @return The component as a {@link ActionRow}
+     */
     @Nonnull
     ActionRow asActionRow();
 

@@ -54,24 +54,157 @@ import java.util.stream.Collectors;
  */
 public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent, ComponentUnion
 {
+    /**
+     * Casts this union to a {@link ActionRow}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * ActionRow row = union.asActionRow();
+     * ActionRow row2 = (ActionRow) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#ACTION_ROW} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof ActionRow</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link ActionRow}.
+     *
+     * @return The component as a {@link ActionRow}
+     */
     @Nonnull
     ActionRow asActionRow();
 
+    /**
+     * Casts this union to a {@link Section}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * Section section = union.asSection();
+     * Section section2 = (Section) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#SECTION} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Section</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link Section}.
+     *
+     * @return The component as a {@link Section}
+     */
     @Nonnull
     Section asSection();
 
+    /**
+     * Casts this union to a {@link TextDisplay}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * TextDisplay textDisplay = union.asTextDisplay();
+     * TextDisplay textDisplay2 = (TextDisplay) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#TEXT_DISPLAY} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof TextDisplay</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link TextDisplay}.
+     *
+     * @return The component as a {@link TextDisplay}
+     */
     @Nonnull
     TextDisplay asTextDisplay();
 
+    /**
+     * Casts this union to a {@link MediaGallery}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * MediaGallery mediaGallery = union.asMediaGallery();
+     * MediaGallery mediaGallery2 = (MediaGallery) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#MEDIA_GALLERY} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof MediaGallery</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link MediaGallery}.
+     *
+     * @return The component as a {@link MediaGallery}
+     */
     @Nonnull
     MediaGallery asMediaGallery();
 
+    /**
+     * Casts this union to a {@link Separator}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * Separator separator = union.asSeparator();
+     * Separator separator2 = (Separator) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#SEPARATOR} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Separator</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link Separator}.
+     *
+     * @return The component as a {@link Separator}
+     */
     @Nonnull
     Separator asSeparator();
 
+    /**
+     * Casts this union to a {@link FileDisplay}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * FileDisplay fileDisplay = union.asFileDisplay();
+     * FileDisplay fileDisplay2 = (FileDisplay) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#FILE_DISPLAY} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof FileDisplay</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link FileDisplay}.
+     *
+     * @return The component as a {@link FileDisplay}
+     */
     @Nonnull
     FileDisplay asFile();
 
+    /**
+     * Casts this union to a {@link Container}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * Container container = union.asContainer();
+     * Container container2 = (Container) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#CONTAINER} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Container</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link Container}.
+     *
+     * @return The component as a {@link Container}
+     */
     @Nonnull
     Container asContainer();
 
