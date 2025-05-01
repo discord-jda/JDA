@@ -51,7 +51,7 @@ import java.util.List;
 public interface Section extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
     /**
-     * How many {@link SectionContentComponent} can be in this section.
+     * How many {@link SectionContentComponent} can be in this section. ({@value})
      */
     int MAX_COMPONENTS = 3;
 

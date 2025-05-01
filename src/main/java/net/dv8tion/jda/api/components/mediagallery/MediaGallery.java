@@ -40,7 +40,7 @@ import java.util.List;
 public interface MediaGallery extends Component, MessageTopLevelComponent, ContainerChildComponent
 {
     /**
-     * How many {@link MediaGalleryItem} can be in a media gallery.
+     * How many {@link MediaGalleryItem} can be in a media gallery. ({@value})
      */
     int MAX_ITEMS = 10;
 

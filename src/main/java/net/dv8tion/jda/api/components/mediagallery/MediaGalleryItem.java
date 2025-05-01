@@ -34,9 +34,9 @@ import javax.annotation.Nullable;
 public interface MediaGalleryItem extends SerializableData
 {
     /**
-     * The maximum amount of characters an item's description can have.
+     * The maximum number of characters an item's description can have. ({@value})
      */
-    int MAX_DESCRIPTION_LENGTH = 256;
+    int MAX_DESCRIPTION_LENGTH = 1024;
 
     /**
      * Constructs a new {@link MediaGalleryItem} from the given URL.

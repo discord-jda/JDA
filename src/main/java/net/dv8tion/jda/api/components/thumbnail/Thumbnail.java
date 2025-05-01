@@ -37,9 +37,9 @@ import javax.annotation.Nullable;
 public interface Thumbnail extends SectionAccessoryComponent
 {
     /**
-     * The maximum amount of characters a thumbnail's description can have.
+     * The maximum number of characters a thumbnail's description can have. ({@value})
      */
-    int MAX_DESCRIPTION_LENGTH = 256;
+    int MAX_DESCRIPTION_LENGTH = 1024;
 
     /**
      * Constructs a new {@link Thumbnail} from the given URL.
