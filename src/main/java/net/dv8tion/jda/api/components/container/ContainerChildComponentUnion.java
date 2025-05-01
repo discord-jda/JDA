@@ -186,6 +186,17 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, C
     @Nonnull
     FileDisplay asFileDisplay();
 
+    /**
+     * Converts the provided {@link DataObject} into an {@link ContainerChildComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataObject} to create the component from
+     *
+     * @return An {@link ContainerChildComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static ContainerChildComponentUnion fromData(@Nonnull DataObject data)
     {
@@ -210,6 +221,17 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, C
         }
     }
 
+    /**
+     * Converts the provided {@link DataArray} into a {@link List} of {@link ContainerChildComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataArray} to create the components from
+     *
+     * @return A {@link List} of {@link ContainerChildComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static List<ContainerChildComponentUnion> fromData(@Nonnull DataArray data)
     {

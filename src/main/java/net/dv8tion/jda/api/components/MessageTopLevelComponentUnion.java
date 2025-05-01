@@ -208,6 +208,17 @@ public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent,
     @Nonnull
     Container asContainer();
 
+    /**
+     * Converts the provided {@link DataObject} into an {@link MessageTopLevelComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataObject} to create the component from
+     *
+     * @return An {@link MessageTopLevelComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static MessageTopLevelComponentUnion fromData(@Nonnull DataObject data)
     {
@@ -237,6 +248,17 @@ public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent,
         }
     }
 
+    /**
+     * Converts the provided {@link DataArray} into a {@link List} of {@link MessageTopLevelComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataArray} to create the components from
+     *
+     * @return A {@link List} of {@link MessageTopLevelComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static List<MessageTopLevelComponentUnion> fromData(@Nonnull DataArray data)
     {

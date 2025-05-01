@@ -86,6 +86,17 @@ public interface SectionAccessoryComponentUnion extends SectionAccessoryComponen
     @Nonnull
     Thumbnail asThumbnail();
 
+    /**
+     * Converts the provided {@link DataObject} into an {@link SectionAccessoryComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataObject} to create the component from
+     *
+     * @return An {@link SectionAccessoryComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static SectionAccessoryComponentUnion fromData(@Nonnull DataObject data)
     {
@@ -102,6 +113,17 @@ public interface SectionAccessoryComponentUnion extends SectionAccessoryComponen
         }
     }
 
+    /**
+     * Converts the provided {@link DataArray} into a {@link List} of {@link SectionAccessoryComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataArray} to create the components from
+     *
+     * @return A {@link List} of {@link SectionAccessoryComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static List<SectionAccessoryComponentUnion> fromData(@Nonnull DataArray data)
     {

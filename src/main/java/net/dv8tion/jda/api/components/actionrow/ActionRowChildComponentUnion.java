@@ -112,6 +112,17 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, C
     @Nonnull
     EntitySelectMenu asEntitySelectMenu();
 
+    /**
+     * Converts the provided {@link DataObject} into an {@link ActionRowChildComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataObject} to create the component from
+     *
+     * @return An {@link ActionRowChildComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static ActionRowChildComponentUnion fromData(@Nonnull DataObject data)
     {
@@ -135,6 +146,17 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, C
         }
     }
 
+    /**
+     * Converts the provided {@link DataArray} into a {@link List} of {@link ActionRowChildComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataArray} to create the components from
+     *
+     * @return A {@link List} of {@link ActionRowChildComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static List<ActionRowChildComponentUnion> fromData(@Nonnull DataArray data)
     {

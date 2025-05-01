@@ -61,6 +61,17 @@ public interface SectionContentComponentUnion extends SectionContentComponent, C
     @Nonnull
     TextDisplay asTextDisplay();
 
+    /**
+     * Converts the provided {@link DataObject} into an {@link SectionContentComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataObject} to create the component from
+     *
+     * @return An {@link SectionContentComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static SectionContentComponentUnion fromData(@Nonnull DataObject data)
     {
@@ -75,6 +86,17 @@ public interface SectionContentComponentUnion extends SectionContentComponent, C
         }
     }
 
+    /**
+     * Converts the provided {@link DataArray} into a {@link List} of {@link SectionContentComponentUnion}.
+     *
+     * @param  data
+     *         The {@link DataArray} to create the components from
+     *
+     * @return A {@link List} of {@link SectionContentComponentUnion} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
     @Nonnull
     static List<SectionContentComponentUnion> fromData(@Nonnull DataArray data)
     {
