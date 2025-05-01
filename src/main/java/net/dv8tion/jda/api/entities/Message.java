@@ -208,11 +208,6 @@ public interface Message extends ISnowflake, Formattable
     int MAX_COMPONENT_COUNT = 5;
 
     /**
-     * The maximum amount of {@link MessageTopLevelComponent MessageTopLevelComponents} that can be added to a message's {@link #getComponents() root component list} when using the {@link MessageRequest#useComponentsV2() V2 component system}.  ({@value})
-     */
-    int MAX_COMPONENT_COUNT_COMPONENTS_V2 = 10;
-
-    /**
      * The maximum amount of {@link Component components} that can be added to a message including nested components. ({@value})
      */
     int MAX_COMPONENT_COUNT_IN_COMPONENT_TREE = 40;
