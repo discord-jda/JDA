@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.annotations.Incubating;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.attribute.IGuildChannelContainer;
@@ -820,10 +821,17 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *         If the provided id is not a valid snowflake
      *
      * @return {@link CommandEditAction} used to edit the command
+     *
+     * @deprecated Use {@link #editCommandById(Command.Type, String)} instead
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction editCommandById(@Nonnull String id);
+    @Deprecated
+    @ReplaceWith("editCommandById(Command.Type, id)")
+    default CommandEditAction editCommandById(@Nonnull String id)
+    {
+        return editCommandById(Command.Type.SLASH, id);
+    }
 
     /**
      * Edit an existing global command by id.
@@ -835,12 +843,59 @@ public interface JDA extends IGuildChannelContainer<Channel>
      *         The id of the command to edit
      *
      * @return {@link CommandEditAction} used to edit the command
+     *
+     * @deprecated Use {@link #editCommandById(Command.Type, long)} instead
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ReplaceWith("editCommandById(Command.Type, id)")
     default CommandEditAction editCommandById(long id)
     {
         return editCommandById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Edit an existing global command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  type
+     *         The command type
+     * @param  id
+     *         The id of the command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake or the type is {@link Command.Type#UNKNOWN}
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction editCommandById(@Nonnull Command.Type type, @Nonnull String id);
+
+    /**
+     * Edit an existing global command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  type
+     *         The command type
+     * @param  id
+     *         The id of the command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the type is {@link Command.Type#UNKNOWN}
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandEditAction editCommandById(@Nonnull Command.Type type, long id)
+    {
+        return editCommandById(type, Long.toUnsignedString(id));
     }
 
     /**
