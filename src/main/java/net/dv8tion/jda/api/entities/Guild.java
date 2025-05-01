@@ -288,10 +288,17 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link CommandEditAction} used to edit the command
+     *
+     * @deprecated Use {@link #editCommandById(Command.Type, String)} instead
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("editCommandById(Command.Type, id)")
     @CheckReturnValue
-    CommandEditAction editCommandById(@Nonnull String id);
+    default CommandEditAction editCommandById(@Nonnull String id)
+    {
+        return editCommandById(Command.Type.SLASH, id);
+    }
 
     /**
      * Edit an existing command by id.
@@ -306,12 +313,63 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link CommandEditAction} used to edit the command
+     *
+     * @deprecated Use {@link #editCommandById(Command.Type, long)} instead
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("editCommandById(Command.Type, id)")
     @CheckReturnValue
     default CommandEditAction editCommandById(long id)
     {
         return editCommandById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Edit an existing command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  type
+     *         The command type
+     * @param  id
+     *         The id of the command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake or the type is {@link Command.Type#UNKNOWN}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction editCommandById(@Nonnull Command.Type type, @Nonnull String id);
+
+    /**
+     * Edit an existing command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  type
+     *         The command type
+     * @param  id
+     *         The id of the command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the type is {@link Command.Type#UNKNOWN}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandEditAction editCommandById(@Nonnull Command.Type type, long id)
+    {
+        return editCommandById(type, Long.toUnsignedString(id));
     }
 
     /**

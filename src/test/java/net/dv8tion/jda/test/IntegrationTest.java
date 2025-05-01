@@ -34,11 +34,16 @@ import org.mockito.Mock;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -55,9 +60,13 @@ public class IntegrationTest
     private AutoCloseable closeable;
     private int expectedRequestCount;
 
+    private TestInfo testInfo;
+
     @BeforeEach
-    protected final void setup()
+    protected final void setup(TestInfo info)
     {
+        testInfo = info;
+
         random.setSeed(4242);
         expectedRequestCount = 0;
         closeable = openMocks(this);
@@ -117,5 +126,22 @@ public class IntegrationTest
     protected void withCacheFlags(EnumSet<CacheFlag> flags)
     {
         when(jda.getCacheFlags()).thenReturn(flags);
+    }
+
+    protected DataObject getSampleObject()
+    {
+        Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
+        Method testMethod = testInfo.getTestMethod().orElseThrow(AssertionError::new);
+        String fileName = currentClass.getSimpleName() + "_" + testMethod.getName() + ".json";
+
+        try (InputStream stream = currentClass.getResourceAsStream(fileName))
+        {
+            assertThat(stream).as("Loading sample from resource file '%s'", fileName).isNotNull();
+            return DataObject.fromJson(stream);
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
     }
 }

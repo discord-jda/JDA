@@ -150,8 +150,7 @@ public class CommandImpl implements Command
     public CommandEditAction editCommand()
     {
         checkSelfUser("Cannot edit a command from another bot!");
-        CommandEditActionImpl action = guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
-        return action.withType(type);
+        return guild == null ? new CommandEditActionImpl(api, type, getId()) : new CommandEditActionImpl(guild, type, getId());
     }
 
     @Nonnull

@@ -82,8 +82,6 @@ public class CommandDataImpl implements SlashCommandData
 
     protected void checkType(Command.Type required, String action)
     {
-        if (type == Command.Type.UNKNOWN)
-            return;
         if (required != type)
             throw new IllegalStateException("Cannot " + action + " for commands of type " + type);
     }

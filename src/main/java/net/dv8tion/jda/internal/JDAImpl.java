@@ -1129,10 +1129,12 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public CommandEditAction editCommandById(@Nonnull String id)
+    public CommandEditAction editCommandById(@Nonnull Command.Type type, @Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id);
+        Checks.notNull(type, "CommandType");
+        Checks.check(type != Command.Type.UNKNOWN, "Type must not be UNKNOWN");
+        return new CommandEditActionImpl(this, type, id);
     }
 
     @Nonnull
