@@ -100,7 +100,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      * @see    #getValues()
      */
     @Nullable
-    default ModalMapping getValue(int id)
+    default ModalMapping getValueByUniqueId(int id)
     {
         return getValues().stream()
                 .filter(mapping -> mapping.getUniqueId() == id)
