@@ -215,12 +215,13 @@ public interface IMessageEditCallback extends IDeferrableCallback
      * @return {@link MessageEditCallbackAction} that can be used to further update the message
      *
      * @see    MessageTopLevelComponent#isMessageCompatible()
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return editComponents(tree.getComponents());
     }
 

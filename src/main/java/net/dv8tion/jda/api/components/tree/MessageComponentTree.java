@@ -27,7 +27,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Specialization of {@link ComponentTree} for {@link MessageTopLevelComponentUnion top-level message components}
+ * Specialization of {@link ComponentTree} for {@link MessageTopLevelComponentUnion top-level message components}.
+ *
+ * <p>
+ * Use the static methods to construct a {@link MessageComponentTree}.
  *
  * @see ComponentTree
  */

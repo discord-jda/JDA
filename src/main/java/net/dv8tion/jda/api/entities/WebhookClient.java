@@ -441,12 +441,14 @@ public interface WebhookClient<T> extends ISnowflake
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return sendMessageComponents(tree.getComponents());
     }
 
@@ -1046,12 +1048,14 @@ public interface WebhookClient<T> extends ISnowflake
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
     }
 
@@ -1083,12 +1087,14 @@ public interface WebhookClient<T> extends ISnowflake
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
     }
 

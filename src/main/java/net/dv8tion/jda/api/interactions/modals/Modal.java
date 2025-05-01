@@ -237,6 +237,7 @@ public interface Modal extends SerializableData
          * @return The same builder instance for chaining
          *
          * @see    Component#isModalCompatible()
+         * @see    ModalComponentTree
          */
         @Nonnull
         public Builder addComponents(@Nonnull ModalTopLevelComponent... components)

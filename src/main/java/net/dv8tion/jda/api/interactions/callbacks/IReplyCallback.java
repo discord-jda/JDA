@@ -445,12 +445,14 @@ public interface IReplyCallback extends IDeferrableCallback
      *         </ul>
      *
      * @return {@link ReplyCallbackAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return replyComponents(tree.getComponents());
     }
 

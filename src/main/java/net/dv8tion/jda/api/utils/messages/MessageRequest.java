@@ -317,11 +317,13 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *         </ul>
      *
      * @return The same instance for chaining
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     default R setComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return setComponents(tree.getComponents());
     }
 

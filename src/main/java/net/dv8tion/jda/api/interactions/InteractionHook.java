@@ -334,6 +334,8 @@ public interface InteractionHook extends WebhookClient<Message>
      *         </ul>
      *
      * @return {@link WebhookMessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue

@@ -1195,12 +1195,13 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageEditAction}
      *
      * @see    MessageChannel#editMessageComponentsById(long, ComponentTree)
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return editMessageComponents(tree.getComponents());
     }
 
@@ -1732,12 +1733,14 @@ public interface Message extends ISnowflake, Formattable
      *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws
      *
      * @return {@link MessageCreateAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction replyComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return replyComponents(tree.getComponents());
     }
 

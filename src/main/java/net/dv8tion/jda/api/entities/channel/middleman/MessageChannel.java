@@ -732,12 +732,14 @@ public interface MessageChannel extends Channel, Formattable
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default MessageCreateAction sendMessageComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return sendMessageComponents(tree.getComponents());
     }
 
@@ -3462,12 +3464,14 @@ public interface MessageChannel extends Channel, Formattable
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
     }
 
@@ -3527,12 +3531,14 @@ public interface MessageChannel extends Channel, Formattable
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     @CheckReturnValue
     default MessageEditAction editMessageComponentsById(long messageId, @Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
     {
-        Checks.notNull(tree, "MessageComponentTree");
+        Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
     }
 

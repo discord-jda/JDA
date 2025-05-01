@@ -210,6 +210,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @return The same instance for chaining
      *
      * @see    ActionRow
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
     default R addComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)

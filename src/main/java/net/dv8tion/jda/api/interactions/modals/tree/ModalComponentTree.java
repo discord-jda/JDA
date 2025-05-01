@@ -30,6 +30,9 @@ import java.util.Collection;
 /**
  * Specialization of {@link ComponentTree} for {@link ModalTopLevelComponentUnion top-level modal components}
  *
+ * <p>
+ * Use the static methods to construct a {@link ModalComponentTree}.
+ *
  * @see ComponentTree
  */
 public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponentUnion>
