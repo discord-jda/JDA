@@ -37,7 +37,7 @@ public class ButtonImpl
         extends AbstractComponentImpl
         implements Button, ActionRowChildComponentUnion, SectionAccessoryComponentUnion
 {
-    private final String id;
+    private final String customId;
     private final int uniqueId;
     private final String label;
     private final ButtonStyle style;
@@ -59,19 +59,19 @@ public class ButtonImpl
             data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null));
     }
 
-    public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)
+    public ButtonImpl(String customId, String label, ButtonStyle style, boolean disabled, Emoji emoji)
     {
-        this(id, label, style, null, null, disabled, emoji);
+        this(customId, label, style, null, null, disabled, emoji);
     }
 
-    public ButtonImpl(String id, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
+    public ButtonImpl(String customId, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
     {
-        this(id, -1, label, style, url, sku, disabled, emoji);
+        this(customId, -1, label, style, url, sku, disabled, emoji);
     }
 
-    public ButtonImpl(String id, int uniqueId, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
+    public ButtonImpl(String customId, int uniqueId, String label, ButtonStyle style, String url, SkuSnowflake sku, boolean disabled, Emoji emoji)
     {
-        this.id = id;
+        this.customId = customId;
         this.uniqueId = uniqueId;
         this.label = label == null ? "" : label;
         this.style = style;
@@ -96,11 +96,11 @@ public class ButtonImpl
             Checks.check(url == null, "Cannot set an URL on action buttons");
             Checks.check(sku == null, "Cannot set an SKU on action buttons");
             Checks.check(emoji != null || !label.isEmpty(), "Action buttons must have either an emoji or label");
-            Checks.notEmpty(id, "Id");
-            Checks.notLonger(id, ID_MAX_LENGTH, "Id");
+            Checks.notEmpty(customId, "Id");
+            Checks.notLonger(customId, ID_MAX_LENGTH, "Id");
             break;
         case LINK:
-            Checks.check(id == null, "Cannot set an ID on link buttons");
+            Checks.check(customId == null, "Cannot set an ID on link buttons");
             Checks.check(url != null, "You must set an URL on link buttons");
             Checks.check(sku == null, "Cannot set an SKU on link buttons");
             Checks.check(emoji != null || !label.isEmpty(), "Link buttons must have either an emoji or label");
@@ -108,7 +108,7 @@ public class ButtonImpl
             Checks.notLonger(url, URL_MAX_LENGTH, "URL");
             break;
         case PREMIUM:
-            Checks.check(id == null, "Cannot set an ID on premium buttons");
+            Checks.check(customId == null, "Cannot set an ID on premium buttons");
             Checks.check(url == null, "Cannot set an URL on premium buttons");
             Checks.check(emoji == null, "Cannot set an emoji on premium buttons");
             Checks.check(label.isEmpty(), "Cannot set a label on premium buttons");
@@ -130,7 +130,7 @@ public class ButtonImpl
     @Override
     public String getCustomId()
     {
-        return id;
+        return customId;
     }
 
     @Override
@@ -194,8 +194,8 @@ public class ButtonImpl
             json.put("emoji", emoji);
         if (url != null)
             json.put("url", url);
-        else if (id != null)
-            json.put("custom_id", id);
+        else if (customId != null)
+            json.put("custom_id", customId);
         else
             json.put("sku_id", sku.getId());
         if (uniqueId >= 0)
@@ -206,7 +206,7 @@ public class ButtonImpl
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, label, style, url, disabled, emoji);
+        return Objects.hash(customId, label, style, url, disabled, emoji);
     }
 
     @Override
@@ -215,7 +215,7 @@ public class ButtonImpl
         if (obj == this) return true;
         if (!(obj instanceof ButtonImpl)) return false;
         ButtonImpl other = (ButtonImpl) obj;
-        return Objects.equals(other.id, id)
+        return Objects.equals(other.customId, customId)
             && Objects.equals(other.label, label)
             && Objects.equals(other.url, url)
             && Objects.equals(other.emoji, emoji)
@@ -229,7 +229,7 @@ public class ButtonImpl
         return new EntityString(this)
                 .setName(label)
                 .addMetadata("id", uniqueId)
-                .addMetadata("custom id", id)
+                .addMetadata("custom id", customId)
                 .toString();
     }
 }

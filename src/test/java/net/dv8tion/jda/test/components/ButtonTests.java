@@ -105,9 +105,9 @@ public class ButtonTests
     void testWithId(Button button, boolean shouldThrow)
     {
         if (shouldThrow)
-            assertThatIllegalArgumentException().isThrownBy(() -> button.withId("valid-id"));
+            assertThatIllegalArgumentException().isThrownBy(() -> button.withCustomId("valid-id"));
         else
-            assertDoesNotThrow(() -> button.withId("valid-id"));
+            assertDoesNotThrow(() -> button.withCustomId("valid-id"));
     }
 
     static Stream<Arguments> testWithId()
