@@ -22,12 +22,10 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -282,8 +280,7 @@ public interface Modal extends SerializableData
          *
          * @param  tree
          *         The {@link ComponentTree} to add,
-         *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total,
-         *         or {@value Message#MAX_COMPONENT_COUNT_COMPONENTS_V2} in total for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+         *         containing up to {@value #MAX_COMPONENTS} V1 components in total.
          *
          * @throws IllegalArgumentException
          *         <ul>
