@@ -146,14 +146,13 @@ public interface ComponentReplacer
      * @param  oldComponent
      *         The component to replace
      * @param  newComponent
-     *         The component to replace with
+     *         The component to replace with, {@code null} to remove the component
      *
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
     @Nonnull
     static ComponentReplacer byId(@Nonnull Component oldComponent, @Nullable Component newComponent)
     {
-        Checks.notNull(oldComponent, "Old component");
         return byId(oldComponent.getUniqueId(), newComponent);
     }
 
@@ -164,14 +163,13 @@ public interface ComponentReplacer
      * @param  id
      *         The ID of the component to replace
      * @param  newComponent
-     *         The component to replace with
+     *         The component to replace with, {@code null} to remove the component
      *
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
     @Nonnull
     static ComponentReplacer byId(int id, @Nullable Component newComponent)
     {
-        Checks.notNull(newComponent, "New component");
         return of(Component.class,
                 component -> component.getUniqueId() == id,
                 component -> newComponent);
