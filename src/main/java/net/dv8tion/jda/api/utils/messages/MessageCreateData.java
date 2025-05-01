@@ -360,7 +360,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
         json.put("flags", flags);
         json.put("allowed_mentions", mentions);
         final List<FileUpload> additionalFiles = getAdditionalFiles();
-        if (files != null || !additionalFiles.isEmpty())
+        if ((files != null && !files.isEmpty()) || !additionalFiles.isEmpty())
             json.put("attachments", MessageUtil.getAttachmentsData(files, additionalFiles));
 
         return json;
