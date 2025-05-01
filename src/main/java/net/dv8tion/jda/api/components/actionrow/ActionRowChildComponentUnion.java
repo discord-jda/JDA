@@ -88,7 +88,7 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, C
      * @return The component as a {@link StringSelectMenu}
      */
     @Nonnull
-    StringSelectMenu asStringSelect();
+    StringSelectMenu asStringSelectMenu();
 
     /**
      * Casts this union to a {@link StringSelectMenu}.
@@ -110,7 +110,7 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, C
      * @return The component as a {@link EntitySelectMenu}
      */
     @Nonnull
-    EntitySelectMenu asEntitySelect();
+    EntitySelectMenu asEntitySelectMenu();
 
     @Nonnull
     static ActionRowChildComponentUnion fromData(@Nonnull DataObject data)

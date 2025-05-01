@@ -51,13 +51,13 @@ public abstract class AbstractComponentImpl
     }
 
     @Nonnull
-    public StringSelectMenu asStringSelect()
+    public StringSelectMenu asStringSelectMenu()
     {
         return toComponentType(StringSelectMenu.class);
     }
 
     @Nonnull
-    public EntitySelectMenu asEntitySelect()
+    public EntitySelectMenu asEntitySelectMenu()
     {
         return toComponentType(EntitySelectMenu.class);
     }
