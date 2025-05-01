@@ -595,24 +595,6 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>If this message was blocked by the harmful link filter</li>
      * </ul>
      *
-     * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
-     * // Make a file upload instance which refers to a local file called "myFile.png"
-     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
-     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
-     *
-     * // Build a message embed which refers to this attachment by the given name.
-     * // Note that this must be the same name as configured for the attachment, not your local filename.
-     * MessageEmbed embed = new EmbedBuilder()
-     *   .setDescription("This is my cute cat :)")
-     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
-     *   .build();
-     *
-     * channel.sendMessageEmbeds(Collections.singleton(embed)) // send the embeds
-     *        .addFiles(file) // add the file as attachment
-     *        .queue();
-     * }</pre>
-     *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
      *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
