@@ -57,7 +57,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private final Guild guild;
 
     private int mask;
-    private CommandDataImpl data;
+    private CommandDataImpl data = new CommandDataImpl(Command.Type.UNKNOWN, UNDEFINED);
 
     public CommandEditActionImpl(JDA api, String id)
     {
@@ -237,6 +237,8 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     protected RequestBody finalizeData()
     {
         DataObject json = data.toData();
+        json.remove("type");
+
         if (isUnchanged(NAME_SET))
             json.remove("name");
         if (isUnchanged(DESCRIPTION_SET))
