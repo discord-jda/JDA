@@ -47,6 +47,7 @@ public class SeparatorImpl
     public SeparatorImpl(Spacing spacing, boolean isDivider)
     {
         this(-1, spacing, isDivider);
+        Checks.check(spacing != Spacing.UNKNOWN, "Spacing cannot be unknown");
     }
 
     private SeparatorImpl(int uniqueId, Spacing spacing, boolean isDivider)
@@ -83,6 +84,7 @@ public class SeparatorImpl
     public Separator withSpacing(@Nonnull Spacing spacing)
     {
         Checks.notNull(spacing, "Spacing");
+        Checks.check(spacing != Spacing.UNKNOWN, "Spacing cannot be unknown");
         return new SeparatorImpl(uniqueId, spacing, isDivider);
     }
 
