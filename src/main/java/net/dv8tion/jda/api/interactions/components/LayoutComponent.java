@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.components.button.ButtonStyle;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.section.Section;
-import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -251,7 +250,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * @return The old {@link ItemComponent} that was replaced or removed
      *
      * @deprecated
-     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, Component)}
+     *         Replaced with {@link ActionRow#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, Component)}
      */
     @Nullable
     @Deprecated
@@ -280,7 +279,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * @return True, if any of the layouts was modified
      *
      * @deprecated
-     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, Component)}
+     *         Replaced with {@link ActionRow#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, Component)}
      */
     @Deprecated
     @ForRemoval
@@ -326,7 +325,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * @return The old {@link ItemComponent} that was replaced or removed
      *
      * @deprecated
-     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(Component, Component)}
+     *         Replaced with {@link ActionRow#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(Component, Component)}
      */
     @Nullable
     @Deprecated
@@ -354,7 +353,7 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
      * @return True, if any of the layouts was modified
      *
      * @deprecated
-     *         Replaced with {@link ComponentTree#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(Component, Component)}
+     *         Replaced with {@link ActionRow#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(Component, Component)}
      */
     @Deprecated
     static boolean updateComponent(@Nonnull List<? extends LayoutComponent<?>> layouts, @Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
