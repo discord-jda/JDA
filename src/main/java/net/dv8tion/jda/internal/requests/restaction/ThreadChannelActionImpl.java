@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.Request;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.ChannelUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
@@ -42,6 +44,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     protected String name;
     protected ThreadChannel.AutoArchiveDuration autoArchiveDuration = null;
+    protected Integer slowmode = null;
     protected Boolean invitable = null;
 
     public ThreadChannelActionImpl(GuildChannel channel, String name, ChannelType type)
@@ -128,6 +131,16 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
     @Nonnull
     @Override
+    public ThreadChannelAction setSlowmode(int slowmode)
+    {
+        Checks.checkSupportedChannelTypes(ChannelUtil.SLOWMODE_SUPPORTED, type, "slowmode");
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
+        this.slowmode = slowmode;
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public ThreadChannelAction setInvitable(boolean invitable)
     {
         if (type != ChannelType.GUILD_PRIVATE_THREAD)
@@ -150,6 +163,8 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
         if (autoArchiveDuration != null)
             object.put("auto_archive_duration", autoArchiveDuration.getMinutes());
+        if(slowmode != null)
+            object.put("rate_limit_per_user", slowmode);
         if (invitable != null)
             object.put("invitable", invitable);
 
