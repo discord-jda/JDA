@@ -33,7 +33,8 @@ import javax.annotation.Nullable;
 /**
  * Component displaying a file, you can mark it as a spoiler.
  *
- * <p><b>Note:</b> Audio files and text files cannot be <i>previewed</i>.
+ * <p><b>Note:</b> Audio files and text files cannot be <i>previewed</i>,
+ * use {@linkplain net.dv8tion.jda.api.components.mediagallery.MediaGallery media galleries} to display images.
  *
  * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  */

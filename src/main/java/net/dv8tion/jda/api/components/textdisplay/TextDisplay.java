@@ -46,7 +46,7 @@ public interface TextDisplay extends Component, MessageTopLevelComponent, Contai
      *         The content of the text display
      *
      * @throws IllegalArgumentException
-     *         If {@code null} is provided
+     *         If the content is {@code null}, blank or empty
      *
      * @return The new {@link TextDisplay}
      */

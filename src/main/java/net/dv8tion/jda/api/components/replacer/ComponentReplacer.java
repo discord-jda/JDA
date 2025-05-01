@@ -69,7 +69,7 @@ public interface ComponentReplacer
      *         The replacers to combine
      *
      * @throws IllegalArgumentException
-     *         If {@code null} is passed
+     *         If the collection is empty or {@code null} is passed
      *
      * @return A {@link ComponentReplacer} running all the provided replacers
      */
