@@ -77,7 +77,10 @@ public interface IDisableable extends Component
      */
     @Nonnull
     @CheckReturnValue
-    IDisableable asDisabled();
+    default IDisableable asDisabled()
+    {
+        return withDisabled(true);
+    }
 
     /**
      * Returns a new instance of this component in an enabled state.
@@ -89,5 +92,8 @@ public interface IDisableable extends Component
      */
     @Nonnull
     @CheckReturnValue
-    IDisableable asEnabled();
+    default IDisableable asEnabled()
+    {
+        return withDisabled(false);
+    }
 }

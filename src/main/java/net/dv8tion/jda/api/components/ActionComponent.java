@@ -99,7 +99,7 @@ public interface ActionComponent extends ItemComponent, IDisableable
     @CheckReturnValue
     default ActionComponent asDisabled()
     {
-        return withDisabled(true);
+        return (ActionComponent) IDisableable.super.asDisabled();
     }
 
 
@@ -112,7 +112,7 @@ public interface ActionComponent extends ItemComponent, IDisableable
     @CheckReturnValue
     default ActionComponent asEnabled()
     {
-        return withDisabled(false);
+        return (ActionComponent) IDisableable.super.asEnabled();
     }
 
     /**

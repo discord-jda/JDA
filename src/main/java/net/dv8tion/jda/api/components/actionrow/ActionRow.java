@@ -44,7 +44,7 @@ import java.util.List;
  *
  * @see ActionRowChildComponent
  */
-public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable
+public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
     /**
      * Load ActionRow from serialized representation.
@@ -265,6 +265,16 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
     @CheckReturnValue
     ActionRow replace(@Nonnull ComponentReplacer replacer);
 
+    default boolean isDisabled()
+    {
+        return getActionComponents().stream().allMatch(ActionComponent::isDisabled);
+    }
+
+    default boolean isEnabled()
+    {
+        return getActionComponents().stream().noneMatch(ActionComponent::isDisabled);
+    }
+
     @Nonnull
     @Override
     @CheckReturnValue
@@ -275,18 +285,16 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
 
     @Nonnull
     @Override
-    @CheckReturnValue
     default ActionRow asDisabled()
     {
-        return withDisabled(true);
+        return (ActionRow) LayoutComponent.super.asDisabled();
     }
 
     @Nonnull
     @Override
-    @CheckReturnValue
     default ActionRow asEnabled()
     {
-        return withDisabled(false);
+        return (ActionRow) LayoutComponent.super.asEnabled();
     }
 
     /**

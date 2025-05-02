@@ -68,6 +68,20 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
 
     @Nonnull
     @Override
+    default SelectMenu asDisabled()
+    {
+        return (SelectMenu) ActionComponent.super.asDisabled();
+    }
+
+    @Nonnull
+    @Override
+    default SelectMenu asEnabled()
+    {
+        return (SelectMenu) ActionComponent.super.asEnabled();
+    }
+
+    @Nonnull
+    @Override
     SelectMenu withUniqueId(int uniqueId);
 
     @Nonnull

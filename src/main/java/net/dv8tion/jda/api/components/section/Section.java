@@ -164,7 +164,7 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
     @CheckReturnValue
     default Section asDisabled()
     {
-        return withDisabled(true);
+        return (Section) IDisableable.super.asDisabled();
     }
 
     @Nonnull
@@ -172,7 +172,7 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
     @CheckReturnValue
     default Section asEnabled()
     {
-        return withDisabled(false);
+        return (Section) IDisableable.super.asEnabled();
     }
 
     /**

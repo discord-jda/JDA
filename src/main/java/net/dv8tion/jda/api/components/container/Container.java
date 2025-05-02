@@ -187,7 +187,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
     @CheckReturnValue
     default Container asDisabled()
     {
-        return withDisabled(true);
+        return (Container) IDisableable.super.asDisabled();
     }
 
     @Nonnull
@@ -195,7 +195,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
     @CheckReturnValue
     default Container asEnabled()
     {
-        return withDisabled(false);
+        return (Container) IDisableable.super.asEnabled();
     }
 
     /**

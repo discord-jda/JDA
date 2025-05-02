@@ -186,11 +186,19 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
 
     @Nonnull
     @CheckReturnValue
-    LayoutComponent<T> asDisabled();
+    @SuppressWarnings("unchecked")
+    default LayoutComponent<T> asDisabled()
+    {
+        return (LayoutComponent<T>) IDisableable.super.asDisabled();
+    }
 
     @Nonnull
     @CheckReturnValue
-    LayoutComponent<T> asEnabled();
+    @SuppressWarnings("unchecked")
+    default LayoutComponent<T> asEnabled()
+    {
+        return (LayoutComponent<T>) IDisableable.super.asEnabled();
+    }
 
     /**
      * Check whether this layout is empty.

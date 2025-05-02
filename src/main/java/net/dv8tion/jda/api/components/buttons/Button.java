@@ -141,14 +141,14 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @CheckReturnValue
     default Button asDisabled()
     {
-        return withDisabled(true);
+        return (Button) ActionComponent.super.asDisabled();
     }
 
     @Nonnull
     @CheckReturnValue
     default Button asEnabled()
     {
-        return withDisabled(false);
+        return (Button) ActionComponent.super.asEnabled();
     }
 
     @Nonnull

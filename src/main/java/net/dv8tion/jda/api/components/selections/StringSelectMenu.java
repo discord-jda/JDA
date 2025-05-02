@@ -68,14 +68,14 @@ public interface StringSelectMenu extends SelectMenu
     @Override
     default StringSelectMenu asDisabled()
     {
-        return withDisabled(true);
+        return (StringSelectMenu) SelectMenu.super.asDisabled();
     }
 
     @Nonnull
     @Override
     default StringSelectMenu asEnabled()
     {
-        return withDisabled(false);
+        return (StringSelectMenu) SelectMenu.super.asEnabled();
     }
 
     @Nonnull
