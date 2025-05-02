@@ -139,7 +139,29 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
 
         protected Builder(@Nonnull String customId)
         {
-            setId(customId);
+            setCustomId(customId);
+        }
+
+        /**
+         * Change the custom id used to identify the select menu.
+         *
+         * @param  customId
+         *         The new custom id to use
+         *
+         * @throws IllegalArgumentException
+         *         If the provided id is null, empty, or longer than {@value #ID_MAX_LENGTH} characters
+         *
+         * @return The same builder instance for chaining
+         *
+         * @deprecated
+         *         Replaced with {@link #setCustomId(String)}
+         */
+        @Nonnull
+        @Deprecated
+        @ReplaceWith("setCustomId(customId)")
+        public B setId(@Nonnull String customId)
+        {
+            return setCustomId(customId);
         }
 
         /**
@@ -154,7 +176,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public B setId(@Nonnull String customId)
+        public B setCustomId(@Nonnull String customId)
         {
             Checks.notEmpty(customId, "Component ID");
             Checks.notLonger(customId, ID_MAX_LENGTH, "Component ID");
