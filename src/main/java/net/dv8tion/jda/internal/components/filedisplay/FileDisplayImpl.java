@@ -103,7 +103,8 @@ public class FileDisplayImpl
     }
 
     @Override
-    public Stream<FileUpload> getFiles() {
+    public Stream<FileUpload> getFiles()
+    {
         final String fileName = Helpers.getLastPathSegment(media.getUrl());
         return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
     }
