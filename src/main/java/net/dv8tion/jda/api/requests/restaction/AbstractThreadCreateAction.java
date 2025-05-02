@@ -103,6 +103,9 @@ public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAct
      * @throws IllegalArgumentException
      *         If the provided slowmode is negative or greater than {@value ISlowmodeChannel#MAX_SLOWMODE}
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the bot does not have {@link Permission#MANAGE_THREADS} in the parent channel
+     *
      * @return The current action, for chaining convenience
      *
      * @see net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel#getSlowmode()
