@@ -16,16 +16,13 @@
 
 package net.dv8tion.jda.internal.components.actionrow;
 
-import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
-import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -33,22 +30,16 @@ import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import org.slf4j.Logger;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 public class ActionRowImpl
         extends AbstractComponentImpl
         implements ActionRow, MessageTopLevelComponentUnion, ModalTopLevelComponentUnion, ContainerChildComponentUnion
 {
-    private static final Logger LOG = JDALogger.getLog(ActionRow.class);
-
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
 
@@ -60,7 +51,7 @@ public class ActionRowImpl
     private ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
     {
         this.uniqueId = uniqueId;
-        this.components = new LogOnModificationList(new ArrayList<>(components));
+        this.components = Helpers.copyAsUnmodifiableList(components);
     }
 
     @Nonnull
@@ -70,6 +61,7 @@ public class ActionRowImpl
         if (data.getInt("type", 0) != Type.ACTION_ROW.getKey())
             throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.ACTION_ROW.getKey() + " Found: " + data.getInt("type"));
         List<ActionRowChildComponentUnion> components = ActionRowChildComponentUnion.fromData(data.getArray("components"));
+        Checks.notEmpty(components, "Row");
 
         return new ActionRowImpl(
                 components,
@@ -82,7 +74,7 @@ public class ActionRowImpl
     public static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> _components)
     {
         Checks.noneNull(_components, "Components");
-        Checks.check(!_components.isEmpty(), "Cannot have empty row!");
+        Checks.notEmpty(_components, "Row");
 
         Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
         ActionRowImpl row = new ActionRowImpl(components);
@@ -106,18 +98,24 @@ public class ActionRowImpl
 
         List<ActionRow> rows = new ArrayList<>();
         // The current action row we are building
-        List<ActionRowChildComponentUnion> currentRow = null;
+        List<ActionRowChildComponentUnion> currentRow = new ArrayList<>();
         // The component types contained in that row (for now it can't have mixed types)
         Component.Type type = null;
 
         for (ActionRowChildComponentUnion current : components)
         {
-            if (type != current.getType() || currentRow.size() == ActionRow.getMaxAllowed(type))
+            if (type != null && type != current.getType())
             {
-                type = current.getType();
-                ActionRowImpl row = (ActionRowImpl) ActionRow.of(current);
-                currentRow = row.components;
-                rows.add(row);
+                rows.add(ActionRow.of(currentRow));
+                currentRow.clear();
+            }
+
+            type = current.getType();
+
+            if (currentRow.size() == ActionRow.getMaxAllowed(type))
+            {
+                rows.add(ActionRow.of(currentRow));
+                currentRow.clear();
             }
             else
             {
@@ -149,7 +147,7 @@ public class ActionRowImpl
 
         return ComponentsUtil.doReplace(
                 ActionRowChildComponent.class,
-                getComponents(),
+                components,
                 replacer,
                 newComponents -> new ActionRowImpl(newComponents, uniqueId)
         );
@@ -160,7 +158,7 @@ public class ActionRowImpl
     public ActionRow withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
-        return new ActionRowImpl(getComponents(), uniqueId);
+        return new ActionRowImpl(components, uniqueId);
     }
 
     @Nonnull
@@ -168,76 +166,6 @@ public class ActionRowImpl
     public ActionRow createCopy()
     {
         return new ActionRowImpl(components, uniqueId);
-    }
-
-    // TODO after removal, make this immutable starting from the constructor
-    @Nullable
-    @Override
-    @Deprecated
-    public ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent)
-    {
-        Checks.notNull(id, "ID");
-
-        List<ActionRowChildComponentUnion> list = getComponents();
-        for (ListIterator<ActionRowChildComponentUnion> it = list.listIterator(); it.hasNext();)
-        {
-            ActionRowChildComponentUnion current = it.next();
-            if (!(current instanceof ActionComponent))
-                continue;
-
-            if (isSameIdentifier((ActionComponent) current, id))
-            {
-                if (newComponent == null)
-                    it.remove();
-                else
-                    it.set(ComponentsUtil.safeUnionCast("component", newComponent, ActionRowChildComponentUnion.class));
-                return (ActionComponent) current;
-            }
-        }
-        return null;
-    }
-
-    private static boolean isSameIdentifier(@Nonnull ActionComponent component, @Nonnull String identifier)
-    {
-        if (identifier.equals(component.getCustomId()))
-            return true;
-
-        if (component instanceof Button)
-        {
-            final Button button = (Button) component;
-            if (identifier.equals(button.getUrl()))
-                return true;
-            if (button.getSku() != null)
-                return identifier.equals(button.getSku().getId());
-        }
-
-        return false;
-    }
-
-    @Nullable
-    @Override
-    @Deprecated
-    public ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
-    {
-        Checks.notNull(component, "Component to be replaced");
-
-        List<ActionRowChildComponentUnion> list = getComponents();
-        for (ListIterator<ActionRowChildComponentUnion> it = list.listIterator(); it.hasNext();)
-        {
-            ActionRowChildComponentUnion current = it.next();
-            if (!(current instanceof ItemComponent))
-                continue;
-
-            if (current.equals(component))
-            {
-                if (newComponent == null)
-                    it.remove();
-                else
-                    it.set(ComponentsUtil.safeUnionCast("component", newComponent, ActionRowChildComponentUnion.class));
-                return (ItemComponent) current;
-            }
-        }
-        return null;
     }
 
     @Nonnull
@@ -269,16 +197,11 @@ public class ActionRowImpl
     @Override
     public boolean isEmpty()
     {
-        return components.isEmpty();
+        return false;
     }
 
     public boolean isValid()
     {
-        // TODO remove this check once this class is completely immutable
-        if (isEmpty())
-            return false;
-
-        List<ActionRowChildComponentUnion> components = getComponents();
         Map<Component.Type, List<ActionRowChildComponentUnion>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
         if (groups.size() > 1) // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
             return false;
@@ -318,100 +241,5 @@ public class ActionRowImpl
             return false;
 
         return components.equals(((ActionRowImpl) obj).components);
-    }
-
-    private static class LogOnModificationList extends AbstractList<ActionRowChildComponentUnion>
-    {
-
-        private final List<ActionRowChildComponentUnion> list = new ArrayList<>();
-
-        public LogOnModificationList()
-        {
-        }
-
-        public LogOnModificationList(List<ActionRowChildComponentUnion> components)
-        {
-            list.addAll(components);
-        }
-
-        @Override
-        public ActionRowChildComponentUnion get(int index)
-        {
-            return list.get(index);
-        }
-
-        @Override
-        public ActionRowChildComponentUnion set(int index, ActionRowChildComponentUnion element)
-        {
-            logModifiedRow();
-            return list.set(index, element);
-        }
-
-        @Override
-        public void add(int index, ActionRowChildComponentUnion element)
-        {
-            logModifiedRow();
-            list.add(index, element);
-        }
-
-        @Override
-        public int size()
-        {
-            return list.size();
-        }
-
-        @Override
-        public boolean remove(Object o)
-        {
-            logModifiedRow();
-            return list.remove(o);
-        }
-
-        @Override
-        public boolean addAll(int index, Collection<? extends ActionRowChildComponentUnion> c)
-        {
-            logModifiedRow();
-            return list.addAll(index, c);
-        }
-
-        @Override
-        public void replaceAll(@Nonnull UnaryOperator<ActionRowChildComponentUnion> operator)
-        {
-            logModifiedRow();
-            list.replaceAll(operator);
-        }
-
-        @Override
-        public boolean removeAll(@Nonnull Collection<?> c)
-        {
-            logModifiedRow();
-            return list.removeAll(c);
-        }
-
-        @Override
-        public boolean retainAll(@Nonnull Collection<?> c)
-        {
-            logModifiedRow();
-            return list.retainAll(c);
-        }
-
-        @Override
-        public boolean removeIf(@Nonnull Predicate<? super ActionRowChildComponentUnion> filter)
-        {
-            logModifiedRow();
-            return list.removeIf(filter);
-        }
-
-        @Override
-        public void sort(Comparator<? super ActionRowChildComponentUnion> c)
-        {
-            logModifiedRow();
-            list.sort(c);
-        }
-    }
-
-    private static void logModifiedRow()
-    {
-        LOG.warn("ActionRow(s) will become immutable in a later release, please update your code, instead replacing the action row with its new components.", new Exception());
     }
 }

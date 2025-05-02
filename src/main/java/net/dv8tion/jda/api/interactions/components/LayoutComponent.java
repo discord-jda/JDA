@@ -23,22 +23,17 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.buttons.Button;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.components.container.Container;
-import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -241,146 +236,4 @@ public interface LayoutComponent<T extends Component> extends SerializableData, 
     @Deprecated
     @ForRemoval
     LayoutComponent<T> createCopy();
-
-    /**
-     * Find and replace a component in this layout.
-     * <br>This will locate and replace the existing component with the specified ID. If you provide null it will be removed instead.
-     *
-     * @param  id
-     *         The custom id of this component, can also be a URL for a {@link Button} with {@link ButtonStyle#LINK},
-     *         or an SKU id for {@link ButtonStyle#PREMIUM}
-     * @param  newComponent
-     *         The new component or null to remove it
-     *
-     * @throws IllegalArgumentException
-     *         If the provided id is null
-     *
-     * @return The old {@link ItemComponent} that was replaced or removed
-     *
-     * @deprecated
-     *         Replaced with {@link ActionRow#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, Component)}
-     */
-    @Nullable
-    @Deprecated
-    @ForRemoval
-    ItemComponent updateComponent(@Nonnull String id, @Nullable ItemComponent newComponent);
-
-    /**
-     * Find and replace a component in this list of layouts.
-     * <br>This will locate and replace the existing component with the specified ID. If you provide null it will be removed instead.
-     *
-     * <p>If one of the layouts is empty after removing the component, it will be removed from the list.
-     * This is an inplace operation and modifies the provided list directly.
-     *
-     * @param  layouts
-     *         The layouts to modify
-     * @param  id
-     *         The custom id of this component, can also be a URL for a {@link Button} with {@link ButtonStyle#LINK}
-     * @param  newComponent
-     *         The new component or null to remove it
-     *
-     * @throws UnsupportedOperationException
-     *         If the list cannot be modified
-     * @throws IllegalArgumentException
-     *         If the provided id or list is null or the replace operation results in an {@link #isValid() invalid} layout
-     *
-     * @return True, if any of the layouts was modified
-     *
-     * @deprecated
-     *         Replaced with {@link ActionRow#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(int, Component)}
-     */
-    @Deprecated
-    @ForRemoval
-    static boolean updateComponent(@Nonnull List<? extends LayoutComponent<?>> layouts, @Nonnull String id, @Nullable ItemComponent newComponent)
-    {
-        Checks.notNull(layouts, "LayoutComponent");
-        Checks.notEmpty(id, "ID or URL");
-        for (Iterator<? extends LayoutComponent<?>> it = layouts.iterator(); it.hasNext();)
-        {
-            LayoutComponent<?> components = it.next();
-            Component oldComponent = components.updateComponent(id, newComponent);
-            if (oldComponent != null)
-            {
-                if (components.getComponents().isEmpty())
-                    it.remove();
-                else if (!components.isValid() && newComponent != null)
-                    throw new IllegalArgumentException("Cannot replace " + oldComponent.getType() + " with " + newComponent.getType() + " due to a violation of the layout maximum. The resulting LayoutComponent is invalid!");
-                return !Objects.equals(oldComponent, newComponent);
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Find and replace a component in this layout.
-     * <br>This will locate and replace the existing component by checking for {@link Object#equals(Object) equality}. If you provide null it will be removed instead.
-     *
-     * <p><b>Example</b>
-     * <pre>{@code
-     * public void disableButton(ActionRow row, Button button) {
-     *     row.updateComponent(button, button.asDisabled());
-     * }
-     * }</pre>
-     *
-     * @param  component
-     *         The component that should be replaced
-     * @param  newComponent
-     *         The new component or null to remove it
-     *
-     * @throws IllegalArgumentException
-     *         If the provided component is null
-     *
-     * @return The old {@link ItemComponent} that was replaced or removed
-     *
-     * @deprecated
-     *         Replaced with {@link ActionRow#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(Component, Component)}
-     */
-    @Nullable
-    @Deprecated
-    ItemComponent updateComponent(@Nonnull ItemComponent component, @Nullable ItemComponent newComponent);
-
-    /**
-     * Find and replace a component in this list of layouts.
-     * <br>This will locate and replace the existing component by checking for {@link Object#equals(Object) equality}. If you provide null it will be removed instead.
-     *
-     * <p>If one of the layouts is empty after removing the component, it will be removed from the list.
-     * This is an inplace operation and modifies the provided list directly.
-     *
-     * @param  layouts
-     *         The layouts to modify
-     * @param  component
-     *         The component that should be replaced
-     * @param  newComponent
-     *         The new component or null to remove it
-     *
-     * @throws UnsupportedOperationException
-     *         If the list cannot be modified
-     * @throws IllegalArgumentException
-     *         If the provided component or list is null or the replace operation results in an {@link #isValid() invalid} layout
-     *
-     * @return True, if any of the layouts was modified
-     *
-     * @deprecated
-     *         Replaced with {@link ActionRow#replace(ComponentReplacer)} using {@link ComponentReplacer#byId(Component, Component)}
-     */
-    @Deprecated
-    static boolean updateComponent(@Nonnull List<? extends LayoutComponent<?>> layouts, @Nonnull ItemComponent component, @Nullable ItemComponent newComponent)
-    {
-        Checks.notNull(layouts, "LayoutComponent");
-        Checks.notNull(component, "Component to replace");
-        for (Iterator<? extends LayoutComponent<?>> it = layouts.iterator(); it.hasNext();)
-        {
-            LayoutComponent<?> components = it.next();
-            ItemComponent oldComponent = components.updateComponent(component, newComponent);
-            if (oldComponent != null)
-            {
-                if (components.getComponents().isEmpty())
-                    it.remove();
-                else if (!components.isValid() && newComponent != null)
-                    throw new IllegalArgumentException("Cannot replace " + oldComponent.getType() + " with " + newComponent.getType() + " due to a violation of the layout maximum. The resulting LayoutComponent is invalid!");
-                return !Objects.equals(oldComponent, newComponent);
-            }
-        }
-        return false;
-    }
 }
