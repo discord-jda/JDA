@@ -224,7 +224,7 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     @CheckReturnValue
     default Button withId(@Nonnull String id)
     {
-        return new ButtonImpl(id, getUniqueId(), getLabel(), getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
+        return withCustomId(id);
     }
 
     /**
