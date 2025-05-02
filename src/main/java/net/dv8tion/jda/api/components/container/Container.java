@@ -216,6 +216,15 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
                 .allMatch(IDisableable::isDisabled);
     }
 
+    @Override
+    default boolean isEnabled()
+    {
+        return ComponentIterator.createStream(getComponents())
+                .filter(IDisableable.class::isInstance)
+                .map(IDisableable.class::cast)
+                .allMatch(IDisableable::isEnabled);
+    }
+
     /**
      * The color of the stripe/border on the side of the container.
      * <br>If no accent color has been set, this will return null.

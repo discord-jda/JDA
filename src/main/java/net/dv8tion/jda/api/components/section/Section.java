@@ -204,4 +204,17 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
                 .map(IDisableable.class::cast)
                 .allMatch(IDisableable::isDisabled);
     }
+
+    @Override
+    default boolean isEnabled()
+    {
+        final SectionAccessoryComponentUnion accessory = getAccessory();
+        if (accessory instanceof IDisableable && ((IDisableable) accessory).isDisabled())
+            return false;
+
+        return ComponentIterator.createStream(getContentComponents())
+                .filter(IDisableable.class::isInstance)
+                .map(IDisableable.class::cast)
+                .allMatch(IDisableable::isEnabled);
+    }
 }
