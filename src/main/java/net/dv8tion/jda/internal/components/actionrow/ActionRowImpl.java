@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.internal.components.actionrow;
 
+import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
@@ -176,7 +178,40 @@ public class ActionRowImpl
     {
         Checks.notNull(id, "ID");
 
-        throw new UnsupportedOperationException("To be implemented, must return old/removed component, use IFinderAware to find component and then delegate to updateComponent(ItemComponent, ItemComponent)");
+        List<ActionRowChildComponentUnion> list = getComponents();
+        for (ListIterator<ActionRowChildComponentUnion> it = list.listIterator(); it.hasNext();)
+        {
+            ActionRowChildComponentUnion current = it.next();
+            if (!(current instanceof ActionComponent))
+                continue;
+
+            if (isSameIdentifier((ActionComponent) current, id))
+            {
+                if (newComponent == null)
+                    it.remove();
+                else
+                    it.set(ComponentsUtil.safeUnionCast("component", newComponent, ActionRowChildComponentUnion.class));
+                return (ActionComponent) current;
+            }
+        }
+        return null;
+    }
+
+    private static boolean isSameIdentifier(@Nonnull ActionComponent component, @Nonnull String identifier)
+    {
+        if (identifier.equals(component.getCustomId()))
+            return true;
+
+        if (component instanceof Button)
+        {
+            final Button button = (Button) component;
+            if (identifier.equals(button.getUrl()))
+                return true;
+            if (button.getSku() != null)
+                return identifier.equals(button.getSku().getId());
+        }
+
+        return false;
     }
 
     @Nullable
@@ -186,7 +221,23 @@ public class ActionRowImpl
     {
         Checks.notNull(component, "Component to be replaced");
 
-        throw new UnsupportedOperationException("To be implemented, must return old/removed component, use IFinderAware to find component and IReplacerAware to replace/remove");
+        List<ActionRowChildComponentUnion> list = getComponents();
+        for (ListIterator<ActionRowChildComponentUnion> it = list.listIterator(); it.hasNext();)
+        {
+            ActionRowChildComponentUnion current = it.next();
+            if (!(current instanceof ItemComponent))
+                continue;
+
+            if (current.equals(component))
+            {
+                if (newComponent == null)
+                    it.remove();
+                else
+                    it.set(ComponentsUtil.safeUnionCast("component", newComponent, ActionRowChildComponentUnion.class));
+                return (ItemComponent) current;
+            }
+        }
+        return null;
     }
 
     @Nonnull
