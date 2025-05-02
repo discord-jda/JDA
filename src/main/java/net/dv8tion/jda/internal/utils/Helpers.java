@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import okhttp3.HttpUrl;
+import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -347,7 +348,9 @@ public final class Helpers
         return Collections.unmodifiableSet(EnumSet.of(first, rest));
     }
 
-    public static <E> List<E> copyAsUnmodifiableList(Collection<? extends E> items)
+    @Nonnull
+    @Unmodifiable
+    public static <E> List<E> copyAsUnmodifiableList(@Nonnull Collection<? extends E> items)
     {
         return Collections.unmodifiableList(new ArrayList<>(items));
     }
