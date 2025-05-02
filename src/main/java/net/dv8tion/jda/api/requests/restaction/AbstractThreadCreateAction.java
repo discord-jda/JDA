@@ -97,10 +97,6 @@ public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAct
      * {@link Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
      *
-     * <p><b>Special case</b><br>
-     * {@link net.dv8tion.jda.api.entities.channel.concrete.ForumChannel ForumChannels} use this to limit how many posts a user can create.
-     * The client refers to this as the post slowmode.
-     *
      * @param  slowmode
      *         The new slowmode
      *
