@@ -25,14 +25,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.api.requests.GatewayIntent.ALL_INTENTS;
-import static net.dv8tion.jda.test.TestHelper.captureLogging;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
-public class JDABuilderTest
+public class JDABuilderTest extends AbstractSnapshotTest
 {
     private static final String TOKEN = "invalid.token.here";
 
@@ -42,8 +40,7 @@ public class JDABuilderTest
         TestJDABuilder builder = new TestJDABuilder(ALL_INTENTS);
         builder.applyIntents();
 
-        List<String> logs = captureLogging(builder::checkIntents);
-        assertThat(logs).isEmpty();
+        assertThatLoggingFrom(builder::checkIntents).isEmpty();
     }
 
     @Test
@@ -52,11 +49,7 @@ public class JDABuilderTest
         TestJDABuilder builder = new TestJDABuilder(0);
         builder.applyIntents();
 
-        List<String> logs = captureLogging(builder::checkIntents);
-
-        EnumSet<CacheFlag> flags = EnumSet.allOf(CacheFlag.class);
-        flags.removeIf(flag -> flag.getRequiredIntent() == null);
-        checkMissingIntentWarnings(logs, flags);
+        assertThatLoggingFrom(builder::checkIntents).matchesSnapshot();
     }
 
     @Test
@@ -66,8 +59,7 @@ public class JDABuilderTest
         builder.applyIntents();
         builder.enableCache(EnumSet.allOf(CacheFlag.class));
 
-        List<String> logs = captureLogging(builder::checkIntents);
-        assertThat(logs).isEmpty();
+        assertThatLoggingFrom(builder::checkIntents).isEmpty();
     }
 
     @Test
@@ -133,8 +125,7 @@ public class JDABuilderTest
         EnumSet<CacheFlag> flags = EnumSet.allOf(CacheFlag.class);
         flags.removeIf(flag -> flag.getRequiredIntent() == null || defaultDisabled.contains(flag));
 
-        List<String> logs = captureLogging(builder::checkIntents);
-        checkMissingIntentWarnings(logs, flags);
+        assertThatLoggingFrom(builder::checkIntents).matchesSnapshot();
     }
 
     @Test
@@ -144,8 +135,9 @@ public class JDABuilderTest
         builder.applyIntents();
         builder.setChunkingFilter(ChunkingFilter.ALL);
 
-        List<String> logs = captureLogging(builder::checkIntents);
-        assertThat(logs).contains("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
+        assertThatLoggingFrom(builder::checkIntents)
+            .containsLine("Member chunking is disabled due to missing GUILD_MEMBERS intent.")
+            .matchesSnapshot();
     }
 
     @EnumSource
@@ -177,32 +169,12 @@ public class JDABuilderTest
             throw new AssertionError("Unexpected test case " + testCase);
         }
 
-        List<String> logs = captureLogging(() ->
-            assertThatNoException().isThrownBy(builder::checkIntents)
-        );
 
-        assertThat(logs)
-            .noneMatch(log -> log.contains("CacheFlag." + CacheFlag.EMOJI))
-            .noneMatch(log -> log.contains("CacheFlag." + CacheFlag.STICKER));
-    }
-
-    private void checkMissingIntentWarnings(List<String> logs, EnumSet<CacheFlag> cacheFlagsWithMissingIntents)
-    {
-        String commaSeparatedList = cacheFlagsWithMissingIntents.stream()
-                .map(CacheFlag::name)
-                .map(name -> "CacheFlag." + name)
-                .collect(Collectors.joining(", "));
-
-        String listOfWarnings = cacheFlagsWithMissingIntents.stream()
-                .map(flag -> String.format("Disabled CacheFlag.%s (missing GatewayIntent.%s)", flag.name(), flag.getRequiredIntent().name()))
-                .collect(Collectors.joining("\n"));
-
-        assertThat(String.join("\n", logs))
-                .isEqualToIgnoringWhitespace(
-                        "Automatically disabled CacheFlags due to missing intents\n" +
-                                listOfWarnings + "\n" +
-                                "You can manually disable these flags to remove this warning by using disableCache(" + commaSeparatedList + ") on your JDABuilder"
-                );
+        assertThatLoggingFrom(
+            () -> assertThatNoException().isThrownBy(builder::checkIntents)
+        )
+            .doesNotContainLineMatching(log -> log.contains("CacheFlag." + CacheFlag.EMOJI))
+            .doesNotContainLineMatching(log -> log.contains("CacheFlag." + CacheFlag.STICKER));
     }
 
     static class TestJDABuilder extends JDABuilder
