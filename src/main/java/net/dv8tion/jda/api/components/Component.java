@@ -64,18 +64,22 @@ public interface Component extends SerializableData
      * <br>Can be set manually or automatically assigned by Discord (starting from {@code 1}).
      * If it has not been assigned yet, this will return {@code -1}.
      *
-     * @return The unique identifier of this component, or {@code -1} if not assigned yet
+     * <p><b>Note:</b> Older messages may return {@code 0}.
+     *
+     * @return The unique identifier of this component, or {@code -1} if not assigned yet, or {@code 0} on older messages
      */
     int getUniqueId();
 
     /**
      * Creates a new component with the provided numeric ID.
+     * <br>If no ID is set, Discord will generate IDs incrementally starting from 1
+     * and will not use existing IDs from the same message/modal.
      *
      * @param  uniqueId
-     *         The new ID, must not be negative
+     *         The new ID; must be >= 1
      *
      * @throws IllegalArgumentException
-     *         If the ID is negative
+     *         If the ID is less than 1
      *
      * @return The new component
      */
