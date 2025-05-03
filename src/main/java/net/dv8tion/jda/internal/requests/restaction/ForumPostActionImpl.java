@@ -18,15 +18,18 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.forums.ForumPost;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTagSnowflake;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.Route;
@@ -36,6 +39,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.utils.ChannelUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.message.MessageCreateBuilderMixin;
 import okhttp3.RequestBody;
@@ -51,6 +55,7 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
     private final TLongSet appliedTags = new TLongHashSet();
     private String name;
     private ThreadChannel.AutoArchiveDuration autoArchiveDuration;
+    protected Integer slowmode = null;
 
     public ForumPostActionImpl(IPostContainer channel, String name, MessageCreateBuilder builder)
     {
@@ -132,6 +137,18 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
         this.autoArchiveDuration = autoArchiveDuration;
         return this;
     }
+    
+    @Nonnull
+    @Override
+    public ForumPostAction setSlowmode(int slowmode)
+    {
+        Checks.checkSupportedChannelTypes(ChannelUtil.SLOWMODE_SUPPORTED, getType(), "slowmode");
+        Checks.check(slowmode <= ISlowmodeChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", ISlowmodeChannel.MAX_SLOWMODE);
+        if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_THREADS))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_THREADS, "You must have Permission.MANAGE_THREADS on the parent forum channel to set a slowmode!");
+        this.slowmode = slowmode;
+        return this;
+    }
 
     @Override
     public MessageCreateBuilder getBuilder()
@@ -149,6 +166,8 @@ public class ForumPostActionImpl extends RestActionImpl<ForumPost> implements Fo
             json.put("name", name);
             if (autoArchiveDuration != null)
                 json.put("auto_archive_duration", autoArchiveDuration.getMinutes());
+            if (slowmode != null)
+                json.put("rate_limit_per_user", slowmode);
             if (!appliedTags.isEmpty())
                 json.put("applied_tags", appliedTags.toArray());
             else if (getChannel().isTagRequired())
