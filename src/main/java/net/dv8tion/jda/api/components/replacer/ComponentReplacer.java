@@ -45,13 +45,16 @@ public interface ComponentReplacer
      * Attempts to replace or remove the given component.
      *
      * <p>If this method returns the same component and contains children,
-     * then this replacer will be applied recursively,
+     * then this replacer will be applied recursively;
      * otherwise, the component is not replaced.
      *
      * <p>The returned component must be compatible with the source (a {@link ActionRow} or a {@link Container} for example) it originated from.
      *
      * @param  oldComponent
      *         The component which is attempted to be replaced
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is passed
      *
      * @return A new, compatible component, the same component, or {@code null} to remove the component.
      */
@@ -62,7 +65,7 @@ public interface ComponentReplacer
      * Creates a new {@link ComponentReplacer} combining the provided replacers.
      *
      * <p>Each replacer will run one after the other,
-     * if one returns a new components, the next replacer will still run against it.
+     * if one returns a new component, the next replacer will still run against it.
      * <br>However, if a replacer returns {@code null}, thus removing the component, it will stop.
      *
      * @param  replacers
@@ -94,7 +97,7 @@ public interface ComponentReplacer
      * Creates a new {@link ComponentReplacer} combining the provided replacers.
      *
      * <p>Each replacer will run one after the other,
-     * if one returns a new components, the next replacer will still run against it.
+     * if one returns a new component, the next replacer will still run against it.
      * <br>However, if a replacer returns {@code null}, thus removing the component, it will stop.
      *
      * @param  first
@@ -122,11 +125,14 @@ public interface ComponentReplacer
      * <p>The provided {@code update} function can return {@code null} to remove the component.
      *
      * @param  type
-     *         The type of components which should be attempted to be replaced
+     *         The type of component which should be attempted to be replaced
      * @param  filter
      *         The filter to match against
      * @param  update
      *         The replacement function, can return {@code null}
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is passed
      *
      * @return A {@link ComponentReplacer} with the provided functions
      */
@@ -147,6 +153,9 @@ public interface ComponentReplacer
      *         The component to replace
      * @param  newComponent
      *         The component to replace with, {@code null} to remove the component
+     *
+     * @throws IllegalArgumentException
+     *         If {@code oldComponent} is {@code null}
      *
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
@@ -173,5 +182,30 @@ public interface ComponentReplacer
         return of(Component.class,
                 component -> component.getUniqueId() == id,
                 component -> newComponent);
+    }
+
+    /**
+     * Creates a {@link ComponentReplacer} which replaces a given component with another,
+     * based on their {@linkplain Component#getUniqueId() numeric ID}.
+     *
+     * <p>The provided {@code update} function can return {@code null} to remove the component.
+     *
+     * @param  id
+     *         The ID of the component to replace
+     * @param  update
+     *         The replacement function, can return {@code null}
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is passed
+     *
+     * @return A {@link ComponentReplacer} replacing the old component with the new one
+     */
+    @Nonnull
+    static ComponentReplacer byId(int id, @Nonnull Function<? super Component, Component> update)
+    {
+        Checks.notNull(update, "Component updater");
+        return of(Component.class,
+                component -> component.getUniqueId() == id,
+                update);
     }
 }
