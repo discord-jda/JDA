@@ -123,6 +123,8 @@ public class ActionRowImpl
             }
         }
 
+        rows.add(ActionRow.of(currentRow));
+
         return rows;
     }
 
