@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -42,13 +41,10 @@ import org.mockito.Mock;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
-import java.util.Base64;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.requests.Method.POST;
-import static net.dv8tion.jda.test.restaction.MessageCreateActionTest.Data.emoji;
-import static net.dv8tion.jda.test.restaction.MessageCreateActionTest.Data.pollAnswer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.when;
@@ -65,29 +61,6 @@ public class MessageCreateActionTest extends IntegrationTest
 
     @Mock
     protected MessageChannel channel;
-
-    private static DataObject minimalMessageRequest()
-    {
-        return DataObject.empty()
-            .put("enforce_nonce", true)
-            .put("flags", 0)
-            .put("nonce", FIXED_NONCE);
-    }
-    private static DataObject defaultMessageRequest()
-    {
-        return minimalMessageRequest()
-                .put("allowed_mentions", DataObject.empty()
-                    .put("parse", DataArray.empty()
-                        .add("users")
-                        .add("roles")
-                        .add("everyone"))
-                    .put("replied_user", true))
-                .put("components", DataArray.empty())
-                .put("content", "")
-                .put("embeds", DataArray.empty())
-                .put("poll", null)
-                .put("tts", false);
-    }
 
     @BeforeEach
     void setupChannel()
@@ -114,7 +87,7 @@ public class MessageCreateActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasMethod(POST)
             .hasCompiledRoute(ENDPOINT_URL)
-            .hasBodyEqualTo(defaultMessageRequest().put("content", "test content"))
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -127,9 +100,7 @@ public class MessageCreateActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasMethod(POST)
             .hasCompiledRoute(ENDPOINT_URL)
-            .hasBodyEqualTo(defaultMessageRequest()
-                .put("embeds", DataArray.empty()
-                    .add(DataObject.empty().put("description", "test description"))))
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -142,17 +113,7 @@ public class MessageCreateActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasMethod(POST)
             .hasCompiledRoute(ENDPOINT_URL)
-            .hasBodyEqualTo(defaultMessageRequest()
-                .put("poll", DataObject.empty()
-                    .put("duration", 72)
-                    .put("allow_multiselect", true)
-                    .put("layout_type", 1)
-                    .put("question", DataObject.empty()
-                        .put("text", "Test poll"))
-                    .put("answers", DataArray.empty()
-                        .add(pollAnswer(1, "Test answer 1", null))
-                        .add(pollAnswer(2, "Test answer 2", emoji("🤔")))
-                        .add(pollAnswer(3, "Test answer 3", emoji("minn", 821355005788684298L, true))))))
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -169,12 +130,8 @@ public class MessageCreateActionTest extends IntegrationTest
 
         assertThatRequestFrom(action)
             .hasMultipartBody()
-            .hasBodyEqualTo(
-                defaultMessageRequest()
-                    .put("flags", 1 << 13)
-                    .put("attachments", DataArray.empty()
-                        .add(Data.getVoiceMessageAttachmentBody(voiceMessageMediaType, voiceMessageFilename, voiceMessageAudio)))
-            ).whenQueueCalled();
+            .hasBodyMatchingSnapshot()
+            .whenQueueCalled();
     }
 
     @Test
@@ -191,12 +148,8 @@ public class MessageCreateActionTest extends IntegrationTest
 
         assertThatRequestFrom(action)
             .hasMultipartBody()
-            .hasBodyEqualTo(
-                defaultMessageRequest()
-                    .put("flags", 0)
-                    .put("attachments", DataArray.empty()
-                        .add(Data.getVoiceMessageAttachmentBody(voiceMessageMediaType, voiceMessageFilename, voiceMessageAudio)))
-            ).whenQueueCalled();
+            .hasBodyMatchingSnapshot()
+            .whenQueueCalled();
     }
 
     @Test
@@ -210,13 +163,7 @@ public class MessageCreateActionTest extends IntegrationTest
         action.failOnInvalidReply(true);
 
         assertThatRequestFrom(action)
-            .hasBodyEqualTo(defaultMessageRequest()
-                .put("content", "test content")
-                .put("message_reference", DataObject.empty()
-                    .put("type", 0)
-                    .put("channel_id", channel.getId())
-                    .put("message_id", Long.toUnsignedString(messageId))
-                    .put("fail_if_not_exists", true)))
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -236,14 +183,7 @@ public class MessageCreateActionTest extends IntegrationTest
         action.setSuppressedNotifications(true);
 
         assertThatRequestFrom(action)
-            .hasBodyEqualTo(minimalMessageRequest()
-                .put("flags", 1 << 12)
-                .put("message_reference", DataObject.empty()
-                    .put("type", 1)
-                    .put("guild_id", Long.toUnsignedString(Constants.GUILD_ID))
-                    .put("channel_id", Long.toUnsignedString(Constants.CHANNEL_ID))
-                    .put("message_id", Long.toUnsignedString(messageId))
-                    .put("fail_if_not_exists", false)))
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -262,7 +202,7 @@ public class MessageCreateActionTest extends IntegrationTest
                 .build();
 
         assertThatRequestFrom(new MessageCreateActionImpl(channel).applyData(data))
-            .hasBodyEqualTo(data.toData().put("enforce_nonce", true))
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -276,8 +216,7 @@ public class MessageCreateActionTest extends IntegrationTest
         action.failOnInvalidReply(true);
 
         assertThatRequestFrom(action)
-            .hasBodyEqualTo(defaultMessageRequest()
-                .put("content", "test content"))
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -293,39 +232,6 @@ public class MessageCreateActionTest extends IntegrationTest
         {
             return FileUpload.fromData(fakeAudio, fileName)
                     .asVoiceMessage(MediaType.parse(audioMediaType), fakeAudio, Duration.ofSeconds(3));
-        }
-
-        static DataObject getVoiceMessageAttachmentBody(String audioMediaType, String fileName, byte[] fakeAudio)
-        {
-            return DataObject.empty()
-                    .put("description", "")
-                    .put("content_type", audioMediaType)
-                    .put("duration_secs", 3.0)
-                    .put("filename", fileName)
-                    .put("id", 0)
-                    .put("waveform", new String(Base64.getEncoder().encode(fakeAudio)));
-        }
-
-        static DataObject pollAnswer(long id, String title, DataObject emoji)
-        {
-            return DataObject.empty()
-                .put("answer_id", id)
-                .put("poll_media", DataObject.empty()
-                    .put("text", title)
-                    .put("emoji", emoji));
-        }
-
-        static DataObject emoji(String name)
-        {
-            return DataObject.empty().put("name", name);
-        }
-
-        static DataObject emoji(String name, long id, boolean animated)
-        {
-            return DataObject.empty()
-                    .put("name", name)
-                    .put("id", id)
-                    .put("animated", animated);
         }
 
         static MessageEmbed getTestEmbed()

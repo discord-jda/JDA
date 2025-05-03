@@ -1,0 +1,12 @@
+{
+  "enforce_nonce" : true,
+  "flags" : 4096,
+  "message_reference" : {
+    "channel_id" : "125227483518861312",
+    "fail_if_not_exists" : false,
+    "guild_id" : "125227483518861312",
+    "message_id" : "2047068418989240485",
+    "type" : 1
+  },
+  "nonce" : "123456"
+}

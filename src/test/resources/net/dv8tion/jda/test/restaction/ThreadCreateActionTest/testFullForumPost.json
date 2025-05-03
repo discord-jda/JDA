@@ -1,0 +1,17 @@
+{
+  "applied_tags" : [ 2047068418989240485 ],
+  "message" : {
+    "allowed_mentions" : {
+      "parse" : [ "users", "roles", "everyone" ],
+      "replied_user" : true
+    },
+    "components" : [ ],
+    "content" : "test message content",
+    "embeds" : [ ],
+    "flags" : 0,
+    "poll" : null,
+    "tts" : false
+  },
+  "name" : "post title by setter",
+  "rate_limit_per_user" : 1337
+}

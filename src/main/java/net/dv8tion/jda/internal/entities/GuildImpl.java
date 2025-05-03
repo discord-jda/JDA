@@ -1652,7 +1652,7 @@ public class GuildImpl implements Guild
 
         Set<Long> userIds = users.stream().map(UserSnowflake::getIdLong).collect(Collectors.toSet());
         DataObject body = DataObject.empty()
-                .put("user_ids", userIds)
+                .put("user_ids", DataArray.fromCollection(userIds))
                 .put("delete_message_seconds", deletionTime.getSeconds());
         Route.CompiledRoute route = Route.Guilds.BULK_BAN.compile(getId());
 

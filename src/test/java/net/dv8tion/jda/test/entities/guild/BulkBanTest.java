@@ -22,8 +22,6 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Method;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.test.Constants;
 import org.junit.jupiter.api.Test;
@@ -112,9 +110,8 @@ public class BulkBanTest extends AbstractGuildTest
             .hasMethod(Method.POST)
             .hasCompiledRoute("guilds/" + Constants.GUILD_ID + "/bulk-ban")
             .hasAuditReason(reason)
-            .hasBodyEqualTo(DataObject.empty()
-                .put("delete_message_seconds", duration.getSeconds())
-                .put("user_ids", DataArray.empty().add(Constants.BUTLER_USER_ID)))
+            .hasBodyMatching(body -> body.getArray("user_ids").length() == 1)
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 }
