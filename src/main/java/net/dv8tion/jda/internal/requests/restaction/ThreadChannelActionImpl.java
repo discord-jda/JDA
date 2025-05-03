@@ -170,7 +170,7 @@ public class ThreadChannelActionImpl extends AuditableRestActionImpl<ThreadChann
 
         if (autoArchiveDuration != null)
             object.put("auto_archive_duration", autoArchiveDuration.getMinutes());
-        if(slowmode != null)
+        if (slowmode != null)
             object.put("rate_limit_per_user", slowmode);
         if (invitable != null)
             object.put("invitable", invitable);

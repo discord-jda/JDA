@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
+import net.dv8tion.jda.test.util.SnapshotHandler;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.Contract;
@@ -38,19 +39,21 @@ import static org.mockito.Mockito.doNothing;
 
 public class RestActionAssertions implements ThrowingConsumer<Request<?>>
 {
+    private final SnapshotHandler snapshotHandler;
     private final RestAction<?> action;
     private final List<ThrowingConsumer<Request<?>>> assertions = new ArrayList<>();
     private Consumer<? super DataObject> normalizeRequestBody = (v) -> {};
 
-    public RestActionAssertions(RestAction<?> action)
+    public RestActionAssertions(SnapshotHandler snapshotHandler, RestAction<?> action)
     {
+        this.snapshotHandler = snapshotHandler;
         this.action = action;
     }
 
     @CheckReturnValue
-    public static RestActionAssertions assertThatNextAction(Requester requester, RestAction<?> action)
+    public static RestActionAssertions assertThatNextAction(SnapshotHandler snapshotHandler, Requester requester, RestAction<?> action)
     {
-        RestActionAssertions assertions = new RestActionAssertions(action);
+        RestActionAssertions assertions = new RestActionAssertions(snapshotHandler, action);
         doNothing().when(requester).request(assertArg(assertions::acceptThrows));
         return assertions;
     }
@@ -108,6 +111,29 @@ public class RestActionAssertions implements ThrowingConsumer<Request<?>>
             assertThat(dataObject.toPrettyString())
                 .as("RestAction should send request using expected request body")
                 .isEqualTo(expected.toPrettyString());
+        });
+    }
+
+    @CheckReturnValue
+    @Contract("->this")
+    public RestActionAssertions hasBodyMatchingSnapshot()
+    {
+        return hasBodyMatchingSnapshot(null);
+    }
+
+    @CheckReturnValue
+    @Contract("_->this")
+    public RestActionAssertions hasBodyMatchingSnapshot(String suffix)
+    {
+        return checkAssertions(request -> {
+            Object body = request.getRawBody();
+            assertThat(body)
+                    .isNotNull()
+                    .isInstanceOf(DataObject.class);
+
+            DataObject dataObject = (DataObject) body;
+            normalizeRequestBody.accept(dataObject);
+            snapshotHandler.compareWithSnapshot(dataObject, suffix);
         });
     }
 

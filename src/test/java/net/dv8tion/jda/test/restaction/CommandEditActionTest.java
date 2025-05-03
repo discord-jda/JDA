@@ -58,7 +58,7 @@ public class CommandEditActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasMethod(Method.PATCH)
             .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
-            .hasBodyEqualTo(getSampleObject())
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -76,7 +76,7 @@ public class CommandEditActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasMethod(Method.PATCH)
             .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
-            .hasBodyEqualTo(getSampleObject())
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -94,7 +94,7 @@ public class CommandEditActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasMethod(Method.PATCH)
             .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/commands/" + id)
-            .hasBodyEqualTo(getSampleObject())
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 }
