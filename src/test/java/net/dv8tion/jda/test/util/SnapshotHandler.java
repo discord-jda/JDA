@@ -108,7 +108,7 @@ public class SnapshotHandler
     {
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
         Method testMethod = testInfo.getTestMethod().orElseThrow(AssertionError::new);
-        String fileName = currentClass.getSimpleName() + "_" + testMethod.getName();
+        String fileName = currentClass.getSimpleName() + "/" + testMethod.getName();
         if (suffix != null && !suffix.isEmpty())
             fileName += "_" + suffix;
         fileName += ".json";

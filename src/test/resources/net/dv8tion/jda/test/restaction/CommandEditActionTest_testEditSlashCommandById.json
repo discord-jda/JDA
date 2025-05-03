@@ -1,8 +1,0 @@
-{
-    "description" : "Updated description",
-    "description_localizations" : { },
-    "name" : "updated-name",
-    "name_localizations" : { },
-    "nsfw" : true,
-    "type" : 1
-}
