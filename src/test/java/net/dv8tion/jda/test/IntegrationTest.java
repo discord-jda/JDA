@@ -27,7 +27,6 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.test.assertions.restaction.RestActionAssertions;
-import net.dv8tion.jda.test.util.SnapshotHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
@@ -43,7 +42,7 @@ import java.util.function.Consumer;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-public class IntegrationTest
+public class IntegrationTest extends AbstractSnapshotTest
 {
     protected Random random = new Random();
     @Mock
@@ -52,16 +51,13 @@ public class IntegrationTest
     protected Requester requester;
     @Mock
     protected ScheduledExecutorService scheduledExecutorService;
-    protected SnapshotHandler snapshotHandler;
 
     private AutoCloseable closeable;
     private int expectedRequestCount;
 
     @BeforeEach
-    protected final void setup(TestInfo info)
+    protected final void setup()
     {
-        snapshotHandler = new SnapshotHandler(info);
-
         random.setSeed(4242);
         expectedRequestCount = 0;
         closeable = openMocks(this);

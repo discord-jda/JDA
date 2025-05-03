@@ -17,10 +17,13 @@
 package net.dv8tion.jda.test.util;
 
 
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Path;
+import org.assertj.core.api.iterable.ThrowingExtractor;
 import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,16 +49,46 @@ public class SnapshotHandler
         this.logger = LoggerFactory.getLogger(SnapshotHandler.class);
     }
 
+    public void compareWithSnapshot(String actual, String suffix)
+    {
+        compareWithSnapshot(
+            stream -> new String(IOUtil.readFully(stream), StandardCharsets.UTF_8),
+            actual,
+            suffix,
+            "txt"
+        );
+    }
+
+    public void compareWithSnapshot(Collection<?> actual, String suffix)
+    {
+        compareWithSnapshot(
+            stream -> DataArray.fromJson(stream).toPrettyString(),
+            DataArray.fromCollection(actual).toPrettyString(),
+            suffix,
+            "json"
+        );
+    }
+
     public void compareWithSnapshot(DataObject actual, String suffix)
     {
+        compareWithSnapshot(
+            stream -> DataObject.fromJson(stream).toPrettyString(),
+            actual.toPrettyString(),
+            suffix,
+            "json"
+        );
+    }
+
+    private void compareWithSnapshot(ThrowingExtractor<InputStream, String, Exception> reader, String actual, String suffix, String extension)
+    {
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
-        String filePath = getFilePath(suffix);
+        String filePath = getFilePath(suffix, extension);
 
         try (InputStream stream = currentClass.getResourceAsStream(filePath))
         {
             assertThat(stream).as("Loading sample from resource file '%s'", filePath).isNotNull();
-            assertThat(DataObject.fromJson(stream).toPrettyString())
-                .isEqualToNormalizingWhitespace(actual.toPrettyString());
+            assertThat(reader.apply(stream))
+                .isEqualToNormalizingWhitespace(actual);
         }
         catch (IOException e)
         {
@@ -64,7 +98,7 @@ public class SnapshotHandler
         {
             try
             {
-                updateOrCreateIfNecessary(actual, suffix);
+                updateOrCreateIfNecessary(actual, suffix, extension);
             }
             catch (Exception exception)
             {
@@ -74,13 +108,14 @@ public class SnapshotHandler
         }
     }
 
-    private void updateOrCreateIfNecessary(DataObject actual, String suffix) throws IOException
+
+    private void updateOrCreateIfNecessary(String actual, String suffix, String extension) throws IOException
     {
         if (System.getProperty("updateSnapshots") == null)
             return;
 
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
-        String filePath = getFilePath(suffix);
+        String filePath = getFilePath(suffix, extension);
 
         String workingDirectory = System.getProperty("user.dir");
         String path = currentClass.getPackage().getName().replace(".", "/") + "/" + filePath;
@@ -100,18 +135,18 @@ public class SnapshotHandler
         try (BufferedSink sink = Okio.buffer(Okio.sink(file)))
         {
             logger.info("Updating snapshot {}", file);
-            sink.writeString(actual.toPrettyString(), StandardCharsets.UTF_8);
+            sink.writeString(actual, StandardCharsets.UTF_8);
         }
     }
 
-    private String getFilePath(String suffix)
+    private String getFilePath(String suffix, String extension)
     {
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
         Method testMethod = testInfo.getTestMethod().orElseThrow(AssertionError::new);
         String fileName = currentClass.getSimpleName() + "/" + testMethod.getName();
         if (suffix != null && !suffix.isEmpty())
             fileName += "_" + suffix;
-        fileName += ".json";
+        fileName += "." + extension;
         return fileName;
     }
 }

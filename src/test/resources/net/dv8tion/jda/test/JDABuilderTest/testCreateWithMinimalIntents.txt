@@ -1,0 +1,9 @@
+Automatically disabled CacheFlags due to missing intents
+Disabled CacheFlag.ACTIVITY (missing GatewayIntent.GUILD_PRESENCES)
+Disabled CacheFlag.VOICE_STATE (missing GatewayIntent.GUILD_VOICE_STATES)
+Disabled CacheFlag.EMOJI (missing GatewayIntent.GUILD_EXPRESSIONS)
+Disabled CacheFlag.STICKER (missing GatewayIntent.GUILD_EXPRESSIONS)
+Disabled CacheFlag.CLIENT_STATUS (missing GatewayIntent.GUILD_PRESENCES)
+Disabled CacheFlag.ONLINE_STATUS (missing GatewayIntent.GUILD_PRESENCES)
+Disabled CacheFlag.SCHEDULED_EVENTS (missing GatewayIntent.SCHEDULED_EVENTS)
+You can manually disable these flags to remove this warning by using disableCache(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE, CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS, CacheFlag.SCHEDULED_EVENTS) on your JDABuilder
