@@ -359,9 +359,15 @@ val build by tasks.getting(Task::class) {
 
 val test by tasks.getting(Test::class) {
     useJUnitPlatform()
-    failFast = true
+    failFast = false
 }
 
+val updateTestSnapshots by tasks.registering(Test::class) {
+    useJUnitPlatform()
+    failFast = false
+
+    systemProperty("updateSnapshots", "true")
+}
 
 ////////////////////////////////////
 //                                //
