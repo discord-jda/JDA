@@ -337,12 +337,13 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
      * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
      *
-     * <p>This however comes with a few drawbacks:
+     * <p>This, however, comes with a few drawbacks:
      * <ul>
      *     <li>You cannot send content, embeds, polls or stickers</li>
      *     <li>It does not support audio files</li>
      *     <li>It does not support text preview for files</li>
      *     <li>URLs don't create embeds</li>
+     *     <li>You cannot switch this message back to not using Components V2</li>
      * </ul>
      *
      * <p>A default value can be set in {@link #setDefaultUseComponentsV2(boolean)}.
@@ -369,12 +370,13 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
      * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
      *
-     * <p>This however comes with a few drawbacks:
+     * <p>This, however, comes with a few drawbacks:
      * <ul>
      *     <li>You cannot send content, embeds, polls or stickers</li>
      *     <li>It does not support audio files</li>
      *     <li>It does not support text preview for files</li>
      *     <li>URLs don't create embeds</li>
+     *     <li>You cannot switch this message back to not using Components V2</li>
      * </ul>
      *
      * @return The same instance for chaining
