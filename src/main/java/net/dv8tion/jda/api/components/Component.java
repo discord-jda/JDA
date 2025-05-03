@@ -76,7 +76,7 @@ public interface Component extends SerializableData
      * and will not use existing IDs from the same message/modal.
      *
      * @param  uniqueId
-     *         The new ID; must be >= 1
+     *         The new ID; must be higher or equal to 1
      *
      * @throws IllegalArgumentException
      *         If the ID is less than 1
