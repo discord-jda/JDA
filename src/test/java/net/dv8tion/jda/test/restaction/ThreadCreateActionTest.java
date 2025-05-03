@@ -72,7 +72,7 @@ public class ThreadCreateActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
             .hasMethod(Method.POST)
-            .hasBodyEqualTo(getSampleObject())
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -94,7 +94,7 @@ public class ThreadCreateActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
             .hasMethod(Method.POST)
-            .hasBodyEqualTo(getSampleObject())
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -106,7 +106,7 @@ public class ThreadCreateActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
             .hasMethod(Method.POST)
-            .hasBodyEqualTo(getSampleObject())
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 
@@ -124,7 +124,7 @@ public class ThreadCreateActionTest extends IntegrationTest
         assertThatRequestFrom(action)
             .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/threads")
             .hasMethod(Method.POST)
-            .hasBodyEqualTo(getSampleObject())
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 }
