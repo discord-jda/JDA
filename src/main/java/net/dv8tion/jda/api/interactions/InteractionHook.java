@@ -243,7 +243,7 @@ public interface InteractionHook extends WebhookClient<Message>
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
      *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
@@ -283,7 +283,7 @@ public interface InteractionHook extends WebhookClient<Message>
      *
      * @param  components
      *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
-     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components in total.
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
      *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
      *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *

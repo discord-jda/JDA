@@ -281,7 +281,7 @@ public interface Modal extends SerializableData
          *
          * @param  tree
          *         The {@link ComponentTree} to add,
-         *         containing up to {@value #MAX_COMPONENTS} V1 components in total.
+         *         containing up to {@value #MAX_COMPONENTS} V1 components.
          *
          * @throws IllegalArgumentException
          *         <ul>
