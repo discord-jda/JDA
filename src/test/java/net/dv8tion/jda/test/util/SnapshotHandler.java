@@ -93,6 +93,7 @@ public class SnapshotHandler
         if (!file.exists())
         {
             logger.info("Creating snapshot {}", file);
+            file.getParentFile().mkdirs();
             assertThat(file.createNewFile()).isTrue();
         }
 

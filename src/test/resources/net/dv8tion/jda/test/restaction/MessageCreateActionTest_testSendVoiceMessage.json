@@ -1,0 +1,22 @@
+{
+  "allowed_mentions" : {
+    "parse" : [ "users", "roles", "everyone" ],
+    "replied_user" : true
+  },
+  "attachments" : [ {
+    "content_type" : "audio/ogg",
+    "description" : "",
+    "duration_secs" : 3.0,
+    "filename" : "voice-message.ogg",
+    "id" : 0,
+    "waveform" : "AQID"
+  } ],
+  "components" : [ ],
+  "content" : "",
+  "embeds" : [ ],
+  "enforce_nonce" : true,
+  "flags" : 8192,
+  "nonce" : "123456",
+  "poll" : null,
+  "tts" : false
+}

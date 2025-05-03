@@ -18,7 +18,6 @@ package net.dv8tion.jda.test.restaction;
 
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.Method;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import net.dv8tion.jda.test.Constants;
 import org.apache.commons.lang3.StringUtils;
@@ -87,9 +86,7 @@ public class CreateApplicationEmojiTest extends RestActionTest
         assertThatRequestFrom(jda.createApplicationEmoji(EXAMPLE_NAME, EXAMPLE_ICON))
             .hasMethod(Method.POST)
             .hasCompiledRoute("applications/" + Constants.BUTLER_USER_ID + "/emojis")
-            .hasBodyEqualTo(DataObject.empty()
-                .put("name", EXAMPLE_NAME)
-                .put("image", EXAMPLE_ICON.getEncoding()))
+            .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
 }
