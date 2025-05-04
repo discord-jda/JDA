@@ -52,7 +52,7 @@ public class ComponentsUtilTest
     {
         // Try everywhere ComponentsUtil is used
         return Stream.of(
-                Arguments.of(run(() -> Section.of(UNKNOWN_COMPONENT, TextDisplay.create("0")))),
+                Arguments.of(run(() -> Section.of(UNKNOWN_COMPONENT, TextDisplay.of("0")))),
                 Arguments.of(run(() -> Section.of(Button.primary("id", "label"), UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> ComponentTree.of(MessageTopLevelComponentUnion.class, Collections.singleton(UNKNOWN_COMPONENT)))),
                 Arguments.of(run(() -> ComponentTree.of(Collections.singleton(UNKNOWN_COMPONENT)))),
