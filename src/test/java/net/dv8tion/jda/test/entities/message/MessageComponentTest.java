@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.*;
 public class MessageComponentTest
 {
     private static final FileUpload EXAMPLE_FILE_UPLOAD = FileUpload.fromData(new byte[100], "bytes.bin");
-    private static final TextDisplay EXAMPLE_TEXT_DISPLAY = TextDisplay.create(getMaxContentString());
+    private static final TextDisplay EXAMPLE_TEXT_DISPLAY = TextDisplay.of(getMaxContentString());
     private static final Section EXAMPLE_SECTION = Section.of(Button.primary("id", "label"), EXAMPLE_TEXT_DISPLAY);
     private static final MediaGallery EXAMPLE_MEDIA_GALLERY = MediaGallery.of(MediaGalleryItem.fromFile(EXAMPLE_FILE_UPLOAD));
     private static final Separator EXAMPLE_SEPARATOR = Separator.createDivider(Separator.Spacing.SMALL);
@@ -102,7 +102,7 @@ public class MessageComponentTest
                 // Attempt to use >MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(mergeItems(getMaxTotal(), EXAMPLE_FILE_DISPLAY)))),
                 // Attempt to use >MAX_CONTENT_LENGTH_COMPONENT_V2
-                Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_TEXT_DISPLAY, TextDisplay.create("1"))))
+                Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_TEXT_DISPLAY, TextDisplay.of("1"))))
         );
     }
 
