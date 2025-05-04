@@ -336,7 +336,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         if (isSet(FLAGS))
             json.put("flags", messageFlags);
 
-        final List<FileUpload> additionalFiles = getAdditionalFiles();
+        final List<FileUpload> additionalFiles = getIndirectFiles();
         if (isSet(ATTACHMENTS) || !additionalFiles.isEmpty())
             json.put("attachments", MessageUtil.getAttachmentsData(files, additionalFiles));
 
@@ -361,10 +361,10 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      * Returns the {@link FileUpload FileUploads} that are added indirectly to this message,
      * such as from V2 components and embeds.
      *
-     * @return The list of additional file uploads
+     * @return The list of indirect file uploads
      */
     @Nonnull
-    public synchronized List<FileUpload> getAdditionalFiles()
+    public synchronized List<FileUpload> getIndirectFiles()
     {
         return ComponentIterator.createStream(components)
                 .filter(FileContainerMixin.class::isInstance)

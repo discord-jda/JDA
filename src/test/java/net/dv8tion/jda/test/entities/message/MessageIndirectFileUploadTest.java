@@ -37,7 +37,7 @@ public class MessageIndirectFileUploadTest
                 .build())
         {
             assertThat(data.getFiles()).isEmpty();
-            assertThat(data.getAdditionalFiles()).hasSize(1)
+            assertThat(data.getIndirectFiles()).hasSize(1)
                     .element(0).extracting(FileUpload::getName).isEqualTo("bytes.bin");
         }
 
@@ -47,7 +47,7 @@ public class MessageIndirectFileUploadTest
                 .build())
         {
             assertThat(data.getFiles()).isEmpty();
-            assertThat(data.getAdditionalFiles()).hasSize(1)
+            assertThat(data.getIndirectFiles()).hasSize(1)
                     .element(0).extracting(FileUpload::getName).isEqualTo("bytes.bin");
         }
     }
