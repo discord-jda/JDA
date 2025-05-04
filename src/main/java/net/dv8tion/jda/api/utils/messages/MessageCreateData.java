@@ -359,7 +359,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
         json.put("tts", tts);
         json.put("flags", flags);
         json.put("allowed_mentions", mentions);
-        final List<FileUpload> additionalFiles = getAdditionalFiles();
+        final List<FileUpload> additionalFiles = getIndirectFiles();
         if ((files != null && !files.isEmpty()) || !additionalFiles.isEmpty())
             json.put("attachments", MessageUtil.getAttachmentsData(files, additionalFiles));
 
@@ -381,10 +381,10 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      * Returns the {@link FileUpload FileUploads} that are added indirectly to this message,
      * such as from V2 components and embeds.
      *
-     * @return The list of additional file uploads
+     * @return The list of indirect file uploads
      */
     @Nonnull
-    public List<FileUpload> getAdditionalFiles()
+    public List<FileUpload> getIndirectFiles()
     {
         return ComponentIterator.createStream(components)
                 .filter(FileContainerMixin.class::isInstance)

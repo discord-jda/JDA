@@ -97,7 +97,7 @@ public class MessageCreateActionImpl extends RestActionImpl<Message> implements 
             DataObject json = data.toData();
             populateBody(json);
 
-            return getMultipartBody(data.getFiles(), data.getAdditionalFiles(), json);
+            return getMultipartBody(data.getFiles(), data.getIndirectFiles(), json);
         }
     }
 
