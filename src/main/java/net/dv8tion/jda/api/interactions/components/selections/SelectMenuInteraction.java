@@ -16,17 +16,17 @@
 
 package net.dv8tion.jda.api.interactions.components.selections;
 
+import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.components.selections.SelectMenu;
+import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -84,13 +84,12 @@ public interface SelectMenuInteraction<T, S extends SelectMenu> extends Componen
     @CheckReturnValue
     default RestAction<Void> editSelectMenu(@Nullable SelectMenu newMenu)
     {
-        Message message = getMessage();
-        List<ActionRow> components = new ArrayList<>(message.getActionRows());
-        LayoutComponent.updateComponent(components, getComponentId(), newMenu);
+        final Message message = getMessage();
+        final MessageComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getSelectMenu(), newMenu));
 
         if (isAcknowledged())
-            return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);
+            return getHook().editMessageComponentsById(message.getId(), newTree.getComponents()).map(it -> null);
         else
-            return editComponents(components).map(it -> null);
+            return editComponents(newTree.getComponents()).map(it -> null);
     }
 }
