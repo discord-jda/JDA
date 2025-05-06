@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.InputStream;
 
 /**
  * Component displaying a file, you can mark it as a spoiler.
@@ -43,8 +44,26 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
     /**
      * Constructs a new {@link FileDisplay} from the {@link FileUpload}.
      *
+     * <p>This method can also be used to upload external resources,
+     * such as by using {@link FileUpload#fromData(InputStream, String)},
+     * in which case it will re-upload the entire file.
+     *
      * <p>This will automatically add the file when building the message,
      * as such you do not need to add it manually (with {@link MessageCreateBuilder#addFiles(FileUpload...)} for example).
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * // It's recommended to use a more robust HTTP library instead,
+     * // such as Java 11+'s HttpClient, or OkHttp (included with JDA), among many other options.
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * // You can also replace this with a local file
+     * FileDisplay fileDisplay = FileDisplay.fromFile(FileUpload.fromData(file, "cat.png"))
+     *     .setDescription("This is a cute car :3");
+     * channel.sendComponents(fileDisplay)
+     *     .useComponentsV2()
+     *     .queue();
+     * </code></pre>
      *
      * @param  file
      *         The {@link FileUpload} to display
