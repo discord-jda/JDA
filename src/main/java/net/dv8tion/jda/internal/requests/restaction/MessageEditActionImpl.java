@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.WebhookClient;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -47,6 +48,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     private final MessageChannel channel;
     private final MessageEditBuilder builder = new MessageEditBuilder();
     private WebhookClient<Message> webhook;
+    private ThreadChannel thread;
 
     public MessageEditActionImpl(@Nonnull JDA jda, @Nullable Guild guild, @Nonnull String channelId, @Nonnull String messageId)
     {
@@ -70,6 +72,12 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
         return this;
     }
 
+    public MessageEditActionImpl withThread(ThreadChannel thread)
+    {
+        this.thread = thread;
+        return this;
+    }
+
     @Override
     public MessageEditBuilder getBuilder()
     {
@@ -80,7 +88,13 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     protected Route.CompiledRoute finalizeRoute()
     {
         if (webhook != null && (!(webhook instanceof InteractionHook) || !((InteractionHook) webhook).isExpired()))
-            return Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), messageId);
+        {
+            Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), messageId);
+            if (thread != null)
+                route = route.withQueryParams("thread_id", thread.getId());
+
+            return route;
+        }
 
         return super.finalizeRoute();
     }
