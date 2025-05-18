@@ -168,6 +168,8 @@ public class ReceivedMessage implements Message
 
     private void checkUser()
     {
+        if (isWebhookMessage())
+            throw new IllegalStateException("Updating messages sent by a webhook must be done with the corresponding webhook!");
         if (!getJDA().getSelfUser().equals(getAuthor()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
     }
