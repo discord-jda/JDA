@@ -1178,13 +1178,7 @@ public interface WebhookClient<T> extends ISnowflake
     @Nonnull
     static IncomingWebhookClient createClient(@Nonnull JDA api, @Nonnull String url)
     {
-        Checks.notNull(url, "URL");
-        Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
-        if (!matcher.matches())
-            throw new IllegalArgumentException("Provided invalid webhook URL");
-        String id = matcher.group(1);
-        String token = matcher.group(2);
-        return createClient(api, id, token);
+        return createClient(api, url, false);
     }
 
     /**
@@ -1210,8 +1204,68 @@ public interface WebhookClient<T> extends ISnowflake
     @Nonnull
     static IncomingWebhookClient createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
     {
+        return createClient(api, webhookId, webhookToken, false);
+    }
+
+    /**
+     * Creates an instance of {@link IncomingWebhookClient} capable of executing webhook requests.
+     * <p>Messages created by this client may not have a fully accessible channel or guild available.
+     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#UNKNOWN UNKNOWN},
+     * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
+     *
+     * @param  api
+     *         The JDA instance, used to handle rate-limits
+     * @param  url
+     *         The webhook url, must include a webhook token
+     * @param  withComponents
+     *         Whether to allow sending webhook messages containing components
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the provided url is not a valid webhook url
+     *
+     * @return The {@link IncomingWebhookClient} instance
+     *
+     * @see    InteractionHook#from(JDA, String)
+     */
+    @Nonnull
+    static IncomingWebhookClient createClient(@Nonnull JDA api, @Nonnull String url, boolean withComponents)
+    {
+        Checks.notNull(url, "URL");
+        Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
+        if (!matcher.matches())
+            throw new IllegalArgumentException("Provided invalid webhook URL");
+        String id = matcher.group(1);
+        String token = matcher.group(2);
+        return createClient(api, id, token, withComponents);
+    }
+
+    /**
+     * Creates an instance of {@link IncomingWebhookClient} capable of executing webhook requests.
+     * <p>Messages created by this client may not have a fully accessible channel or guild available.
+     * The messages might report a channel of type {@link net.dv8tion.jda.api.entities.channel.ChannelType#UNKNOWN UNKNOWN},
+     * in which case the channel is assumed to be inaccessible and limited to only webhook requests.
+     *
+     * @param  api
+     *         The JDA instance, used to handle rate-limits
+     * @param  webhookId
+     *         The id of the webhook, for interactions this is the application id
+     * @param  webhookToken
+     *         The token of the webhook, for interactions this is the interaction token
+     * @param  withComponents
+     *         Whether to allow sending webhook messages containing components
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the provided webhook id is not a valid snowflake or the token is blank
+     *
+     * @return The {@link IncomingWebhookClient} instance
+     *
+     * @see    InteractionHook#from(JDA, String)
+     */
+    @Nonnull
+    static IncomingWebhookClient createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken, boolean withComponents)
+    {
         Checks.notNull(api, "JDA");
         Checks.notBlank(webhookToken, "Token");
-        return new IncomingWebhookClientImpl(MiscUtil.parseSnowflake(webhookId), webhookToken, api);
+        return new IncomingWebhookClientImpl(MiscUtil.parseSnowflake(webhookId), webhookToken, api, withComponents);
     }
 }
