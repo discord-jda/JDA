@@ -44,11 +44,7 @@ public class ChannelUtil
 
     public static <T extends Channel> T safeChannelCast(Object instance, Class<T> toObjectClass)
     {
-        if (toObjectClass.isInstance(instance))
-            return toObjectClass.cast(instance);
-
-        String cleanedClassName = instance.getClass().getSimpleName().replace("Impl", "");
-        throw new IllegalStateException(Helpers.format("Cannot convert channel of type %s to %s!", cleanedClassName, toObjectClass.getSimpleName()));
+        return UnionUtil.safeUnionCast("channel", instance, toObjectClass);
     }
 
     public static int compare(GuildChannel a, GuildChannel b)

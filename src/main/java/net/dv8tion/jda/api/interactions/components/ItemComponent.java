@@ -16,13 +16,22 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.components.ActionComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+
 /**
  * Component which can be inserted into a {@link LayoutComponent}.
  *
  * @see ActionComponent
  * @see ActionRow
  */
-public interface ItemComponent extends Component
+@ForRemoval
+@Deprecated
+@ReplaceWith("ActionRowChildComponent")
+public interface ItemComponent extends ActionRowChildComponent
 {
     /**
      * How many of these components can be added to one {@link ActionRow}.
@@ -32,17 +41,5 @@ public interface ItemComponent extends Component
     default int getMaxPerRow()
     {
         return getType().getMaxPerRow();
-    }
-
-    @Override
-    default boolean isModalCompatible()
-    {
-        return getType().isModalCompatible();
-    }
-
-    @Override
-    default boolean isMessageCompatible()
-    {
-        return getType().isMessageCompatible();
     }
 }

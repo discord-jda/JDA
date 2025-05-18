@@ -16,11 +16,14 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -43,13 +46,18 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>> implements MessageRequest<R>
 {
+    static boolean isDefaultUseComponentsV2 = false;
+
     protected final List<MessageEmbed> embeds = new ArrayList<>(Message.MAX_EMBED_COUNT);
-    protected final List<LayoutComponent> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
+    protected final List<MessageTopLevelComponentUnion> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
     protected final StringBuilder content = new StringBuilder(Message.MAX_CONTENT_LENGTH);
     protected AllowedMentionsData mentions = new AllowedMentionsData();
     protected int messageFlags;
 
-    protected AbstractMessageBuilder() {}
+    protected AbstractMessageBuilder() {
+        if (isDefaultUseComponentsV2)
+            useComponentsV2();
+    }
 
     @Nonnull
     @Override
@@ -163,22 +171,44 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
 
     @Nonnull
     @Override
-    public R setComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public R setComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        Checks.noneNull(components, "ComponentLayouts");
-        for (LayoutComponent layout : components)
-            Checks.check(layout.isMessageCompatible(), "Provided component layout is invalid for messages!");
-        Checks.check(components.size() <= Message.MAX_COMPONENT_COUNT, "Cannot send more than %d component layouts in a message!", Message.MAX_COMPONENT_COUNT);
+        Checks.noneNull(components, "MessageTopLevelComponents");
+        Checks.checkComponents(
+            "Provided component is invalid for messages!",
+            components,
+            Component::isMessageCompatible
+        );
+
+        List<MessageTopLevelComponentUnion> componentsAsUnions = ComponentsUtil.membersToUnion(components, MessageTopLevelComponentUnion.class);
+
         this.components.clear();
-        this.components.addAll(components);
+        this.components.addAll(componentsAsUnions);
         return (R) this;
     }
 
     @Nonnull
     @Override
-    public List<LayoutComponent> getComponents()
+    public R useComponentsV2(boolean use) {
+        final int flag = Message.MessageFlag.IS_COMPONENTS_V2.getValue();
+        if (use)
+            this.messageFlags |= flag;
+        else
+            this.messageFlags &= ~flag;
+        return (R) this;
+    }
+
+    @Nonnull
+    @Override
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return Collections.unmodifiableList(components);
+    }
+
+    @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (messageFlags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     @Nonnull
@@ -236,13 +266,15 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
      *             <li>If the builder is {@link #isEmpty() empty}</li>
      *             <li>If the content set is longer than {@value Message#MAX_CONTENT_LENGTH}</li>
      *             <li>If more than {@value Message#MAX_EMBED_COUNT} embeds are set</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are set</li>
+     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} top-level components are set</li>
+     *             <li>When {@linkplain #isUsingComponentsV2() using components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are set</li>
      *         </ul>
      *         For {@link MessageEditBuilder}
      *         <ul>
      *             <li>If the content set is longer than {@value Message#MAX_CONTENT_LENGTH}</li>
      *             <li>If more than {@value Message#MAX_EMBED_COUNT} embeds are set</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} component layouts are set</li>
+     *             <li>When using components V1, if more than {@value Message#MAX_COMPONENT_COUNT} top-level components are set</li>
+     *             <li>When {@linkplain #isUsingComponentsV2() using components V2}, if more than {@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE} total components are set</li>
      *         </ul>
      *
      * @return The validated data instance
