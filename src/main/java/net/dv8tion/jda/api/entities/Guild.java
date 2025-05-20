@@ -3898,7 +3898,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     /* From GuildController */
 
     /**
-     * Used to move a {@link Member Member} from one {@link AudioChannel AudioChannel}
+     * Used to move a Member from one {@link AudioChannel AudioChannel}
      * to another {@link AudioChannel AudioChannel}.
      * <br>As a note, you cannot move a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild as the one that you are moving them to.
@@ -3919,17 +3919,17 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     <br>The specified channel was deleted before finishing the task</li>
      * </ul>
      *
-     * @param  member
-     *         The {@link Member Member} that you are moving.
+     * @param  user
+     *         The member that you are moving.
      * @param  audioChannel
      *         The destination {@link AudioChannel AudioChannel} to which the member is being
      *         moved to. Or null to perform a voice kick.
      *
      * @throws IllegalStateException
-     *         If the Member isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
+     *         If the user is a Member and isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the provided member is {@code null}</li>
+     *             <li>If the provided user is {@code null}</li>
      *             <li>If the provided Member isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
      *             <li>If the provided AudioChannel isn't part of this {@link net.dv8tion.jda.api.entities.Guild Guild}</li>
      *         </ul>
@@ -3947,10 +3947,10 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable AudioChannel audioChannel);
+    RestAction<Void> moveVoiceMember(@Nonnull UserSnowflake user, @Nullable AudioChannel audioChannel);
 
     /**
-     * Used to kick a {@link Member Member} from a {@link AudioChannel AudioChannel}.
+     * Used to kick a member from a {@link AudioChannel AudioChannel}.
      * <br>As a note, you cannot kick a Member that isn't already in a AudioChannel. Also they must be in a AudioChannel
      * in the same Guild.
      *
@@ -3969,11 +3969,11 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *     <br>The specified channel was deleted before finishing the task</li>
      * </ul>
      *
-     * @param  member
-     *         The {@link Member Member} that you are moving.
+     * @param  user
+     *         The member that you are kicking.
      *
      * @throws IllegalStateException
-     *         If the Member isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
+     *         If the user is a Member and isn't currently in a AudioChannel in this Guild, or {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled.
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If any of the provided arguments is {@code null}</li>
@@ -3990,9 +3990,9 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> kickVoiceMember(@Nonnull Member member)
+    default RestAction<Void> kickVoiceMember(@Nonnull UserSnowflake user)
     {
-        return moveVoiceMember(member, null);
+        return moveVoiceMember(user, null);
     }
 
     /**
