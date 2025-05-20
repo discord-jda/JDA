@@ -123,10 +123,6 @@ public interface GuildVoiceState extends ISnowflake
      * Returns the current {@link AudioChannelUnion} that the {@link Member} is in.
      * If the {@link Member} is currently not connected to a {@link AudioChannel}, this returns null.
      *
-     * <p><b>Note:</b> This will return {@code null} if the member is not cached!
-     * You can use {@link net.dv8tion.jda.api.utils.MemberCachePolicy#VOICE MemberCachePolicy.VOICE}
-     * to cache members in voice channels.
-     *
      * @return The AudioChannelUnion that the Member is connected to, or null if the member is not connected to an audio channel.
      */
     @Nullable
