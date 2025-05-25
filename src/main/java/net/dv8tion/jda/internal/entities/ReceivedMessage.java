@@ -179,7 +179,7 @@ public class ReceivedMessage implements Message
         if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
         {
             SelfUser selfUser = api.getSelfUser();
-            boolean isBotOwnedWebhookMessage = selfUser.getApplicationId().equals(getApplicationId()) && isWebhookMessage();
+            boolean isBotOwnedWebhookMessage = selfUser.getApplicationIdLong() == getApplicationIdLong() && isWebhookMessage();
 
             if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild() && !isBotOwnedWebhookMessage)
             {
