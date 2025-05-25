@@ -34,6 +34,7 @@ import org.mockito.Mock;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.io.InputStream;
 import java.util.EnumSet;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
@@ -117,5 +118,10 @@ public class IntegrationTest extends AbstractSnapshotTest
     protected void withCacheFlags(EnumSet<CacheFlag> flags)
     {
         when(jda.getCacheFlags()).thenReturn(flags);
+    }
+
+    protected InputStream getResource(String path)
+    {
+        return getClass().getResourceAsStream("/" + path);
     }
 }
