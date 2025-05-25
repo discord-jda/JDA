@@ -59,13 +59,6 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> impl
 
     @Nonnull
     @Override
-    public ApplicationInfo getApplicationInfo()
-    {
-        return this.getJDA().retrieveApplicationInfo().complete();
-    }
-
-    @Nonnull
-    @Override
     @CheckReturnValue
     public ApplicationManagerImpl reset(long fields)
     {

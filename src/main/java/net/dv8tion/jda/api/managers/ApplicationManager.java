@@ -54,14 +54,6 @@ public interface ApplicationManager extends Manager<ApplicationManager>
     long INTEGRATION_TYPES_CONFIG  = 1 << 7;
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ApplicationInfo ApplicationInfo} associated to the bot.
-     *
-     * @return The corresponding ApplicationInfo
-     */
-    @Nonnull
-    ApplicationInfo getApplicationInfo();
-
-    /**
      * Resets the fields specified by the provided bit-flag pattern.
      * You can specify a combination by using a bitwise OR concat of the flag constants.
      * <br>Example: {@code manager.reset(ApplicationManager.ICON | ApplicationManager.COVER_IMAGE);}
