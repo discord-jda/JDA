@@ -23,12 +23,14 @@ import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.managers.ApplicationManager;
 import net.dv8tion.jda.api.managers.ApplicationManager.IntegrationTypeConfig;
 import net.dv8tion.jda.api.requests.Method;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.managers.ApplicationManagerImpl;
 import net.dv8tion.jda.test.IntegrationTest;
 import net.dv8tion.jda.test.Resources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.*;
 
@@ -113,6 +115,19 @@ public class ApplicationManagerTest extends IntegrationTest
         config.put(IntegrationType.UNKNOWN, IntegrationTypeConfig.of(Collections.emptySet(), Collections.emptySet()));
         assertThatIllegalArgumentException()
             .isThrownBy(() -> manager.setIntegrationTypeConfig(config));
+    }
+
+    @Nonnull
+    @Override
+    protected DataObject normalizeRequestBody(@Nonnull DataObject body)
+    {
+        String iconEncoding = getLogoIcon().getEncoding();
+        for (String key : body.keys())
+        {
+            if (iconEncoding.equals(body.get(key)))
+                body.put(key, "[MASKED]");
+        }
+        return super.normalizeRequestBody(body);
     }
 
     private static void assertUrlChecks(String name, ThrowingConsumer<String> consumer)
