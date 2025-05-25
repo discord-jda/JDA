@@ -133,7 +133,15 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> impl
     public ApplicationManager setTags(@Nonnull Collection<String> tags)
     {
         Checks.noneNull(tags, "Tags");
-        this.tags = new LinkedHashSet<>(tags);
+        Set<String> tagSet = new LinkedHashSet<>();
+        for (String tag : tags)
+        {
+            Checks.notLonger(tag.trim(), ApplicationInfo.MAX_TAG_LENGTH, "Tag");
+            Checks.notBlank(tag, "Tag");
+            tagSet.add(tag.trim());
+        }
+
+        this.tags = tagSet;
         set |= TAGS;
         return this;
     }
@@ -177,6 +185,7 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> impl
         {
             Checks.noneNull(config.keySet(), "IntegrationTypeConfig");
             Checks.noneNull(config.values(), "IntegrationTypeConfig");
+            Checks.check(!config.keySet().contains(IntegrationType.UNKNOWN), "IntegrationTypeConfig must not be set for UNKNOWN");
         }
 
         this.integrationTypeConfig = config;

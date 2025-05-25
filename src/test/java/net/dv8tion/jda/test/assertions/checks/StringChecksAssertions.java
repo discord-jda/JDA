@@ -39,7 +39,13 @@ public class StringChecksAssertions extends AbstractChecksAssertions<String, Str
 
     public StringChecksAssertions checksNotBlank()
     {
-        throwsFor(null, isNullError(name));
+        return checksNotBlank(true);
+    }
+
+    public StringChecksAssertions checksNotBlank(boolean checkNull)
+    {
+        if (checkNull)
+            throwsFor(null, isNullError(name));
         throwsFor("", isBlankError(name));
         throwsFor(" ", isBlankError(name));
         return this;
@@ -70,6 +76,13 @@ public class StringChecksAssertions extends AbstractChecksAssertions<String, Str
     public StringChecksAssertions checksRegex(String input, Pattern regex)
     {
         throwsFor(input, notRegexMatch(name, regex, input));
+        return this;
+    }
+
+    public StringChecksAssertions checksNoWhitespace()
+    {
+        String input = "hello world";
+        throwsFor(input, containsWhitespaceError(name, input));
         return this;
     }
 }

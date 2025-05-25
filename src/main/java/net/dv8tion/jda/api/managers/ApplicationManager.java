@@ -202,7 +202,6 @@ public interface ApplicationManager extends Manager<ApplicationManager>
     @CheckReturnValue
     ApplicationManager setCustomInstallUrl(@Nullable String customInstallUrl);
 
-
     /**
      * Sets the default installation parameters of this application.
      *

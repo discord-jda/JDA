@@ -17,6 +17,7 @@
 package net.dv8tion.jda.test.managers;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.managers.ApplicationManager;
@@ -26,9 +27,14 @@ import net.dv8tion.jda.internal.managers.ApplicationManagerImpl;
 import net.dv8tion.jda.test.IntegrationTest;
 import net.dv8tion.jda.test.Resources;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import java.io.IOException;
 import java.util.*;
+
+import static net.dv8tion.jda.test.ChecksHelper.assertChecks;
+import static net.dv8tion.jda.test.ChecksHelper.assertStringChecks;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 public class ApplicationManagerTest extends IntegrationTest
 {
@@ -41,7 +47,7 @@ public class ApplicationManagerTest extends IntegrationTest
 
         assertThatRequestFrom(manager)
             .hasMethod(Method.PATCH)
-            .hasCompiledRoute("/applications/@me")
+            .hasCompiledRoute("applications/@me")
             .hasBodyMatchingSnapshot()
             .whenQueueCalled();
     }
@@ -68,10 +74,53 @@ public class ApplicationManagerTest extends IntegrationTest
             .setIntegrationTypeConfig(integrationTypeConfig);
 
         assertThatRequestFrom(manager)
-                .hasMethod(Method.PATCH)
-                .hasCompiledRoute("/applications/@me")
-                .hasBodyMatchingSnapshot()
-                .whenQueueCalled();
+            .hasMethod(Method.PATCH)
+            .hasCompiledRoute("applications/@me")
+            .hasBodyMatchingSnapshot()
+            .whenQueueCalled();
+    }
+
+    @Test
+    void testChecks()
+    {
+        ApplicationManager manager = new ApplicationManagerImpl(jda);
+
+        assertStringChecks("Description", manager::setDescription)
+            .checksNotNull()
+            .checksNotLonger(ApplicationInfo.MAX_DESCRIPTION_LENGTH);
+
+        assertStringChecks("Tag", value -> manager.setTags(Collections.singleton(value)))
+            .checksNotLonger(ApplicationInfo.MAX_TAG_LENGTH);
+
+        assertChecks("Tags",manager::setTags)
+            .checksNotNull();
+
+        assertUrlChecks("URL", manager::setCustomInstallUrl);
+        assertUrlChecks("URL", manager::setInteractionsEndpointUrl);
+
+        Map<IntegrationType, IntegrationTypeConfig> config = new HashMap<>();
+        config.put(null, IntegrationTypeConfig.of(Collections.emptySet(), Collections.emptySet()));
+
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> manager.setIntegrationTypeConfig(config));
+
+        config.clear();
+        config.put(IntegrationType.GUILD_INSTALL, null);
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> manager.setIntegrationTypeConfig(config));
+
+        config.clear();
+        config.put(IntegrationType.UNKNOWN, IntegrationTypeConfig.of(Collections.emptySet(), Collections.emptySet()));
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> manager.setIntegrationTypeConfig(config));
+    }
+
+    private static void assertUrlChecks(String name, ThrowingConsumer<String> consumer)
+    {
+        assertStringChecks(name, consumer)
+            .checksNotBlank(false)
+            .checksNoWhitespace()
+            .checksNotLonger(ApplicationInfo.MAX_URL_LENGTH);
     }
 
     private static IntegrationTypeConfig getInstallParams()

@@ -49,6 +49,11 @@ public class ChecksHelper
         return name + " may not be blank";
     }
 
+    public static String containsWhitespaceError(String name, String argument)
+    {
+        return name + " may not contain blanks. Provided: \"" + argument + "\"";
+    }
+
     public static String isNotLowercase(String name, String value)
     {
         return name + " must be lowercase only! Provided: \"" + value + "\"";
