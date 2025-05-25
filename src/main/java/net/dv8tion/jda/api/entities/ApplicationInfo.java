@@ -37,6 +37,15 @@ import java.util.*;
  */
 public interface ApplicationInfo extends ISnowflake
 {
+    /** The maximum length for an application description ({@value}) */
+    int MAX_DESCRIPTION_LENGTH = 400;
+    /** The maximum length for any URL set on an application ({@value}) */
+    int MAX_URL_LENGTH = 2048;
+    /** The maximum allowed number of unique tags for an application ({@value})*/
+    int MAX_TAGS = 5;
+    /** The maximum length a single tag is allowed to be ({@value}) */
+    int MAX_TAG_LENGTH = 20;
+
     /**
      * Whether the bot requires code grant to invite or not. 
      * 

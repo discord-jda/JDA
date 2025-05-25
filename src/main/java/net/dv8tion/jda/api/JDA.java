@@ -2335,11 +2335,13 @@ public interface JDA extends IGuildChannelContainer<Channel>
     }
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.managers.ApplicationManager} that manages the application associated with the bot.
+     * Returns the {@link ApplicationManager} that manages the application associated with the bot.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @return The corresponding ApplicationManager
      */
     @Nonnull
+    @CheckReturnValue
     ApplicationManager getApplicationManager();
 
 }
