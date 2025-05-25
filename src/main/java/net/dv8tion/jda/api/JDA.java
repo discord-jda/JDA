@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.managers.ApplicationManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
@@ -2332,4 +2333,15 @@ public interface JDA extends IGuildChannelContainer<Channel>
         else throw new IllegalStateException("No port available");
         return new CompletedRestAction<>(this, port);
     }
+
+    /**
+     * Returns the {@link ApplicationManager} that manages the application associated with the bot.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @return The corresponding ApplicationManager
+     */
+    @Nonnull
+    @CheckReturnValue
+    ApplicationManager getApplicationManager();
+
 }
