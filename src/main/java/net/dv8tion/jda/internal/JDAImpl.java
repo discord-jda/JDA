@@ -86,7 +86,6 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -147,8 +146,6 @@ public class JDAImpl implements JDA
     protected final AtomicBoolean requesterShutdown = new AtomicBoolean(false);
     protected final AtomicReference<ShutdownEvent> shutdownEvent = new AtomicReference<>(null);
 
-    protected final ApplicationManager applicationManager;
-
     public JDAImpl(AuthorizationConfig authConfig)
     {
         this(authConfig, null, null, null, null);
@@ -169,7 +166,6 @@ public class JDAImpl implements JDA
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
         this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
-        this.applicationManager = new ApplicationManagerImpl(this);
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -1236,7 +1232,7 @@ public class JDAImpl implements JDA
     @Override
     public ApplicationManager getApplicationManager()
     {
-        return this.applicationManager;
+        return new ApplicationManagerImpl(this);
     }
 
     @Nonnull
