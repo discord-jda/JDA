@@ -56,15 +56,6 @@ public class LocalizationTest
                             new Command.Choice("7 Days", "7"),
                             new Command.Choice("14 Days", "14")
                         )
-                ),
-                new SubcommandData("temp", "Bans a user temporarily").addOptions(
-                    new OptionData(OptionType.STRING, "user", "The user to ban"),
-                    new OptionData(OptionType.INTEGER, "del_days", "The amount of days to delete messages")
-                        .addChoices(
-                            new Command.Choice("1 Day", "1"),
-                            new Command.Choice("7 Days", "7"),
-                            new Command.Choice("14 Days", "14")
-                        )
                 )
             )
         ).setLocalizationFunction(localizationFunction);
