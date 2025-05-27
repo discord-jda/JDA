@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.events.guild.member;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -31,6 +33,7 @@ import javax.annotation.Nonnull;
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
+@RequiredIntents(always = GatewayIntent.GUILD_MEMBERS)
 public class GuildMemberJoinEvent extends GenericGuildMemberEvent
 {
     public GuildMemberJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)

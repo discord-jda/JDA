@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,6 +43,7 @@ import javax.annotation.Nullable;
  * </ul>
 
  */
+@RequiredIntents(sometimes = {GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES})
 public class MessageReceivedEvent extends GenericMessageEvent
 {
     private final Message message;
