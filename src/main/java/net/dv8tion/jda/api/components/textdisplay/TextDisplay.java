@@ -57,6 +57,36 @@ public interface TextDisplay extends Component, MessageTopLevelComponent, Contai
         return new TextDisplayImpl(content);
     }
 
+    /**
+     * Constructs a new {@link TextDisplay} from the given format string and arguments.
+     *
+     * @param  format
+     *         The content to format with the following arguments
+     * @param  args
+     *         The arguments to format the content with,
+     *         if there are more arguments than format specifiers, the extra arguments are ignored.
+     *         The number of arguments is variable and may be zero.
+     *         The behaviour on a {@code null} argument depends on the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax" target="_blank">conversion</a>.
+     *
+     * @throws IllegalArgumentException
+     *         If the format string is {@code null}, or the resulting content is blank
+     * @throws java.util.IllegalFormatException
+     *         If the format string contains an illegal syntax,
+     *         a format specifier that is incompatible with the given arguments,
+     *         insufficient arguments given the format string, or other illegal conditions.
+     *         For specification of all possible formatting errors,
+     *         see the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#detail" target="_blank">Details</a> section of the formatter class specification.
+     *
+     * @return The new {@link TextDisplay}
+     */
+    @Nonnull
+    static TextDisplay ofFormat(@Nonnull String format, @Nonnull Object... args)
+    {
+        Checks.notNull(format, "Format string");
+        Checks.notNull(args, "Format args"); // Null array elements are allowed
+        return of(String.format(format, args));
+    }
+
     @Nonnull
     @Override
     @CheckReturnValue
