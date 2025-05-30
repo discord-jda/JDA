@@ -168,6 +168,8 @@ public class ReceivedMessage implements Message
 
     private void checkUser()
     {
+        if (isWebhookMessage())
+            throw new IllegalStateException("Updating messages sent by a webhook must be done with the corresponding webhook!");
         if (!getJDA().getSelfUser().equals(getAuthor()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
     }
@@ -728,7 +730,7 @@ public class ReceivedMessage implements Message
         action.setContent(newContent.toString());
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -744,7 +746,7 @@ public class ReceivedMessage implements Message
         action.setEmbeds(embeds);
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -760,7 +762,7 @@ public class ReceivedMessage implements Message
         action.setComponents(components);
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -776,7 +778,7 @@ public class ReceivedMessage implements Message
         action.setContent(String.format(format, args));
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -792,7 +794,7 @@ public class ReceivedMessage implements Message
         action.setAttachments(attachments);
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -808,7 +810,7 @@ public class ReceivedMessage implements Message
         action.applyData(newContent);
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -826,6 +828,8 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
+            route = withThreadContext(route);
+
             final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
             action.setErrorMapper(getUnknownWebhookErrorMapper());
             return action;
@@ -863,6 +867,7 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), getId());
+            route = withThreadContext(route);
         }
         else
         {
@@ -1048,6 +1053,13 @@ public class ReceivedMessage implements Message
 
         messageEditAction.setErrorMapper(getUnknownWebhookErrorMapper());
         return messageEditAction;
+    }
+
+    private Route.CompiledRoute withThreadContext(Route.CompiledRoute route)
+    {
+        if (getChannelType().isThread() && !(webhook instanceof InteractionHook))
+            return route.withQueryParams("thread_id", getChannelId());
+        return route;
     }
 
     private ErrorMapper getUnknownWebhookErrorMapper()
