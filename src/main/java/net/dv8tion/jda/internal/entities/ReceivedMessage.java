@@ -826,7 +826,7 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
-            if (channel instanceof ThreadChannel)
+            if (channel instanceof ThreadChannel && !(webhook instanceof InteractionHook))
                 route = route.withQueryParams("thread_id", channel.getId());
 
             final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
@@ -866,7 +866,7 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), getId());
-            if (channel instanceof ThreadChannel)
+            if (channel instanceof ThreadChannel && !(webhook instanceof InteractionHook))
                 route = route.withQueryParams("thread_id", channel.getId());
         }
         else
@@ -1059,7 +1059,7 @@ public class ReceivedMessage implements Message
     private MessageEditActionImpl webhookEditRequest(MessageEditActionImpl action)
     {
         MessageEditActionImpl withHook = action.withHook(webhook);
-        if (channel instanceof ThreadChannel)
+        if (channel instanceof ThreadChannel && !(webhook instanceof InteractionHook))
             withHook = withHook.withThread((ThreadChannel) channel);
         return withHook;
     }
