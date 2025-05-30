@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.WebhookClient;
-import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -48,7 +48,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     private final MessageChannel channel;
     private final MessageEditBuilder builder = new MessageEditBuilder();
     private WebhookClient<Message> webhook;
-    private ThreadChannel thread;
+    private String threadId;
 
     public MessageEditActionImpl(@Nonnull JDA jda, @Nullable Guild guild, @Nonnull String channelId, @Nonnull String messageId)
     {
@@ -66,15 +66,11 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
         this.messageId = messageId;
     }
 
-    public MessageEditActionImpl withHook(WebhookClient<Message> hook)
+    public MessageEditActionImpl withHook(WebhookClient<Message> hook, ChannelType channelType, long channelId)
     {
         this.webhook = hook;
-        return this;
-    }
-
-    public MessageEditActionImpl withThread(ThreadChannel thread)
-    {
-        this.thread = thread;
+        if (!(hook instanceof InteractionHook) && channelType.isThread())
+            this.threadId = Long.toUnsignedString(channelId);
         return this;
     }
 
@@ -90,8 +86,8 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
         if (webhook != null && (!(webhook instanceof InteractionHook) || !((InteractionHook) webhook).isExpired()))
         {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), messageId);
-            if (thread != null && !(webhook instanceof InteractionHook))
-                route = route.withQueryParams("thread_id", thread.getId());
+            if (this.threadId != null)
+                route = route.withQueryParams("thread_id", threadId);
 
             return route;
         }
