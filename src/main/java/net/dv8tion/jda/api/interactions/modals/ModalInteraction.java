@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
+import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * Interaction on a {@link Modal}
  *
- * <p>If the modal of this interaction was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction},
+ * <p>If the modal of this interaction was a reply to a {@link ComponentInteraction ComponentInteraction},
  * you can also use {@link #deferEdit()} to edit the original message that contained the component instead of replying.
  *
  * @see    net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -64,7 +65,7 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      *
      * <p>Returns null if no component with that id has been found
      *
-     * @param  id
+     * @param  customId
      *         The custom id
      *
      * @throws IllegalArgumentException
@@ -75,16 +76,39 @@ public interface ModalInteraction extends IReplyCallback, IMessageEditCallback
      * @see    #getValues()
      */
     @Nullable
-    default ModalMapping getValue(@Nonnull String id)
+    default ModalMapping getValue(@Nonnull String customId)
     {
-        Checks.notNull(id, "ID");
+        Checks.notNull(customId, "ID");
         return getValues().stream()
-                .filter(mapping -> mapping.getId().equals(id))
+                .filter(mapping -> mapping.getCustomId().equals(customId))
                 .findFirst().orElse(null);
     }
 
     /**
-     * Message this modal came from, if it was a reply to a {@link net.dv8tion.jda.api.interactions.components.ComponentInteraction ComponentInteraction}.
+     * Convenience method to get a {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMapping} by its numeric id from the List of {@link net.dv8tion.jda.api.interactions.modals.ModalMapping ModalMappings}
+     *
+     * <p>Returns null if no component with that id has been found
+     *
+     * @param  id
+     *         The numeric id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is null
+     *
+     * @return ModalMapping with this numeric id, or null if not found
+     *
+     * @see    #getValues()
+     */
+    @Nullable
+    default ModalMapping getValueByUniqueId(int id)
+    {
+        return getValues().stream()
+                .filter(mapping -> mapping.getUniqueId() == id)
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * Message this modal came from, if it was a reply to a {@link ComponentInteraction ComponentInteraction}.
      *
      * @return The message the component is attached to, or {@code null}
      */
