@@ -68,7 +68,7 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
     @Nonnull
     @Override
     @CheckReturnValue
-    M setCheck(BooleanSupplier checks);
+    M setCheck(@Nonnull BooleanSupplier checks);
 
     @Nonnull
     @Override

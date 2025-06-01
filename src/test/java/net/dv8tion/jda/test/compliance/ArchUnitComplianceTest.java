@@ -18,13 +18,20 @@ package net.dv8tion.jda.test.compliance;
 
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.lang.ArchCondition;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
 import net.dv8tion.jda.annotations.UnknownNullability;
 import net.dv8tion.jda.api.managers.Manager;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.IOBiConsumer;
+import net.dv8tion.jda.api.utils.IOFunction;
 import org.jetbrains.annotations.Contract;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -93,6 +100,23 @@ public class ArchUnitComplianceTest
     }
 
     @Test
+    void testMethodsThatAcceptObjectShouldHaveNullabilityAnnotations()
+    {
+        methods()
+            .that()
+            .arePublic()
+            .and().doNotHaveName("equals")
+            .and().doNotHaveName("valueOf")
+            .and().doNotHaveName("accept")
+            .and().doNotHaveName("test")
+            .and().doNotHaveName("formatTo")
+            .and().areNotDeclaredIn(IOFunction.class)
+            .and().areNotDeclaredIn(IOBiConsumer.class)
+            .should(haveNonPrimitiveParametersAnnotatedWithNullability())
+            .check(apiClasses);
+    }
+
+    @Test
     void testMethodsThatReturnPrimitivesShouldNotHaveNullabilityAnnotations()
     {
         methods()
@@ -147,5 +171,24 @@ public class ArchUnitComplianceTest
             .resideOutsideOfPackage("net.dv8tion.jda.api..")
             .allowEmptyShould(true)
             .check(apiClasses);
+    }
+
+    private ArchCondition<JavaMethod> haveNonPrimitiveParametersAnnotatedWithNullability()
+    {
+        return new ArchCondition<JavaMethod>("have non-primitive parameters annotated with @Nonnull or @Nullable")
+        {
+            @Override
+            public void check(JavaMethod method, ConditionEvents events)
+            {
+                method.getParameters()
+                    .stream()
+                    .filter(parameter -> !parameter.getRawType().isPrimitive())
+                    .filter(parameter -> !parameter.getRawType().isArray())
+                    .filter(parameter -> !parameter.isAnnotatedWith(Nonnull.class) && !parameter.isAnnotatedWith(Nullable.class) && !parameter.isAnnotatedWith(CheckForNull.class))
+                    .forEach(parameter ->
+                        events.add(SimpleConditionEvent.violated(method, parameter.getDescription() + " is not annotated with @Nonnull or @Nullable"))
+                    );
+            }
+        };
     }
 }

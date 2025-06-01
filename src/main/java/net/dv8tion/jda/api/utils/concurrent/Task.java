@@ -109,7 +109,7 @@ public interface Task<T>
      * @return The current Task instance for chaining
      */
     @Nonnull
-    default Task<T> setTimeout(long timeout, TimeUnit unit)
+    default Task<T> setTimeout(long timeout, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");
         return setTimeout(Duration.ofMillis(unit.toMillis(timeout)));

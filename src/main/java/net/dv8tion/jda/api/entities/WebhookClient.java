@@ -637,7 +637,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageById(long messageId, MessageEditData message)
+    default WebhookMessageEditAction<T> editMessageById(long messageId, @Nonnull MessageEditData message)
     {
         return editMessageById(Long.toUnsignedString(messageId), message);
     }

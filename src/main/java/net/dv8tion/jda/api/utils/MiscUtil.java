@@ -70,7 +70,7 @@ public class MiscUtil
      *
      * @return The shard id for the guild.
      */
-    public static int getShardForGuild(String guildId, int shards)
+    public static int getShardForGuild(@Nonnull String guildId, int shards)
     {
         return getShardForGuild(parseSnowflake(guildId), shards);
     }
@@ -89,7 +89,7 @@ public class MiscUtil
      *
      * @return The shard id for the guild.
      */
-    public static int getShardForGuild(Guild guild, int shards)
+    public static int getShardForGuild(@Nonnull Guild guild, int shards)
     {
         return getShardForGuild(guild.getIdLong(), shards);
     }
@@ -108,7 +108,7 @@ public class MiscUtil
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
     }
 
-    public static long parseLong(String input)
+    public static long parseLong(@Nonnull String input)
     {
         if (input.startsWith("-"))
             return Long.parseLong(input);
@@ -116,7 +116,7 @@ public class MiscUtil
             return Long.parseUnsignedLong(input);
     }
 
-    public static long parseSnowflake(String input)
+    public static long parseSnowflake(@Nonnull String input)
     {
         Checks.notEmpty(input, "ID");
         try
@@ -131,7 +131,7 @@ public class MiscUtil
     }
 
     @UnknownNullability
-    public static <E> E locked(ReentrantLock lock, Supplier<E> task)
+    public static <E> E locked(@Nonnull ReentrantLock lock, @Nonnull Supplier<E> task)
     {
         tryLock(lock);
         try
@@ -144,7 +144,7 @@ public class MiscUtil
         }
     }
 
-    public static void locked(ReentrantLock lock, Runnable task)
+    public static void locked(@Nonnull ReentrantLock lock, @Nonnull Runnable task)
     {
         tryLock(lock);
         try
@@ -166,7 +166,7 @@ public class MiscUtil
      * @throws IllegalStateException
      *         If the lock could not be acquired
      */
-    public static void tryLock(Lock lock)
+    public static void tryLock(@Nonnull Lock lock)
     {
         try
         {
@@ -193,7 +193,7 @@ public class MiscUtil
      * @param out
      *        The String to append
      */
-    public static void appendTo(Formatter formatter, int width, int precision, boolean leftJustified, String out)
+    public static void appendTo(@Nonnull Formatter formatter, int width, int precision, boolean leftJustified, @Nonnull String out)
     {
         try
         {

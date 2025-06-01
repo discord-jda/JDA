@@ -15,13 +15,6 @@
  */
 package net.dv8tion.jda.internal.entities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -33,6 +26,12 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class WidgetImpl implements Widget
 {
@@ -145,7 +144,7 @@ public class WidgetImpl implements Widget
 
     @Override
     @Nullable
-    public VoiceChannel getVoiceChannelById(String id)
+    public VoiceChannel getVoiceChannelById(@Nonnull String id)
     {
         checkAvailable();
 
@@ -172,7 +171,7 @@ public class WidgetImpl implements Widget
 
     @Override
     @Nullable
-    public Member getMemberById(String id)
+    public Member getMemberById(@Nonnull String id)
     {
         checkAvailable();
 
