@@ -186,7 +186,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(Member issuer)
+    default boolean canInteract(@Nonnull Member issuer)
     {
         return PermissionUtil.canInteract(issuer, this);
     }
@@ -202,7 +202,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(User issuer, MessageChannel channel)
+    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel)
     {
         return PermissionUtil.canInteract(issuer, this, channel);
     }
@@ -220,7 +220,7 @@ public interface RichCustomEmoji extends CustomEmoji
      *
      * @return True, if the provided Member can use this emoji
      */
-    default boolean canInteract(User issuer, MessageChannel channel, boolean botOverride)
+    default boolean canInteract(@Nonnull User issuer, @Nonnull MessageChannel channel, boolean botOverride)
     {
         return PermissionUtil.canInteract(issuer, this, channel, botOverride);
     }

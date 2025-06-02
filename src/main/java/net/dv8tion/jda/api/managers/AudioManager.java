@@ -75,7 +75,7 @@ public interface AudioManager
      *                 and the {@link VoiceChannel#getUserLimit() user limit} has been exceeded!</li>
      *         </ul>
      */
-    void openAudioConnection(AudioChannel channel);
+    void openAudioConnection(@Nonnull AudioChannel channel);
 
     /**
      * Close down the current audio connection of this {@link net.dv8tion.jda.api.entities.Guild Guild}

@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents the embedded resource type.
@@ -53,7 +54,7 @@ public enum EmbedType
      *         or {@link net.dv8tion.jda.api.entities.EmbedType#UNKNOWN UNKNOWN}.
      */
     @Nonnull
-    public static EmbedType fromKey(String key)
+    public static EmbedType fromKey(@Nullable String key)
     {
         for (EmbedType type : values())
         {

@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.MDC;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.NoRouteToHostException;
@@ -39,7 +40,7 @@ public class DefaultSendSystem implements IAudioSendSystem
     private Thread sendThread;
     private ConcurrentMap<String, String> contextMap;
 
-    public DefaultSendSystem(IPacketProvider packetProvider)
+    public DefaultSendSystem(@Nonnull IPacketProvider packetProvider)
     {
         this.packetProvider = packetProvider;
     }
