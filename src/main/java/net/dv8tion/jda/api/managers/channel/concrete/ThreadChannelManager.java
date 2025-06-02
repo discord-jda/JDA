@@ -85,7 +85,10 @@ public interface ThreadChannelManager extends ChannelManager<ThreadChannel, Thre
     /**
      * Sets the locked state of this ThreadChannel.
      *
-     * <p>This is the equivalent of archiving as a moderator.
+     * <p> Locking will prevent any new messages from being sent in the thread except by moderators.
+     * Actions such as react to messages, leave, get removed and get invited to the thread are still possible.
+     * <p>Locking a thread will not archive it.
+     *
      *
      * @param  locked
      *         The new locked state for the selected {@link ThreadChannel}
