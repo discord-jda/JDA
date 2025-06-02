@@ -19,6 +19,10 @@ package net.dv8tion.jda.api.events.sticker.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 
@@ -36,6 +40,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code name}
  */
+@RequiredIntents(always = GatewayIntent.GUILD_EXPRESSIONS)
+@RequiredCacheFlags(always = CacheFlag.STICKER)
 public class GuildStickerUpdateNameEvent extends GenericGuildStickerUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
