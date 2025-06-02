@@ -314,6 +314,7 @@ class AudioWebSocket extends WebSocketAdapter
             final VoiceCode.Close closeCode = VoiceCode.Close.from(code);
             switch (closeCode)
             {
+                case RATE_LIMIT_EXCEEDED:
                 case SERVER_NOT_FOUND:
                 case SERVER_CRASH:
                 case INVALID_SESSION:
@@ -322,6 +323,7 @@ class AudioWebSocket extends WebSocketAdapter
                 case AUTHENTICATION_FAILED:
                     this.close(ConnectionStatus.DISCONNECTED_AUTHENTICATION_FAILURE);
                     break;
+                case DISCONNECTED_ALL_CLIENTS:
                 case DISCONNECTED:
                     this.close(ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL);
                     break;
