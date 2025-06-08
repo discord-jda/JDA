@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a union of {@link SectionContentComponent SectionContentComponents} that can be either
+ * Represents a union of {@link SectionContentComponent SectionContentComponents} that can be one of:
  * <ul>
  *     <li>{@link TextDisplay}</li>
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>

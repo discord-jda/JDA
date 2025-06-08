@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Represents a union of {@link ContainerChildComponent ContainerChildComponents} that can be either
+ * Represents a union of {@link ContainerChildComponent ContainerChildComponents} that can be one of:
  * <ul>
  *     <li>{@link ActionRow}</li>
  *     <li>{@link Section}</li>
