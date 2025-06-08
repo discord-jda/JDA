@@ -173,7 +173,7 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
      *
      * @return The maximum amount an action row can contain
      */
-    static int getMaxAllowed(Component.Type type)
+    static int getMaxAllowed(@Nonnull Component.Type type)
     {
         switch (type)
         {
