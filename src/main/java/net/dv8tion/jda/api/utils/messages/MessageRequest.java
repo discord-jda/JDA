@@ -250,7 +250,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <pre>{@code
      * channel.sendMessage("Content is still required")
      *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
+     *     ActionRow.of(selectMenu), // first row
      *     ActionRow.of(button1, button2)) // second row (shows below the first)
      *   .queue();
      * }</pre>
@@ -292,7 +292,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <pre>{@code
      * channel.sendMessage("Content is still required")
      *   .setComponents(
-     *     ActionRow.of(selectMenu) // first row
+     *     ActionRow.of(selectMenu), // first row
      *     ActionRow.of(button1, button2)) // second row (shows below the first)
      *   .queue();
      * }</pre>
@@ -397,7 +397,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <pre>{@code
      * channel.sendMessage("Content is still required")
-     *   .setActionRow(button1, button2)
+     *   .setComponents(ActionRow.of(button1, button2))
      *   .queue();
      * }</pre>
      *
