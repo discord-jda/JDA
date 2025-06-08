@@ -106,7 +106,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     }
 
     /**
-     * Sets whether V2 components will be used by default. (default: {@value AbstractMessageBuilder#isDefaultUseComponentsV2})
+     * Sets whether V2 components will be used by default, this is {@code false} by default.
      * <br>When enabled, {@link #useComponentsV2()} gets called for every message builder.
      *
      * <p>This can be overwritten with {@link #useComponentsV2(boolean)} on each builder instance.
@@ -120,7 +120,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     }
 
     /**
-     * Whether V2 components are used by default.
+     * Whether V2 components are used by default, this is {@code false} by default.
      * <br>When enabled, {@link #useComponentsV2()} gets called for every message builder.
      *
      * <p>This can be overwritten with {@link #useComponentsV2(boolean)} on each builder instance.
@@ -328,7 +328,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     }
 
     /**
-     * Sets whether this message is allowed to use V2 components.
+     * Sets whether this message is allowed to use V2 components, this is disabled by default.
      *
      * <p>Using V2 components removes the top-level component limit,
      * and allows more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
@@ -360,7 +360,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     R useComponentsV2(boolean use);
 
     /**
-     * Enables using V2 components.
+     * Enables using V2 components, this is disabled by default.
      * <br>This is a shortcut for {@code useComponentV2(true)}
      *
      * <p>Using V2 components removes the top-level component limit,
@@ -382,6 +382,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @return The same instance for chaining
      *
      * @see    MessageTopLevelComponent
+     * @see    #setDefaultUseComponentsV2(boolean)
      */
     @Nonnull
     default R useComponentsV2()
