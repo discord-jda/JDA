@@ -106,10 +106,10 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     }
 
     /**
-     * Sets whether V2 components will be used by default.
+     * Sets whether V2 components will be used by default. (default: {@value AbstractMessageBuilder#isDefaultUseComponentsV2})
      * <br>When enabled, {@link #useComponentsV2()} gets called for every message builder.
      *
-     * <p>This can still be overridden by calling {@link #useComponentsV2(boolean)} manually.
+     * <p>This can be overwritten with {@link #useComponentsV2(boolean)} on each builder instance.
      *
      * @param  use
      *         {@code true} to enable V2 components by default, {@code false} to disabled them by default.
@@ -123,7 +123,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * Whether V2 components are used by default.
      * <br>When enabled, {@link #useComponentsV2()} gets called for every message builder.
      *
-     * <p>This can still be overridden by calling {@link #useComponentsV2(boolean)} manually.
+     * <p>This can be overwritten with {@link #useComponentsV2(boolean)} on each builder instance.
      *
      * @return {@code true} if every message will use Components V2 by default, {@code false} if not
      */
