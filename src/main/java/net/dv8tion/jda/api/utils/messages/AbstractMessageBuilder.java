@@ -54,9 +54,9 @@ public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder
     protected AllowedMentionsData mentions = new AllowedMentionsData();
     protected int messageFlags;
 
-    protected AbstractMessageBuilder() {
-        if (isDefaultUseComponentsV2)
-            useComponentsV2();
+    protected AbstractMessageBuilder()
+    {
+        useComponentsV2(isDefaultUseComponentsV2);
     }
 
     @Nonnull
