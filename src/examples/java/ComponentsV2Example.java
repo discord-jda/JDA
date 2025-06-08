@@ -45,46 +45,36 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.List;
 
 /**
- * A (somewhat?) comprehensive example on how to use the new V2 components.
+ * An example on how to use components version 2.
  *
  * <h3>Enabling Components V2</h3>
  * V2 components can only be used in messages which uses {@link MessageRequest#useComponentsV2()},
  * this however has some limits, which are documented on the method.
  *
- * <p>Note that every component which requires that flag will be documented.
+ * <p>Note that every component documents whether it requires the V2 flag.
  *
  * <h3>Component typing</h3>
- * Components now follow a type system similar to channels, using "union" types;
+ * Components follow a type system similar to channels, using "union" types;
  * they help you discover which type of component a particular union can represent,
- * with methods such as {@link ActionRowChildComponentUnion#asButton()}.
- * <br>For instance, {@link ActionRowChildComponentUnion ActionRowChildComponentUnion}
- * can represent 3 different component types, excluding unknown components.
+ * with methods such as {@link ActionRowChildComponentUnion#asButton()},
+ * take a look at what each union supports!
  *
  * <p>Each component that can contain other components will contain a link to their compatible children type.
  *
- * <h3>New IDs</h3>
- * Discord has also added unique, numeric IDs on <i>every</i> component, even non-actionable ones.
- *
- * <p>This is why we now have one {@linkplain Component#getUniqueId() getter for unique IDs},
- * and {@linkplain ActionComponent#getCustomId() another for custom IDs} (on action components)
- *
- * <h3>Replacing components</h3>
- * With the new IDs, we are now able to replace any component by ID, to streamline this,
- * we added {@link IReplaceable#replace(ComponentReplacer)} on component containers,
- * and {@link ComponentTree}.
+ * <h3>Unique IDs</h3>
+ * Every component has a {@linkplain Component#getUniqueId() unique numeric ID},
+ * you can, for example, use them to replace specific components of a message.
+ * <br>For this, you can use {@link IReplaceable#replace(ComponentReplacer)} on component containers and {@link ComponentTree}.
  *
  * <p>For example:
- * <pre><code>
+ * <pre>{@code
  *     public class MyButtonListener extends ListenerAdapter {
- *         {@code @Override}
+ *         @Override
  *         public void onButtonInteraction(ButtonInteractionEvent event)
  *         {
  *              final MessageComponentTree clickedAsDisabled = event.getMessage()
@@ -93,13 +83,13 @@ import java.util.List;
  *             event.editComponents(clickedAsDisabled).queue();
  *         }
  *     }
- * </code></pre>
+ * }</pre>
  *
  * You can also easily disable all components:
  *
- * <pre><code>
+ * <pre>{@code
  *     public class MyButtonListener extends ListenerAdapter {
- *         {@code @Override}
+ *         @Override
  *         public void onButtonInteraction(ButtonInteractionEvent event)
  *         {
  *              final MessageComponentTree everythingAsDisabled = event.getMessage()
@@ -108,7 +98,10 @@ import java.util.List;
  *             event.editComponents(everythingAsDisabled).queue();
  *         }
  *     }
- * </code></pre>
+ * }</pre>
+ *
+ * <p>This is separate from {@linkplain ActionComponent#getCustomId() custom IDs}
+ * which you can only find on components that trigger interactions.
  *
  * @see Container
  * @see Section
@@ -128,15 +121,12 @@ public class ComponentsV2Example extends ListenerAdapter
 
     public static void main(String[] args) throws IOException
     {
-        // Read our token from a "Config.txt" in the project root (where the README.md is)
-        // In Java 11+, you can replace this with "Files.readString(Path.of("Config.txt"))"
-        final String token = new String(Files.readAllBytes(Paths.get("Config.txt")), Charset.defaultCharset()).trim();
-        JDA jda = JDABuilder.createLight(token, EnumSet.noneOf(GatewayIntent.class)) // slash commands don't need any intents
+        JDA jda = JDABuilder.createLight("YOUR_BOT_TOKEN_HERE", EnumSet.noneOf(GatewayIntent.class)) // slash commands don't need any intents
                 .addEventListeners(new ComponentsV2Example())
                 .build();
 
         final List<ApplicationEmoji> applicationEmojis = jda.retrieveApplicationEmojis().complete();
-        backEmoji = getOrCreateEmoji(jda, applicationEmojis, "/back.webp");
+        backEmoji = getOrCreateEmoji(jda, applicationEmojis, "/back.png");
 
         // Send the new set of commands to Discord; this will override any existing global commands with the new set provided here
         // You might need to reload your Discord client if you don't see the commands
@@ -166,9 +156,9 @@ public class ComponentsV2Example extends ListenerAdapter
         Container container = Container.of(
                 // Displays content on the left and an "accessory" on the right.
                 Section.of(
-                        // A thumbnail, it even works with WEBPs.
+                        // A thumbnail, it should work with all image formats Discord supports.
                         // You can make it a spoiler and also give it a description (alternative text)
-                        Thumbnail.fromFile(getResourceAsFileUpload("/cv2.webp")),
+                        Thumbnail.fromFile(getResourceAsFileUpload("/cv2.png")),
                         // The section's children
                         TextDisplay.of("## A container"),
                         TextDisplay.of("Quite different from embeds"),
@@ -187,7 +177,7 @@ public class ComponentsV2Example extends ListenerAdapter
                         TextDisplay.of("**Moderation:** Moderates the messages"),
                         TextDisplay.of("**Status:** Enabled")
                 ),
-                // A classic row.
+                // A row of actionable components.
                 ActionRow.of(
                         // For the sake of the example, this select menu will do nothing.
                         StringSelectMenu.create("feature")
@@ -196,7 +186,7 @@ public class ComponentsV2Example extends ListenerAdapter
                                 .addOption("Fun", "fun", "Configure the fun module")
                                 .setDefaultValues("moderation")
                                 .build()
-                ).withUniqueId(42), // You can now put numeric IDs on *any* component.
+                ).withUniqueId(42), // Set an identifier, this may be useful to specifically remove this action row later
 
                 // Separate things a bit.
                 Separator.createDivider(Separator.Spacing.SMALL),
@@ -207,21 +197,15 @@ public class ComponentsV2Example extends ListenerAdapter
                 // Displays a simple download component, has no preview.
                 FileDisplay.fromFile(FileUpload.fromData("{}".getBytes(StandardCharsets.UTF_8), "config.json")),
 
-                // Again?
-                Separator.createDivider(Separator.Spacing.SMALL),
-
-                // 🦀
-                TextDisplay.of("Powered by:"),
                 // A set of pictures to display, display in a mosaic
                 // It can also take one item, in which case it will take the most horizontal space as possible,
                 // depending on the aspect ratio.
                 MediaGallery.of(
-                        MediaGalleryItem.fromFile(getResourceAsFileUpload("/rust.gif"))
+                        MediaGalleryItem.fromFile(getResourceAsFileUpload("/docs.gif"))
                 )
         );
 
-        // Notice here how we don't have to upload any files and manage ugly "attachment://" URLs?
-        // They are automatically added when they are inside a V2 component
+        // No need to upload files here, it's taken care of automatically
         event.replyComponents(container)
                 // This is required any time you are using Components V2
                 .useComponentsV2()
@@ -238,7 +222,7 @@ public class ComponentsV2Example extends ListenerAdapter
                 Separator.createDivider(Separator.Spacing.LARGE),
 
                 Section.of(
-                        Thumbnail.fromFile(getResourceAsFileUpload("/Prairie_ButterflyFields.webp"))
+                        Thumbnail.fromFile(getResourceAsFileUpload("/Prairie_ButterflyFields.jpg"))
                                 // Set an "alternative text", useful for accessibility
                                 .withDescription("Butterfly Fields"),
                         // In Java 15+, you can use text blocks instead: https://www.baeldung.com/java-text-blocks
@@ -269,8 +253,7 @@ public class ComponentsV2Example extends ListenerAdapter
                 )
         );
 
-        // Notice here how we don't have to upload any files and manage ugly "attachment://" URLs?
-        // They are automatically added when they are inside a V2 component
+        // No need to upload files here, it's taken care of automatically
         event.replyComponents(container)
                 // This is required any time you are using Components V2
                 .useComponentsV2()
