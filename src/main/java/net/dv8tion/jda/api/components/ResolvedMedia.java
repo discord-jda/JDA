@@ -28,11 +28,10 @@ import javax.annotation.Nullable;
 public interface ResolvedMedia
 {
     /**
-     * The URL of this media, this is always where the file originally came from.
-     * <br>This can be either {@code attachment://filename.extension} or an actual URL.
+     * The URL of this media, for locally-uploaded files, this will always be a URL from Discord's CDN,
+     * in other cases it <i>may</i> be an external URL.
      *
-     * <p>If you want to download the file, you should use {@link #getProxy()},
-     * to avoid connecting your bot to unknown servers.
+     * <p>If you want to download the file, you should use {@link #getProxy()}.
      *
      * @return The URL of this media
      */
@@ -43,6 +42,8 @@ public interface ResolvedMedia
      * The URL of this media, proxied by Discord's CDN.
      *
      * <p>This URL may be invalid if the media failed to load.
+     *
+     * <p>If you want to download the file, you should use {@link #getProxy()}.
      *
      * @return The proxy URL of this media
      */
