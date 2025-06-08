@@ -450,7 +450,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return replyComponents(tree.getComponents());

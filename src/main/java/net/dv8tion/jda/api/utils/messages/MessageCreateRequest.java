@@ -213,7 +213,7 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
-    default R addComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default R addComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         return addComponents(tree.getComponents());
     }

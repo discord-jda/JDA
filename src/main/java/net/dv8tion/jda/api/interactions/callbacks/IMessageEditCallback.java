@@ -259,7 +259,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editComponents(tree.getComponents());

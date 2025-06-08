@@ -446,7 +446,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return sendMessageComponents(tree.getComponents());
@@ -1083,7 +1083,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
@@ -1124,7 +1124,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());

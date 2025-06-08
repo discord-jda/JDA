@@ -347,7 +347,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         return editMessageComponentsById("@original", tree);
     }

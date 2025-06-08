@@ -1220,7 +1220,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default MessageEditAction editMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponents(tree.getComponents());
@@ -1768,7 +1768,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponents(@Nonnull ComponentTree<MessageTopLevelComponentUnion> tree)
+    default MessageCreateAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return replyComponents(tree.getComponents());
