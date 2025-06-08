@@ -20,9 +20,11 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
+import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
@@ -30,12 +32,16 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.internal.components.UnknownComponentImpl;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ComponentsUtilTest
 {
@@ -68,5 +74,21 @@ public class ComponentsUtilTest
     private static ThrowableAssert.ThrowingCallable run(ThrowableAssert.ThrowingCallable runnable)
     {
         return runnable;
+    }
+
+    @Test
+    void testRemoveComponentFromRow()
+    {
+        MessageComponentTree tree = MessageComponentTree.of(
+                ActionRow.of(
+                        Button.primary("button1", "test").withUniqueId(1),
+                        Button.secondary("button2", "test").withUniqueId(2)
+                )
+        );
+
+        MessageComponentTree newTree = assertDoesNotThrow(() -> tree.replace(ComponentReplacer.byUniqueId(1, (Button) null)));
+        final ActionRow row = newTree.getComponents().get(0).asActionRow();
+        assertEquals(1, row.getComponents().size());
+        assertEquals(2, row.getComponents().get(0).getUniqueId());
     }
 }

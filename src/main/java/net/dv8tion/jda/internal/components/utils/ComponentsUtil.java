@@ -77,6 +77,8 @@ public class ComponentsUtil
         for (E component : children)
         {
             Component newComponent = replacer.apply(component);
+            if (newComponent == null)
+                continue;
             // If it returned a different component, then use it and don't try to recurse
             if (newComponent != component)
             {
