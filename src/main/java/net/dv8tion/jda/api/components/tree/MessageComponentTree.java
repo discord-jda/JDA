@@ -39,7 +39,7 @@ public interface MessageComponentTree extends ComponentTree<MessageTopLevelCompo
     @Nonnull
     @Override
     @CheckReturnValue
-    MessageComponentTree replace(ComponentReplacer replacer);
+    MessageComponentTree replace(@Nonnull ComponentReplacer replacer);
 
     @Nonnull
     @Override

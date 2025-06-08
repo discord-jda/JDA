@@ -38,7 +38,7 @@ public final class ComponentTreeImpl<E extends ComponentUnion> extends AbstractC
 
     @Nonnull
     @Override
-    public ComponentTree<E> replace(ComponentReplacer replacer)
+    public ComponentTree<E> replace(@Nonnull ComponentReplacer replacer)
     {
         Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(

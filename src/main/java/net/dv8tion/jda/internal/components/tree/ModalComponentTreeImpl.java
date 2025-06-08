@@ -47,7 +47,7 @@ public class ModalComponentTreeImpl
 
     @Nonnull
     @Override
-    public ModalComponentTree replace(ComponentReplacer replacer)
+    public ModalComponentTree replace(@Nonnull ComponentReplacer replacer)
     {
         Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(

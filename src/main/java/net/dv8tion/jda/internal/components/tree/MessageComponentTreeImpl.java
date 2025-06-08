@@ -47,7 +47,7 @@ public class MessageComponentTreeImpl
 
     @Nonnull
     @Override
-    public MessageComponentTree replace(ComponentReplacer replacer)
+    public MessageComponentTree replace(@Nonnull ComponentReplacer replacer)
     {
         Checks.notNull(replacer, "ComponentReplacer");
         return ComponentsUtil.doReplace(

@@ -39,7 +39,7 @@ public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponent
 {
     @Nonnull
     @Override
-    ModalComponentTree replace(ComponentReplacer replacer);
+    ModalComponentTree replace(@Nonnull ComponentReplacer replacer);
 
     @Nonnull
     @Override

@@ -189,7 +189,7 @@ public interface ComponentTree<E extends ComponentUnion>
      */
     @Nonnull
     @CheckReturnValue
-    ComponentTree<E> replace(ComponentReplacer replacer);
+    ComponentTree<E> replace(@Nonnull ComponentReplacer replacer);
 
     /**
      * Enables or disables all components which {@linkplain net.dv8tion.jda.api.components.attribute.IDisableable can be enabled/disabled},
