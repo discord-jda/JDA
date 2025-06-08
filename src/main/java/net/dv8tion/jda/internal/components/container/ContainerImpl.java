@@ -51,6 +51,7 @@ public class ContainerImpl
 
     private ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> components, boolean spoiler, Integer accentColor)
     {
+        Checks.notEmpty(components, "Components");
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
         this.spoiler = spoiler;
@@ -59,7 +60,6 @@ public class ContainerImpl
 
     public static Container of(Collection<? extends ContainerChildComponent> _components)
     {
-        Checks.notEmpty(_components, "Components");
         Checks.noneNull(_components, "Components");
 
         final Collection<ContainerChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ContainerChildComponentUnion.class);

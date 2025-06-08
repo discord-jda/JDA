@@ -50,6 +50,7 @@ public class ActionRowImpl
 
     private ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
     {
+        Checks.notEmpty(components, "Row");
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
     }
@@ -61,7 +62,6 @@ public class ActionRowImpl
         if (data.getInt("type", 0) != Type.ACTION_ROW.getKey())
             throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.ACTION_ROW.getKey() + " Found: " + data.getInt("type"));
         List<ActionRowChildComponentUnion> components = ActionRowChildComponentUnion.fromData(data.getArray("components"));
-        Checks.notEmpty(components, "Row");
 
         return new ActionRowImpl(
                 components,
@@ -74,7 +74,6 @@ public class ActionRowImpl
     public static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> _components)
     {
         Checks.noneNull(_components, "Components");
-        Checks.notEmpty(_components, "Row");
 
         Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
         ActionRowImpl row = new ActionRowImpl(components);

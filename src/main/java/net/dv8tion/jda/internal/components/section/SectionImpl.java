@@ -51,6 +51,7 @@ public class SectionImpl
 
     private SectionImpl(int uniqueId, Collection<SectionContentComponentUnion> components, SectionAccessoryComponentUnion accessory)
     {
+        Checks.notEmpty(components, "Components");
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
         this.accessory = accessory;
@@ -59,7 +60,6 @@ public class SectionImpl
     public static Section of(SectionAccessoryComponent _accessory, Collection<? extends SectionContentComponent> _components)
     {
         Checks.notNull(_accessory, "Accessory");
-        Checks.notEmpty(_components, "Components");
         Checks.noneNull(_components, "Components");
         Checks.check(_components.size() <= MAX_COMPONENTS, "A section can only contain %d components, provided: %d", MAX_COMPONENTS, _components.size());
 
@@ -110,12 +110,16 @@ public class SectionImpl
                 Function.identity()
         );
 
-        final SectionAccessoryComponentUnion newAccessory = accessory != null ? ComponentsUtil.doReplace(
+        final SectionAccessoryComponentUnion newAccessory = ComponentsUtil.doReplace(
                 SectionAccessoryComponent.class,
                 Collections.singletonList(accessory),
                 replacer,
-                newAccessories -> newAccessories.get(0)
-        ) : null;
+                newAccessories ->
+                {
+                    Checks.check(!newAccessories.isEmpty(), "A section's accessory cannot be removed!");
+                    return newAccessories.get(0);
+                }
+        );
 
         return new SectionImpl(newContent, newAccessory);
     }
@@ -147,11 +151,10 @@ public class SectionImpl
     {
         final DataObject json = DataObject.empty();
         json.put("type", getType().getKey());
+        json.put("accessory", accessory);
         json.put("components", DataArray.fromCollection(getContentComponents()));
         if (uniqueId >= 0)
             json.put("id", uniqueId);
-        if (accessory != null)
-            json.put("accessory", accessory);
         return json;
     }
 
