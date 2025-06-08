@@ -46,7 +46,7 @@ import java.util.*;
 @SuppressWarnings("unchecked")
 public abstract class AbstractMessageBuilder<T, R extends AbstractMessageBuilder<T, R>> implements MessageRequest<R>
 {
-    static boolean isDefaultUseComponentsV2 = false;
+    protected static boolean isDefaultUseComponentsV2 = false;
 
     protected final List<MessageEmbed> embeds = new ArrayList<>(Message.MAX_EMBED_COUNT);
     protected final List<MessageTopLevelComponentUnion> components = new ArrayList<>(Message.MAX_COMPONENT_COUNT);
