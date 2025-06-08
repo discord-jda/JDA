@@ -35,7 +35,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 public interface ComponentUnion extends Component
 {
     default boolean isUnknownComponent() {
-        return this instanceof UnknownComponent;
+        return this.getType() == Type.UNKNOWN;
     }
 }
 
