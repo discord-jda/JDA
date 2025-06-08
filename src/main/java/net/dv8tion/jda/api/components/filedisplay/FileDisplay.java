@@ -34,8 +34,9 @@ import java.io.InputStream;
 /**
  * Component displaying a file, you can mark it as a spoiler.
  *
- * <p><b>Note:</b> Audio files and text files cannot be <i>previewed</i>,
- * use {@linkplain net.dv8tion.jda.api.components.mediagallery.MediaGallery media galleries} to display images.
+ * <p>This will appear as a generic download-able file,
+ * meaning that audio files and text files cannot be played/previewed.
+ * <br>You can instead use {@linkplain net.dv8tion.jda.api.components.mediagallery.MediaGallery media galleries} to display images.
  *
  * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  */
