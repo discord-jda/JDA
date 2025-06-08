@@ -34,6 +34,17 @@ import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
  */
 public interface ComponentUnion extends Component
 {
+    /**
+     * Whether this component is an {@link UnknownComponent}.
+     *
+     * <p>Unknown components have restrictions, see {@link UnknownComponent} for details.
+     *
+     * <p>This is equivalent to {@code getType() == Type.UNKNOWN}.
+     *
+     * @return {@code true} if this is an unknown component, {@code false} if not.
+     *
+     * @see UnknownComponent
+     */
     default boolean isUnknownComponent() {
         return this.getType() == Type.UNKNOWN;
     }
