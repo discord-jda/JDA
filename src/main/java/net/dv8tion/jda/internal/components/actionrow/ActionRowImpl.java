@@ -51,6 +51,7 @@ public class ActionRowImpl
     private ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
     {
         Checks.notEmpty(components, "Row");
+        checkIsValid(components);
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
     }
@@ -76,17 +77,7 @@ public class ActionRowImpl
         Checks.noneNull(_components, "Components");
 
         Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
-        ActionRowImpl row = new ActionRowImpl(components);
-        if (!row.isValid())
-        {
-            Map<Component.Type, List<ActionRowChildComponentUnion>> grouped = components.stream().collect(Collectors.groupingBy(Component::getType));
-            String provided = grouped.entrySet()
-                    .stream()
-                    .map(entry -> entry.getValue().size() + "/" + ActionRow.getMaxAllowed(entry.getKey()) + " of " + entry.getKey())
-                    .collect(Collectors.joining(", "));
-            throw new IllegalArgumentException("Cannot create action row with invalid component combinations. Provided: " + provided);
-        }
-        return row;
+        return new ActionRowImpl(components);
     }
 
     @Nonnull
@@ -203,19 +194,23 @@ public class ActionRowImpl
 
     public boolean isValid()
     {
+        return true;
+    }
+
+    private static void checkIsValid(Collection<ActionRowChildComponentUnion> components)
+    {
         Map<Component.Type, List<ActionRowChildComponentUnion>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
-        if (groups.size() > 1) // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
-            return false;
+        // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
+        if (groups.size() > 1)
+            throw new IllegalArgumentException("Cannot create action row containing different component types! Provided: " + groups.keySet());
 
         for (Map.Entry<Component.Type, List<ActionRowChildComponentUnion>> entry : groups.entrySet())
         {
             Component.Type type = entry.getKey();
             List<ActionRowChildComponentUnion> list = entry.getValue();
-            if (list.size() > ActionRow.getMaxAllowed(type))
-                return false;
+            final int maxAllowed = ActionRow.getMaxAllowed(type);
+            Checks.check(list.size() <= maxAllowed, "Cannot create an action row with more than %d %s! Provided: %d", maxAllowed, type.name(), list.size());
         }
-
-        return true;
     }
 
     @Override
