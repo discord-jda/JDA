@@ -160,9 +160,9 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
     @Nonnull
-    static ComponentReplacer byId(@Nonnull Component oldComponent, @Nullable Component newComponent)
+    static ComponentReplacer byUniqueId(@Nonnull Component oldComponent, @Nullable Component newComponent)
     {
-        return byId(oldComponent.getUniqueId(), newComponent);
+        return byUniqueId(oldComponent.getUniqueId(), newComponent);
     }
 
     /**
@@ -177,7 +177,7 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
     @Nonnull
-    static ComponentReplacer byId(int id, @Nullable Component newComponent)
+    static ComponentReplacer byUniqueId(int id, @Nullable Component newComponent)
     {
         return of(Component.class,
                 component -> component.getUniqueId() == id,
@@ -201,7 +201,7 @@ public interface ComponentReplacer
      * @return A {@link ComponentReplacer} replacing the old component with the new one
      */
     @Nonnull
-    static ComponentReplacer byId(int id, @Nonnull Function<? super Component, Component> update)
+    static ComponentReplacer byUniqueId(int id, @Nonnull Function<? super Component, Component> update)
     {
         Checks.notNull(update, "Component updater");
         return of(Component.class,

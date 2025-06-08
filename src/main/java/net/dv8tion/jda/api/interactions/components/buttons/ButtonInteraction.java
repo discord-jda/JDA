@@ -69,7 +69,7 @@ public interface ButtonInteraction extends ComponentInteraction
     default RestAction<Void> editButton(@Nullable Button newButton)
     {
         final Message message = getMessage();
-        final MessageComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byId(getButton(), newButton));
+        final MessageComponentTree newTree = message.getComponentTree().replace(ComponentReplacer.byUniqueId(getButton(), newButton));
 
         if (isAcknowledged())
             return getHook().editMessageComponentsById(message.getId(), newTree.getComponents()).map(it -> null);
