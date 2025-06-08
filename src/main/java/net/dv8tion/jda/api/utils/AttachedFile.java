@@ -28,7 +28,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -318,33 +317,12 @@ public interface AttachedFile extends Closeable
     @Nonnull
     static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nullable RequestBody payloadJson)
     {
-        return createMultipartBody(files, Collections.emptyList(), payloadJson);
-    }
-
-    /**
-     * Build a complete request using the provided files and payload data.
-     *
-     * @param  files
-     *         The files to upload/edit
-     * @param  additionalFiles
-     *         Additional files to upload/edit
-     * @param  payloadJson
-     *         The payload data to send, null to not add a payload_json part
-     *
-     * @throws IllegalArgumentException
-     *         If the file list is null
-     *
-     * @return {@link MultipartBody.Builder}
-     */
-    @Nonnull
-    static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nonnull List<? extends AttachedFile> additionalFiles, @Nullable RequestBody payloadJson)
-    {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        int i = 0;
-        for (AttachedFile file : files)
-            file.addPart(builder, i++);
-        for (AttachedFile file : additionalFiles)
-            file.addPart(builder, i++);
+        for (int i = 0; i < files.size(); i++)
+        {
+            AttachedFile file = files.get(i);
+            file.addPart(builder, i);
+        }
 
         if (payloadJson != null)
             builder.addFormDataPart("payload_json", null, payloadJson);
