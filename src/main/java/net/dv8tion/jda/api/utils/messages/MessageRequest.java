@@ -340,10 +340,10 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <p>This, however, comes with a few drawbacks:
      * <ul>
      *     <li>You cannot send content, embeds, polls or stickers</li>
-     *     <li>It does not support audio files</li>
-     *     <li>It does not support text preview for files</li>
+     *     <li>It does not support voice messages</li>
+     *     <li>It does not support previewing files</li>
      *     <li>URLs don't create embeds</li>
-     *     <li>You cannot switch this message back to not using Components V2</li>
+     *     <li>You cannot switch this message back to not using Components V2 (you can however upgrade a message to V2)</li>
      * </ul>
      *
      * <p>A default value can be set in {@link #setDefaultUseComponentsV2(boolean)}.
@@ -373,10 +373,10 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * <p>This, however, comes with a few drawbacks:
      * <ul>
      *     <li>You cannot send content, embeds, polls or stickers</li>
-     *     <li>It does not support audio files</li>
-     *     <li>It does not support text preview for files</li>
+     *     <li>It does not support voice messages</li>
+     *     <li>It does not support previewing files</li>
      *     <li>URLs don't create embeds</li>
-     *     <li>You cannot switch this message back to not using Components V2</li>
+     *     <li>You cannot switch this message back to not using Components V2 (you can however upgrade a message to V2)</li>
      * </ul>
      *
      * @return The same instance for chaining

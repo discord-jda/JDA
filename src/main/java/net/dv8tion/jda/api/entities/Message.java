@@ -2759,10 +2759,10 @@ public interface Message extends ISnowflake, Formattable
          * <p>This, however, comes with a few drawbacks:
          * <ul>
          *     <li>You cannot send content, embeds, polls or stickers</li>
-         *     <li>It does not support audio files</li>
-         *     <li>It does not support text preview for files</li>
+         *     <li>It does not support voice messages</li>
+         *     <li>It does not support previewing files</li>
          *     <li>URLs don't create embeds</li>
-         *     <li>You cannot switch this message back to not using Components V2</li>
+         *     <li>You cannot switch this message back to not using Components V2 (you can however upgrade a message to V2)</li>
          * </ul>
          *
          * @see MessageRequest#useComponentsV2()
