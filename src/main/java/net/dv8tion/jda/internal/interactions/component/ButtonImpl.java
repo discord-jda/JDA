@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -82,16 +83,16 @@ public class ButtonImpl implements Button
         case DANGER:
             Checks.check(url == null, "Cannot set an URL on action buttons");
             Checks.check(sku == null, "Cannot set an SKU on action buttons");
-            Checks.check(emoji != null || !label.isEmpty(), "Action buttons must have either an emoji or label");
-            Checks.notEmpty(id, "Id");
+            Checks.check(emoji != null || !Helpers.isBlank(label), "Action buttons must have either an emoji or label");
+            Checks.notBlank(id, "Id");
             Checks.notLonger(id, ID_MAX_LENGTH, "Id");
             break;
         case LINK:
             Checks.check(id == null, "Cannot set an ID on link buttons");
             Checks.check(url != null, "You must set an URL on link buttons");
             Checks.check(sku == null, "Cannot set an SKU on link buttons");
-            Checks.check(emoji != null || !label.isEmpty(), "Link buttons must have either an emoji or label");
-            Checks.notEmpty(url, "URL");
+            Checks.check(emoji != null || !Helpers.isBlank(label), "Link buttons must have either an emoji or label");
+            Checks.notBlank(url, "URL");
             Checks.notLonger(url, URL_MAX_LENGTH, "URL");
             break;
         case PREMIUM:
@@ -167,7 +168,7 @@ public class ButtonImpl implements Button
     {
         DataObject json = DataObject.empty();
         json.put("type", 2);
-        if (!label.isEmpty())
+        if (!Helpers.isBlank(label))
             json.put("label", label);
         json.put("style", style.getKey());
         json.put("disabled", disabled);
