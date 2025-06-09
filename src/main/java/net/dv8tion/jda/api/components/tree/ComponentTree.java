@@ -32,6 +32,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -171,6 +172,32 @@ public interface ComponentTree<E extends ComponentUnion>
                 .map(type::cast)
                 .filter(filter)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Finds the first component with the given type and satisfying the filter, recursively.
+     *
+     * @param  type
+     *         The type of components to search for
+     * @param  filter
+     *         The component filter to apply
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return An {@link Optional} possibly containing a component satisfying the type and filter
+     */
+    @Nonnull
+    default <T extends Component> Optional<T> find(@Nonnull Class<T> type, @Nonnull Predicate<? super T> filter)
+    {
+        Checks.notNull(type, "Component type");
+        Checks.notNull(filter, "Component filter");
+
+        return ComponentIterator.createStream(getComponents())
+                .filter(type::isInstance)
+                .map(type::cast)
+                .filter(filter)
+                .findFirst();
     }
 
     /**
