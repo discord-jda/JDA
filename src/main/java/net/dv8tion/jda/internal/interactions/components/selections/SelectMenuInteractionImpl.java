@@ -34,13 +34,8 @@ public abstract class SelectMenuInteractionImpl<T, S extends SelectMenu> extends
         super(jda, data);
         if (message != null)
         {
-            menu = message.getActionRows()
-                    .stream()
-                    .flatMap(row -> row.getComponents().stream())
-                    .filter(type::isInstance)
-                    .map(type::cast)
-                    .filter(c -> customId.equals(c.getCustomId()))
-                    .findFirst()
+            menu = message.getComponentTree()
+                    .find(type, s -> customId.equals(s.getCustomId()))
                     .orElse(null);
         }
         else
