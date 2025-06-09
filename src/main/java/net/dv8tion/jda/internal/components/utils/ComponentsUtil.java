@@ -65,7 +65,7 @@ public class ComponentsUtil
     }
 
     @SuppressWarnings("unchecked")
-    public static <R, E extends ComponentUnion> R doReplace(
+    public static <R, E extends Component> R doReplace(
             // This isn't '? extends E' as users are not required to return unions
             Class<? extends Component> expectedChildrenType,
             Iterable<E> children,

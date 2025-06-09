@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.components.tree;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.ComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
@@ -26,7 +25,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 
-public final class ComponentTreeImpl<E extends ComponentUnion> extends AbstractComponentTree<E>
+public final class ComponentTreeImpl<E extends Component> extends AbstractComponentTree<E>
 {
     private final Class<? extends Component> componentType;
 

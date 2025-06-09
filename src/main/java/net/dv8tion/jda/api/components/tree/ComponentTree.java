@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  *
  * @param <E> Type of components contained by this tree
  */
-public interface ComponentTree<E extends ComponentUnion>
+public interface ComponentTree<E extends Component>
 {
     /**
      * Creates a {@link ComponentTree} from the given components,
