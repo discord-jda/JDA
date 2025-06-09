@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.components.Component;
@@ -779,9 +780,14 @@ public interface Message extends ISnowflake, Formattable
      *
      * @see    #getButtons()
      * @see    #getButtonById(String)
+     *
+     * @deprecated
+     *         Can be replaced with {@link ComponentTree#findAll(Class) getComponentTree().findAll(ActionRow.class)}
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<ActionRow> getActionRows()
     {
         return ComponentIterator.createStream(getComponents())
@@ -796,9 +802,14 @@ public interface Message extends ISnowflake, Formattable
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable {@link List} of {@link Button Buttons}
+     *
+     * @deprecated
+     *         Can be replaced with {@link ComponentTree#findAll(Class) getComponentTree().findAll(Button.class)}
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<Button> getButtons()
     {
         return ComponentIterator.createStream(getComponents())
@@ -819,8 +830,13 @@ public interface Message extends ISnowflake, Formattable
      *         If the id is null
      *
      * @return The {@link Button} or null if no button with that ID is present on this message
+     *
+     * @deprecated
+     *         Can be replaced with {@link ComponentTree#find(Class, Predicate) getComponentTree().find(Button.class, button -> id.equals(button.getCustomId()).orElse(null)}
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     default Button getButtonById(@Nonnull String id)
     {
         Checks.notNull(id, "Button ID");
@@ -843,9 +859,16 @@ public interface Message extends ISnowflake, Formattable
      *         If the provided label is null
      *
      * @return Immutable {@link List} of {@link Button Buttons} with the specified label
+     *
+     * @deprecated
+     *         Can be replaced with {@link ComponentTree#findAll(Class, Predicate) getComponentTree().findAll(Button.class, button -> id.equals(button.getCustomId())},
+     *         usage is discouraged since content displayed to an user can change, prefer using data owned by the bot,
+     *         for example, in custom IDs or stored by the bot
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
     {
         Checks.notNull(label, "Label");
