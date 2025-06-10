@@ -79,7 +79,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;\n\npublic class Test { EntitySelectMenu x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.EntitySelectMenu;\n\npublic class Test { EntitySelectMenu x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.EntitySelectMenu;\n\npublic class Test { EntitySelectMenu x() {} }"
                 )
         );
         rewriteRun(
@@ -87,7 +87,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.Builder;\n\npublic class Test { Builder x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.EntitySelectMenu.Builder;\n\npublic class Test { Builder x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.EntitySelectMenu.Builder;\n\npublic class Test { Builder x() {} }"
                 )
         );
         rewriteRun(
@@ -95,7 +95,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.DefaultValue;\n\npublic class Test { DefaultValue x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.EntitySelectMenu.DefaultValue;\n\npublic class Test { DefaultValue x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.EntitySelectMenu.DefaultValue;\n\npublic class Test { DefaultValue x() {} }"
                 )
         );
         rewriteRun(
@@ -103,7 +103,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;\n\npublic class Test { SelectTarget x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;\n\npublic class Test { SelectTarget x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.EntitySelectMenu.SelectTarget;\n\npublic class Test { SelectTarget x() {} }"
                 )
         );
         rewriteRun(
@@ -111,7 +111,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;\n\npublic class Test { SelectMenu x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\n\npublic class Test { SelectMenu x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.SelectMenu;\n\npublic class Test { SelectMenu x() {} }"
                 )
         );
         rewriteRun(
@@ -119,7 +119,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu.Builder;\n\npublic class Test { Builder x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.SelectMenu.Builder;\n\npublic class Test { Builder x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.SelectMenu.Builder;\n\npublic class Test { Builder x() {} }"
                 )
         );
         rewriteRun(
@@ -127,7 +127,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.SelectOption;\n\npublic class Test { SelectOption x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.SelectOption;\n\npublic class Test { SelectOption x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.SelectOption;\n\npublic class Test { SelectOption x() {} }"
                 )
         );
         rewriteRun(
@@ -135,7 +135,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;\n\npublic class Test { StringSelectMenu x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.StringSelectMenu;\n\npublic class Test { StringSelectMenu x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.StringSelectMenu;\n\npublic class Test { StringSelectMenu x() {} }"
                 )
         );
         rewriteRun(
@@ -143,7 +143,7 @@ public class MigrateComponentsV2Test implements RewriteTest
                 //language=java
                 java(
                         "import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.Builder;\n\npublic class Test { Builder x() {} }",
-                        "import net.dv8tion.jda.api.components.selections.StringSelectMenu.Builder;\n\npublic class Test { Builder x() {} }"
+                        "import net.dv8tion.jda.api.components.selects.StringSelectMenu.Builder;\n\npublic class Test { Builder x() {} }"
                 )
         );
         rewriteRun(
@@ -206,7 +206,7 @@ public class MigrateComponentsV2Test implements RewriteTest
 //                //language=java
 //                java(
 //                        "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;\n\npublic class Test { void x(SelectMenu.Builder<?, ?> component) { component.getId(); } }",
-//                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\n\npublic class Test { void x(SelectMenu.Builder<?, ?> component) { component.getCustomId(); } }"
+//                        "import net.dv8tion.jda.api.components.selects.SelectMenu;\n\npublic class Test { void x(SelectMenu.Builder<?, ?> component) { component.getCustomId(); } }"
 //                )
 //        );
 //

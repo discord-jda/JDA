@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.interactions.components.selections;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.selections.SelectMenu;
+import net.dv8tion.jda.api.components.selects.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
