@@ -18,11 +18,9 @@ package net.dv8tion.jda.test.components;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class ActionRowTest extends AbstractSnapshotTest
 {
@@ -30,9 +28,10 @@ public class ActionRowTest extends AbstractSnapshotTest
     @Test
     void testGetMaxAllowedIsUpdated()
     {
-        String actual = Arrays.stream(Component.Type.values())
-                .map(type -> type.name() + " = " + ActionRow.getMaxAllowed(type))
-                .collect(Collectors.joining("\n"));
+        DataObject actual = DataObject.empty();
+
+        for (Component.Type type : Component.Type.values())
+            actual.put(type.name(), ActionRow.getMaxAllowed(type));
 
         snapshotHandler.compareWithSnapshot(actual, null);
     }
