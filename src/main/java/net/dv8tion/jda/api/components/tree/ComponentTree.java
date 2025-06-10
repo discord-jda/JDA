@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.components.tree;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.ComponentUnion;
+import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
@@ -62,7 +62,7 @@ public interface ComponentTree<E extends Component>
      * @return A {@link ComponentTree} containing the given components
      */
     @Nonnull
-    static <E extends Component, T extends ComponentUnion> ComponentTree<T> of(@Nonnull Class<T> unionType, @Nonnull Collection<E> components)
+    static <E extends Component, T extends IComponentUnion> ComponentTree<T> of(@Nonnull Class<T> unionType, @Nonnull Collection<E> components)
     {
         Checks.notNull(unionType, "Component union type");
         Checks.noneNull(components, "Components");
@@ -82,10 +82,10 @@ public interface ComponentTree<E extends Component>
      * @return A {@link ComponentTree} containing the given components
      */
     @Nonnull
-    static ComponentTree<ComponentUnion> of(@Nonnull Collection<? extends Component> components)
+    static ComponentTree<IComponentUnion> of(@Nonnull Collection<? extends Component> components)
     {
         Checks.noneNull(components, "Components");
-        return new ComponentTreeImpl<>(ComponentUnion.class, ComponentsUtil.relaxedMembersToUnion(components, ComponentUnion.class));
+        return new ComponentTreeImpl<>(IComponentUnion.class, ComponentsUtil.relaxedMembersToUnion(components, IComponentUnion.class));
     }
 
     /**
@@ -270,11 +270,11 @@ public interface ComponentTree<E extends Component>
      *         If the provided data is null
      */
     @Nonnull
-    static ComponentTree<ComponentUnion> fromData(@Nonnull DataArray data)
+    static ComponentTree<IComponentUnion> fromData(@Nonnull DataArray data)
     {
         Checks.notNull(data, "Data");
-        List<ComponentUnion> components = data.stream(DataArray::getObject)
-                .map(ComponentUnion::fromData)
+        List<IComponentUnion> components = data.stream(DataArray::getObject)
+                .map(IComponentUnion::fromData)
                 .collect(Collectors.toCollection(() -> new ArrayList<>(data.length())));
         return of(components);
     }

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.components.container;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.ComponentUnion;
+import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
@@ -56,7 +56,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
+     *             <li>If one of the components is {@linkplain IComponentUnion#isUnknownComponent() unknown}</li>
      *         </ul>
      *
      * @return The new {@link Container}
@@ -78,7 +78,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
+     *             <li>If one of the components is {@linkplain IComponentUnion#isUnknownComponent() unknown}</li>
      *         </ul>
      *
      * @return The new {@link Container}

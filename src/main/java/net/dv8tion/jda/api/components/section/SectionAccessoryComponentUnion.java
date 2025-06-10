@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.components.section;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.ComponentUnion;
+import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
-public interface SectionAccessoryComponentUnion extends SectionAccessoryComponent, ComponentUnion
+public interface SectionAccessoryComponentUnion extends SectionAccessoryComponent, IComponentUnion
 {
     /**
      * Casts this union to a {@link Button}.

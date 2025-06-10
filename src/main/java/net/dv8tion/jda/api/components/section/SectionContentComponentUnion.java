@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.components.section;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.ComponentUnion;
+import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 
@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
-public interface SectionContentComponentUnion extends SectionContentComponent, ComponentUnion
+public interface SectionContentComponentUnion extends SectionContentComponent, IComponentUnion
 {
     /**
      * Casts this union to a {@link TextDisplay}.

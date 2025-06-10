@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.modals;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.ComponentUnion;
+import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
-public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, ComponentUnion
+public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, IComponentUnion
 {
     /**
      * Casts this union to a {@link ActionRow}.

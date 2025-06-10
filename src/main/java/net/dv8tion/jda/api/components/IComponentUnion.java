@@ -40,7 +40,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 
 /**
- * Represents a union of {@link Component Components}.
+ * Base interface for {@link Component} union types.
  *
  * @see ActionRowChildComponentUnion
  * @see ContainerChildComponentUnion
@@ -49,7 +49,7 @@ import javax.annotation.Nonnull;
  * @see MessageTopLevelComponentUnion
  * @see ModalTopLevelComponentUnion
  */
-public interface ComponentUnion extends Component
+public interface IComponentUnion extends Component
 {
     /**
      * Whether this component is an {@link UnknownComponent}.
@@ -67,19 +67,19 @@ public interface ComponentUnion extends Component
     }
 
     /**
-     * Converts the provided {@link DataObject} into an {@link ComponentUnion}.
+     * Converts the provided {@link DataObject} into an {@link IComponentUnion}.
      * <br>Note that any unsupported component will be represented as an {@link net.dv8tion.jda.api.components.UnknownComponent UnknownComponent}.
      *
      * @param  data
      *         The {@link DataObject} to create the component from
      *
-     * @return An {@link ComponentUnion} representing the provided data
+     * @return An {@link IComponentUnion} representing the provided data
      *
      * @throws IllegalArgumentException
      *         If the provided data is null
      */
     @Nonnull
-    static ComponentUnion fromData(@Nonnull DataObject data)
+    static IComponentUnion fromData(@Nonnull DataObject data)
     {
         Checks.notNull(data, "Data");
 

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.components.section;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.ComponentUnion;
+import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
@@ -67,7 +67,7 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If more than {@value #MAX_COMPONENTS} components are provided</li>
-     *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
+     *             <li>If one of the components is {@linkplain IComponentUnion#isUnknownComponent() unknown}</li>
      *         </ul>
      *
      * @return The new {@link Section}
@@ -92,7 +92,7 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
      *         <ul>
      *             <li>If {@code null} is provided</li>
      *             <li>If more than {@value #MAX_COMPONENTS} components are provided</li>
-     *             <li>If one of the components is {@linkplain ComponentUnion#isUnknownComponent() unknown}</li>
+     *             <li>If one of the components is {@linkplain IComponentUnion#isUnknownComponent() unknown}</li>
      *         </ul>
      *
      * @return The new {@link Section}

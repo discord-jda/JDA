@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Such components can be received and serialized, but cannot be sent or modified in any way.
  *
- * @see ComponentUnion#isUnknownComponent()
+ * @see IComponentUnion#isUnknownComponent()
  */
 public interface UnknownComponent extends Component
 {

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.components.container;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.ComponentUnion;
+import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link UnknownComponent}, detectable via {@link #isUnknownComponent()}</li>
  * </ul>
  */
-public interface ContainerChildComponentUnion extends ContainerChildComponent, ComponentUnion
+public interface ContainerChildComponentUnion extends ContainerChildComponent, IComponentUnion
 {
     /**
      * Casts this union to a {@link ActionRow}.
