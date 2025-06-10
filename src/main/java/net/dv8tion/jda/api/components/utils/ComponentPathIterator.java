@@ -125,7 +125,7 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
         }
     }
 
-    public static class CollectionAttributeIterator implements Iterator<ComponentWithPath> {
+    private static class CollectionAttributeIterator implements Iterator<ComponentWithPath> {
         final Iterator<? extends Component> nestedIterator;
         final String parentPath;
         final String listName;
