@@ -64,6 +64,7 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.entities.channel.concrete.*;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
 import net.dv8tion.jda.internal.entities.emoji.ApplicationEmojiImpl;
@@ -1674,7 +1675,8 @@ public class EntityBuilder extends AbstractEntityBuilder
         final List<MessageEmbed>                  embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         final List<MessageReaction>               reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, channelId, id, obj));
         final List<StickerItem>                   stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
-        final List<MessageTopLevelComponentUnion> components  = map(jsonObject, "components",    MessageTopLevelComponentUnion::fromData);
+        // Keep the unknown components so the user can read them if they want
+        final List<MessageTopLevelComponentUnion> components  = map(jsonObject, "components",    (obj) -> ComponentsUtil.deserializeTo(obj, MessageTopLevelComponentUnion.class));
 
         MessagePoll poll = jsonObject.optObject("poll").map(EntityBuilder::createMessagePoll).orElse(null);
 
@@ -2126,7 +2128,8 @@ public class EntityBuilder extends AbstractEntityBuilder
         List<Message.Attachment>            attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
         List<MessageEmbed>                  embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
         List<StickerItem>                   stickers    = map(jsonObject, "sticker_items", this::createStickerItem);
-        List<MessageTopLevelComponentUnion> components  = map(jsonObject, "components",    MessageTopLevelComponentUnion::fromData);
+        // Keep the unknown components so the user can read them if they want
+        List<MessageTopLevelComponentUnion> components  = map(jsonObject, "components",    (obj) -> ComponentsUtil.deserializeTo(obj, MessageTopLevelComponentUnion.class));
 
         Guild guild = messageReference.getGuild();
         // Lazy Mention parsing and caching (includes reply mentions)

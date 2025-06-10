@@ -25,20 +25,8 @@ import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.components.UnknownComponentImpl;
-import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
-import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
-import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
-import net.dv8tion.jda.internal.components.section.SectionImpl;
-import net.dv8tion.jda.internal.components.separator.SeparatorImpl;
-import net.dv8tion.jda.internal.components.textdisplay.TextDisplayImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represents a union of {@link ContainerChildComponent ContainerChildComponents} that can be one of:
@@ -185,61 +173,4 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, C
      */
     @Nonnull
     FileDisplay asFileDisplay();
-
-    /**
-     * Converts the provided {@link DataObject} into an {@link ContainerChildComponentUnion}.
-     *
-     * @param  data
-     *         The {@link DataObject} to create the component from
-     *
-     * @return An {@link ContainerChildComponentUnion} representing the provided data
-     *
-     * @throws IllegalArgumentException
-     *         If the provided data is null
-     */
-    @Nonnull
-    static ContainerChildComponentUnion fromData(@Nonnull DataObject data)
-    {
-        Checks.notNull(data, "Data");
-
-        switch (Component.Type.fromKey(data.getInt("type")))
-        {
-        case ACTION_ROW:
-            return ActionRowImpl.fromData(data);
-        case SECTION:
-            return SectionImpl.fromData(data);
-        case TEXT_DISPLAY:
-            return new TextDisplayImpl(data);
-        case MEDIA_GALLERY:
-            return new MediaGalleryImpl(data);
-        case FILE_DISPLAY:
-            return new FileDisplayImpl(data);
-        case SEPARATOR:
-            return new SeparatorImpl(data);
-        default:
-            return new UnknownComponentImpl(data);
-        }
-    }
-
-    /**
-     * Converts the provided {@link DataArray} into a {@link List} of {@link ContainerChildComponentUnion}.
-     *
-     * @param  data
-     *         The {@link DataArray} to create the components from
-     *
-     * @return A {@link List} of {@link ContainerChildComponentUnion} representing the provided data
-     *
-     * @throws IllegalArgumentException
-     *         If the provided data is null
-     */
-    @Nonnull
-    static List<ContainerChildComponentUnion> fromData(@Nonnull DataArray data)
-    {
-        Checks.notNull(data, "Data");
-
-        return data
-                .stream(DataArray::getObject)
-                .map(ContainerChildComponentUnion::fromData)
-                .collect(Collectors.toList());
-    }
 }

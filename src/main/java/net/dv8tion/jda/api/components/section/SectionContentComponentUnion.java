@@ -20,15 +20,8 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.components.UnknownComponentImpl;
-import net.dv8tion.jda.internal.components.textdisplay.TextDisplayImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represents a union of {@link SectionContentComponent SectionContentComponents} that can be one of:
@@ -60,51 +53,4 @@ public interface SectionContentComponentUnion extends SectionContentComponent, C
      */
     @Nonnull
     TextDisplay asTextDisplay();
-
-    /**
-     * Converts the provided {@link DataObject} into an {@link SectionContentComponentUnion}.
-     *
-     * @param  data
-     *         The {@link DataObject} to create the component from
-     *
-     * @return An {@link SectionContentComponentUnion} representing the provided data
-     *
-     * @throws IllegalArgumentException
-     *         If the provided data is null
-     */
-    @Nonnull
-    static SectionContentComponentUnion fromData(@Nonnull DataObject data)
-    {
-        Checks.notNull(data, "Data");
-
-        switch (Component.Type.fromKey(data.getInt("type")))
-        {
-        case TEXT_DISPLAY:
-            return new TextDisplayImpl(data);
-        default:
-            return new UnknownComponentImpl(data);
-        }
-    }
-
-    /**
-     * Converts the provided {@link DataArray} into a {@link List} of {@link SectionContentComponentUnion}.
-     *
-     * @param  data
-     *         The {@link DataArray} to create the components from
-     *
-     * @return A {@link List} of {@link SectionContentComponentUnion} representing the provided data
-     *
-     * @throws IllegalArgumentException
-     *         If the provided data is null
-     */
-    @Nonnull
-    static List<SectionContentComponentUnion> fromData(@Nonnull DataArray data)
-    {
-        Checks.notNull(data, "Data");
-
-        return data
-                .stream(DataArray::getObject)
-                .map(SectionContentComponentUnion::fromData)
-                .collect(Collectors.toList());
-    }
 }

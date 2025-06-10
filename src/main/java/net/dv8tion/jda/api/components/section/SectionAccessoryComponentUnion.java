@@ -21,16 +21,8 @@ import net.dv8tion.jda.api.components.ComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.components.UnknownComponentImpl;
-import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
-import net.dv8tion.jda.internal.components.thumbnail.ThumbnailImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represents a union of {@link SectionAccessoryComponent SectionAccessoryComponents} that can be one of:
@@ -85,53 +77,4 @@ public interface SectionAccessoryComponentUnion extends SectionAccessoryComponen
      */
     @Nonnull
     Thumbnail asThumbnail();
-
-    /**
-     * Converts the provided {@link DataObject} into an {@link SectionAccessoryComponentUnion}.
-     *
-     * @param  data
-     *         The {@link DataObject} to create the component from
-     *
-     * @return An {@link SectionAccessoryComponentUnion} representing the provided data
-     *
-     * @throws IllegalArgumentException
-     *         If the provided data is null
-     */
-    @Nonnull
-    static SectionAccessoryComponentUnion fromData(@Nonnull DataObject data)
-    {
-        Checks.notNull(data, "Data");
-
-        switch (Component.Type.fromKey(data.getInt("type")))
-        {
-        case BUTTON:
-            return new ButtonImpl(data);
-        case THUMBNAIL:
-            return new ThumbnailImpl(data);
-        default:
-            return new UnknownComponentImpl(data);
-        }
-    }
-
-    /**
-     * Converts the provided {@link DataArray} into a {@link List} of {@link SectionAccessoryComponentUnion}.
-     *
-     * @param  data
-     *         The {@link DataArray} to create the components from
-     *
-     * @return A {@link List} of {@link SectionAccessoryComponentUnion} representing the provided data
-     *
-     * @throws IllegalArgumentException
-     *         If the provided data is null
-     */
-    @Nonnull
-    static List<SectionAccessoryComponentUnion> fromData(@Nonnull DataArray data)
-    {
-        Checks.notNull(data, "Data");
-
-        return data
-                .stream(DataArray::getObject)
-                .map(SectionAccessoryComponentUnion::fromData)
-                .collect(Collectors.toList());
-    }
 }

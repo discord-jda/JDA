@@ -24,6 +24,8 @@ import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -54,14 +56,65 @@ public class ComponentsUtil
     }
 
     /**
+     * Checks the component has the target union type, and allows unknown components,
+     * throws {@link IllegalArgumentException} otherwise.
+     * <br>This should only be used for reading purposes,
+     * use {@link #membersToUnion(Collection, Class)} to verify components to be sent.
+     */
+    public static <T extends ComponentUnion> T relaxedSafeUnionCast(String componentCategory, Component component, Class<T> toUnionClass)
+    {
+        if (toUnionClass.isInstance(component))
+            return toUnionClass.cast(component);
+
+        String cleanedClassName = component.getClass().getSimpleName().replace("Impl", "");
+        throw new IllegalArgumentException(Helpers.format("Cannot convert " + componentCategory + " of type %s to %s!", cleanedClassName, toUnionClass.getSimpleName()));
+    }
+
+    /**
      * Checks all the components has the target union type, and isn't an {@link UnknownComponent},
      * throws {@link IllegalArgumentException} otherwise.
      */
-    public static <TMember extends Component, TUnion extends ComponentUnion> List<TUnion> membersToUnion(Collection<? extends TMember> members, Class<TUnion> clazz) {
+    public static <TMember extends Component, TUnion extends ComponentUnion> List<TUnion> membersToUnion(Collection<? extends TMember> members, Class<TUnion> clazz)
+    {
         return members
                 .stream()
                 .map(c -> safeUnionCast("component", c, clazz))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Retains all components extending the provided union type, keeps unknown components,
+     * throws {@link IllegalArgumentException} on invalid types.
+     * <br>This should only be used for reading purposes,
+     * use {@link #membersToUnion(Collection, Class)} to verify components to be sent.
+     */
+    public static <TMember extends Component, TUnion extends ComponentUnion> List<TUnion> relaxedMembersToUnion(Collection<? extends TMember> members, Class<TUnion> clazz)
+    {
+        return members
+                .stream()
+                .map(c -> relaxedSafeUnionCast("component", c, clazz))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Deserializes the given data, checks if it corresponds to the target union while preserving unknown components.
+     * <br>This should only be used for deserialization purposes.
+     */
+    public static <TUnion extends ComponentUnion> List<TUnion> deserializeTo(DataArray data, Class<TUnion> clazz)
+    {
+        final List<ComponentUnion> components = data.stream(DataArray::getObject)
+                .map(ComponentUnion::fromData)
+                .collect(Collectors.toList());
+        return relaxedMembersToUnion(components, clazz);
+    }
+
+    /**
+     * Deserializes the given data, checks if it corresponds to the target union while preserving unknown components.
+     * <br>This should only be used for deserialization purposes.
+     */
+    public static <TUnion extends ComponentUnion> TUnion deserializeTo(DataObject data, Class<TUnion> clazz)
+    {
+        return relaxedSafeUnionCast("component", ComponentUnion.fromData(data), clazz);
     }
 
     @SuppressWarnings("unchecked")

@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.components.tree.ComponentTreeImpl;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +66,8 @@ public interface ComponentTree<E extends Component>
     {
         Checks.notNull(unionType, "Component union type");
         Checks.noneNull(components, "Components");
-        return new ComponentTreeImpl<>(unionType, ComponentsUtil.membersToUnion(components, unionType));
+        // We don't care if there are unknown components, they will be unpacked and checked when sending
+        return new ComponentTreeImpl<>(unionType, ComponentsUtil.relaxedMembersToUnion(components, unionType));
     }
 
     /**
@@ -82,7 +85,7 @@ public interface ComponentTree<E extends Component>
     static ComponentTree<ComponentUnion> of(@Nonnull Collection<? extends Component> components)
     {
         Checks.noneNull(components, "Components");
-        return new ComponentTreeImpl<>(ComponentUnion.class, ComponentsUtil.membersToUnion(components, ComponentUnion.class));
+        return new ComponentTreeImpl<>(ComponentUnion.class, ComponentsUtil.relaxedMembersToUnion(components, ComponentUnion.class));
     }
 
     /**
@@ -252,5 +255,27 @@ public interface ComponentTree<E extends Component>
     default ComponentTree<E> asEnabled()
     {
         return withDisabled(false);
+    }
+
+    /**
+     * Converts the provided {@link DataArray} into a {@link ComponentTree}.
+     * <br>Note that any unsupported component will be represented as an {@link net.dv8tion.jda.api.components.UnknownComponent UnknownComponent}.
+     *
+     * @param  data
+     *         The {@link DataArray} to create the component tree from
+     *
+     * @return A {@link ComponentTree} representing the provided data
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     */
+    @Nonnull
+    static ComponentTree<ComponentUnion> fromData(@Nonnull DataArray data)
+    {
+        Checks.notNull(data, "Data");
+        List<ComponentUnion> components = data.stream(DataArray::getObject)
+                .map(ComponentUnion::fromData)
+                .collect(Collectors.toCollection(() -> new ArrayList<>(data.length())));
+        return of(components);
     }
 }
