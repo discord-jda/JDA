@@ -66,6 +66,10 @@ public class InviteCreateHandler extends SocketHandler
                 .map(String::valueOf)
                 .map(OffsetDateTime::parse)
                 .orElse(null);
+        OffsetDateTime expirationTime = content.opt("expires_at")
+                .map(String::valueOf)
+                .map(OffsetDateTime::parse)
+                .orElse(null);
 
         Optional<DataObject> inviterJson = content.optObject("inviter");
         boolean expanded = maxUses != -1;
@@ -98,9 +102,9 @@ public class InviteCreateHandler extends SocketHandler
             target = new InviteImpl.InviteTargetImpl(targetType, null, null);
         }
 
-        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter,
-                                       maxAge, maxUses, temporary, creationTime,
-                                      0, channel, guild, null, target, Invite.InviteType.GUILD);
+        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge,
+                                       maxUses, temporary, creationTime, expirationTime,
+                                 0, channel, guild, null, target, Invite.InviteType.GUILD);
         getJDA().handleEvent(
             new GuildInviteCreateEvent(
                 getJDA(), responseNumber,
