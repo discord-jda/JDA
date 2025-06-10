@@ -100,7 +100,7 @@ public class MessageEditActionImpl extends RestActionImpl<Message> implements Me
     {
         try (MessageEditData data = builder.build())
         {
-            return getMultipartBody(data.getFiles(), data.getIndirectFiles(), data.toData());
+            return getMultipartBody(data.getAllDistinctFiles(), data.toData());
         }
     }
 

@@ -16,36 +16,40 @@
 
 package net.dv8tion.jda.internal.utils.message;
 
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 
+import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MessageUtil
 {
-    public static DataArray getAttachmentsData(List<? extends AttachedFile> files, List<FileUpload> additionalFiles)
+    @Nonnull
+    public static List<FileUpload> getIndirectFiles(@Nonnull Collection<MessageTopLevelComponentUnion> components)
+    {
+        return ComponentIterator.createStream(components)
+                .filter(FileContainerMixin.class::isInstance)
+                .map(FileContainerMixin.class::cast)
+                .flatMap(FileContainerMixin::getFiles)
+                .collect(Collectors.toList());
+    }
+
+    public static DataArray getAttachmentsData(@Nonnull Collection<? extends AttachedFile> files)
     {
         DataArray attachments = DataArray.empty();
         int fileUploadCount = 0;
 
-        if (files != null)
+        for (AttachedFile file : files)
         {
-            for (AttachedFile file : files)
-            {
-                attachments.add(file.toAttachmentData(fileUploadCount));
-                if (file instanceof FileUpload)
-                    fileUploadCount++;
-            }
-        }
-
-        if (!additionalFiles.isEmpty())
-        {
-            for (FileUpload file : additionalFiles)
-            {
-                attachments.add(file.toAttachmentData(fileUploadCount));
+            attachments.add(file.toAttachmentData(fileUploadCount));
+            if (file instanceof FileUpload)
                 fileUploadCount++;
-            }
         }
 
         return attachments;

@@ -156,7 +156,7 @@ public class WebhookMessageCreateActionImpl<T>
                     json.put("applied_tags", tags.stream().map(ForumTagSnowflake::getId).collect(Helpers.toDataArray()));
             }
 
-            return getMultipartBody(data.getFiles(), data.getIndirectFiles(), json);
+            return getMultipartBody(data.getAllDistinctFiles(), json);
         }
     }
 

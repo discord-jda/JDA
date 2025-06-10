@@ -32,8 +32,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
@@ -265,15 +264,12 @@ public class RestActionImpl<T> implements RestAction<T>
     }
 
     @Nonnull
-    protected RequestBody getMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nonnull List<? extends AttachedFile> additionalFiles, @Nonnull DataObject json)
+    protected RequestBody getMultipartBody(@Nonnull Set<? extends AttachedFile> files, @Nonnull DataObject json)
     {
         RequestBody payloadJson = getRequestBody(json);
-        if (files.isEmpty() && additionalFiles.isEmpty())
+        if (files.isEmpty())
             return payloadJson;
-        final List<AttachedFile> mergedFiles = new ArrayList<>(files.size() + additionalFiles.size());
-        mergedFiles.addAll(files);
-        mergedFiles.addAll(additionalFiles);
-        return AttachedFile.createMultipartBody(mergedFiles, payloadJson).build();
+        return AttachedFile.createMultipartBody(files, payloadJson).build();
     }
 
     private CheckWrapper getFinisher()

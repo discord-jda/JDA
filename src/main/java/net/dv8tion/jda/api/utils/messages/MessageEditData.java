@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -26,14 +25,13 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
 
@@ -52,6 +50,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<AttachedFile> files;
+    private final Set<AttachedFile> allDistinctFiles;
     private final List<MessageTopLevelComponentUnion> components;
     private final int messageFlags;
 
@@ -66,6 +65,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
         this.files = Collections.unmodifiableList(files);
+        this.allDistinctFiles = createAllDistinctFiles(files, components);
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
         this.messageFlags = messageFlags;
@@ -336,9 +336,9 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         if (isSet(FLAGS))
             json.put("flags", messageFlags);
 
-        final List<FileUpload> additionalFiles = getIndirectFiles();
+        final List<FileUpload> additionalFiles = MessageUtil.getIndirectFiles(components);
         if (isSet(ATTACHMENTS) || !additionalFiles.isEmpty())
-            json.put("attachments", MessageUtil.getAttachmentsData(files, additionalFiles));
+            json.put("attachments", MessageUtil.getAttachmentsData(allDistinctFiles));
 
         return json;
     }
@@ -358,19 +358,27 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     }
 
     /**
-     * Returns the {@link FileUpload FileUploads} that are added indirectly to this message,
-     * such as from V2 components and embeds.
+     * Returns both the {@link FileUpload FileUploads} attached to that message,
+     * and those added indirectly to this message, such as from V2 components and embeds,
+     * references to the same uploads are deduplicated.
      *
-     * @return The list of indirect file uploads
+     * @return The set of all file uploads
      */
     @Nonnull
-    public synchronized List<FileUpload> getIndirectFiles()
+    public Set<? extends AttachedFile> getAllDistinctFiles()
     {
-        return ComponentIterator.createStream(components)
-                .filter(FileContainerMixin.class::isInstance)
-                .map(FileContainerMixin.class::cast)
-                .flatMap(FileContainerMixin::getFiles)
-                .collect(Collectors.toList());
+        return allDistinctFiles;
+    }
+
+    @Nonnull
+    public static Set<AttachedFile> createAllDistinctFiles(@Nullable Collection<AttachedFile> files, @Nonnull Collection<MessageTopLevelComponentUnion> components)
+    {
+        List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
+        Set<AttachedFile> distinctFiles = new LinkedHashSet<>(files == null ? 0 : files.size() + indirectFiles.size());
+        if (files != null)
+            distinctFiles.addAll(files);
+        distinctFiles.addAll(indirectFiles);
+        return Collections.unmodifiableSet(distinctFiles);
     }
 
     @Override

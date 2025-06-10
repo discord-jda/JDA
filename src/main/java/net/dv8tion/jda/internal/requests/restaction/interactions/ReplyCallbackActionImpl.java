@@ -72,7 +72,7 @@ public class ReplyCallbackActionImpl extends DeferrableCallbackActionImpl implem
             DataObject msg = data.toData();
             msg.put("flags", msg.getInt("flags", 0) | flags);
             json.put("data",msg);
-            return getMultipartBody(data.getFiles(), data.getIndirectFiles(), json);
+            return getMultipartBody(data.getAllDistinctFiles(), json);
         }
     }
 

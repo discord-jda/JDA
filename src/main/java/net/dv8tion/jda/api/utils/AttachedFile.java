@@ -28,7 +28,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Represents files that are attached to requests.
@@ -276,7 +276,7 @@ public interface AttachedFile extends Closeable
      * @return {@link MultipartBody.Builder}
      */
     @Nonnull
-    static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files)
+    static MultipartBody.Builder createMultipartBody(@Nonnull Collection<? extends AttachedFile> files)
     {
         return createMultipartBody(files, (RequestBody) null);
     }
@@ -295,7 +295,7 @@ public interface AttachedFile extends Closeable
      * @return {@link MultipartBody.Builder}
      */
     @Nonnull
-    static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nullable DataObject payloadJson)
+    static MultipartBody.Builder createMultipartBody(@Nonnull Collection<? extends AttachedFile> files, @Nullable DataObject payloadJson)
     {
         RequestBody body = payloadJson != null ? RequestBody.create(payloadJson.toJson(), Requester.MEDIA_TYPE_JSON) : null;
         return createMultipartBody(files, body);
@@ -315,14 +315,12 @@ public interface AttachedFile extends Closeable
      * @return {@link MultipartBody.Builder}
      */
     @Nonnull
-    static MultipartBody.Builder createMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nullable RequestBody payloadJson)
+    static MultipartBody.Builder createMultipartBody(@Nonnull Collection<? extends AttachedFile> files, @Nullable RequestBody payloadJson)
     {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        for (int i = 0; i < files.size(); i++)
-        {
-            AttachedFile file = files.get(i);
-            file.addPart(builder, i);
-        }
+        int i = 0;
+        for (AttachedFile file : files)
+            file.addPart(builder, i++);
 
         if (payloadJson != null)
             builder.addFormDataPart("payload_json", null, payloadJson);
