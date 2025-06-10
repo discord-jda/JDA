@@ -247,8 +247,8 @@ public class Checks
         StringBuilder sb = new StringBuilder();
 
         ComponentPathIterator.createStream("root", components)
-                .filter(c -> !predicate.test(c.component))
-                .forEach(c -> sb.append(" - ").append(c.path).append("\n"));
+                .filter(c -> !predicate.test(c.getComponent()))
+                .forEach(c -> sb.append(" - ").append(c.getPath()).append("\n"));
 
         if (sb.length() > 0)
             throw new IllegalArgumentException(errorMessage + "\n" + sb.toString().trim());

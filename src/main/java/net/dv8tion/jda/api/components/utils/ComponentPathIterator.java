@@ -104,12 +104,24 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
     }
 
     public static class ComponentWithPath {
-        public final Component component;
-        public final String path;
+        private final Component component;
+        private final String path;
 
         ComponentWithPath(Component component, String path) {
             this.component = component;
             this.path = path;
+        }
+
+        @Nonnull
+        public Component getComponent()
+        {
+            return component;
+        }
+
+        @Nonnull
+        public String getPath()
+        {
+            return path;
         }
     }
 
