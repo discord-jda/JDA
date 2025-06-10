@@ -63,6 +63,7 @@ public class SectionImpl
         Checks.noneNull(_components, "Components");
         Checks.check(_components.size() <= MAX_COMPONENTS, "A section can only contain %d components, provided: %d", MAX_COMPONENTS, _components.size());
 
+        // Don't allow unknown components in user-called methods
         final Collection<SectionContentComponentUnion> components = ComponentsUtil.membersToUnion(_components, SectionContentComponentUnion.class);
         final SectionAccessoryComponentUnion accessory = ComponentsUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);
 
@@ -76,8 +77,9 @@ public class SectionImpl
             throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.SECTION.getKey() + " Found: " + data.getInt("type"));
 
         final int uniqueId = data.getInt("id");
-        final List<SectionContentComponentUnion> components = SectionContentComponentUnion.fromData(data.getArray("components"));
-        final SectionAccessoryComponentUnion accessory = SectionAccessoryComponentUnion.fromData(data.getObject("accessory"));
+        // Allow unknown components in deserialization methods
+        final List<SectionContentComponentUnion> components = ComponentsUtil.deserializeTo(data.getArray("components"), SectionContentComponentUnion.class);
+        final SectionAccessoryComponentUnion accessory = ComponentsUtil.deserializeTo(data.getObject("accessory"), SectionAccessoryComponentUnion.class);
 
         return new SectionImpl(uniqueId, components, accessory);
     }

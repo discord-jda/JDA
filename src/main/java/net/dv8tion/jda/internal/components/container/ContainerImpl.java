@@ -62,6 +62,7 @@ public class ContainerImpl
     {
         Checks.noneNull(_components, "Components");
 
+        // Don't allow unknown components in user-called methods
         final Collection<ContainerChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ContainerChildComponentUnion.class);
         return new ContainerImpl(components);
     }
@@ -73,7 +74,8 @@ public class ContainerImpl
             throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.CONTAINER.getKey() + " Found: " + data.getInt("type"));
 
         final int uniqueId = data.getInt("id");
-        final List<ContainerChildComponentUnion> components = ContainerChildComponentUnion.fromData(data.getArray("components"));
+        // Allow unknown components in deserialization methods
+        final List<ContainerChildComponentUnion> components = ComponentsUtil.deserializeTo(data.getArray("components"), ContainerChildComponentUnion.class);
         final boolean spoiler = data.getBoolean("spoiler", false);
         final Integer accentColor = (Integer) data.opt("accent_color").orElse(null);
 

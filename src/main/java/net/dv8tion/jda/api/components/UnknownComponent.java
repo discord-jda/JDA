@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 /**
  * Represents a component which has an unknown type.
  *
- * <p>Such components can be received and serialized, but cannot be sent back or modified in any way.
+ * <p>Such components can be received and serialized, but cannot be sent or modified in any way.
  *
  * @see ComponentUnion#isUnknownComponent()
  */

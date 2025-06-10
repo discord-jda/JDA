@@ -16,14 +16,12 @@
 
 package net.dv8tion.jda.test.components.utils;
 
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.components.tree.MessageComponentTree;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -37,7 +35,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -60,8 +57,6 @@ public class ComponentsUtilTest
         return Stream.of(
                 Arguments.of(run(() -> Section.of(UNKNOWN_COMPONENT, TextDisplay.of("0")))),
                 Arguments.of(run(() -> Section.of(Button.primary("id", "label"), UNKNOWN_COMPONENT))),
-                Arguments.of(run(() -> ComponentTree.of(MessageTopLevelComponentUnion.class, Collections.singleton(UNKNOWN_COMPONENT)))),
-                Arguments.of(run(() -> ComponentTree.of(Collections.singleton(UNKNOWN_COMPONENT)))),
                 Arguments.of(run(() -> Modal.create("id", "title").addComponents(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> new MessageEditBuilder().setComponents(UNKNOWN_COMPONENT))),
                 Arguments.of(run(() -> new MessageCreateBuilder().addComponents(UNKNOWN_COMPONENT))),

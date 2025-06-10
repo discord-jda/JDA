@@ -41,7 +41,8 @@ public class MessageComponentTreeImpl
         // Empty trees are allowed
         Checks.noneNull(_components, "Components");
 
-        final Collection<MessageTopLevelComponentUnion> components = ComponentsUtil.membersToUnion(_components, MessageTopLevelComponentUnion.class);
+        // Allow unknown components so [[Message#getComponentTree]] works
+        final Collection<MessageTopLevelComponentUnion> components = ComponentsUtil.relaxedMembersToUnion(_components, MessageTopLevelComponentUnion.class);
         return new MessageComponentTreeImpl(components);
     }
 

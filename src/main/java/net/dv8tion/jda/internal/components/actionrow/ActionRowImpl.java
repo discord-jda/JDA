@@ -51,7 +51,7 @@ public class ActionRowImpl
     private ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
     {
         Checks.notEmpty(components, "Row");
-        checkIsValid(components);
+        checkIsValid(components); // This is here so the "replace" method can't create invalid rows
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
     }
@@ -62,7 +62,8 @@ public class ActionRowImpl
         Checks.notNull(data, "Data");
         if (data.getInt("type", 0) != Type.ACTION_ROW.getKey())
             throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.ACTION_ROW.getKey() + " Found: " + data.getInt("type"));
-        List<ActionRowChildComponentUnion> components = ActionRowChildComponentUnion.fromData(data.getArray("components"));
+        // Allow unknown components in deserialization methods
+        List<ActionRowChildComponentUnion> components = ComponentsUtil.deserializeTo(data.getArray("components"), ActionRowChildComponentUnion.class);
 
         return new ActionRowImpl(
                 components,
@@ -76,6 +77,7 @@ public class ActionRowImpl
     {
         Checks.noneNull(_components, "Components");
 
+        // Don't allow unknown components in user-called methods
         Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
         return new ActionRowImpl(components);
     }
@@ -84,6 +86,7 @@ public class ActionRowImpl
     public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> _components)
     {
         Checks.noneNull(_components, "Components");
+        // Don't allow unknown components in user-called methods
         Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
 
         List<ActionRow> rows = new ArrayList<>();
