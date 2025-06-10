@@ -27,6 +27,9 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * Utility class to recursively iterate on a list of components.
+ */
 public class ComponentIterator implements Iterator<Component>
 {
     private final Stack<Iterator<? extends Component>> stack = new Stack<>();
@@ -35,11 +38,27 @@ public class ComponentIterator implements Iterator<Component>
         stack.push(components.iterator());
     }
 
+    /**
+     * Creates a {@link ComponentIterator} to recursively iterate on the provided components.
+     *
+     * @param  components
+     *         The components to iterate on
+     *
+     * @return A new {@link ComponentIterator}
+     */
     @Nonnull
     public static ComponentIterator create(@Nonnull Collection<? extends Component> components) {
         return new ComponentIterator(components);
     }
 
+    /**
+     * Creates a {@link Stream} of {@link Component} which recursively iterates on the provided components.
+     *
+     * @param  components
+     *         The components to iterate on
+     *
+     * @return A new, ordered {@link Stream} of {@link Component}
+     */
     @Nonnull
     public static Stream<Component> createStream(@Nonnull Collection<? extends Component> components) {
         Spliterator<Component> spliterator = Spliterators.spliteratorUnknownSize(create(components), Spliterator.ORDERED);

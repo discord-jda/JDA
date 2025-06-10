@@ -27,6 +27,9 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * Utility class to recursively iterate on a list of components while keeping track their path.
+ */
 public class ComponentPathIterator implements Iterator<ComponentPathIterator.ComponentWithPath>
 {
     private final Stack<Iterator<ComponentWithPath>> stack = new Stack<>();
@@ -35,11 +38,27 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
         stack.push(new CollectionAttributeIterator(rootName, "components", components));
     }
 
+    /**
+     * Creates a {@link ComponentPathIterator} to recursively iterate on the provided components.
+     *
+     * @param  components
+     *         The components to iterate on
+     *
+     * @return A new {@link ComponentPathIterator}
+     */
     @Nonnull
     public static ComponentPathIterator create(@Nonnull String rootName, @Nonnull Collection<? extends Component> components) {
         return new ComponentPathIterator(rootName, components);
     }
 
+    /**
+     * Creates a {@link Stream} of {@link ComponentWithPath} which recursively iterates on the provided components.
+     *
+     * @param  components
+     *         The components to iterate on
+     *
+     * @return A new, ordered {@link Stream} of {@link ComponentWithPath}
+     */
     @Nonnull
     public static Stream<ComponentWithPath> createStream(@Nonnull String rootName, @Nonnull Collection<? extends Component> components) {
         Spliterator<ComponentWithPath> spliterator = Spliterators.spliteratorUnknownSize(create(rootName, components), Spliterator.ORDERED);
