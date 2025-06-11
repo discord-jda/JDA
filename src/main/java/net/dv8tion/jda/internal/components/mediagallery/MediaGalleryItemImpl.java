@@ -96,13 +96,12 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
     @Override
     public Stream<FileUpload> getFiles()
     {
-        if (media != null)
+        if (media != null) // We'll reupload the entire file
         {
             final String fileName = Helpers.getLastPathSegment(media.getUrl());
             return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
         }
-        else
-            // This is an original item using an existing URL, nothing to upload
+        else // External URL or user-managed attachment
             return Stream.empty();
     }
 
@@ -124,10 +123,9 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
     public DataObject toData()
     {
         final String outputUrl;
-        if (media != null)
+        if (media != null) // We'll reupload the entire file
             outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
-        else
-            // This is an original item using an existing URL
+        else // External URL or user-managed attachment
             outputUrl = url;
         return DataObject.empty()
                 .put("media", DataObject.empty().put("url", outputUrl))
