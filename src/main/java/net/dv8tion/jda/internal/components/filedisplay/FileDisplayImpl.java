@@ -31,11 +31,12 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * Only represents a deserialized file component
+ * Represents either an attachment:// link, or a deserialized file component
  */
 public class FileDisplayImpl
         extends AbstractComponentImpl
@@ -54,6 +55,11 @@ public class FileDisplayImpl
                 new ResolvedMediaImpl(data.getObject("file")),
                 data.getBoolean("spoiler", false)
         );
+    }
+
+    public FileDisplayImpl(String url)
+    {
+        this(-1, url, null, false);
     }
 
     private FileDisplayImpl(int uniqueId, String url, ResolvedMedia media, boolean spoiler)
@@ -99,7 +105,7 @@ public class FileDisplayImpl
         return url;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public ResolvedMedia getResolvedMedia()
     {
@@ -109,12 +115,17 @@ public class FileDisplayImpl
     @Override
     public Stream<AttachedFile> getFiles(boolean shouldRetain)
     {
-        final String fileName = Helpers.getLastPathSegment(media.getUrl());
-        final String attachmentId = media.getAttachmentId();
-        if (shouldRetain && attachmentId != null)
-            return Stream.of(AttachmentUpdate.fromAttachment(attachmentId, fileName));
+        if (media != null)
+        {
+            final String fileName = Helpers.getLastPathSegment(media.getUrl());
+            final String attachmentId = media.getAttachmentId();
+            if (shouldRetain && attachmentId != null)
+                return Stream.of(AttachmentUpdate.fromAttachment(attachmentId, fileName));
 
-        return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
+            return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
+        }
+        else
+            return Stream.empty();
     }
 
     @Override
@@ -127,11 +138,15 @@ public class FileDisplayImpl
     @Override
     public DataObject toData()
     {
-        final String fileName = Helpers.getLastPathSegment(media.getUrl());
+        final String outputUrl;
+        if (media != null) // Retain or reupload the entire file, both cases uses attachment://
+            outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
+        else // User-managed attachment
+            outputUrl = url;
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
                 // File components only support attachment://
-                .put("file", DataObject.empty().put("url", "attachment://" + fileName))
+                .put("file", DataObject.empty().put("url", outputUrl))
                 .put("spoiler", spoiler);
         if (uniqueId >= 0)
             json.put("id", uniqueId);

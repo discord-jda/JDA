@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayFileUpload;
+import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -79,6 +80,42 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
     {
         Checks.notNull(file, "FileUpload");
         return new FileDisplayFileUpload(file);
+    }
+
+    /**
+     * Constructs a new {@link FileDisplay} with the provided file name.
+     *
+     * <p>You will need to add the file before building the message,
+     * such as with {@link MessageCreateBuilder#addFiles(FileUpload...)}, for example.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * MessageChannel channel; // = reference of a MessageChannel
+     * // It's recommended to use a more robust HTTP library instead,
+     * // such as Java 11+'s HttpClient, or OkHttp (included with JDA), among many other options.
+     * InputStream file = new URL("https://http.cat/500").openStream();
+     * FileDisplay fileDisplay = FileDisplay.fromFile("cat.png") // Match the file name in FileUpload
+     *     .setDescription("This is a cute car :3");
+     * channel.sendComponents(fileDisplay)
+     *     // You can also replace this with a local file
+     *     .addFiles(FileUpload.fromData(file, "cat.png"))
+     *     .useComponentsV2()
+     *     .queue();
+     * </code></pre>
+     *
+     * @param  fileName
+     *         The name of the file to display
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The new {@link FileDisplay}
+     */
+    @Nonnull
+    static FileDisplay fromFile(@Nonnull String fileName)
+    {
+        Checks.notNull(fileName, "File name");
+        return new FileDisplayImpl("attachment://" + fileName);
     }
 
     @Nonnull
