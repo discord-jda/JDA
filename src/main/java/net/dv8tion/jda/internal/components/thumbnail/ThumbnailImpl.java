@@ -19,19 +19,23 @@ package net.dv8tion.jda.internal.components.thumbnail;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
+import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class ThumbnailImpl
         extends AbstractComponentImpl
-        implements Thumbnail, SectionAccessoryComponentUnion
+        implements Thumbnail, SectionAccessoryComponentUnion, FileContainerMixin
 {
     private final int uniqueId;
     private final String url;
@@ -118,6 +122,18 @@ public class ThumbnailImpl
         return media;
     }
 
+    @Override
+    public Stream<FileUpload> getFiles()
+    {
+        if (media != null) // We'll reupload the entire file
+        {
+            final String fileName = Helpers.getLastPathSegment(media.getUrl());
+            return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
+        }
+        else // External URL or user-managed attachment
+            return Stream.empty();
+    }
+
     @Nullable
     @Override
     public String getDescription()
@@ -135,9 +151,14 @@ public class ThumbnailImpl
     @Override
     public DataObject toData()
     {
+        final String outputUrl;
+        if (media != null) // We'll reupload the entire file
+            outputUrl = "attachment://" + Helpers.getLastPathSegment(media.getUrl());
+        else // External URL or user-managed attachment
+            outputUrl = url;
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
-                .put("media", DataObject.empty().put("url", url))
+                .put("media", DataObject.empty().put("url", outputUrl))
                 .put("spoiler", spoiler);
         if (uniqueId >= 0)
             json.put("id", uniqueId);
