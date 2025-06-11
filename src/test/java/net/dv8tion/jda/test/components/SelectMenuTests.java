@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.test.components;
 
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu;
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu.Builder;
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu.DefaultValue;
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu.SelectTarget;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.Builder;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.DefaultValue;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.junit.jupiter.api.Test;
 

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.components.selections;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.selects.EntitySelectMenu;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;

@@ -17,4 +17,4 @@
 /**
  * Select menu components, also known as dropdowns.
  */
-package net.dv8tion.jda.api.components.selects;
+package net.dv8tion.jda.api.components.selections;
