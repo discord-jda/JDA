@@ -27,6 +27,7 @@ import java.util.Objects;
 
 public class ResolvedMediaImpl implements ResolvedMedia
 {
+    private final String attachmentId;
     private final String url;
     private final String proxyUrl;
     private final int width, height;
@@ -35,6 +36,7 @@ public class ResolvedMediaImpl implements ResolvedMedia
     public ResolvedMediaImpl(DataObject data)
     {
         this(
+                data.getString("attachment_id", null),
                 data.getString("url"),
                 data.getString("proxy_url"),
                 data.getInt("width", 0),
@@ -43,13 +45,21 @@ public class ResolvedMediaImpl implements ResolvedMedia
         );
     }
 
-    public ResolvedMediaImpl(String url, String proxyUrl, int width, int height, String contentType)
+    public ResolvedMediaImpl(String attachmentId, String url, String proxyUrl, int width, int height, String contentType)
     {
+        this.attachmentId = attachmentId;
         this.url = url;
         this.proxyUrl = proxyUrl;
         this.width = width;
         this.height = height;
         this.contentType = contentType;
+    }
+
+    @Nullable
+    @Override
+    public String getAttachmentId()
+    {
+        return attachmentId;
     }
 
     @Nonnull

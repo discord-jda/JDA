@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -88,7 +89,7 @@ public class FileDisplayFileUpload
     }
 
     @Override
-    public Stream<FileUpload> getFiles()
+    public Stream<AttachedFile> getFiles(boolean shouldRetain)
     {
         return Stream.of(file);
     }

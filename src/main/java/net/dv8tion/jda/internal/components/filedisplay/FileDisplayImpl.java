@@ -20,7 +20,8 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
-import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.AttachmentUpdate;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
@@ -33,6 +34,9 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Only represents a deserialized file component
+ */
 public class FileDisplayImpl
         extends AbstractComponentImpl
         implements FileDisplay, MessageTopLevelComponentUnion, ContainerChildComponentUnion, FileContainerMixin
@@ -103,9 +107,13 @@ public class FileDisplayImpl
     }
 
     @Override
-    public Stream<FileUpload> getFiles()
+    public Stream<AttachedFile> getFiles(boolean shouldRetain)
     {
         final String fileName = Helpers.getLastPathSegment(media.getUrl());
+        final String attachmentId = media.getAttachmentId();
+        if (shouldRetain && attachmentId != null)
+            return Stream.of(AttachmentUpdate.fromAttachment(attachmentId, fileName));
+
         return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
     }
 
@@ -122,6 +130,7 @@ public class FileDisplayImpl
         final String fileName = Helpers.getLastPathSegment(media.getUrl());
         final DataObject json = DataObject.empty()
                 .put("type", getType().getKey())
+                // File components only support attachment://
                 .put("file", DataObject.empty().put("url", "attachment://" + fileName))
                 .put("spoiler", spoiler);
         if (uniqueId >= 0)

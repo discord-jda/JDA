@@ -55,6 +55,20 @@ public interface MessageEditBuilderMixin<R extends MessageEditRequest<R>> extend
 
     @Nonnull
     @Override
+    default R setForceReuploadIndirectAttachments(boolean forceReuploadIndirectAttachments)
+    {
+        getBuilder().setForceReuploadIndirectAttachments(forceReuploadIndirectAttachments);
+        return (R) this;
+    }
+
+    @Override
+    default boolean isForceReuploadIndirectAttachments()
+    {
+        return getBuilder().isForceReuploadIndirectAttachments();
+    }
+
+    @Nonnull
+    @Override
     default R applyData(@Nonnull MessageEditData data)
     {
         getBuilder().applyData(data);

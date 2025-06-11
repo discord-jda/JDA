@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,8 +39,9 @@ public class MessageIndirectFileUploadTest
                 .build())
         {
             assertThat(data.getFiles()).isEmpty();
-            assertThat(MessageUtil.getIndirectFiles(data.getComponents())).hasSize(1)
-                    .element(0).extracting(FileUpload::getName).isEqualTo("bytes.bin");
+            assertThat(MessageUtil.getIndirectFiles(data.getComponents(), false)).hasSize(1)
+                    .element(0).asInstanceOf(InstanceOfAssertFactories.type(FileUpload.class))
+                    .extracting(FileUpload::getName).isEqualTo("bytes.bin");
         }
 
         try (MessageEditData data = new MessageEditBuilder()
@@ -48,8 +50,9 @@ public class MessageIndirectFileUploadTest
                 .build())
         {
             assertThat(data.getFiles()).isEmpty();
-            assertThat(MessageUtil.getIndirectFiles(data.getComponents())).hasSize(1)
-                    .element(0).extracting(FileUpload::getName).isEqualTo("bytes.bin");
+            assertThat(MessageUtil.getIndirectFiles(data.getComponents(), false)).hasSize(1)
+                    .element(0).asInstanceOf(InstanceOfAssertFactories.type(FileUpload.class))
+                    .extracting(FileUpload::getName).isEqualTo("bytes.bin");
         }
     }
 }

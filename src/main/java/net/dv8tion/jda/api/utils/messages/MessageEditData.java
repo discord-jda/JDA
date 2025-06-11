@@ -50,6 +50,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<AttachedFile> files;
+    private final boolean forceReuploadIndirectAttachments;
     private final Set<AttachedFile> allDistinctFiles;
     private final List<MessageTopLevelComponentUnion> components;
     private final int messageFlags;
@@ -59,13 +60,14 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
 
     protected MessageEditData(
             int configuredFields, int messageFlags, boolean isReplace, String content,
-            List<MessageEmbed> embeds, List<AttachedFile> files, List<MessageTopLevelComponentUnion> components,
-            AllowedMentionsData mentions)
+            List<MessageEmbed> embeds, List<AttachedFile> files, boolean forceReuploadIndirectAttachments,
+            List<MessageTopLevelComponentUnion> components, AllowedMentionsData mentions)
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
         this.files = Collections.unmodifiableList(files);
-        this.allDistinctFiles = createAllDistinctFiles(files, components);
+        this.forceReuploadIndirectAttachments = forceReuploadIndirectAttachments;
+        this.allDistinctFiles = createAllDistinctFiles(files, components, forceReuploadIndirectAttachments);
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
         this.messageFlags = messageFlags;
@@ -271,6 +273,19 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         return files;
     }
 
+    /**
+     * Whether indirect attachments will be re-uploaded,
+     * see {@link MessageEditRequest#setForceReuploadIndirectAttachments(boolean)} for more details.
+     *
+     * @return {@code true} if indirect attachments will be re-uploaded
+     *
+     * @see MessageEditRequest#setForceReuploadIndirectAttachments(boolean)
+     */
+    public boolean isForceReuploadIndirectAttachments()
+    {
+        return forceReuploadIndirectAttachments;
+    }
+
     @Override
     public boolean isSuppressEmbeds()
     {
@@ -336,7 +351,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
         if (isSet(FLAGS))
             json.put("flags", messageFlags);
 
-        final List<FileUpload> additionalFiles = MessageUtil.getIndirectFiles(components);
+        final List<AttachedFile> additionalFiles = MessageUtil.getIndirectFiles(components, !forceReuploadIndirectAttachments);
         if (isSet(ATTACHMENTS) || !additionalFiles.isEmpty())
             json.put("attachments", MessageUtil.getAttachmentsData(allDistinctFiles));
 
@@ -371,9 +386,13 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     }
 
     @Nonnull
-    public static Set<AttachedFile> createAllDistinctFiles(@Nullable Collection<AttachedFile> files, @Nonnull Collection<MessageTopLevelComponentUnion> components)
+    public static Set<AttachedFile> createAllDistinctFiles(
+            @Nullable Collection<AttachedFile> files,
+            @Nonnull Collection<MessageTopLevelComponentUnion> components,
+            boolean isForceReuploadIndirectAttachments
+    )
     {
-        List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
+        List<AttachedFile> indirectFiles = MessageUtil.getIndirectFiles(components, !isForceReuploadIndirectAttachments);
         Set<AttachedFile> distinctFiles = new LinkedHashSet<>(files == null ? 0 : files.size() + indirectFiles.size());
         if (files != null)
             distinctFiles.addAll(files);

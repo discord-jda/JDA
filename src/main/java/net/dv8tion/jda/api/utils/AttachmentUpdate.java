@@ -63,6 +63,23 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
      *
      * @param  id
      *         The id of the attachment to retain
+     * @param  name
+     *         The existing attachment name
+     *
+     * @return {@link AttachmentUpdate}
+     */
+    @Nonnull
+    public static AttachmentUpdate fromAttachment(long id, @Nullable String name)
+    {
+        return new AttachmentUpdate(id, name);
+    }
+
+    /**
+     * Creates an {@link AttachmentUpdate} with the given attachment id.
+     * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+     *
+     * @param  id
+     *         The id of the attachment to retain
      *
      * @throws IllegalArgumentException
      *         If the id is not a valid snowflake
@@ -73,6 +90,26 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
     public static AttachmentUpdate fromAttachment(@Nonnull String id)
     {
         return fromAttachment(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Creates an {@link AttachmentUpdate} with the given attachment id.
+     * <br>This is primarily used for message edit requests, to specify which attachments to retain in the message after the update.
+     *
+     * @param  id
+     *         The id of the attachment to retain
+     * @param  name
+     *         The existing attachment name
+     *
+     * @throws IllegalArgumentException
+     *         If the id is not a valid snowflake
+     *
+     * @return {@link AttachmentUpdate}
+     */
+    @Nonnull
+    public static AttachmentUpdate fromAttachment(@Nonnull String id, @Nullable String name)
+    {
+        return fromAttachment(MiscUtil.parseSnowflake(id), name);
     }
 
     /**

@@ -16,16 +16,20 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,6 +45,8 @@ import java.util.*;
  */
 public class MessageCreateData implements MessageData, AutoCloseable, SerializableData
 {
+    private static final Logger LOG = JDALogger.getLog(MessageCreateData.class);
+
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<FileUpload> files;
@@ -391,10 +397,18 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     @Nonnull
     private static Set<FileUpload> createAllDistinctFiles(@Nonnull Collection<FileUpload> files, @Nonnull Collection<MessageTopLevelComponentUnion> components)
     {
-        List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
+        List<AttachedFile> indirectFiles = MessageUtil.getIndirectFiles(components, false);
         Set<FileUpload> distinctFiles = new LinkedHashSet<>(files.size() + indirectFiles.size());
         distinctFiles.addAll(files);
-        distinctFiles.addAll(indirectFiles);
+        for (AttachedFile file : indirectFiles)
+        {
+            if (!(file instanceof FileUpload))
+            {
+                LOG.warn("Tried to add an attachment that isn't a FileUpload, discarding the file. Please redirect the following message to the devs (JDA {})", JDAInfo.VERSION);
+                continue;
+            }
+            distinctFiles.add((FileUpload) file);
+        }
         return Collections.unmodifiableSet(distinctFiles);
     }
 
