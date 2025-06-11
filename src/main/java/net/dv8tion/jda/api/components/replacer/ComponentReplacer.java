@@ -62,6 +62,24 @@ public interface ComponentReplacer
     Component apply(@Nonnull Component oldComponent);
 
     /**
+     * Applies this replacer on the provided component tree.
+     *
+     * @param  tree
+     *         The {@link ComponentTree} on which to apply this replacer
+     *
+     * @throws IllegalArgumentException
+     *         If the provided tree is {@code null}
+     *
+     * @return The new component tree, with zero, one or more components replaced
+     */
+    @Nonnull
+    default <T extends Component> ComponentTree<T> applyOn(@Nonnull ComponentTree<T> tree)
+    {
+        Checks.notNull(tree, "Component tree");
+        return tree.replace(this);
+    }
+
+    /**
      * Creates a new {@link ComponentReplacer} combining the provided replacers.
      *
      * <p>Each replacer will run one after the other,
