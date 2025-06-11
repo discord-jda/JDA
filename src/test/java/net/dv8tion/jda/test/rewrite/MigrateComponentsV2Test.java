@@ -201,22 +201,24 @@ public class MigrateComponentsV2Test implements RewriteTest
         //
         // Though this will happen only if the import wasn't already present,
         // it will still produce valid code and the user can mass optimize imports when it's finished.
-//        rewriteRun(
-//                spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2"),
-//                //language=java
-//                java(
-//                        "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;\n\npublic class Test { void x(SelectMenu.Builder<?, ?> component) { component.getId(); } }",
-//                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\n\npublic class Test { void x(SelectMenu.Builder<?, ?> component) { component.getCustomId(); } }"
-//                )
-//        );
-//
-//        rewriteRun(
-//                spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2"),
-//                //language=java
-//                java(
-//                        "import net.dv8tion.jda.api.interactions.components.text.TextInput;\n\npublic class Test { void x(TextInput.Builder component) { component.getId(); } }",
-//                        "import net.dv8tion.jda.api.components.textinput.TextInput;\n\npublic class Test { void x(TextInput.Builder component) { component.getCustomId(); } }"
-//                )
-//        );
+        //
+        // These tests will take this bug into account
+        rewriteRun(
+                spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2"),
+                //language=java
+                java(
+                        "import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;\n\npublic class Test { void x(SelectMenu.Builder<?, ?> component) { component.getId(); } }",
+                        "import net.dv8tion.jda.api.components.selections.SelectMenu;\nimport net.dv8tion.jda.api.components.selections.SelectMenu.Builder;\n\npublic class Test { void x(SelectMenu.Builder<?, ?> component) { component.getCustomId(); } }"
+                )
+        );
+
+        rewriteRun(
+                spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2"),
+                //language=java
+                java(
+                        "import net.dv8tion.jda.api.interactions.components.text.TextInput;\n\npublic class Test { void x(TextInput.Builder component) { component.getId(); } }",
+                        "import net.dv8tion.jda.api.components.textinput.TextInput;\nimport net.dv8tion.jda.api.components.textinput.TextInput.Builder;\n\npublic class Test { void x(TextInput.Builder component) { component.getCustomId(); } }"
+                )
+        );
     }
 }

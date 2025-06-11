@@ -173,6 +173,7 @@ dependencies {
 
     // rewrite-java dependencies only necessary for Java Recipe development
     testImplementation("org.openrewrite:rewrite-java")
+    testImplementation("org.openrewrite.recipe:rewrite-java-dependencies")
 
     // This is supposed to only be the version that corresponds to the current Java version,
     // but as there are no toolchain, we include all, they can coexist safely tho.
