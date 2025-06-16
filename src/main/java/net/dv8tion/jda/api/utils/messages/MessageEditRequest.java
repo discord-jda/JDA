@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -30,8 +29,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Specialized abstraction of setters for editing existing messages throughout the API.
@@ -132,6 +129,35 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
         return setAttachments(Arrays.asList(attachments));
     }
 
+    /**
+     * Whether to force re-uploading of indirect attachments.
+     *
+     * <p>When building a message, some components may accept {@link FileUpload FileUploads},
+     * those are <i>indirect attachments</i>, they are added automatically when building the message,
+     * sparing you the need to add the files separately while also managing {@code attachment://} references.
+     *
+     * <p>When editing a message, JDA tries to retain existing attachments,
+     * however, in the rare case your bot copies an attachment from a message it doesn't own,
+     * you may need to re-upload them to avoid "Attachment data not found" errors; this is what this method fixes.
+     *
+     * @param  forceReuploadIndirectAttachments
+     *         {@code true} to always re-upload indirect attachments
+     *
+     * @return The same instance for chaining
+     */
+    @Nonnull
+    R setForceReuploadIndirectAttachments(boolean forceReuploadIndirectAttachments);
+
+    /**
+     * Whether indirect attachments will be re-uploaded,
+     * see {@link #setForceReuploadIndirectAttachments(boolean)} for more details.
+     *
+     * @return {@code true} if indirect attachments will be re-uploaded
+     *
+     * @see #setForceReuploadIndirectAttachments(boolean)
+     */
+    boolean isForceReuploadIndirectAttachments();
+
     @Nonnull
     @Override
     default R setFiles(@Nullable Collection<? extends FileUpload> files)
@@ -208,17 +234,15 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
     @Nonnull
     default R applyCreateData(@Nonnull MessageCreateData data)
     {
-        final List<LayoutComponent> layoutComponents = data.getComponents().stream()
-                .map(LayoutComponent::createCopy)
-                .collect(Collectors.toList());
         return setReplace(true)
                 .setContent(data.getContent())
                 .setAllowedMentions(data.getAllowedMentions())
                 .mentionUsers(data.getMentionedUsers())
                 .mentionRoles(data.getMentionedRoles())
                 .mentionRepliedUser(data.isMentionRepliedUser())
+                .setComponents(data.getComponents())
+                .useComponentsV2(data.isUsingComponentsV2())
                 .setEmbeds(data.getEmbeds())
-                .setComponents(layoutComponents)
                 .setFiles(data.getFiles());
     }
 
