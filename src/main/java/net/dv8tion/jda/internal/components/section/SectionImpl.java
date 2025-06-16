@@ -123,7 +123,7 @@ public class SectionImpl
                 }
         );
 
-        return new SectionImpl(newContent, newAccessory);
+        return new SectionImpl(uniqueId, newContent, newAccessory);
     }
 
     @Override
