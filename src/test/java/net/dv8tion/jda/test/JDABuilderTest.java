@@ -140,43 +140,6 @@ public class JDABuilderTest extends AbstractSnapshotTest
             .matchesSnapshot();
     }
 
-    @EnumSource
-    @ParameterizedTest
-    @SuppressWarnings("deprecation")
-    void testDeprecatedIntentDoesNotDisableCache(IntentTestCase testCase)
-    {
-        TestJDABuilder builder;
-
-        switch (testCase)
-        {
-        case PASSED_TO_FACTORY:
-            builder = new TestJDABuilder(GatewayIntent.GUILD_EMOJIS_AND_STICKERS.getRawValue());
-            builder.applyIntents();
-            break;
-        case PASSED_TO_RELATIVE:
-            builder = new TestJDABuilder(0);
-            builder.applyLight();
-            builder.enableIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS);
-            builder.enableCache(CacheFlag.EMOJI, CacheFlag.STICKER);
-            break;
-        case PASSED_TO_SETTER:
-            builder = new TestJDABuilder(0);
-            builder.applyLight();
-            builder.setEnabledIntents(GatewayIntent.GUILD_EMOJIS_AND_STICKERS);
-            builder.enableCache(CacheFlag.EMOJI, CacheFlag.STICKER);
-            break;
-        default:
-            throw new AssertionError("Unexpected test case " + testCase);
-        }
-
-
-        assertThatLoggingFrom(
-            () -> assertThatNoException().isThrownBy(builder::checkIntents)
-        )
-            .doesNotContainLineMatching(log -> log.contains("CacheFlag." + CacheFlag.EMOJI))
-            .doesNotContainLineMatching(log -> log.contains("CacheFlag." + CacheFlag.STICKER));
-    }
-
     static class TestJDABuilder extends JDABuilder
     {
         public TestJDABuilder(int intents)
@@ -207,12 +170,5 @@ public class JDABuilderTest extends AbstractSnapshotTest
         {
             super.checkIntents();
         }
-    }
-
-    enum IntentTestCase
-    {
-        PASSED_TO_FACTORY,
-        PASSED_TO_RELATIVE,
-        PASSED_TO_SETTER;
     }
 }
