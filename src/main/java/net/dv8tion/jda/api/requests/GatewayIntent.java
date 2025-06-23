@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.requests;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -57,7 +55,7 @@ import java.util.EnumSet;
  * <ol>
  *     <li><b>GUILD_MEMBERS</b> - This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks). This is required to cache all members of a guild (including chunking)</li>
  *     <li><b>GUILD_MODERATION</b> - This will only track guild moderation events, such as bans, unbans, and audit-logs.</li>
- *     <li><b>GUILD_EMOJIS</b> - This will only track custom emoji create/modify/delete. Most bots don't need this since they just use the emoji id anyway.</li>
+ *     <li><b>GUILD_EXPRESSIONS</b> - This will only track custom emoji, sticker, and soundboard sound create/update/delete.</li>
  *     <li><b>GUILD_WEBHOOKS</b> - This will only track guild webhook create/update/delete. Most bots don't need this since related events don't contain any useful information about webhook changes.</li>
  *     <li><b>GUILD_INVITES</b> - This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
  *     <li><b>GUILD_VOICE_STATES</b> - Required to properly get information of members in voice channels and cache them. <u>You cannot connect to a voice channel without this intent</u>.</li>
@@ -100,15 +98,6 @@ public enum GatewayIntent
      * Moderation events, such as ban/unban/audit-log.
      */
     GUILD_MODERATION(2),
-    /**
-     * Custom emoji and sticker add/update/delete events.
-     *
-     * @deprecated Replaced with {@link #GUILD_EXPRESSIONS}
-     */
-    @ForRemoval(deadline = "5.3.0")
-    @ReplaceWith("GUILD_EXPRESSIONS")
-    @Deprecated
-    GUILD_EMOJIS_AND_STICKERS(3),
     /**
      * Custom emoji, sticker and soundboard sound add/update/delete events.
      */
