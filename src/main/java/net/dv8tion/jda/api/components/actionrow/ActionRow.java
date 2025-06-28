@@ -264,11 +264,13 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
     @CheckReturnValue
     ActionRow replace(@Nonnull ComponentReplacer replacer);
 
+    @Override
     default boolean isDisabled()
     {
         return getActionComponents().stream().allMatch(ActionComponent::isDisabled);
     }
 
+    @Override
     default boolean isEnabled()
     {
         return getActionComponents().stream().noneMatch(ActionComponent::isDisabled);
