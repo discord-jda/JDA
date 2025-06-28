@@ -164,7 +164,7 @@ public class ComponentsUtil
         return !getIllegalV1Components(components).isEmpty();
     }
 
-    public static long getComponentTreeLength(@Nonnull Collection<? extends Component> components)
+    public static long getComponentTreeTextContentLength(@Nonnull Collection<? extends Component> components)
     {
         return ComponentIterator.createStream(components)
                 .mapToInt(c ->
