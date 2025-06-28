@@ -153,7 +153,7 @@ public class MessageComponentTest
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(getAbsurdTopLevelV2()))),
                 // MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(getMaxTotal()))),
-                // Attempt to use >MAX_CONTENT_LENGTH_COMPONENT_V2
+                // Attempt to use =MAX_CONTENT_LENGTH_COMPONENT_V2
                 Arguments.of(message(b -> b.useComponentsV2().setComponents(EXAMPLE_TEXT_DISPLAY)))
         );
     }
