@@ -17,6 +17,7 @@
 package net.dv8tion.jda.test.components.utils;
 
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
@@ -37,8 +38,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ComponentsUtilTest
 {
@@ -74,16 +74,17 @@ public class ComponentsUtilTest
     @Test
     void testRemoveComponentFromRow()
     {
+        final Button button2 = Button.secondary("button2", "test").withUniqueId(2);
         MessageComponentTree tree = MessageComponentTree.of(
                 ActionRow.of(
                         Button.primary("button1", "test").withUniqueId(1),
-                        Button.secondary("button2", "test").withUniqueId(2)
+                        button2
                 )
         );
 
-        MessageComponentTree newTree = assertDoesNotThrow(() -> tree.replace(ComponentReplacer.byUniqueId(1, (Button) null)));
+        MessageComponentTree newTree = tree.replace(ComponentReplacer.byUniqueId(1, (Button) null));
         final ActionRow row = newTree.getComponents().get(0).asActionRow();
-        assertEquals(1, row.getComponents().size());
-        assertEquals(2, row.getComponents().get(0).getUniqueId());
+        assertThat(row.getComponents()).hasSize(1);
+        assertThat(row.getComponents()).contains((ActionRowChildComponentUnion) button2);
     }
 }
