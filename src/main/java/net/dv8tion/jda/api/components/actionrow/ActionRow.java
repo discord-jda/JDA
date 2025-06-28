@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.components.actionrow;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
@@ -25,7 +24,6 @@ import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
@@ -44,7 +42,7 @@ import java.util.List;
  *
  * @see ActionRowChildComponent
  */
-public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>, MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
+public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
     /**
      * Load ActionRow from serialized representation.
@@ -235,12 +233,6 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
                 .collect(Helpers.toUnmodifiableList());
     }
 
-    @Nonnull
-    @Override
-    @Deprecated
-    @ForRemoval
-    ActionRow createCopy();
-
     @Override
     default boolean isMessageCompatible()
     {
@@ -288,22 +280,13 @@ public interface ActionRow extends LayoutComponent<ActionRowChildComponentUnion>
     @Override
     default ActionRow asDisabled()
     {
-        return (ActionRow) LayoutComponent.super.asDisabled();
+        return (ActionRow) IDisableable.super.asDisabled();
     }
 
     @Nonnull
     @Override
     default ActionRow asEnabled()
     {
-        return (ActionRow) LayoutComponent.super.asEnabled();
+        return (ActionRow) IDisableable.super.asEnabled();
     }
-
-    /**
-     * Check whether this row has a valid configuration.
-     *
-     * <p>This primarily checks the number of components in a single row.
-     *
-     * @return True, if this action row is valid
-     */
-    boolean isValid();
 }

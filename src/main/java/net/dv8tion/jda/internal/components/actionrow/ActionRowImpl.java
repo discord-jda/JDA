@@ -33,7 +33,10 @@ import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ActionRowImpl
@@ -158,13 +161,6 @@ public class ActionRowImpl
 
     @Nonnull
     @Override
-    public ActionRow createCopy()
-    {
-        return new ActionRowImpl(components, uniqueId);
-    }
-
-    @Nonnull
-    @Override
     public Component.Type getType()
     {
         return Component.Type.ACTION_ROW;
@@ -180,25 +176,6 @@ public class ActionRowImpl
         if (uniqueId >= 0)
             json.put("id", uniqueId);
         return json;
-    }
-
-    @Nonnull
-    @Override
-    public Iterator<ActionRowChildComponentUnion> iterator()
-    {
-        return components.iterator();
-    }
-
-    @Override
-    public boolean isEmpty()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isValid()
-    {
-        return true;
     }
 
     private static void checkIsValid(Collection<ActionRowChildComponentUnion> components)

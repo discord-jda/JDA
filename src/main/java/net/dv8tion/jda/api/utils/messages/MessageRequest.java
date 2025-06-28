@@ -16,17 +16,14 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -388,92 +385,6 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     default R useComponentsV2()
     {
         return useComponentsV2(true);
-    }
-
-    /**
-     * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setComponents(Collection)} instead.
-     *
-     * <p><b>Example</b><br>
-     *
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(ActionRow.of(button1, button2))
-     *   .queue();
-     * }</pre>
-     *
-     * is equivalent to:
-     *
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(ActionRow.of(button1, button2))
-     *   .queue();
-     * }</pre><br>
-     *
-     * @param  components
-     *         The {@link ActionRowChildComponent ActionRowChildComponents} for the message (up to 5)
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link ActionRowChildComponent#isMessageCompatible() message compatible}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ActionRowChildComponent...)} throws an exception</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @deprecated
-     *         Replace with {@link #setComponents(MessageTopLevelComponent...) setComponents(ActionRow.of(components))}
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setComponents(ActionRow.of(components))")
-    default R setActionRow(@Nonnull Collection<? extends ItemComponent> components)
-    {
-        return setComponents(ActionRow.of(components));
-    }
-
-    /**
-     * Convenience method to set the components of a message to a single {@link ActionRow} of components.
-     * <br>To remove components, you should use {@link #setComponents(MessageTopLevelComponent...)} instead.
-     *
-     * <p><b>Example</b><br>
-     *
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setActionRow(button1, button2)
-     *   .queue();
-     * }</pre>
-     *
-     * is equivalent to:
-     *
-     * <pre>{@code
-     * channel.sendMessage("Content is still required")
-     *   .setComponents(ActionRow.of(button1, button2))
-     *   .queue();
-     * }</pre><br>
-     *
-     * @param  components
-     *         The {@link ActionRowChildComponent ActionRowChildComponents} for the message (up to 5)
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any component is not {@link ActionRowChildComponent#isMessageCompatible() message compatible}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ActionRowChildComponent...)} throws an exception</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @deprecated
-     *         Replace with {@link #setComponents(MessageTopLevelComponent...) setActionRows(ActionRow.of(components))}
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setComponents(ActionRow.of(components))")
-    default R setActionRow(@Nonnull ItemComponent... components)
-    {
-        return setComponents(ActionRow.of(components));
     }
 
     /**

@@ -16,17 +16,14 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -216,80 +213,6 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     default R addComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
     {
         return addComponents(tree.getComponents());
-    }
-
-    /**
-     * Appends a single {@link ActionRow} to the request.
-     * <br>Use {@link #setActionRow(Collection)} instead, to replace the components entirely.
-     *
-     * <p><b>Example</b><br>
-     * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addActionRow(button1, button2)
-     *        .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The {@link ActionRowChildComponent components} to add to the action row, must not be empty
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link Component#isMessageCompatible() message compatible}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ActionRowChildComponent...)} throws an exception</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @see    ActionRow#of(ActionRowChildComponent...)
-     *
-     * @deprecated
-     *         Replace with {@link #addComponents(MessageTopLevelComponent...) addComponents(ActionRow.of(components))}
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setActionRows(ActionRow.of(components))")
-    default R addActionRow(@Nonnull Collection<? extends ItemComponent> components)
-    {
-        return addComponents(ActionRow.of(components));
-    }
-
-    /**
-     * Appends a single {@link ActionRow} to the request.
-     * <br>Use {@link #setActionRow(Collection)} instead, to replace the components entirely.
-     *
-     * <p><b>Example</b><br>
-     * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addActionRow(button1, button2)
-     *        .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         The {@link ActionRowChildComponent components} to add to the action row, must not be empty
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link Component#isMessageCompatible() message compatible}</li>
-     *             <li>In all the same cases as {@link ActionRow#of(ActionRowChildComponent...)} throws an exception</li>
-     *         </ul>
-     *
-     * @return The same instance for chaining
-     *
-     * @see    ActionRow#of(ActionRowChildComponent...)
-     *
-     * @deprecated
-     *         Replace with {@link #addComponents(MessageTopLevelComponent...) addActionRows(ActionRow.of(components))}
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setActionRows(ActionRow.of(components))")
-    default R addActionRow(@Nonnull ItemComponent... components)
-    {
-        return addComponents(ActionRow.of(components));
     }
 
     /**
