@@ -38,7 +38,7 @@ public class MessageComponentTreeImpl
     @Nonnull
     public static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> _components)
     {
-        // Empty trees are allowed
+        // Empty trees are allowed (messages can contain no components)
         Checks.noneNull(_components, "Components");
 
         // Allow unknown components so [[Message#getComponentTree]] works

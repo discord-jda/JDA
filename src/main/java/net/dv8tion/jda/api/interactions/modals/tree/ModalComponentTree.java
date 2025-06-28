@@ -69,7 +69,7 @@ public interface ModalComponentTree extends ComponentTree<ModalTopLevelComponent
      *         List of components to construct the tree from
      *
      * @throws IllegalArgumentException
-     *         If {@code null} is provided
+     *         If {@code null} is provided or the collection is empty
      *
      * @return A {@link ModalComponentTree} containing the given components
      */
