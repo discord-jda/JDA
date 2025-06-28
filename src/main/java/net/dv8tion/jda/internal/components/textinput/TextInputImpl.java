@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class TextInputImpl
         extends AbstractComponentImpl
@@ -157,6 +158,23 @@ public class TextInputImpl
         if (placeholder != null)
             obj.put("placeholder", placeholder);
         return obj;
+    }
+
+    @Override
+    public final boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (!(o instanceof TextInputImpl)) return false;
+        TextInputImpl that = (TextInputImpl) o;
+        return uniqueId == that.uniqueId && minLength == that.minLength && maxLength == that.maxLength
+                && required == that.required && id.equals(that.id) && style == that.style && label.equals(that.label)
+                && Objects.equals(value, that.value) && Objects.equals(placeholder, that.placeholder);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, uniqueId, style, label, minLength, maxLength, required, value, placeholder);
     }
 
     @Override
