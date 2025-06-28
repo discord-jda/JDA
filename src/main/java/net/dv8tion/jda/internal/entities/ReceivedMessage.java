@@ -639,7 +639,7 @@ public class ReceivedMessage implements Message
     @Override
     public boolean isUsingComponentsV2()
     {
-        return (this.flags & MessageFlag.IS_COMPONENTS_V2.getValue()) > 0;
+        return (this.flags & MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     @Override
