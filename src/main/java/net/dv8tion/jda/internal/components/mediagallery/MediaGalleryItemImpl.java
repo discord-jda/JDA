@@ -144,6 +144,7 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof MediaGalleryItemImpl)) return false;
         MediaGalleryItemImpl that = (MediaGalleryItemImpl) o;
         return spoiler == that.spoiler && Objects.equals(url, that.url) && Objects.equals(description, that.description);

@@ -163,6 +163,7 @@ public class SectionImpl
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof SectionImpl)) return false;
         SectionImpl that = (SectionImpl) o;
         return uniqueId == that.uniqueId && Objects.equals(components, that.components) && Objects.equals(accessory, that.accessory);

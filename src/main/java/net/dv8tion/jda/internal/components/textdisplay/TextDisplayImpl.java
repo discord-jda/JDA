@@ -105,6 +105,7 @@ public class TextDisplayImpl
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof TextDisplayImpl)) return false;
         TextDisplayImpl that = (TextDisplayImpl) o;
         return uniqueId == that.uniqueId && Objects.equals(content, that.content);

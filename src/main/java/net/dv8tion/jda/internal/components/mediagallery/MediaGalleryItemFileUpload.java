@@ -118,6 +118,7 @@ public class MediaGalleryItemFileUpload implements MediaGalleryItem, FileContain
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof MediaGalleryItemFileUpload)) return false;
         MediaGalleryItemFileUpload that = (MediaGalleryItemFileUpload) o;
         return spoiler == that.spoiler && Objects.equals(file, that.file) && Objects.equals(description, that.description);

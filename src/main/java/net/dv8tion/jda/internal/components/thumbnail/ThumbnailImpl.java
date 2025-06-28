@@ -178,6 +178,7 @@ public class ThumbnailImpl
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof ThumbnailImpl)) return false;
         ThumbnailImpl thumbnail = (ThumbnailImpl) o;
         return uniqueId == thumbnail.uniqueId && spoiler == thumbnail.spoiler && Objects.equals(url, thumbnail.url) && Objects.equals(description, thumbnail.description);

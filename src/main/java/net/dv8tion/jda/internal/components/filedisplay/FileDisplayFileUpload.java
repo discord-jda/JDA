@@ -123,6 +123,7 @@ public class FileDisplayFileUpload
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof FileDisplayFileUpload)) return false;
         FileDisplayFileUpload fileDisplay = (FileDisplayFileUpload) o;
         return uniqueId == fileDisplay.uniqueId && spoiler == fileDisplay.spoiler && Objects.equals(file, fileDisplay.file);

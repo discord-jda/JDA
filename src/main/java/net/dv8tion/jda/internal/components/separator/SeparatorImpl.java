@@ -123,6 +123,7 @@ public class SeparatorImpl
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof SeparatorImpl)) return false;
         SeparatorImpl separator = (SeparatorImpl) o;
         return uniqueId == separator.uniqueId && isDivider == separator.isDivider && spacing == separator.spacing;

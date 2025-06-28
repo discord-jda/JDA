@@ -169,6 +169,7 @@ public class ContainerImpl
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof ContainerImpl)) return false;
         ContainerImpl that = (ContainerImpl) o;
         return uniqueId == that.uniqueId && spoiler == that.spoiler && Objects.equals(components, that.components) && Objects.equals(accentColor, that.accentColor);

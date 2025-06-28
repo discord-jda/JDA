@@ -148,6 +148,7 @@ public class ThumbnailFileUpload
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof ThumbnailFileUpload)) return false;
         ThumbnailFileUpload thumbnail = (ThumbnailFileUpload) o;
         return uniqueId == thumbnail.uniqueId && spoiler == thumbnail.spoiler && Objects.equals(file, thumbnail.file) && Objects.equals(description, thumbnail.description);

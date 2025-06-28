@@ -156,6 +156,7 @@ public class FileDisplayImpl
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof FileDisplayImpl)) return false;
         FileDisplayImpl fileDisplay = (FileDisplayImpl) o;
         return uniqueId == fileDisplay.uniqueId && spoiler == fileDisplay.spoiler && Objects.equals(url, fileDisplay.url);

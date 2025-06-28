@@ -126,6 +126,7 @@ public class MediaGalleryImpl
     @Override
     public boolean equals(Object o)
     {
+        if (o == this) return true;
         if (!(o instanceof MediaGalleryImpl)) return false;
         MediaGalleryImpl that = (MediaGalleryImpl) o;
         return uniqueId == that.uniqueId && Objects.equals(items, that.items);
