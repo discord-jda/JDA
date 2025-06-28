@@ -206,7 +206,7 @@ public class ButtonImpl
     @Override
     public int hashCode()
     {
-        return Objects.hash(customId, label, style, url, disabled, emoji);
+        return Objects.hash(customId, label, style, url, sku, disabled, emoji);
     }
 
     @Override
@@ -218,6 +218,7 @@ public class ButtonImpl
         return Objects.equals(other.customId, customId)
             && Objects.equals(other.label, label)
             && Objects.equals(other.url, url)
+            && Objects.equals(other.sku, sku)
             && Objects.equals(other.emoji, emoji)
             && other.disabled == disabled
             && other.style == style;
@@ -226,10 +227,16 @@ public class ButtonImpl
     @Override
     public String toString()
     {
-        return new EntityString(this)
+        final EntityString entityString = new EntityString(this)
                 .setName(label)
-                .addMetadata("id", uniqueId)
-                .addMetadata("custom id", customId)
-                .toString();
+                .addMetadata("id", uniqueId);
+        if (customId != null)
+            entityString.addMetadata("custom id", customId);
+        if (url != null)
+            entityString.addMetadata("url", url);
+        if (sku != null)
+            entityString.addMetadata("sku", sku.getId());
+
+        return entityString.toString();
     }
 }
