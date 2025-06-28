@@ -37,6 +37,19 @@ public interface ResolvedMedia
     String getAttachmentId();
 
     /**
+     * The ID of the attachment represented by this resolved media,
+     * may return {@code null} if this media was created from an external link.
+     *
+     * @return The ID of the attachment, or {@code null}
+     */
+    @Nullable
+    default Long getAttachmentIdLong()
+    {
+        final String attachmentId = getAttachmentId();
+        return attachmentId != null ? Long.valueOf(attachmentId) : null;
+    }
+
+    /**
      * The URL of this media, for locally-uploaded files, this will always be a URL from Discord's CDN,
      * in other cases it <i>may</i> be an external URL.
      *
