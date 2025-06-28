@@ -32,7 +32,7 @@ import java.util.stream.StreamSupport;
  */
 public class ComponentIterator implements Iterator<Component>
 {
-    private final Stack<Iterator<? extends Component>> stack = new Stack<>();
+    private final Deque<Iterator<? extends Component>> stack = new ArrayDeque<>();
 
     protected ComponentIterator(Collection<? extends Component> components) {
         stack.push(components.iterator());

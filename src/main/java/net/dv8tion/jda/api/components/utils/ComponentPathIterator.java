@@ -32,7 +32,7 @@ import java.util.stream.StreamSupport;
  */
 public class ComponentPathIterator implements Iterator<ComponentPathIterator.ComponentWithPath>
 {
-    private final Stack<Iterator<ComponentWithPath>> stack = new Stack<>();
+    private final Deque<Iterator<ComponentWithPath>> stack = new ArrayDeque<>();
 
     protected ComponentPathIterator(String rootName, Collection<? extends Component> components) {
         stack.push(new CollectionAttributeIterator(rootName, "components", components));
