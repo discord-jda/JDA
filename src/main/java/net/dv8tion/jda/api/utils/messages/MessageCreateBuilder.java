@@ -284,7 +284,7 @@ public class MessageCreateBuilder extends AbstractMessageBuilder<MessageCreateDa
 
     private boolean isV2Valid()
     {
-        return Helpers.isBlank(content)
+        return content.length() == 0
                 && embeds.isEmpty()
                 && poll == null
                 && !components.isEmpty()

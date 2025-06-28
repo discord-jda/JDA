@@ -322,7 +322,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
             if (ComponentsUtil.getComponentTreeTextContentLength(components) > Message.MAX_CONTENT_LENGTH_COMPONENT_V2)
                 return false;
         }
-        if (isSet(CONTENT) && !Helpers.isBlank(content))
+        if (isSet(CONTENT) && content.length() > 0)
             return false;
         if (isReplace() && components.isEmpty())
             return false;
