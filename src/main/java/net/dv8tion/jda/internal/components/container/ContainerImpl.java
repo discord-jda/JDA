@@ -44,6 +44,17 @@ public class ContainerImpl
     private final boolean spoiler;
     private final Integer accentColor;
 
+    public ContainerImpl(DataObject data)
+    {
+        this(
+                data.getInt("id"),
+                // Allow unknown components in deserialization methods
+                ComponentsUtil.deserializeTo(data.getArray("components"), ContainerChildComponentUnion.class),
+                data.getBoolean("spoiler", false),
+                (Integer) data.opt("accent_color").orElse(null)
+        );
+    }
+
     private ContainerImpl(Collection<ContainerChildComponentUnion> components)
     {
         this(-1, components, false, null);
@@ -65,21 +76,6 @@ public class ContainerImpl
         // Don't allow unknown components in user-called methods
         final Collection<ContainerChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ContainerChildComponentUnion.class);
         return new ContainerImpl(components);
-    }
-
-    public static ContainerImpl fromData(DataObject data)
-    {
-        Checks.notNull(data, "Data");
-        if (data.getInt("type", 0) != Type.CONTAINER.getKey())
-            throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.CONTAINER.getKey() + " Found: " + data.getInt("type"));
-
-        final int uniqueId = data.getInt("id");
-        // Allow unknown components in deserialization methods
-        final List<ContainerChildComponentUnion> components = ComponentsUtil.deserializeTo(data.getArray("components"), ContainerChildComponentUnion.class);
-        final boolean spoiler = data.getBoolean("spoiler", false);
-        final Integer accentColor = (Integer) data.opt("accent_color").orElse(null);
-
-        return new ContainerImpl(uniqueId, components, spoiler, accentColor);
     }
 
     @Nonnull

@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -44,26 +43,6 @@ import java.util.List;
  */
 public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
-    /**
-     * Load ActionRow from serialized representation.
-     * <br>Inverse of {@link #toData()}.
-     *
-     * @param  data
-     *         Serialized version of an action row
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the provided data is not a valid action row
-     * @throws IllegalArgumentException
-     *         If the data is null or the type is not 1
-     *
-     * @return ActionRow instance
-     */
-    @Nonnull
-    static ActionRow fromData(@Nonnull DataObject data)
-    {
-        return ActionRowImpl.fromData(data);
-    }
-
     /**
      * Create one row of {@link ActionRowChildComponent components}.
      * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.

@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -87,23 +86,6 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
     static Container of(@Nonnull ContainerChildComponent component, @Nonnull ContainerChildComponent... components)
     {
         return of(Helpers.mergeVararg(component, components));
-    }
-
-    /**
-     * Constructs a new {@link Container} from the given {@link DataObject}.
-     *
-     * @param  data
-     *         The data to construct the {@link Container} from
-     *
-     * @throws IllegalArgumentException
-     *         If the data does not represent a {@link Container}
-     *
-     * @return The new {@link Container}
-     */
-    @Nonnull
-    static Container fromData(@Nonnull DataObject data)
-    {
-        return ContainerImpl.fromData(data);
     }
 
     @Override

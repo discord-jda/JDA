@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -103,23 +102,6 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
         Checks.notNull(component, "Component");
         Checks.noneNull(components, "Components");
         return of(accessory, Helpers.mergeVararg(component, components));
-    }
-
-    /**
-     * Constructs a new {@link Section} from the given {@link DataObject}.
-     *
-     * @param  data
-     *         The data to construct the section from
-     *
-     * @throws IllegalArgumentException
-     *         If the data does not represent a {@link Section}
-     *
-     * @return The new {@link Section}
-     */
-    @Nonnull
-    static Section fromData(@Nonnull DataObject data)
-    {
-        return SectionImpl.fromData(data);
     }
 
     @Override

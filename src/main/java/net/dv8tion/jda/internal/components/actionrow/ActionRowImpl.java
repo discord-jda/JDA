@@ -46,6 +46,16 @@ public class ActionRowImpl
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
 
+    public ActionRowImpl(DataObject data)
+    {
+        this(
+                // Allow unknown components in deserialization methods
+                ComponentsUtil.deserializeTo(data.getArray("components"), ActionRowChildComponentUnion.class),
+                // Absent in modals
+                data.getInt("id", -1)
+        );
+    }
+
     private ActionRowImpl(Collection<ActionRowChildComponentUnion> components)
     {
         this(components, -1);
@@ -57,22 +67,6 @@ public class ActionRowImpl
         checkIsValid(components); // This is here so the "replace" method can't create invalid rows
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
-    }
-
-    @Nonnull
-    public static ActionRowImpl fromData(@Nonnull DataObject data)
-    {
-        Checks.notNull(data, "Data");
-        if (data.getInt("type", 0) != Type.ACTION_ROW.getKey())
-            throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.ACTION_ROW.getKey() + " Found: " + data.getInt("type"));
-        // Allow unknown components in deserialization methods
-        List<ActionRowChildComponentUnion> components = ComponentsUtil.deserializeTo(data.getArray("components"), ActionRowChildComponentUnion.class);
-
-        return new ActionRowImpl(
-                components,
-                // Absent in modals
-                data.getInt("id", -1)
-        );
     }
 
     @Nonnull

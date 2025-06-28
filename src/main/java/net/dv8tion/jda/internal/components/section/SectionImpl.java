@@ -44,6 +44,16 @@ public class SectionImpl
     private final List<SectionContentComponentUnion> components;
     private final SectionAccessoryComponentUnion accessory;
 
+    public SectionImpl(DataObject data)
+    {
+        this(
+                data.getInt("id"),
+                // Allow unknown components in deserialization methods
+                ComponentsUtil.deserializeTo(data.getArray("components"), SectionContentComponentUnion.class),
+                ComponentsUtil.deserializeTo(data.getObject("accessory"), SectionAccessoryComponentUnion.class)
+        );
+    }
+
     public SectionImpl(Collection<SectionContentComponentUnion> components, SectionAccessoryComponentUnion accessory)
     {
         this(-1, components, accessory);
@@ -68,20 +78,6 @@ public class SectionImpl
         final SectionAccessoryComponentUnion accessory = ComponentsUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);
 
         return new SectionImpl(components, accessory);
-    }
-
-    public static SectionImpl fromData(DataObject data)
-    {
-        Checks.notNull(data, "Data");
-        if (data.getInt("type", 0) != Type.SECTION.getKey())
-            throw new IllegalArgumentException("Data has incorrect type. Expected: " + Type.SECTION.getKey() + " Found: " + data.getInt("type"));
-
-        final int uniqueId = data.getInt("id");
-        // Allow unknown components in deserialization methods
-        final List<SectionContentComponentUnion> components = ComponentsUtil.deserializeTo(data.getArray("components"), SectionContentComponentUnion.class);
-        final SectionAccessoryComponentUnion accessory = ComponentsUtil.deserializeTo(data.getObject("accessory"), SectionAccessoryComponentUnion.class);
-
-        return new SectionImpl(uniqueId, components, accessory);
     }
 
     @Nonnull

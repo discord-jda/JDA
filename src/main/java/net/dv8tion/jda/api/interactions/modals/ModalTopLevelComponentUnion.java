@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.UnknownComponentImpl;
+import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -69,7 +70,7 @@ public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, ICo
 
         switch (type) {
             case ACTION_ROW:
-                return (ModalTopLevelComponentUnion) ActionRow.fromData(data);
+                return new ActionRowImpl(data);
             default:
                 return new UnknownComponentImpl(data);
         }

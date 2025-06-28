@@ -86,7 +86,7 @@ public interface IComponentUnion extends Component
         switch (Component.Type.fromKey(data.getInt("type")))
         {
         case ACTION_ROW:
-            return ActionRowImpl.fromData(data);
+            return new ActionRowImpl(data);
         case BUTTON:
             return new ButtonImpl(data);
         case STRING_SELECT:
@@ -99,7 +99,7 @@ public interface IComponentUnion extends Component
         case CHANNEL_SELECT:
             return new EntitySelectMenuImpl(data);
         case SECTION:
-            return SectionImpl.fromData(data);
+            return new SectionImpl(data);
         case TEXT_DISPLAY:
             return new TextDisplayImpl(data);
         case THUMBNAIL:
@@ -111,10 +111,9 @@ public interface IComponentUnion extends Component
         case SEPARATOR:
             return new SeparatorImpl(data);
         case CONTAINER:
-            return ContainerImpl.fromData(data);
+            return new ContainerImpl(data);
         default:
             return new UnknownComponentImpl(data);
         }
     }
 }
-
