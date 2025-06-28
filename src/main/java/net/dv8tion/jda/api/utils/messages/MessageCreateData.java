@@ -403,10 +403,7 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
         for (AttachedFile file : indirectFiles)
         {
             if (!(file instanceof FileUpload))
-            {
-                LOG.warn("Tried to add an attachment that isn't a FileUpload, discarding the file. Please redirect the following message to the devs (JDA {})", JDAInfo.VERSION);
-                continue;
-            }
+                throw new IllegalStateException("Tried to add an attachment that isn't a FileUpload, discarding the file. Please redirect the following message to the devs (JDA " + JDAInfo.VERSION + ")");
             distinctFiles.add((FileUpload) file);
         }
         return Collections.unmodifiableSet(distinctFiles);
