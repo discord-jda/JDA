@@ -102,12 +102,12 @@ public interface ResolvedMedia
     int getHeight();
 
     /**
-     * The <a href="https://en.wikipedia.org/wiki/Media_type" target="_blank">MIME type</a> of this media,
+     * The <a href="https://en.wikipedia.org/wiki/Media_type" target="_blank">media type</a>,
      * if available, or {@code null}.
      *
      * <p>This may be absent if the media failed to load.
      *
-     * @return The MIME type of this media, or {@code null}
+     * @return The media type, or {@code null}
      */
     @Nullable
     String getContentType();
