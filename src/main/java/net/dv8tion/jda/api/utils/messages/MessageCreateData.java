@@ -16,15 +16,18 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.JDALogger;
+import net.dv8tion.jda.internal.utils.message.MessageUtil;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,10 +43,13 @@ import java.util.*;
  */
 public class MessageCreateData implements MessageData, AutoCloseable, SerializableData
 {
+    private static final Logger LOG = JDALogger.getLog(MessageCreateData.class);
+
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<FileUpload> files;
-    private final List<LayoutComponent> components;
+    private final Set<FileUpload> allDistinctFiles;
+    private final List<MessageTopLevelComponentUnion> components;
     private final AllowedMentionsData mentions;
     private final MessagePollData poll;
     private final boolean tts;
@@ -51,12 +57,13 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
 
     protected MessageCreateData(
             String content,
-            List<MessageEmbed> embeds, List<FileUpload> files, List<LayoutComponent> components,
+            List<MessageEmbed> embeds, List<FileUpload> files, List<MessageTopLevelComponentUnion> components,
             AllowedMentionsData mentions, MessagePollData poll, boolean tts, int flags)
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
         this.files = Collections.unmodifiableList(files);
+        this.allDistinctFiles = createAllDistinctFiles(files, components);
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
         this.poll = poll;
@@ -228,9 +235,15 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
      */
     @Nonnull
     @Override
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return components;
+    }
+
+    @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (flags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     @Nonnull
@@ -339,20 +352,18 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     public DataObject toData()
     {
         DataObject json = DataObject.empty();
-        json.put("content", content);
-        json.put("poll", poll);
-        json.put("embeds", DataArray.fromCollection(embeds));
+        if (!isUsingComponentsV2())
+        {
+            json.put("content", content);
+            json.put("poll", poll);
+            json.put("embeds", DataArray.fromCollection(embeds));
+        }
         json.put("components", DataArray.fromCollection(components));
         json.put("tts", tts);
         json.put("flags", flags);
         json.put("allowed_mentions", mentions);
-        if (files != null && !files.isEmpty())
-        {
-            DataArray attachments = DataArray.empty();
-            json.put("attachments", attachments);
-            for (int i = 0; i < files.size(); i++)
-                attachments.add(files.get(i).toAttachmentData(i));
-        }
+        if (files != null && !allDistinctFiles.isEmpty())
+            json.put("attachments", MessageUtil.getAttachmentsData(getAllDistinctFiles()));
 
         return json;
     }
@@ -366,6 +377,29 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     public List<FileUpload> getFiles()
     {
         return files;
+    }
+
+    /**
+     * Returns both the {@link FileUpload FileUploads} attached to that message,
+     * and those added indirectly to this message, such as from V2 components and embeds,
+     * references to the same uploads are deduplicated.
+     *
+     * @return The set of all file uploads
+     */
+    @Nonnull
+    public Set<? extends FileUpload> getAllDistinctFiles()
+    {
+        return allDistinctFiles;
+    }
+
+    @Nonnull
+    private static Set<FileUpload> createAllDistinctFiles(@Nonnull Collection<FileUpload> files, @Nonnull Collection<MessageTopLevelComponentUnion> components)
+    {
+        List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
+        Set<FileUpload> distinctFiles = new LinkedHashSet<>(files.size() + indirectFiles.size());
+        distinctFiles.addAll(files);
+        distinctFiles.addAll(indirectFiles);
+        return Collections.unmodifiableSet(distinctFiles);
     }
 
     @Override
