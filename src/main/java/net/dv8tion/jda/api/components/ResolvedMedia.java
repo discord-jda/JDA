@@ -46,7 +46,7 @@ public interface ResolvedMedia
     default Long getAttachmentIdLong()
     {
         final String attachmentId = getAttachmentId();
-        return attachmentId != null ? Long.valueOf(attachmentId) : null;
+        return attachmentId != null ? Long.parseUnsignedLong(attachmentId) : null;
     }
 
     /**
