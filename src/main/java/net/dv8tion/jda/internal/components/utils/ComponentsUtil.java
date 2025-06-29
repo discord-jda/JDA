@@ -18,23 +18,27 @@ package net.dv8tion.jda.internal.components.utils;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
+import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ComponentsUtil
 {
@@ -174,5 +178,16 @@ public class ComponentsUtil
                     return 0;
                 })
                 .sum();
+    }
+
+    public static Stream<FileUpload> getFilesFromMedia(@Nullable ResolvedMedia media)
+    {
+        if (media != null) // Retain or reupload the entire file
+        {
+            final String fileName = Helpers.getLastPathSegment(media.getUrl());
+            return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
+        }
+        else // External URL or user-managed attachment
+            return Stream.empty();
     }
 }

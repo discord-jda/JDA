@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
+import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -128,13 +129,7 @@ public class ThumbnailImpl
     @Override
     public Stream<FileUpload> getFiles()
     {
-        if (media != null) // Retain or reupload the entire file
-        {
-            final String fileName = Helpers.getLastPathSegment(media.getUrl());
-            return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
-        }
-        else // External URL or user-managed attachment
-            return Stream.empty();
+        return ComponentsUtil.getFilesFromMedia(media);
     }
 
     @Nullable
