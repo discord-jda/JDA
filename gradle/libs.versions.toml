@@ -1,25 +1,25 @@
 [versions]
-jackson = "2.18.3"
+jackson = "2.19.1"
 
 [libraries]
-archunit = "com.tngtech.archunit:archunit:1.4.0"
+archunit = "com.tngtech.archunit:archunit:1.4.1"
 assertj = "org.assertj:assertj-core:3.27.3"
-commons-collections = "org.apache.commons:commons-collections4:4.4"
+commons-collections = "org.apache.commons:commons-collections4:4.5.0"
 commons-lang3 = "org.apache.commons:commons-lang3:3.17.0"
 findbugs = "com.google.code.findbugs:jsr305:3.0.2"
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jetbrains-annotations = "org.jetbrains:annotations:26.0.2"
 jna = "net.java.dev.jna:jna:5.17.0"
-junit = "org.junit.jupiter:junit-jupiter:5.12.2"
-junit-launcher = "org.junit.platform:junit-platform-launcher:1.12.2"
+junit = "org.junit.jupiter:junit-jupiter:5.13.2"
+junit-launcher = "org.junit.platform:junit-platform-launcher:1.13.2"
 logback-classic = "ch.qos.logback:logback-classic:1.5.18"
-mockito = "org.mockito:mockito-core:5.17.0"
+mockito = "org.mockito:mockito-core:5.18.0"
 okhttp = "com.squareup.okhttp3:okhttp:4.12.0"
 opus = "club.minnced:opus-java:1.1.1"
 reflections = "org.reflections:reflections:0.10.2"
 slf4j = "org.slf4j:slf4j-api:2.0.17"
-tink = "com.google.crypto.tink:tink:1.17.0"
+tink = "com.google.crypto.tink:tink:1.18.0"
 trove4j = "net.sf.trove4j:core:3.1.0"
 websocket-client = "com.neovisionaries:nv-websocket-client:2.14"
 
