@@ -60,9 +60,10 @@ public class SectionImpl
         this(-1, components, accessory);
     }
 
-    private SectionImpl(int uniqueId, Collection<SectionContentComponentUnion> components, SectionAccessoryComponentUnion accessory)
+    public SectionImpl(int uniqueId, Collection<SectionContentComponentUnion> components, SectionAccessoryComponentUnion accessory)
     {
         Checks.notEmpty(components, "Components");
+        Checks.notNull(accessory, "Accessory");
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
         this.accessory = accessory;
@@ -113,11 +114,7 @@ public class SectionImpl
                 SectionAccessoryComponent.class,
                 Collections.singletonList(accessory),
                 replacer,
-                newAccessories ->
-                {
-                    Checks.check(!newAccessories.isEmpty(), "A section's accessory cannot be removed!");
-                    return newAccessories.get(0);
-                }
+                newAccessories -> newAccessories.isEmpty() ? null : newAccessories.get(0)
         );
 
         return new SectionImpl(uniqueId, newContent, newAccessory);

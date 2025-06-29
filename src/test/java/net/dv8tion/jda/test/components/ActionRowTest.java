@@ -18,12 +18,28 @@ package net.dv8tion.jda.test.components;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class ActionRowTest extends AbstractSnapshotTest
 {
+
+    private static final ActionRowChildComponentUnion EXAMPLE_BUTTON =
+            (ActionRowChildComponentUnion) Button.primary("id", "label");
+    private static final ActionRowChildComponentUnion EXAMPLE_MENU =
+            (ActionRowChildComponentUnion) EntitySelectMenu
+                    .create("id", EntitySelectMenu.SelectTarget.ROLE)
+                    .build();
 
     @Test
     void testGetMaxAllowedIsUpdated()
@@ -34,5 +50,21 @@ public class ActionRowTest extends AbstractSnapshotTest
             actual.put(type.name(), ActionRow.getMaxAllowed(type));
 
         snapshotHandler.compareWithSnapshot(actual, null);
+    }
+
+    @Test
+    void testEmptyRowThrows()
+    {
+        Assertions.assertThatIllegalArgumentException()
+                .isThrownBy(() -> new ActionRowImpl(Collections.emptyList(), -1));
+    }
+
+    @Test
+    void testCombiningDifferentElementsThrows()
+    {
+        final List<ActionRowChildComponentUnion> list = Arrays.asList(EXAMPLE_BUTTON, EXAMPLE_MENU);
+
+        Assertions.assertThatIllegalArgumentException()
+                .isThrownBy(() -> new ActionRowImpl(list, -1));
     }
 }

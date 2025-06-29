@@ -62,10 +62,10 @@ public class ActionRowImpl
         this(components, -1);
     }
 
-    private ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
+    public ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
     {
         Checks.notEmpty(components, "Row");
-        checkIsValid(components); // This is here so the "replace" method can't create invalid rows
+        checkIsValid(components);
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
     }

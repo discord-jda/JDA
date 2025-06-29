@@ -61,7 +61,7 @@ public class ContainerImpl
         this(-1, components, false, null);
     }
 
-    private ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> components, boolean spoiler, Integer accentColor)
+    public ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> components, boolean spoiler, Integer accentColor)
     {
         Checks.notEmpty(components, "Components");
         this.uniqueId = uniqueId;
