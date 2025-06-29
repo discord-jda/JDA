@@ -48,6 +48,13 @@ public class MessageComponentTreeImpl
 
     @Nonnull
     @Override
+    public Type getType()
+    {
+        return Type.MESSAGE;
+    }
+
+    @Nonnull
+    @Override
     public MessageComponentTree replace(@Nonnull ComponentReplacer replacer)
     {
         Checks.notNull(replacer, "ComponentReplacer");

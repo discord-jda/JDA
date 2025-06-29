@@ -123,6 +123,14 @@ public interface ComponentTree<E extends Component>
     }
 
     /**
+     * Returns the type of this component tree.
+     *
+     * @return The type of this component tree
+     */
+    @Nonnull
+    Type getType();
+
+    /**
      * Unmodifiable list of components contained by this tree.
      *
      * @return An unmodifiable list of components in this tree
@@ -253,5 +261,28 @@ public interface ComponentTree<E extends Component>
     default ComponentTree<E> asEnabled()
     {
         return withDisabled(false);
+    }
+
+    /**
+     * Represents the type of component tree.
+     */
+    enum Type
+    {
+        /**
+         * A component tree of no specific type,
+         * this includes ones made with {@link ComponentTree#of(Collection)} or {@link ComponentTree#of(Class, Collection)}.
+         */
+        ANY,
+
+        /**
+         * Represents a {@link MessageComponentTree}.
+         */
+        MESSAGE,
+
+        /**
+         * Represents a {@link ModalComponentTree}.
+         */
+        MODAL,
+        ;
     }
 }

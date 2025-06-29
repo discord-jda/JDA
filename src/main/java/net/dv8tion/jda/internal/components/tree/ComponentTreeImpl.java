@@ -37,6 +37,13 @@ public final class ComponentTreeImpl<E extends Component> extends AbstractCompon
 
     @Nonnull
     @Override
+    public Type getType()
+    {
+        return Type.ANY;
+    }
+
+    @Nonnull
+    @Override
     public ComponentTree<E> replace(@Nonnull ComponentReplacer replacer)
     {
         Checks.notNull(replacer, "ComponentReplacer");

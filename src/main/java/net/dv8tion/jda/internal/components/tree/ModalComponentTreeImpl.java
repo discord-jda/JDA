@@ -48,6 +48,13 @@ public class ModalComponentTreeImpl
 
     @Nonnull
     @Override
+    public Type getType()
+    {
+        return Type.MODAL;
+    }
+
+    @Nonnull
+    @Override
     public ModalComponentTree replace(@Nonnull ComponentReplacer replacer)
     {
         Checks.notNull(replacer, "ComponentReplacer");
