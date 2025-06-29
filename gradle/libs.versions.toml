@@ -37,3 +37,4 @@ junit = ["junit", "junit-launcher"]
 publish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 versions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
+version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version = "1.0.0" }
