@@ -63,7 +63,7 @@ public class ComponentsTests
             testParseTreeIsUpdated(ModalComponentTree.class);
             break;
         default:
-            fail("Components#parseTree does not support " + type.name());
+            fail("Please update this test with the new component type (" + type.name() + "), then update Components#parseTree if necessary");
         }
     }
 
@@ -126,7 +126,7 @@ public class ComponentsTests
             testParseComponentIsUpdated(type, ContainerImpl.class);
             break;
         default:
-            fail("Components#parseComponent does not support " + type.name());
+            fail("Please update this test with the new component type (" + type.name() + "), then update Components#parseComponent if necessary");
         }
     }
 
