@@ -35,6 +35,6 @@ junit = [
 
 [plugins]
 publish = "io.github.gradle-nexus.publish-plugin:2.0.0"
-shadow = "com.github.johnrengelman.shadow:8.1.1"
+shadow = "com.gradleup.shadow:8.3.7"
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
 versions = "com.github.ben-manes.versions:0.52.0"
