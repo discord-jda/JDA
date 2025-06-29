@@ -1,40 +1,40 @@
 [versions]
 jackson = "2.18.3"
 
-
 [libraries]
+archunit = "com.tngtech.archunit:archunit:1.4.0"
+assertj = "org.assertj:assertj-core:3.27.3"
+commons-collections = "org.apache.commons:commons-collections4:4.4"
+commons-lang3 = "org.apache.commons:commons-lang3:3.17.0"
+findbugs = "com.google.code.findbugs:jsr305:3.0.2"
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
-websocket-client = { module = "com.neovisionaries:nv-websocket-client", version = "2.14" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version = "4.12.0" }
-trove4j = { module = "net.sf.trove4j:core", version = "3.1.0" }
-commons-collections = { module = "org.apache.commons:commons-collections4", version = "4.4" }
-commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.17.0" }
-slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.17" }
-findbugs = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
-jetbrains-annotations = { module = "org.jetbrains:annotations", version = "26.0.2" }
-opus = { module = "club.minnced:opus-java", version = "1.1.1" }
-jna = { module = "net.java.dev.jna:jna", version = "5.17.0" }
-tink = { module = "com.google.crypto.tink:tink", version = "1.17.0" }
-
-# Test dependencies
-
-junit = { module = "org.junit.jupiter:junit-jupiter", version = "5.12.2" }
-junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.12.2" }
-reflections = { module = "org.reflections:reflections", version = "0.10.2" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version = "1.5.18" }
-assertj = { module = "org.assertj:assertj-core", version = "3.27.3" }
-archunit = { module = "com.tngtech.archunit:archunit", version = "1.4.0" }
-mockito = { module = "org.mockito:mockito-core", version = "5.17.0" }
-
+jetbrains-annotations = "org.jetbrains:annotations:26.0.2"
+jna = "net.java.dev.jna:jna:5.17.0"
+junit = "org.junit.jupiter:junit-jupiter:5.12.2"
+junit-launcher = "org.junit.platform:junit-platform-launcher:1.12.2"
+logback-classic = "ch.qos.logback:logback-classic:1.5.18"
+mockito = "org.mockito:mockito-core:5.17.0"
+okhttp = "com.squareup.okhttp3:okhttp:4.12.0"
+opus = "club.minnced:opus-java:1.1.1"
+reflections = "org.reflections:reflections:0.10.2"
+slf4j = "org.slf4j:slf4j-api:2.0.17"
+tink = "com.google.crypto.tink:tink:1.17.0"
+trove4j = "net.sf.trove4j:core:3.1.0"
+websocket-client = "com.neovisionaries:nv-websocket-client:2.14"
 
 [bundles]
-jackson = ["jackson-core", "jackson-databind"]
-junit = ["junit", "junit-launcher"]
-
+jackson = [
+    "jackson-core",
+    "jackson-databind",
+]
+junit = [
+    "junit",
+    "junit-launcher",
+]
 
 [plugins]
-publish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
-shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
-versions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
-version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version = "1.0.0" }
+publish = "io.github.gradle-nexus.publish-plugin:2.0.0"
+shadow = "com.github.johnrengelman.shadow:8.1.1"
+version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
+versions = "com.github.ben-manes.versions:0.52.0"
