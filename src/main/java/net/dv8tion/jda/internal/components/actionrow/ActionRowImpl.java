@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.components.actionrow;
 
 import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
@@ -50,7 +51,7 @@ public class ActionRowImpl
     {
         this(
                 // Allow unknown components in deserialization methods
-                ComponentsUtil.deserializeTo(data.getArray("components"), ActionRowChildComponentUnion.class),
+                Components.parseComponents(ActionRowChildComponentUnion.class, data.getArray("components")),
                 // Absent in modals
                 data.getInt("id", -1)
         );

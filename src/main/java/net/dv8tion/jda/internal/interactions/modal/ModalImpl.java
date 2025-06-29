@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions.modal;
 
+import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -39,7 +40,7 @@ public class ModalImpl implements Modal
         this.id = object.getString("custom_id");
         this.title = object.getString("title");
         this.components = object.optArray("components")
-                .map(ModalTopLevelComponentUnion::fromData)
+                .map(arr -> Components.parseComponents(ModalTopLevelComponentUnion.class, arr))
                 .orElseGet(Collections::emptyList);
     }
 

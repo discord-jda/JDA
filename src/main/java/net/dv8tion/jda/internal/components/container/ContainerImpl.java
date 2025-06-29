@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.components.container;
 
+import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
@@ -49,7 +50,7 @@ public class ContainerImpl
         this(
                 data.getInt("id"),
                 // Allow unknown components in deserialization methods
-                ComponentsUtil.deserializeTo(data.getArray("components"), ContainerChildComponentUnion.class),
+                Components.parseComponents(ContainerChildComponentUnion.class, data.getArray("components")),
                 data.getBoolean("spoiler", false),
                 (Integer) data.opt("accent_color").orElse(null)
         );

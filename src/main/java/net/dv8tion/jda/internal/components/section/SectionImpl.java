@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.components.section;
 
+import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
@@ -49,8 +50,8 @@ public class SectionImpl
         this(
                 data.getInt("id"),
                 // Allow unknown components in deserialization methods
-                ComponentsUtil.deserializeTo(data.getArray("components"), SectionContentComponentUnion.class),
-                ComponentsUtil.deserializeTo(data.getObject("accessory"), SectionAccessoryComponentUnion.class)
+                Components.parseComponents(SectionContentComponentUnion.class, data.getArray("components")),
+                Components.parseComponent(SectionAccessoryComponentUnion.class, data.getObject("accessory"))
         );
     }
 
