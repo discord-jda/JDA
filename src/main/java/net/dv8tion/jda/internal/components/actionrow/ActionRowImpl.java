@@ -71,21 +71,21 @@ public class ActionRowImpl
     }
 
     @Nonnull
-    public static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> _components)
+    public static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> components)
     {
-        Checks.noneNull(_components, "Components");
+        Checks.noneNull(components, "Components");
 
         // Don't allow unknown components in user-called methods
-        Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
-        return new ActionRowImpl(components);
+        Collection<ActionRowChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
+        return new ActionRowImpl(componentUnions);
     }
 
     @Nonnull
-    public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> _components)
+    public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> components)
     {
-        Checks.noneNull(_components, "Components");
+        Checks.noneNull(components, "Components");
         // Don't allow unknown components in user-called methods
-        Collection<ActionRowChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ActionRowChildComponentUnion.class);
+        Collection<ActionRowChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
 
         List<ActionRow> rows = new ArrayList<>();
         // The current action row we are building
@@ -93,7 +93,7 @@ public class ActionRowImpl
         // The component types contained in that row (for now it can't have mixed types)
         Component.Type type = null;
 
-        for (ActionRowChildComponentUnion current : components)
+        for (ActionRowChildComponentUnion current : componentUnions)
         {
             if (type != null && type != current.getType())
             {

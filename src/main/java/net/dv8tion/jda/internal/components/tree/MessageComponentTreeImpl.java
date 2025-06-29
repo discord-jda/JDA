@@ -36,14 +36,14 @@ public class MessageComponentTreeImpl
     }
 
     @Nonnull
-    public static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> _components)
+    public static MessageComponentTree of(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         // Empty trees are allowed (messages can contain no components)
-        Checks.noneNull(_components, "Components");
+        Checks.noneNull(components, "Components");
 
         // Allow unknown components so [[Message#getComponentTree]] works
-        final Collection<MessageTopLevelComponentUnion> components = ComponentsUtil.relaxedMembersToUnion(_components, MessageTopLevelComponentUnion.class);
-        return new MessageComponentTreeImpl(components);
+        final Collection<MessageTopLevelComponentUnion> componentUnions = ComponentsUtil.relaxedMembersToUnion(components, MessageTopLevelComponentUnion.class);
+        return new MessageComponentTreeImpl(componentUnions);
     }
 
     @Nonnull

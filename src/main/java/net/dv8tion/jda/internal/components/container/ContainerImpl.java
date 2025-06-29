@@ -70,13 +70,13 @@ public class ContainerImpl
         this.accentColor = accentColor;
     }
 
-    public static Container of(Collection<? extends ContainerChildComponent> _components)
+    public static Container of(Collection<? extends ContainerChildComponent> components)
     {
-        Checks.noneNull(_components, "Components");
+        Checks.noneNull(components, "Components");
 
         // Don't allow unknown components in user-called methods
-        final Collection<ContainerChildComponentUnion> components = ComponentsUtil.membersToUnion(_components, ContainerChildComponentUnion.class);
-        return new ContainerImpl(components);
+        final Collection<ContainerChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ContainerChildComponentUnion.class);
+        return new ContainerImpl(componentUnions);
     }
 
     @Nonnull

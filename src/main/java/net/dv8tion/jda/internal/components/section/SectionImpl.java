@@ -69,17 +69,17 @@ public class SectionImpl
         this.accessory = accessory;
     }
 
-    public static Section of(SectionAccessoryComponent _accessory, Collection<? extends SectionContentComponent> _components)
+    public static Section of(SectionAccessoryComponent accessory, Collection<? extends SectionContentComponent> components)
     {
-        Checks.notNull(_accessory, "Accessory");
-        Checks.noneNull(_components, "Components");
-        Checks.check(_components.size() <= MAX_COMPONENTS, "A section can only contain %d components, provided: %d", MAX_COMPONENTS, _components.size());
+        Checks.notNull(accessory, "Accessory");
+        Checks.noneNull(components, "Components");
+        Checks.check(components.size() <= MAX_COMPONENTS, "A section can only contain %d components, provided: %d", MAX_COMPONENTS, components.size());
 
         // Don't allow unknown components in user-called methods
-        final Collection<SectionContentComponentUnion> components = ComponentsUtil.membersToUnion(_components, SectionContentComponentUnion.class);
-        final SectionAccessoryComponentUnion accessory = ComponentsUtil.safeUnionCast("accessory", _accessory, SectionAccessoryComponentUnion.class);
+        final Collection<SectionContentComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, SectionContentComponentUnion.class);
+        final SectionAccessoryComponentUnion accessoryUnion = ComponentsUtil.safeUnionCast("accessory", accessory, SectionAccessoryComponentUnion.class);
 
-        return new SectionImpl(components, accessory);
+        return new SectionImpl(componentUnions, accessoryUnion);
     }
 
     @Nonnull
