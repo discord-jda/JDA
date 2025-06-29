@@ -20,6 +20,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.gradlenexus.publishplugin.AbstractNexusStagingRepositoryTask
+import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Duration
 
@@ -31,6 +32,7 @@ plugins {
     alias(libs.plugins.publish)
     alias(libs.plugins.shadow)
     alias(libs.plugins.versions)
+    alias(libs.plugins.version.catalog.update)
 }
 
 
@@ -181,6 +183,10 @@ tasks.withType<DependencyUpdatesTask> {
     }
 
     gradleReleaseChannel = "current"
+}
+
+versionCatalogUpdate {
+    versionSelector(VersionSelectors.STABLE)
 }
 
 
