@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.AttachmentUpdate;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
@@ -113,15 +112,11 @@ public class FileDisplayImpl
     }
 
     @Override
-    public Stream<AttachedFile> getFiles(boolean shouldRetain)
+    public Stream<FileUpload> getFiles()
     {
         if (media != null)
         {
             final String fileName = Helpers.getLastPathSegment(media.getUrl());
-            final String attachmentId = media.getAttachmentId();
-            if (shouldRetain && attachmentId != null)
-                return Stream.of(AttachmentUpdate.fromAttachment(attachmentId, fileName));
-
             return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
         }
         else

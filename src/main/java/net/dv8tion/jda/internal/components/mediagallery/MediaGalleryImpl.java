@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
-import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -103,12 +103,12 @@ public class MediaGalleryImpl
     }
 
     @Override
-    public Stream<AttachedFile> getFiles(boolean shouldRetain)
+    public Stream<FileUpload> getFiles()
     {
         return items.stream()
                 .filter(FileContainerMixin.class::isInstance)
                 .map(FileContainerMixin.class::cast)
-                .flatMap(fileContainerMixin -> fileContainerMixin.getFiles(shouldRetain));
+                .flatMap(FileContainerMixin::getFiles);
     }
 
     @Nonnull

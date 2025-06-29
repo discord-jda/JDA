@@ -16,11 +16,11 @@
 
 package net.dv8tion.jda.internal.interactions.modal;
 
-import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
@@ -80,7 +80,8 @@ public class ModalImpl implements Modal
                 .put("title", title);
 
         object.put("components", DataArray.fromCollection(components.stream()
-                .map(Component::toData)
+                .map(AbstractComponentImpl.class::cast)
+                .map(AbstractComponentImpl::toData)
                 .collect(Collectors.toList())));
         return object;
     }

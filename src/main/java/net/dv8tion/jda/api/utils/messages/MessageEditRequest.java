@@ -129,35 +129,6 @@ public interface MessageEditRequest<R extends MessageEditRequest<R>> extends Mes
         return setAttachments(Arrays.asList(attachments));
     }
 
-    /**
-     * Whether to force re-uploading of indirect attachments.
-     *
-     * <p>When building a message, some components may accept {@link FileUpload FileUploads},
-     * those are <i>indirect attachments</i>, they are added automatically when building the message,
-     * sparing you the need to add the files separately while also managing {@code attachment://} references.
-     *
-     * <p>When editing a message, JDA tries to retain existing attachments,
-     * however, in the rare case your bot copies an attachment from a message it doesn't own,
-     * you may need to re-upload them to avoid "Attachment data not found" errors; this is what this method fixes.
-     *
-     * @param  forceReuploadIndirectAttachments
-     *         {@code true} to always re-upload indirect attachments
-     *
-     * @return The same instance for chaining
-     */
-    @Nonnull
-    R setForceReuploadIndirectAttachments(boolean forceReuploadIndirectAttachments);
-
-    /**
-     * Whether indirect attachments will be re-uploaded,
-     * see {@link #setForceReuploadIndirectAttachments(boolean)} for more details.
-     *
-     * @return {@code true} if indirect attachments will be re-uploaded
-     *
-     * @see #setForceReuploadIndirectAttachments(boolean)
-     */
-    boolean isForceReuploadIndirectAttachments();
-
     @Nonnull
     @Override
     default R setFiles(@Nullable Collection<? extends FileUpload> files)

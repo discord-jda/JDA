@@ -16,12 +16,10 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
-import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -397,15 +395,10 @@ public class MessageCreateData implements MessageData, AutoCloseable, Serializab
     @Nonnull
     private static Set<FileUpload> createAllDistinctFiles(@Nonnull Collection<FileUpload> files, @Nonnull Collection<MessageTopLevelComponentUnion> components)
     {
-        List<AttachedFile> indirectFiles = MessageUtil.getIndirectFiles(components, false);
+        List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
         Set<FileUpload> distinctFiles = new LinkedHashSet<>(files.size() + indirectFiles.size());
         distinctFiles.addAll(files);
-        for (AttachedFile file : indirectFiles)
-        {
-            if (!(file instanceof FileUpload))
-                throw new IllegalStateException("Tried to add an attachment that isn't a FileUpload, discarding the file. Please redirect the following message to the devs (JDA " + JDAInfo.VERSION + ")");
-            distinctFiles.add((FileUpload) file);
-        }
+        distinctFiles.addAll(indirectFiles);
         return Collections.unmodifiableSet(distinctFiles);
     }
 

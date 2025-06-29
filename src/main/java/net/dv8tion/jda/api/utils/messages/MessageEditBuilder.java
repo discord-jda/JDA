@@ -57,7 +57,6 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
     private int configuredFields = 0;
 
     private final List<AttachedFile> attachments = new ArrayList<>(10);
-    private boolean forceReuploadIndirectAttachments = false;
 
     public MessageEditBuilder() {}
 
@@ -179,20 +178,6 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
         if (attachments != null)
             this.attachments.addAll(attachments);
         return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageEditBuilder setForceReuploadIndirectAttachments(boolean forceReuploadIndirectAttachments)
-    {
-        this.forceReuploadIndirectAttachments = forceReuploadIndirectAttachments;
-        return this;
-    }
-
-    @Override
-    public boolean isForceReuploadIndirectAttachments()
-    {
-        return forceReuploadIndirectAttachments;
     }
 
     @Nonnull
@@ -371,7 +356,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
                 throw new IllegalStateException("Cannot build message with components other than ActionRow while using components V1, see #useComponentsV2, provided: " + illegalComponents);
         }
 
-        return new MessageEditData(configuredFields, messageFlags, replace, content, embeds, attachments, forceReuploadIndirectAttachments, components, mentions);
+        return new MessageEditData(configuredFields, messageFlags, replace, content, embeds, attachments, components, mentions);
     }
 
     @Nonnull
@@ -397,7 +382,7 @@ public class MessageEditBuilder extends AbstractMessageBuilder<MessageEditData, 
                 throw new IllegalStateException("Cannot build message with over " + Message.MAX_CONTENT_LENGTH_COMPONENT_V2 + " total characters, provided " + componentTreeLength);
         }
 
-        return new MessageEditData(configuredFields, messageFlags, replace, "", Collections.emptyList(), attachments, forceReuploadIndirectAttachments, components, mentions);
+        return new MessageEditData(configuredFields, messageFlags, replace, "", Collections.emptyList(), attachments, components, mentions);
     }
 
     @Nonnull

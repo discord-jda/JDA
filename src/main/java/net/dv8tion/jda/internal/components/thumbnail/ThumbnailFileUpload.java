@@ -19,7 +19,6 @@ package net.dv8tion.jda.internal.components.thumbnail;
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
-import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -102,7 +101,7 @@ public class ThumbnailFileUpload
     }
 
     @Override
-    public Stream<AttachedFile> getFiles(boolean shouldRetain)
+    public Stream<FileUpload> getFiles()
     {
         return Stream.of(file);
     }

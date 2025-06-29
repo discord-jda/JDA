@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.utils.message;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
 
@@ -30,12 +31,12 @@ import java.util.stream.Collectors;
 public class MessageUtil
 {
     @Nonnull
-    public static List<AttachedFile> getIndirectFiles(@Nonnull Collection<MessageTopLevelComponentUnion> components, boolean shouldRetain)
+    public static List<FileUpload> getIndirectFiles(@Nonnull Collection<MessageTopLevelComponentUnion> components)
     {
         return ComponentIterator.createStream(components)
                 .filter(FileContainerMixin.class::isInstance)
                 .map(FileContainerMixin.class::cast)
-                .flatMap(fileContainerMixin -> fileContainerMixin.getFiles(shouldRetain))
+                .flatMap(FileContainerMixin::getFiles)
                 .collect(Collectors.toList());
     }
 

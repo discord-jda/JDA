@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.components.selections.EntitySelectMenu.Builder;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu.DefaultValue;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.components.selections.EntitySelectMenuImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +36,7 @@ public class SelectMenuTests
         builder.setDefaultValues(DefaultValue.role("1234"));
 
         EntitySelectMenu menu = builder.build();
-        DataObject value = menu.toData().getArray("default_values").getObject(0);
+        DataObject value = ((EntitySelectMenuImpl) menu).toData().getArray("default_values").getObject(0);
 
         assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.role("1234"));
         assertThat(value.getString("type")).isEqualTo("role");
@@ -45,7 +46,7 @@ public class SelectMenuTests
         builder.setDefaultValues(DefaultValue.user("1234"));
 
         menu = builder.build();
-        value = menu.toData().getArray("default_values").getObject(0);
+        value = ((EntitySelectMenuImpl) menu).toData().getArray("default_values").getObject(0);
 
         assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.user("1234"));
         assertThat(value.getString("type")).isEqualTo("user");
@@ -55,7 +56,7 @@ public class SelectMenuTests
         builder.setDefaultValues(DefaultValue.channel("1234"));
 
         menu = builder.build();
-        value = menu.toData().getArray("default_values").getObject(0);
+        value = ((EntitySelectMenuImpl) menu).toData().getArray("default_values").getObject(0);
 
         assertThat(menu.getDefaultValues()).containsExactly(DefaultValue.channel("1234"));
         assertThat(value.getString("type")).isEqualTo("channel");

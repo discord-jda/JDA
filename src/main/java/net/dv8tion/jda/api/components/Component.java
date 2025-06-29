@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.components.section.SectionAccessoryComponent;
 import net.dv8tion.jda.api.components.section.SectionContentComponent;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
-import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -49,7 +48,7 @@ import javax.annotation.Nonnull;
  * @see SectionContentComponent
  * @see SectionAccessoryComponent
  */
-public interface Component extends SerializableData
+public interface Component
 {
     /**
      * The type of component.

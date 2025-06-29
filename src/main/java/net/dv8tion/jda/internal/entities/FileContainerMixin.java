@@ -16,16 +16,11 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.utils.AttachedFile;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.stream.Stream;
 
 public interface FileContainerMixin
 {
-    /**
-     * @param shouldRetain
-     *        Specifies whether an implementation <b>should try</b> to return {@link net.dv8tion.jda.api.utils.AttachmentUpdate AttachmentUpdate}
-     *        instead of {@link net.dv8tion.jda.api.utils.FileUpload FileUpload}.
-     */
-    Stream<AttachedFile> getFiles(boolean shouldRetain);
+    Stream<FileUpload> getFiles();
 }

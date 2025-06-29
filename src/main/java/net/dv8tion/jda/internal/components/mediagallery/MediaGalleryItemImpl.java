@@ -18,8 +18,7 @@ package net.dv8tion.jda.internal.components.mediagallery;
 
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
-import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.AttachmentUpdate;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
@@ -98,15 +97,11 @@ public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixi
     }
 
     @Override
-    public Stream<AttachedFile> getFiles(boolean shouldRetain)
+    public Stream<FileUpload> getFiles()
     {
         if (media != null) // Retain or reupload the entire file
         {
             final String fileName = Helpers.getLastPathSegment(media.getUrl());
-            final String attachmentId = media.getAttachmentId();
-            if (shouldRetain && attachmentId != null)
-                return Stream.of(AttachmentUpdate.fromAttachment(attachmentId, fileName));
-
             return Stream.of(media.getProxy().downloadAsFileUpload(fileName));
         }
         else // External URL or user-managed attachment
