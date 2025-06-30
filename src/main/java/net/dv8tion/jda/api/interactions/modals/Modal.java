@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -320,6 +321,7 @@ public interface Modal extends SerializableData
          */
         @Nonnull
         @Deprecated
+        @ForRemoval
         @ReplaceWith("addComponents(ActionRow.of(components))")
         public Builder addActionRow(@Nonnull Collection<? extends ActionRowChildComponent> components)
         {
@@ -347,6 +349,7 @@ public interface Modal extends SerializableData
          */
         @Nonnull
         @Deprecated
+        @ForRemoval
         @ReplaceWith("addComponents(ActionRow.of(components))")
         public Builder addActionRow(@Nonnull ActionRowChildComponent... components)
         {
