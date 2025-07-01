@@ -25,6 +25,7 @@ import okhttp3.MultipartBody;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Represents existing message attachment.
@@ -125,6 +126,20 @@ public class AttachmentUpdate implements AttachedFile, ISnowflake
 
     @Override
     public void forceClose() {}
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (!(o instanceof AttachmentUpdate)) return false;
+        AttachmentUpdate that = (AttachmentUpdate) o;
+        return id == that.id && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, name);
+    }
 
     @Override
     public String toString()

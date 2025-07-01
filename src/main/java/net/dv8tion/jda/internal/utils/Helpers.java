@@ -22,7 +22,10 @@ import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import okhttp3.HttpUrl;
+import org.jetbrains.annotations.Unmodifiable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -345,6 +348,23 @@ public final class Helpers
         return Collections.unmodifiableSet(EnumSet.of(first, rest));
     }
 
+    @Nonnull
+    @Unmodifiable
+    public static <E> List<E> copyAsUnmodifiableList(@Nonnull Collection<? extends E> items)
+    {
+        return Collections.unmodifiableList(new ArrayList<>(items));
+    }
+
+    @Nonnull
+    @SafeVarargs
+    public static <E> List<E> mergeVararg(@Nonnull E first, @Nonnull E... other)
+    {
+        List<E> list = new ArrayList<>(other.length + 1);
+        list.add(first);
+        Collections.addAll(list, other);
+        return list;
+    }
+
     public static <T> Collector<T, ?, DataArray> toDataArray()
     {
         return Collector.of(DataArray::empty, DataArray::add, DataArray::addAll);
@@ -371,5 +391,14 @@ public final class Helpers
             joiner.add(seconds + " seconds");
 
         return raw + " (" + joiner + ")";
+    }
+
+    @Nonnull
+    public static String getLastPathSegment(@Nonnull String url) {
+        final HttpUrl parsedUrl = HttpUrl.parse(url);
+        Checks.check(parsedUrl != null, "URL '%s' is invalid", url);
+
+        final List<String> segments = parsedUrl.pathSegments();
+        return segments.get(segments.size() - 1);
     }
 }
