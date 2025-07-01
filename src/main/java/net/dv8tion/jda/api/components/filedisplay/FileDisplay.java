@@ -94,7 +94,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
      * // It's recommended to use a more robust HTTP library instead,
      * // such as Java 11+'s HttpClient, or OkHttp (included with JDA), among many other options.
      * InputStream file = new URL("https://http.cat/500").openStream();
-     * FileDisplay fileDisplay = FileDisplay.fromFile("cat.png") // Match the file name in FileUpload
+     * FileDisplay fileDisplay = FileDisplay.fromFileName("cat.png") // Match the file name in FileUpload
      *     .setDescription("This is a cute car :3");
      * channel.sendComponents(fileDisplay)
      *     // You can also replace this with a local file
@@ -112,7 +112,7 @@ public interface FileDisplay extends Component, MessageTopLevelComponent, Contai
      * @return The new {@link FileDisplay}
      */
     @Nonnull
-    static FileDisplay fromFile(@Nonnull String fileName)
+    static FileDisplay fromFileName(@Nonnull String fileName)
     {
         Checks.notNull(fileName, "File name");
         return new FileDisplayImpl("attachment://" + fileName);
