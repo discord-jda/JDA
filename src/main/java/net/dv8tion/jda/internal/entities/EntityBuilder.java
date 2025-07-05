@@ -489,7 +489,9 @@ public class EntityBuilder extends AbstractEntityBuilder
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0))
+                   .setPrimaryClan(new ClanImpl(user.getObject("primary_guild")))
                    .setProfile(profile);
+
         }
         else
         {
@@ -512,6 +514,8 @@ public class EntityBuilder extends AbstractEntityBuilder
         String newAvatar = user.getString("avatar", null);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
+        Clan oldClan = userObj.getPrimaryClan();
+        Clan newClan = new ClanImpl(user.getObject("primary_guild"));
 
         JDAImpl jda = getJDA();
         long responseNumber = jda.getResponseTotal();
@@ -559,6 +563,17 @@ public class EntityBuilder extends AbstractEntityBuilder
                     new UserUpdateFlagsEvent(
                         jda, responseNumber,
                         userObj, User.UserFlag.getFlags(oldFlags)));
+        }
+
+        if (!oldClan.equals(newClan))
+        {
+            userObj.setPrimaryClan(newClan);
+            jda.handleEvent(
+                    new UserUpdateClanEvent(
+                            jda, responseNumber,
+                            userObj, oldClan
+                    )
+            );
         }
     }
 

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.api.entities.Clan;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
@@ -50,6 +51,8 @@ public class UserImpl extends UserSnowflakeImpl implements User
     protected boolean bot;
     protected boolean system;
     protected int flags;
+
+    protected Clan primary_clan;
 
     public UserImpl(long id, JDAImpl api)
     {
@@ -192,6 +195,13 @@ public class UserImpl extends UserSnowflakeImpl implements User
     }
 
     @Override
+    public Clan getPrimaryClan()
+    {
+        return null;
+    }
+
+
+    @Override
     public String toString()
     {
         return new EntityString(this)
@@ -253,6 +263,12 @@ public class UserImpl extends UserSnowflakeImpl implements User
     public UserImpl setFlags(int flags)
     {
         this.flags = flags;
+        return this;
+    }
+
+    public UserImpl setPrimaryClan(Clan clan)
+    {
+        this.primary_clan = clan;
         return this;
     }
 
