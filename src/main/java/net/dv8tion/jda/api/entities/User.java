@@ -354,6 +354,12 @@ public interface User extends UserSnowflake
     int getFlagsRaw();
 
     /**
+     * Returns the clan representation of the {@link net.dv8tion.jda.api.entities.Clan Clans} of this user.
+     *
+     */
+    Clan getPrimaryClan();
+
+    /**
      * Represents the information contained in a {@link User User}'s profile.
      *
      * @since 4.3.0
