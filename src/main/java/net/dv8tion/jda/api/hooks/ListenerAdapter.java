@@ -163,6 +163,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
     public void onUserUpdateActivityOrder(@Nonnull UserUpdateActivityOrderEvent event) {}
     public void onUserUpdateFlags(@Nonnull UserUpdateFlagsEvent event) {}
+	public void onUserUpdatePrimaryGuild(@Nonnull UserUpdatePrimaryGuildEvent event) {}
     public void onUserTyping(@Nonnull UserTypingEvent event) {}
     public void onUserActivityStart(@Nonnull UserActivityStartEvent event) {}
     public void onUserActivityEnd(@Nonnull UserActivityEndEvent event) {}

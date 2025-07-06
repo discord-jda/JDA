@@ -33,6 +33,7 @@ import java.awt.*;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -88,6 +89,8 @@ public interface User extends UserSnowflake
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
     /** Template for {@link Profile#getBannerUrl()} */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
+	/** Template for {@link PrimaryGuild#getBadgeUrl()} */
+	String TAG_BADGE_URL = "https://cdn.discordapp.com/guild-tag-badges/%s/%s.png";
 
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_ACCENT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
@@ -352,6 +355,14 @@ public interface User extends UserSnowflake
      * @return bitmask representation of the user's flags.
      */
     int getFlagsRaw();
+	
+	/**
+     * Returns the {@link PrimaryGuild} of this user.
+     *
+     * @return Possibly-null {@link PrimaryGuild} of this user.
+     */
+	@Nullable
+	PrimaryGuild getPrimaryGuild();
 
     /**
      * Represents the information contained in a {@link User User}'s profile.
@@ -624,4 +635,105 @@ public interface User extends UserSnowflake
             return getRaw(flags.toArray(EMPTY_FLAGS));
         }
     }
+	
+	/**
+     * Represents the information about {@link User User}'s primary guild
+     */
+	class PrimaryGuild
+	{
+		private final String identityGuildId;
+		private final boolean identityEnabled;
+		private final String tag;
+		private final String badge;
+		
+		public PrimaryGuild(String identityGuildId, boolean identityEnabled, String tag, String badge)
+		{
+			this.identityGuildId = identityGuildId;
+			this.identityEnabled = identityEnabled;
+			this.tag = tag;
+			this.badge = badge;
+		}
+		
+		/**
+         * The id of the user's primary guild.
+         *
+         * @return Possibly-null String containing the id of the {@link User User}'s primary guild.
+         */
+		@Nullable
+		public String getIdentityGuildId()
+		{
+			return identityGuildId;
+		}
+		
+		/**
+         * Indicates whether the user is displaying the primary guild's server tag.
+         *
+         * @return Boolean indicating whether the {@link User User} is displaying the primary guild's server tag.
+         */
+		public boolean isIdentityEnabled()
+		{
+			return identityEnabled;
+		}
+		
+		/**
+         * The user's server tag
+         *
+         * @return Possibly-null String containing the text of the {@link User User}'s server tag.
+         */
+		@Nullable
+		public String getTag()
+		{
+			return tag;
+		}
+		
+		/**
+         * The user's server tag badge hash
+         *
+         * @return Possibly-null String containing the server tag badge hash.
+         */
+		@Nullable
+		public String getBadgeHash()
+		{
+			return badge;
+		}
+		
+		/**
+         * The URL for the user's server tag badge image.
+         *
+         * @return Possibly-null String containing the {@link User User}'s server tag badge url.
+         *
+         * @see User#TAG_BADGE_URL
+         */
+        @Nullable
+        public String getBadgeUrl()
+        {	
+            return (identityGuildId == null || badge == null) ? null : String.format(TAG_BADGE_URL, identityGuildId, badge);
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for user's server tag badge.
+         *
+         * @return Possibly-null {@link ImageProxy} of {@link User User}'s server tag badge.
+         *
+         * @see #getBadgeUrl()
+         */
+        @Nullable
+        public ImageProxy getBadge()
+        {
+            final String badgeUrl = getBadgeUrl();
+            return badgeUrl == null ? null : new ImageProxy(badgeUrl);
+        }
+		
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (!(obj instanceof PrimaryGuild))
+			{
+				return false;
+			}
+			
+			PrimaryGuild other = (PrimaryGuild) obj;
+			return Objects.equals(identityGuildId, other.identityGuildId) && identityEnabled == other.identityEnabled && Objects.equals(tag, other.tag) && Objects.equals(badge, other.badge);
+		}
+	}
 }

@@ -481,6 +481,10 @@ public class EntityBuilder extends AbstractEntityBuilder
 
         if (newUser)
         {
+			User.PrimaryGuild primaryGuild = user.optObject("primary_guild")
+			       .map(obj -> new User.PrimaryGuild(obj.getString("identity_guild_id"), obj.getBoolean("identity_enabled"), obj.getString("tag"), obj.getString("badge")))
+				   .orElse(null);
+			
             // Initial creation
             userObj.setName(user.getString("username"))
                    .setGlobalName(user.getString("global_name", null))
@@ -489,6 +493,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0))
+				   .setPrimaryGuild(primaryGuild)
                    .setProfile(profile);
         }
         else
@@ -512,6 +517,10 @@ public class EntityBuilder extends AbstractEntityBuilder
         String newAvatar = user.getString("avatar", null);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
+		User.PrimaryGuild oldPrimaryGuild = userObj.getPrimaryGuild();
+		User.PrimaryGuild newPrimaryGuild = user.optObject("primary_guild")
+			    .map(obj -> new User.PrimaryGuild(obj.getString("identity_guild_id"), obj.getBoolean("identity_enabled"), obj.getString("tag"), obj.getString("badge")))
+				.orElse(null);
 
         JDAImpl jda = getJDA();
         long responseNumber = jda.getResponseTotal();
@@ -560,6 +569,15 @@ public class EntityBuilder extends AbstractEntityBuilder
                         jda, responseNumber,
                         userObj, User.UserFlag.getFlags(oldFlags)));
         }
+		
+		if (!Objects.equals(oldPrimaryGuild, newPrimaryGuild))
+		{
+			userObj.setPrimaryGuild(newPrimaryGuild);
+			jda.handleEvent(
+                new UserUpdatePrimaryGuildEvent(
+                    jda, responseNumber,
+                    userObj, oldPrimaryGuild));
+		}
     }
 
     public boolean updateMemberCache(MemberImpl member)
