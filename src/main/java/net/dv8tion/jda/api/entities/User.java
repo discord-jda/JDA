@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserSnowflakeImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
@@ -707,7 +708,7 @@ public interface User extends UserSnowflake
         @Nullable
         public String getBadgeUrl()
         {    
-            return (identityGuildId == null || badge == null) ? null : String.format(TAG_BADGE_URL, identityGuildId, badge);
+            return (identityGuildId == null || badge == null) ? null : Helpers.format(TAG_BADGE_URL, identityGuildId, badge);
         }
 
         /**
@@ -727,13 +728,31 @@ public interface User extends UserSnowflake
         @Override
         public boolean equals(Object obj)
         {
+            if (obj == this)
+                return true;
+            
             if (!(obj instanceof PrimaryGuild))
-            {
                 return false;
-            }
             
             PrimaryGuild other = (PrimaryGuild) obj;
             return Objects.equals(identityGuildId, other.identityGuildId) && identityEnabled == other.identityEnabled && Objects.equals(tag, other.tag) && Objects.equals(badge, other.badge);
+        }
+        
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(identityGuildId, identityEnabled, tag, badge);
+        }
+        
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .addMetadata("identityGuildId", identityGuildId)
+                    .addMetadata("identityEnabled", identityEnabled)
+                    .addMetadata("tag", tag)
+                    .addMetadata("badge", badge)
+                    .toString();
         }
     }
 }
