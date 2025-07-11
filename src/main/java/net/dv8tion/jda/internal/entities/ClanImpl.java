@@ -24,13 +24,13 @@ public class ClanImpl implements Clan
     }
 
     @Override
-    public String getGuildId()
+    public String getId()
     {
         return identity_guild_id;
     }
 
     @Override
-    public String getTagName()
+    public String getName()
     {
         return tagName;
     }
@@ -50,13 +50,13 @@ public class ClanImpl implements Clan
     @Override
     public boolean equals(Clan otherClan)
     {
-        if (!getGuildId().equals(otherClan.getGuildId()))
+        if (!getId().equals(otherClan.getId()))
             return false;
 
         if (isEnabled() != otherClan.isEnabled())
             return false;
 
-        if (!getTagName().equals(otherClan.getTagName()))
+        if (!getName().equals(otherClan.getName()))
             return false;
 
         return getBadge().equals(otherClan.getBadge());

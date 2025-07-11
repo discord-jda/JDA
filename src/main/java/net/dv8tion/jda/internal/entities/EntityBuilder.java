@@ -489,7 +489,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0))
-                   .setPrimaryClan(new ClanImpl(user.hasKey(ClanImpl.CLAN_KEY) ? user.getObject(ClanImpl.CLAN_KEY) : null))
+                   .setClan(new ClanImpl(user.hasKey(ClanImpl.CLAN_KEY) ? user.getObject(ClanImpl.CLAN_KEY) : null))
                    .setProfile(profile);
 
         }
@@ -573,7 +573,7 @@ public class EntityBuilder extends AbstractEntityBuilder
 
                 if (!oldClan.equals(newClan))
                 {
-                    userObj.setPrimaryClan(newClan);
+                    userObj.setClan(newClan);
                     jda.handleEvent(
                             new UserUpdateClanEvent(
                                     jda, responseNumber,

@@ -12,12 +12,12 @@ public interface Clan
     /**
      * Returns the id of Clan
      */
-    String getGuildId();
+    String getId();
 
     /**
      * Returns the name of Clan
      */
-    String getTagName();
+    String getName();
 
     /**
      * Returns the badge hash

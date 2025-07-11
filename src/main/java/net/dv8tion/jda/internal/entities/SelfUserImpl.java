@@ -112,6 +112,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
                 .setGlobalName(other.globalName)
                 .setAvatarId(other.avatarId)
                 .setDiscriminator(other.getDiscriminatorInt())
+                .setClan(other.clan)
                 .setBot(other.bot);
         return selfUser
                 .setVerified(other.verified)

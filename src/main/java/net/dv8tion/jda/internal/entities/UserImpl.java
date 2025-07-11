@@ -266,7 +266,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
         return this;
     }
 
-    public UserImpl setPrimaryClan(Clan clan)
+    public UserImpl setClan(Clan clan)
     {
         this.clan = clan;
         return this;
