@@ -85,4 +85,8 @@ public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, ICo
                 .map(ModalTopLevelComponentUnion::fromData)
                 .collect(Collectors.toList());
     }
+
+    @Nonnull
+    @Override
+    ModalTopLevelComponentUnion withUniqueId(int uniqueId);
 }

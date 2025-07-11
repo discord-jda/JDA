@@ -58,6 +58,10 @@ public abstract class SelectMenuImpl
 
     @Nonnull
     @Override
+    public abstract SelectMenuImpl withUniqueId(int uniqueId);
+
+    @Nonnull
+    @Override
     public String getCustomId()
     {
         return id;

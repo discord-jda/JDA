@@ -55,6 +55,10 @@ public interface IDisableable extends Component
         return !isDisabled();
     }
 
+    @Nonnull
+    @Override
+    IDisableable withUniqueId(int uniqueId);
+
     /**
      * Returns a new instance of this component in an enabled/disabled state.
      * <br>For layout components, this enables/disables all the components it contains.

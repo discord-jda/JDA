@@ -61,6 +61,13 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
 
     @Nonnull
     @Override
+    public StringSelectMenuImpl withUniqueId(int uniqueId)
+    {
+        return (StringSelectMenuImpl) createCopy().setUniqueId(uniqueId).build();
+    }
+
+    @Nonnull
+    @Override
     public List<SelectOption> getOptions()
     {
         return Collections.unmodifiableList(options);

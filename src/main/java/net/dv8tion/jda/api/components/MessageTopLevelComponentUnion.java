@@ -194,4 +194,8 @@ public interface MessageTopLevelComponentUnion extends MessageTopLevelComponent,
      */
     @Nonnull
     Container asContainer();
+
+    @Nonnull
+    @Override
+    MessageTopLevelComponentUnion withUniqueId(int uniqueId);
 }

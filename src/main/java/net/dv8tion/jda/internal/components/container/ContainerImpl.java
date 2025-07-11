@@ -88,7 +88,7 @@ public class ContainerImpl
 
     @Nonnull
     @Override
-    public Container withUniqueId(int uniqueId)
+    public ContainerImpl withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new ContainerImpl(uniqueId, components, spoiler, accentColor);

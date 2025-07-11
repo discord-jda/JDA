@@ -173,4 +173,8 @@ public interface ContainerChildComponentUnion extends ContainerChildComponent, I
      */
     @Nonnull
     FileDisplay asFileDisplay();
+
+    @Nonnull
+    @Override
+    ContainerChildComponentUnion withUniqueId(int uniqueId);
 }

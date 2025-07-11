@@ -97,10 +97,7 @@ public interface EntitySelectMenu extends SelectMenu
 
     @Nonnull
     @Override
-    default EntitySelectMenu withUniqueId(int uniqueId)
-    {
-        return createCopy().setUniqueId(uniqueId).build();
-    }
+    EntitySelectMenu withUniqueId(int uniqueId);
 
     /**
      * The {@link SelectTarget SelectTargets} supported by this menu.

@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.components.section.SectionContentComponentUnion;
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 
+import javax.annotation.Nonnull;
+
 /**
  * Base interface for {@link Component} union types.
  *
@@ -48,4 +50,8 @@ public interface IComponentUnion extends Component
     default boolean isUnknownComponent() {
         return this.getType() == Type.UNKNOWN;
     }
+
+    @Nonnull
+    @Override
+    IComponentUnion withUniqueId(int uniqueId);
 }

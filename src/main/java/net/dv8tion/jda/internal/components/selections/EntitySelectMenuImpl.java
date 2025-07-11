@@ -67,6 +67,13 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
 
     @Nonnull
     @Override
+    public EntitySelectMenuImpl withUniqueId(int uniqueId)
+    {
+        return (EntitySelectMenuImpl) createCopy().setUniqueId(uniqueId).build();
+    }
+
+    @Nonnull
+    @Override
     public EnumSet<SelectTarget> getEntityTypes()
     {
         switch (type)

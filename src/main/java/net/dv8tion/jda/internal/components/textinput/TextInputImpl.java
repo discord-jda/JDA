@@ -74,7 +74,7 @@ public class TextInputImpl
 
     @Nonnull
     @Override
-    public TextInput withUniqueId(int uniqueId)
+    public TextInputImpl withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new TextInputImpl(id, uniqueId, style, label, minLength, maxLength, required, value, placeholder);

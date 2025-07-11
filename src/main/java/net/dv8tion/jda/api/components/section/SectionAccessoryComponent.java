@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a component that can be set as a {@link Section} accessory, this includes:
  * <ul>
@@ -29,4 +31,7 @@ import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
  */
 public interface SectionAccessoryComponent extends Component
 {
+    @Nonnull
+    @Override
+    SectionAccessoryComponent withUniqueId(int uniqueId);
 }

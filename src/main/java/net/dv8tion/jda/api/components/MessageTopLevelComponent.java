@@ -24,6 +24,8 @@ import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a component that can be added directly to a message, this includes:
  * <ul>
@@ -37,4 +39,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
  * </ul>
  */
 public interface MessageTopLevelComponent extends Component {
+    @Nonnull
+    @Override
+    MessageTopLevelComponent withUniqueId(int uniqueId);
 }

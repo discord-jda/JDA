@@ -62,7 +62,7 @@ public class ThumbnailFileUpload
 
     @Nonnull
     @Override
-    public Thumbnail withUniqueId(int uniqueId)
+    public ThumbnailFileUpload withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new ThumbnailFileUpload(uniqueId, file, description, spoiler);

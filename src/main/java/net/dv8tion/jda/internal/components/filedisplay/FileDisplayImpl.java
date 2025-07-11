@@ -79,7 +79,7 @@ public class FileDisplayImpl
 
     @Nonnull
     @Override
-    public FileDisplay withUniqueId(int uniqueId)
+    public FileDisplayImpl withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new FileDisplayImpl(uniqueId, url, media, spoiler);

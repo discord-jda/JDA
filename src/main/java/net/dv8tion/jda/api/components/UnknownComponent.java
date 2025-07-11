@@ -33,4 +33,8 @@ public interface UnknownComponent extends Component
     {
         return Type.UNKNOWN;
     }
+
+    @Nonnull
+    @Override
+    UnknownComponent withUniqueId(int uniqueId);
 }

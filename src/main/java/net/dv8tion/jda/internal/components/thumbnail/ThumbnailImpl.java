@@ -81,7 +81,7 @@ public class ThumbnailImpl
 
     @Nonnull
     @Override
-    public Thumbnail withUniqueId(int uniqueId)
+    public ThumbnailImpl withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new ThumbnailImpl(uniqueId, url, media, description, spoiler);

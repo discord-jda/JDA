@@ -53,4 +53,8 @@ public interface SectionContentComponentUnion extends SectionContentComponent, I
      */
     @Nonnull
     TextDisplay asTextDisplay();
+
+    @Nonnull
+    @Override
+    SectionContentComponentUnion withUniqueId(int uniqueId);
 }

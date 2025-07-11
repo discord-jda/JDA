@@ -136,7 +136,21 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
 
     @Nonnull
     @Override
-    default ActionComponent withDisabled(boolean disabled)
+    default TextInput asDisabled()
+    {
+        return (TextInput) ActionComponent.super.asDisabled();
+    }
+
+    @Nonnull
+    @Override
+    default TextInput asEnabled()
+    {
+        return (TextInput) ActionComponent.super.asEnabled();
+    }
+
+    @Nonnull
+    @Override
+    default TextInput withDisabled(boolean disabled)
     {
         throw new UnsupportedOperationException("TextInputs cannot be disabled!");
     }

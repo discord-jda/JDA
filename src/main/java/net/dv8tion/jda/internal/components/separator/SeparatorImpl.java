@@ -66,7 +66,7 @@ public class SeparatorImpl
 
     @Nonnull
     @Override
-    public Separator withUniqueId(int uniqueId)
+    public SeparatorImpl withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new SeparatorImpl(uniqueId, spacing, isDivider);

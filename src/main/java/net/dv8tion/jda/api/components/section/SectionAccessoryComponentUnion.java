@@ -77,4 +77,8 @@ public interface SectionAccessoryComponentUnion extends SectionAccessoryComponen
      */
     @Nonnull
     Thumbnail asThumbnail();
+
+    @Nonnull
+    @Override
+    SectionAccessoryComponentUnion withUniqueId(int uniqueId);
 }

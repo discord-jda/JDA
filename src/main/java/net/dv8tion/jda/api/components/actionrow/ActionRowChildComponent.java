@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a component that can be added to an {@link ActionRow}, this includes:
  * <ul>
@@ -31,5 +33,7 @@ import net.dv8tion.jda.api.components.selections.StringSelectMenu;
  */
 public interface ActionRowChildComponent extends Component
 {
-
+    @Nonnull
+    @Override
+    ActionRowChildComponent withUniqueId(int uniqueId);
 }

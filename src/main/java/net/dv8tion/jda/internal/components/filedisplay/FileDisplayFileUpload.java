@@ -61,7 +61,7 @@ public class FileDisplayFileUpload
 
     @Nonnull
     @Override
-    public FileDisplay withUniqueId(int uniqueId)
+    public FileDisplayFileUpload withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new FileDisplayFileUpload(uniqueId, file, spoiler);

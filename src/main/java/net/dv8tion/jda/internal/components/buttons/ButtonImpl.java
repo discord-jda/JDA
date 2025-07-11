@@ -126,6 +126,13 @@ public class ButtonImpl
         return Type.BUTTON;
     }
 
+    @Nonnull
+    @Override
+    public ButtonImpl withUniqueId(int uniqueId)
+    {
+        return (ButtonImpl) Button.super.withUniqueId(uniqueId);
+    }
+
     @Nullable
     @Override
     public String getCustomId()

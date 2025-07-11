@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.components;
 
-import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
@@ -46,7 +45,7 @@ public class UnknownComponentImpl extends AbstractComponentImpl implements
 
     @Nonnull
     @Override
-    public Component withUniqueId(int uniqueId)
+    public UnknownComponentImpl withUniqueId(int uniqueId)
     {
         throw new UnsupportedOperationException("Cannot modify an unknown component");
     }

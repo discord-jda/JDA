@@ -80,6 +80,10 @@ public interface ActionComponent extends IDisableable
     @Nullable
     String getCustomId();
 
+    @Nonnull
+    @Override
+    ActionComponent withUniqueId(int uniqueId);
+
     /**
      * Whether this action component is disabled.
      *

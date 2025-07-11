@@ -101,4 +101,8 @@ public interface ActionRowChildComponentUnion extends ActionRowChildComponent, I
      */
     @Nonnull
     EntitySelectMenu asEntitySelectMenu();
+
+    @Nonnull
+    @Override
+    ActionRowChildComponentUnion withUniqueId(int uniqueId);
 }

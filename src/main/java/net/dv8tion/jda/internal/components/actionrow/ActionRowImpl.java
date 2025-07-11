@@ -148,7 +148,7 @@ public class ActionRowImpl
 
     @Nonnull
     @Override
-    public ActionRow withUniqueId(int uniqueId)
+    public ActionRowImpl withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new ActionRowImpl(components, uniqueId);

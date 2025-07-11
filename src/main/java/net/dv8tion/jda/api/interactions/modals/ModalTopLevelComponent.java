@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.interactions.modals;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a component that can be added directly to a modal, this includes:
  * <ul>
@@ -27,5 +29,7 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
  */
 public interface ModalTopLevelComponent extends Component
 {
-
+    @Nonnull
+    @Override
+    ModalTopLevelComponent withUniqueId(int uniqueId);
 }

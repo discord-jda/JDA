@@ -24,6 +24,8 @@ import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a component that can be added to a {@link Container}, this includes:
  * <ul>
@@ -37,4 +39,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
  */
 public interface ContainerChildComponent extends Component
 {
+    @Nonnull
+    @Override
+    ContainerChildComponent withUniqueId(int uniqueId);
 }

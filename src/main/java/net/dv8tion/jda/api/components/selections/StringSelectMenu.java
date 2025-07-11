@@ -87,10 +87,7 @@ public interface StringSelectMenu extends SelectMenu
 
     @Nonnull
     @Override
-    default StringSelectMenu withUniqueId(int uniqueId)
-    {
-        return createCopy().setUniqueId(uniqueId).build();
-    }
+    StringSelectMenu withUniqueId(int uniqueId);
 
     /**
      * An <b>unmodifiable</b> list of up to {@value #OPTIONS_MAX_AMOUNT} available options to choose from.

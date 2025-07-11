@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.components.section;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a component that can be added to a {@link Section}, this includes:
  * <ul>
@@ -27,4 +29,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
  */
 public interface SectionContentComponent extends Component
 {
+    @Nonnull
+    @Override
+    SectionContentComponent withUniqueId(int uniqueId);
 }

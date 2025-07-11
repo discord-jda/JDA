@@ -91,7 +91,7 @@ public class SectionImpl
 
     @Nonnull
     @Override
-    public Section withUniqueId(int uniqueId)
+    public SectionImpl withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new SectionImpl(uniqueId, components, accessory);

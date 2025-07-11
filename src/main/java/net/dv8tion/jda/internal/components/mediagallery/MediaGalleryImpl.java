@@ -83,7 +83,7 @@ public class MediaGalleryImpl
 
     @Nonnull
     @Override
-    public MediaGallery withUniqueId(int uniqueId)
+    public MediaGalleryImpl withUniqueId(int uniqueId)
     {
         Checks.positive(uniqueId, "Unique ID");
         return new MediaGalleryImpl(uniqueId, items);
