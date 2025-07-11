@@ -355,9 +355,12 @@ public interface User extends UserSnowflake
 
     /**
      * Returns the clan representation of the {@link net.dv8tion.jda.api.entities.Clan Clans} of this user.
+     *  Clan can be null
      *
+     * @return instance of {@link net.dv8tion.jda.api.entities.Clan Clans}
      */
-    Clan getPrimaryClan();
+    @Nullable
+    Clan getClan();
 
     /**
      * Represents the information contained in a {@link User User}'s profile.

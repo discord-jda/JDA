@@ -6,13 +6,17 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 public class ClanImpl implements Clan
 {
 
-    private final String identity_guild_id;
-    private final boolean identity_enabled;
-    private final String tagName;
-    private final String badge;
+    public static final String CLAN_KEY = "clan";
+
+    private String identity_guild_id;
+    private boolean identity_enabled;
+    private String tagName;
+    private String badge;
 
     public ClanImpl(DataObject data)
     {
+        if (data == null) return;
+
         this.identity_guild_id = data.getString("identity_guild_id");
         this.identity_enabled = data.getBoolean("identity_enabled");
         this.tagName = data.getString("tag");
@@ -44,17 +48,17 @@ public class ClanImpl implements Clan
     }
 
     @Override
-    public boolean equals(Clan clan)
+    public boolean equals(Clan otherClan)
     {
-        if (!getGuildId().equals(clan.getGuildId()))
+        if (!getGuildId().equals(otherClan.getGuildId()))
             return false;
 
-        if (isEnabled() != clan.isEnabled())
+        if (isEnabled() != otherClan.isEnabled())
             return false;
 
-        if (!getTagName().equals(clan.getTagName()))
+        if (!getTagName().equals(otherClan.getTagName()))
             return false;
 
-        return getBadge().equals(clan.getBadge());
+        return getBadge().equals(otherClan.getBadge());
     }
 }

@@ -489,7 +489,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0))
-                   .setPrimaryClan(new ClanImpl(user.getObject("primary_guild")))
+                   .setPrimaryClan(new ClanImpl(user.hasKey(ClanImpl.CLAN_KEY) ? user.getObject(ClanImpl.CLAN_KEY) : null))
                    .setProfile(profile);
 
         }
@@ -514,8 +514,6 @@ public class EntityBuilder extends AbstractEntityBuilder
         String newAvatar = user.getString("avatar", null);
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
-        Clan oldClan = userObj.getPrimaryClan();
-        Clan newClan = new ClanImpl(user.getObject("primary_guild"));
 
         JDAImpl jda = getJDA();
         long responseNumber = jda.getResponseTotal();
@@ -565,15 +563,25 @@ public class EntityBuilder extends AbstractEntityBuilder
                         userObj, User.UserFlag.getFlags(oldFlags)));
         }
 
-        if (!oldClan.equals(newClan))
+        String clanKey = ClanImpl.CLAN_KEY;
+        if (user.hasKey(clanKey))
         {
-            userObj.setPrimaryClan(newClan);
-            jda.handleEvent(
-                    new UserUpdateClanEvent(
-                            jda, responseNumber,
-                            userObj, oldClan
-                    )
-            );
+            Clan oldClan = userObj.getClan();
+            if (oldClan != null)
+            {
+                Clan newClan = new ClanImpl(user.getObject(clanKey));
+
+                if (!oldClan.equals(newClan))
+                {
+                    userObj.setPrimaryClan(newClan);
+                    jda.handleEvent(
+                            new UserUpdateClanEvent(
+                                    jda, responseNumber,
+                                    userObj, oldClan
+                            )
+                    );
+                }
+            }
         }
     }
 

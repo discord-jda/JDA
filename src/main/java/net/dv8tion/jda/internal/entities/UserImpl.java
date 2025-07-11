@@ -52,7 +52,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
     protected boolean system;
     protected int flags;
 
-    protected Clan primary_clan;
+    protected Clan clan;
 
     public UserImpl(long id, JDAImpl api)
     {
@@ -194,12 +194,12 @@ public class UserImpl extends UserSnowflakeImpl implements User
         return flags;
     }
 
+    @org.jetbrains.annotations.Nullable
     @Override
-    public Clan getPrimaryClan()
+    public Clan getClan()
     {
-        return null;
+        return clan;
     }
-
 
     @Override
     public String toString()
@@ -268,7 +268,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
 
     public UserImpl setPrimaryClan(Clan clan)
     {
-        this.primary_clan = clan;
+        this.clan = clan;
         return this;
     }
 

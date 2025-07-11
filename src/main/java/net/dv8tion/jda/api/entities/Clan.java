@@ -4,7 +4,7 @@ package net.dv8tion.jda.api.entities;
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Clan Clan}.
  * This should contain all information provided from Discord about a Clan.
  *
- * @see User#getPrimaryClan()
+ * @see User#getClan()
  */
 public interface Clan
 {
@@ -32,5 +32,5 @@ public interface Clan
     /**
      * Returns if clans are same
      */
-    boolean equals(Clan clan);
+    boolean equals(Clan otherClan);
 }

@@ -12,7 +12,7 @@ public class UserUpdateClanEvent extends GenericUserUpdateEvent<Clan>
 
     public UserUpdateClanEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull Clan clan)
     {
-        super(api, responseNumber, user, user.getPrimaryClan(), clan, IDENTIFIER);
+        super(api, responseNumber, user, user.getClan(), clan, IDENTIFIER);
     }
 
     /**
