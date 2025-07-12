@@ -18,8 +18,6 @@ package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.Message;
@@ -140,8 +138,6 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *         </ul>
      *
      * @return The same instance for chaining
-     *
-     * @see    ActionRow
      */
     @Nonnull
     R addComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
@@ -171,8 +167,6 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *         </ul>
      *
      * @return The same instance for chaining
-     *
-     * @see    ActionRow
      */
     @Nonnull
     default R addComponents(@Nonnull MessageTopLevelComponent... components)
@@ -198,7 +192,6 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
      *
      * @return The same instance for chaining
      *
-     * @see    ActionRow
      * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull

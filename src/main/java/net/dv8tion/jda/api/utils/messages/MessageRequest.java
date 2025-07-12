@@ -18,8 +18,6 @@ package net.dv8tion.jda.api.utils.messages;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
@@ -199,8 +197,6 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
     /**
      * The {@link MessageTopLevelComponent MessageTopLevelComponents} that should be attached to the message.
      * <br>You can use {@link Collections#emptyList()} to remove all components from the message.
-     *
-     * <p>The most commonly used layout is {@link ActionRow}.
      *
      * <p><b>Example: Set action rows</b><br>
      * <pre>{@code
