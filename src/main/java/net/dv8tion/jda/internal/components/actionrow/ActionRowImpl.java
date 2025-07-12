@@ -84,6 +84,7 @@ public class ActionRowImpl
     public static List<ActionRow> partitionOf(@Nonnull Collection<? extends ActionRowChildComponent> components)
     {
         Checks.noneNull(components, "Components");
+        Checks.notEmpty(components, "Components");
         // Don't allow unknown components in user-called methods
         Collection<ActionRowChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
 
@@ -95,23 +96,14 @@ public class ActionRowImpl
 
         for (ActionRowChildComponentUnion current : componentUnions)
         {
-            if (type != null && type != current.getType())
+            if ((type != null && type != current.getType()) || currentRow.size() == ActionRow.getMaxAllowed(current.getType()))
             {
                 rows.add(ActionRow.of(currentRow));
                 currentRow.clear();
             }
 
             type = current.getType();
-
-            if (currentRow.size() == ActionRow.getMaxAllowed(type))
-            {
-                rows.add(ActionRow.of(currentRow));
-                currentRow.clear();
-            }
-            else
-            {
-                currentRow.add(current);
-            }
+            currentRow.add(current);
         }
 
         rows.add(ActionRow.of(currentRow));

@@ -67,4 +67,24 @@ public class ActionRowTest extends AbstractSnapshotTest
         Assertions.assertThatIllegalArgumentException()
                 .isThrownBy(() -> new ActionRowImpl(list, -1));
     }
+
+    @Test
+    void testPartitionOf()
+    {
+        Assertions.assertThatIllegalArgumentException()
+                        .isThrownBy(() -> ActionRow.partitionOf(Collections.emptyList()));
+
+        final List<ActionRow> rowsOfSixButtons = ActionRow.partitionOf(EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON);
+        Assertions.assertThat(rowsOfSixButtons)
+                .isEqualTo(Arrays.asList(
+                        ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON),
+                        ActionRow.of(EXAMPLE_BUTTON)
+                ));
+
+        final List<ActionRow> rowsOfFiveButtons = ActionRow.partitionOf(EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON);
+        Assertions.assertThat(rowsOfFiveButtons)
+                .isEqualTo(Collections.singletonList(
+                        ActionRow.of(EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON, EXAMPLE_BUTTON)
+                ));
+    }
 }

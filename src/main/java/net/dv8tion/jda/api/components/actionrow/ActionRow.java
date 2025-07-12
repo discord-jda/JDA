@@ -102,7 +102,7 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      *         The components to partition
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or there is no components
      *
      * @return {@link List} of {@link ActionRow}
      */
@@ -134,7 +134,7 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      *         The components to partition
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or there is no components
      *
      * @return {@link List} of {@link ActionRow}
      */
