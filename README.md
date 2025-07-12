@@ -253,7 +253,7 @@ And configurators like:
 ```java
 public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
     return channel.sendMessage("The following message will destroy itself in 1 minute!")
-        .addActionRow(Button.danger("delete", "Delete now")) // further amend message before sending
+        .addComponents(ActionRow.of(Button.danger("delete", "Delete now"))) // further amend message before sending
         .delay(10, SECONDS, scheduler) // after sending, wait 10 seconds
         .flatMap((it) -> it.editMessage(content)) // then edit the message
         .delay(1, MINUTES, scheduler) // wait another minute

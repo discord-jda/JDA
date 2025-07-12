@@ -63,7 +63,7 @@ import java.util.*;
  *
  *   event.reply("Please pick your class below")
  *     .setEphemeral(true)
- *     .addActionRow(menu)
+ *     .addComponents(ActionRow.of(menu))
  *     .queue();
  * }
  * }</pre>
