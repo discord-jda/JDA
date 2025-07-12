@@ -18,9 +18,7 @@ package net.dv8tion.jda.test.compliance;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
-import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethod;
-import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
@@ -36,15 +34,13 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 public class ComponentConsistencyComplianceTest
 {
-    final JavaClasses apiClasses = new ClassFileImporter().importPackages("net.dv8tion.jda.api");
-
     @Test
     void testComponentMethodsThatThemselvesAreOverridden()
     {
         classes()
             .that(areComponents())
             .should(overrideSupertypeMethodsWhichReturnsTheirDeclaringClass())
-            .check(apiClasses);
+            .check(SourceSets.getApiClasses());
     }
 
     private DescribedPredicate<JavaClass> areComponents()
