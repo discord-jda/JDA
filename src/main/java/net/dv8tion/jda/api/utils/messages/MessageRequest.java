@@ -204,14 +204,14 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * list.add(ActionRow.of(selectMenu); // first row
      * list.add(ActionRow.of(button1, button2)); // second row (shows below the first)
      *
-     * channel.sendMessage("Content is still required")
+     * channel.sendMessage("Content here")
      *   .setComponents(list)
      *   .queue();
      * }</pre>
      *
      * <p><b>Example: Remove action rows</b><br>
      * <pre>{@code
-     * channel.sendMessage("Content is still required")
+     * channel.sendMessage("Content here")
      *    .setComponents(Collections.emptyList())
      *    .queue();
      * }</pre>
@@ -239,7 +239,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <p><b>Example: Set action rows</b><br>
      * <pre>{@code
-     * channel.sendMessage("Content is still required")
+     * channel.sendMessage("Content here")
      *   .setComponents(
      *     ActionRow.of(selectMenu), // first row
      *     ActionRow.of(button1, button2)) // second row (shows below the first)
@@ -248,7 +248,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      *
      * <p><b>Example: Remove action rows</b><br>
      * <pre>{@code
-     * channel.sendMessage("Content is still required")
+     * channel.sendMessage("Content here")
      *   .setComponents()
      *   .queue();
      * }</pre>
