@@ -16,11 +16,10 @@
 
 package net.dv8tion.jda.test.components;
 
+import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
-import org.assertj.core.api.Assertions;
+import net.dv8tion.jda.test.ChecksHelper;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
 
 public class ContainerTest
 {
@@ -28,7 +27,11 @@ public class ContainerTest
     @Test
     void testEmptyContainerThrows()
     {
-        Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> new ContainerImpl(-1, Collections.emptyList(), false, null));
+        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks(
+                        "Components",
+                        coll -> new ContainerImpl(-1, coll, false, null)
+                )
+                .checksNotNull()
+                .checksNotEmpty();
     }
 }

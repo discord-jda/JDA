@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
+import net.dv8tion.jda.test.ChecksHelper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -55,8 +56,12 @@ public class ActionRowTest extends AbstractSnapshotTest
     @Test
     void testEmptyRowThrows()
     {
-        Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> new ActionRowImpl(Collections.emptyList(), -1));
+        ChecksHelper.<ActionRowChildComponentUnion>assertCollectionChecks(
+                        "Row",
+                        coll -> new ActionRowImpl(coll, -1)
+                )
+                .checksNotNull()
+                .checksNotEmpty();
     }
 
     @Test

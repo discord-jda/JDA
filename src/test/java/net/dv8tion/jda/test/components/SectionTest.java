@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.components.section.SectionContentComponentUnion;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
-import org.assertj.core.api.Assertions;
+import net.dv8tion.jda.test.ChecksHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -36,14 +36,21 @@ public class SectionTest
     @Test
     void testEmptyContainerThrows()
     {
-        Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> new SectionImpl(-1, Collections.emptyList(), EXAMPLE_BUTTON));
+        ChecksHelper.<SectionContentComponentUnion>assertCollectionChecks(
+                        "Components",
+                        coll -> new SectionImpl(-1, coll, EXAMPLE_BUTTON)
+                )
+                .checksNotNull()
+                .checksNotEmpty();
     }
 
     @Test
     void testContainerWithNoAccessoryThrows()
     {
-        Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> new SectionImpl(-1, Collections.singletonList(EXAMPLE_TEXT_DISPLAY), null));
+        ChecksHelper.<SectionAccessoryComponentUnion>assertChecks(
+                        "Accessory",
+                        accessory -> new SectionImpl(-1, Collections.singletonList(EXAMPLE_TEXT_DISPLAY), accessory)
+                )
+                .checksNotNull();
     }
 }
