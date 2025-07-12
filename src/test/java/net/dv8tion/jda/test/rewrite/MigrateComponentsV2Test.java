@@ -15,10 +15,6 @@ public class MigrateComponentsV2Test implements RewriteTest
     public void defaults(RecipeSpec spec)
     {
         // https://docs.openrewrite.org/authoring-recipes/multiple-versions#manually-copying-jars-and-using-the-classpathfromresources-function
-        // I'd like to use their recipe-library, but it pulls a beta version of the shadow plugin, forcing us to upgrade
-        // which then breaks the buildscript for god knows what reason.
-        // I ain't putting more effort into what could have been at worst, a 5 minutes job for the end user,
-        // when it cost me my entire day.
         spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "JDA-5.6.1"));
     }
 
@@ -26,6 +22,14 @@ public class MigrateComponentsV2Test implements RewriteTest
     @Test
     void replacesPackage()
     {
+        rewriteRun(
+                spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2Packages"),
+                //language=java
+                java(
+                        "import net.dv8tion.jda.api.interactions.components.*;\n\npublic class Test { ActionComponent x() {} }",
+                        "import net.dv8tion.jda.api.components.ActionComponent;\nimport net.dv8tion.jda.api.interactions.components.*;\n\npublic class Test { ActionComponent x() {} }"
+                )
+        );
         rewriteRun(
                 spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2Packages"),
                 //language=java
