@@ -138,7 +138,10 @@ public class Components
      * @return A {@link ComponentTree} representing the provided data
      *
      * @throws IllegalArgumentException
-     *         If the provided data is {@code null}, or one of the components is not of type {@link T}
+     *         If the provided data is {@code null}, or one of the components is not compatible.
+     * @throws UnsupportedOperationException
+     *         If the provided tree type is not supported
+     *
      */
     @Nonnull
     @SuppressWarnings("unchecked")
