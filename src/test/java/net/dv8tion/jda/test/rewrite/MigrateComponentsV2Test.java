@@ -1,20 +1,4 @@
-/*
- * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package rewrite;
+package net.dv8tion.jda.test.rewrite;
 
 import org.junit.jupiter.api.Test;
 import org.openrewrite.InMemoryExecutionContext;
@@ -26,10 +10,16 @@ import static org.openrewrite.java.Assertions.java;
 
 public class MigrateComponentsV2Test implements RewriteTest
 {
+
     @Override
     public void defaults(RecipeSpec spec)
     {
-        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "JDA-5.6.1"));
+        // https://docs.openrewrite.org/authoring-recipes/multiple-versions#manually-copying-jars-and-using-the-classpathfromresources-function
+        // I'd like to use their recipe-library, but it pulls a beta version of the shadow plugin, forcing us to upgrade
+        // which then breaks the buildscript for god knows what reason.
+        // I ain't putting more effort into what could have been at worst, a 5 minutes job for the end user,
+        // when it cost me my entire day.
+        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "JDA-5.3.0"));
     }
 
     // https://docs.openrewrite.org/authoring-recipes/recipe-testing#declarative-recipe-testing

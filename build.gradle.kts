@@ -166,6 +166,23 @@ dependencies {
     testImplementation(libs.commons.lang3)
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
+
+    // OpenRewrite
+    // Import Rewrite's bill of materials.
+    testImplementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:3.6.1"))
+
+    // rewrite-java dependencies only necessary for Java Recipe development
+    testImplementation("org.openrewrite:rewrite-java")
+    testImplementation("org.openrewrite.recipe:rewrite-java-dependencies")
+
+    // This is supposed to only be the version that corresponds to the current Java version,
+    // but as there are no toolchain, we include all, they can coexist safely tho.
+    testRuntimeOnly("org.openrewrite:rewrite-java-8")
+    testRuntimeOnly("org.openrewrite:rewrite-java-11")
+    testRuntimeOnly("org.openrewrite:rewrite-java-17")
+
+    // For authoring tests for any kind of Recipe
+    testImplementation("org.openrewrite:rewrite-test")
 }
 
 fun isNonStable(version: String): Boolean {
@@ -343,19 +360,6 @@ tasks.withType<JavaCompile> {
 val compileJava by tasks.getting(JavaCompile::class) {
     dependsOn(generateJavaSources)
     source = generateJavaSources.get().source
-}
-
-val copyRewriteConfig by tasks.registering(Copy::class) {
-    val migrationsProject = gradle.includedBuilds.find { it.name == "migrations" }!!
-    val processResources: ProcessResources by tasks
-    val destinationDir = processResources.destinationDir
-
-    from(migrationsProject.projectDir.resolve("rewrite.yml"))
-    into(destinationDir.resolve("META-INF/rewrite"))
-}
-
-tasks.withType<ProcessResources>().configureEach {
-    dependsOn(copyRewriteConfig)
 }
 
 val build by tasks.getting(Task::class) {
