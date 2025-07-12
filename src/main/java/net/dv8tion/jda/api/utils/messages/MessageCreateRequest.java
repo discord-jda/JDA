@@ -181,16 +181,8 @@ public interface MessageCreateRequest<R extends MessageCreateRequest<R>> extends
     }
 
     /**
-     * Appends the provided {@link MessageTopLevelComponent MessageTopLevelComponents} to the request.
+     * Appends the provided {@link ComponentTree} of {@link MessageTopLevelComponent MessageTopLevelComponents} to the request.
      * <br>Use {@link #setComponents(ComponentTree)} instead, to replace the components entirely.
-     *
-     * <p><b>Example</b><br>
-     * Sending a message with multiple action rows:
-     * <pre>{@code
-     * channel.sendMessageComponents(ActionRow.of(selectMenu))
-     *        .addComponents(ActionRow.of(button1, button2))
-     *        .queue();
-     * }</pre>
      *
      * @param  tree
      *         The {@link ComponentTree} to add,

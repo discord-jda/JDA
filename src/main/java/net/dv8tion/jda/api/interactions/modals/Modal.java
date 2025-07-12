@@ -277,7 +277,7 @@ public interface Modal extends SerializableData
         }
 
         /**
-         * Adds {@link ModalTopLevelComponent components} to this modal
+         * Adds the provided {@link ComponentTree} of {@link ModalTopLevelComponent ModalTopLevelComponents} to this modal
          *
          * @param  tree
          *         The {@link ComponentTree} to add,
