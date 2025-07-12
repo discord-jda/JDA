@@ -20,15 +20,8 @@ import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.UnknownComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.components.UnknownComponentImpl;
-import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represents a union of {@link ModalTopLevelComponent ModalTopLevelComponents} that can be one of:
@@ -60,31 +53,6 @@ public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, ICo
      */
     @Nonnull
     ActionRow asActionRow();
-
-    @Nonnull
-    static ModalTopLevelComponentUnion fromData(@Nonnull DataObject data) {
-        Checks.notNull(data, "Data");
-
-        int rawType = data.getInt("type", -1);
-        Component.Type type = Component.Type.fromKey(rawType);
-
-        switch (type) {
-            case ACTION_ROW:
-                return new ActionRowImpl(data);
-            default:
-                return new UnknownComponentImpl(data);
-        }
-    }
-
-    @Nonnull
-    static List<ModalTopLevelComponentUnion> fromData(@Nonnull DataArray data) {
-        Checks.notNull(data, "Data");
-
-        return data
-                .stream(DataArray::getObject)
-                .map(ModalTopLevelComponentUnion::fromData)
-                .collect(Collectors.toList());
-    }
 
     @Nonnull
     @Override
