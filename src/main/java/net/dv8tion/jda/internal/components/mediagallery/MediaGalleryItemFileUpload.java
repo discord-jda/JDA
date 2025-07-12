@@ -91,11 +91,9 @@ public class MediaGalleryItemFileUpload implements MediaGalleryItem, FileContain
     @Override
     public String getDescription()
     {
-        // FileUpload is mutable unfortunately
-        final String fileDescription = file.getDescription();
-        if (fileDescription != null)
-            return fileDescription;
-        return description;
+        if (description != null)
+            return description;
+        return file.getDescription(); // FileUpload is mutable
     }
 
     @Override

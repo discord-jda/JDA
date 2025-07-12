@@ -117,10 +117,9 @@ public class ThumbnailFileUpload
     @Override
     public String getDescription()
     {
-        final String fileDescription = file.getDescription();
-        if (fileDescription != null)
-            return fileDescription;
-        return description;
+        if (description != null)
+            return description;
+        return file.getDescription(); // FileUpload is mutable
     }
 
     @Override
