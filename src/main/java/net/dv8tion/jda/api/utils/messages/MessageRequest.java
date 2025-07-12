@@ -241,8 +241,6 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * The {@link MessageTopLevelComponent MessageTopLevelComponents} that should be attached to the message.
      * <br>You can call this method without anything to remove all components from the message.
      *
-     * <p>The most commonly used layout is {@link ActionRow}.
-     *
      * <p><b>Example: Set action rows</b><br>
      * <pre>{@code
      * channel.sendMessage("Content is still required")

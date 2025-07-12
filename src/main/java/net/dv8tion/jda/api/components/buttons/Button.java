@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.components.buttons;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponent;
 import net.dv8tion.jda.api.entities.SkuSnowflake;
@@ -36,7 +35,6 @@ import javax.annotation.Nullable;
 
 /**
  * Represents a Message Button.
- * <br>These buttons are located below the message in {@link ActionRow ActionRows}.
  *
  * <p>Each button has either a {@code custom_id} or URL attached.
  * The id has to be provided by the user and can be used to identify the button in the {@link ButtonInteractionEvent ButtonInteractionEvent}.
@@ -73,7 +71,6 @@ import javax.annotation.Nullable;
  * <br>
  * <img alt="ButtonExample" src="https://raw.githubusercontent.com/discord-jda/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  *
- * @see ActionRow#of(ActionRowChildComponent...)
  * @see ReplyCallbackAction#addComponents(MessageTopLevelComponent...)
  */
 public interface Button extends ActionComponent, ActionRowChildComponent, SectionAccessoryComponent
