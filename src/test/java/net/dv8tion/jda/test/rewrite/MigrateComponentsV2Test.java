@@ -19,7 +19,7 @@ public class MigrateComponentsV2Test implements RewriteTest
         // which then breaks the buildscript for god knows what reason.
         // I ain't putting more effort into what could have been at worst, a 5 minutes job for the end user,
         // when it cost me my entire day.
-        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "JDA-5.3.0"));
+        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "JDA-5.6.1"));
     }
 
     // https://docs.openrewrite.org/authoring-recipes/recipe-testing#declarative-recipe-testing

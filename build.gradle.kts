@@ -112,6 +112,7 @@ configure<SourceSetContainer> {
 //                                //
 ////////////////////////////////////
 
+val recipeParserClasspath by configurations.creating
 
 repositories {
     mavenLocal()
@@ -183,6 +184,8 @@ dependencies {
 
     // For authoring tests for any kind of Recipe
     testImplementation("org.openrewrite:rewrite-test")
+
+    recipeParserClasspath("net.dv8tion:JDA:5.6.1")
 }
 
 fun isNonStable(version: String): Boolean {
@@ -470,6 +473,16 @@ nexusPublishing {
     }
 }
 
+val downloadRecipeClasspath by tasks.registering(Copy::class) {
+    from(recipeParserClasspath)
+    into("src/test/resources/META-INF/rewrite/classpath")
+
+    include("JDA-*.jar")
+}
+
+tasks.named("processTestResources").configure {
+    dependsOn(downloadRecipeClasspath)
+}
 
 ////////////////////////////////////
 //                                //
