@@ -316,7 +316,7 @@ public interface MessageRequest<R extends MessageRequest<R>> extends MessageData
      * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
      */
     @Nonnull
-    default R setComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default R setComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return setComponents(tree.getComponents());

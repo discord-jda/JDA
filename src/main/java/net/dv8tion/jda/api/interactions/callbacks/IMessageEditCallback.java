@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.interactions.callbacks;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -259,7 +258,7 @@ public interface IMessageEditCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default MessageEditCallbackAction editComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editComponents(tree.getComponents());

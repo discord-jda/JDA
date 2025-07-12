@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.interactions.callbacks;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -450,7 +449,7 @@ public interface IReplyCallback extends IDeferrableCallback
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default ReplyCallbackAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return replyComponents(tree.getComponents());

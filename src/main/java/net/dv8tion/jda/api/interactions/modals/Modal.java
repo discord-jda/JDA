@@ -294,7 +294,7 @@ public interface Modal extends SerializableData
          * @see    Component#isModalCompatible()
          */
         @Nonnull
-        public Builder addComponents(@Nonnull ComponentTree<? extends ModalTopLevelComponentUnion> tree)
+        public Builder addComponents(@Nonnull ComponentTree<? extends ModalTopLevelComponent> tree)
         {
             Checks.notNull(tree, "ModalComponentTree");
             return addComponents(tree.getComponents());

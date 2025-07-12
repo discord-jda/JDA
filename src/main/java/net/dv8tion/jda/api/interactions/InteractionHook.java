@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.interactions;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -347,7 +346,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default WebhookMessageEditAction<Message> editOriginalComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         return editMessageComponentsById("@original", tree);
     }

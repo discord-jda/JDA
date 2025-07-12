@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
@@ -446,7 +445,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default WebhookMessageCreateAction<T> sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return sendMessageComponents(tree.getComponents());
@@ -1083,7 +1082,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default WebhookMessageEditAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
@@ -1124,7 +1123,7 @@ public interface WebhookClient<T> extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default WebhookMessageEditAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());

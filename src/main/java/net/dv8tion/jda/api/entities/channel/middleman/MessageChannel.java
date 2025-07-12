@@ -17,7 +17,6 @@ package net.dv8tion.jda.api.entities.channel.middleman;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
-import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.selections.SelectMenu;
@@ -719,7 +718,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default MessageCreateAction sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return sendMessageComponents(tree.getComponents());
@@ -3498,7 +3497,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
@@ -3570,7 +3569,7 @@ public interface MessageChannel extends Channel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponentUnion> tree)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
     {
         Checks.notNull(tree, "ComponentTree");
         return editMessageComponentsById(messageId, tree.getComponents());
