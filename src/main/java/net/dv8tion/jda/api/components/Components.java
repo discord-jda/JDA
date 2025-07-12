@@ -67,7 +67,7 @@ public class Components
         Checks.notNull(data, "Data");
 
         final IComponentUnion component = parseComponent(data);
-        return ComponentsUtil.relaxedSafeUnionCast("component", component, componentType);
+        return ComponentsUtil.safeUnionCastWithUnknownType("component", component, componentType);
     }
 
     @Nonnull

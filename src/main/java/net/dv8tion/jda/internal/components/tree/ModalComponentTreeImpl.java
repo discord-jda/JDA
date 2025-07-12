@@ -42,7 +42,7 @@ public class ModalComponentTreeImpl
         Checks.noneNull(components, "Components");
 
         // Allow unknown components so [[Modal#getComponentTree]] works
-        final Collection<ModalTopLevelComponentUnion> componentUnions = ComponentsUtil.relaxedMembersToUnion(components, ModalTopLevelComponentUnion.class);
+        final Collection<ModalTopLevelComponentUnion> componentUnions = ComponentsUtil.membersToUnionWithUnknownType(components, ModalTopLevelComponentUnion.class);
         return new ModalComponentTreeImpl(componentUnions);
     }
 

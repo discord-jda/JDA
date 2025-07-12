@@ -65,7 +65,7 @@ public interface ComponentTree<E extends Component>
         Checks.notNull(unionType, "Component union type");
         Checks.noneNull(components, "Components");
         // We don't care if there are unknown components, they will be unpacked and checked when sending
-        return new ComponentTreeImpl<>(unionType, ComponentsUtil.relaxedMembersToUnion(components, unionType));
+        return new ComponentTreeImpl<>(unionType, ComponentsUtil.membersToUnionWithUnknownType(components, unionType));
     }
 
     /**
@@ -83,7 +83,7 @@ public interface ComponentTree<E extends Component>
     static ComponentTree<IComponentUnion> of(@Nonnull Collection<? extends Component> components)
     {
         Checks.noneNull(components, "Components");
-        return new ComponentTreeImpl<>(IComponentUnion.class, ComponentsUtil.relaxedMembersToUnion(components, IComponentUnion.class));
+        return new ComponentTreeImpl<>(IComponentUnion.class, ComponentsUtil.membersToUnionWithUnknownType(components, IComponentUnion.class));
     }
 
     /**

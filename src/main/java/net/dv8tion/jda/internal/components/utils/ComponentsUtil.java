@@ -63,7 +63,7 @@ public class ComponentsUtil
      * <br>This should only be used for reading purposes,
      * use {@link #membersToUnion(Collection, Class)} to verify components to be sent.
      */
-    public static <T extends Component> T relaxedSafeUnionCast(String componentCategory, Component component, Class<T> toUnionClass)
+    public static <T extends Component> T safeUnionCastWithUnknownType(String componentCategory, Component component, Class<T> toUnionClass)
     {
         if (toUnionClass.isInstance(component))
             return toUnionClass.cast(component);
@@ -90,11 +90,11 @@ public class ComponentsUtil
      * <br>This should only be used for reading purposes,
      * use {@link #membersToUnion(Collection, Class)} to verify components to be sent.
      */
-    public static <T extends Component> List<T> relaxedMembersToUnion(Collection<? extends Component> members, Class<T> clazz)
+    public static <T extends Component> List<T> membersToUnionWithUnknownType(Collection<? extends Component> members, Class<T> clazz)
     {
         return members
                 .stream()
-                .map(c -> relaxedSafeUnionCast("component", c, clazz))
+                .map(c -> safeUnionCastWithUnknownType("component", c, clazz))
                 .collect(Collectors.toList());
     }
 
