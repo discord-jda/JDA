@@ -377,7 +377,7 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     )
     {
         List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
-        Set<AttachedFile> distinctFiles = new LinkedHashSet<>(files == null ? 0 : files.size() + indirectFiles.size());
+        Set<AttachedFile> distinctFiles = new LinkedHashSet<>((files == null ? 0 : files.size()) + indirectFiles.size());
         if (files != null)
             distinctFiles.addAll(files);
         distinctFiles.addAll(indirectFiles);
