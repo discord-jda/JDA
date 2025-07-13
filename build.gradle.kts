@@ -45,7 +45,7 @@ plugins {
 ////////////////////////////////////
 
 projectEnvironment {
-    version = Version(major = "5", minor = "6", revision = "1", classifier = null)
+    version = Version(major = "6", minor = "0", revision = "0", classifier = "preview")
 }
 
 artifactFilters {
