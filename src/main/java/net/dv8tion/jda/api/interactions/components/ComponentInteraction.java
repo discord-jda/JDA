@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.components;
 
+import net.dv8tion.jda.api.components.ActionComponent;
+import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -42,10 +44,23 @@ public interface ComponentInteraction extends IReplyCallback, IMessageEditCallba
      *
      * @return The component ID
      *
-     * @see    ActionComponent#getId()
+     * @see    ActionComponent#getCustomId()
      */
     @Nonnull
     String getComponentId();
+
+    /**
+     * The numeric component ID provided to the component when it was originally created.
+     * <br>This value is typically used to uniquely identify the component.
+     *
+     * @return The unique, numeric component ID
+     *
+     * @see    ActionComponent#getUniqueId()
+     */
+    default int getUniqueId()
+    {
+        return getComponent().getUniqueId();
+    }
 
     /**
      * The {@link ActionComponent} instance.

@@ -17,12 +17,12 @@
 package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.ActionComponent;
+import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
@@ -131,7 +131,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
     }
 
     /**
-     * @deprecated Replaced with {@link net.dv8tion.jda.api.interactions.components.buttons.Button#premium(net.dv8tion.jda.api.entities.SkuSnowflake) Button.premium(SkuSnowflake)},
+     * @deprecated Replaced with {@link net.dv8tion.jda.api.components.buttons.Button#premium(net.dv8tion.jda.api.entities.SkuSnowflake) Button.premium(SkuSnowflake)},
      * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
      */
     @Nonnull

@@ -16,11 +16,17 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.ItemComponent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
+import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -30,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Discord Modal
@@ -63,8 +70,8 @@ import java.util.List;
  *     }
  * }}</pre>
  *
- * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link net.dv8tion.jda.api.interactions.components.text.TextInput TextInputs} are allowed at this time.</b>
- * You can check whether a component is supported via {@link net.dv8tion.jda.api.interactions.components.Component.Type#isModalCompatible}.
+ * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link TextInput TextInputs} are allowed at this time.</b>
+ * You can check whether a component is supported via {@link Component.Type#isModalCompatible}.
  *
  * @see    ModalInteractionEvent
  */
@@ -104,12 +111,23 @@ public interface Modal extends SerializableData
     String getTitle();
 
     /**
-     * A List of {@link LayoutComponent LayoutComponents} that this modal contains.
+     * A List of {@link ModalTopLevelComponent components} that this modal contains.
      *
-     * @return List of LayoutComponents
+     * @return List of ModalTopLevelComponentUnions
      */
     @Nonnull
-    List<LayoutComponent> getComponents();
+    List<ModalTopLevelComponentUnion> getComponents();
+
+    /**
+     * A {@link ModalComponentTree} constructed from {@link #getComponents()}.
+     *
+     * @return {@link ModalComponentTree}
+     */
+    @Nonnull
+    default ModalComponentTree getComponentTree()
+    {
+        return ModalComponentTree.of(getComponents());
+    }
 
     /**
      * Creates a new preconfigured {@link Modal.Builder} with the same settings used for this modal.
@@ -120,8 +138,9 @@ public interface Modal extends SerializableData
     @Nonnull
     default Modal.Builder createCopy()
     {
+        List<ModalTopLevelComponent> c = getComponents().stream().map(c2 -> (ModalTopLevelComponent) c2).collect(Collectors.toList());
         return new Builder(getId(), getTitle())
-                .addComponents(getComponents());
+                .addComponents(c);
     }
 
     /**
@@ -153,7 +172,7 @@ public interface Modal extends SerializableData
      */
     class Builder
     {
-        private final List<LayoutComponent> components = new ArrayList<>(MAX_COMPONENTS);
+        private final List<ModalTopLevelComponentUnion> components = new ArrayList<>(MAX_COMPONENTS);
         private String id;
         private String title;
 
@@ -204,55 +223,81 @@ public interface Modal extends SerializableData
         }
 
         /**
-         * Adds {@link LayoutComponent LayoutComponents} to this modal
+         * Adds {@link ModalTopLevelComponent components} to this modal
          *
          * @param  components
-         *         {@link LayoutComponent LayoutComponents} to add to the modal, up to {@value MAX_COMPONENTS} total
+         *         {@link ModalTopLevelComponent Components} to add to the modal, up to {@value MAX_COMPONENTS} total
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If any of the provided layouts are null</li>
-         *             <li>If any of the provided components are not compatible with Modals</li>
+         *             <li>If {@code null} is provided</li>
+         *             <li>If any of the provided components are not {@linkplain Component.Type#isModalCompatible() compatible with modals}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining
          *
-         * @see    LayoutComponent#isModalCompatible()
+         * @see    Component#isModalCompatible()
+         * @see    ModalComponentTree
          */
         @Nonnull
-        public Builder addComponents(@Nonnull LayoutComponent... components)
+        public Builder addComponents(@Nonnull ModalTopLevelComponent... components)
         {
-            Checks.noneNull(components, "Action Rows");
+            Checks.noneNull(components, "Components");
             return addComponents(Arrays.asList(components));
         }
 
         /**
-         * Adds {@link LayoutComponent LayoutComponents} to this modal
+         * Adds {@link ModalTopLevelComponent components} to this modal
          *
          * @param  components
-         *         {@link LayoutComponent LayoutComponents} to add to the modal, up to {@value MAX_COMPONENTS} total
+         *         {@link ModalTopLevelComponent Components} to add to the modal, up to {@value MAX_COMPONENTS} total
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If any of the provided layouts are null</li>
-         *             <li>If any of the provided components are not compatible with Modals</li>
+         *             <li>If {@code null} is provided</li>
+         *             <li>If any of the provided components are not {@linkplain Component.Type#isModalCompatible() compatible with modals}</li>
          *         </ul>
          *
          * @return The same builder instance for chaining
          *
-         * @see    LayoutComponent#isModalCompatible()
+         * @see    Component#isModalCompatible()
          */
         @Nonnull
-        public Builder addComponents(@Nonnull Collection<? extends LayoutComponent> components)
+        public Builder addComponents(@Nonnull Collection<? extends ModalTopLevelComponent> components)
         {
             Checks.noneNull(components, "Components");
-
-            Checks.checkComponents("Some components are incompatible with Modals",
+            Checks.checkComponents(
+                    "Some components are incompatible with Modals",
                     components,
-                    component -> component.getType().isModalCompatible());
+                    Component::isModalCompatible
+            );
 
-            this.components.addAll(components);
+            this.components.addAll(membersToUnion(components));
             return this;
+        }
+
+        /**
+         * Adds the provided {@link ComponentTree} of {@link ModalTopLevelComponent ModalTopLevelComponents} to this modal
+         *
+         * @param  tree
+         *         The {@link ComponentTree} to add,
+         *         containing up to {@value #MAX_COMPONENTS} V1 components.
+         *
+         * @throws IllegalArgumentException
+         *         <ul>
+         *             <li>If {@code null} is provided</li>
+         *             <li>If any of the provided components are not {@linkplain Component.Type#isModalCompatible() compatible with modals}</li>
+         *         </ul>
+         *
+         * @return The same builder instance for chaining
+         *
+         * @see    Component#isModalCompatible()
+         */
+        @Nonnull
+        public Builder addComponents(@Nonnull ComponentTree<? extends ModalTopLevelComponent> tree)
+        {
+            Checks.notNull(tree, "ModalComponentTree");
+            return addComponents(tree.getComponents());
         }
 
         /**
@@ -263,16 +308,22 @@ public interface Modal extends SerializableData
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If any of the provided ItemComponents are null, or an invalid number of components are provided</li>
-         *             <li>If any of the provided ItemComponents are not compatible with Modals</li>
+         *             <li>If any of the provided components are null, or an invalid number of components are provided</li>
+         *             <li>If any of the provided components are not compatible with Modals</li>
          *         </ul>
          *
          * @return Same builder for chaining convenience
          *
-         * @see    ItemComponent#isModalCompatible()
+         * @see    Component#isModalCompatible()
+         *
+         * @deprecated
+         *         Use {@link #addComponents(ModalTopLevelComponent...)} instead
          */
         @Nonnull
-        public Builder addActionRow(@Nonnull Collection<? extends ItemComponent> components)
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("addComponents(ActionRow.of(components))")
+        public Builder addActionRow(@Nonnull Collection<? extends ActionRowChildComponent> components)
         {
             return addComponents(ActionRow.of(components));
         }
@@ -285,16 +336,22 @@ public interface Modal extends SerializableData
          *
          * @throws IllegalArgumentException
          *         <ul>
-         *             <li>If any of the provided ItemComponents are null, or an invalid number of components are provided</li>
-         *             <li>If any of the provided ItemComponents are not compatible with Modals</li>
+         *             <li>If any of the provided components are null, or an invalid number of components are provided</li>
+         *             <li>If any of the provided components are not compatible with Modals</li>
          *         </ul>
          *
          * @return Same builder for chaining convenience
          *
-         * @see    ItemComponent#isModalCompatible()
+         * @see    Component#isModalCompatible()
+         *
+         * @deprecated
+         *         Use {@link #addComponents(ModalTopLevelComponent...)} instead
          */
         @Nonnull
-        public Builder addActionRow(@Nonnull ItemComponent... components)
+        @Deprecated
+        @ForRemoval
+        @ReplaceWith("addComponents(ActionRow.of(components))")
+        public Builder addActionRow(@Nonnull ActionRowChildComponent... components)
         {
             return addComponents(ActionRow.of(components));
         }
@@ -305,7 +362,7 @@ public interface Modal extends SerializableData
          * @return A modifiable list of all components
          */
         @Nonnull
-        public List<LayoutComponent> getComponents()
+        public List<ModalTopLevelComponentUnion> getComponents()
         {
             return components;
         }
@@ -350,6 +407,10 @@ public interface Modal extends SerializableData
             Checks.check(components.size() <= MAX_COMPONENTS, "Cannot make a modal with more than 5 components!");
 
             return new ModalImpl(id, title, components);
+        }
+
+        private static Collection<ModalTopLevelComponentUnion> membersToUnion(Collection<? extends ModalTopLevelComponent> members) {
+            return ComponentsUtil.membersToUnion(members, ModalTopLevelComponentUnion.class);
         }
     }
 }

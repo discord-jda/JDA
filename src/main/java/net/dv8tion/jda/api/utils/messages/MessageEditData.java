@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.api.utils.messages;
 
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -27,8 +27,10 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 import static net.dv8tion.jda.api.utils.messages.MessageEditBuilder.*;
@@ -48,7 +50,8 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
     private final String content;
     private final List<MessageEmbed> embeds;
     private final List<AttachedFile> files;
-    private final List<LayoutComponent> components;
+    private final Set<AttachedFile> allDistinctFiles;
+    private final List<MessageTopLevelComponentUnion> components;
     private final int messageFlags;
 
     private final boolean isReplace;
@@ -56,12 +59,13 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
 
     protected MessageEditData(
             int configuredFields, int messageFlags, boolean isReplace, String content,
-            List<MessageEmbed> embeds, List<AttachedFile> files, List<LayoutComponent> components,
-            AllowedMentionsData mentions)
+            List<MessageEmbed> embeds, List<AttachedFile> files,
+            List<MessageTopLevelComponentUnion> components, AllowedMentionsData mentions)
     {
         this.content = content;
         this.embeds = Collections.unmodifiableList(embeds);
         this.files = Collections.unmodifiableList(files);
+        this.allDistinctFiles = createAllDistinctFiles(files, components);
         this.components = Collections.unmodifiableList(components);
         this.mentions = mentions;
         this.messageFlags = messageFlags;
@@ -245,9 +249,15 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
      * @return The components or an empty list if none were set
      */
     @Nonnull
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         return components;
+    }
+
+    @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (messageFlags & Message.MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     /**
@@ -325,20 +335,10 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
             json.put("allowed_mentions", mentions);
         if (isSet(FLAGS))
             json.put("flags", messageFlags);
-        if (isSet(ATTACHMENTS))
-        {
-            DataArray attachments = DataArray.empty();
 
-            int fileUploadCount = 0;
-            for (AttachedFile file : files)
-            {
-                attachments.add(file.toAttachmentData(fileUploadCount));
-                if (file instanceof FileUpload)
-                    fileUploadCount++;
-            }
-
-            json.put("attachments", attachments);
-        }
+        final List<FileUpload> additionalFiles = MessageUtil.getIndirectFiles(components);
+        if (isSet(ATTACHMENTS) || !additionalFiles.isEmpty())
+            json.put("attachments", MessageUtil.getAttachmentsData(allDistinctFiles));
 
         return json;
     }
@@ -355,6 +355,33 @@ public class MessageEditData implements MessageData, AutoCloseable, Serializable
                 .filter(FileUpload.class::isInstance)
                 .map(FileUpload.class::cast)
                 .collect(Helpers.toUnmodifiableList());
+    }
+
+    /**
+     * Returns both the {@link FileUpload FileUploads} attached to that message,
+     * and those added indirectly to this message, such as from V2 components and embeds,
+     * references to the same uploads are deduplicated.
+     *
+     * @return The set of all file uploads
+     */
+    @Nonnull
+    public Set<? extends AttachedFile> getAllDistinctFiles()
+    {
+        return allDistinctFiles;
+    }
+
+    @Nonnull
+    public static Set<AttachedFile> createAllDistinctFiles(
+            @Nullable Collection<AttachedFile> files,
+            @Nonnull Collection<MessageTopLevelComponentUnion> components
+    )
+    {
+        List<FileUpload> indirectFiles = MessageUtil.getIndirectFiles(components);
+        Set<AttachedFile> distinctFiles = new LinkedHashSet<>((files == null ? 0 : files.size()) + indirectFiles.size());
+        if (files != null)
+            distinctFiles.addAll(files);
+        distinctFiles.addAll(indirectFiles);
+        return Collections.unmodifiableSet(distinctFiles);
     }
 
     @Override

@@ -50,3 +50,6 @@ src-old/examples/java/TestReceive.java
 src-old/main/java/net/dv8tion/jda/events/audio/AudioMovedEvent.java
 src-old/main/java/net/dv8tion/jda/ratelimit/Bucket.java
 src-old/main/java/net/dv8tion/jda/ratelimit/RateLimitControl.java
+
+# Recipe jars
+src/test/resources/**/*.jar
