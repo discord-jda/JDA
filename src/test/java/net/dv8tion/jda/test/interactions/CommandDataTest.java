@@ -96,31 +96,6 @@ public class CommandDataTest
     }
 
     @Test
-    void testDeprecatedGuildOnly()
-    {
-        CommandDataImpl command = new CommandDataImpl("ban", "Ban a user from this server")
-                .setGuildOnly(true);
-
-        assertThat(command.toData())
-                .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(defaultCommand()
-                        .put("type", 1)
-                        .put("name", "ban")
-                        .put("description", "Ban a user from this server")
-                        .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType())));
-
-        command.setGuildOnly(false);
-
-        assertThat(command.toData())
-                .withRepresentation(new PrettyRepresentation())
-                .isEqualTo(defaultCommand()
-                        .put("type", 1)
-                        .put("name", "ban")
-                        .put("description", "Ban a user from this server")
-                        .put("contexts", DataArray.empty().add(InteractionContextType.GUILD.getType()).add(InteractionContextType.BOT_DM.getType())));
-    }
-
-    @Test
     void testDefaultMemberPermissions()
     {
         CommandData command = new CommandDataImpl("ban", "Ban a user from this server")

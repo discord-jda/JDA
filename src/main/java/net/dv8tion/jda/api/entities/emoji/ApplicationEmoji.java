@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.entities.emoji;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.User;
@@ -39,13 +38,6 @@ import javax.annotation.Nullable;
  */
 public interface ApplicationEmoji extends CustomEmoji
 {
-    /**
-     * @deprecated Replaced with {@link #MAX_APPLICATION_EMOJIS}
-     */
-    @Deprecated
-    @ReplaceWith("MAX_APPLICATION_EMOJIS")
-    int APPLICATION_EMOJI_CAP = 2000;
-
     /**
      * Maximum number of emojis that can be registered on an application.
      */

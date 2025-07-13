@@ -19,7 +19,6 @@ package net.dv8tion.jda.internal.requests.restaction.interactions;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.interactions.response.InteractionCallbackResponseImpl;
 import okhttp3.MediaType;

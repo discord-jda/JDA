@@ -144,12 +144,6 @@ public class CommandDataImpl implements SlashCommandData
         return defaultMemberPermissions;
     }
 
-    @Override
-    public boolean isGuildOnly()
-    {
-        return contexts.size() == 1 && contexts.contains(InteractionContextType.GUILD);
-    }
-
     @Nonnull
     @Override
     public Set<InteractionContextType> getContexts()
@@ -206,16 +200,6 @@ public class CommandDataImpl implements SlashCommandData
     {
         Checks.notNull(permissions, "Permissions");
         this.defaultMemberPermissions = permissions;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public CommandDataImpl setGuildOnly(boolean guildOnly)
-    {
-        setContexts(guildOnly
-                ? EnumSet.of(InteractionContextType.GUILD)
-                : EnumSet.of(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
         return this;
     }
 

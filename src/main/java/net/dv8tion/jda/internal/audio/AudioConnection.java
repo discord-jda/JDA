@@ -115,11 +115,6 @@ public class AudioConnection
         webSocket.setAutoReconnect(shouldReconnect);
     }
 
-    @Deprecated
-    public void setSpeakingDelay(int millis)
-    {
-    }
-
     public void setSendingHandler(AudioSendHandler handler)
     {
         this.sendHandler = handler;

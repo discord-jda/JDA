@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -148,22 +147,6 @@ public interface CommandData extends SerializableData
     CommandData setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
     /**
-     * Sets whether this command is only usable in a guild (Default: false).
-     * <br>This only has an effect if this command is registered globally.
-     *
-     * @param  guildOnly
-     *         Whether to restrict this command to guilds
-     *
-     * @return The builder instance, for chaining
-     *
-     * @deprecated Replaced with {@link #setContexts(InteractionContextType...)}
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("setContexts(InteractionContextType.GUILD)")
-    CommandData setGuildOnly(boolean guildOnly);
-
-    /**
      * Sets the contexts in which this command can be used (Default: Guild and Bot DMs).
      * <br>This only has an effect if this command is registered globally.
      *
@@ -284,18 +267,6 @@ public interface CommandData extends SerializableData
     DefaultMemberPermissions getDefaultPermissions();
 
     /**
-     * Whether the command can only be used inside a guild.
-     * <br>Always true for guild commands.
-     *
-     * @return True, if this command is restricted to guilds.
-     *
-     * @deprecated Replaced with {@link #getContexts()}
-     */
-    @Deprecated
-    @ReplaceWith("getContexts().equals(EnumSet.of(InteractionContextType.GUILD))")
-    boolean isGuildOnly();
-
-    /**
      * The contexts in which this command can be used.
      *
      * @return The contexts in which this command can be used
@@ -392,8 +363,6 @@ public interface CommandData extends SerializableData
                         .map(InteractionContextType::fromKey)
                         .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
             }
-            else if (!object.isNull("dm_permission"))
-                data.setGuildOnly(!object.getBoolean("dm_permission"));
             else
                 data.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
 

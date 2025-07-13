@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.requests;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -100,15 +98,6 @@ public enum GatewayIntent
      * Moderation events, such as ban/unban/audit-log.
      */
     GUILD_MODERATION(2),
-    /**
-     * Custom emoji and sticker add/update/delete events.
-     *
-     * @deprecated Replaced with {@link #GUILD_EXPRESSIONS}
-     */
-    @ForRemoval(deadline = "5.3.0")
-    @ReplaceWith("GUILD_EXPRESSIONS")
-    @Deprecated
-    GUILD_EMOJIS_AND_STICKERS(3),
     /**
      * Custom emoji, sticker and soundboard sound add/update/delete events.
      */

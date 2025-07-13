@@ -50,10 +50,9 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private static final int DESCRIPTION_SET          = 1 << 1;
     private static final int OPTIONS_SET              = 1 << 2;
     private static final int PERMISSIONS_SET          = 1 << 3;
-    private static final int GUILD_ONLY_SET           = 1 << 4;
-    private static final int NSFW_SET                 = 1 << 5;
-    private static final int INTERACTION_CONTEXTS_SET = 1 << 6;
-    private static final int INTEGRATION_TYPES_SET    = 1 << 7;
+    private static final int NSFW_SET                 = 1 << 4;
+    private static final int INTERACTION_CONTEXTS_SET = 1 << 5;
+    private static final int INTEGRATION_TYPES_SET    = 1 << 6;
     private final Guild guild;
 
     private int mask;
@@ -94,7 +93,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditAction apply(@Nonnull CommandData commandData)
     {
         Checks.notNull(commandData, "Command Data");
-        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET | PERMISSIONS_SET | GUILD_ONLY_SET | NSFW_SET | INTERACTION_CONTEXTS_SET | INTEGRATION_TYPES_SET;
+        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET | PERMISSIONS_SET | NSFW_SET | INTERACTION_CONTEXTS_SET | INTEGRATION_TYPES_SET;
         this.data = (CommandDataImpl) commandData;
         return this;
     }
@@ -124,15 +123,6 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         }
         data.setName(name);
         mask |= NAME_SET;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public CommandEditAction setGuildOnly(boolean guildOnly)
-    {
-        data.setGuildOnly(guildOnly);
-        mask |= GUILD_ONLY_SET;
         return this;
     }
 
@@ -239,8 +229,6 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
             json.remove("options");
         if (isUnchanged(PERMISSIONS_SET))
             json.remove("default_member_permissions");
-        if (isUnchanged(GUILD_ONLY_SET))
-            json.remove("dm_permission");
         if (isUnchanged(NSFW_SET))
             json.remove("nsfw");
         if (isUnchanged(INTERACTION_CONTEXTS_SET))

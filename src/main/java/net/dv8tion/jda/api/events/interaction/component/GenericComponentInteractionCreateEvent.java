@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.PremiumRequiredCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.CheckReturnValue;
@@ -128,18 +127,5 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
     public ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
         return interaction.replyModal(modal);
-    }
-
-    /**
-     * @deprecated Replaced with {@link net.dv8tion.jda.api.components.buttons.Button#premium(net.dv8tion.jda.api.entities.SkuSnowflake) Button.premium(SkuSnowflake)},
-     * see the <a href="https://discord.com/developers/docs/change-log#premium-apps-new-premium-button-style-deep-linking-url-schemes" target="_blank">Discord change logs</a> for more details.
-     */
-    @Nonnull
-    @Override
-    @Deprecated
-    @CheckReturnValue
-    public PremiumRequiredCallbackAction replyWithPremiumRequired()
-    {
-        return interaction.replyWithPremiumRequired();
     }
 }

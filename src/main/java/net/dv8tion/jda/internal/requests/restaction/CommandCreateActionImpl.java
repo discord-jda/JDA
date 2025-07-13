@@ -96,14 +96,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setGuildOnly(boolean guildOnly)
-    {
-        data.setGuildOnly(guildOnly);
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public CommandCreateAction setContexts(@Nonnull Collection<InteractionContextType> contexts)
     {
         data.setContexts(contexts);
@@ -160,12 +152,6 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public DefaultMemberPermissions getDefaultPermissions()
     {
         return data.getDefaultPermissions();
-    }
-
-    @Override
-    public boolean isGuildOnly()
-    {
-        return data.isGuildOnly();
     }
 
     @Nonnull
