@@ -50,6 +50,7 @@ public class UserImpl extends UserSnowflakeImpl implements User
     protected boolean bot;
     protected boolean system;
     protected int flags;
+    protected PrimaryGuild primaryGuild;
 
     public UserImpl(long id, JDAImpl api)
     {
@@ -190,6 +191,13 @@ public class UserImpl extends UserSnowflakeImpl implements User
     {
         return flags;
     }
+    
+    @Nullable
+    @Override
+    public PrimaryGuild getPrimaryGuild()
+    {
+        return primaryGuild;
+    }
 
     @Override
     public String toString()
@@ -253,6 +261,12 @@ public class UserImpl extends UserSnowflakeImpl implements User
     public UserImpl setFlags(int flags)
     {
         this.flags = flags;
+        return this;
+    }
+    
+    public UserImpl setPrimaryGuild(PrimaryGuild primaryGuild)
+    {
+        this.primaryGuild = primaryGuild;
         return this;
     }
 
