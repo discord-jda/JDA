@@ -20,4 +20,4 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Build and test
-        run: ./gradlew --build-cache build test
+        run: ./gradlew --build-cache --parallel build test
