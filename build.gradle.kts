@@ -16,26 +16,24 @@
 
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import io.github.gradlenexus.publishplugin.AbstractNexusStagingRepositoryTask
 import net.dv8tion.jda.tasks.Version
 import net.dv8tion.jda.tasks.applyAudioExclusions
 import net.dv8tion.jda.tasks.applyOpusExclusions
 import net.dv8tion.jda.tasks.nullableReplacement
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
-import java.time.Duration
+import org.jreleaser.model.Active
 
 plugins {
     environment
     artifacts
-    signing
     `java-library`
     `maven-publish`
 
-    alias(libs.plugins.publish)
     alias(libs.plugins.shadow)
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
+    alias(libs.plugins.jreleaser)
 }
 
 
@@ -345,6 +343,17 @@ val build by tasks.getting(Task::class) {
     shadowJar.mustRunAfter(sourcesJar)
 }
 
+val downloadRecipeClasspath by tasks.registering(Copy::class) {
+    from(recipeParserClasspath)
+    into("src/test/resources/META-INF/rewrite/classpath")
+
+    include("JDA-*.jar")
+}
+
+tasks.named("processTestResources").configure {
+    dependsOn(downloadRecipeClasspath)
+}
+
 val test by tasks.getting(Test::class) {
     useJUnitPlatform()
     failFast = false
@@ -402,6 +411,8 @@ components.java.withVariantsFromConfiguration(configurations.shadowRuntimeElemen
 val SoftwareComponentContainer.java
     get() = components.getByName<AdhocComponentWithVariants>("java")
 
+val stagingDirectory = layout.buildDirectory.dir("staging-deploy").get()
+
 publishing {
     publications {
         register<MavenPublication>("Release") {
@@ -417,83 +428,37 @@ publishing {
             pom.populate()
         }
     }
+
+    repositories.maven {
+        url = stagingDirectory.asFile.toURI()
+    }
 }
 
-signing {
-    val key = projectEnvironment.signingKey
+jreleaser {
+    project {
+        versionPattern = "CUSTOM"
+    }
 
-    useInMemoryPgpKeys(key?.id, key?.key?.value, "")
-    sign(publishing.publications.getByName("Release"))
-    isRequired = projectEnvironment.canPublish
-}
-
-nexusPublishing {
-    val credentials = projectEnvironment.mavenCredentials
-
-    if (credentials != null) {
-        repositories.sonatype {
-            username.set(credentials.user)
-            password.set(credentials.token.value)
-            stagingProfileId.set(credentials.stagingProfileId)
+    release {
+        github {
+            enabled = false
         }
     }
 
-    connectTimeout.set(Duration.ofMinutes(1))
-    clientTimeout.set(Duration.ofMinutes(10))
-
-    transitionCheckOptions {
-        maxRetries.set(100)
-        delayBetween.set(Duration.ofSeconds(5))
+    signing {
+        active = Active.RELEASE
+        armored = true
     }
-}
 
-val downloadRecipeClasspath by tasks.registering(Copy::class) {
-    from(recipeParserClasspath)
-    into("src/test/resources/META-INF/rewrite/classpath")
-
-    include("JDA-*.jar")
-}
-
-tasks.named("processTestResources").configure {
-    dependsOn(downloadRecipeClasspath)
-}
-
-////////////////////////////////////
-//                                //
-//   Release Task Configuration   //
-//                                //
-////////////////////////////////////
-
-
-val rebuild by tasks.registering(Task::class) {
-    group = "build"
-
-    dependsOn(build)
-    dependsOn(tasks.clean)
-    build.mustRunAfter(tasks.clean)
-}
-
-val publishingTasks = tasks.withType<PublishToMavenRepository> {
-    enabled = projectEnvironment.canPublish
-    mustRunAfter(rebuild)
-    dependsOn(rebuild)
-}
-
-tasks.withType<AbstractNexusStagingRepositoryTask> {
-    enabled = projectEnvironment.canPublish
-}
-
-val release by tasks.registering(Task::class) {
-    group = "publishing"
-    enabled = projectEnvironment.canPublish
-
-    dependsOn(publishingTasks)
-}
-
-afterEvaluate {
-    val closeAndReleaseStagingRepositories by tasks.getting
-    closeAndReleaseStagingRepositories.apply {
-        release.get().dependsOn(this)
-        mustRunAfter(publishingTasks)
+    deploy {
+        maven {
+            mavenCentral {
+                register("sonatype") {
+                    active = Active.RELEASE
+                    url = "https://central.sonatype.com/api/v1/publisher"
+                    stagingRepository(stagingDirectory.asFile.relativeTo(projectDir).path)
+                }
+            }
+        }
     }
 }
