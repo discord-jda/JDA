@@ -31,7 +31,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Generate documentation directory
-        run: ./gradlew javadoc
+        run: ./gradlew --build-cache javadoc
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
