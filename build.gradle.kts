@@ -22,6 +22,7 @@ import net.dv8tion.jda.tasks.applyOpusExclusions
 import net.dv8tion.jda.tasks.nullableReplacement
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
 import org.jreleaser.model.Active
 
 plugins {
@@ -459,3 +460,8 @@ jreleaser {
         }
     }
 }
+
+tasks.withType<AbstractJReleaserTask>().configureEach {
+    mustRunAfter(tasks.named("publish"))
+}
+
