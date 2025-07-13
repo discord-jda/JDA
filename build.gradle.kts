@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-//to build everything:             "gradlew build"
-//to build and upload everything:  "gradlew release"
-
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import io.github.gradlenexus.publishplugin.AbstractNexusStagingRepositoryTask
+import net.dv8tion.jda.tasks.Version
+import net.dv8tion.jda.tasks.applyAudioExclusions
+import net.dv8tion.jda.tasks.applyOpusExclusions
+import net.dv8tion.jda.tasks.nullableReplacement
 import nl.littlerobots.vcu.plugin.resolver.VersionSelectors
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.time.Duration
 
 plugins {
+    environment
+    artifacts
     signing
     `java-library`
     `maven-publish`
@@ -42,53 +45,25 @@ plugins {
 //                                //
 ////////////////////////////////////
 
-
-val javaVersion = JavaVersion.current()
-val versionObj = Version(major = "5", minor = "6", revision = "1", classifier = null)
-val isGithubAction = System.getProperty("GITHUB_ACTION") != null || System.getenv("GITHUB_ACTION") != null
-val isCI = System.getProperty("BUILD_NUMBER") != null // jenkins
-        || System.getenv("BUILD_NUMBER") != null
-        || System.getProperty("GIT_COMMIT") != null // jitpack
-        || System.getenv("GIT_COMMIT") != null
-        || isGithubAction // Github Actions
-
-// Check the commit hash and version information
-val commitHash: String by lazy {
-    val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT") ?: System.getenv("GITHUB_SHA")
-    // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
-    if (isCI && commit != null)
-        commit.take(7)
-    else
-        "DEV"
+projectEnvironment {
+    version = Version(major = "5", minor = "6", revision = "1", classifier = null)
 }
 
-val previousVersion: Version by lazy {
-    val file = layout.projectDirectory.file(".version").asFile
-    if (file.canRead())
-        Version.parse(file.readText().trim())
-    else
-        versionObj
+artifactFilters {
+    opusExclusions.addAll("natives/**", "com/sun/jna/**", "club/minnced/opus/util/*", "tomp2p/opuswrapper/*")
+    additionalAudioExclusions.addAll("com/google/crypto/tink/**", "com/google/gson/**", "com/google/protobuf/**", "google/protobuf/**")
 }
-
-val signingKey: String? by project
-val signingKeyId: String? by project
-val ossrhUser: String? by project
-val ossrhPassword: String? by project
-val stagingProfile: String? by project
-
-val ossrhConfigured = ossrhUser != null && ossrhPassword != null
-val canSign = signingKey != null && signingKeyId != null
-val shouldPublish = canSign && ossrhConfigured && isGithubAction
 
 // Use normal version string for new releases and commitHash for other builds
-if (shouldPublish) {
-    project.version = "$versionObj"
+if (projectEnvironment.canPublish) {
+    project.version = projectEnvironment.version.get().toString()
 } else {
-    project.version = "${versionObj}_$commitHash"
+    project.version = "${projectEnvironment.version.get()}_${projectEnvironment.commitHash}"
 }
 
-project.group = "net.dv8tion"
+val javaVersion = JavaVersion.current()
 
+project.group = "net.dv8tion"
 
 base {
     archivesName.set("JDA")
@@ -218,9 +193,7 @@ versionCatalogUpdate {
 
 val jar by tasks.getting(Jar::class) {
     archiveBaseName.set(project.name)
-    manifest.attributes(
-            "Implementation-Version" to project.version,
-            "Automatic-Module-Name" to "net.dv8tion.jda")
+    manifest.attributes("Implementation-Version" to project.version, "Automatic-Module-Name" to "net.dv8tion.jda")
 }
 
 val shadowJar by tasks.getting(ShadowJar::class) {
@@ -231,12 +204,14 @@ val shadowJar by tasks.getting(ShadowJar::class) {
 val sourcesForRelease by tasks.registering(Copy::class) {
     from("src/main/java") {
         include("**/JDAInfo.java")
+        val version = projectEnvironment.version.get()
+
         val tokens = mapOf(
-            "versionMajor" to versionObj.major,
-            "versionMinor" to versionObj.minor,
-            "versionRevision" to versionObj.revision,
-            "versionClassifier" to nullableReplacement(versionObj.classifier),
-            "commitHash" to commitHash
+            "versionMajor" to version.major,
+            "versionMinor" to version.minor,
+            "versionRevision" to version.revision,
+            "versionClassifier" to nullableReplacement(version.classifier),
+            "commitHash" to projectEnvironment.commitHash
         )
         // Allow for setting null on some strings without breaking the source
         // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
@@ -264,11 +239,7 @@ val noOpusJar by tasks.registering(ShadowJar::class) {
 
     configurations = shadowJar.configurations
     from(sourceSets["main"].output)
-    exclude("natives/**")     // ~2 MB
-    exclude("com/sun/jna/**") // ~1 MB
-    exclude("club/minnced/opus/util/*")
-    exclude("tomp2p/opuswrapper/*")
-
+    applyOpusExclusions(artifactFilters)
     manifest.inheritFrom(jar.manifest)
 }
 
@@ -279,14 +250,7 @@ val minimalJar by tasks.registering(ShadowJar::class) {
 
     configurations = shadowJar.configurations
     from(sourceSets["main"].output)
-    exclude("natives/**")     // ~2 MB
-    exclude("com/sun/jna/**") // ~1 MB
-    exclude("com/google/crypto/tink/**") // ~2 MB
-    exclude("com/google/gson/**") // ~300 KB
-    exclude("com/google/protobuf/**") // ~2 MB
-    exclude("google/protobuf/**")
-    exclude("club/minnced/opus/util/*")
-    exclude("tomp2p/opuswrapper/*")
+    applyAudioExclusions(artifactFilters)
     manifest.inheritFrom(jar.manifest)
 }
 
@@ -301,16 +265,14 @@ val sourcesJar by tasks.registering(Jar::class) {
 }
 
 val javadoc by tasks.getting(Javadoc::class) {
-    isFailOnError = isCI
+    isFailOnError = projectEnvironment.isCI
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
 
     (options as? StandardJavadocDocletOptions)?.let { opt ->
         opt.author()
         opt.tags("incubating:a:Incubating:")
-        opt.links(
-                "https://docs.oracle.com/javase/8/docs/api/",
-                "https://takahikokawasaki.github.io/nv-websocket-client/")
+        opt.links("https://docs.oracle.com/javase/8/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
         if (JavaVersion.VERSION_1_8 < javaVersion) {
             opt.addBooleanOption("html5", true) // Adds search bar
             opt.addStringOption("-release", "8")
@@ -458,16 +420,22 @@ publishing {
 }
 
 signing {
-    useInMemoryPgpKeys(signingKeyId, signingKey, "")
+    val key = projectEnvironment.signingKey
+
+    useInMemoryPgpKeys(key?.id, key?.key?.value, "")
     sign(publishing.publications.getByName("Release"))
-    isRequired = shouldPublish
+    isRequired = projectEnvironment.canPublish
 }
 
 nexusPublishing {
-    repositories.sonatype {
-        username.set(ossrhUser)
-        password.set(ossrhPassword)
-        stagingProfileId.set(stagingProfile)
+    val credentials = projectEnvironment.mavenCredentials
+
+    if (credentials != null) {
+        repositories.sonatype {
+            username.set(credentials.user)
+            password.set(credentials.token.value)
+            stagingProfileId.set(credentials.stagingProfileId)
+        }
     }
 
     connectTimeout.set(Duration.ofMinutes(1))
@@ -506,18 +474,18 @@ val rebuild by tasks.registering(Task::class) {
 }
 
 val publishingTasks = tasks.withType<PublishToMavenRepository> {
-    enabled = shouldPublish
+    enabled = projectEnvironment.canPublish
     mustRunAfter(rebuild)
     dependsOn(rebuild)
 }
 
 tasks.withType<AbstractNexusStagingRepositoryTask> {
-    enabled = shouldPublish
+    enabled = projectEnvironment.canPublish
 }
 
 val release by tasks.registering(Task::class) {
     group = "publishing"
-    enabled = shouldPublish
+    enabled = projectEnvironment.canPublish
 
     dependsOn(publishingTasks)
 }
@@ -527,36 +495,5 @@ afterEvaluate {
     closeAndReleaseStagingRepositories.apply {
         release.get().dependsOn(this)
         mustRunAfter(publishingTasks)
-    }
-}
-
-
-////////////////////////////////////
-//                                //
-//            Helpers             //
-//                                //
-////////////////////////////////////
-
-fun nullableReplacement(string: String?): String {
-    return if (string == null) "null"
-    else "\"$string\""
-}
-
-data class Version(
-    val major: String,
-    val minor: String,
-    val revision: String,
-    val classifier: String? = null
-) {
-    companion object {
-        fun parse(string: String): Version {
-            val (major, minor, revision) = string.substringBefore("-").split(".")
-            val classifier = string.substringAfter("-").takeIf { "-" in string }
-            return Version(major, minor, revision, classifier)
-        }
-    }
-
-    override fun toString(): String {
-        return "$major.$minor.$revision" + if (classifier != null) "-$classifier" else ""
     }
 }
