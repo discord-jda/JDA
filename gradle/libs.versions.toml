@@ -5,14 +5,14 @@ jackson = "2.19.1"
 archunit = "com.tngtech.archunit:archunit:1.4.1"
 assertj = "org.assertj:assertj-core:3.27.3"
 commons-collections = "org.apache.commons:commons-collections4:4.5.0"
-commons-lang3 = "org.apache.commons:commons-lang3:3.17.0"
+commons-lang3 = "org.apache.commons:commons-lang3:3.18.0"
 findbugs = "com.google.code.findbugs:jsr305:3.0.2"
 jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jetbrains-annotations = "org.jetbrains:annotations:26.0.2"
 jna = "net.java.dev.jna:jna:5.17.0"
-junit = "org.junit.jupiter:junit-jupiter:5.13.2"
-junit-launcher = "org.junit.platform:junit-platform-launcher:1.13.2"
+junit = "org.junit.jupiter:junit-jupiter:5.13.3"
+junit-launcher = "org.junit.platform:junit-platform-launcher:1.13.3"
 logback-classic = "ch.qos.logback:logback-classic:1.5.18"
 mockito = "org.mockito:mockito-core:5.18.0"
 okhttp = "com.squareup.okhttp3:okhttp:4.12.0"
@@ -35,6 +35,6 @@ junit = [
 
 [plugins]
 publish = "io.github.gradle-nexus.publish-plugin:2.0.0"
-shadow = "com.gradleup.shadow:8.3.7"
+shadow = "com.gradleup.shadow:8.3.8"
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
 versions = "com.github.ben-manes.versions:0.52.0"
