@@ -38,8 +38,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImpl>
 {

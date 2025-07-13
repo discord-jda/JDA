@@ -169,15 +169,6 @@ public interface CommandCreateAction extends RestAction<Command>, SlashCommandDa
     @CheckReturnValue
     CommandCreateAction setDefaultPermissions(@Nonnull DefaultMemberPermissions permission);
 
-    /**
-     * @deprecated Replaced with {@link #setContexts(InteractionContextType...)}
-     */
-    @Nonnull
-    @Override
-    @Deprecated
-    @CheckReturnValue
-    CommandCreateAction setGuildOnly(boolean guildOnly);
-
     @Nonnull
     @Override
     @CheckReturnValue

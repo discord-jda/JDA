@@ -16,17 +16,12 @@
 
 package net.dv8tion.jda.internal.entities.emoji;
 
-import net.dv8tion.jda.api.entities.emoji.ApplicationEmoji;
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
-import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
-import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
+import net.dv8tion.jda.api.entities.emoji.*;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
 
 public class CustomEmojiImpl implements CustomEmoji, EmojiUnion
 {

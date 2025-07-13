@@ -251,12 +251,6 @@ public class CommandImpl implements Command
         return defaultMemberPermissions;
     }
 
-    @Override
-    public boolean isGuildOnly()
-    {
-        return contexts.size() == 1 && contexts.contains(InteractionContextType.GUILD);
-    }
-
     @Nonnull
     @Override
     public EnumSet<InteractionContextType> getContexts()

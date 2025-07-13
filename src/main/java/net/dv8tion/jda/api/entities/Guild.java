@@ -15,10 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.Incubating;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -272,58 +269,6 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     @CheckReturnValue
     CommandListUpdateAction updateCommands();
-
-    /**
-     * Edit an existing command by id.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  id
-     *         The id of the command to edit
-     *
-     * @throws IllegalArgumentException
-     *         If the provided id is not a valid snowflake
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link CommandEditAction} used to edit the command
-     *
-     * @deprecated Use {@link #editCommandById(Command.Type, String)} instead
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("editCommandById(Command.Type, id)")
-    @CheckReturnValue
-    default CommandEditAction editCommandById(@Nonnull String id)
-    {
-        return editCommandById(Command.Type.SLASH, id);
-    }
-
-    /**
-     * Edit an existing command by id.
-     *
-     * <p>If there is no command with the provided ID,
-     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
-     *
-     * @param  id
-     *         The id of the command to edit
-     *
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link CommandEditAction} used to edit the command
-     *
-     * @deprecated Use {@link #editCommandById(Command.Type, long)} instead
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("editCommandById(Command.Type, id)")
-    @CheckReturnValue
-    default CommandEditAction editCommandById(long id)
-    {
-        return editCommandById(Long.toUnsignedString(id));
-    }
 
     /**
      * Edit an existing command by id.
@@ -4153,56 +4098,6 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> modifySecurityIncidents(@Nonnull SecurityIncidentActions incidents);
-
-    /**
-     * Kicks the {@link UserSnowflake} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The specified Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  user
-     *         The {@link UserSnowflake} for the user to kick.
-     *         This can be a member or user instance or {@link User#fromId(long)}.
-     * @param  reason
-     *         The reason for this action or {@code null} if there is no specified reason
-     *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the logged in account cannot kick the other member due to permission hierarchy position. (See {@link Member#canInteract(Member)})
-     * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the user cannot be kicked from this Guild or the provided {@code user} is null.</li>
-     *             <li>If the provided reason is longer than 512 characters</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     *
-     * @deprecated
-     *         Use {@link #kick(UserSnowflake)} and {@link AuditableRestAction#reason(String)} instead.
-     */
-    @Nonnull
-    @CheckReturnValue
-    @Deprecated
-    @ForRemoval
-    @ReplaceWith("kick(user).reason(reason)")
-    @DeprecatedSince("5.0.0")
-    default AuditableRestAction<Void> kick(@Nonnull UserSnowflake user, @Nullable String reason)
-    {
-        return kick(user).reason(reason);
-    }
 
     /**
      * Kicks a {@link Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.

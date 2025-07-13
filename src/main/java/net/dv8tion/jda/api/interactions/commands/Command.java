@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -196,7 +195,7 @@ public interface Command extends ISnowflake, ICommandReference
 
     /**
      * The version of this command.
-     * <br>This changes when a command is updated through {@link JDA#upsertCommand(CommandData) upsertCommand}, {@link JDA#updateCommands() updateCommands}, or {@link JDA#editCommandById(String) editCommandById}
+     * <br>This changes when a command is updated through {@link JDA#upsertCommand(CommandData) upsertCommand}, {@link JDA#updateCommands() updateCommands}, or {@link JDA#editCommandById(Type, String) editCommandById}
      * <br>Useful for checking if command cache is outdated
      *
      * @return The version of the command as a snowflake id.
@@ -226,18 +225,6 @@ public interface Command extends ISnowflake, ICommandReference
      */
     @Nonnull
     DefaultMemberPermissions getDefaultPermissions();
-
-    /**
-     * Whether the command can only be used inside a guild.
-     * <br>Always true for guild commands.
-     *
-     * @return True, if this command is restricted to guilds.
-     *
-     * @deprecated Replaced with {@link #getContexts()}
-     */
-    @Deprecated
-    @ReplaceWith("getContexts().equals(EnumSet.of(InteractionContextType.GUILD))")
-    boolean isGuildOnly();
 
     /**
      * The contexts in which this command can be used.
