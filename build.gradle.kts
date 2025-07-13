@@ -263,45 +263,42 @@ val sourcesJar by tasks.registering(Jar::class) {
 }
 
 val javadoc by tasks.getting(Javadoc::class) {
-    isFailOnError = projectEnvironment.isCI
-    options.memberLevel = JavadocMemberLevel.PUBLIC
-    options.encoding = "UTF-8"
+    isFailOnError = projectEnvironment.isGithubAction
 
-    (options as? StandardJavadocDocletOptions)?.let { opt ->
-        opt.author()
-        opt.tags("incubating:a:Incubating:")
-        opt.links("https://docs.oracle.com/javase/8/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
+    (options as? StandardJavadocDocletOptions)?.apply {
+        memberLevel = JavadocMemberLevel.PUBLIC
+        encoding = "UTF-8"
+
+        author()
+        tags("incubating:a:Incubating:")
+        links("https://docs.oracle.com/javase/8/docs/api/", "https://takahikokawasaki.github.io/nv-websocket-client/")
+
         if (JavaVersion.VERSION_1_8 < javaVersion) {
-            opt.addBooleanOption("html5", true) // Adds search bar
-            opt.addStringOption("-release", "8")
+            addBooleanOption("html5", true) // Adds search bar
+            addStringOption("-release", "8")
         }
+
         // Fix for https://stackoverflow.com/questions/52326318/maven-javadoc-search-redirects-to-undefined-url
         if (javaVersion in JavaVersion.VERSION_11..JavaVersion.VERSION_12) {
-            opt.addBooleanOption("-no-module-directories", true)
+            addBooleanOption("-no-module-directories", true)
         }
+
         // Java 13 changed accessibility rules.
         // On versions less than Java 13, we simply ignore the errors.
         // Both of these remove "no comment" warnings.
         if (javaVersion >= JavaVersion.VERSION_13) {
-            opt.addBooleanOption("Xdoclint:all,-missing", true)
+            addBooleanOption("Xdoclint:all,-missing", true)
         } else {
-            opt.addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
+            addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
         }
 
-        opt.overview = "$projectDir/overview.html"
+        overview = "$projectDir/overview.html"
     }
 
-    dependsOn(sourcesJar)
-    source = sourcesJar.get().source.asFileTree
-    exclude("MANIFEST.MF")
+    dependsOn(generateJavaSources)
+    source = generateJavaSources.get().source
 
-    //### excludes ###
-
-    //jda internals
     exclude("net/dv8tion/jda/internal")
-
-    //voice crypto
-    exclude("com/iwebpp/crypto")
 }
 
 val javadocJar by tasks.registering(Jar::class) {

@@ -19,15 +19,24 @@ package net.dv8tion.jda.tasks
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 
+val jreleaserEnvironmentKeys = setOf(
+    "JRELEASER_MAVENCENTRAL_USERNAME",
+    "JRELEASER_MAVENCENTRAL_TOKEN",
+    "JRELEASER_GPG_PUBLIC_KEY",
+    "JRELEASER_GPG_SECRET_KEY",
+)
 
 abstract class ProjectEnvironmentConfig(
     val project: Project,
 ) {
     abstract val version: Property<Version>
 
-    val isCI = System.getenv("GITHUB_ACTION") != null
+    val isGithubAction = System.getenv("GITHUB_ACTION") == "true"
+    val isJitpack = System.getenv("JITPACK") == "true"
+    val isCI = isGithubAction || isJitpack
+
     val commitHash: String by lazy {
-        val commit = System.getenv("GIT_COMMIT") ?: System.getProperty("GIT_COMMIT") ?: System.getenv("GITHUB_SHA")
+        val commit = System.getenv("GIT_COMMIT") ?: System.getenv("GITHUB_SHA")
         // We only set the commit hash on CI builds since we don't want dirty local repos to set a wrong commit
         if (isCI && commit != null)
             commit.take(7)
@@ -35,27 +44,8 @@ abstract class ProjectEnvironmentConfig(
             "DEV"
     }
 
-    val mavenCredentials = run {
-        val user = this.project.findProperty("ossrhUser")
-        val token = this.project.findProperty("ossrhPassword")
-        val stagingProfileId = this.project.findProperty("stagingProfile") as? String
+    val hasReleaseCredentials: Boolean
+        get() = jreleaserEnvironmentKeys.all { System.getenv(it) != null }
 
-        if (user is String && token is String)
-            MavenCredentials(user, SecretString(token), stagingProfileId)
-        else
-            null
-    }
-
-    val signingKey = run {
-        val keyValue = this.project.findProperty("signingKey")
-        val keyId = this.project.findProperty("signingKeyId")
-
-        if (keyId is String && keyValue is String)
-            SigningKey(keyId, SecretString(keyValue))
-        else
-            null
-    }
-
-    val canSign: Boolean get() = signingKey != null
-    val canPublish: Boolean get() = isCI && canSign && mavenCredentials != null
+    val canPublish: Boolean get() = isCI && hasReleaseCredentials
 }
