@@ -1,10 +1,9 @@
 name: Pull Request Validation
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
-    branches:
-    - master
-    - legacy/v4
 
 jobs:
   build:
