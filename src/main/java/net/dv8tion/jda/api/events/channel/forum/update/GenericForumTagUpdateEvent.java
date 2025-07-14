@@ -21,7 +21,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.attribute.IPostContainer;
 import net.dv8tion.jda.api.entities.channel.forums.ForumTag;
 import net.dv8tion.jda.api.events.UpdateEvent;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
 import net.dv8tion.jda.api.events.channel.forum.GenericForumTagEvent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -36,6 +38,7 @@ import java.util.Collection;
  * @param <T>
  *        The type of the updated field
  */
+@RequiredCacheFlags(always = CacheFlag.FORUM_TAGS)
 public abstract class GenericForumTagUpdateEvent<T> extends GenericForumTagEvent implements UpdateEvent<ForumTag, T>
 {
     private final T previous;
