@@ -31,7 +31,7 @@ abstract class ProjectEnvironmentConfig(
 ) {
     abstract val version: Property<Version>
 
-    val isGithubAction = System.getenv("GITHUB_ACTION") == "true"
+    val isGithubAction = System.getenv("GITHUB_ACTION") != null
     val isJitpack = System.getenv("JITPACK") == "true"
     val isCI = isGithubAction || isJitpack
 
