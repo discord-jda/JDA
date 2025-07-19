@@ -341,7 +341,7 @@ val build by tasks.getting(Task::class) {
 val downloadRecipeClasspath by tasks.registering(Download::class) {
     val targetVersion = "5.6.1"
     src("https://repo.maven.apache.org/maven2/net/dv8tion/JDA/$targetVersion/JDA-$targetVersion.jar")
-    dest("src/test/resources/META-INF/rewrite/classpath")
+    dest("src/test/resources/META-INF/rewrite/classpath/JDA-$targetVersion.jar")
     overwrite(false)
 }
 
