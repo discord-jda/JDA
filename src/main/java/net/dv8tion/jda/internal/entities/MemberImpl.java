@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.channel.attribute.IPermissionContainer;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.unions.DefaultGuildChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.Role.RoleColors;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.mixin.attribute.IPermissionContainerMixin;
@@ -217,18 +218,29 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl>
     }
 
     @Override
+    @Deprecated
     public Color getColor()
     {
         final int raw = getColorRaw();
         return raw != Role.DEFAULT_COLOR_RAW ? new Color(raw) : null;
     }
 
+    @Nonnull
+    public RoleColors getColors() {
+        Role role = getRoles().get(0);
+        if (role == null) // user has no roles other than @everyone
+            return RoleImpl.RoleColorsImpl.EMPTY;
+        else
+            return role.getColors();
+    }
+
     @Override
+    @Deprecated
     public int getColorRaw()
     {
         for (Role r : getRoles())
         {
-            final int colorRaw = r.getColorRaw();
+            final int colorRaw = r.getColors().getPrimaryColorRaw();
             if (colorRaw != Role.DEFAULT_COLOR_RAW)
                 return colorRaw;
         }
