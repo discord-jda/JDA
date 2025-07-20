@@ -226,7 +226,8 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl>
     }
 
     @Nonnull
-    public RoleColors getColors() {
+    public RoleColors getColors()
+    {
         Role role = getRoles().get(0);
         if (role == null) // user has no roles other than @everyone
             return RoleImpl.RoleColorsImpl.EMPTY;
