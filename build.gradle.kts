@@ -299,7 +299,9 @@ val javadoc by tasks.getting(Javadoc::class) {
     dependsOn(generateJavaSources)
     source = generateJavaSources.get().source
 
-    exclude("net/dv8tion/jda/internal")
+    exclude {
+        it.file.absolutePath.contains("internal", ignoreCase=false)
+    }
 }
 
 val javadocJar by tasks.registering(Jar::class) {
