@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.RoleImpl.RoleColorsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
@@ -40,7 +41,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     protected Role role;
 
     protected String name;
-    protected int color;
+    protected RoleColorsImpl colors;
     protected long permissions;
     protected boolean hoist;
     protected boolean mentionable;
@@ -81,7 +82,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         if ((fields & NAME) == NAME)
             this.name = null;
         if ((fields & COLOR) == COLOR)
-            this.color = Role.DEFAULT_COLOR_RAW;
+            this.colors = RoleColorsImpl.EMPTY;
         return this;
     }
 
@@ -101,7 +102,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     {
         super.reset();
         this.name = null;
-        this.color = Role.DEFAULT_COLOR_RAW;
+        this.colors = RoleColorsImpl.EMPTY;
         return this;
     }
 
@@ -143,10 +144,40 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     public RoleManagerImpl setColor(int rgb)
     {
-        this.color = rgb;
+        this.colors.setSolidColor(rgb);
+        set |= COLOR;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleManagerImpl setSolidColor(int rgb)
+    {
+        this.colors.setSolidColor(rgb);
+        set |= COLOR;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleManagerImpl setGradientColors(int color1, int color2) {
+        this.colors.setGradientColors(color1, color2);
+        set |= COLOR;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleManagerImpl setHolographicColors()
+    {
+        this.colors.setHolographicColors();
         set |= COLOR;
         return this;
     }
@@ -226,7 +257,18 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         if (shouldUpdate(MENTIONABLE))
             object.put("mentionable", mentionable);
         if (shouldUpdate(COLOR))
-            object.put("color", color == Role.DEFAULT_COLOR_RAW ? 0 : color & 0xFFFFFF);
+        {
+            object.put("color", colors.getPrimaryColorRaw() == Role.DEFAULT_COLOR_RAW ? 0 : colors.getPrimaryColorRaw() & 0xFFFFFF);
+
+            DataObject colorsObject = DataObject.empty();
+
+            colorsObject.put("primary_color", colors.getPrimaryColorRaw() == Role.DEFAULT_COLOR_RAW ? 0 : colors.getPrimaryColorRaw() & 0xFFFFFF);
+            colorsObject.put("secondary_color", ((colors.getSecondaryColorRaw() == null) || (colors.getSecondaryColorRaw() == Role.DEFAULT_COLOR_RAW))
+                    ? null : colors.getSecondaryColorRaw() & 0xFFFFFF);
+            colorsObject.put("tertiary_color", ((colors.getTertiaryColorRaw() == null) || (colors.getTertiaryColorRaw() == Role.DEFAULT_COLOR_RAW))
+                    ? null : colors.getTertiaryColorRaw() & 0xFFFFFF);
+            object.put("colors", colorsObject);
+        }
         if (shouldUpdate(ICON))
         {
             object.put("icon", icon == null ? null : icon.getEncoding());

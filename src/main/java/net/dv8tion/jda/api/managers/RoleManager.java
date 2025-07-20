@@ -233,14 +233,66 @@ public interface RoleManager extends Manager<RoleManager>
      * @param  color
      *         The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role}
      *
+     * @deprecated Use {@link #setSolidColor(Color)} instead.
+     *
+     * @return RoleManager for chaining convenience
+     */
+    @Nonnull
+    @Deprecated
+    @CheckReturnValue
+    default RoleManager setColor(@Nullable Color color)
+    {
+        return setSolidColor(color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB());
+    }
+
+    /**
+     * Sets the {@link java.awt.Color Color} of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     *
+     * @param color
+     *        The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *
      * @return RoleManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setColor(@Nullable Color color)
+    default RoleManager setSolidColor(@Nullable Color color)
     {
-        return setColor(color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB());
+        return setSolidColor(color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB());
     }
+
+    /**
+     * Sets the gradient colors for the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     *
+     * @param color1 New first color for the gradient of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * @param color2 New second color for the gradient of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     *
+     * @return RoleManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RoleManager setGradientColors(@Nullable Color color1, @Nullable Color color2)
+    {
+        final int first = color1 == null ? Role.DEFAULT_COLOR_RAW : color1.getRGB();
+        final int second = color2 == null ? Role.DEFAULT_COLOR_RAW : color2.getRGB();
+        return setGradientColors(first, second);
+    }
+
+    /**
+     * Sets the rgb color of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     *
+     * @param  rgb
+     *         The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     *
+     * @deprecated Use {@link #setSolidColor(int)} instead.
+     *
+     * @return RoleManager for chaining convenience
+     *
+     * @see    Role#DEFAULT_COLOR_RAW Role.DEFAULT_COLOR_RAW
+     */
+    @Nonnull
+    @Deprecated
+    @CheckReturnValue
+    RoleManager setColor(int rgb);
 
     /**
      * Sets the rgb color of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
@@ -250,11 +302,36 @@ public interface RoleManager extends Manager<RoleManager>
      *
      * @return RoleManager for chaining convenience
      *
-     * @see    Role#DEFAULT_COLOR_RAW Role.DEFAULT_COLOR_RAW
+     * @see    Role#getColors()
      */
     @Nonnull
     @CheckReturnValue
-    RoleManager setColor(int rgb);
+    RoleManager setSolidColor(int rgb);
+
+    /**
+     * Sets the rgb colors for the selected {@link net.dv8tion.jda.api.entities.Role Role} gradient.
+     *
+     * @param color1 First color for the gradient
+     * @param color2 Second color for the gradient
+     *
+     * @return RoleManager for chaining convenience
+     *
+     * @see    Role#getColors()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleManager setGradientColors(int color1, int color2);
+
+    /**
+     * Sets the colors of this The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role} to holographic
+     *
+     * @return RoleManager for chaining convenience
+     *
+     * @see    Role#getColors()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleManager setHolographicColors();
 
     /**
      * Sets the <b><u>hoist state</u></b> of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
