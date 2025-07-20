@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.test.interactions;
+package net.dv8tion.jda.test.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Entitlement;
 import net.dv8tion.jda.api.entities.SelfUser;
