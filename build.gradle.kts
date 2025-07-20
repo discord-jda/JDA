@@ -16,6 +16,7 @@
 
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import de.undercouch.gradle.tasks.download.Download
 import net.dv8tion.jda.tasks.Version
 import net.dv8tion.jda.tasks.applyAudioExclusions
 import net.dv8tion.jda.tasks.applyOpusExclusions
@@ -35,6 +36,7 @@ plugins {
     alias(libs.plugins.versions)
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.jreleaser)
+    alias(libs.plugins.download)
 }
 
 
@@ -45,7 +47,7 @@ plugins {
 ////////////////////////////////////
 
 projectEnvironment {
-    version = Version(major = "5", minor = "6", revision = "1", classifier = null)
+    version = Version(major = "6", minor = "0", revision = "0", classifier = "rc.1")
 }
 
 artifactFilters {
@@ -88,10 +90,7 @@ configure<SourceSetContainer> {
 //                                //
 ////////////////////////////////////
 
-val recipeParserClasspath by configurations.creating
-
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -160,8 +159,6 @@ dependencies {
 
     // For authoring tests for any kind of Recipe
     testImplementation("org.openrewrite:rewrite-test")
-
-    recipeParserClasspath("net.dv8tion:JDA:5.6.1")
 }
 
 fun isNonStable(version: String): Boolean {
@@ -343,11 +340,11 @@ val build by tasks.getting(Task::class) {
     shadowJar.mustRunAfter(sourcesJar)
 }
 
-val downloadRecipeClasspath by tasks.registering(Copy::class) {
-    from(recipeParserClasspath)
-    into("src/test/resources/META-INF/rewrite/classpath")
-
-    include("JDA-*.jar")
+val downloadRecipeClasspath by tasks.registering(Download::class) {
+    val targetVersion = "5.6.1"
+    src("https://repo.maven.apache.org/maven2/net/dv8tion/JDA/$targetVersion/JDA-$targetVersion.jar")
+    dest("src/test/resources/META-INF/rewrite/classpath/JDA-$targetVersion.jar")
+    overwrite(false)
 }
 
 tasks.named("processTestResources").configure {
