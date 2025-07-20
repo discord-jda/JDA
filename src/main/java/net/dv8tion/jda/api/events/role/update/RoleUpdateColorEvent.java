@@ -30,6 +30,7 @@ import java.awt.*;
  *
  * <p>Identifier: {@code color}
  */
+@Deprecated
 public class RoleUpdateColorEvent extends GenericRoleUpdateEvent<Integer>
 {
     public static final String IDENTIFIER = "color";
