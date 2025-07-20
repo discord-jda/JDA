@@ -131,11 +131,64 @@ public interface RoleAction extends AuditableRestAction<Role>
      * @param  rgb
      *         The color for the new role in integer form, {@code null} to use default white/black
      *
+     * @deprecated It's better to use {@link #setSolidColor(Integer)}.
+     *
      * @return The current RoleAction, for chaining convenience
      */
     @Nonnull
+    @Deprecated
     @CheckReturnValue
     RoleAction setColor(@Nullable Integer rgb);
+
+    /**
+     * Sets the rgb color of new {@link net.dv8tion.jda.api.entities.Role Role}.
+     *
+     * @param  rgb
+     *         The new color for new {@link net.dv8tion.jda.api.entities.Role Role}
+     *
+     * @return The current RoleAction for chaining convenience
+     *
+     * @see    Role#getColors()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleAction setSolidColor(@Nullable Integer rgb);
+
+    /**
+     * Sets the rgb colors for new {@link net.dv8tion.jda.api.entities.Role Role} gradient.
+     *
+     * @param color1 First color for the gradient
+     * @param color2 Second color for the gradient
+     *
+     * @return The current RoleAction for chaining convenience
+     *
+     * @see    Role#getColors()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleAction setGradientColors(@Nonnull Integer color1, @Nonnull Integer color2);
+
+    /**
+     * Sets the colors of this {@link net.dv8tion.jda.api.entities.Role Role} to holographic
+     *
+     * @return The current RoleAction for chaining convenience
+     *
+     * @see    Role#getColors()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleAction setHolographicColors();
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.Role.RoleColors RoleColors} for this {@link net.dv8tion.jda.api.entities.Role Role}.
+     *
+     * @return The current RoleAction for chaining convenience
+     *
+     * @see    Role#getColors()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RoleAction setColors(@Nullable Role.RoleColors colors);
 
     /**
      * Sets the Permissions the new Role should have.

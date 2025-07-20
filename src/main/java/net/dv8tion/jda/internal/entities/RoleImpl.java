@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -60,7 +61,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
     private boolean hoisted;
     private boolean mentionable;
     private long rawPermissions;
-    private int color;
+    private RoleColorsImpl colors;
     private int rawPosition;
     private int frozenPosition = Integer.MIN_VALUE; // this is used exclusively for delete events
     private RoleIcon icon;
@@ -165,15 +166,25 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
     }
 
     @Override
+    @Deprecated
     public Color getColor()
     {
-        return color != Role.DEFAULT_COLOR_RAW ? new Color(color) : null;
+        RoleColorsImpl roleColors = colors;
+        return roleColors == null ? null : colors.getPrimaryColor();
+    }
+
+    @Nonnull
+    @Override
+    public RoleColors getColors() {
+        return colors == null ? RoleColorsImpl.EMPTY : colors;
     }
 
     @Override
+    @Deprecated
     public int getColorRaw()
     {
-        return color;
+        RoleColorsImpl roleColors = colors;
+        return colors == null ? Role.DEFAULT_COLOR_RAW : roleColors.getPrimaryColorRaw();
     }
 
     @Override
@@ -365,9 +376,16 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
     }
 
     @Override
+    @Deprecated
     public RoleImpl setColor(int color)
     {
-        this.color = color;
+        this.colors.primaryColor = color;
+        return this;
+    }
+
+    @Override
+    public RoleImpl setColors(DataObject colors) {
+        this.colors = new RoleColorsImpl(colors);
         return this;
     }
 
@@ -539,6 +557,161 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
                     .addMetadata("isBoost", isBoost())
                     .addMetadata("isAvailableForPurchase", isAvailableForPurchase())
                     .addMetadata("isGuildConnections", isLinkedRole())
+                    .toString();
+        }
+    }
+
+    public static class RoleColorsImpl implements RoleColors
+    {
+        public static final RoleColorsImpl EMPTY = new RoleColorsImpl();
+        private Style style;
+        private int primaryColor;
+        private int secondaryColor; // refers to Role.RoleColors.COLOR_NOT_SET (-1) if null
+        private int tertiaryColor; // refers to Role.RoleColors.COLOR_NOT_SET (-1) if null
+
+        public RoleColorsImpl()
+        {
+            this.style = Style.SOLID;
+            this.primaryColor = RoleImpl.DEFAULT_COLOR_RAW;
+            this.secondaryColor = COLOR_NOT_SET;
+            this.tertiaryColor = COLOR_NOT_SET;
+        }
+
+        public RoleColorsImpl(DataObject tags)
+        {
+            this.primaryColor = tags.getInt("primary_color");
+            this.secondaryColor = tags.getUnsignedInt("secondary_color", COLOR_NOT_SET);
+            this.tertiaryColor = tags.getUnsignedInt("tertiary_color", COLOR_NOT_SET);
+
+            if (getTertiaryColor() != null) {
+                this.style = Style.HOLOGRAPHIC;
+            } else if (getSecondaryColor() != null) {
+                this.style = Style.GRADIENT;
+            } else {
+                this.style = Style.SOLID;
+            }
+        }
+
+        @Override
+        public int getPrimaryColorRaw()
+        {
+            return this.primaryColor == COLOR_NOT_SET ? Role.DEFAULT_COLOR_RAW : this.primaryColor;
+        }
+
+        @Override
+        public @Nullable Integer getSecondaryColorRaw()
+        {
+            return this.secondaryColor == COLOR_NOT_SET ? null : this.secondaryColor;
+        }
+
+        @Override
+        public @Nullable Integer getTertiaryColorRaw()
+        {
+            return this.tertiaryColor == COLOR_NOT_SET ? null : this.tertiaryColor;
+        }
+
+        @Override
+        public @Nonnull Color getPrimaryColor()
+        {
+            return this.primaryColor == COLOR_NOT_SET ? new Color(Role.DEFAULT_COLOR_RAW) : new Color(this.primaryColor);
+        }
+
+        @Override
+        public @Nullable Color getSecondaryColor()
+        {
+            return this.secondaryColor == COLOR_NOT_SET ? null : new Color(this.secondaryColor);
+        }
+
+        @Override
+        public @Nullable Color getTertiaryColor()
+        {
+            return this.tertiaryColor == COLOR_NOT_SET ? null : new Color(this.tertiaryColor);
+        }
+
+        @Nonnull
+        @Override
+        @CanIgnoreReturnValue
+        public RoleColorsImpl setSolidColor(int color)
+        {
+            this.primaryColor = color;
+            this.secondaryColor = COLOR_NOT_SET;
+            this.tertiaryColor = COLOR_NOT_SET;
+            this.style = this.redefineStyle();
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        @CanIgnoreReturnValue
+        public RoleColorsImpl setGradientColors(int color1, int color2)
+        {
+            this.primaryColor = color1;
+            this.secondaryColor = color2;
+            this.tertiaryColor = COLOR_NOT_SET;
+            this.style = this.redefineStyle();
+            return this;
+        }
+
+        @Nonnull
+        @Override
+        @CanIgnoreReturnValue
+        public RoleColorsImpl setHolographicColors()
+        {
+            // default holographic color values - https://discord.com/developers/docs/topics/permissions#role-object-role-colors-object
+            this.primaryColor = 11127295;
+            this.secondaryColor = 16759788;
+            this.tertiaryColor = 16761760;
+            this.style = this.redefineStyle();
+            return this;
+        }
+
+        @Override
+        public @Nonnull Style getStyle()
+        {
+            return this.style;
+        }
+
+        private @Nonnull Style redefineStyle()
+        {
+            Style style;
+            if (getTertiaryColor() != null) {
+                style = Style.HOLOGRAPHIC;
+            } else if (getSecondaryColor() != null) {
+                style = Style.GRADIENT;
+            } else {
+                style = Style.SOLID;
+            }
+            return style;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(getPrimaryColorRaw(), getSecondaryColorRaw(), getTertiaryColorRaw(), getStyle());
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof RoleColorsImpl))
+                return false;
+            RoleColorsImpl other = (RoleColorsImpl) obj;
+            return primaryColor == other.primaryColor
+                    && secondaryColor == other.secondaryColor
+                    && tertiaryColor == other.tertiaryColor
+                    && style == other.style;
+        }
+
+        @Override
+        public String toString()
+        {
+            return new EntityString(this)
+                    .addMetadata("primaryColor", getPrimaryColorRaw())
+                    .addMetadata("secondaryColor", getSecondaryColorRaw())
+                    .addMetadata("tertiaryColor", getTertiaryColorRaw())
+                    .addMetadata("style", getStyle().name())
                     .toString();
         }
     }

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.Role.RoleColors;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -32,6 +33,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -40,7 +42,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     protected final Guild guild;
     protected Long permissions;
     protected String name = null;
-    protected Integer color = null;
+    protected RoleColors colors = null;
     protected Boolean hoisted = null;
     protected Boolean mentionable = null;
     protected Icon icon = null;
@@ -120,10 +122,42 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     public RoleActionImpl setColor(Integer rgb)
     {
-        this.color = rgb;
+        this.colors.setSolidColor(rgb);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleAction setSolidColor(@Nullable Integer rgb) {
+        this.colors.setSolidColor(rgb == null ? Role.DEFAULT_COLOR_RAW : rgb);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleAction setGradientColors(@Nonnull Integer color1, @Nonnull Integer color2) {
+        this.colors.setGradientColors(color1, color2);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public RoleAction setHolographicColors() {
+        this.colors.setHolographicColors();
+        return this;
+    }
+
+    @Override
+    public RoleAction setColors(@Nullable Role.RoleColors colors)
+    {
+        this.colors = colors;
         return this;
     }
 
@@ -167,8 +201,19 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
         DataObject object = DataObject.empty();
         if (name != null)
             object.put("name", name);
-        if (color != null)
-            object.put("color", color & 0xFFFFFF);
+        if (colors != null)
+        {
+            object.put("color", colors.getPrimaryColorRaw() == Role.DEFAULT_COLOR_RAW ? 0 : colors.getPrimaryColorRaw() & 0xFFFFFF);
+
+            DataObject colorsObject = DataObject.empty();
+
+            colorsObject.put("primary_color", colors.getPrimaryColorRaw() == Role.DEFAULT_COLOR_RAW ? 0 : colors.getPrimaryColorRaw() & 0xFFFFFF);
+            colorsObject.put("secondary_color", ((colors.getSecondaryColorRaw() == null) || (colors.getSecondaryColorRaw() == Role.DEFAULT_COLOR_RAW))
+                    ? null : colors.getSecondaryColorRaw() & 0xFFFFFF);
+            colorsObject.put("tertiary_color", ((colors.getTertiaryColorRaw() == null) || (colors.getTertiaryColorRaw() == Role.DEFAULT_COLOR_RAW))
+                    ? null : colors.getTertiaryColorRaw() & 0xFFFFFF);
+            object.put("colors", colorsObject);
+        }
         if (permissions != null)
             object.put("permissions", permissions);
         if (hoisted != null)

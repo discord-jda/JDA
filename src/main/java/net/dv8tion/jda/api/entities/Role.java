@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.detached.IDetachableEntity;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -112,19 +113,35 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
     /**
      * The color this {@link net.dv8tion.jda.api.entities.Role Role} is displayed in.
      *
+     * @deprecated It's better to use {@link RoleColors#getPrimaryColor() getColors().getPrimaryColor()} instead.
+     *
      * @return Color value of Role-color
      *
      * @see    #getColorRaw()
      */
     @Nullable
+    @Deprecated
     Color getColor();
+
+    /**
+     * The colors and coloring style this {@link net.dv8tion.jda.api.entities.Role Role} is displayed in.
+     *
+     * @return {@link net.dv8tion.jda.api.entities.Role.RoleColors RoleColors} associated with this role.
+     *
+     * @see RoleColors
+     */
+    @Nonnull
+    RoleColors getColors();
 
     /**
      * The raw color RGB value used for this role
      * <br>Defaults to {@link #DEFAULT_COLOR_RAW} if this role has no set color
      *
+     * @deprecated It's better to use {@link RoleColors#getPrimaryColorRaw() getColors().getPrimaryColorRaw()} instead.
+     *
      * @return The raw RGB color value or default
      */
+    @Deprecated
     int getColorRaw();
 
     /**
@@ -447,5 +464,143 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
          * @see    <a href="https://discord.com/developers/docs/tutorials/configuring-app-metadata-for-linked-roles" target="_blank">Configuring App Metadata for Linked Roles</a>
          */
         boolean isLinkedRole();
+    }
+
+    /**
+     * Colors associated with this role.
+     *
+     * @since 5.6.1
+     */
+    interface RoleColors
+    {
+        /**
+         * A value representing not set color.
+         */
+        int COLOR_NOT_SET = -1;
+
+        /**
+         * The raw color RGB value used for this role.
+         * <p>Defaults to {@link #DEFAULT_COLOR_RAW} if this role has no set color.
+         * <p>In case this role's coloring style is {@link Style#HOLOGRAPHIC HOLOGRAPHIC}, this method will return {@code 11127295}.</p>
+         *
+         * @return The raw RGB color value or default
+         */
+        int getPrimaryColorRaw();
+
+        /**
+         * The raw RGB value of the secondary color used for this role.
+         *
+         * <p>Possible variants of the return value of this method:
+         * <ul>
+         *     <li><code>null</code>
+         *     <br>If this role's coloring style is {@link Style#SOLID SOLID}.</li>
+         *
+         *     <li>{@link Integer}
+         *     <br>This value will be {@code 16759788} if role's coloring style is {@link Style#HOLOGRAPHIC HOLOGRAPHIC},
+         *         or any other value set for this role if this role's coloring style is {@link Style#GRADIENT GRADIENT}.</li>
+         * </ul>
+         *
+         * @return The raw RGB value of the secondary color or null.
+         */
+        @Nullable
+        Integer getSecondaryColorRaw();
+
+        /**
+         * The raw RGB value of the tertiary color used for this role.
+         *
+         * <p>Possible variants of the return value of this method:
+         * <ul>
+         *     <li><code>null</code>
+         *     <br>If this role's coloring style is {@link Style#SOLID SOLID}.</li>
+         *
+         *     <li>{@link Integer}
+         *     <br>This value will be {@code 16761760} if role's coloring style is {@link Style#HOLOGRAPHIC HOLOGRAPHIC}</li>
+         * </ul>
+         *
+         * @return The raw RGB value of the tertiary color or null.
+         */
+        @Nullable
+        Integer getTertiaryColorRaw();
+
+        /**
+         * The primary color this {@link net.dv8tion.jda.api.entities.Role} is displayed in.
+         *
+         * @return The primary color of this role.
+         *
+         * @see #getPrimaryColorRaw()
+         */
+        @Nonnull
+        Color getPrimaryColor();
+
+        /**
+         * The secondary color this {@link net.dv8tion.jda.api.entities.Role} is displayed in.
+         *
+         * <p>This color's value will be {@code 16759788} if role's coloring style is {@link Style#HOLOGRAPHIC HOLOGRAPHIC}
+         *
+         * @return The secondary color of this role if present, or {@code null}.
+         *
+         * @see #getSecondaryColorRaw()
+         */
+        @Nullable
+        Color getSecondaryColor();
+
+        /**
+         * The tertiary color this {@link net.dv8tion.jda.api.entities.Role} is displayed in.
+         *
+         * <p>This color's value will be {@code 16761760} if role's coloring style is {@link Style#HOLOGRAPHIC HOLOGRAPHIC}
+         *
+         * @return The tertiary color of this role
+         *
+         * @see #getTertiaryColorRaw()
+         */
+        @Nullable
+        Color getTertiaryColor();
+
+        @Nonnull
+        @CanIgnoreReturnValue
+        RoleColors setSolidColor(int color);
+
+        @Nonnull
+        @CanIgnoreReturnValue
+        RoleColors setGradientColors(int color1, int color2);
+
+        @Nonnull
+        @CanIgnoreReturnValue
+        RoleColors setHolographicColors();
+
+        /**
+         * The style of this role.
+         * <p>This style represents how the username of the user with this role is colored.
+         *
+         * @see Style
+         *
+         * @return the type of coloring for this role
+         */
+        @Nonnull
+        Style getStyle();
+
+        /**
+         * Coloring style associated with this role.
+         *
+         * @since 5.6.1
+         */
+        enum Style
+        {
+            /**
+             * Represents a single-color style of coloring the role.
+             */
+            SOLID,
+            /**
+             * Represents a two-color style of role coloring that forms a gradient.
+             */
+            GRADIENT,
+            /**
+             * Represents a three-color style of role coloring.
+             *
+             * <br>If this style is defined for a role, the role is colored in a gradient of three colors ({@code 11127295}, {@code 16759788}, {@code 16761760}) according to
+             * <a href="https://discord.com/developers/docs/topics/permissions#role-object-role-colors-object">Discord API documentation</a>.
+             */
+            HOLOGRAPHIC
+        }
     }
 }
