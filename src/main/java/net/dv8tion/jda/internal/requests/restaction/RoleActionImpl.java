@@ -154,6 +154,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
         return this;
     }
 
+    @Nonnull
     @Override
     public RoleAction setColors(@Nullable Role.RoleColors colors)
     {
@@ -208,10 +209,8 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
             DataObject colorsObject = DataObject.empty();
 
             colorsObject.put("primary_color", colors.getPrimaryColorRaw() == Role.DEFAULT_COLOR_RAW ? 0 : colors.getPrimaryColorRaw() & 0xFFFFFF);
-            colorsObject.put("secondary_color", ((colors.getSecondaryColorRaw() == null) || (colors.getSecondaryColorRaw() == Role.DEFAULT_COLOR_RAW))
-                    ? null : colors.getSecondaryColorRaw() & 0xFFFFFF);
-            colorsObject.put("tertiary_color", ((colors.getTertiaryColorRaw() == null) || (colors.getTertiaryColorRaw() == Role.DEFAULT_COLOR_RAW))
-                    ? null : colors.getTertiaryColorRaw() & 0xFFFFFF);
+            colorsObject.put("secondary_color", colors.getSecondaryColorRaw() == null ? null : colors.getSecondaryColorRaw() & 0xFFFFFF);
+            colorsObject.put("tertiary_color", colors.getTertiaryColorRaw() == null ? null : colors.getTertiaryColorRaw() & 0xFFFFFF);
             object.put("colors", colorsObject);
         }
         if (permissions != null)
