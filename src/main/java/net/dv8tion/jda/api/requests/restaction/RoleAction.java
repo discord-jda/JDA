@@ -157,8 +157,8 @@ public interface RoleAction extends AuditableRestAction<Role>
     /**
      * Sets the rgb colors for new {@link net.dv8tion.jda.api.entities.Role Role} gradient.
      *
-     * @param color1 First color for the gradient
-     * @param color2 Second color for the gradient
+     * @param  primary First color for the gradient
+     * @param  secondary Second color for the gradient
      *
      * @return The current RoleAction for chaining convenience
      *
@@ -166,7 +166,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      */
     @Nonnull
     @CheckReturnValue
-    RoleAction setGradientColors(@Nonnull Integer color1, @Nonnull Integer color2);
+    RoleAction setGradientColors(@Nonnull Integer primary, @Nonnull Integer secondary);
 
     /**
      * Sets the colors of this {@link net.dv8tion.jda.api.entities.Role Role} to holographic

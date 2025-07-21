@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.RoleImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
@@ -126,37 +127,37 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @CheckReturnValue
     public RoleActionImpl setColor(Integer rgb)
     {
-        this.colors.setSolidColor(rgb);
+        this.colors = new RoleImpl.RoleColorsImpl(rgb == null ? Role.DEFAULT_COLOR_RAW : rgb, null, null);
         return this;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleAction setSolidColor(@Nullable Integer rgb) {
-        this.colors.setSolidColor(rgb == null ? Role.DEFAULT_COLOR_RAW : rgb);
+    public RoleActionImpl setSolidColor(@Nullable Integer rgb) {
+        this.colors = new RoleImpl.RoleColorsImpl(rgb == null ? Role.DEFAULT_COLOR_RAW : rgb, null, null);
         return this;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleAction setGradientColors(@Nonnull Integer color1, @Nonnull Integer color2) {
-        this.colors.setGradientColors(color1, color2);
+    public RoleActionImpl setGradientColors(@Nonnull Integer primary, @Nonnull Integer secondary) {
+        this.colors = new RoleImpl.RoleColorsImpl(primary, secondary, null);
         return this;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleAction setHolographicColors() {
-        this.colors.setHolographicColors();
+    public RoleActionImpl setHolographicColors() {
+        this.colors = RoleImpl.RoleColorsImpl.HOLOGRAPHIC;
         return this;
     }
 
     @Nonnull
     @Override
-    public RoleAction setColors(@Nullable Role.RoleColors colors)
+    public RoleActionImpl setColors(@Nullable Role.RoleColors colors)
     {
         this.colors = colors;
         return this;
