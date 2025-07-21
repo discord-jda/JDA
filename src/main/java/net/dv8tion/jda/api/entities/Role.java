@@ -554,18 +554,6 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
         @Nullable
         Color getTertiaryColor();
 
-        @Nonnull
-        @CanIgnoreReturnValue
-        RoleColors setSolidColor(int color);
-
-        @Nonnull
-        @CanIgnoreReturnValue
-        RoleColors setGradientColors(int color1, int color2);
-
-        @Nonnull
-        @CanIgnoreReturnValue
-        RoleColors setHolographicColors();
-
         /**
          * The style of this role.
          * <p>This style represents how the username of the user with this role is colored.

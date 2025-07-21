@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -379,7 +378,7 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
     @Deprecated
     public RoleImpl setColor(int color)
     {
-        this.colors.primaryColor = color;
+        this.colors = new RoleColorsImpl(color, null, null);
         return this;
     }
 
@@ -564,10 +563,14 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
     public static class RoleColorsImpl implements RoleColors
     {
         public static final RoleColorsImpl EMPTY = new RoleColorsImpl();
-        private Style style;
-        private int primaryColor;
-        private int secondaryColor; // refers to Role.RoleColors.COLOR_NOT_SET (-1) if null
-        private int tertiaryColor; // refers to Role.RoleColors.COLOR_NOT_SET (-1) if null
+        /**
+         * Holographic role coloring, accroding to <a href="https://discord.com/developers/docs/topics/permissions#role-object-role-colors-object">Discord API Documentation</a>.
+         */
+        public static final RoleColorsImpl HOLOGRAPHIC = new RoleColorsImpl(11127295, 16759788, 16761760);
+        private final Style style;
+        private final int primaryColor;
+        private final int secondaryColor; // refers to Role.RoleColors.COLOR_NOT_SET (-1) if null
+        private final int tertiaryColor; // refers to Role.RoleColors.COLOR_NOT_SET (-1) if null
 
         public RoleColorsImpl()
         {
@@ -590,6 +593,15 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
             } else {
                 this.style = Style.SOLID;
             }
+        }
+
+        public RoleColorsImpl(@Nonnull Integer primaryColor, @Nullable Integer secondaryColor, @Nullable Integer tertiaryColor)
+        {
+            this.primaryColor = primaryColor;
+            this.secondaryColor = secondaryColor == null ? RoleColors.COLOR_NOT_SET : secondaryColor;
+            this.tertiaryColor = tertiaryColor == null ? RoleColors.COLOR_NOT_SET : tertiaryColor;
+
+            this.style = this.redefineStyle();
         }
 
         @Override
@@ -626,43 +638,6 @@ public class RoleImpl implements Role, RoleMixin<RoleImpl>
         public @Nullable Color getTertiaryColor()
         {
             return this.tertiaryColor == COLOR_NOT_SET ? null : new Color(this.tertiaryColor);
-        }
-
-        @Nonnull
-        @Override
-        @CanIgnoreReturnValue
-        public RoleColorsImpl setSolidColor(int color)
-        {
-            this.primaryColor = color;
-            this.secondaryColor = COLOR_NOT_SET;
-            this.tertiaryColor = COLOR_NOT_SET;
-            this.style = this.redefineStyle();
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        @CanIgnoreReturnValue
-        public RoleColorsImpl setGradientColors(int color1, int color2)
-        {
-            this.primaryColor = color1;
-            this.secondaryColor = color2;
-            this.tertiaryColor = COLOR_NOT_SET;
-            this.style = this.redefineStyle();
-            return this;
-        }
-
-        @Nonnull
-        @Override
-        @CanIgnoreReturnValue
-        public RoleColorsImpl setHolographicColors()
-        {
-            // default holographic color values - https://discord.com/developers/docs/topics/permissions#role-object-role-colors-object
-            this.primaryColor = 11127295;
-            this.secondaryColor = 16759788;
-            this.tertiaryColor = 16761760;
-            this.style = this.redefineStyle();
-            return this;
         }
 
         @Override
