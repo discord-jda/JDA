@@ -393,11 +393,11 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * <p>This is determined by the color of the highest role assigned to them that does not have the default color.
      * <br>If all roles have default color, this returns null.
      *
+     * @return     The display Color for this Member.
+     *
      * @deprecated It's better to use {@link RoleColors#getPrimaryColor() getColors().getPrimaryColor()}.
      *
-     * @return The display Color for this Member.
-     *
-     * @see    #getColorRaw()
+     * @see        #getColorRaw()
      */
     @Nullable
     @Deprecated
@@ -418,9 +418,9 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      * <br>Defaulting to {@link net.dv8tion.jda.api.entities.Role#DEFAULT_COLOR_RAW Role.DEFAULT_COLOR_RAW}
      * if this member uses the default color (special property, it changes depending on theme used in the client)
      *
-     * @deprecated It's better to use {@link RoleColors#getPrimaryColorRaw() getColors().getPrimaryColorRaw()} instead.
+     * @return     The raw RGB value or the role default
      *
-     * @return The raw RGB value or the role default
+     * @deprecated It's better to use {@link RoleColors#getPrimaryColorRaw() getColors().getPrimaryColorRaw()} instead.
      */
     @Deprecated
     int getColorRaw();
