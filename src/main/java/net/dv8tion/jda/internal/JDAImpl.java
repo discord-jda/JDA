@@ -613,7 +613,7 @@ public class JDAImpl implements JDA
     public List<Guild> getMutualGuilds(@Nonnull Collection<UserSnowflake> users)
     {
         Checks.notNull(users, "users");
-        for(User u : users)
+        for(UserSnowflake u : users)
             Checks.notNull(u, "All users");
         return getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
