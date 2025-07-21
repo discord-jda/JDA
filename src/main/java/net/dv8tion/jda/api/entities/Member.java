@@ -408,7 +408,7 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
      *
      * @return {@link net.dv8tion.jda.api.entities.Role.RoleColors RoleColors} associated with this user's role.
      *
-     * @see RoleColors
+     * @see    RoleColors
      */
     @Nonnull
     RoleColors getColors();
