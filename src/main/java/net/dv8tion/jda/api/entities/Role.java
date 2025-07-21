@@ -468,8 +468,6 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
 
     /**
      * Colors associated with this role.
-     *
-     * @since 5.6.1
      */
     interface RoleColors
     {
@@ -581,8 +579,6 @@ public interface Role extends IMentionable, IPermissionHolder, IDetachableEntity
 
         /**
          * Coloring style associated with this role.
-         *
-         * @since 5.6.1
          */
         enum Style
         {
