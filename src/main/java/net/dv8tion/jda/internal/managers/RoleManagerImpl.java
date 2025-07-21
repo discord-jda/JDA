@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.RoleImpl;
 import net.dv8tion.jda.internal.entities.RoleImpl.RoleColorsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
@@ -148,7 +149,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @CheckReturnValue
     public RoleManagerImpl setColor(int rgb)
     {
-        this.colors.setSolidColor(rgb);
+        this.colors = new RoleImpl.RoleColorsImpl(rgb, null, null);
         set |= COLOR;
         return this;
     }
@@ -158,7 +159,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @CheckReturnValue
     public RoleManagerImpl setSolidColor(int rgb)
     {
-        this.colors.setSolidColor(rgb);
+        this.colors = new RoleColorsImpl(rgb, null, null);
         set |= COLOR;
         return this;
     }
@@ -166,8 +167,8 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl setGradientColors(int color1, int color2) {
-        this.colors.setGradientColors(color1, color2);
+    public RoleManagerImpl setGradientColors(int primary, int secondary) {
+        this.colors = new RoleColorsImpl(primary, secondary, null);
         set |= COLOR;
         return this;
     }
@@ -177,7 +178,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @CheckReturnValue
     public RoleManagerImpl setHolographicColors()
     {
-        this.colors.setHolographicColors();
+        this.colors = RoleColorsImpl.HOLOGRAPHIC;
         set |= COLOR;
         return this;
     }

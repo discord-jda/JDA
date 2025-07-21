@@ -248,10 +248,10 @@ public interface RoleManager extends Manager<RoleManager>
     /**
      * Sets the {@link java.awt.Color Color} of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
      *
-     * @param color
-     *        The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role}
+     * @param   color
+     *          The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role}
      *
-     * @return RoleManager for chaining convenience
+     * @return  RoleManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
@@ -263,17 +263,17 @@ public interface RoleManager extends Manager<RoleManager>
     /**
      * Sets the gradient colors for the selected {@link net.dv8tion.jda.api.entities.Role Role}.
      *
-     * @param color1 New first color for the gradient of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
-     * @param color2 New second color for the gradient of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * @param   primary New first color for the gradient of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
+     * @param   secondary New second color for the gradient of the selected {@link net.dv8tion.jda.api.entities.Role Role}.
      *
-     * @return RoleManager for chaining convenience
+     * @return  RoleManager for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setGradientColors(@Nullable Color color1, @Nullable Color color2)
+    default RoleManager setGradientColors(@Nullable Color primary, @Nullable Color secondary)
     {
-        final int first = color1 == null ? Role.DEFAULT_COLOR_RAW : color1.getRGB();
-        final int second = color2 == null ? Role.DEFAULT_COLOR_RAW : color2.getRGB();
+        final int first = primary == null ? Role.DEFAULT_COLOR_RAW : primary.getRGB();
+        final int second = secondary == null ? Role.DEFAULT_COLOR_RAW : secondary.getRGB();
         return setGradientColors(first, second);
     }
 
@@ -311,16 +311,16 @@ public interface RoleManager extends Manager<RoleManager>
     /**
      * Sets the rgb colors for the selected {@link net.dv8tion.jda.api.entities.Role Role} gradient.
      *
-     * @param color1 First color for the gradient
-     * @param color2 Second color for the gradient
+     * @param   primary First color for the gradient
+     * @param   secondary Second color for the gradient
      *
-     * @return RoleManager for chaining convenience
+     * @return  RoleManager for chaining convenience
      *
      * @see    Role#getColors()
      */
     @Nonnull
     @CheckReturnValue
-    RoleManager setGradientColors(int color1, int color2);
+    RoleManager setGradientColors(int primary, int secondary);
 
     /**
      * Sets the colors of this The new color for the selected {@link net.dv8tion.jda.api.entities.Role Role} to holographic
