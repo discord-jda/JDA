@@ -68,6 +68,7 @@ public class RoleUpdateColorsEvent extends GenericRoleUpdateEvent<Role.RoleColor
      *
      * @return The new colors, or null
      */
+    @Nullable
     public Role.RoleColors getNewColors()
     {
         return next != RoleImpl.RoleColorsImpl.EMPTY ? next : null;
