@@ -318,17 +318,15 @@ tasks.withType<JavaCompile> {
         args.add("8")
     }
 
-    doFirst {
-        options.compilerArgs = args
-    }
+    options.compilerArgs.addAll(args)
 }
 
-val compileJava by tasks.getting(JavaCompile::class) {
+tasks.named<JavaCompile>("compileJava").configure {
     dependsOn(generateJavaSources)
     source = generateJavaSources.get().source
 }
 
-val build by tasks.getting(Task::class) {
+tasks.named("build").configure {
     dependsOn(jar)
     dependsOn(javadocJar)
     dependsOn(sourcesJar)
@@ -351,16 +349,14 @@ tasks.named("processTestResources").configure {
     dependsOn(downloadRecipeClasspath)
 }
 
-val test by tasks.getting(Test::class) {
-    useJUnitPlatform()
-    failFast = false
+
+tasks.register<Test>("updateTestSnapshots") {
+    systemProperty("updateSnapshots", "true")
 }
 
-val updateTestSnapshots by tasks.registering(Test::class) {
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     failFast = false
-
-    systemProperty("updateSnapshots", "true")
 }
 
 ////////////////////////////////////
