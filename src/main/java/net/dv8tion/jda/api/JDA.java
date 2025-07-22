@@ -789,7 +789,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * jda.updateCommands()
      *   .addCommands(Commands.slash("ping", "Gives the current ping"))
      *   .addCommands(Commands.slash("ban", "Ban the target user")
-     *     .setGuildOnly(true)
+     *     .setContexts(InteractionContextType.GUILD)
      *     .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *   .queue();
