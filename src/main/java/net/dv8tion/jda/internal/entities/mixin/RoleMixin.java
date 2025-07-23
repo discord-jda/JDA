@@ -37,7 +37,7 @@ public interface RoleMixin<T extends RoleMixin<T>>
     {
         Checks.notNull(guild, "Guild");
         return guild.createRole()
-                    .setColor(getColorRaw())
+                    .setColors(getColors())
                     .setHoisted(isHoisted())
                     .setMentionable(isMentionable())
                     .setName(getName())
@@ -68,7 +68,10 @@ public interface RoleMixin<T extends RoleMixin<T>>
 
     T setName(String name);
 
+    @Deprecated
     T setColor(int color);
+
+    T setColors(DataObject colors);
 
     T setManaged(boolean managed);
 
