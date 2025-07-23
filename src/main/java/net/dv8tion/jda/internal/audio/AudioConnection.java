@@ -581,6 +581,11 @@ public class AudioConnection
         }
         ((Buffer) nonEncodedBuffer).flip();
 
+        if (opusEncoder == null || opusEncoder.getValue() == null)
+        {
+          throw new IllegalStateException("Opus encoder is not initialized! This should never happen, please report this as a bug.");
+        }
+
         int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
         if (result <= 0)
         {
