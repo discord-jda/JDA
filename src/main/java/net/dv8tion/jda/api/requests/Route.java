@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -258,7 +259,10 @@ public class Route
     {
         public static final Route EDIT_MESSAGE =          new Route(PATCH,  "channels/{channel_id}/messages/{message_id}"); // requires special handling, same bucket but different endpoints
         public static final Route SEND_MESSAGE =          new Route(POST,   "channels/{channel_id}/messages");
+        @Deprecated
+        @ReplaceWith("GET_MESSAGE_PINS")
         public static final Route GET_PINNED_MESSAGES =   new Route(GET,    "channels/{channel_id}/pins");
+        public static final Route GET_MESSAGE_PINS =      new Route(GET,    "channels/{channel_id}/messages/pins");
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}");
 
