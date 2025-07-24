@@ -1170,13 +1170,13 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param  users
      *         The users which all the returned {@link Guild Guilds} must contain.
      *
-     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.UserSnowflake Users} in them.
      *
      * @see    Guild#isMember(UserSnowflake)
      */
     @Nonnull
     @Unmodifiable
-    List<Guild> getMutualGuilds(@Nonnull User... users);
+    List<Guild> getMutualGuilds(@Nonnull UserSnowflake... users);
 
     /**
      * Gets all {@link Guild Guilds} that contain all given users as their members.
@@ -1184,11 +1184,11 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param users
      *        The users which all the returned {@link Guild Guilds} must contain.
      *
-     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.UserSnowflake Users} in them.
      */
     @Nonnull
     @Unmodifiable
-    List<Guild> getMutualGuilds(@Nonnull Collection<User> users);
+    List<Guild> getMutualGuilds(@Nonnull Collection<UserSnowflake> users);
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.

@@ -307,7 +307,7 @@ public interface User extends UserSnowflake
 
     /**
      * Finds and collects all {@link net.dv8tion.jda.api.entities.Guild Guild} instances that contain this {@link net.dv8tion.jda.api.entities.User User} within the current {@link net.dv8tion.jda.api.JDA JDA} instance.<br>
-     * <p>This method is a shortcut for {@link net.dv8tion.jda.api.JDA#getMutualGuilds(User...) JDA.getMutualGuilds(User)}.</p>
+     * <p>This method is a shortcut for {@link net.dv8tion.jda.api.JDA#getMutualGuilds(UserSnowflake...) JDA.getMutualGuilds(User)}.</p>
      *
      * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that this user is a member of.
      */
