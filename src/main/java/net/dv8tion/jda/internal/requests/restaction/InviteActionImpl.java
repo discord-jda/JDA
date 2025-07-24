@@ -40,10 +40,12 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     private Long targetApplication = null;
     private Long targetUser = null;
     private Invite.TargetType targetType = null;
+    private final boolean nonCommunityRestricted;
 
-    public InviteActionImpl(final JDA api, final String channelId)
+    public InviteActionImpl(final JDA api, final String channelId, final boolean nonCommunityRestricted)
     {
         super(api, Route.Invites.CREATE_INVITE.compile(channelId));
+        this.nonCommunityRestricted = nonCommunityRestricted;
     }
 
     @Nonnull
@@ -67,6 +69,12 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         return (InviteActionImpl) super.deadline(timestamp);
     }
 
+    @Override
+    public boolean hasCommunityRestrictions()
+    {
+        return nonCommunityRestricted;
+    }
+
     @Nonnull
     @Override
     @CheckReturnValue
@@ -74,6 +82,12 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     {
         if (maxAge != null)
             Checks.notNegative(maxAge, "maxAge");
+
+        if (nonCommunityRestricted)
+        {
+            Checks.check(maxAge != null && maxAge >= 1 && maxAge <= MAX_RESTRICTED_AGE,
+                "maxAge for invites in non-community guilds must be between 1 second and 30 days!");
+        }
 
         this.maxAge = maxAge;
         return this;
@@ -87,7 +101,6 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         if (maxAge == null)
             return this.setMaxAge(null);
 
-        Checks.notNegative(maxAge, "maxAge");
         Checks.notNull(timeUnit, "timeUnit");
 
         return this.setMaxAge(Math.toIntExact(timeUnit.toSeconds(maxAge)));
