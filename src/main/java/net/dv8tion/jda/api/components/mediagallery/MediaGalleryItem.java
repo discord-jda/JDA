@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.components.mediagallery;
 
 import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemFileUpload;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryItemImpl;
@@ -32,7 +31,7 @@ import java.io.InputStream;
 /**
  * A singular item (not a component) of a {@link MediaGallery}, you can mark it as a spoiler and set a description.
  */
-public interface MediaGalleryItem extends SerializableData
+public interface MediaGalleryItem
 {
     /**
      * The maximum number of characters an item's description can have. ({@value})
