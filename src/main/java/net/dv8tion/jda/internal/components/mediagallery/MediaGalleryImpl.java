@@ -89,6 +89,14 @@ public class MediaGalleryImpl
         return new MediaGalleryImpl(uniqueId, items);
     }
 
+    @Nonnull
+    @Override
+    public MediaGalleryImpl withItems(@Nonnull Collection<? extends MediaGalleryItem> items)
+    {
+        Checks.noneNull(items, "Items");
+        return new MediaGalleryImpl(uniqueId, items);
+    }
+
     @Override
     public int getUniqueId()
     {

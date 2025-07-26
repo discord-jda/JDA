@@ -268,4 +268,38 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
     {
         return (ActionRow) IDisableable.super.asEnabled();
     }
+
+    /**
+     * Creates a new {@link ActionRow} with the specified components.
+     *
+     * @param  components
+     *         The new components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link ActionRow}
+     */
+    @Nonnull
+    @CheckReturnValue
+    ActionRow withComponents(@Nonnull Collection<? extends ActionRowChildComponent> components);
+
+    /**
+     * Creates a new {@link ActionRow} with the specified components.
+     *
+     * @param  components
+     *         The new components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link ActionRow}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ActionRow withComponents(@Nonnull ActionRowChildComponent... components)
+    {
+        Checks.notNull(components, "Components");
+        return withComponents(Arrays.asList(components));
+    }
 }
