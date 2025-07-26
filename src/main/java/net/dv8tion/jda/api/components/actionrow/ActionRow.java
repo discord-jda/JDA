@@ -32,7 +32,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -74,10 +73,11 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      * @return The action row
      */
     @Nonnull
-    static ActionRow of(@Nonnull ActionRowChildComponent... components)
+    static ActionRow of(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
     {
+        Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
-        return of(Arrays.asList(components));
+        return of(Helpers.mergeVararg(component, components));
     }
 
     /**
@@ -139,10 +139,11 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
-    static List<ActionRow> partitionOf(@Nonnull ActionRowChildComponent... components)
+    static List<ActionRow> partitionOf(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
     {
+        Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
-        return partitionOf(Arrays.asList(components));
+        return partitionOf(Helpers.mergeVararg(component, components));
     }
 
     /**
@@ -297,9 +298,10 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      */
     @Nonnull
     @CheckReturnValue
-    default ActionRow withComponents(@Nonnull ActionRowChildComponent... components)
+    default ActionRow withComponents(@Nonnull ActionRowChildComponent component, ActionRowChildComponent... components)
     {
+        Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
-        return withComponents(Arrays.asList(components));
+        return withComponents(Helpers.mergeVararg(component, components));
     }
 }

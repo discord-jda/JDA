@@ -32,7 +32,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -186,10 +185,11 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
      */
     @Nonnull
     @CheckReturnValue
-    default Section withContentComponents(@Nonnull SectionContentComponent... components)
+    default Section withContentComponents(@Nonnull SectionContentComponent component, @Nonnull SectionContentComponent... components)
     {
+        Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
-        return withContentComponents(Arrays.asList(components));
+        return withContentComponents(Helpers.mergeVararg(component, components));
     }
 
     /**

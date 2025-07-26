@@ -33,7 +33,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -186,10 +185,11 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
      */
     @Nonnull
     @CheckReturnValue
-    default Container withComponents(@Nonnull ContainerChildComponent... components)
+    default Container withComponents(@Nonnull ContainerChildComponent component, @Nonnull ContainerChildComponent... components)
     {
+        Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
-        return withComponents(Arrays.asList(components));
+        return withComponents(Helpers.mergeVararg(component, components));
     }
 
     @Nonnull

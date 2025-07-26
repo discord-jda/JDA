@@ -27,7 +27,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -122,10 +121,11 @@ public interface MediaGallery extends Component, MessageTopLevelComponent, Conta
      */
     @Nonnull
     @CheckReturnValue
-    default MediaGallery withItems(@Nonnull MediaGalleryItem... items)
+    default MediaGallery withItems(@Nonnull MediaGalleryItem item, @Nonnull MediaGalleryItem... items)
     {
+        Checks.notNull(item, "Item");
         Checks.notNull(items, "Items");
-        return withItems(Arrays.asList(items));
+        return withItems(Helpers.mergeVararg(item, items));
     }
 
     /**
