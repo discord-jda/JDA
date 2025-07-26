@@ -353,10 +353,10 @@ public interface Modal extends SerializableData
         @Nonnull
         @Deprecated
         @ForRemoval
-        @ReplaceWith("addComponents(ActionRow.of(components))")
-        public Builder addActionRow(@Nonnull ActionRowChildComponent... components)
+        @ReplaceWith("addComponents(ActionRow.of(component, components))")
+        public Builder addActionRow(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
         {
-            return addComponents(ActionRow.of(components));
+            return addComponents(ActionRow.of(component, components));
         }
 
         /**
