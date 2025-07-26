@@ -45,7 +45,7 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
 {
     /**
      * Create one row of {@link ActionRowChildComponent components}.
-     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
+     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link #getMaxAllowed(Type)}.
      *
      * @param  components
      *         The components for this action row
@@ -63,7 +63,7 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
 
     /**
      * Create one row of {@link ActionRowChildComponent components}.
-     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
+     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link #getMaxAllowed(Type)}.
      *
      * @param  components
      *         The components for this action row
@@ -82,7 +82,7 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
 
     /**
      * Partitions the provided {@link ActionRowChildComponent components} into a list of ActionRow instances.
-     * <br>This will split the provided components by {@link #getMaxAllowed(Type)} ()} and create homogeneously typed rows,
+     * <br>This will split the provided components by {@link #getMaxAllowed(Type)} and create homogeneously typed rows,
      * meaning they will not have mixed component types.
      *
      * <p><b>Example</b>
