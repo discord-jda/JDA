@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -156,6 +157,55 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
     {
         return (Section) IDisableable.super.asEnabled();
     }
+
+    /**
+     * Creates a new {@link Section} with the specified content components.
+     *
+     * @param  components
+     *         The new content components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link Section}
+     */
+    @Nonnull
+    @CheckReturnValue
+    Section withContentComponents(@Nonnull Collection<? extends SectionContentComponent> components);
+
+    /**
+     * Creates a new {@link Section} with the specified content components.
+     *
+     * @param  components
+     *         The new content components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link Section}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Section withContentComponents(@Nonnull SectionContentComponent... components)
+    {
+        Checks.notNull(components, "Components");
+        return withContentComponents(Arrays.asList(components));
+    }
+
+    /**
+     * Creates a new {@link Section} with the specified accessory.
+     *
+     * @param  accessory
+     *         The new accessory
+     *
+     * @throws IllegalArgumentException
+     *         If the provided accessory is {@code null}
+     *
+     * @return The new {@link Section}
+     */
+    @Nonnull
+    @CheckReturnValue
+    Section withAccessory(@Nonnull SectionAccessoryComponent accessory);
 
     /**
      * Returns an immutable list with the components contained by this section.

@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -92,6 +93,40 @@ public interface MediaGallery extends Component, MessageTopLevelComponent, Conta
     @Override
     @CheckReturnValue
     MediaGallery withUniqueId(int uniqueId);
+
+    /**
+     * Creates a new {@link MediaGallery} with the specified items.
+     *
+     * @param  items
+     *         The new items
+     *
+     * @throws IllegalArgumentException
+     *         If the provided items are {@code null} or contains {@code null}
+     *
+     * @return The new {@link MediaGallery}
+     */
+    @Nonnull
+    @CheckReturnValue
+    MediaGallery withItems(@Nonnull Collection<? extends MediaGalleryItem> items);
+
+    /**
+     * Creates a new {@link MediaGallery} with the specified items.
+     *
+     * @param  items
+     *         The new items
+     *
+     * @throws IllegalArgumentException
+     *         If the provided items are {@code null} or contains {@code null}
+     *
+     * @return The new {@link MediaGallery}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MediaGallery withItems(@Nonnull MediaGalleryItem... items)
+    {
+        Checks.notNull(items, "Items");
+        return withItems(Arrays.asList(items));
+    }
 
     /**
      * Returns an immutable list with the items contained by this media gallery.

@@ -99,6 +99,22 @@ public class SectionImpl
 
     @Nonnull
     @Override
+    public Section withContentComponents(@Nonnull Collection<? extends SectionContentComponent> components)
+    {
+        Checks.noneNull(components, "Components");
+        return new SectionImpl(uniqueId, ComponentsUtil.membersToUnion(components, SectionContentComponentUnion.class), accessory);
+    }
+
+    @Nonnull
+    @Override
+    public Section withAccessory(@Nonnull SectionAccessoryComponent accessory)
+    {
+        Checks.notNull(accessory, "Accessory");
+        return new SectionImpl(uniqueId, components, ComponentsUtil.safeUnionCast("accessory", accessory, SectionAccessoryComponentUnion.class));
+    }
+
+    @Nonnull
+    @Override
     public Section replace(@Nonnull ComponentReplacer replacer)
     {
         Checks.notNull(replacer, "ComponentReplacer");

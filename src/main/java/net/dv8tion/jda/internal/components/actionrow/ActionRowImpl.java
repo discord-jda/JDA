@@ -148,6 +148,14 @@ public class ActionRowImpl
 
     @Nonnull
     @Override
+    public ActionRow withComponents(@Nonnull Collection<? extends ActionRowChildComponent> components)
+    {
+        Checks.noneNull(components, "Components");
+        return new ActionRowImpl(ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class), uniqueId);
+    }
+
+    @Nonnull
+    @Override
     public Component.Type getType()
     {
         return Component.Type.ACTION_ROW;
