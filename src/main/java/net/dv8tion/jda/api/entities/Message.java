@@ -724,6 +724,9 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * A {@link MessageComponentTree} constructed from {@link #getComponents()}.
+     * <br>You can use {@link MessageRequest#setComponents(ComponentTree)} to update these.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return {@link MessageComponentTree}
      */
