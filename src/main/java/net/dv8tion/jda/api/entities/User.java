@@ -640,30 +640,25 @@ public interface User extends UserSnowflake
     /**
      * Represents the information about {@link User User}'s primary guild
      */
-    class PrimaryGuild
+    class PrimaryGuild implements ISnowflake
     {
-        private final String identityGuildId;
+        private final long guildId;
         private final boolean identityEnabled;
         private final String tag;
         private final String badge;
         
-        public PrimaryGuild(String identityGuildId, boolean identityEnabled, String tag, String badge)
+        public PrimaryGuild(long guildId, boolean identityEnabled, String tag, String badge)
         {
-            this.identityGuildId = identityGuildId;
+            this.guildId = guildId;
             this.identityEnabled = identityEnabled;
             this.tag = tag;
             this.badge = badge;
         }
         
-        /**
-         * The id of the user's primary guild.
-         *
-         * @return Possibly-null String containing the id of the {@link User User}'s primary guild.
-         */
-        @Nullable
-        public String getIdentityGuildId()
+        @Override
+        public long getIdLong()
         {
-            return identityGuildId;
+            return guildId;
         }
         
         /**
@@ -707,8 +702,8 @@ public interface User extends UserSnowflake
          */
         @Nullable
         public String getBadgeUrl()
-        {    
-            return (identityGuildId == null || badge == null) ? null : Helpers.format(TAG_BADGE_URL, identityGuildId, badge);
+        {
+            return badge == null ? null : Helpers.format(TAG_BADGE_URL, guildId, badge);
         }
 
         /**
@@ -735,20 +730,20 @@ public interface User extends UserSnowflake
                 return false;
             
             PrimaryGuild other = (PrimaryGuild) obj;
-            return Objects.equals(identityGuildId, other.identityGuildId) && identityEnabled == other.identityEnabled && Objects.equals(tag, other.tag) && Objects.equals(badge, other.badge);
+            return guildId == other.guildId && identityEnabled == other.identityEnabled && Objects.equals(tag, other.tag) && Objects.equals(badge, other.badge);
         }
         
         @Override
         public int hashCode()
         {
-            return Objects.hash(identityGuildId, identityEnabled, tag, badge);
+            return Objects.hash(guildId, identityEnabled, tag, badge);
         }
         
         @Override
         public String toString()
         {
             return new EntityString(this)
-                    .addMetadata("identityGuildId", identityGuildId)
+                    .addMetadata("guildId", guildId)
                     .addMetadata("identityEnabled", identityEnabled)
                     .addMetadata("tag", tag)
                     .addMetadata("badge", badge)

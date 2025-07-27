@@ -460,7 +460,11 @@ public class EntityBuilder extends AbstractEntityBuilder
     
     public User.PrimaryGuild createPrimaryGuild(DataObject obj)
     {
-        return new User.PrimaryGuild(obj.getString("identity_guild_id"), obj.getBoolean("identity_enabled"), obj.getString("tag"), obj.getString("badge"));
+        long guildId = obj.getLong("identity_guild_id", -1);
+        if (guildId == -1) // Possibly null according to docs
+            return null;
+        
+        return new User.PrimaryGuild(guildId, obj.getBoolean("identity_enabled"), obj.getString("tag"), obj.getString("badge"));
     }
 
     public UserImpl createUser(DataObject user)
