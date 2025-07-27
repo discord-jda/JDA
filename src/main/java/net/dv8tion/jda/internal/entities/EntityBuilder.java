@@ -457,6 +457,11 @@ public class EntityBuilder extends AbstractEntityBuilder
             return null;
         }
     }
+    
+    public User.PrimaryGuild createPrimaryGuild(DataObject obj)
+    {
+        return new User.PrimaryGuild(obj.getString("identity_guild_id"), obj.getBoolean("identity_enabled"), obj.getString("tag"), obj.getString("badge"));
+    }
 
     public UserImpl createUser(DataObject user)
     {
@@ -482,7 +487,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         if (newUser)
         {
             User.PrimaryGuild primaryGuild = user.optObject("primary_guild")
-                   .map(obj -> new User.PrimaryGuild(obj.getString("identity_guild_id"), obj.getBoolean("identity_enabled"), obj.getString("tag"), obj.getString("badge")))
+                   .map(this::createPrimaryGuild)
                    .orElse(null);
             
             // Initial creation
@@ -519,7 +524,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         int newFlags = user.getInt("public_flags", 0);
         User.PrimaryGuild oldPrimaryGuild = userObj.getPrimaryGuild();
         User.PrimaryGuild newPrimaryGuild = user.optObject("primary_guild")
-                .map(obj -> new User.PrimaryGuild(obj.getString("identity_guild_id"), obj.getBoolean("identity_enabled"), obj.getString("tag"), obj.getString("badge")))
+                .map(this::createPrimaryGuild)
                 .orElse(null);
 
         JDAImpl jda = getJDA();
