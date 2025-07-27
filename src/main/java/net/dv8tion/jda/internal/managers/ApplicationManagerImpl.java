@@ -77,7 +77,7 @@ public class ApplicationManagerImpl extends ManagerBase<ApplicationManager> impl
     @Nonnull
     @Override
     @CheckReturnValue
-    public ApplicationManagerImpl reset(long... fields)
+    public ApplicationManagerImpl reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return this;

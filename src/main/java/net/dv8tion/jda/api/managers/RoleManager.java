@@ -108,7 +108,7 @@ public interface RoleManager extends Manager<RoleManager>
     @Nonnull
     @Override
     @CheckReturnValue
-    RoleManager reset(long... fields);
+    RoleManager reset(@Nonnull long... fields);
 
     /**
      * The target {@link net.dv8tion.jda.api.entities.Role Role} for this

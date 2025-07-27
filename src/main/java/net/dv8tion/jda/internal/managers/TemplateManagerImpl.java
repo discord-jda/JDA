@@ -70,7 +70,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public TemplateManagerImpl reset(long... fields)
+    public TemplateManagerImpl reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return this;

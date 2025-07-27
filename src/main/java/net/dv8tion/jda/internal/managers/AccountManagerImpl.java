@@ -72,7 +72,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl reset(long... fields)
+    public AccountManagerImpl reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return this;

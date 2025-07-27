@@ -70,7 +70,7 @@ public class EntitlementPaginationActionImpl
 
     @Nonnull
     @Override
-    public EntitlementPaginationAction skuIds(long... skuIds)
+    public EntitlementPaginationAction skuIds(@Nonnull long... skuIds)
     {
         this.skuIds.clear();
         for (long skuId : skuIds)

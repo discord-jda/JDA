@@ -1773,7 +1773,7 @@ public class  DefaultShardManagerBuilder
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setShards(final int... shardIds)
+    public DefaultShardManagerBuilder setShards(@Nonnull int... shardIds)
     {
         Checks.notNull(shardIds, "shardIds");
         for (int id : shardIds)
