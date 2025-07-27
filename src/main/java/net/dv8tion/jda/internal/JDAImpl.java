@@ -602,7 +602,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public List<Guild> getMutualGuilds(@Nonnull User... users)
+    public List<Guild> getMutualGuilds(@Nonnull UserSnowflake... users)
     {
         Checks.notNull(users, "users");
         return getMutualGuilds(Arrays.asList(users));
@@ -610,10 +610,10 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public List<Guild> getMutualGuilds(@Nonnull Collection<User> users)
+    public List<Guild> getMutualGuilds(@Nonnull Collection<? extends UserSnowflake> users)
     {
         Checks.notNull(users, "users");
-        for(User u : users)
+        for(UserSnowflake u : users)
             Checks.notNull(u, "All users");
         return getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
