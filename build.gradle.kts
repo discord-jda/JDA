@@ -344,6 +344,14 @@ tasks.build.configure {
     shadowJar.mustRunAfter(sourcesJar)
 }
 
+
+////////////////////////////////////
+//                                //
+//       Test Configuration       //
+//                                //
+////////////////////////////////////
+
+
 val downloadRecipeClasspath by tasks.registering(Download::class) {
     val targetVersion = "5.6.1"
     src("https://repo.maven.apache.org/maven2/net/dv8tion/JDA/$targetVersion/JDA-$targetVersion.jar")
@@ -368,6 +376,17 @@ tasks.withType<Test>().configureEach {
         jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
     }
 }
+
+tasks.test {
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+    reports {
+        junitXml.required = projectEnvironment.isGithubAction
+        html.required = projectEnvironment.isGithubAction
+    }
+}
+
 
 ////////////////////////////////////
 //                                //
