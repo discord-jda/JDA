@@ -90,6 +90,8 @@ configure<SourceSetContainer> {
 //                                //
 ////////////////////////////////////
 
+val mockitoAgent by configurations.creating
+
 repositories {
     mavenCentral()
 }
@@ -142,6 +144,10 @@ dependencies {
     testImplementation(libs.commons.lang3)
     testImplementation(libs.logback.classic)
     testImplementation(libs.archunit)
+
+    mockitoAgent(libs.mockito) {
+        isTransitive = false
+    }
 
     // OpenRewrite
     // Import Rewrite's bill of materials.
@@ -326,7 +332,7 @@ tasks.named<JavaCompile>("compileJava").configure {
     source = generateJavaSources.get().source
 }
 
-tasks.named("build").configure {
+tasks.build.configure {
     dependsOn(jar)
     dependsOn(javadocJar)
     dependsOn(sourcesJar)
@@ -357,6 +363,10 @@ tasks.register<Test>("updateTestSnapshots") {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     failFast = false
+
+    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_21)) {
+        jvmArgs = listOf("-javaagent:${mockitoAgent.asPath}")
+    }
 }
 
 ////////////////////////////////////
