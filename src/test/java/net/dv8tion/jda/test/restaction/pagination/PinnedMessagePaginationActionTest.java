@@ -19,9 +19,7 @@ package net.dv8tion.jda.test.restaction.pagination;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.requests.Method;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.pagination.PinnedMessagePaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.PinnedMessagePaginationAction.PinnedMessage;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -35,13 +33,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
-@SuppressWarnings("unchecked")
 public class PinnedMessagePaginationActionTest extends IntegrationTest
 {
     @Mock
@@ -67,16 +62,8 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest
             .hasCompiledRoute("channels/" + Constants.CHANNEL_ID + "/messages/pins?limit=50")
             .whenQueueCalled();
 
-        Response response = mock(Response.class);
-        when(response.isOk()).thenReturn(true);
-        when(response.getObject()).thenReturn(DataObject.empty()
-            .put("items", DataArray.empty()));
-
-        Request<List<PinnedMessagePaginationAction.PinnedMessage>> request = mock(Request.class);
-
-        action.handleResponse(response, request);
-
-        verify(request, times(1)).onSuccess(eq(Collections.emptyList()));
+        assertThat(captureListCallback(PinnedMessage.class, action, DataObject.empty().put("items", DataArray.empty())))
+            .isEmpty();
 
         assertThatRequestFrom(action)
             .hasMethod(Method.GET)
@@ -88,9 +75,6 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest
     void testFullResponseSetsBeforeOnNextUse()
     {
         PinnedMessagePaginationActionImpl action = new PinnedMessagePaginationActionImpl(channel);
-
-        Response response = mock(Response.class);
-        when(response.isOk()).thenReturn(true);
 
         DataArray items = DataArray.empty();
         OffsetDateTime timeStamp = OffsetDateTime.now();
@@ -105,20 +89,9 @@ public class PinnedMessagePaginationActionTest extends IntegrationTest
 
         OffsetDateTime lastTimestamp = timeStamp;
 
-        when(response.getObject()).thenReturn(DataObject.empty().put("items", items));
-
-        Request<List<PinnedMessagePaginationAction.PinnedMessage>> request = mock(Request.class);
-
-        action.handleResponse(response, request);
-
-        verify(request, times(1)).onSuccess(argThat(list ->
-        {
-            assertThat(list).hasSize(50);
-            assertThat(list)
-                .last()
-                .matches(pinned -> pinned.getTimePinned().equals(lastTimestamp));
-            return true;
-        }));
+        assertThat(captureListCallback(PinnedMessage.class, action, DataObject.empty().put("items", items)))
+            .hasSize(50)
+            .last().matches(pinned -> pinned.getTimePinned().equals(lastTimestamp));
 
         assertThatRequestFrom(action)
             .hasMethod(Method.GET)
