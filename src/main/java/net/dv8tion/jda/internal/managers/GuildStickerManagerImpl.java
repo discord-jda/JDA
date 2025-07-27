@@ -76,7 +76,7 @@ public class GuildStickerManagerImpl extends ManagerBase<GuildStickerManager> im
 
     @Nonnull
     @Override
-    public GuildStickerManagerImpl reset(long... fields)
+    public GuildStickerManagerImpl reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return this;

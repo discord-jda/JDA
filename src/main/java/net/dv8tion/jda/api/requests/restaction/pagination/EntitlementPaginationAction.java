@@ -76,7 +76,7 @@ public interface EntitlementPaginationAction extends PaginationAction<Entitlemen
      */
     @Nonnull
     @CheckReturnValue
-    EntitlementPaginationAction skuIds(long... skuIds);
+    EntitlementPaginationAction skuIds(@Nonnull long... skuIds);
 
     /**
      * Filters {@link Entitlement Entitlement}s by their SKU id

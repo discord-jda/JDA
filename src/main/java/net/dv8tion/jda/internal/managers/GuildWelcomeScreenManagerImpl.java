@@ -76,7 +76,7 @@ public class GuildWelcomeScreenManagerImpl extends ManagerBase<GuildWelcomeScree
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildWelcomeScreenManagerImpl reset(long... fields)
+    public GuildWelcomeScreenManagerImpl reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return this;

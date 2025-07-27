@@ -175,7 +175,7 @@ public class ChannelManagerImpl<T extends GuildChannel, M extends ChannelManager
     @Nonnull
     @Override
     @CheckReturnValue
-    public M reset(long... fields)
+    public M reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return (M) this;

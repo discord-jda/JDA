@@ -72,7 +72,7 @@ public class CustomEmojiManagerImpl extends ManagerBase<CustomEmojiManager> impl
     @Nonnull
     @Override
     @CheckReturnValue
-    public CustomEmojiManagerImpl reset(long... fields)
+    public CustomEmojiManagerImpl reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return this;

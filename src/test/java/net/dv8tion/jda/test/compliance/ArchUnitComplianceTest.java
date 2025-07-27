@@ -179,7 +179,6 @@ public class ArchUnitComplianceTest
                 method.getParameters()
                     .stream()
                     .filter(parameter -> !parameter.getRawType().isPrimitive())
-                    .filter(parameter -> !parameter.getRawType().isArray())
                     .filter(parameter -> !parameter.isAnnotatedWith(Nonnull.class) && !parameter.isAnnotatedWith(Nullable.class) && !parameter.isAnnotatedWith(CheckForNull.class))
                     .forEach(parameter ->
                         events.add(SimpleConditionEvent.violated(method, parameter.getDescription() + " is not annotated with @Nonnull or @Nullable"))

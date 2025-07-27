@@ -106,7 +106,7 @@ public interface GuildWelcomeScreenManager extends Manager<GuildWelcomeScreenMan
     @Nonnull
     @Override
     @CheckReturnValue
-    GuildWelcomeScreenManager reset(long... fields);
+    GuildWelcomeScreenManager reset(@Nonnull long... fields);
 
     /**
      * Sets the enabled state of the welcome screen.

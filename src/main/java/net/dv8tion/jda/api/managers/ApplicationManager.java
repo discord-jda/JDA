@@ -104,7 +104,7 @@ public interface ApplicationManager extends Manager<ApplicationManager>
     @Nonnull
     @Override
     @CheckReturnValue
-    ApplicationManager reset(long... fields);
+    ApplicationManager reset(@Nonnull long... fields);
 
     /**
      * Sets the description of the application.
