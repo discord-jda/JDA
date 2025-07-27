@@ -1188,7 +1188,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     @Unmodifiable
-    List<Guild> getMutualGuilds(@Nonnull Collection<UserSnowflake> users);
+    List<Guild> getMutualGuilds(@Nonnull Collection<? extends UserSnowflake> users);
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.

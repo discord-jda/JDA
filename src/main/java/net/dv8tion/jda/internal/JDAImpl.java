@@ -610,7 +610,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public List<Guild> getMutualGuilds(@Nonnull Collection<UserSnowflake> users)
+    public List<Guild> getMutualGuilds(@Nonnull Collection<? extends UserSnowflake> users)
     {
         Checks.notNull(users, "users");
         for(UserSnowflake u : users)

@@ -433,7 +433,7 @@ public interface ShardManager extends IGuildChannelContainer<Channel>
      */
     @Nonnull
     @Unmodifiable
-    default List<Guild> getMutualGuilds(@Nonnull final Collection<UserSnowflake> users)
+    default List<Guild> getMutualGuilds(@Nonnull final Collection<? extends UserSnowflake> users)
     {
         Checks.noneNull(users, "users");
         return this.getGuildCache().stream()
