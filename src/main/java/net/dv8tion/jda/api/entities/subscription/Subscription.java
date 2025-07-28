@@ -3,6 +3,7 @@ package net.dv8tion.jda.api.entities.subscription;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -14,8 +15,8 @@ import java.util.List;
 public class Subscription
 {
     private final JDAImpl api;
-    private final Long id;
-    private final Long subscriberId;
+    private final long id;
+    private final long subscriberId;
     private final List<Long> skuIDs;
     private final List<Long> entitlementIDs;
     private final List<Long> renewalSkuIDs;
@@ -23,12 +24,11 @@ public class Subscription
     private final OffsetDateTime currentPeriodEnd;
     private final OffsetDateTime canceledAt;
     private final SubscriptionStatus status;
-    private final String country;
 
-    public Subscription(final JDAImpl api, final long id, final long subscriberId, final List<Long> skuIDs,
-                        final List<Long> entitlementIDs, @Nullable final List<Long> renewalSkuIDs,
-                        final OffsetDateTime currentPeriodStart, final OffsetDateTime currentPeriodEnd, @Nullable final OffsetDateTime canceledAt,
-                        final SubscriptionStatus status, final String country)
+    public Subscription(@Nonnull final JDAImpl api, final long id, final long subscriberId, @Nonnull final List<Long> skuIDs,
+                        @Nonnull final List<Long> entitlementIDs, @Nullable final List<Long> renewalSkuIDs,
+                        @Nonnull final OffsetDateTime currentPeriodStart, @Nonnull final OffsetDateTime currentPeriodEnd, @Nullable final OffsetDateTime canceledAt,
+                        @Nonnull final SubscriptionStatus status)
     {
 
         this.api = api;
@@ -41,7 +41,6 @@ public class Subscription
         this.currentPeriodEnd = currentPeriodEnd;
         this.canceledAt = canceledAt;
         this.status = status;
-        this.country = country;
     }
 
     public Long getId()
@@ -89,10 +88,6 @@ public class Subscription
         return status;
     }
 
-    public String getCountry()
-    {
-        return country;
-    }
 
     public JDAImpl getApi()
     {
@@ -102,7 +97,7 @@ public class Subscription
     @Override
     public int hashCode()
     {
-        return id.hashCode();
+        return Long.hashCode(id);
     }
 
     @Override
@@ -115,7 +110,7 @@ public class Subscription
             return false;
         }
         Subscription other = (Subscription) obj;
-        return other.id.equals(this.id);
+        return other.id == this.id;
     }
 
     @Override
