@@ -29,10 +29,12 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.RoleImpl;
 import net.dv8tion.jda.internal.entities.RoleImpl.RoleTagsImpl;
 import net.dv8tion.jda.internal.entities.mixin.RoleMixin;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,7 +53,7 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
     private boolean hoisted;
     private boolean mentionable;
     private long rawPermissions;
-    private int color;
+    private RoleColors colors;
     private int rawPosition;
     private RoleIcon icon;
 
@@ -141,15 +143,24 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
     }
 
     @Override
+    @Deprecated
     public Color getColor()
     {
+        int color = getColors().getPrimaryColorRaw();
         return color != Role.DEFAULT_COLOR_RAW ? new Color(color) : null;
     }
 
     @Override
+    public @NotNull RoleColors getColors()
+    {
+        return colors;
+    }
+
+    @Override
+    @Deprecated
     public int getColorRaw()
     {
-        return color;
+        return colors.getPrimaryColorRaw();
     }
 
     @Override
@@ -286,9 +297,17 @@ public class DetachedRoleImpl implements Role, RoleMixin<DetachedRoleImpl>
     }
 
     @Override
+    @Deprecated
     public DetachedRoleImpl setColor(int color)
     {
-        this.color = color;
+        this.colors.setSolidColor(color);
+        return this;
+    }
+
+    @Override
+    public DetachedRoleImpl setColors(DataObject colors)
+    {
+        this.colors = new RoleImpl.RoleColorsImpl(colors);
         return this;
     }
 
