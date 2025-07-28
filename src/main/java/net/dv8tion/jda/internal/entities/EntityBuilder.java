@@ -48,6 +48,8 @@ import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
 import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.*;
+import net.dv8tion.jda.api.entities.subscription.Subscription;
+import net.dv8tion.jda.api.entities.subscription.SubscriptionStatus;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
 import net.dv8tion.jda.api.entities.templates.TemplateGuild;
@@ -392,7 +394,8 @@ public class EntityBuilder extends AbstractEntityBuilder
             LOG.error("Guild is missing a SelfMember. GuildId: {}", guildId);
             LOG.debug("Guild is missing a SelfMember. GuildId: {} JSON: \n{}", guildId, guildJson);
             // This is actually a gateway request
-            guildObj.retrieveMembersByIds(api.getSelfUser().getIdLong()).onSuccess(m -> {
+            guildObj.retrieveMembersByIds(api.getSelfUser().getIdLong()).onSuccess(m ->
+            {
                 if (m.isEmpty())
                     LOG.warn("Was unable to recover SelfMember for guild with id {}. This guild might be corrupted!", guildId);
                 else
@@ -2611,6 +2614,42 @@ public class EntityBuilder extends AbstractEntityBuilder
                 object.getOffsetDateTime("ends_at", null),
                 object.getBoolean("consumed", false)
         );
+    }
+
+    public Subscription createSubscription(DataObject object)
+    {
+        DataArray skuIDs = object.getArray("sku_ids");
+        DataArray entitlementsIDs = object.getArray("entitlement_ids");
+        DataArray renewalSkuIDs = object.optArray("renewal_sku_ids").orElse(null);
+        OffsetDateTime canceledAt = object.getOffsetDateTime("canceled_at", null);
+
+
+        List<Long> mappedSkuIds = mapDataArrayToLongList(skuIDs);
+        List<Long> mappedEntitlementsIds = mapDataArrayToLongList(entitlementsIDs);
+        List<Long> mappedRenewalSkuIds = Optional.ofNullable(renewalSkuIDs)
+                .map(this::mapDataArrayToLongList)
+                .orElse(null);
+
+
+        return new Subscription(
+                getJDA(),
+                object.getUnsignedLong("id"),
+                object.getUnsignedLong("user_id", 0),
+                mappedSkuIds,
+                mappedEntitlementsIds,
+                mappedRenewalSkuIds,
+                object.getOffsetDateTime("current_period_start"),
+                object.getOffsetDateTime("current_period_end"),
+                canceledAt,
+                SubscriptionStatus.fromKey(object.getInt("status"))
+        );
+    }
+
+    public List<Long> mapDataArrayToLongList(DataArray dataArray)
+    {
+        return IntStream.range(0, dataArray.length())
+                .mapToObj(dataArray::getLong)
+                .collect(Collectors.toList());
     }
 
     private Map<String, AuditLogChange> changeToMap(Set<AuditLogChange> changesList)
