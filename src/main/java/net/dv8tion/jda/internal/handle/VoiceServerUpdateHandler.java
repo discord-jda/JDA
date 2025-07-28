@@ -53,8 +53,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
             return null;
         }
 
-        //Strip the port from the endpoint.
-        String endpoint = content.getString("endpoint").replace(":80", "");
+        String endpoint = content.getString("endpoint");
         String token = content.getString("token");
         String sessionId = guild.getSelfMember().getVoiceState().getSessionId();
         if (sessionId == null)
