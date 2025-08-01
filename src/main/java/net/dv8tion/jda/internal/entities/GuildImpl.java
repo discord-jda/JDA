@@ -1095,9 +1095,6 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> leave()
     {
-        if (getSelfMember().isOwner())
-            throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
-
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
         return new RestActionImpl<>(getJDA(), route);
     }
