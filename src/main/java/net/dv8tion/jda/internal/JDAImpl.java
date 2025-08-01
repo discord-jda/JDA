@@ -73,7 +73,10 @@ import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
-import net.dv8tion.jda.internal.requests.restaction.*;
+import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.CommandListUpdateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.TestEntitlementCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.EntitlementPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -1179,37 +1182,6 @@ public class JDAImpl implements JDA
                     .stream(DataArray::getObject)
                     .map(RoleConnectionMetadata::fromData)
                     .collect(Helpers.toUnmodifiableList()));
-    }
-
-    @Nonnull
-    @Override
-    public GuildActionImpl createGuild(@Nonnull String name)
-    {
-        if (guildCache.size() >= 10)
-            throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
-        return new GuildActionImpl(this, name);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> createGuildFromTemplate(@Nonnull String code, @Nonnull String name, Icon icon)
-    {
-        if (guildCache.size() >= 10)
-            throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
-
-        Checks.notBlank(code, "Template code");
-        Checks.notBlank(name, "Name");
-        name = name.trim();
-        Checks.notLonger(name, 100, "Name");
-
-        final Route.CompiledRoute route = Route.Templates.CREATE_GUILD_FROM_TEMPLATE.compile(code);
-
-        DataObject object = DataObject.empty();
-        object.put("name", name);
-        if (icon != null)
-            object.put("icon", icon.getEncoding());
-
-        return new RestActionImpl<>(this, route, object);
     }
 
     @Nonnull
