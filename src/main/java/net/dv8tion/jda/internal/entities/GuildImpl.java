@@ -1105,34 +1105,6 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> delete()
-    {
-        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
-            throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
-
-        return delete(null);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> delete(String mfaCode)
-    {
-        if (!getSelfMember().isOwner())
-            throw new PermissionException("Cannot delete a guild that you do not own!");
-
-        DataObject mfaBody = null;
-        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
-        {
-            Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
-            mfaBody = DataObject.empty().put("code", mfaCode);
-        }
-
-        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, mfaBody);
-    }
-
-    @Nonnull
-    @Override
     public AudioManager getAudioManager()
     {
         if (!getJDA().isIntent(GatewayIntent.GUILD_VOICE_STATES))

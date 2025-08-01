@@ -155,7 +155,6 @@ public class Route
         public static final Route MODIFY_GUILD_INCIDENTS = new Route(PUT,  "guilds/{guild_id}/incident-actions");
 
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
-        public static final Route DELETE_GUILD = new Route(POST, "guilds/{guild_id}/delete");
     }
 
     public static class Emojis

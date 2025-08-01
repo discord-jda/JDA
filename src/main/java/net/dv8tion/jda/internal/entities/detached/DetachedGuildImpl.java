@@ -672,20 +672,6 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
 
     @Nonnull
     @Override
-    public RestAction<Void> delete()
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> delete(String mfaCode)
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
     public AudioManager getAudioManager()
     {
         throw detachedException();
