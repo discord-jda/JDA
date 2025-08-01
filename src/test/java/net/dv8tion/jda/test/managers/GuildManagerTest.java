@@ -110,7 +110,6 @@ public class GuildManagerTest extends IntegrationTest
             .put("description", "test")
             .put("explicit_content_filter", 0)
             .put("icon", null)
-            .put("mfa_level", 0)
             .put("name", "test")
             .put("premium_progress_bar_enabled", true)
             .put("public_updates_channel_id", "125227483518861312")

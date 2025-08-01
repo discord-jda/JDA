@@ -918,59 +918,6 @@ public interface JDA extends IGuildChannelContainer<Channel>
     RestAction<List<RoleConnectionMetadata>> updateRoleConnectionMetadata(@Nonnull Collection<? extends RoleConnectionMetadata> records);
 
     /**
-     * Constructs a new {@link Guild Guild} with the specified name
-     * <br>Use the returned {@link GuildAction GuildAction} to provide
-     * further details and settings for the resulting Guild!
-     *
-     * <p>This RestAction does not provide the resulting Guild!
-     * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
-     *
-     * @param  name
-     *         The name of the resulting guild
-     *
-     * @throws java.lang.IllegalStateException
-     *         If the currently logged in account is in 10 or more guilds
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided name is empty, {@code null} or not between 2-100 characters
-     *
-     * @return {@link GuildAction GuildAction}
-     *         <br>Allows for setting various details for the resulting Guild
-     */
-    @Nonnull
-    @CheckReturnValue
-    GuildAction createGuild(@Nonnull String name);
-
-    /**
-     * Constructs a new {@link Guild Guild} from the specified template code.
-     *
-     * <p>This RestAction does not provide the resulting Guild!
-     * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_TEMPLATE Unknown Guild Template}
-     *     <br>The template doesn't exist.</li>
-     * </ul>
-     *
-     * @param  code
-     *         The template code to use to create a guild
-     * @param  name
-     *         The name of the resulting guild
-     * @param  icon
-     *         The {@link net.dv8tion.jda.api.entities.Icon Icon} to use, or null to use no icon
-     *
-     * @throws java.lang.IllegalStateException
-     *         If the currently logged in account is in 10 or more guilds
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided name is empty, {@code null} or not between 2-100 characters
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> createGuildFromTemplate(@Nonnull String code, @Nonnull String name, @Nullable Icon icon);
-
-    /**
      * {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} of
      * all cached {@link net.dv8tion.jda.api.managers.AudioManager AudioManagers} created for this JDA instance.
      * <br>AudioManagers are created when first retrieved via {@link Guild#getAudioManager() Guild.getAudioManager()}.

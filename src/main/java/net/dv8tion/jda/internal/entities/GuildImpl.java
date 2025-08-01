@@ -45,7 +45,6 @@ import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
@@ -1096,39 +1095,8 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> leave()
     {
-        if (getSelfMember().isOwner())
-            throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
-
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
         return new RestActionImpl<>(getJDA(), route);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> delete()
-    {
-        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
-            throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
-
-        return delete(null);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> delete(String mfaCode)
-    {
-        if (!getSelfMember().isOwner())
-            throw new PermissionException("Cannot delete a guild that you do not own!");
-
-        DataObject mfaBody = null;
-        if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
-        {
-            Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
-            mfaBody = DataObject.empty().put("code", mfaCode);
-        }
-
-        Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, mfaBody);
     }
 
     @Nonnull
@@ -1861,25 +1829,6 @@ public class GuildImpl implements Guild
             .put("roles", roles.stream().map(Role::getId).collect(Collectors.toSet()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
-        return new AuditableRestActionImpl<>(getJDA(), route, body);
-    }
-
-    @Nonnull
-    @Override
-    public AuditableRestAction<Void> transferOwnership(@Nonnull Member newOwner)
-    {
-        Checks.notNull(newOwner, "Member");
-        checkGuild(newOwner.getGuild(), "Member");
-        if (!getSelfMember().isOwner())
-            throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
-
-        Checks.check(!getSelfMember().equals(newOwner),
-                     "The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
-
-        Checks.check(!newOwner.getUser().isBot(), "Cannot transfer ownership of a Guild to a Bot!");
-
-        DataObject body = DataObject.empty().put("owner_id", newOwner.getUser().getId());
-        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
