@@ -45,7 +45,6 @@ import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.PrivilegeConfig;
@@ -1833,25 +1832,6 @@ public class GuildImpl implements Guild
             .put("roles", roles.stream().map(Role::getId).collect(Collectors.toSet()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
-        return new AuditableRestActionImpl<>(getJDA(), route, body);
-    }
-
-    @Nonnull
-    @Override
-    public AuditableRestAction<Void> transferOwnership(@Nonnull Member newOwner)
-    {
-        Checks.notNull(newOwner, "Member");
-        checkGuild(newOwner.getGuild(), "Member");
-        if (!getSelfMember().isOwner())
-            throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
-
-        Checks.check(!getSelfMember().equals(newOwner),
-                     "The member provided as the newOwner is the currently logged in account. Provide a different member to give ownership to.");
-
-        Checks.check(!newOwner.getUser().isBot(), "Cannot transfer ownership of a Guild to a Bot!");
-
-        DataObject body = DataObject.empty().put("owner_id", newOwner.getUser().getId());
-        Route.CompiledRoute route = Route.Guilds.MODIFY_GUILD.compile(getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 

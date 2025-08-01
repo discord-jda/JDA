@@ -1208,8 +1208,6 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      *
      * <p>If lazy-loading is used it is recommended to use {@link #retrieveOwner()} instead.
      *
-     * <p>Ownership can be transferred using {@link net.dv8tion.jda.api.entities.Guild#transferOwnership(Member)}.
-     *
      * <p>This only works when the member was added to cache. Lazy loading might load this later.
      * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
@@ -2739,9 +2737,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     AuditLogPaginationAction retrieveAuditLogs();
 
     /**
-     * Used to leave a Guild. If the currently logged in account is the owner of this guild ({@link net.dv8tion.jda.api.entities.Guild#getOwner()})
-     * then ownership of the Guild needs to be transferred to a different {@link Member Member}
-     * before leaving using {@link #transferOwnership(Member)}.
+     * Used to leave a Guild.
      *
      * @throws java.lang.IllegalStateException
      *         Thrown if the currently logged in account is the Owner of this Guild.
@@ -4819,39 +4815,6 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles);
-
-    /**
-     * Transfers the Guild ownership to the specified {@link Member Member}
-     * <br>Only available if the currently logged in account is the owner of this Guild
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
-     * the returned {@link RestAction RestAction} include the following:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The currently logged in account lost ownership before completing the task</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
-     *     <br>The target Member was removed from the Guild before finishing the task</li>
-     * </ul>
-     *
-     * @param  newOwner
-     *         Not-null Member to transfer ownership to
-     *
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the currently logged in account is not the owner of this Guild
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the specified Member is {@code null} or not from the same Guild</li>
-     *             <li>If the specified Member already is the Guild owner</li>
-     *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
-     *         If this entity is {@link #isDetached() detached}
-     *
-     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    AuditableRestAction<Void> transferOwnership(@Nonnull Member newOwner);
 
     /**
      * Creates a new {@link TextChannel TextChannel} in this Guild.

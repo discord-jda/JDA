@@ -931,13 +931,6 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> transferOwnership(@Nonnull Member newOwner)
-    {
-        throw detachedException();
-    }
-
-    @Nonnull
-    @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent)
     {
         throw detachedException();
