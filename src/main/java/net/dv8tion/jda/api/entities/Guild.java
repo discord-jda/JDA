@@ -3051,8 +3051,6 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
     /**
      * Returns the level of multifactor authentication required to execute administrator restricted functions in this guild.
      * <br>For a short description of the different values, see {@link net.dv8tion.jda.api.entities.Guild.MFALevel MFALevel}.
-     * <p>
-     * This value can be modified using {@link GuildManager#setRequiredMFALevel(net.dv8tion.jda.api.entities.Guild.MFALevel)}.
      *
      * @return The MFA-Level required by this Guild.
      */
