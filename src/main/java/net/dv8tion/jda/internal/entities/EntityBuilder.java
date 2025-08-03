@@ -49,6 +49,7 @@ import net.dv8tion.jda.api.entities.messages.MessagePoll;
 import net.dv8tion.jda.api.entities.messages.MessageSnapshot;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.subscription.Subscription;
+import net.dv8tion.jda.api.entities.subscription.SubscriptionImpl;
 import net.dv8tion.jda.api.entities.subscription.SubscriptionStatus;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.entities.templates.TemplateChannel;
@@ -2624,17 +2625,16 @@ public class EntityBuilder extends AbstractEntityBuilder
         OffsetDateTime canceledAt = object.getOffsetDateTime("canceled_at", null);
 
 
-        List<Long> mappedSkuIds = mapDataArrayToLongList(skuIDs);
-        List<Long> mappedEntitlementsIds = mapDataArrayToLongList(entitlementsIDs);
+        List<Long> mappedSkuIds = mapToLongList(skuIDs);
+        List<Long> mappedEntitlementsIds = mapToLongList(entitlementsIDs);
         List<Long> mappedRenewalSkuIds = Optional.ofNullable(renewalSkuIDs)
-                .map(this::mapDataArrayToLongList)
+                .map(this::mapToLongList)
                 .orElse(null);
 
 
-        return new Subscription(
-                getJDA(),
+        return new SubscriptionImpl(
                 object.getUnsignedLong("id"),
-                object.getUnsignedLong("user_id", 0),
+                object.getUnsignedLong("user_id"),
                 mappedSkuIds,
                 mappedEntitlementsIds,
                 mappedRenewalSkuIds,
@@ -2645,7 +2645,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         );
     }
 
-    public List<Long> mapDataArrayToLongList(DataArray dataArray)
+    public List<Long> mapToLongList(DataArray dataArray)
     {
         return IntStream.range(0, dataArray.length())
                 .mapToObj(dataArray::getLong)

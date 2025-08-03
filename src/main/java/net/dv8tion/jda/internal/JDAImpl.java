@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.sticker.StickerUnion;
+import net.dv8tion.jda.api.entities.subscription.Subscription;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
@@ -1260,6 +1261,20 @@ public class JDAImpl implements JDA
     public RestAction<Entitlement> retrieveEntitlementById(long entitlementId)
     {
         return new RestActionImpl<>(this, Route.Applications.GET_ENTITLEMENT.compile(getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId)));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Subscription> retrieveSubscriptionsBySkuId(long skuId)
+    {
+        return new RestActionImpl<>(this, Route.Sku.GET_SUBSCRIPTIONS.compile(Long.toUnsignedString(skuId)));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Subscription> retrieveSubscriptionBySkuIdAndSubscriptionId(long skuId, long subscriptionId)
+    {
+        return new RestActionImpl<>(this, Route.Sku.GET_SUBSCRIPTION.compile(Long.toUnsignedString(skuId), Long.toUnsignedString(subscriptionId)));
     }
 
     @Nonnull
