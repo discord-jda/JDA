@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.components.ResolvedMediaImpl;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
@@ -35,7 +36,7 @@ import java.util.stream.Stream;
 /**
  * Represents either an external link, an attachment:// link, or an existing item (which is also a link)
  */
-public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixin
+public class MediaGalleryItemImpl implements MediaGalleryItem, FileContainerMixin, SerializableData
 {
     private final String url, description;
     private final ResolvedMedia media;

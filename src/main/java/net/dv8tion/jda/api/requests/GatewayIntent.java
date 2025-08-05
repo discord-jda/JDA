@@ -161,7 +161,7 @@ public enum GatewayIntent
      *     <li>{@link Message#getContentRaw()}, {@link Message#getContentDisplay()}, {@link Message#getContentStripped()}</li>
      *     <li>{@link Message#getEmbeds()}</li>
      *     <li>{@link Message#getAttachments()}</li>
-     *     <li>{@link Message#getActionRows()}, {@link Message#getButtons()}</li>
+     *     <li>{@link Message#getComponents()}, {@link Message#getComponentTree()}</li>
      * </ul>
      *
      * @see <a href="https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ" target="_blank">Message Content Privileged Intent FAQ</a>

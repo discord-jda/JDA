@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.components.ResolvedMedia;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.entities.FileContainerMixin;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class MediaGalleryItemFileUpload implements MediaGalleryItem, FileContainerMixin
+public class MediaGalleryItemFileUpload implements MediaGalleryItem, FileContainerMixin, SerializableData
 {
     private final FileUpload file; // Contains name and description
     private final String description;
