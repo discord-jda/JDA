@@ -235,13 +235,12 @@ public abstract class AbstractEntityBuilder
 
     protected void configureRole(DataObject roleJson, RoleMixin<?> role, long id)
     {
-        final int color = roleJson.getInt("color");
         role.setName(roleJson.getString("name"))
                 .setRawPosition(roleJson.getInt("position"))
                 .setRawPermissions(roleJson.getLong("permissions"))
                 .setManaged(roleJson.getBoolean("managed"))
                 .setHoisted(roleJson.getBoolean("hoist"))
-                .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
+                .setColors(roleJson.getObject("colors"))
                 .setMentionable(roleJson.getBoolean("mentionable"))
                 .setTags(roleJson.optObject("tags").orElseGet(DataObject::empty));
 
