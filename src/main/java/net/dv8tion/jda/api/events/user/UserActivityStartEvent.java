@@ -20,7 +20,11 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
@@ -50,6 +54,9 @@ import javax.annotation.Nonnull;
  * <p>This also requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled.
  * You can enable the cache flag with {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) enableCache(CacheFlag.ACTIVITY)}.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_PRESENCES)
+@RequiredCacheFlags(always = CacheFlag.ACTIVITY)
+@RequiresCachedMember
 public class UserActivityStartEvent extends GenericUserEvent implements GenericUserPresenceEvent
 {
     private final Activity newActivity;
