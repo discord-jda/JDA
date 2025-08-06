@@ -58,7 +58,7 @@ public class PrimaryEntryPointCommandDataImpl
 
     @Nonnull
     @Override
-    public PrimaryEntryPointCommandDataImpl setHandler(Handler handler)
+    public PrimaryEntryPointCommandDataImpl setHandler(@Nonnull Handler handler)
     {
         this.handler = handler;
         return this;
