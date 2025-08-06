@@ -46,7 +46,7 @@ public interface InteractionCallbackResponse
     /**
      * Returns the {@link ActivityInstanceResource} contained in this callback response, or {@code null} if the response was not a launched activity.
      *
-     * @return ActivityInstance contained in this callback response, or null.
+     * @return {@link ActivityInstanceResource} contained in this callback response, or null.
      */
     @Nullable
     ActivityInstanceResource getActivityInstance();
