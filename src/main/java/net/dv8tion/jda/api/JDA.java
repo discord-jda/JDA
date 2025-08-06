@@ -890,6 +890,27 @@ public interface JDA extends IGuildChannelContainer<Channel>
     }
 
     /**
+     * Retrieve an {@link ActivityInstance} from the provided instance ID.
+     * <br>The activity instance ID can be retrieved in {@link ActivityInstanceResource#getInstanceId()}.
+     *
+     * <p>This is useful to <a target="_blank" href="https://discord.com/developers/docs/activities/development-guides/multiplayer-experience#preventing-unwanted-activity-sessions">prevent unwanted activity sessions</a>.
+     *
+     * <p>If there is no such activity instance,
+     * the {@link RestAction} will fail with an {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseException}.
+     *
+     * @param  instanceId
+     *         The activity instance ID
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return {@link RestAction} of type {@link ActivityInstance}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<ActivityInstance> retrieveActivityInstanceById(@Nonnull String instanceId);
+
+    /**
      * Retrieves the currently configured {@link RoleConnectionMetadata} records for this application.
      *
      * @return {@link RestAction} - Type: {@link List} of {@link RoleConnectionMetadata}

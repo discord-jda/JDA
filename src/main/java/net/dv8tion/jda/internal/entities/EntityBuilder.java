@@ -1032,6 +1032,25 @@ public class EntityBuilder extends AbstractEntityBuilder
     }
 
     @Nonnull
+    public ActivityInstance createActivityInstance(@Nonnull DataObject json)
+    {
+        final DataObject location = json.getObject("location");
+        return new ActivityInstanceImpl(
+                json.getString("instance_id"),
+                json.getLong("launch_id"),
+                new ActivityInstanceImpl.LocationImpl(
+                        location.getString("id"),
+                        ActivityInstance.Location.Kind.fromKey(location.getString("kind")),
+                        location.getLong("channel_id"),
+                        location.isNull("guild_id") ? null : location.getLong("guild_id")
+                ),
+                json.getArray("users").stream(DataArray::getLong)
+                        .map(UserSnowflake::fromId)
+                        .collect(Helpers.toUnmodifiableList())
+        );
+    }
+
+    @Nonnull
     public static ActivityInstanceResource createActivityInstanceResource(@Nonnull DataObject json)
     {
         return new ActivityInstanceResourceImpl(

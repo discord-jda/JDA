@@ -1150,6 +1150,16 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public RestAction<ActivityInstance> retrieveActivityInstanceById(@Nonnull String instanceId)
+    {
+        Checks.notNull(instanceId, "Instance ID");
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_ACTIVITY_INSTANCE.compile(getSelfUser().getApplicationId(), instanceId);
+        return new RestActionImpl<>(this, route, (response, request) ->
+                entityBuilder.createActivityInstance(response.getObject()));
+    }
+
+    @Nonnull
+    @Override
     public RestAction<List<RoleConnectionMetadata>> retrieveRoleConnectionMetadata()
     {
         Route.CompiledRoute route = Route.Applications.GET_ROLE_CONNECTION_METADATA.compile(getSelfUser().getApplicationId());
