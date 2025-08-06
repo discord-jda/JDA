@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.PrimaryEntryPointCommandData;
 import net.dv8tion.jda.api.managers.ApplicationManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
@@ -776,6 +777,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
     /**
      * Configures the complete list of global commands.
      * <br>This will replace the existing command list for this bot. You should only use this once on startup!
+     * <br>If your bot has activities enabled, you <b>must</b> {@link GlobalCommandListUpdateAction#setPrimaryEntryPointCommand(PrimaryEntryPointCommandData) set your entry point command}.
      *
      * <p>This operation is idempotent.
      * Commands will persist between restarts of your bot, you only have to create a command once.
@@ -800,13 +802,13 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * jda.updateCommands().queue();
      * }</pre>
      *
-     * @return {@link CommandListUpdateAction}
+     * @return {@link GlobalCommandListUpdateAction}
      *
      * @see    Guild#updateCommands()
      */
     @Nonnull
     @CheckReturnValue
-    CommandListUpdateAction updateCommands();
+    GlobalCommandListUpdateAction updateCommands();
 
     /**
      * Edit an existing global command by id.
