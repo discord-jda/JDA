@@ -323,6 +323,8 @@ public interface CommandData extends SerializableData
             CommandDataImpl.applyBaseCommand(data, command);
             return data;
         }
+        case PRIMARY_ENTRY_POINT:
+            return PrimaryEntryPointCommandData.fromCommand(command);
         }
 
         throw new UnsupportedOperationException("Cannot create a command from an unknown type: " + command.getType());
@@ -363,6 +365,8 @@ public interface CommandData extends SerializableData
             CommandDataImpl.applyBaseCommandData(data, object);
             return data;
         }
+        case PRIMARY_ENTRY_POINT:
+            return PrimaryEntryPointCommandData.fromData(object);
         }
 
         throw new UnsupportedOperationException("Cannot create a command from an unknown type: " + rawType);

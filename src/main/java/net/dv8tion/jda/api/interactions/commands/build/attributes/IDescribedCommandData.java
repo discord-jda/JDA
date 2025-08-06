@@ -27,6 +27,7 @@ import java.util.Map;
  * Builder for describable Application Commands.
  *
  * @see net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
+ * @see net.dv8tion.jda.api.interactions.commands.build.PrimaryEntryPointCommandData
  */
 public interface IDescribedCommandData
 {

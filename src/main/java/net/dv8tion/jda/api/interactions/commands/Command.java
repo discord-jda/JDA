@@ -259,7 +259,8 @@ public interface Command extends ISnowflake, ICommandReference
         UNKNOWN(-1),
         SLASH(1),
         USER(2),
-        MESSAGE(3);
+        MESSAGE(3),
+        PRIMARY_ENTRY_POINT(4);
 
         private final int id;
 

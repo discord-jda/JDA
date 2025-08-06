@@ -67,7 +67,7 @@ public class CommandDataImpl implements SlashCommandData
 
         this.type = type;
         setName(name);
-        if (type == Command.Type.SLASH)
+        if (type == Command.Type.SLASH || type == Command.Type.PRIMARY_ENTRY_POINT)
             setDescription(description);
     }
 
@@ -104,7 +104,8 @@ public class CommandDataImpl implements SlashCommandData
 
     public void checkDescription(@Nonnull String description)
     {
-        checkType(Command.Type.SLASH, "set description");
+        if (getType() != Command.Type.SLASH && getType() != Command.Type.PRIMARY_ENTRY_POINT)
+            throw new IllegalStateException("Cannot set description for commands of type " + getType());
         Checks.inRange(description, 1, IDescribedCommandData.MAX_DESCRIPTION_LENGTH, "Description");
     }
 
