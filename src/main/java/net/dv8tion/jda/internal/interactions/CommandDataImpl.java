@@ -59,26 +59,30 @@ public class CommandDataImpl implements SlashCommandData
 
     private final Command.Type type;
 
+    @SuppressWarnings("DataFlowIssue")
+    public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name, @Nullable String description)
+    {
+        Checks.notNull(type, "Type");
+
+        this.type = type;
+        setName(name);
+        if (type == Command.Type.SLASH)
+            setDescription(description);
+    }
+
     public CommandDataImpl(@Nonnull String name, @Nonnull String description)
     {
-        this.type = Command.Type.SLASH;
-        setName(name);
-        setDescription(description);
+        this(Command.Type.SLASH, name, description);
     }
 
     public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name)
     {
-        this.type = type;
-        Checks.notNull(type, "Command Type");
-        Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
-        setName(name);
+        this(type, name, null);
     }
 
     public static CommandDataImpl of(@Nonnull Command.Type type, @Nonnull String name, @Nullable String description)
     {
-        if (type == Command.Type.SLASH)
-            return new CommandDataImpl(name, description);
-        return new CommandDataImpl(type, name);
+        return new CommandDataImpl(type, name, description);
     }
 
     protected void checkType(Command.Type required, String action)
