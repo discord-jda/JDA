@@ -56,6 +56,8 @@ public interface InteractionCallbackAction<T> extends RestAction<T>
         MODAL(9),
         /** Placeholder for unknown types */
         UNKNOWN(-1),
+        /** Launch the app's activity */
+        LAUNCH_ACTIVITY(12),
         ;
         private final int raw;
 

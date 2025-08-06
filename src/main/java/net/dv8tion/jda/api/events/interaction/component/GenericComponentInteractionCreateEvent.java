@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.requests.restaction.interactions.LaunchActivityCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
@@ -127,5 +128,13 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
     public ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
         return interaction.replyModal(modal);
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public LaunchActivityCallbackAction replyLaunchActivity()
+    {
+        return interaction.replyLaunchActivity();
     }
 }
