@@ -150,9 +150,9 @@ public interface Command extends ISnowflake, ICommandReference
     LocalizationMap getDescriptionLocalizations();
 
     /**
-     * The handler, if this is an {@link PrimaryEntryPointCommandData entry point command}.
+     * The handler, if this is an {@linkplain PrimaryEntryPointCommandData entry point command}, or {@code null}.
      *
-     * @return The entry point handler
+     * @return The entry point handler, or {@code null}
      */
     @Nullable
     PrimaryEntryPointCommandData.Handler getHandler();

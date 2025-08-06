@@ -26,18 +26,29 @@ import net.dv8tion.jda.api.requests.restaction.GlobalCommandListUpdateAction;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that an activity entry point was used in a {@link MessageChannel}.
+ * Indicates that an entry point command was used in a {@link MessageChannel}.
 
  * <br>This interaction requires <a href="https://discord.com/developers/docs/activities/overview" target="_blank">activities</a> to be enabled,
- * and an {@link GlobalCommandListUpdateAction#setPrimaryEntryPointCommand(PrimaryEntryPointCommandData) entry point}
- * with its {@link PrimaryEntryPointCommandData#setHandler(PrimaryEntryPointCommandData.Handler) handler}
+ * and an {@linkplain GlobalCommandListUpdateAction#setPrimaryEntryPointCommand(PrimaryEntryPointCommandData) entry point}
+ * with its {@linkplain PrimaryEntryPointCommandData#setHandler(PrimaryEntryPointCommandData.Handler) handler}
  * set to {@link PrimaryEntryPointCommandData.Handler#APP_HANDLER APP_HANDLER} to be configured.
  *
  * <p><b>Requirements</b><br>
- * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
- * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
- *
- * @see PrimaryEntryPointInteraction
+ * To receive these events, you must:
+ * <ul>
+ *     <li>
+ *         Unset the <b>Interactions Endpoint URL</b> in your application dashboard
+ *         <br>You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>
+ *     </li>
+ *     <li>
+ *         Enable <a href="https://discord.com/developers/docs/activities/overview" target="_blank">activities</a>
+ *     </li>
+ *     <li>
+ *         Set an {@linkplain GlobalCommandListUpdateAction#setPrimaryEntryPointCommand(PrimaryEntryPointCommandData) entry point}
+ *         with its {@linkplain PrimaryEntryPointCommandData#setHandler(PrimaryEntryPointCommandData.Handler) handler}
+ *         set to {@link PrimaryEntryPointCommandData.Handler#APP_HANDLER APP_HANDLER}
+ *     </li>
+ * </ul>
  */
 public class PrimaryEntryPointInteractionEvent extends GenericCommandInteractionEvent implements PrimaryEntryPointInteraction
 {

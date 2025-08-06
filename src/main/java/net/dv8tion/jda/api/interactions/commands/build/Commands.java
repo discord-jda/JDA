@@ -131,7 +131,7 @@ public class Commands
     }
 
     /**
-     * Create a primary entry point command builder for your app's activity.
+     * Create a primary entry point command builder for your app.
      *
      * <p>Only one entry point can be created per app.
      *
@@ -159,8 +159,6 @@ public class Commands
      * Parses the provided serialization back into an CommandData instance.
      * <br>This is the reverse function for {@link CommandData#toData()}.
      *
-     * <p><b>Note:</b> This does not take into account {@link #primaryEntryPoint(String, String, PrimaryEntryPointCommandData.Handler) entry point commands}.
-     *
      * @param  array
      *         Array of serialized {@link DataObject} representing the commands
      *
@@ -187,8 +185,6 @@ public class Commands
     /**
      * Parses the provided serialization back into an CommandData instance.
      * <br>This is the reverse function for {@link CommandData#toData()}.
-     *
-     * <p><b>Note:</b> This does not take into account {@link #primaryEntryPoint(String, String, PrimaryEntryPointCommandData.Handler) entry point commands}.
      *
      * @param  collection
      *         Collection of serialized {@link DataObject} representing the commands

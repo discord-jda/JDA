@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.events.interaction.command.PrimaryEntryPointInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -35,9 +36,10 @@ import java.util.Map;
 
 /**
  * Builder for Entry Point Commands.
- * <br>Use {@link Commands#primaryEntryPoint(String, String, PrimaryEntryPointCommandData.Handler)} to create instances of this interface.
+ * <br>This type of command is shown in your app's panel,
+ * as a button firing a {@link PrimaryEntryPointInteractionEvent PrimaryEntryPointInteractionEvent}.
  *
- * <p>This command can only be added via {@link GlobalCommandListUpdateAction#setPrimaryEntryPointCommand(PrimaryEntryPointCommandData)}.
+ * <p>This command can only be set with {@link GlobalCommandListUpdateAction#setPrimaryEntryPointCommand(PrimaryEntryPointCommandData)}.
  *
  * @see Commands#primaryEntryPoint(String, String, PrimaryEntryPointCommandData.Handler)
  */
@@ -45,9 +47,12 @@ public interface PrimaryEntryPointCommandData extends CommandData, IDescribedCom
 {
     /**
      * Returns the handler type of this entry point command.
-     * <br>This defines the behavior when this command is used.
+     * <br>This defines the behavior when this command is used,
+     * see the values of {@link Handler Handler} for more details.
      *
      * @return The handler type of this entry point command
+     *
+     * @see    Handler
      */
     @Nonnull
     Handler getHandler();
@@ -112,12 +117,15 @@ public interface PrimaryEntryPointCommandData extends CommandData, IDescribedCom
 
     /**
      * Sets the handler of this entry point command.
-     * This defines the behavior when this command is used.
+     * This defines the behavior when this command is used,
+     * see the values of {@link Handler Handler} for more details.
      *
      * @param  handler
      *         The handler type for this command
      *
      * @return This builder instance, for chaining
+     *
+     * @see    Handler
      */
     @Nonnull
     PrimaryEntryPointCommandData setHandler(@Nonnull Handler handler);
@@ -189,7 +197,8 @@ public interface PrimaryEntryPointCommandData extends CommandData, IDescribedCom
     {
         UNKNOWN(-1),
         /**
-         * Lets this app handle the activity start via an interaction.
+         * Lets this app handle a {@link PrimaryEntryPointInteractionEvent},
+         * allowing your app to decide what to do, such as replying, prompting with a modal or launching an activity.
          */
         APP_HANDLER(1),
         /**
