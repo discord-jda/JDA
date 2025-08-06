@@ -1123,10 +1123,10 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public CommandListUpdateAction updateCommands()
+    public GlobalCommandListUpdateAction updateCommands()
     {
         Route.CompiledRoute route = Route.Interactions.UPDATE_COMMANDS.compile(getSelfUser().getApplicationId());
-        return new CommandListUpdateActionImpl(this, null, route);
+        return new GlobalCommandListUpdateActionImpl(this, route);
     }
 
     @Nonnull
@@ -1146,6 +1146,16 @@ public class JDAImpl implements JDA
         Checks.isSnowflake(commandId);
         Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(getSelfUser().getApplicationId(), commandId);
         return new RestActionImpl<>(this, route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ActivityInstance> retrieveActivityInstanceById(@Nonnull String instanceId)
+    {
+        Checks.notNull(instanceId, "Instance ID");
+        Route.CompiledRoute route = Route.Applications.GET_APPLICATION_ACTIVITY_INSTANCE.compile(getSelfUser().getApplicationId(), instanceId);
+        return new RestActionImpl<>(this, route, (response, request) ->
+                entityBuilder.createActivityInstance(response.getObject()));
     }
 
     @Nonnull

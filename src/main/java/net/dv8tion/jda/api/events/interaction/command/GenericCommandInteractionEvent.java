@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.requests.restaction.interactions.LaunchActivityCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
@@ -120,5 +121,13 @@ public class GenericCommandInteractionEvent extends GenericInteractionCreateEven
     public ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
         return getInteraction().replyModal(modal);
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public LaunchActivityCallbackAction replyLaunchActivity()
+    {
+        return getInteraction().replyLaunchActivity();
     }
 }

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
+import net.dv8tion.jda.internal.interactions.PrimaryEntryPointCommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -129,6 +130,30 @@ public class Commands
         return new CommandDataImpl(type, name);
     }
 
+    /**
+     * Create a primary entry point command builder for your app.
+     *
+     * <p>Only one entry point can be created per app.
+     *
+     * @param  name
+     *         The entry point name, 1-32 lowercase alphanumeric characters
+     * @param  description
+     *         The entry point description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If any of the following requirements are not met
+     *         <ul>
+     *             <li>The name must be lowercase alphanumeric (with dash), 1-32 characters long</li>
+     *             <li>The description must be 1-100 characters long</li>
+     *         </ul>
+     *
+     * @return {@link PrimaryEntryPointCommandData} builder for the app's activity entry point command
+     */
+    @Nonnull
+    public static PrimaryEntryPointCommandData primaryEntryPoint(@Nonnull String name, @Nonnull String description, @Nonnull PrimaryEntryPointCommandData.Handler handler)
+    {
+        return new PrimaryEntryPointCommandDataImpl(name, description, handler);
+    }
 
     /**
      * Parses the provided serialization back into an CommandData instance.
@@ -146,6 +171,7 @@ public class Commands
      *
      * @see    CommandData#fromData(DataObject)
      * @see    SlashCommandData#fromData(DataObject)
+     * @see    PrimaryEntryPointCommandData#fromData(DataObject)
      */
     @Nonnull
     public static List<CommandData> fromList(@Nonnull DataArray array)
@@ -172,6 +198,7 @@ public class Commands
      *
      * @see    CommandData#fromData(DataObject)
      * @see    SlashCommandData#fromData(DataObject)
+     * @see    PrimaryEntryPointCommandData#fromData(DataObject)
      */
     @Nonnull
     public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection)

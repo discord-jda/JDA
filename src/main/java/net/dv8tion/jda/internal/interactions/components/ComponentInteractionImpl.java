@@ -22,12 +22,14 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.requests.restaction.interactions.LaunchActivityCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import net.dv8tion.jda.internal.interactions.DeferrableInteractionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.LaunchActivityCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.MessageEditCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ModalCallbackActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyCallbackActionImpl;
@@ -111,5 +113,12 @@ public abstract class ComponentInteractionImpl extends DeferrableInteractionImpl
         Checks.notNull(modal, "Modal");
 
         return new ModalCallbackActionImpl(this, modal);
+    }
+
+    @Nonnull
+    @Override
+    public LaunchActivityCallbackAction replyLaunchActivity()
+    {
+        return new LaunchActivityCallbackActionImpl(hook);
     }
 }

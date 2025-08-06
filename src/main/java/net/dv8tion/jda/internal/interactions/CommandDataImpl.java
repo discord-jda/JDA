@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.IDescribedCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -31,6 +32,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.command.localization.LocalizationMapper;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,26 +60,30 @@ public class CommandDataImpl implements SlashCommandData
 
     private final Command.Type type;
 
+    @SuppressWarnings("DataFlowIssue")
+    public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name, @Nullable String description)
+    {
+        Checks.notNull(type, "Type");
+
+        this.type = type;
+        setName(name);
+        if (type == Command.Type.SLASH || type == Command.Type.PRIMARY_ENTRY_POINT)
+            setDescription(description);
+    }
+
     public CommandDataImpl(@Nonnull String name, @Nonnull String description)
     {
-        this.type = Command.Type.SLASH;
-        setName(name);
-        setDescription(description);
+        this(Command.Type.SLASH, name, description);
     }
 
     public CommandDataImpl(@Nonnull Command.Type type, @Nonnull String name)
     {
-        this.type = type;
-        Checks.notNull(type, "Command Type");
-        Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
-        setName(name);
+        this(type, name, null);
     }
 
     public static CommandDataImpl of(@Nonnull Command.Type type, @Nonnull String name, @Nullable String description)
     {
-        if (type == Command.Type.SLASH)
-            return new CommandDataImpl(name, description);
-        return new CommandDataImpl(type, name);
+        return new CommandDataImpl(type, name, description);
     }
 
     protected void checkType(Command.Type required, String action)
@@ -98,8 +104,9 @@ public class CommandDataImpl implements SlashCommandData
 
     public void checkDescription(@Nonnull String description)
     {
-        checkType(Command.Type.SLASH, "set description");
-        Checks.inRange(description, 1, MAX_DESCRIPTION_LENGTH, "Description");
+        if (getType() != Command.Type.SLASH && getType() != Command.Type.PRIMARY_ENTRY_POINT)
+            throw new IllegalStateException("Cannot set description for commands of type " + getType());
+        Checks.inRange(description, 1, IDescribedCommandData.MAX_DESCRIPTION_LENGTH, "Description");
     }
 
     @Nonnull
@@ -442,5 +449,59 @@ public class CommandDataImpl implements SlashCommandData
         allowOption = last instanceof OptionData;
         allowRequired = allowOption && ((OptionData) last).isRequired();
         allowSubcommands = !allowOption;
+    }
+
+    public static void applyBaseCommandData(CommandDataImpl data, DataObject object)
+    {
+        if (!object.isNull("default_member_permissions"))
+        {
+            long defaultPermissions = object.getLong("default_member_permissions");
+            data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
+        }
+
+        if (!object.isNull("contexts"))
+        {
+            data.setContexts(object.getArray("contexts")
+                    .stream(DataArray::getString)
+                    .map(InteractionContextType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
+        }
+        else
+            data.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
+
+        if (!object.isNull("integration_types"))
+        {
+            data.setIntegrationTypes(object.getArray("integration_types")
+                    .stream(DataArray::getString)
+                    .map(IntegrationType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
+        }
+        else
+            data.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
+
+        data.setNSFW(object.getBoolean("nsfw"));
+        data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
+    }
+
+    public static void applyBaseCommand(CommandDataImpl data, Command command)
+    {
+        data.setDefaultPermissions(command.getDefaultPermissions());
+        data.setContexts(command.getContexts());
+        data.setIntegrationTypes(command.getIntegrationTypes());
+        data.setNSFW(command.isNSFW());
+        //Command localizations are modifiable, make a copy
+        data.setNameLocalizations(command.getNameLocalizations().toMap());
+    }
+
+    public static void applyDescribedCommandData(CommandDataImpl data, DataObject object)
+    {
+        data.setDescription(object.getString("description"));
+        data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
+    }
+
+    public static void applyDescribedCommand(CommandDataImpl data, Command command)
+    {
+        data.setDescription(command.getDescription());
+        data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
     }
 }
