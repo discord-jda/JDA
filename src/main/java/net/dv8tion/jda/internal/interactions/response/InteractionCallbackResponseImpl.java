@@ -16,10 +16,12 @@
 
 package net.dv8tion.jda.internal.interactions.response;
 
+import net.dv8tion.jda.api.entities.ActivityInstanceResource;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.response.InteractionCallbackResponse;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 
 import javax.annotation.Nonnull;
@@ -30,12 +32,14 @@ public class InteractionCallbackResponseImpl implements InteractionCallbackRespo
     private final InteractionCallbackAction.ResponseType type;
 
     private final Message message;
+    private final ActivityInstanceResource activityInstance;
 
     public InteractionCallbackResponseImpl(InteractionHookImpl hook, DataObject resource)
     {
         this.type = InteractionCallbackAction.ResponseType.fromId(resource.getInt("type", -1));
 
         this.message = resource.optObject("message").map(hook::buildMessage).orElse(null);
+        this.activityInstance = resource.optObject("activity_instance").map(EntityBuilder::createActivityInstanceResource).orElse(null);
     }
 
     @Nullable
@@ -43,6 +47,13 @@ public class InteractionCallbackResponseImpl implements InteractionCallbackRespo
     public Message getMessage()
     {
         return message;
+    }
+
+    @Nullable
+    @Override
+    public ActivityInstanceResource getActivityInstance()
+    {
+        return activityInstance;
     }
 
     @Nonnull

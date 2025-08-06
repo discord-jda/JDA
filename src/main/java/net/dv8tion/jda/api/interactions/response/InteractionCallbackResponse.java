@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.response;
 
+import net.dv8tion.jda.api.entities.ActivityInstanceResource;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 
@@ -23,9 +24,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Interaction callback response that is created by interaction replies like
- * {@link net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(String) IReplyCallback#reply()} or interaction updates like
- * {@link net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback#editMessage(String) IMessageEditCallback#editMessage()}.
+ * Interaction callback response that is created by interactions such as:
+ * <ul>
+ *     <li>Interaction replies like {@link net.dv8tion.jda.api.interactions.callbacks.IReplyCallback#reply(String) IReplyCallback#reply()}</li>
+ *     <li>Interaction updates like {@link net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback#editMessage(String) IMessageEditCallback#editMessage()}</li>
+ *     <li>{@link net.dv8tion.jda.api.interactions.callbacks.ILaunchActivityCallback#replyLaunchActivity() ILaunchActivityCallback#replyLaunchActivity()}</li>
+ * </ul>
  *
  * @see net.dv8tion.jda.api.interactions.InteractionHook#getCallbackResponse() InteractionHook#getCallbackResponse
  */
@@ -38,6 +42,14 @@ public interface InteractionCallbackResponse
      */
     @Nullable
     Message getMessage();
+
+    /**
+     * Returns the {@link ActivityInstanceResource} contained in this callback response, or {@code null} if the response was not a launched activity.
+     *
+     * @return ActivityInstance contained in this callback response, or null.
+     */
+    @Nullable
+    ActivityInstanceResource getActivityInstance();
 
     /**
      * Returns the {@link InteractionCallbackAction.ResponseType ResponseType} that was used for replying to the interaction.

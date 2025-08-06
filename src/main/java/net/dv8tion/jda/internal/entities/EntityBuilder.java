@@ -1031,6 +1031,14 @@ public class EntityBuilder extends AbstractEntityBuilder
                 .setName(json.getString("name"));
     }
 
+    @Nonnull
+    public static ActivityInstanceResource createActivityInstanceResource(@Nonnull DataObject json)
+    {
+        return new ActivityInstanceResourceImpl(
+                json.getString("id")
+        );
+    }
+
     public ScheduledEvent createScheduledEvent(GuildImpl guild, DataObject json)
     {
         final long id = json.getLong("id");
