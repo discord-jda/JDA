@@ -24,13 +24,10 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import javax.annotation.Nonnull;
@@ -315,18 +312,20 @@ public interface CommandData extends SerializableData
     static CommandData fromCommand(@Nonnull Command command)
     {
         Checks.notNull(command, "Command");
-        if (command.getType() != Command.Type.SLASH)
+        switch (command.getType())
         {
-            final CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
-            return data.setDefaultPermissions(command.getDefaultPermissions())
-                    .setContexts(command.getContexts())
-                    .setIntegrationTypes(command.getIntegrationTypes())
-                    .setNSFW(command.isNSFW())
-                    .setNameLocalizations(command.getNameLocalizations().toMap())
-                    .setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
+        case SLASH:
+            return SlashCommandData.fromCommand(command);
+        case USER:
+        case MESSAGE:
+        {
+            CommandDataImpl data = new CommandDataImpl(command.getType(), command.getName());
+            CommandDataImpl.applyBaseCommand(data, command);
+            return data;
+        }
         }
 
-        return SlashCommandData.fromCommand(command);
+        throw new UnsupportedOperationException("Cannot create a command from an unknown type: " + command.getType());
     }
 
     /**
@@ -350,43 +349,22 @@ public interface CommandData extends SerializableData
     static CommandData fromData(@Nonnull DataObject object)
     {
         Checks.notNull(object, "DataObject");
-        String name = object.getString("name");
-        Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
-        if (commandType != Command.Type.SLASH)
+
+        final int rawType = object.getInt("type", 1);
+        Command.Type commandType = Command.Type.fromId(rawType);
+        switch (commandType)
         {
-            CommandDataImpl data = new CommandDataImpl(commandType, name);
-            if (!object.isNull("default_member_permissions"))
-            {
-                long defaultPermissions = object.getLong("default_member_permissions");
-                data.setDefaultPermissions(defaultPermissions == 0 ? DefaultMemberPermissions.DISABLED : DefaultMemberPermissions.enabledFor(defaultPermissions));
-            }
-
-            if (!object.isNull("contexts"))
-            {
-                data.setContexts(object.getArray("contexts")
-                        .stream(DataArray::getString)
-                        .map(InteractionContextType::fromKey)
-                        .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
-            }
-            else
-                data.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
-
-            if (!object.isNull("integration_types"))
-            {
-                data.setIntegrationTypes(object.getArray("integration_types")
-                        .stream(DataArray::getString)
-                        .map(IntegrationType::fromKey)
-                        .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
-            }
-            else
-                data.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
-
-            data.setNSFW(object.getBoolean("nsfw"));
-            data.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
-            data.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
+        case SLASH:
+            return SlashCommandData.fromData(object);
+        case USER:
+        case MESSAGE:
+        {
+            CommandDataImpl data = new CommandDataImpl(commandType, object.getString("name"));
+            CommandDataImpl.applyBaseCommandData(data, object);
             return data;
         }
+        }
 
-        return SlashCommandData.fromData(object);
+        throw new UnsupportedOperationException("Cannot create a command from an unknown type: " + rawType);
     }
 }

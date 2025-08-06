@@ -29,8 +29,6 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
@@ -558,13 +556,9 @@ public interface SlashCommandData extends CommandData, IDescribedCommandData
         Checks.check(command.getType() == Command.Type.SLASH, "Cannot convert command of type %s to SlashCommandData!", command.getType());
 
         CommandDataImpl data = new CommandDataImpl(command.getName(), command.getDescription());
-        data.setContexts(command.getContexts());
-        data.setIntegrationTypes(command.getIntegrationTypes());
-        data.setNSFW(command.isNSFW());
-        data.setDefaultPermissions(command.getDefaultPermissions());
-        //Command localizations are unmodifiable, make a copy
-        data.setNameLocalizations(command.getNameLocalizations().toMap());
-        data.setDescriptionLocalizations(command.getDescriptionLocalizations().toMap());
+        CommandDataImpl.applyBaseCommand(data, command);
+        CommandDataImpl.applyDescribedCommand(data, command);
+
         command.getOptions()
                 .stream()
                 .map(OptionData::fromOption)
@@ -605,54 +599,27 @@ public interface SlashCommandData extends CommandData, IDescribedCommandData
         Command.Type commandType = Command.Type.fromId(object.getInt("type", 1));
         Checks.check(commandType == Command.Type.SLASH, "Cannot convert command '%s' of type %s to SlashCommandData!", name, commandType);
 
-        String description = object.getString("description");
+        CommandDataImpl data = new CommandDataImpl(name, object.getString("description"));
+
+        CommandDataImpl.applyBaseCommandData(data, object);
+        CommandDataImpl.applyDescribedCommandData(data, object);
+
         DataArray options = object.optArray("options").orElseGet(DataArray::empty);
-        CommandDataImpl command = new CommandDataImpl(name, description);
-        if (!object.isNull("contexts"))
-        {
-            command.setContexts(object.getArray("contexts")
-                    .stream(DataArray::getString)
-                    .map(InteractionContextType::fromKey)
-                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class)));
-        }
-        else
-            command.setContexts(Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM));
-
-        if (!object.isNull("integration_types"))
-        {
-            command.setIntegrationTypes(object.getArray("integration_types")
-                    .stream(DataArray::getString)
-                    .map(IntegrationType::fromKey)
-                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class)));
-        }
-        else
-            command.setIntegrationTypes(Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL));
-
-        command.setNSFW(object.getBoolean("nsfw"));
-
-        command.setDefaultPermissions(
-                object.isNull("default_member_permissions")
-                        ? DefaultMemberPermissions.ENABLED
-                        : DefaultMemberPermissions.enabledFor(object.getLong("default_member_permissions"))
-        );
-
-        command.setNameLocalizations(LocalizationUtils.mapFromProperty(object, "name_localizations"));
-        command.setDescriptionLocalizations(LocalizationUtils.mapFromProperty(object, "description_localizations"));
         options.stream(DataArray::getObject).forEach(opt ->
         {
             OptionType type = OptionType.fromKey(opt.getInt("type"));
             switch (type)
             {
             case SUB_COMMAND:
-                command.addSubcommands(SubcommandData.fromData(opt));
+                data.addSubcommands(SubcommandData.fromData(opt));
                 break;
             case SUB_COMMAND_GROUP:
-                command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
+                data.addSubcommandGroups(SubcommandGroupData.fromData(opt));
                 break;
             default:
-                command.addOptions(OptionData.fromData(opt));
+                data.addOptions(OptionData.fromData(opt));
             }
         });
-        return command;
+        return data;
     }
 }
