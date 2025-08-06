@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.IDescribedCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -99,7 +100,7 @@ public class CommandDataImpl implements SlashCommandData
     public void checkDescription(@Nonnull String description)
     {
         checkType(Command.Type.SLASH, "set description");
-        Checks.inRange(description, 1, MAX_DESCRIPTION_LENGTH, "Description");
+        Checks.inRange(description, 1, IDescribedCommandData.MAX_DESCRIPTION_LENGTH, "Description");
     }
 
     @Nonnull

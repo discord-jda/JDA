@@ -17,10 +17,9 @@
 package net.dv8tion.jda.internal.interactions.command.localization;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.IDescribedCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -75,10 +74,10 @@ public class LocalizationMapper
         ctx.withKey(commandData.getName(), () ->
         {
             ctx.trySetTranslation(commandData.getNameLocalizations(), "name");
-            if (commandData.getType() == Command.Type.SLASH)
+            if (commandData instanceof IDescribedCommandData)
             {
-                final SlashCommandData slashCommandData = (SlashCommandData) commandData;
-                ctx.trySetTranslation(slashCommandData.getDescriptionLocalizations(), "description");
+                final IDescribedCommandData describedCommandData = (IDescribedCommandData) commandData;
+                ctx.trySetTranslation(describedCommandData.getDescriptionLocalizations(), "description");
                 localizeOptionArray(optionArray, ctx);
             }
         });

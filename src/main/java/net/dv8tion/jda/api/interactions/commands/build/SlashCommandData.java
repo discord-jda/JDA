@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.attributes.IDescribedCommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.CommandDataImpl;
@@ -42,7 +42,7 @@ import java.util.function.Predicate;
 /**
  * Extension of {@link CommandData} which allows setting slash-command specific settings such as options and subcommands.
  */
-public interface SlashCommandData extends CommandData
+public interface SlashCommandData extends CommandData, IDescribedCommandData
 {
     @Nonnull
     @Override
@@ -90,75 +90,17 @@ public interface SlashCommandData extends CommandData
     @Override
     SlashCommandData setNSFW(boolean nsfw);
 
-    /**
-     * Configure the description
-     *
-     * @param  description
-     *         The description, 1-{@value #MAX_DESCRIPTION_LENGTH} characters
-     *
-     * @throws IllegalArgumentException
-     *         If the name is null or not between 1-{@value #MAX_DESCRIPTION_LENGTH} characters
-     *
-     * @return The builder, for chaining
-     */
     @Nonnull
+    @Override
     SlashCommandData setDescription(@Nonnull String description);
 
-    /**
-     * Sets a {@link DiscordLocale language-specific} localizations of this command's description.
-     *
-     * @param  locale
-     *         The locale to associate the translated description with
-     *
-     * @param  description
-     *         The translated description to put
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the locale is null</li>
-     *             <li>If the description is null</li>
-     *             <li>If the locale is {@link DiscordLocale#UNKNOWN}</li>
-     *             <li>If the description does not pass the corresponding {@link #setDescription(String) description check}</li>
-     *         </ul>
-     *
-     * @return This builder instance, for chaining
-     */
     @Nonnull
+    @Override
     SlashCommandData setDescriptionLocalization(@Nonnull DiscordLocale locale, @Nonnull String description);
 
-    /**
-     * Sets multiple {@link DiscordLocale language-specific} localizations of this command's description.
-     *
-     * @param  map
-     *         The map from which to transfer the translated descriptions
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the map is null</li>
-     *             <li>If the map contains an {@link DiscordLocale#UNKNOWN} key</li>
-     *             <li>If the map contains a description which does not pass the corresponding {@link #setDescription(String) description check}</li>
-     *         </ul>
-     *
-     * @return This builder instance, for chaining
-     */
     @Nonnull
+    @Override
     SlashCommandData setDescriptionLocalizations(@Nonnull Map<DiscordLocale, String> map);
-
-    /**
-     * The configured description
-     *
-     * @return The description
-     */
-    @Nonnull
-    String getDescription();
-
-    /**
-     * The localizations of this command's description for {@link DiscordLocale various languages}.
-     *
-     * @return The {@link LocalizationMap} containing the mapping from {@link DiscordLocale} to the localized description
-     */
-    @Nonnull
-    LocalizationMap getDescriptionLocalizations();
 
     /**
      * Removes all options that evaluate to {@code true} under the provided {@code condition}.

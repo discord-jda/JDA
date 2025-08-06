@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -53,7 +54,11 @@ public interface CommandData extends SerializableData
 
     /**
      * The maximum length the description of a command can be. ({@value})
+     *
+     * @deprecated Moved to {@link net.dv8tion.jda.api.interactions.commands.build.attributes.IDescribedCommandData IDescribedCommandData}
      */
+    @Deprecated
+    @ReplaceWith("IDescribedCommandData.MAX_DESCRIPTION_LENGTH")
     int MAX_DESCRIPTION_LENGTH = 100;
 
     /**
