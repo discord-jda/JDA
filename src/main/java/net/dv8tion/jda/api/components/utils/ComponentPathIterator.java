@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.components.utils;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.section.Section;
 import org.apache.commons.collections4.iterators.SingletonIterator;
 
@@ -101,6 +102,11 @@ public class ComponentPathIterator implements Iterator<ComponentPathIterator.Com
 
             stack.push(new CollectionAttributeIterator(componentWithPath.path, "components", section.getContentComponents()));
             stack.push(singleAttributeIterator(componentWithPath.path, "accessory", section.getAccessory()));
+        }
+        else if (component instanceof Label)
+        {
+            Label label = (Label) component;
+            stack.push(singleAttributeIterator(componentWithPath.path, "component", label.getChild()));
         }
 
         return componentWithPath;

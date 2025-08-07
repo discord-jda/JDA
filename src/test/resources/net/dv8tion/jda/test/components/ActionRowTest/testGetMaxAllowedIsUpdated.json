@@ -4,6 +4,7 @@
     "CHANNEL_SELECT" : 1,
     "CONTAINER" : 0,
     "FILE_DISPLAY" : 0,
+    "LABEL" : 0,
     "MEDIA_GALLERY" : 0,
     "MENTIONABLE_SELECT" : 1,
     "ROLE_SELECT" : 1,

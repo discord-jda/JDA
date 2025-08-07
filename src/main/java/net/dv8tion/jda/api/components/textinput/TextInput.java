@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.components.textinput;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
-import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.internal.components.textinput.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  *
  * <p>Must be used in {@link Modal Modals}!
  */
-public interface TextInput extends ActionComponent, ActionRowChildComponent
+public interface TextInput extends ActionComponent, LabelChildComponent
 {
     /**
      * The maximum length a TextInput value can have. ({@value})
@@ -48,11 +48,6 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
      * The maximum length a TextInput placeholder can have. ({@value})
      */
     int MAX_PLACEHOLDER_LENGTH = 100;
-
-    /**
-     * The maximum length a TextInput label can have. ({@value})
-     */
-    int MAX_LABEL_LENGTH = 45;
 
     /**
      * The {@link TextInputStyle} of this TextInput component.
@@ -72,14 +67,6 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
     @Nonnull
     @Override
     String getCustomId();
-
-    /**
-     * The label of this TextInput component.
-     *
-     * @return The label of this TextInput component.
-     */
-    @Nonnull
-    String getLabel();
 
     /**
      * The minimum amount of characters that must be written to submit the Modal.
@@ -171,25 +158,22 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
      *
      * @param  id
      *         The custom id
-     * @param  label
-     *         The label
      * @param  style
      *         The {@link TextInputStyle TextInputStyle}
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If either id or label are null or blank</li>
+     *             <li>If id is null or blank</li>
      *             <li>If style is null or {@link TextInputStyle#UNKNOWN UNKNOWN}</li>
      *             <li>If id is longer than {@value #MAX_ID_LENGTH} characters</li>
-     *             <li>If label is longer than {@value #MAX_LABEL_LENGTH} characters</li>
      *         </ul>
      *
      * @return a new TextInput Builder.
      */
     @Nonnull
-    static TextInput.Builder create(@Nonnull String id, @Nonnull String label, @Nonnull TextInputStyle style)
+    static TextInput.Builder create(@Nonnull String id, @Nonnull TextInputStyle style)
     {
-        return new Builder(id, label, style);
+        return new Builder(id, style);
     }
 
     /**
@@ -199,7 +183,6 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
     {
         private String id;
         private int uniqueId = -1;
-        private String label;
         private String value;
         private String placeholder;
         private int minLength = -1;
@@ -207,10 +190,9 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
         private TextInputStyle style;
         private boolean required = true;
 
-        protected Builder(String id, String label, TextInputStyle style)
+        protected Builder(String id, TextInputStyle style)
         {
             setId(id);
-            setLabel(label);
             setStyle(style);
         }
 
@@ -255,29 +237,6 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
         {
             Checks.positive(uniqueId, "Unique ID");
             this.uniqueId = uniqueId;
-            return this;
-        }
-
-        /**
-         * Sets the label for this TextInput
-         *
-         * @param  label
-         *         The label to set
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If label is null or blank</li>
-         *             <li>If label is longer than {@value #MAX_LABEL_LENGTH} characters</li>
-         *         </ul>
-         *
-         * @return The same Builder for chaining convenience.
-         */
-        @Nonnull
-        public Builder setLabel(@Nonnull String label)
-        {
-            Checks.notBlank(label, "Label");
-            Checks.notLonger(label, MAX_LABEL_LENGTH, "Label");
-            this.label = label;
             return this;
         }
 
@@ -505,17 +464,6 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
         }
 
         /**
-         * The label shown above this text input box
-         *
-         * @return Label for the input
-         */
-        @Nonnull
-        public String getLabel()
-        {
-            return label;
-        }
-
-        /**
          * The {@link TextInputStyle TextInputStyle}
          *
          * @return The TextInputStyle
@@ -576,7 +524,7 @@ public interface TextInput extends ActionComponent, ActionRowChildComponent
             if (maxLength < minLength && maxLength != -1)
                 throw new IllegalStateException("maxLength cannot be smaller than minLength!");
 
-            return new TextInputImpl(id, uniqueId, style, label, minLength, maxLength, required, value, placeholder);
+            return new TextInputImpl(id, uniqueId, style, minLength, maxLength, required, value, placeholder);
         }
     }
 }
