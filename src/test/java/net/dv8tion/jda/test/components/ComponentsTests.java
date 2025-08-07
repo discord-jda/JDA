@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
+import net.dv8tion.jda.internal.components.label.LabelImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.internal.components.selections.EntitySelectMenuImpl;
@@ -124,6 +125,9 @@ public class ComponentsTests
             break;
         case CONTAINER:
             testParseComponentIsUpdated(type, ContainerImpl.class);
+            break;
+        case LABEL:
+            testParseComponentIsUpdated(type, LabelImpl.class);
             break;
         default:
             fail("Please update this test with the new component type (" + type.name() + "), then update Components#parseComponent if necessary");

@@ -136,6 +136,7 @@ public interface Component
         FILE_DISPLAY(13, true, false),
         SEPARATOR(14, true, false),
         CONTAINER(17, true, false),
+        LABEL(18, false, true),
         ;
 
         private final int key;

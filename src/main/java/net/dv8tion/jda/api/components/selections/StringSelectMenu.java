@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.components.selections;
 
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction;
@@ -62,7 +63,7 @@ import java.util.stream.Collectors;
  * @see StringSelectInteraction
  * @see EntitySelectMenu
  */
-public interface StringSelectMenu extends SelectMenu
+public interface StringSelectMenu extends SelectMenu, LabelChildComponent
 {
     @Nonnull
     @Override

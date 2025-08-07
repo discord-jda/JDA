@@ -20,10 +20,13 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -36,15 +39,16 @@ public class ModalMapping
 {
     private final String id;
     private final int uniqueId;
-    private final String value;
+    private final DataObject value;
     private final Component.Type type;
 
     public ModalMapping(DataObject object)
     {
-        this.uniqueId = object.getInt("id");
+        // TODO: selects don't have an id for now, should be fixed soon:tm:
+        this.uniqueId = object.getInt("id", -1);
         this.id = object.getString("custom_id");
-        this.value = object.getString("value");
         this.type = Component.Type.fromKey(object.getInt("type"));
+        this.value = object;
     }
 
     /**
@@ -106,7 +110,21 @@ public class ModalMapping
     @Nonnull
     public String getAsString()
     {
-        return value;
+        if (type != Component.Type.TEXT_INPUT)
+            typeError("String");
+
+        return value.getString("value");
+    }
+
+    @Nonnull
+    public List<String> getAsStringList()
+    {
+        if (type != Component.Type.STRING_SELECT)
+            typeError("List<String>");
+
+        return value.getArray("values")
+                .stream(DataArray::getString)
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Override
@@ -114,7 +132,7 @@ public class ModalMapping
     {
         return new EntityString(this)
                 .setType(getType())
-                .addMetadata("value", getAsString())
+                .addMetadata("custom_id", id)
                 .toString();
     }
 
@@ -131,5 +149,10 @@ public class ModalMapping
     public int hashCode()
     {
         return Objects.hash(id, uniqueId, value, type);
+    }
+
+    private void typeError(String targetType)
+    {
+        throw new IllegalStateException("ModalMapping of type " + getType() + " can not be represented as " + targetType + "!");
     }
 }

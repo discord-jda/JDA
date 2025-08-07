@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.components.selections;
 
+import net.dv8tion.jda.api.components.label.LabelChildComponentUnion;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -27,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelectMenu
+public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelectMenu, LabelChildComponentUnion
 {
     private final List<SelectOption> options;
 
