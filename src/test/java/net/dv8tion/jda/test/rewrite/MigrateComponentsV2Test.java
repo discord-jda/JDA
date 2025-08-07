@@ -174,6 +174,14 @@ public class MigrateComponentsV2Test implements RewriteTest
                         "import net.dv8tion.jda.api.components.textinput.TextInputStyle;\n\npublic class Test { TextInputStyle x() {} }"
                 )
         );
+        rewriteRun(
+                spec -> spec.recipeFromResources("net.dv8tion.MigrateComponentsV2Packages"),
+                //language=java
+                java(
+                        "import net.dv8tion.jda.api.interactions.modals.Modal;\n\npublic class Test20 { Modal x() {} }",
+                        "import net.dv8tion.jda.api.modals.Modal;\n\npublic class Test20 { Modal x() {} }"
+                )
+        );
     }
 
     @Test

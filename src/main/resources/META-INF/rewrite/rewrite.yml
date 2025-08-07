@@ -76,6 +76,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.components.text.TextInputStyle
       newFullyQualifiedTypeName: net.dv8tion.jda.api.components.textinput.TextInputStyle
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.dv8tion.jda.api.interactions.modals.Modal
+      newFullyQualifiedTypeName: net.dv8tion.jda.api.modals.Modal
 
 ---
 type: specs.openrewrite.org/v1beta/recipe

@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.components.section.SectionContentComponentUnion;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 
 import javax.annotation.Nonnull;
 

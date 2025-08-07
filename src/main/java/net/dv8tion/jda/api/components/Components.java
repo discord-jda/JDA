@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.components;
 
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.components.tree.MessageComponentTree;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
-import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
+import net.dv8tion.jda.api.components.tree.ModalComponentTree;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.UnknownComponentImpl;
