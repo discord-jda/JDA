@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.components.textinput;
 
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 
 import javax.annotation.Nonnull;
 
