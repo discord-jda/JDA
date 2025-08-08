@@ -16,12 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
-import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
@@ -299,62 +294,6 @@ public interface Modal extends SerializableData
         {
             Checks.notNull(tree, "ModalComponentTree");
             return addComponents(tree.getComponents());
-        }
-
-        /**
-         * Adds an ActionRow to this modal
-         *
-         * @param  components
-         *         The components to add
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If any of the provided components are null, or an invalid number of components are provided</li>
-         *             <li>If any of the provided components are not compatible with Modals</li>
-         *         </ul>
-         *
-         * @return Same builder for chaining convenience
-         *
-         * @see    Component#isModalCompatible()
-         *
-         * @deprecated
-         *         Use {@link #addComponents(ModalTopLevelComponent...)} instead
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("addComponents(ActionRow.of(components))")
-        public Builder addActionRow(@Nonnull Collection<? extends ActionRowChildComponent> components)
-        {
-            return addComponents(ActionRow.of(components));
-        }
-
-        /**
-         * Adds an ActionRow to this modal
-         *
-         * @param  components
-         *         The components to add
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If any of the provided components are null, or an invalid number of components are provided</li>
-         *             <li>If any of the provided components are not compatible with Modals</li>
-         *         </ul>
-         *
-         * @return Same builder for chaining convenience
-         *
-         * @see    Component#isModalCompatible()
-         *
-         * @deprecated
-         *         Use {@link #addComponents(ModalTopLevelComponent...)} instead
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("addComponents(ActionRow.of(components))")
-        public Builder addActionRow(@Nonnull ActionRowChildComponent... components)
-        {
-            return addComponents(ActionRow.of(components));
         }
 
         /**

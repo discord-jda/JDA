@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.interactions.modals;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 
 import javax.annotation.Nonnull;
 

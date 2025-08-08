@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -42,7 +41,7 @@ import java.util.stream.Collectors;
 
 public class ActionRowImpl
         extends AbstractComponentImpl
-        implements ActionRow, MessageTopLevelComponentUnion, ModalTopLevelComponentUnion, ContainerChildComponentUnion
+        implements ActionRow, MessageTopLevelComponentUnion, ContainerChildComponentUnion
 {
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
