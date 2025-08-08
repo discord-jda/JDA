@@ -1,7 +1,6 @@
-package net.dv8tion.jda.api.entities.subscription;
+package net.dv8tion.jda.internal.entities.subscription;
 
 import net.dv8tion.jda.internal.utils.EntityString;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,24 +37,23 @@ public class SubscriptionImpl implements Subscription
         this.status = status;
     }
 
-    @Nonnull
     @Override
-    public long getIdLong()
+    @Nonnull public long getIdLong()
     {
         return id;
     }
 
-    public long getSubscriberIdLong()
+    public @Nonnull long getSubscriberIdLong()
     {
         return subscriberId;
     }
 
-    public @NotNull List<Long> getSkuIdsLong()
+    public @Nonnull List<Long> getSkuIdsLong()
     {
         return skuIDs;
     }
 
-    public @NotNull List<Long> getEntitlementIdsLong()
+    public @Nonnull List<Long> getEntitlementIdsLong()
     {
         return entitlementIDs;
     }
@@ -65,22 +63,22 @@ public class SubscriptionImpl implements Subscription
         return renewalSkuIDs;
     }
 
-    public @NotNull OffsetDateTime getCurrentPeriodStart()
+    public @Nonnull OffsetDateTime getCurrentPeriodStart()
     {
         return currentPeriodStart;
     }
 
-    public @NotNull OffsetDateTime getCurrentPeriodEnd()
+    public @Nonnull OffsetDateTime getCurrentPeriodEnd()
     {
         return currentPeriodEnd;
     }
 
-    public OffsetDateTime getCanceledAt()
+    public @Nullable OffsetDateTime getCanceledAt()
     {
         return canceledAt;
     }
 
-    public @NotNull SubscriptionStatus getStatus()
+    public @Nonnull SubscriptionStatus getStatus()
     {
         return status;
     }
@@ -97,9 +95,8 @@ public class SubscriptionImpl implements Subscription
         if (this == obj)
             return true;
         if (!(obj instanceof SubscriptionImpl))
-        {
             return false;
-        }
+
         SubscriptionImpl other = (SubscriptionImpl) obj;
         return other.id == this.id;
     }

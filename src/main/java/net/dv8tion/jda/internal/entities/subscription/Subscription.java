@@ -1,4 +1,4 @@
-package net.dv8tion.jda.api.entities.subscription;
+package net.dv8tion.jda.internal.entities.subscription;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
 
@@ -35,7 +35,7 @@ public interface Subscription extends ISnowflake
     }
 
     /**
-     * The sku id's related to this
+     * The SKU id's related to this
      *
      * @return The list of sku id's related to this {@link Subscription}
      */
@@ -43,7 +43,7 @@ public interface Subscription extends ISnowflake
     List<Long> getSkuIdsLong();
 
     /**
-     * The sku id's related to this
+     * The SKU id's related to this
      *
      * @return The list sku id's related to this {@link Subscription}
      */
@@ -77,7 +77,7 @@ public interface Subscription extends ISnowflake
     }
 
     /**
-     * The renewal sku id's related to this {@link Subscription}
+     * The renewal SKU id's related to this {@link Subscription}
      *
      * @return The  renewal sku id's related to this {@link Subscription}
      */
@@ -85,7 +85,7 @@ public interface Subscription extends ISnowflake
     List<Long> getRenewalSkuIdsLong();
 
     /**
-     * The renewal sku id's related to this {@link Subscription}
+     * The renewal SKU id's related to this {@link Subscription}
      *
      * @return The  renewal sku id's related to this {@link Subscription}
      */
