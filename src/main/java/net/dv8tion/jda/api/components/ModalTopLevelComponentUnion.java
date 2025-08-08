@@ -29,6 +29,25 @@ import javax.annotation.Nonnull;
  */
 public interface ModalTopLevelComponentUnion extends ModalTopLevelComponent, IComponentUnion
 {
+    /**
+     * Casts this union to a {@link Label}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * Label label = union.asLabel();
+     * Label label2 = (Label) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link net.dv8tion.jda.api.components.Component.Type#LABEL LABEL} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof Label</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link Label}.
+     *
+     * @return The component as a {@link Label}
+     */
     @Nonnull
     Label asLabel();
 

@@ -29,7 +29,7 @@ import javax.annotation.Nullable;
 /**
  * Represents a Discord Text input component
  *
- * <p>Must be used in {@link Modal Modals}!
+ * <p>Must be used inside {@link net.dv8tion.jda.api.components.label.Label Labels} only!
  */
 public interface TextInput extends ActionComponent, LabelChildComponent
 {

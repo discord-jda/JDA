@@ -53,27 +53,28 @@ import java.util.stream.Collectors;
  * {
  *     if (event.getName().equals("modmail"))
  *     {
- *         TextInput subject = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
+ *         TextInput subject = TextInput.create("subject", TextInputStyle.SHORT)
  *                 .setPlaceholder("Subject of this ticket")
  *                 .setMinLength(10)
  *                 .setMaxLength(100) // or setRequiredRange(10, 100)
  *                 .build();
  *
- *         TextInput body = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
+ *         TextInput body = TextInput.create("body", TextInputStyle.PARAGRAPH)
  *                 .setPlaceholder("Your concerns go here")
  *                 .setMinLength(30)
  *                 .setMaxLength(1000)
  *                 .build();
  *
  *         Modal modal = Modal.create("modmail", "Modmail")
- *                 .addComponents(ActionRow.of(subject), ActionRow.of(body))
+ *                 .addComponents(Label.of("Subject", subject), Label.of("Body", body))
  *                 .build();
  *
  *         event.replyModal(modal).queue();
  *     }
  * }}</pre>
  *
- * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link TextInput TextInputs} are allowed at this time.</b>
+ * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only
+ * {@link net.dv8tion.jda.api.components.label.Label Labels} are allowed at this time.</b>
  * You can check whether a component is supported via {@link Component.Type#isModalCompatible}.
  *
  * @see    ModalInteractionEvent
