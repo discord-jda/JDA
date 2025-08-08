@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
@@ -108,6 +109,12 @@ public abstract class AbstractComponentImpl implements SerializableData
     public Container asContainer()
     {
         return toComponentType(Container.class);
+    }
+
+    @Nonnull
+    public Label asLabel()
+    {
+        return toComponentType(Label.class);
     }
 
     protected <T extends Component> T toComponentType(Class<T> type) {

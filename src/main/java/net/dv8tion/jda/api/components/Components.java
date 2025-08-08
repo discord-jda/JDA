@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
+import net.dv8tion.jda.internal.components.label.LabelImpl;
 import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
 import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.internal.components.selections.EntitySelectMenuImpl;
@@ -102,6 +103,8 @@ public class Components
             return new SeparatorImpl(data);
         case CONTAINER:
             return new ContainerImpl(data);
+        case LABEL:
+            return new LabelImpl(data);
         default:
             return new UnknownComponentImpl(data);
         }

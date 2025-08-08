@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -41,7 +40,7 @@ import java.util.List;
  *
  * @see ActionRowChildComponent
  */
-public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
+public interface ActionRow extends MessageTopLevelComponent, ContainerChildComponent, IReplaceable, IDisableable
 {
     /**
      * Create one row of {@link ActionRowChildComponent components}.

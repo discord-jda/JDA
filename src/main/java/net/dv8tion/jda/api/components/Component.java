@@ -115,7 +115,7 @@ public interface Component
     {
         UNKNOWN(-1, false, false),
         /** A row of components */
-        ACTION_ROW(1, true, true),
+        ACTION_ROW(1, true, false),
         /** A button */
         BUTTON(2, true, false),
         /** A select menu of strings */
@@ -137,6 +137,7 @@ public interface Component
         FILE_DISPLAY(13, true, false),
         SEPARATOR(14, true, false),
         CONTAINER(17, true, false),
+        LABEL(18, false, true),
         ;
 
         private final int key;
