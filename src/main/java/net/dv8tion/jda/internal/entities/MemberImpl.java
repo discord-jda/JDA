@@ -36,10 +36,9 @@ import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -221,6 +220,12 @@ public class MemberImpl implements Member, MemberMixin<MemberImpl>
     {
         final int raw = getColorRaw();
         return raw != Role.DEFAULT_COLOR_RAW ? new Color(raw) : null;
+    }
+
+    @Override
+    public boolean hasRole(@Nonnull Role role)
+    {
+        return roles.contains(role);
     }
 
     @Override
