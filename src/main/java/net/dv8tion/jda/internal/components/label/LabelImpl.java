@@ -47,7 +47,7 @@ public class LabelImpl
 
     public static Label of(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
     {
-        Checks.notNull(label, "Label");
+        Checks.notBlank(label, "Label");
         Checks.notNull(child, "Child");
 
         LabelChildComponentUnion childUnion = ComponentsUtil.safeUnionCast("child", child, LabelChildComponentUnion.class);
