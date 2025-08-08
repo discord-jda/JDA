@@ -103,7 +103,12 @@ public class ModalMapping
     /**
      * The String representation of this component.
      *
-     * <p>For TextInputs, this returns what the User typed in it.
+     * <p>For {@link net.dv8tion.jda.api.components.textinput.TextInput TextInputs}, this returns what the User typed in it.
+     *
+     * <p>Use {@link #getType()} to check if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as a String.
      *
      * @return The String representation of this component.
      */
@@ -116,6 +121,19 @@ public class ModalMapping
         return value.getString("value");
     }
 
+    /**
+     * The String list representation of this component.
+     *
+     * <p>For {@link net.dv8tion.jda.api.components.selections.StringSelectMenu StringSelectMenus}, this returns
+     * the values chosen by the User.
+     *
+     * <p>Use {@link #getType()} to check if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as a List of Strings.
+     *
+     * @return The string list representation of this component.
+     */
     @Nonnull
     public List<String> getAsStringList()
     {

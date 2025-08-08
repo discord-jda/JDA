@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.dv8tion.jda.api.components.label;
 
 import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
@@ -7,20 +23,84 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Component that contains a label, an optional description, and a {@link LabelChildComponent child component}.
+ *
+ * <p>Labels are used as top-level components inside {@link net.dv8tion.jda.api.interactions.modals.Modal Modals},
+ * and cannot be used in Messages.
+ *
+ * @see LabelChildComponent
+ * @see LabelChildComponentUnion
+ */
 public interface Label extends ModalTopLevelComponent
 {
+    /**
+     * Constructs a new {@link Label} using the provided label, description and child component.
+     *
+     * @param  label
+     *         The label of the Label
+     * @param  description
+     *         The description of the Label. May be {@code null}
+     * @param  child
+     *         The {@link LabelChildComponent} that should be contained by the Label
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code label} is {@code null} or blank</li>
+     *             <li>If {@code child} is {@code null}</li>
+     *         </ul>
+     *
+     * @return The new {@link Label}
+     */
     @Nonnull
     static Label of(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
     {
         return LabelImpl.of(label, description, child);
     }
 
+    /**
+     * Constructs a new {@link Label} using the provided label and child component.
+     *
+     * @param  label
+     *         The label of the Label
+     * @param  child
+     *         The {@link LabelChildComponent} that should be contained by the Label
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code label} is {@code null} or blank</li>
+     *             <li>If {@code child} is {@code null}</li>
+     *         </ul>
+     *
+     * @return The new {@link Label}
+     */
+    @Nonnull
+    static Label of(@Nonnull String label, @Nonnull LabelChildComponent child)
+    {
+        return of(label, null, child);
+    }
+
+    /**
+     * The label.
+     *
+     * @return The label
+     */
     @Nonnull
     String getLabel();
 
+    /**
+     * The description of the Label. May be null.
+     *
+     * @return The description
+     */
     @Nullable
     String getDescription();
 
+    /**
+     * The {@link LabelChildComponentUnion child component} contained by this Label.
+     *
+     * @return The child component
+     */
     @Nonnull
     LabelChildComponentUnion getChild();
 
