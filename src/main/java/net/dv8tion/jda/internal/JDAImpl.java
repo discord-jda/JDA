@@ -35,7 +35,8 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.sticker.StickerPack;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.sticker.StickerUnion;
-import net.dv8tion.jda.api.entities.subscription.Subscription;
+import net.dv8tion.jda.api.requests.restaction.pagination.SubscriptionPaginationAction;
+import net.dv8tion.jda.internal.entities.subscription.Subscription;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
@@ -76,6 +77,7 @@ import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.pagination.EntitlementPaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.SubscriptionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -1258,23 +1260,23 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<Entitlement> retrieveEntitlementById(long entitlementId)
+    public RestAction<Entitlement> retrieveEntitlementById(@Nonnull long entitlementId)
     {
         return new RestActionImpl<>(this, Route.Applications.GET_ENTITLEMENT.compile(getSelfUser().getApplicationId(), Long.toUnsignedString(entitlementId)));
     }
 
     @Nonnull
     @Override
-    public RestAction<Subscription> retrieveSubscriptionsBySkuId(long skuId)
+    public SubscriptionPaginationAction retrieveSubscriptionsBySkuId(@Nonnull SkuSnowflake skuId)
     {
-        return new RestActionImpl<>(this, Route.Sku.GET_SUBSCRIPTIONS.compile(Long.toUnsignedString(skuId)));
+        return new SubscriptionPaginationActionImpl(this, skuId.getId());
     }
 
     @Nonnull
     @Override
-    public RestAction<Subscription> retrieveSubscriptionBySkuIdAndSubscriptionId(long skuId, long subscriptionId)
+    public RestAction<Subscription> retrieveSubscriptionBySkuId(@Nonnull SkuSnowflake skuId, @Nonnull long subscriptionId)
     {
-        return new RestActionImpl<>(this, Route.Sku.GET_SUBSCRIPTION.compile(Long.toUnsignedString(skuId), Long.toUnsignedString(subscriptionId)));
+        return new RestActionImpl<>(this, Route.Sku.GET_SUBSCRIPTION.compile(Long.toUnsignedString(skuId.getIdLong()), Long.toUnsignedString(subscriptionId)));
     }
 
     @Nonnull

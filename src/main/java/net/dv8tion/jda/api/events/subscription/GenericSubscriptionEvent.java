@@ -1,7 +1,7 @@
 package net.dv8tion.jda.api.events.subscription;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.subscription.Subscription;
+import net.dv8tion.jda.internal.entities.subscription.Subscription;
 import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
@@ -24,9 +24,9 @@ public abstract class GenericSubscriptionEvent extends Event
     }
 
     /**
-     * The subscription {@link Subscription}
+     * The {@link Subscription}
      *
-     * @return The subscription {@link Subscription}
+     * @return The {@link Subscription}
      */
     @Nonnull
     public Subscription getSubscription()

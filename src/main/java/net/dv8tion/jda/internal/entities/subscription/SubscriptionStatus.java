@@ -1,4 +1,4 @@
-package net.dv8tion.jda.api.entities.subscription;
+package net.dv8tion.jda.internal.entities.subscription;
 
 import javax.annotation.Nonnull;
 
@@ -33,9 +33,7 @@ public enum SubscriptionStatus
         for (SubscriptionStatus status : values())
         {
             if (status.id == key)
-            {
                 return status;
-            }
         }
         return UNKNOWN;
     }
