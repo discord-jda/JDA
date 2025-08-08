@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.components.textinput;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
-import net.dv8tion.jda.api.modals.Modal;
+import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.internal.components.textinput.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 

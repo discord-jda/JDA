@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 public class ActionRowImpl
         extends AbstractComponentImpl
-        implements ActionRow, MessageTopLevelComponentUnion, ModalTopLevelComponentUnion, ContainerChildComponentUnion
+        implements ActionRow, MessageTopLevelComponentUnion, ContainerChildComponentUnion
 {
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;

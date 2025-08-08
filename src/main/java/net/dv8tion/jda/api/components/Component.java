@@ -114,7 +114,7 @@ public interface Component
     {
         UNKNOWN(-1, false, false),
         /** A row of components */
-        ACTION_ROW(1, true, true),
+        ACTION_ROW(1, true, false),
         /** A button */
         BUTTON(2, true, false),
         /** A select menu of strings */
