@@ -23,8 +23,8 @@ import javax.annotation.Nonnull;
 /**
  * Represents a component that can be used inside {@link Label Labels}. This includes:
  * <ul>
- *     <li>{@link net.dv8tion.jda.api.components.textinput.TextInput}</li>
- *     <li>{@link net.dv8tion.jda.api.components.selections.StringSelectMenu}</li>
+ *     <li>{@link net.dv8tion.jda.api.components.textinput.TextInput TextInput}</li>
+ *     <li>{@link net.dv8tion.jda.api.components.selections.StringSelectMenu StringSelectMenu}</li>
  * </ul>
  */
 public interface LabelChildComponent extends Component

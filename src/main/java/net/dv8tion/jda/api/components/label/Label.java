@@ -56,7 +56,8 @@ public interface Label extends ModalTopLevelComponent
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code label} is {@code null} or blank</li>
+     *             <li>If {@code label} is {@code null}, blank, or longer than {@link #LABEL_MAX_LENGTH}</li>
+     *             <li>If {@code description} is not {@code null} and is blank or longer than {@link #DESCRIPTION_MAX_LENGTH}</li>
      *             <li>If {@code child} is {@code null}</li>
      *         </ul>
      *
@@ -78,7 +79,7 @@ public interface Label extends ModalTopLevelComponent
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If {@code label} is {@code null} or blank</li>
+     *             <li>If {@code label} is {@code null}, blank, or longer than {@link #LABEL_MAX_LENGTH}</li>
      *             <li>If {@code child} is {@code null}</li>
      *         </ul>
      *
@@ -91,6 +92,54 @@ public interface Label extends ModalTopLevelComponent
     }
 
     /**
+     * Returns a copy of this Label with the provided label.
+     *
+     * @param  label
+     *         The label
+     *
+     * @throws IllegalArgumentException
+     *         If {@code label} is {@code null}, blank, or longer than {@link #LABEL_MAX_LENGTH}
+     *
+     * @return The new Label
+     */
+    default Label withLabel(@Nonnull String label)
+    {
+        return LabelImpl.of(label, getDescription(), getChild());
+    }
+
+    /**
+     * Returns a copy of this Label with the provided description.
+     *
+     * @param  description
+     *         The description
+     *
+     * @throws IllegalArgumentException
+     *         If {@code description} is not {@code null} and is blank or longer than {@link #DESCRIPTION_MAX_LENGTH}
+     *
+     * @return The new Label
+     */
+    default Label withDescription(@Nullable String description)
+    {
+        return LabelImpl.of(getLabel(), description, getChild());
+    }
+
+    /**
+     * Returns a copy of this Label with the provided {@linkplain LabelChildComponent child component}.
+     *
+     * @param  child
+     *         The child component
+     *
+     * @throws IllegalArgumentException
+     *         If {@code child} is {@code null}
+     *
+     * @return The new Label
+     */
+    default Label withChild(@Nonnull LabelChildComponent child)
+    {
+        return LabelImpl.of(getLabel(), getDescription(), child);
+    }
+
+    /**
      * The label.
      *
      * @return The label
@@ -99,7 +148,7 @@ public interface Label extends ModalTopLevelComponent
     String getLabel();
 
     /**
-     * The description of the Label. May be null.
+     * The description of the Label. May be {@code null}.
      *
      * @return The description
      */
