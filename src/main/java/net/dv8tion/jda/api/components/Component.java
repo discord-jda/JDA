@@ -118,7 +118,7 @@ public interface Component
         /** A button */
         BUTTON(2, true, false),
         /** A select menu of strings */
-        STRING_SELECT(3, true, false),
+        STRING_SELECT(3, true, true),
         /** A text input field */
         TEXT_INPUT(4, false, true),
         /** A select menu of users */
