@@ -68,10 +68,6 @@ import java.util.stream.Collectors;
  *     }
  * }}</pre>
  *
- * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only
- * {@link net.dv8tion.jda.api.components.label.Label Labels} are allowed at this time.</b>
- * You can check whether a component is supported via {@link Component.Type#isModalCompatible}.
- *
  * @see    ModalInteractionEvent
  */
 public interface Modal extends SerializableData
