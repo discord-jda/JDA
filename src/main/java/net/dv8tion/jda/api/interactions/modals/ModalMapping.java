@@ -150,7 +150,7 @@ public class ModalMapping
     {
         return new EntityString(this)
                 .setType(getType())
-                .addMetadata("custom_id", id)
+                .addMetadata("customId", id)
                 .toString();
     }
 
