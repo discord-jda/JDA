@@ -37,7 +37,7 @@ import java.util.Objects;
  */
 public class ModalMapping
 {
-    private final String id;
+    private final String customId;
     private final int uniqueId;
     private final DataObject value;
     private final Component.Type type;
@@ -46,7 +46,7 @@ public class ModalMapping
     {
         // TODO: selects don't have an id for now, should be fixed soon:tm:
         this.uniqueId = object.getInt("id", -1);
-        this.id = object.getString("custom_id");
+        this.customId = object.getString("custom_id");
         this.type = Component.Type.fromKey(object.getInt("type"));
         this.value = object;
     }
@@ -65,7 +65,7 @@ public class ModalMapping
     @ReplaceWith("getCustomId()")
     public String getId()
     {
-        return id;
+        return customId;
     }
 
     /**
@@ -76,7 +76,7 @@ public class ModalMapping
     @Nonnull
     public String getCustomId()
     {
-        return id;
+        return customId;
     }
 
     /**
@@ -150,7 +150,7 @@ public class ModalMapping
     {
         return new EntityString(this)
                 .setType(getType())
-                .addMetadata("customId", id)
+                .addMetadata("customId", customId)
                 .toString();
     }
 
@@ -160,13 +160,13 @@ public class ModalMapping
         if (this == o) return true;
         if (!(o instanceof ModalMapping)) return false;
         ModalMapping that = (ModalMapping) o;
-        return type == that.type && Objects.equals(id, that.id) && Objects.equals(uniqueId, that.uniqueId) && Objects.equals(value, that.value);
+        return type == that.type && Objects.equals(customId, that.customId) && Objects.equals(uniqueId, that.uniqueId) && Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, uniqueId, value, type);
+        return Objects.hash(customId, uniqueId, value, type);
     }
 
     private void typeError(String targetType)
