@@ -39,6 +39,15 @@ public class LabelImpl
 
     private LabelImpl(int uniqueId, @Nonnull String label, @Nullable String description, @Nonnull LabelChildComponentUnion child)
     {
+        Checks.notBlank(label, "Label");
+        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
+        Checks.notNull(child, "Child");
+        if (description != null)
+        {
+            Checks.notBlank(description, "Description");
+            Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
+        }
+
         this.uniqueId = uniqueId;
         this.label = label;
         this.description = description;
@@ -47,9 +56,6 @@ public class LabelImpl
 
     public static Label of(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
     {
-        Checks.notBlank(label, "Label");
-        Checks.notNull(child, "Child");
-
         LabelChildComponentUnion childUnion = ComponentsUtil.safeUnionCast("child", child, LabelChildComponentUnion.class);
         return new LabelImpl(label, description, childUnion);
     }
@@ -90,7 +96,7 @@ public class LabelImpl
 
     @Nonnull
     @Override
-    public  LabelChildComponentUnion getChild()
+    public LabelChildComponentUnion getChild()
     {
         return child;
     }

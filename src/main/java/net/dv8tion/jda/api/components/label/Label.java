@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Component that contains a label, an optional description, and a {@link LabelChildComponent child component}.
+ * Component that contains a label, an optional description, and a {@linkplain LabelChildComponent child component}.
  *
  * <p>Labels are used as top-level components inside {@link net.dv8tion.jda.api.interactions.modals.Modal Modals},
  * and cannot be used in Messages.
@@ -34,6 +34,16 @@ import javax.annotation.Nullable;
  */
 public interface Label extends ModalTopLevelComponent
 {
+    /**
+     * The maximum length a label can have. ({@value})
+     */
+    int LABEL_MAX_LENGTH = 45;
+
+    /**
+     * The maximum length a label description can have. ({@value})
+     */
+    int DESCRIPTION_MAX_LENGTH = 100;
+
     /**
      * Constructs a new {@link Label} using the provided label, description and child component.
      *
@@ -97,7 +107,7 @@ public interface Label extends ModalTopLevelComponent
     String getDescription();
 
     /**
-     * The {@link LabelChildComponentUnion child component} contained by this Label.
+     * The {@linkplain LabelChildComponentUnion child component} contained by this Label.
      *
      * @return The child component
      */
