@@ -103,10 +103,7 @@ public interface Label extends ModalTopLevelComponent
      * @return The new Label
      */
     @Nonnull
-    default Label withLabel(@Nonnull String label)
-    {
-        return LabelImpl.of(label, getDescription(), getChild());
-    }
+    Label withLabel(@Nonnull String label);
 
     /**
      * Returns a copy of this Label with the provided description.
@@ -120,10 +117,7 @@ public interface Label extends ModalTopLevelComponent
      * @return The new Label
      */
     @Nonnull
-    default Label withDescription(@Nullable String description)
-    {
-        return LabelImpl.of(getLabel(), description, getChild());
-    }
+    Label withDescription(@Nullable String description);
 
     /**
      * Returns a copy of this Label with the provided {@linkplain LabelChildComponent child component}.
@@ -137,10 +131,7 @@ public interface Label extends ModalTopLevelComponent
      * @return The new Label
      */
     @Nonnull
-    default Label withChild(@Nonnull LabelChildComponent child)
-    {
-        return LabelImpl.of(getLabel(), getDescription(), child);
-    }
+    Label withChild(@Nonnull LabelChildComponent child);
 
     /**
      * The label.

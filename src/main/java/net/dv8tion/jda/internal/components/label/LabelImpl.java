@@ -62,6 +62,30 @@ public class LabelImpl
 
     @Nonnull
     @Override
+    public Label withLabel(@Nonnull String label)
+    {
+        return new LabelImpl(label, this.description, this.child);
+    }
+
+    @Nonnull
+    @Override
+    public Label withDescription(@Nullable String description)
+    {
+        return new LabelImpl(this.label, description, this.child);
+    }
+
+    @Nonnull
+    @Override
+    public Label withChild(@Nonnull LabelChildComponent child)
+    {
+        Checks.notNull(child, "Child");
+
+        LabelChildComponentUnion childUnion = ComponentsUtil.safeUnionCast("child", child, LabelChildComponentUnion.class);
+        return new LabelImpl(this.label, this.description, childUnion);
+    }
+
+    @Nonnull
+    @Override
     public LabelImpl withUniqueId(int uniqueId)
     {
         return new LabelImpl(uniqueId, label, description, child);
