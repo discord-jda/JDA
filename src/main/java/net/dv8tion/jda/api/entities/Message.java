@@ -2009,7 +2009,7 @@ public interface Message extends ISnowflake, Formattable
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The pin request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
+     *     <br>The pin request was attempted after the account lost {@link Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in
      *         the {@link GuildChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2021,7 +2021,7 @@ public interface Message extends ISnowflake, Formattable
      *         <br><ul>
      *             <li>Missing {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
      *             <br>The account needs access the the channel to pin a message in it.</li>
-     *             <li>Missing {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
+     *             <li>Missing {@link Permission#PIN_MESSAGES Permission.PIN_MESSAGES}.
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
      * @throws IllegalStateException
@@ -2048,7 +2048,7 @@ public interface Message extends ISnowflake, Formattable
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The unpin request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
+     *     <br>The unpin request was attempted after the account lost {@link Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in
      *         the {@link GuildChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2060,7 +2060,7 @@ public interface Message extends ISnowflake, Formattable
      *         <br><ul>
      *             <li>Missing {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
      *             <br>The account needs access the the channel to pin a message in it.</li>
-     *             <li>Missing {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
+     *             <li>Missing {@link Permission#PIN_MESSAGES Permission.PIN_MESSAGES}.
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
      * @throws IllegalStateException
