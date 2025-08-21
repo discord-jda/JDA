@@ -33,6 +33,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.time.Instant;
 import java.util.Collection;
 
 public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>> extends
@@ -41,6 +42,8 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         GuildChannelMixin<T>,
         MessageChannelMixin<T>
 {
+    Instant PIN_PERMISSION_DEADLINE = Instant.parse("2026-01-12T00:00:00Z");
+
     // ---- Default implementations of interface ----
     @Nonnull
     @CheckReturnValue
@@ -163,11 +166,20 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     default void checkCanControlMessagePins()
     {
         checkCanAccess();
-        checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
+        if (currentInstant().isBefore(PIN_PERMISSION_DEADLINE) && hasPermission(Permission.MESSAGE_MANAGE))
+            return;
+
+        checkPermission(Permission.PIN_MESSAGES, "You need PIN_MESSAGES to pin or unpin messages.");
     }
 
     default boolean canDeleteOtherUsersMessages()
     {
         return hasPermission(Permission.MESSAGE_MANAGE);
+    }
+
+    // So we can mock it instead of JDK classes
+    default Instant currentInstant()
+    {
+        return Instant.now();
     }
 }
