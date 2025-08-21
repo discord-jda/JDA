@@ -65,6 +65,7 @@ public enum Permission
     MESSAGE_ATTACH_VOICE_MESSAGE(46, true, true, "Send Voice Messages"),
     MESSAGE_SEND_POLLS(          49, true, true, "Create Polls"),
     USE_EXTERNAL_APPLICATIONS(   50, true, true, "Use External Apps"),
+    PIN_MESSAGES(                51, true, true, "Pin Messages"),
 
     // Thread Permissions
     MANAGE_THREADS(          34, true, true, "Manage Threads"),
