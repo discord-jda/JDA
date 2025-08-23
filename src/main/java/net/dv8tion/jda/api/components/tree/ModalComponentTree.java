@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.modals.tree;
+package net.dv8tion.jda.api.components.tree;
 
+import net.dv8tion.jda.api.components.ModalTopLevelComponent;
+import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.components.tree.ComponentTree;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.internal.components.tree.ModalComponentTreeImpl;
 
 import javax.annotation.CheckReturnValue;

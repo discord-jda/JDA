@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.interactions.callbacks;
 
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 
 import javax.annotation.CheckReturnValue;

@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.modals;
+package net.dv8tion.jda.api.modals;
 
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.ModalTopLevelComponent;
+import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
+import net.dv8tion.jda.api.components.tree.ModalComponentTree;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.modals.tree.ModalComponentTree;
+import net.dv8tion.jda.api.interactions.modals.ModalInteraction;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
-import net.dv8tion.jda.internal.interactions.modal.ModalImpl;
+import net.dv8tion.jda.internal.modals.ModalImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;

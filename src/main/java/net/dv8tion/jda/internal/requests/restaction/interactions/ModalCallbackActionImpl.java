@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
