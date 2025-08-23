@@ -38,7 +38,10 @@ import javax.annotation.Nullable;
  */
 public interface ApplicationEmoji extends CustomEmoji
 {
-    int APPLICATION_EMOJI_CAP = 2000;
+    /**
+     * Maximum number of emojis that can be registered on an application.
+     */
+    int MAX_APPLICATION_EMOJIS = 2000;
 
     /**
      * The {@link net.dv8tion.jda.api.JDA JDA} instance of this emoji

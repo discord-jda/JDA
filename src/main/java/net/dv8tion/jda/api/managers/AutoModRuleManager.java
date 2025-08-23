@@ -110,7 +110,7 @@ public interface AutoModRuleManager extends Manager<AutoModRuleManager>
     @Nonnull
     @Override
     @CheckReturnValue
-    AutoModRuleManager reset(long... fields);
+    AutoModRuleManager reset(@Nonnull long... fields);
 
     /**
      * Sets the <b><u>name</u></b> of the selected {@link AutoModRule}.

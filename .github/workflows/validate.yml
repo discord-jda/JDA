@@ -1,10 +1,9 @@
 name: Pull Request Validation
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
-    branches:
-    - master
-    - legacy/v4
 
 jobs:
   build:
@@ -18,6 +17,24 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
       - name: Build and test
-        run: ./gradlew build test
+        run: ./gradlew --build-cache --parallel build test
+      - name: Upload JUnit XML Test Report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+            name: junit-xml-test-report
+            path: build/test-results/test
+      - name: Upload HTML Test Report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+            name: junit-html-test-report
+            path: build/reports/tests/test
+      - name: Annotate Failed Tests
+        uses: mikepenz/action-junit-report@v5
+        if: ${{ !cancelled() }}
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          annotate_only: 'true'

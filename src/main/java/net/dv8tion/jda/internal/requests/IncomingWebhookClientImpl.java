@@ -49,6 +49,7 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> im
     {
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(Long.toUnsignedString(id), token);
         route = route.withQueryParams("wait", "true");
+        route = route.withQueryParams("with_components", "true");
         WebhookMessageCreateActionImpl<Message> action = new WebhookMessageCreateActionImpl<>(api, route, builder());
         action.run();
         action.setInteraction(false);
@@ -62,6 +63,7 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> im
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(Long.toUnsignedString(id), token, messageId);
         route = route.withQueryParams("wait", "true");
+        route = route.withQueryParams("with_components", "true");
         WebhookMessageEditActionImpl<Message> action = new WebhookMessageEditActionImpl<>(api, route, builder());
         action.run();
         return action;
@@ -100,5 +102,4 @@ public class IncomingWebhookClientImpl extends AbstractWebhookClient<Message> im
             return message;
         };
     }
-
 }

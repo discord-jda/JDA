@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.interactions.callbacks.IModalCallback;
-import net.dv8tion.jda.api.interactions.callbacks.IPremiumRequiredReplyCallback;
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
 
@@ -29,6 +28,6 @@ import net.dv8tion.jda.api.interactions.commands.context.ContextInteraction;
  * @see ContextInteraction
  * @see SlashCommandInteraction
  */
-public interface CommandInteraction extends IReplyCallback, CommandInteractionPayload, IModalCallback, IPremiumRequiredReplyCallback
+public interface CommandInteraction extends IReplyCallback, CommandInteractionPayload, IModalCallback
 {
 }

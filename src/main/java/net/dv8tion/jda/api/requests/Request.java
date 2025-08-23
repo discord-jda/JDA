@@ -108,7 +108,7 @@ public class Request<T>
         }
     }
 
-    public void onSuccess(T successObj)
+    public void onSuccess(@Nullable T successObj)
     {
         if (done)
             return;
@@ -135,7 +135,7 @@ public class Request<T>
         });
     }
 
-    public void onFailure(Response response)
+    public void onFailure(@Nonnull Response response)
     {
         if (response.code == 429)
         {
@@ -147,7 +147,7 @@ public class Request<T>
         }
     }
 
-    public void onRateLimited(Response response)
+    public void onRateLimited(@Nonnull Response response)
     {
         onFailure(new RateLimitedException(route, response.retryAfter));
     }
@@ -159,7 +159,7 @@ public class Request<T>
                 ErrorResponse.fromJSON(response.optObject().orElse(null)), response);
     }
 
-    public void onFailure(Throwable failException)
+    public void onFailure(@Nonnull Throwable failException)
     {
         if (done)
             return;

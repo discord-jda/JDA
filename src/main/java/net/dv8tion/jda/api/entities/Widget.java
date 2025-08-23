@@ -15,14 +15,13 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.api.utils.WidgetUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Represents a guild's widget
@@ -89,7 +88,7 @@ public interface Widget extends ISnowflake
      * @return possibly-null VoiceChannel with the given ID. 
      */
     @Nullable
-    VoiceChannel getVoiceChannelById(String id);
+    VoiceChannel getVoiceChannelById(@Nonnull String id);
 
     /**
      * Gets a voice channel with the given ID, or {@code null} if the voice channel is not found
@@ -130,7 +129,7 @@ public interface Widget extends ISnowflake
      * @return possibly-null Member with the given ID. 
      */
     @Nullable
-    Member getMemberById(String id);
+    Member getMemberById(@Nonnull String id);
 
     /**
      * Gets a member with the given ID, or {@code null} if the member is not found

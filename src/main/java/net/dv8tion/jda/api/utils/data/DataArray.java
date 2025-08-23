@@ -847,7 +847,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
     }
 
     @Nonnull
-    public <T> Stream<T> stream(BiFunction<? super DataArray, Integer, ? extends T> mapper)
+    public <T> Stream<T> stream(@Nonnull BiFunction<? super DataArray, Integer, ? extends T> mapper)
     {
         return IntStream.range(0, length())
                 .mapToObj(index -> mapper.apply(this, index));

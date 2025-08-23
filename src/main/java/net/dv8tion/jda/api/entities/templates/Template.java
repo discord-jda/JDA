@@ -98,7 +98,7 @@ public class Template
      */
     @Nonnull
     @CheckReturnValue
-    public static RestAction<Template> resolve(final JDA api, final String code)
+    public static RestAction<Template> resolve(@Nonnull final JDA api, @Nonnull final String code)
     {
         Checks.notEmpty(code, "code");
         Checks.noWhitespace(code, "code");

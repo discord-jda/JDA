@@ -61,7 +61,7 @@ public class ApplicationEmojiManagerImpl extends ManagerBase<ApplicationEmojiMan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ApplicationEmojiManagerImpl reset(long... fields)
+    public ApplicationEmojiManagerImpl reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return this;

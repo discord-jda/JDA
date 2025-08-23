@@ -17,6 +17,8 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -31,8 +33,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandDataImpl implements SlashCommandData
@@ -47,7 +51,8 @@ public class CommandDataImpl implements SlashCommandData
     private boolean allowSubcommands = true;
     private boolean allowOption = true;
     private boolean allowRequired = true;
-    private boolean guildOnly = false;
+    private EnumSet<InteractionContextType> contexts = EnumSet.of(InteractionContextType.GUILD, InteractionContextType.BOT_DM);
+    private EnumSet<IntegrationType> integrationTypes = EnumSet.of(IntegrationType.GUILD_INSTALL);
     private boolean nsfw = false;
     private DefaultMemberPermissions defaultMemberPermissions = DefaultMemberPermissions.ENABLED;
 
@@ -66,6 +71,13 @@ public class CommandDataImpl implements SlashCommandData
         Checks.notNull(type, "Command Type");
         Checks.check(type != Command.Type.SLASH, "Cannot create slash command without description. Use `new CommandDataImpl(name, description)` instead.");
         setName(name);
+    }
+
+    public static CommandDataImpl of(@Nonnull Command.Type type, @Nonnull String name, @Nullable String description)
+    {
+        if (type == Command.Type.SLASH)
+            return new CommandDataImpl(name, description);
+        return new CommandDataImpl(type, name);
     }
 
     protected void checkType(Command.Type required, String action)
@@ -103,7 +115,8 @@ public class CommandDataImpl implements SlashCommandData
                 .put("name", name)
                 .put("nsfw", nsfw)
                 .put("options", options)
-                .put("dm_permission", !guildOnly)
+                .put("contexts", contexts.stream().map(InteractionContextType::getType).collect(Collectors.toList()))
+                .put("integration_types", integrationTypes.stream().map(IntegrationType::getType).collect(Collectors.toList()))
                 .put("default_member_permissions", defaultMemberPermissions == DefaultMemberPermissions.ENABLED
                         ? null
                         : Long.toUnsignedString(defaultMemberPermissions.getPermissionsRaw()))
@@ -131,10 +144,18 @@ public class CommandDataImpl implements SlashCommandData
         return defaultMemberPermissions;
     }
 
+    @Nonnull
     @Override
-    public boolean isGuildOnly()
+    public Set<InteractionContextType> getContexts()
     {
-        return guildOnly;
+        return Collections.unmodifiableSet(contexts);
+    }
+
+    @Nonnull
+    @Override
+    public Set<IntegrationType> getIntegrationTypes()
+    {
+        return integrationTypes;
     }
 
     @Override
@@ -184,9 +205,19 @@ public class CommandDataImpl implements SlashCommandData
 
     @Nonnull
     @Override
-    public CommandDataImpl setGuildOnly(boolean guildOnly)
+    public CommandDataImpl setContexts(@Nonnull Collection<InteractionContextType> contexts)
     {
-        this.guildOnly = guildOnly;
+        Checks.notEmpty(contexts, "Contexts");
+        this.contexts = Helpers.copyEnumSet(InteractionContextType.class, contexts);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandDataImpl setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes)
+    {
+        Checks.notEmpty(contexts, "Contexts");
+        this.integrationTypes = Helpers.copyEnumSet(IntegrationType.class, integrationTypes);
         return this;
     }
 
@@ -390,6 +421,12 @@ public class CommandDataImpl implements SlashCommandData
         if (modified)
             updateAllowedOptions();
         return modified;
+    }
+
+    public void removeAllOptions()
+    {
+        this.options.clear();
+        this.updateAllowedOptions();
     }
 
     // Update allowed conditions after removing options

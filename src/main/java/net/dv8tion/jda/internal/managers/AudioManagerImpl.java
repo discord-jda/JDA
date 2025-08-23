@@ -70,7 +70,7 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
-    public void openAudioConnection(AudioChannel channel)
+    public void openAudioConnection(@Nonnull AudioChannel channel)
     {
         Checks.notNull(channel, "Provided AudioChannel");
 

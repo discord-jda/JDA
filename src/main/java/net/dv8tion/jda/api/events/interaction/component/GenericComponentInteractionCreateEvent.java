@@ -17,17 +17,16 @@
 package net.dv8tion.jda.api.events.interaction.component;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.ActionComponent;
+import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ModalCallbackAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.PremiumRequiredCallbackAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import javax.annotation.CheckReturnValue;
@@ -128,14 +127,5 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
     public ModalCallbackAction replyModal(@Nonnull Modal modal)
     {
         return interaction.replyModal(modal);
-    }
-
-    @Nonnull
-    @Override
-    @Deprecated
-    @CheckReturnValue
-    public PremiumRequiredCallbackAction replyWithPremiumRequired()
-    {
-        return interaction.replyWithPremiumRequired();
     }
 }

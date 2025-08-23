@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationMap;
 import net.dv8tion.jda.api.interactions.commands.privileges.IntegrationPrivilege;
@@ -193,7 +195,7 @@ public interface Command extends ISnowflake, ICommandReference
 
     /**
      * The version of this command.
-     * <br>This changes when a command is updated through {@link JDA#upsertCommand(CommandData) upsertCommand}, {@link JDA#updateCommands() updateCommands}, or {@link JDA#editCommandById(String) editCommandById}
+     * <br>This changes when a command is updated through {@link JDA#upsertCommand(CommandData) upsertCommand}, {@link JDA#updateCommands() updateCommands}, or {@link JDA#editCommandById(Type, String) editCommandById}
      * <br>Useful for checking if command cache is outdated
      *
      * @return The version of the command as a snowflake id.
@@ -225,12 +227,20 @@ public interface Command extends ISnowflake, ICommandReference
     DefaultMemberPermissions getDefaultPermissions();
 
     /**
-     * Whether the command can only be used inside a guild.
-     * <br>Always true for guild commands.
+     * The contexts in which this command can be used.
      *
-     * @return True, if this command is restricted to guilds.
+     * @return The contexts in which this command can be used
      */
-    boolean isGuildOnly();
+    @Nonnull
+    EnumSet<InteractionContextType> getContexts();
+
+    /**
+     * Gets the integration types on which this command can be installed on.
+     *
+     * @return The integration types on which this command can be installed on
+     */
+    @Nonnull
+    EnumSet<IntegrationType> getIntegrationTypes();
 
     /**
      * Whether this command is restricted to NSFW (age-restricted) channels.
@@ -592,7 +602,7 @@ public interface Command extends ISnowflake, ICommandReference
         }
 
         @Nonnull
-        public DataObject toData(OptionType optionType)
+        public DataObject toData(@Nonnull OptionType optionType)
         {
             final Object value;
             if (optionType == OptionType.INTEGER)

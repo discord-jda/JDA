@@ -43,6 +43,8 @@ public enum CacheFlag
      * Enables cache for {@link Member#getVoiceState()}
      * <br>This will always be cached for self member.
      *
+     * <p><b>Voice states are only cached when the member is connected to an audio channel.</b>
+     *
      * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled.
      */
     VOICE_STATE(GatewayIntent.GUILD_VOICE_STATES),

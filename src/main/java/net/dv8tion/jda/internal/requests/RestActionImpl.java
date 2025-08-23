@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
@@ -264,7 +264,7 @@ public class RestActionImpl<T> implements RestAction<T>
     }
 
     @Nonnull
-    protected RequestBody getMultipartBody(@Nonnull List<? extends AttachedFile> files, @Nonnull DataObject json)
+    protected RequestBody getMultipartBody(@Nonnull Set<? extends AttachedFile> files, @Nonnull DataObject json)
     {
         RequestBody payloadJson = getRequestBody(json);
         if (files.isEmpty())

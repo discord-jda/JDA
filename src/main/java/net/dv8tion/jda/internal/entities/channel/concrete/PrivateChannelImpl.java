@@ -20,18 +20,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.Route;
-import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.channel.AbstractChannelImpl;
-import net.dv8tion.jda.internal.entities.channel.mixin.middleman.MessageChannelMixin;
-import net.dv8tion.jda.internal.requests.CompletedRestAction;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.entities.channel.mixin.concrete.PrivateChannelMixin;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements PrivateChannel, MessageChannelMixin<PrivateChannelImpl>
+public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> implements
+        PrivateChannel,
+        PrivateChannelMixin<PrivateChannelImpl>
 {
     private User user;
     private long latestMessageId;
@@ -40,6 +37,12 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
     {
         super(id, api);
         this.user = user;
+    }
+
+    @Override
+    public boolean isDetached()
+    {
+        return false;
     }
 
     @Nonnull
@@ -59,42 +62,9 @@ public class PrivateChannelImpl extends AbstractChannelImpl<PrivateChannelImpl> 
 
     @Nonnull
     @Override
-    public RestAction<User> retrieveUser()
-    {
-        User user = getUser();
-        if (user != null)
-            return new CompletedRestAction<>(getJDA(), user);
-        //even if the user blocks the bot, this does not fail.
-        return retrievePrivateChannel()
-                .map(PrivateChannel::getUser);
-    }
-
-    @Nonnull
-    @Override
     public String getName()
     {
-        User user = getUser();
-        if (user == null)
-        {
-            //don't break or override the contract of @NonNull
-            return "";
-        }
-        return user.getName();
-    }
-
-    @Nonnull
-    private RestAction<PrivateChannel> retrievePrivateChannel()
-    {
-        Route.CompiledRoute route = Route.Channels.GET_CHANNEL.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> ((JDAImpl) getJDA()).getEntityBuilder().createPrivateChannel(response.getObject()));
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> delete()
-    {
-        Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new RestActionImpl<>(getJDA(), route);
+        return PrivateChannelMixin.super.getName();
     }
 
     @Override

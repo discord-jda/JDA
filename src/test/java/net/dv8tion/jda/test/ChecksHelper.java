@@ -20,6 +20,7 @@ import net.dv8tion.jda.test.assertions.checks.*;
 import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 public class ChecksHelper
@@ -47,6 +48,11 @@ public class ChecksHelper
     public static String isBlankError(String name)
     {
         return name + " may not be blank";
+    }
+
+    public static String containsWhitespaceError(String name, String argument)
+    {
+        return name + " may not contain blanks. Provided: \"" + argument + "\"";
     }
 
     public static String isNotLowercase(String name, String value)
@@ -87,6 +93,11 @@ public class ChecksHelper
     public static LongChecksAssertions assertLongChecks(String name, ThrowingConsumer<Long> callable)
     {
         return new LongChecksAssertions(name, callable);
+    }
+
+    public static <T> CollectionChecksAssertions<T> assertCollectionChecks(String name, ThrowingConsumer<Collection<T>> callable)
+    {
+        return new CollectionChecksAssertions<>(name, callable);
     }
 
     public static <T> SimpleChecksAssertions<T> assertChecks(String name, ThrowingConsumer<T> callable)

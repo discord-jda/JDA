@@ -124,7 +124,7 @@ public class Response implements Closeable
     }
 
     @Nonnull
-    public <T> T get(Class<T> clazz, IOFunction<BufferedReader, T> parser)
+    public <T> T get(@Nonnull Class<T> clazz, @Nonnull IOFunction<BufferedReader, T> parser)
     {
         return parseBody(clazz, parser).orElseThrow(IllegalStateException::new);
     }

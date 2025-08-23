@@ -18,16 +18,14 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.utils.ImageProxy;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Discord Application from its bot's point of view.
@@ -39,6 +37,15 @@ import java.util.List;
  */
 public interface ApplicationInfo extends ISnowflake
 {
+    /** The maximum length for an application description ({@value}) */
+    int MAX_DESCRIPTION_LENGTH = 400;
+    /** The maximum length for any URL set on an application ({@value}) */
+    int MAX_URL_LENGTH = 2048;
+    /** The maximum allowed number of unique tags for an application ({@value})*/
+    int MAX_TAGS = 5;
+    /** The maximum length a single tag is allowed to be ({@value}) */
+    int MAX_TAG_LENGTH = 20;
+
     /**
      * Whether the bot requires code grant to invite or not. 
      * 
@@ -116,7 +123,7 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
-     * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
+     * <br>The scope {@code "bot"} is always applied.
      *
      * @param  scopes
      *         The scopes to use with {@link #getInviteUrl(Permission...)} and the likes
@@ -135,7 +142,7 @@ public interface ApplicationInfo extends ISnowflake
 
     /**
      * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
-     * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
+     * <br>The scope {@code "bot"} is always applied.
      *
      * @param  scopes
      *         The scopes to use with {@link #getInviteUrl(Permission...)} and the likes
@@ -407,6 +414,64 @@ public interface ApplicationInfo extends ISnowflake
      * @return The bitset
      */
     long getFlagsRaw();
+
+    /**
+     * The approximate count of users that have installed this application,
+     * or {@code -1} if it is unknown.
+     *
+     * @return The approximate count of users that have installed this application.
+     */
+    long getUserInstallCount();
+
+    /**
+     * The configurations for each {@link IntegrationType} set on the application.
+     *
+     * @return The configurations for each integration type
+     */
+    @Nonnull
+    Map<IntegrationType, IntegrationTypeConfiguration> getIntegrationTypesConfig();
+
+    /**
+     * Configuration of a single {@link IntegrationType}.
+     *
+     * @see ApplicationInfo#getIntegrationTypesConfig()
+     */
+    interface IntegrationTypeConfiguration
+    {
+        /**
+         * The OAuth2 install parameters for the default in-app authorization link.
+         * <br>When a user invites your application in the Discord app, these will be the parameters of the invite url.
+         *
+         * @return The OAuth2 install parameters for the default in-app authorization link
+         */
+        @Nullable
+        InstallParameters getInstallParameters();
+    }
+
+    /**
+     * OAuth2 install parameter for the default in-app authorization link.
+     *
+     * @see IntegrationTypeConfiguration#getInstallParameters()
+     */
+    interface InstallParameters
+    {
+        /**
+         * Gets the required scopes granted to the bot when invited.
+         *
+         * @return The required scopes granted to the bot when invited
+         */
+        @Nonnull
+        List<String> getScopes();
+
+        /**
+         * Gets the permissions your bot asks for when invited.
+         * <br><b>Note:</b> Users can choose to disable permissions before and after inviting your bot.
+         *
+         * @return The permissions your bot asks for when invited
+         */
+        @Nonnull
+        Set<Permission> getPermissions();
+    }
 
     /**
      * Flag constants corresponding to the <a href="https://discord.com/developers/docs/resources/application#application-object-application-flags" target="_blank">Discord Enum</a>

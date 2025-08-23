@@ -58,8 +58,6 @@ public interface GuildManager extends Manager<GuildManager>
     long AFK_TIMEOUT    = 1 << 4;
     /** Used to reset the system channel field */
     long SYSTEM_CHANNEL = 1 << 5;
-    /** Used to reset the mfa level field */
-    long MFA_LEVEL      = 1 << 6;
     /** Used to reset the default notification level field */
     long NOTIFICATION_LEVEL     = 1 << 7;
     /** Used to reset the explicit content level field */
@@ -96,7 +94,6 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #SYSTEM_CHANNEL}</li>
      *     <li>{@link #RULES_CHANNEL}</li>
      *     <li>{@link #COMMUNITY_UPDATES_CHANNEL}</li>
-     *     <li>{@link #MFA_LEVEL}</li>
      *     <li>{@link #NOTIFICATION_LEVEL}</li>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
@@ -128,7 +125,6 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #SYSTEM_CHANNEL}</li>
      *     <li>{@link #RULES_CHANNEL}</li>
      *     <li>{@link #COMMUNITY_UPDATES_CHANNEL}</li>
-     *     <li>{@link #MFA_LEVEL}</li>
      *     <li>{@link #NOTIFICATION_LEVEL}</li>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
      *     <li>{@link #VERIFICATION_LEVEL}</li>
@@ -144,7 +140,7 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @Override
     @CheckReturnValue
-    GuildManager reset(long... fields);
+    GuildManager reset(@Nonnull long... fields);
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} object of this Manager.
@@ -323,21 +319,6 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setDefaultNotificationLevel(@Nonnull Guild.NotificationLevel level);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Guild.MFALevel MFA Level} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *
-     * @param  level
-     *         The new MFA Level for this {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided level is {@code null} or UNKNOWN
-     *
-     * @return GuildManager for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    GuildManager setRequiredMFALevel(@Nonnull Guild.MFALevel level);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel Explicit Content Level} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.

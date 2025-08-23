@@ -1,0 +1,26 @@
+{
+  "cover_image" : "[MASKED]",
+  "custom_install_url" : "https://jda.wiki/install",
+  "description" : "test",
+  "icon" : "[MASKED]",
+  "install_params" : {
+    "permissions" : 2048,
+    "scopes" : [ "bot" ]
+  },
+  "integration_type_config" : {
+    "GUILD_INSTALL" : {
+      "oauth2_install_params" : {
+        "permissions" : 2048,
+        "scopes" : [ "bot" ]
+      }
+    },
+    "USER_INSTALL" : {
+      "oauth2_install_params" : {
+        "permissions" : 2048,
+        "scopes" : [ "bot" ]
+      }
+    }
+  },
+  "interactions_endpoint_url" : "https://jda.wiki/interaction",
+  "tags" : [ "test-tag" ]
+}

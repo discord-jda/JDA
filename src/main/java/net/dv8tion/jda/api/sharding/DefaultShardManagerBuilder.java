@@ -1773,7 +1773,7 @@ public class  DefaultShardManagerBuilder
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public DefaultShardManagerBuilder setShards(final int... shardIds)
+    public DefaultShardManagerBuilder setShards(@Nonnull int... shardIds)
     {
         Checks.notNull(shardIds, "shardIds");
         for (int id : shardIds)
@@ -2018,7 +2018,7 @@ public class  DefaultShardManagerBuilder
     {
         this.intents = GatewayIntent.ALL_INTENTS;
         if (intents != null)
-            this.intents = 1 | ~GatewayIntent.getRaw(intents);
+            this.intents = 1 | (GatewayIntent.ALL_INTENTS & ~GatewayIntent.getRaw(intents));
         return this;
     }
 

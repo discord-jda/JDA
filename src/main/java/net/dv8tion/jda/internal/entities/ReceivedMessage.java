@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -39,7 +41,6 @@ import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -101,13 +102,15 @@ public class ReceivedMessage implements Message
     protected final MessagePoll poll;
     protected final OffsetDateTime editedTime;
     protected final Mentions mentions;
+    @SuppressWarnings("deprecation")
     protected final Message.Interaction interaction;
+    protected final Message.InteractionMetadata interactionMetadata;
     protected final ThreadChannel startedThread;
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<StickerItem> stickers;
-    protected final List<LayoutComponent> components;
+    protected final List<MessageTopLevelComponentUnion> components;
     protected final List<MessageSnapshot> messageSnapshots;
 
     protected WebhookClient<Message> webhook;
@@ -118,13 +121,14 @@ public class ReceivedMessage implements Message
 
     protected List<String> invites = null;
 
+    @SuppressWarnings("deprecation")
     public ReceivedMessage(
             long id, long channelId, long guildId, JDA jda, Guild guild, MessageChannel channel, MessageType type, MessageReference messageReference,
             boolean fromWebhook, long applicationId, boolean  tts, boolean pinned,
             String content, String nonce, User author, Member member, MessageActivity activity, MessagePoll poll, OffsetDateTime editTime,
             Mentions mentions, List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds,
-            List<StickerItem> stickers, List<LayoutComponent> components, List<MessageSnapshot> messageSnapshots,
-            int flags, Message.Interaction interaction, ThreadChannel startedThread, int position)
+            List<StickerItem> stickers, List<MessageTopLevelComponentUnion> components, List<MessageSnapshot> messageSnapshots,
+            int flags, Message.Interaction interaction, Message.InteractionMetadata interactionMetadata, ThreadChannel startedThread, int position)
     {
         this.id = id;
         this.channelId = channelId;
@@ -153,6 +157,7 @@ public class ReceivedMessage implements Message
         this.messageSnapshots = Collections.unmodifiableList(messageSnapshots);
         this.flags = flags;
         this.interaction = interaction;
+        this.interactionMetadata = interactionMetadata;
         this.startedThread = startedThread;
         this.position = position;
         this.poll = poll;
@@ -177,7 +182,9 @@ public class ReceivedMessage implements Message
         if (!didContentIntentWarning && !api.isIntent(GatewayIntent.MESSAGE_CONTENT))
         {
             SelfUser selfUser = api.getSelfUser();
-            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild())
+            boolean isBotOwnedWebhookMessage = selfUser.getApplicationIdLong() == getApplicationIdLong() && isWebhookMessage();
+
+            if (!Objects.equals(selfUser, author) && !mentions.getUsers().contains(selfUser) && isFromGuild() && !isBotOwnedWebhookMessage)
             {
                 didContentIntentWarning = true;
                 JDAImpl.LOG.warn(
@@ -221,7 +228,7 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> pin()
+    public AuditableRestAction<Void> pin()
     {
         checkSystem("pin");
         if (isEphemeral())
@@ -230,13 +237,13 @@ public class ReceivedMessage implements Message
         if (hasChannel())
             return getChannel().pinMessageById(getIdLong());
 
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getChannelId(), getId());
-        return new RestActionImpl<>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.PIN_MESSAGE.compile(getChannelId(), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> unpin()
+    public AuditableRestAction<Void> unpin()
     {
         checkSystem("unpin");
         if (isEphemeral())
@@ -245,8 +252,8 @@ public class ReceivedMessage implements Message
         if (hasChannel())
             return getChannel().unpinMessageById(getIdLong());
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getChannelId(), getId());
-        return new RestActionImpl<>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.UNPIN_MESSAGE.compile(getChannelId(), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -352,15 +359,18 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
     {
         if (isEphemeral())
             throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
 
         if (hasChannel())
-            return getChannel().retrieveReactionUsersById(id, emoji);
+            return getChannel().retrieveReactionUsersById(id, emoji, type);
 
-        return new ReactionPaginationActionImpl(this, emoji.getAsReactionCode());
+        Checks.notNull(type, "ReactionType");
+        Checks.notNull(emoji, "Emoji");
+
+        return new ReactionPaginationActionImpl(this, emoji.getAsReactionCode(), type);
     }
 
     @Nullable
@@ -383,9 +393,17 @@ public class ReceivedMessage implements Message
 
     @Nullable
     @Override
+    @SuppressWarnings("deprecation")
     public Interaction getInteraction()
     {
         return interaction;
+    }
+
+    @Nullable
+    @Override
+    public InteractionMetadata getInteractionMetadata()
+    {
+        return interactionMetadata;
     }
 
     @Override
@@ -612,10 +630,16 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public List<LayoutComponent> getComponents()
+    public List<MessageTopLevelComponentUnion> getComponents()
     {
         checkIntent();
         return components;
+    }
+
+    @Override
+    public boolean isUsingComponentsV2()
+    {
+        return (this.flags & MessageFlag.IS_COMPONENTS_V2.getValue()) != 0;
     }
 
     @Override
@@ -714,7 +738,7 @@ public class ReceivedMessage implements Message
         action.setContent(newContent.toString());
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -730,7 +754,7 @@ public class ReceivedMessage implements Message
         action.setEmbeds(embeds);
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -740,13 +764,13 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    public MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         MessageEditActionImpl action = editRequest();
         action.setComponents(components);
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -762,7 +786,7 @@ public class ReceivedMessage implements Message
         action.setContent(String.format(format, args));
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -778,7 +802,7 @@ public class ReceivedMessage implements Message
         action.setAttachments(attachments);
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -794,7 +818,7 @@ public class ReceivedMessage implements Message
         action.applyData(newContent);
 
         if (isWebhookRequest())
-            return action.withHook(webhook);
+            return action.withHook(webhook, getChannelType(), channelId);
 
         checkSystem("edit");
         checkUser();
@@ -812,6 +836,8 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(webhook.getId(), webhook.getToken(), getId());
+            route = withThreadContext(route);
+
             final AuditableRestActionImpl<Void> action = new AuditableRestActionImpl<>(getJDA(), route);
             action.setErrorMapper(getUnknownWebhookErrorMapper());
             return action;
@@ -849,6 +875,7 @@ public class ReceivedMessage implements Message
         if (isWebhookRequest())
         {
             route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhook.getId(), webhook.getToken(), getId());
+            route = withThreadContext(route);
         }
         else
         {
@@ -1034,6 +1061,13 @@ public class ReceivedMessage implements Message
 
         messageEditAction.setErrorMapper(getUnknownWebhookErrorMapper());
         return messageEditAction;
+    }
+
+    private Route.CompiledRoute withThreadContext(Route.CompiledRoute route)
+    {
+        if (getChannelType().isThread() && !(webhook instanceof InteractionHook))
+            return route.withQueryParams("thread_id", getChannelId());
+        return route;
     }
 
     private ErrorMapper getUnknownWebhookErrorMapper()

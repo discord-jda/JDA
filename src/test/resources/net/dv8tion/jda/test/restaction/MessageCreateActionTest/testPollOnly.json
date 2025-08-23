@@ -1,0 +1,46 @@
+{
+  "allowed_mentions" : {
+    "parse" : [ "users", "roles", "everyone" ],
+    "replied_user" : true
+  },
+  "components" : [ ],
+  "content" : "",
+  "embeds" : [ ],
+  "enforce_nonce" : true,
+  "flags" : 0,
+  "nonce" : "123456",
+  "poll" : {
+    "allow_multiselect" : true,
+    "answers" : [ {
+      "answer_id" : 1,
+      "poll_media" : {
+        "emoji" : null,
+        "text" : "Test answer 1"
+      }
+    }, {
+      "answer_id" : 2,
+      "poll_media" : {
+        "emoji" : {
+          "name" : "🤔"
+        },
+        "text" : "Test answer 2"
+      }
+    }, {
+      "answer_id" : 3,
+      "poll_media" : {
+        "emoji" : {
+          "animated" : true,
+          "id" : 821355005788684298,
+          "name" : "minn"
+        },
+        "text" : "Test answer 3"
+      }
+    } ],
+    "duration" : 72,
+    "layout_type" : 1,
+    "question" : {
+      "text" : "Test poll"
+    }
+  },
+  "tts" : false
+}

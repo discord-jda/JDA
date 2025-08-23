@@ -92,7 +92,7 @@ public interface WebhookManager extends Manager<WebhookManager>
     @Nonnull
     @Override
     @CheckReturnValue
-    WebhookManager reset(long... fields);
+    WebhookManager reset(@Nonnull long... fields);
 
     /**
      * The target {@link net.dv8tion.jda.api.entities.Webhook Webhook}

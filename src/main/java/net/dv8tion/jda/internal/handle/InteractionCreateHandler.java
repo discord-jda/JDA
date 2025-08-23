@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
@@ -37,9 +36,9 @@ import net.dv8tion.jda.internal.interactions.command.CommandAutoCompleteInteract
 import net.dv8tion.jda.internal.interactions.command.MessageContextInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.command.UserContextInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.ButtonInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.EntitySelectInteractionImpl;
-import net.dv8tion.jda.internal.interactions.component.StringSelectInteractionImpl;
+import net.dv8tion.jda.internal.interactions.components.buttons.ButtonInteractionImpl;
+import net.dv8tion.jda.internal.interactions.components.selections.EntitySelectInteractionImpl;
+import net.dv8tion.jda.internal.interactions.components.selections.StringSelectInteractionImpl;
 import net.dv8tion.jda.internal.interactions.modal.ModalInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
@@ -62,16 +61,13 @@ public class InteractionCreateHandler extends SocketHandler
         }
 
         long guildId = content.getUnsignedLong("guild_id", 0);
-        Guild guild = api.getGuildById(guildId);
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
-        if (guildId != 0 && guild == null)
-            return null; // discard event if it is not from a guild we are currently in
 
         // Check channel type
         DataObject channelJson = content.getObject("channel");
         ChannelType channelType = ChannelType.fromId(channelJson.getInt("type"));
-        if (!channelType.isMessage() || channelType == ChannelType.GROUP)
+        if (!channelType.isMessage())
         {
             WebSocketClient.LOG.debug("Discarding INTERACTION_CREATE event from unexpected channel type. Channel: {}", channelJson);
             return null;

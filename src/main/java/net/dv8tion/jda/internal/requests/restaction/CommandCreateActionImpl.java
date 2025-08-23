@@ -17,6 +17,8 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -36,8 +38,10 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
@@ -92,9 +96,17 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setGuildOnly(boolean guildOnly)
+    public CommandCreateAction setContexts(@Nonnull Collection<InteractionContextType> contexts)
     {
-        data.setGuildOnly(guildOnly);
+        data.setContexts(contexts);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction setIntegrationTypes(@Nonnull Collection<IntegrationType> integrationTypes)
+    {
+        data.setIntegrationTypes(integrationTypes);
         return this;
     }
 
@@ -142,10 +154,18 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         return data.getDefaultPermissions();
     }
 
+    @Nonnull
     @Override
-    public boolean isGuildOnly()
+    public Set<InteractionContextType> getContexts()
     {
-        return data.isGuildOnly();
+        return data.getContexts();
+    }
+
+    @Nonnull
+    @Override
+    public Set<IntegrationType> getIntegrationTypes()
+    {
+        return data.getIntegrationTypes();
     }
 
     @Override

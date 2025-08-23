@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.StageInstance;
 
 import javax.annotation.CheckReturnValue;
@@ -43,14 +42,6 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
 {
     /** Used to reset the topic field */
     long TOPIC         = 1;
-    /**
-     * Used to reset the privacy level field
-     *
-     * @deprecated Obsolete.
-     */
-    @Deprecated
-    @ForRemoval(deadline = "5.3.0")
-    long PRIVACY_LEVEL = 1 << 1;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -60,7 +51,6 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
      * <p><b>Flag Constants:</b>
      * <ul>
      *     <li>{@link #TOPIC}</li>
-     *     <li>{@link #PRIVACY_LEVEL}</li>
      * </ul>
      *
      * @param  fields
@@ -80,7 +70,6 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
      * <p><b>Flag Constants:</b>
      * <ul>
      *     <li>{@link #TOPIC}</li>
-     *     <li>{@link #PRIVACY_LEVEL}</li>
      * </ul>
      *
      * @param  fields
@@ -91,7 +80,7 @@ public interface StageInstanceManager extends Manager<StageInstanceManager>
     @Nonnull
     @Override
     @CheckReturnValue
-    StageInstanceManager reset(long... fields);
+    StageInstanceManager reset(@Nonnull long... fields);
 
     /**
      * The associated {@link StageInstance}

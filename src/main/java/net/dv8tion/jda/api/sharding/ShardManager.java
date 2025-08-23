@@ -429,11 +429,11 @@ public interface ShardManager extends IGuildChannelContainer<Channel>
      * @param  users
      *         The users which all the returned {@link net.dv8tion.jda.api.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.UserSnowflake Users} in them.
      */
     @Nonnull
     @Unmodifiable
-    default List<Guild> getMutualGuilds(@Nonnull final Collection<User> users)
+    default List<Guild> getMutualGuilds(@Nonnull final Collection<? extends UserSnowflake> users)
     {
         Checks.noneNull(users, "users");
         return this.getGuildCache().stream()
@@ -448,11 +448,11 @@ public interface ShardManager extends IGuildChannelContainer<Channel>
      * @param  users
      *         The users which all the returned {@link net.dv8tion.jda.api.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.UserSnowflake Users} in them.
      */
     @Nonnull
     @Unmodifiable
-    default List<Guild> getMutualGuilds(@Nonnull final User... users)
+    default List<Guild> getMutualGuilds(@Nonnull final UserSnowflake... users)
     {
         Checks.notNull(users, "users");
         return this.getMutualGuilds(Arrays.asList(users));

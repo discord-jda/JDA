@@ -110,14 +110,14 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
                 start();
         }
 
-        public void enqueue(SessionConnectNode node)
+        public void enqueue(@Nonnull SessionConnectNode node)
         {
             log.trace("Appending node to queue {}", node.getShardInfo());
             queue.add(node);
             start();
         }
 
-        public void dequeue(SessionConnectNode node)
+        public void dequeue(@Nonnull SessionConnectNode node)
         {
             log.trace("Removing node from queue {}", node.getShardInfo());
             queue.remove(node);

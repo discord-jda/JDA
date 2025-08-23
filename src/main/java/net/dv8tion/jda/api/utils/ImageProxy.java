@@ -15,9 +15,11 @@
  */
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.FutureUtil;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import okhttp3.OkHttpClient;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -30,7 +32,9 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * A utility class to retrieve images.
- * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific size (width is the same as the height).
+ * <br>This supports downloading the images from the normal URL, as well as downloading the image with a specific size.
+ *
+ * @see <a href="https://discord.com/developers/docs/reference#image-formatting" target="_blank">Discord docs on image formatting</a>
  */
 public class ImageProxy extends FileProxy
 {
@@ -48,12 +52,22 @@ public class ImageProxy extends FileProxy
         super(url);
     }
 
+    @Nonnull
+    @Override
+    public ImageProxy withClient(@Nonnull OkHttpClient customHttpClient)
+    {
+        return (ImageProxy) super.withClient(customHttpClient);
+    }
+
     /**
      * Returns the image URL for the specified size.
      * <br>The size is a best-effort resize from Discord, with recommended size values as powers of 2 such as 1024 or 512.
      *
      * @param  size
      *         The size of the image
+     *
+     * @throws IllegalArgumentException
+     *         If the requested size is negative or 0
      *
      * @return URL of the image with the specified size
      */
@@ -67,7 +81,8 @@ public class ImageProxy extends FileProxy
 
     /**
      * Retrieves the {@link InputStream} of this image at the specified size.
-     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
      *
@@ -84,8 +99,10 @@ public class ImageProxy extends FileProxy
     }
 
     /**
-     * Downloads the data of this image, at the specified size, and stores it in a file with the same name as the queried file name (this would be the last segment of the URL).
-     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     * Downloads the data of this image, at the specified size, and stores it in a file with the same name
+     * as the queried file name (this would be the last segment of the URL).
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
      *
@@ -93,7 +110,7 @@ public class ImageProxy extends FileProxy
      *       The file is first downloaded into a temporary file, the file is then moved to its real destination when the download is complete.
      *
      * @param  size
-     *         The width and height of this image, must be positive
+     *         The size of this image, must be positive
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
@@ -113,7 +130,8 @@ public class ImageProxy extends FileProxy
 
     /**
      * Downloads the data of this image, at the specified size, and stores it in the specified file.
-     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
      *
@@ -122,6 +140,8 @@ public class ImageProxy extends FileProxy
      *
      * @param  file
      *         The file in which to download the image
+     * @param  size
+     *         The size of this image, must be positive
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
@@ -147,7 +167,8 @@ public class ImageProxy extends FileProxy
 
     /**
      * Downloads the data of this image, at the specified size, and stores it in the specified file.
-     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
      *
      * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
      *
@@ -157,6 +178,8 @@ public class ImageProxy extends FileProxy
      *
      * @param  path
      *         The file in which to download the image
+     * @param  size
+     *         The size of this image, must be positive
      *
      * @throws IllegalArgumentException
      *         If any of the follow checks are true
@@ -177,5 +200,68 @@ public class ImageProxy extends FileProxy
         Checks.notNull(path, "Path");
 
         return downloadToPath(getUrl(size), path);
+    }
+
+    /**
+     * Downloads the data of this attachment, and constructs an {@link Icon} from the data.
+     *
+     * @return {@link CompletableFuture} which holds an {@link Icon}.
+     */
+    @Nonnull
+    @CheckReturnValue
+    public CompletableFuture<Icon> downloadAsIcon()
+    {
+        return downloadAsIcon(getUrl());
+    }
+
+    /**
+     * Downloads the data of this image, at the specified size, and constructs an {@link Icon} from the data.
+     * <br><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>,
+     * so numbers like 128, 256, 512..., 100 and 600 might also be valid sizes.
+     *
+     * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
+     *
+     * @param  size
+     *         The size of this image, must be positive
+     *
+     * @throws IllegalArgumentException
+     *         If the requested size is negative or 0
+     *
+     * @return {@link CompletableFuture} which holds an {@link Icon}.
+     */
+    @Nonnull
+    @CheckReturnValue
+    public CompletableFuture<Icon> downloadAsIcon(int size)
+    {
+        return downloadAsIcon(getUrl(size));
+    }
+
+    /**
+     * Returns a {@link FileUpload} which supplies a data stream of this attachment,
+     * with the given file name and at the specified size.
+     * <br>The returned {@link FileUpload} can be reused safely, and does not need to be closed.
+     *
+     * <p><b>The image may not be resized at any size, usually Discord only allows for a few powers of 2</b>, so numbers like 128, 256, 512..., 100 might also be a valid size.
+     *
+     * <p>If the image is not of a valid size, the CompletableFuture will hold an exception since the HTTP request would have returned a 404.
+     *
+     * @param  name
+     *         The name of the to-be-uploaded file
+     * @param  size
+     *         The size of this image
+     *
+     * @throws IllegalArgumentException If the file name is null or blank
+     *
+     * @return {@link FileUpload} from this attachment.
+     */
+    @Nonnull
+    public FileUpload downloadAsFileUpload(@Nonnull String name, int size)
+    {
+        final String url = getUrl(size); // So the checks are also done outside the FileUpload
+        return FileUpload.fromStreamSupplier(name, () ->
+        {
+            // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+            return download(url).join();
+        });
     }
 }

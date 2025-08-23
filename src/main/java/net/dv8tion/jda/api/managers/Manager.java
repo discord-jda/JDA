@@ -68,7 +68,7 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
     @Nonnull
     @Override
     @CheckReturnValue
-    M setCheck(BooleanSupplier checks);
+    M setCheck(@Nonnull BooleanSupplier checks);
 
     @Nonnull
     @Override
@@ -86,7 +86,7 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
 
     @Nonnull
     @CheckReturnValue
-    M reset(long... fields);
+    M reset(@Nonnull long... fields);
 
     /**
      * Resets all fields for this Manager

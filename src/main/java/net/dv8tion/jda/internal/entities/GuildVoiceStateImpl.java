@@ -251,9 +251,15 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     // -- Setters --
 
-    public GuildVoiceStateImpl setConnectedChannel(AudioChannel connectedChannel)
+    public void setMember(Member member)
+    {
+        this.member = member;
+    }
+
+    public GuildVoiceStateImpl updateConnectedChannel(AudioChannel connectedChannel)
     {
         this.connectedChannel = connectedChannel;
+        ((GuildImpl) guild).handleVoiceStateUpdate(this);
         return this;
     }
 

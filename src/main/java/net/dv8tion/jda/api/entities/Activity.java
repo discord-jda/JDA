@@ -538,7 +538,7 @@ public interface Activity
          * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
          * @see    java.time.temporal.TemporalUnit
          */
-        public long getRemainingTime(TemporalUnit unit)
+        public long getRemainingTime(@Nonnull TemporalUnit unit)
         {
             Checks.notNull(unit, "TemporalUnit");
             Instant end = getEndTime();
@@ -566,7 +566,7 @@ public interface Activity
          * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
          * @see    java.time.temporal.TemporalUnit
          */
-        public long getElapsedTime(TemporalUnit unit)
+        public long getElapsedTime(@Nonnull TemporalUnit unit)
         {
             Checks.notNull(unit, "TemporalUnit");
             Instant start = getStartTime();

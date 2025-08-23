@@ -1,9 +1,7 @@
-[maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA?color=blue
-[jitpack]: https://img.shields.io/badge/Snapshots-JitPack-blue
+[maven-central]: https://img.shields.io/maven-central/v/net.dv8tion/JDA?filter=!*-preview*&logo=apachemaven&color=blue
+[jitpack]: https://img.shields.io/badge/Snapshots-JitPack?logo=jitpack
 [installation]: #-installation
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
-[migration]: https://jda.wiki/introduction/migration-v4-v5/
-[jenkins]: https://ci.dv8tion.net/job/JDA5
 [license]: https://github.com/discord-jda/JDA/tree/master/LICENSE
 [faq]: https://jda.wiki/introduction/faq/
 [docs]: https://docs.jda.wiki/index.html
@@ -13,9 +11,7 @@
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [docs-shield]: https://img.shields.io/badge/Wiki-Docs-blue.svg
 [troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-darkgreen.svg
-[jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-purple.svg
 [license-shield]: https://img.shields.io/badge/License-Apache%202.0-white.svg
-[migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V4-darkgreen.svg
 [GatewayIntent]: https://docs.jda.wiki/net/dv8tion/jda/api/requests/GatewayIntent.html
 [JDABuilder]: https://docs.jda.wiki/net/dv8tion/jda/api/JDABuilder.html
 [DefaultShardManagerBuilder]: https://docs.jda.wiki/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html
@@ -24,14 +20,12 @@
 
 [![maven-central][]][installation]
 [![jitpack][]](https://jitpack.io/#discord-jda/JDA)
-[![jenkins-shield][]][jenkins]
 [![license-shield][]][license]
 
 [![discord-shield][]][discord-invite]
 [![faq-shield]][faq]
 [![docs-shield]][docs]
 [![troubleshooting-shield]][troubleshooting]
-[![migration-shield][]][migration]
 
 # JDA (Java Discord API)
 
@@ -53,7 +47,7 @@ You can learn more by visiting our [wiki][wiki] or referencing our [Javadocs][do
 
 ## 🔬 Installation
 
-[![maven-central][]](https://mvnrepository.com/artifact/net.dv8tion/JDA/latest)
+[![maven-central][]](https://central.sonatype.com/artifact/net.dv8tion/JDA)
 [![jitpack][]](https://jitpack.io/#discord-jda/JDA)
 
 This library is available on maven central. The latest version is always shown in the [GitHub Release](https://github.com/discord-jda/JDA/releases/latest).
@@ -69,11 +63,13 @@ repositories {
 
 dependencies {
     implementation("net.dv8tion:JDA:$version") { // replace $version with the latest version
-      // Optionally disable audio natives to reduce jar size by excluding `opus-java`
+      // Optionally disable audio natives to reduce jar size by excluding `opus-java` and `tink`
       // Gradle DSL:
-      // exclude module: 'opus-java'
+      // exclude module: 'opus-java' // required for encoding audio into opus, not needed if audio is already provided in opus encoding
+      // exclude module: 'tink' // required for encrypting and decrypting audio
       // Kotlin DSL:
-      // exclude(module="opus-java")
+      // exclude(module="opus-java") // required for encoding audio into opus, not needed if audio is already provided in opus encoding
+      // exclude(module="tink") // required for encrypting and decrypting audio
     }
 }
 ```
@@ -85,14 +81,19 @@ dependencies {
     <groupId>net.dv8tion</groupId>
     <artifactId>JDA</artifactId>
     <version>$version</version> <!-- replace $version with the latest version -->
-    <!-- Optionally disable audio natives to reduce jar size by excluding `opus-java`
+    <!-- Optionally disable audio natives to reduce jar size by excluding `opus-java` and `tink` -->
     <exclusions>
+        <!-- required for encoding audio into opus, not needed if audio is already provided in opus encoding
         <exclusion>
             <groupId>club.minnced</groupId>
             <artifactId>opus-java</artifactId>
-        </exclusion>
+        </exclusion> -->
+        <!-- required for encrypting and decrypting audio
+        <exclusion>
+            <groupId>com.google.crypto.tink</groupId>
+            <artifactId>tink</artifactId>
+        </exclusion> -->
     </exclusions>
-    -->
 </dependency>
 ```
 
@@ -164,7 +165,7 @@ public static void main(String[] args) {
     Commands.slash("say", "Makes the bot say what you tell it to")
       .addOption(STRING, "content", "What the bot should say", true), // Accepting a user input
     Commands.slash("leave", "Makes the bot leave the server")
-      .setGuildOnly(true) // this doesn't make sense in DMs
+      .setContexts(InteractionContextType.GUILD) // this doesn't make sense in DMs
       .setDefaultPermissions(DefaultMemberPermissions.DISABLED) // only admins should be able to use this command.
   );
 
@@ -246,7 +247,7 @@ And configurators like:
 ```java
 public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
     return channel.sendMessage("The following message will destroy itself in 1 minute!")
-        .addActionRow(Button.danger("delete", "Delete now")) // further amend message before sending
+        .addComponents(ActionRow.of(Button.danger("delete", "Delete now"))) // further amend message before sending
         .delay(10, SECONDS, scheduler) // after sending, wait 10 seconds
         .flatMap((it) -> it.editMessage(content)) // then edit the message
         .delay(1, MINUTES, scheduler) // wait another minute

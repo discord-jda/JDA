@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.api.interactions.modals;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
 
@@ -33,11 +35,13 @@ import java.util.Objects;
 public class ModalMapping
 {
     private final String id;
+    private final int uniqueId;
     private final String value;
     private final Component.Type type;
 
     public ModalMapping(DataObject object)
     {
+        this.uniqueId = object.getInt("id");
         this.id = object.getString("custom_id");
         this.value = object.getString("value");
         this.type = Component.Type.fromKey(object.getInt("type"));
@@ -47,11 +51,38 @@ public class ModalMapping
      * The custom id of this component
      *
      * @return The custom id of this component
+     *
+     * @deprecated
+     *         Replaced with {@link #getCustomId()}
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getCustomId()")
     public String getId()
     {
         return id;
+    }
+
+    /**
+     * The custom id of the component owning this data
+     *
+     * @return The custom id of the component
+     */
+    @Nonnull
+    public String getCustomId()
+    {
+        return id;
+    }
+
+    /**
+     * The unique, numeric id of the component owning this data
+     *
+     * @return The numeric id of the component
+     */
+    public int getUniqueId()
+    {
+        return uniqueId;
     }
 
     /**
@@ -93,12 +124,12 @@ public class ModalMapping
         if (this == o) return true;
         if (!(o instanceof ModalMapping)) return false;
         ModalMapping that = (ModalMapping) o;
-        return type == that.type && Objects.equals(id, that.id) && Objects.equals(value, that.value);
+        return type == that.type && Objects.equals(id, that.id) && Objects.equals(uniqueId, that.uniqueId) && Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, value, type);
+        return Objects.hash(id, uniqueId, value, type);
     }
 }

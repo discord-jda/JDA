@@ -163,6 +163,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
     public void onUserUpdateActivityOrder(@Nonnull UserUpdateActivityOrderEvent event) {}
     public void onUserUpdateFlags(@Nonnull UserUpdateFlagsEvent event) {}
+    public void onUserUpdatePrimaryGuild(@Nonnull UserUpdatePrimaryGuildEvent event) {}
     public void onUserTyping(@Nonnull UserTypingEvent event) {}
     public void onUserActivityStart(@Nonnull UserActivityStartEvent event) {}
     public void onUserActivityEnd(@Nonnull UserActivityEndEvent event) {}
@@ -263,6 +264,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateCommunityUpdatesChannel(@Nonnull GuildUpdateCommunityUpdatesChannelEvent event) {}
     public void onGuildUpdateSafetyAlertsChannel(@Nonnull GuildUpdateSafetyAlertsChannelEvent event) {}
     public void onGuildUpdateAfkTimeout(@Nonnull GuildUpdateAfkTimeoutEvent event) {}
+    public void onGuildUpdateSecurityIncidentActions(@Nonnull GuildUpdateSecurityIncidentActionsEvent event) {}
+    public void onGuildUpdateSecurityIncidentDetections(@Nonnull GuildUpdateSecurityIncidentDetectionsEvent event) {}
     public void onGuildUpdateExplicitContentLevel(@Nonnull GuildUpdateExplicitContentLevelEvent event) {}
     public void onGuildUpdateIcon(@Nonnull GuildUpdateIconEvent event) {}
     public void onGuildUpdateMFALevel(@Nonnull GuildUpdateMFALevelEvent event) {}

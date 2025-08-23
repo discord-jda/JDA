@@ -81,7 +81,7 @@ public class SessionControllerAdapter implements SessionController
         return new RestActionImpl<ShardedGateway>(api, Route.Misc.GATEWAY_BOT.compile())
         {
             @Override
-            public void handleResponse(Response response, Request<ShardedGateway> request)
+            public void handleResponse(@Nonnull Response response, @Nonnull Request<ShardedGateway> request)
             {
                 if (response.isOk())
                 {

@@ -264,13 +264,11 @@ public class EmbedBuilder
     public boolean isEmpty()
     {
         return (title == null || title.trim().isEmpty())
-            && timestamp == null
             && thumbnail == null
             && author == null
             && footer == null
             && image == null
-            && color == Role.DEFAULT_COLOR_RAW
-            && description.length() == 0
+            && description.toString().trim().isEmpty()
             && fields.isEmpty();
     }
 

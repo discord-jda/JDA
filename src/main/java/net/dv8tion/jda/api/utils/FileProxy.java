@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.requests.RestConfig;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
@@ -186,6 +187,24 @@ public class FileProxy
 
     @Nonnull
     @CheckReturnValue
+    protected CompletableFuture<Icon> downloadAsIcon(String url)
+    {
+        final CompletableFuture<InputStream> downloadFuture = download(url);
+        return FutureUtil.thenApplyCancellable(downloadFuture, stream ->
+        {
+            try (final InputStream ignored = stream)
+            {
+                return Icon.from(stream);
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
+    }
+
+    @Nonnull
+    @CheckReturnValue
     protected CompletableFuture<Path> downloadToPath(String url)
     {
         final HttpUrl parsedUrl = HttpUrl.parse(url);
@@ -328,6 +347,28 @@ public class FileProxy
         Checks.notNull(path, "Path");
 
         return downloadToPath(url, path);
+    }
+
+    /**
+     * Returns a {@link FileUpload} which supplies a data stream of this attachment,
+     * with the given file name.
+     * <br>The returned {@link FileUpload} can be reused safely, and does not need to be closed.
+     *
+     * @param  name
+     *         The name of the to-be-uploaded file
+     *
+     * @throws IllegalArgumentException If the file name is null or blank
+     *
+     * @return {@link FileUpload} from this attachment.
+     */
+    @Nonnull
+    public FileUpload downloadAsFileUpload(@Nonnull String name)
+    {
+        return FileUpload.fromStreamSupplier(name, () ->
+        {
+            // Blocking is fine on the elastic rate limit thread pool [[JDABuilder#setRateLimitElastic]]
+            return download().join();
+        });
     }
 
     protected static class DownloadTask

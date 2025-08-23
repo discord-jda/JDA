@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.requests;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -101,15 +99,6 @@ public enum GatewayIntent
      */
     GUILD_MODERATION(2),
     /**
-     * Custom emoji and sticker add/update/delete events.
-     *
-     * @deprecated Replaced with {@link #GUILD_EXPRESSIONS}
-     */
-    @ForRemoval(deadline = "5.3.0")
-    @ReplaceWith("GUILD_EXPRESSIONS")
-    @Deprecated
-    GUILD_EMOJIS_AND_STICKERS(3),
-    /**
      * Custom emoji, sticker and soundboard sound add/update/delete events.
      */
     GUILD_EXPRESSIONS(3),
@@ -172,7 +161,7 @@ public enum GatewayIntent
      *     <li>{@link Message#getContentRaw()}, {@link Message#getContentDisplay()}, {@link Message#getContentStripped()}</li>
      *     <li>{@link Message#getEmbeds()}</li>
      *     <li>{@link Message#getAttachments()}</li>
-     *     <li>{@link Message#getActionRows()}, {@link Message#getButtons()}</li>
+     *     <li>{@link Message#getComponents()}, {@link Message#getComponentTree()}</li>
      * </ul>
      *
      * @see <a href="https://support-dev.discord.com/hc/en-us/articles/4404772028055-Message-Content-Privileged-Intent-FAQ" target="_blank">Message Content Privileged Intent FAQ</a>

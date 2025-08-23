@@ -46,7 +46,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected String afkChannel, systemChannel, rulesChannel, communityUpdatesChannel, safetyAlertsChannel;
     protected String description;
     protected int afkTimeout;
-    protected int mfaLevel;
     protected int notificationLevel;
     protected int explicitContentLevel;
     protected int verificationLevel;
@@ -105,7 +104,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl reset(long... fields)
+    public GuildManagerImpl reset(@Nonnull long... fields)
     {
         super.reset(fields);
         return this;
@@ -254,18 +253,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl setRequiredMFALevel(@Nonnull Guild.MFALevel level)
-    {
-        Checks.notNull(level, "Level");
-        Checks.check(level != Guild.MFALevel.UNKNOWN, "Level must not be UNKNOWN");
-        this.mfaLevel = level.getKey();
-        set |= MFA_LEVEL;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
     public GuildManagerImpl setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level)
     {
         Checks.notNull(level, "Level");
@@ -368,8 +355,6 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("verification_level", verificationLevel);
         if (shouldUpdate(NOTIFICATION_LEVEL))
             body.put("default_message_notifications", notificationLevel);
-        if (shouldUpdate(MFA_LEVEL))
-            body.put("mfa_level", mfaLevel);
         if (shouldUpdate(EXPLICIT_CONTENT_LEVEL))
             body.put("explicit_content_filter", explicitContentLevel);
         if (shouldUpdate(BANNER))

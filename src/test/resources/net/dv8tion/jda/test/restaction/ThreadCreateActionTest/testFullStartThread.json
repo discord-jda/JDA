@@ -1,0 +1,5 @@
+{
+  "name" : "post title by setter",
+  "rate_limit_per_user" : 1337,
+  "type" : 0
+}

@@ -51,7 +51,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M setCheck(BooleanSupplier checks)
+    public M setCheck(@Nonnull BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
     }
@@ -89,7 +89,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M reset(long... fields)
+    public M reset(@Nonnull long... fields)
     {
         Checks.notNull(fields, "Fields");
         //trivial case

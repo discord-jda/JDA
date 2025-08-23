@@ -17,18 +17,21 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
@@ -45,7 +48,7 @@ public class SlashBotExample extends ListenerAdapter
                 .addEventListeners(new SlashBotExample())
                 .build();
 
-        // These commands might take a few minutes to be active after creation/update/delete
+        // You might need to reload your Discord client if you don't see the commands
         CommandListUpdateAction commands = jda.updateCommands();
 
         // Moderation commands with required options
@@ -56,27 +59,33 @@ public class SlashBotExample extends ListenerAdapter
                 .addOptions(new OptionData(INTEGER, "del_days", "Delete messages from the past days.") // This is optional
                     .setRequiredRange(0, 7)) // Only allow values between 0 and 7 (inclusive)
                 .addOptions(new OptionData(STRING, "reason", "The ban reason to use (default: Banned by <user>)")) // optional reason
-                .setGuildOnly(true) // This way the command can only be executed from a guild, and not the DMs
+                .setContexts(InteractionContextType.GUILD) // This way the command can only be executed from a guild, and not the DMs
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS)) // Only members with the BAN_MEMBERS permission are going to see this command
         );
 
         // Simple reply commands
         commands.addCommands(
             Commands.slash("say", "Makes the bot say what you tell it to")
+                .setContexts(InteractionContextType.ALL) // Allow the command to be used anywhere (Bot DMs, Guild, Friend DMs, Group DMs)
+                .setIntegrationTypes(IntegrationType.ALL) // Allow the command to be installed anywhere (Guilds, Users)
                 .addOption(STRING, "content", "What the bot should say", true) // you can add required options like this too
         );
 
         // Commands without any inputs
         commands.addCommands(
             Commands.slash("leave", "Make the bot leave the server")
-                .setGuildOnly(true) // this doesn't make sense in DMs
+                // The default integration types are GUILD_INSTALL.
+                // Can't use this in DMs, and in guilds the bot isn't in.
+                .setContexts(InteractionContextType.GUILD)
                 .setDefaultPermissions(DefaultMemberPermissions.DISABLED) // only admins should be able to use this command.
         );
 
         commands.addCommands(
             Commands.slash("prune", "Prune messages from this channel")
                 .addOption(INTEGER, "amount", "How many messages to prune (Default 100)") // simple optional argument
-                .setGuildOnly(true)
+                // The default integration types are GUILD_INSTALL.
+                // Can't use this in DMs, and in guilds the bot isn't in.
+                .setContexts(InteractionContextType.GUILD)
                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MESSAGE_MANAGE))
         );
 
@@ -200,9 +209,12 @@ public class SlashBotExample extends ListenerAdapter
                 : (int) Math.min(200, Math.max(2, amountOption.getAsLong())); // enforcement: must be between 2-200
         String userId = event.getUser().getId();
         event.reply("This will delete " + amount + " messages.\nAre you sure?") // prompt the user with a button menu
-            .addActionRow(// this means "<style>(<id>, <label>)", you can encode anything you want in the id (up to 100 characters)
-                Button.secondary(userId + ":delete", "Nevermind!"),
-                Button.danger(userId + ":prune:" + amount, "Yes!")) // the first parameter is the component id we use in onButtonInteraction above
-            .queue();
+                .addComponents(
+                        ActionRow.of( // this means "<style>(<id>, <label>)", you can encode anything you want in the id (up to 100 characters)
+                                Button.secondary(userId + ":delete", "Nevermind!"),
+                                Button.danger(userId + ":prune:" + amount, "Yes!") // the first parameter is the component id we use in onButtonInteraction above
+                        )
+                )
+                .queue();
     }
 }

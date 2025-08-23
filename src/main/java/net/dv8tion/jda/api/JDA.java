@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.managers.ApplicationManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
@@ -63,8 +64,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
@@ -788,7 +789,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * jda.updateCommands()
      *   .addCommands(Commands.slash("ping", "Gives the current ping"))
      *   .addCommands(Commands.slash("ban", "Ban the target user")
-     *     .setGuildOnly(true)
+     *     .setContexts(InteractionContextType.GUILD)
      *     .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.BAN_MEMBERS))
      *     .addOption(OptionType.USER, "user", "The user to ban", true))
      *   .queue();
@@ -813,17 +814,19 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
+     * @param  type
+     *         The command type
      * @param  id
      *         The id of the command to edit
      *
      * @throws IllegalArgumentException
-     *         If the provided id is not a valid snowflake
+     *         If the provided id is not a valid snowflake or the type is {@link Command.Type#UNKNOWN}
      *
      * @return {@link CommandEditAction} used to edit the command
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction editCommandById(@Nonnull String id);
+    CommandEditAction editCommandById(@Nonnull Command.Type type, @Nonnull String id);
 
     /**
      * Edit an existing global command by id.
@@ -831,16 +834,21 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
+     * @param  type
+     *         The command type
      * @param  id
      *         The id of the command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the type is {@link Command.Type#UNKNOWN}
      *
      * @return {@link CommandEditAction} used to edit the command
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction editCommandById(long id)
+    default CommandEditAction editCommandById(@Nonnull Command.Type type, long id)
     {
-        return editCommandById(Long.toUnsignedString(id));
+        return editCommandById(type, Long.toUnsignedString(id));
     }
 
     /**
@@ -908,59 +916,6 @@ public interface JDA extends IGuildChannelContainer<Channel>
     @Nonnull
     @CheckReturnValue
     RestAction<List<RoleConnectionMetadata>> updateRoleConnectionMetadata(@Nonnull Collection<? extends RoleConnectionMetadata> records);
-
-    /**
-     * Constructs a new {@link Guild Guild} with the specified name
-     * <br>Use the returned {@link GuildAction GuildAction} to provide
-     * further details and settings for the resulting Guild!
-     *
-     * <p>This RestAction does not provide the resulting Guild!
-     * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
-     *
-     * @param  name
-     *         The name of the resulting guild
-     *
-     * @throws java.lang.IllegalStateException
-     *         If the currently logged in account is in 10 or more guilds
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided name is empty, {@code null} or not between 2-100 characters
-     *
-     * @return {@link GuildAction GuildAction}
-     *         <br>Allows for setting various details for the resulting Guild
-     */
-    @Nonnull
-    @CheckReturnValue
-    GuildAction createGuild(@Nonnull String name);
-
-    /**
-     * Constructs a new {@link Guild Guild} from the specified template code.
-     *
-     * <p>This RestAction does not provide the resulting Guild!
-     * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_TEMPLATE Unknown Guild Template}
-     *     <br>The template doesn't exist.</li>
-     * </ul>
-     *
-     * @param  code
-     *         The template code to use to create a guild
-     * @param  name
-     *         The name of the resulting guild
-     * @param  icon
-     *         The {@link net.dv8tion.jda.api.entities.Icon Icon} to use, or null to use no icon
-     *
-     * @throws java.lang.IllegalStateException
-     *         If the currently logged in account is in 10 or more guilds
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided name is empty, {@code null} or not between 2-100 characters
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> createGuildFromTemplate(@Nonnull String code, @Nonnull String name, @Nullable Icon icon);
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} of
@@ -1162,13 +1117,13 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param  users
      *         The users which all the returned {@link Guild Guilds} must contain.
      *
-     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.UserSnowflake Users} in them.
      *
      * @see    Guild#isMember(UserSnowflake)
      */
     @Nonnull
     @Unmodifiable
-    List<Guild> getMutualGuilds(@Nonnull User... users);
+    List<Guild> getMutualGuilds(@Nonnull UserSnowflake... users);
 
     /**
      * Gets all {@link Guild Guilds} that contain all given users as their members.
@@ -1176,11 +1131,11 @@ public interface JDA extends IGuildChannelContainer<Channel>
      * @param users
      *        The users which all the returned {@link Guild Guilds} must contain.
      *
-     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.UserSnowflake Users} in them.
      */
     @Nonnull
     @Unmodifiable
-    List<Guild> getMutualGuilds(@Nonnull Collection<User> users);
+    List<Guild> getMutualGuilds(@Nonnull Collection<? extends UserSnowflake> users);
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
@@ -1755,7 +1710,7 @@ public interface JDA extends IGuildChannelContainer<Channel>
     /**
      * Creates a new {@link ApplicationEmoji} for this bot.
      *
-     * <p>Note that the bot is limited to {@value ApplicationEmoji#APPLICATION_EMOJI_CAP} Application Emojis (normal and animated).
+     * <p>Note that the bot is limited to {@value ApplicationEmoji#MAX_APPLICATION_EMOJIS} Application Emojis (normal and animated).
      *
      * @param  name
      *         The name for the new emoji (2-{@value CustomEmoji#EMOJI_NAME_MAX_LENGTH} characters)
@@ -2277,4 +2232,15 @@ public interface JDA extends IGuildChannelContainer<Channel>
         else throw new IllegalStateException("No port available");
         return new CompletedRestAction<>(this, port);
     }
+
+    /**
+     * Returns the {@link ApplicationManager} that manages the application associated with the bot.
+     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * @return The corresponding ApplicationManager
+     */
+    @Nonnull
+    @CheckReturnValue
+    ApplicationManager getApplicationManager();
+
 }

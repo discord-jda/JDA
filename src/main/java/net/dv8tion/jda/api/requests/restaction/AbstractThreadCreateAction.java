@@ -16,9 +16,11 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -84,4 +86,30 @@ public interface AbstractThreadCreateAction<T, R extends AbstractThreadCreateAct
     @Nonnull
     @CheckReturnValue
     R setAutoArchiveDuration(@Nonnull ThreadChannel.AutoArchiveDuration autoArchiveDuration);
+
+    /**
+     * Sets the <b><u>slowmode</u></b> for the new thread.
+     *
+     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link ISlowmodeChannel#MAX_SLOWMODE}!
+     *
+     * <p>Note: Bots are unaffected by this.
+     * <br>Having {@link Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
+     * {@link Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
+     * grants immunity to slowmode.
+     *
+     * @param  slowmode
+     *         The new slowmode
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the bot does not have {@link Permission#MANAGE_THREADS} in the parent channel
+     * @throws IllegalArgumentException
+     *         If the provided slowmode is negative or greater than {@value ISlowmodeChannel#MAX_SLOWMODE}
+     *
+     * @return The current action, for chaining convenience
+     *
+     * @see net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel#getSlowmode()
+     */
+    @Nonnull
+    @CheckReturnValue
+    R setSlowmode(int slowmode);
 }

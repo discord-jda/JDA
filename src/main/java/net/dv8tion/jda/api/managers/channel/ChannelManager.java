@@ -175,7 +175,7 @@ public interface ChannelManager<T extends GuildChannel, M extends ChannelManager
     @Nonnull
     @Override
     @CheckReturnValue
-    M reset(long... fields);
+    M reset(@Nonnull long... fields);
 
     /**
      * The {@link GuildChannel GuildChannel} that will

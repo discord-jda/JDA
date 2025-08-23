@@ -82,6 +82,7 @@ public class PermissionUtilTest extends IntegrationTest
         when(member.getGuild()).thenReturn(guild);
         when(guild.getPublicRole()).thenReturn(publicRole);
         when(member.getRoles()).thenReturn(Collections.singletonList(role));
+        when(member.getUnsortedRoles()).thenReturn(Collections.singleton(role));
 
         mockChannel(textChannel, ChannelType.TEXT);
         mockChannel(voiceChannel, ChannelType.VOICE);

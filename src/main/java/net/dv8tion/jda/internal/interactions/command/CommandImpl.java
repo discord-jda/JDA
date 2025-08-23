@@ -18,6 +18,8 @@ package net.dv8tion.jda.internal.interactions.command;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -33,12 +35,14 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.localization.LocalizationUtils;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -59,7 +63,9 @@ public class CommandImpl implements Command
     private final List<Command.SubcommandGroup> groups;
     private final List<Command.Subcommand> subcommands;
     private final long id, guildId, applicationId, version;
-    private final boolean guildOnly, nsfw;
+    private final boolean nsfw;
+    private final Set<InteractionContextType> contexts;
+    private final Set<IntegrationType> integrationTypes;
     private final Command.Type type;
     private final DefaultMemberPermissions defaultMemberPermissions;
 
@@ -84,7 +90,34 @@ public class CommandImpl implements Command
                 ? DefaultMemberPermissions.ENABLED
                 : DefaultMemberPermissions.enabledFor(json.getLong("default_member_permissions"));
 
-        this.guildOnly = !json.getBoolean("dm_permission", true);
+        if (!json.isNull("contexts"))
+        {
+            this.contexts = json.getArray("contexts")
+                    .stream(DataArray::getString)
+                    .map(InteractionContextType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(InteractionContextType.class));
+        }
+        // If the command is in a guild, it can only be guild, otherwise up to the dm_permission flag
+        else if (guildId != 0L)
+            this.contexts = Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
+        else
+        {
+            final boolean dmPermission = json.getBoolean("dm_permission", true);
+            this.contexts = dmPermission
+                    ? Helpers.unmodifiableEnumSet(InteractionContextType.GUILD, InteractionContextType.BOT_DM)
+                    : Helpers.unmodifiableEnumSet(InteractionContextType.GUILD);
+        }
+
+        if (!json.isNull("integration_types"))
+        {
+            this.integrationTypes = json.getArray("integration_types")
+                    .stream(DataArray::getString)
+                    .map(IntegrationType::fromKey)
+                    .collect(Helpers.toUnmodifiableEnumSet(IntegrationType.class));
+        }
+        else
+            this.integrationTypes = Helpers.unmodifiableEnumSet(IntegrationType.GUILD_INSTALL);
+
         this.nsfw = json.getBoolean("nsfw");
     }
 
@@ -117,7 +150,7 @@ public class CommandImpl implements Command
     public CommandEditAction editCommand()
     {
         checkSelfUser("Cannot edit a command from another bot!");
-        return guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
+        return guild == null ? new CommandEditActionImpl(api, type, getId()) : new CommandEditActionImpl(guild, type, getId());
     }
 
     @Nonnull
@@ -218,10 +251,18 @@ public class CommandImpl implements Command
         return defaultMemberPermissions;
     }
 
+    @Nonnull
     @Override
-    public boolean isGuildOnly()
+    public EnumSet<InteractionContextType> getContexts()
     {
-        return guildOnly;
+        return Helpers.copyEnumSet(InteractionContextType.class, contexts);
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<IntegrationType> getIntegrationTypes()
+    {
+        return Helpers.copyEnumSet(IntegrationType.class, integrationTypes);
     }
 
     @Override

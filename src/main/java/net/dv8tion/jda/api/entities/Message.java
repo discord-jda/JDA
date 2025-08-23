@@ -15,8 +15,17 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
+import net.dv8tion.jda.api.components.tree.MessageComponentTree;
+import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.attribute.IThreadContainer;
@@ -37,10 +46,8 @@ import net.dv8tion.jda.api.entities.sticker.StickerItem;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.IntegrationOwners;
 import net.dv8tion.jda.api.interactions.InteractionType;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
@@ -49,8 +56,8 @@ import net.dv8tion.jda.api.requests.restaction.ThreadChannelAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachedFile;
-import net.dv8tion.jda.api.utils.AttachmentProxy;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.NamedAttachmentProxy;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -142,11 +149,11 @@ public interface Message extends ISnowflake, Formattable
     String JUMP_URL = "https://discord.com/channels/%s/%s/%s";
 
     /**
-     * The maximum sendable file size (25 MiB)
+     * The maximum sendable file size (10 MiB)
      *
      *  @see MessageRequest#setFiles(Collection)
      */
-    int MAX_FILE_SIZE = 25 << 20;
+    int MAX_FILE_SIZE = 10 << 20;
 
     /**
      * The maximum amount of files sendable within a single message ({@value})
@@ -162,6 +169,16 @@ public interface Message extends ISnowflake, Formattable
      * @see MessageRequest#setContent(String)
      */
     int MAX_CONTENT_LENGTH = 2000;
+
+    /**
+     * The maximum amount of characters sendable in one message. ({@value})
+     * <br>This only applies when {@linkplain #isUsingComponentsV2() V2 Components} are enabled.
+     *
+     * <p>Unlike {@link #MAX_CONTENT_LENGTH}, the amount of characters is calculated from all the components.
+     *
+     * @see MessageRequest#useComponentsV2()
+     */
+    int MAX_CONTENT_LENGTH_COMPONENT_V2 = 4000;
 
    /**
     * The maximum amount of reactions that can be added to one message ({@value})
@@ -187,9 +204,14 @@ public interface Message extends ISnowflake, Formattable
     int MAX_STICKER_COUNT = 3;
 
     /**
-     * The maximum amount of {@link LayoutComponent LayoutComponents} that can be added to a message ({@value})
+     * The maximum amount of {@link MessageTopLevelComponent MessageTopLevelComponents} that can be added to a message's {@link #getComponents() root component list} when using the legacy component system.  ({@value})
      */
     int MAX_COMPONENT_COUNT = 5;
+
+    /**
+     * The maximum amount of {@link Component components} that can be added to a message including nested components. ({@value})
+     */
+    int MAX_COMPONENT_COUNT_IN_COMPONENT_TREE = 40;
 
     /**
      * The maximum character length for a {@link #getNonce() nonce} ({@value})
@@ -207,7 +229,7 @@ public interface Message extends ISnowflake, Formattable
             "(?:https?://)?" +                     // Scheme
             "(?:\\w+\\.)?" +                       // Subdomain
             "discord(?:(?:app)?\\.com" +           // Discord domain
-            "/invite|\\.gg)/(?<code>[a-z0-9-]+)" + // Path
+            "/invite[/\\\\]|\\.gg/)(?<code>[a-z0-9-]+)" + // Path
             "(?:\\?\\S*)?(?:#\\S*)?",              // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
 
@@ -267,6 +289,14 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
      *
+     * <p>This will have different meaning depending on the message {@link #getType() type}.
+     * The following are the message types where a reference will be present:
+     * <ul>
+     *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
+     *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link MessageType#CONTEXT_COMMAND CONTEXT_COMMAND} (message context command)</li>
+     * </ul>
+     *
      * <p>You can access all the information about a reference through this object.
      * Additionally, you can retrieve the referenced Message if discord did not load it in time. This can be done with {@link MessageReference#resolve()}.
      *
@@ -278,9 +308,15 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Referenced message.
      *
-     * <p>This will have different meaning depending on the {@link #getType() type} of message.
-     * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
-     * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
+     * <p>This will have different meaning depending on the message {@link #getType() type}.
+     * The following are the message types where a reference can be present:
+     * <ul>
+     *     <li>{@link MessageType#INLINE_REPLY INLINE_REPLY}</li>
+     *     <li>{@link MessageType#THREAD_STARTER_MESSAGE THREAD_STARTER_MESSAGE}</li>
+     *     <li>{@link MessageType#CONTEXT_COMMAND CONTEXT_COMMAND} (message context command)</li>
+     * </ul>
+     *
+     * <p>This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      *
      * <p>This differs from a {@link MessageReference}, which contains the raw IDs attached to the reference, and allows you to retrieve the referenced message
      *
@@ -341,7 +377,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.
      * <br><b>This is only valid if the Message was actually sent in a GuildMessageChannel.</b> This will return {@code null}
-     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook.
+     * if the message was not sent in a GuildMessageChannel, or if the message was sent by a Webhook (including apps).
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
@@ -489,8 +525,8 @@ public interface Message extends ISnowflake, Formattable
     ChannelType getChannelType();
 
     /**
-     * Indicates if this Message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} instead of a
-     * {@link User User}.
+     * Indicates if this Message was sent either by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or an app,
+     * instead of a {@link User User}.
      * <br>Useful if you want to ignore non-users.
      *
      * @return True if this message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
@@ -661,11 +697,11 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Layouts of interactive components, usually {@link ActionRow ActionRows}.
-     * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.
+     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
-     * @return Immutable {@link List} of {@link LayoutComponent}
+     * @return Immutable {@link List} of {@link MessageTopLevelComponent}
      *
      * @see    #getActionRows()
      * @see    #getButtons()
@@ -673,7 +709,32 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @Unmodifiable
-    List<LayoutComponent> getComponents();
+    List<MessageTopLevelComponentUnion> getComponents();
+
+    /**
+     * Whether this message can contain V2 components.
+     * <br>This checks for {@link MessageFlag#IS_COMPONENTS_V2}.
+     *
+     * @return {@code true} if this message has the components V2 flag
+     *
+     * @see MessageRequest#useComponentsV2()
+     * @see MessageRequest#useComponentsV2(boolean)
+     */
+    boolean isUsingComponentsV2();
+
+    /**
+     * A {@link MessageComponentTree} constructed from {@link #getComponents()}.
+     * <br>You can use {@link MessageRequest#setComponents(ComponentTree)} to update these.
+     *
+     * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
+     *
+     * @return {@link MessageComponentTree}
+     */
+    @Nonnull
+    default MessageComponentTree getComponentTree()
+    {
+        return MessageComponentTree.of(getComponents());
+    }
 
     /**
      * The {@link MessagePoll} attached to this message.
@@ -714,7 +775,7 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Rows of interactive components such as {@link Button Buttons}.
-     * <br>You can use {@link MessageRequest#setComponents(LayoutComponent...)} to update these.
+     * <br>You can use {@link MessageRequest#setComponents(MessageTopLevelComponent...)} to update these.
      *
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
@@ -722,13 +783,17 @@ public interface Message extends ISnowflake, Formattable
      *
      * @see    #getButtons()
      * @see    #getButtonById(String)
+     *
+     * @deprecated
+     *         Can be replaced with {@link ComponentTree#findAll(Class) getComponentTree().findAll(ActionRow.class)}
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<ActionRow> getActionRows()
     {
-        return getComponents()
-                .stream()
+        return ComponentIterator.createStream(getComponents())
                 .filter(ActionRow.class::isInstance)
                 .map(ActionRow.class::cast)
                 .collect(Helpers.toUnmodifiableList());
@@ -740,15 +805,20 @@ public interface Message extends ISnowflake, Formattable
      * <p><b>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#MESSAGE_CONTENT GatewayIntent.MESSAGE_CONTENT}</b>
      *
      * @return Immutable {@link List} of {@link Button Buttons}
+     *
+     * @deprecated
+     *         Can be replaced with {@link ComponentTree#findAll(Class) getComponentTree().findAll(Button.class)}
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<Button> getButtons()
     {
-        return getComponents().stream()
-                .map(LayoutComponent::getButtons)
-                .flatMap(List::stream)
-                .collect(Helpers.toUnmodifiableList());
+        return ComponentIterator.createStream(getComponents())
+                .filter(Button.class::isInstance)
+                .map(Button.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -762,14 +832,19 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         If the id is null
      *
-     * @return The {@link Button} or null of no button with that ID is present on this message
+     * @return The {@link Button} or null if no button with that ID is present on this message
+     *
+     * @deprecated
+     *         Can be replaced with {@link ComponentTree#find(Class, Predicate) getComponentTree().find(Button.class, button -> id.equals(button.getCustomId()).orElse(null)}
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
     default Button getButtonById(@Nonnull String id)
     {
         Checks.notNull(id, "Button ID");
         return getButtons().stream()
-                .filter(it -> id.equals(it.getId()))
+                .filter(it -> id.equals(it.getCustomId()))
                 .findFirst().orElse(null);
     }
 
@@ -787,9 +862,16 @@ public interface Message extends ISnowflake, Formattable
      *         If the provided label is null
      *
      * @return Immutable {@link List} of {@link Button Buttons} with the specified label
+     *
+     * @deprecated
+     *         Can be replaced with {@link ComponentTree#findAll(Class, Predicate) getComponentTree().findAll(Button.class, button -> id.equals(button.getCustomId())},
+     *         usage is discouraged since content displayed to an user can change, prefer using data owned by the bot,
+     *         for example, in custom IDs or stored by the bot
      */
     @Nonnull
     @Unmodifiable
+    @Deprecated
+    @ForRemoval
     default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
     {
         Checks.notNull(label, "Label");
@@ -870,6 +952,9 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  newContent
@@ -907,6 +992,9 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  data
@@ -945,6 +1033,9 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  embeds
@@ -986,6 +1077,9 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  embeds
@@ -1015,7 +1109,7 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
+     * Edits this message using the provided {@link MessageTopLevelComponent MessageTopLevelComponents}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1030,10 +1124,16 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, or an empty list to remove all components
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1042,8 +1142,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link MessageEditAction}
@@ -1052,10 +1151,10 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageEditAction editMessageComponents(@Nonnull Collection<? extends LayoutComponent> components);
+    MessageEditAction editMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components);
 
     /**
-     * Edits this message using the provided {@link LayoutComponent LayoutComponents}.
+     * Edits this message using the provided {@link MessageTopLevelComponent MessageTopLevelComponents}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1070,10 +1169,16 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  components
-     *         The new {@link LayoutComponent LayoutComponents} of the message, empty list to remove all components
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a system message
@@ -1082,8 +1187,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If {@code null} is provided</li>
-     *             <li>If any of the components is not {@link LayoutComponent#isMessageCompatible() message compatible}</li>
-     *             <li>If more than {@value Message#MAX_COMPONENT_COUNT} components are provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      *
      * @return {@link MessageEditAction}
@@ -1092,10 +1196,60 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponents(@Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponents(@Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponents(Arrays.asList(components));
+    }
+
+    /**
+     * Edits this message using the provided {@link ComponentTree}.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
+     * </ul>
+     *
+     * @param  tree
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     *
+     * @throws UnsupportedOperationException
+     *         If this is a system message
+     * @throws IllegalStateException
+     *         If the message is not authored by this bot
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    MessageChannel#editMessageComponentsById(long, ComponentTree)
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditAction editMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
+    {
+        Checks.notNull(tree, "ComponentTree");
+        return editMessageComponents(tree.getComponents());
     }
 
     /**
@@ -1114,6 +1268,9 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  format
@@ -1161,10 +1318,13 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages, if the interaction expired.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
@@ -1206,10 +1366,13 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
-     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages, if the interaction expired.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
@@ -1522,45 +1685,6 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
-     *
-     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If this message no longer exists</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
-     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
-     *     <br>If this message was blocked by the harmful link filter</li>
-     * </ul>
-     *
-     * @param  component
-     *         The {@link LayoutComponent} to send
-     * @param  other
-     *         Any addition {@link LayoutComponent LayoutComponents} to send
-     *
-     * @throws InsufficientPermissionException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
-     * @throws IllegalArgumentException
-     *         If {@link MessageChannel#sendMessageComponents(LayoutComponent, LayoutComponent...)} throws
-     *
-     * @return {@link MessageCreateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageCreateAction replyComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
-    {
-        Checks.notNull(component, "LayoutComponents");
-        Checks.noneNull(other, "LayoutComponents");
-        List<LayoutComponent> components = new ArrayList<>(1 + other.length);
-        components.add(component);
-        Collections.addAll(components, other);
-        return replyComponents(components);
-    }
-
-    /**
      * Shortcut for {@code getChannel().sendMessageComponents(components).setMessageReference(this)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
@@ -1576,7 +1700,10 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  components
-     *         The {@link LayoutComponent LayoutComponents} to send
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws InsufficientPermissionException
      *         If {@link MessageChannel#sendMessageComponents(Collection)} throws
@@ -1587,9 +1714,90 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction replyComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default MessageCreateAction replyComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
+        Checks.noneNull(components, "MessageTopLevelComponents");
         return getChannel().sendMessageComponents(components).setMessageReference(this);
+    }
+
+    /**
+     * Shortcut for {@code getChannel().sendMessageComponents(component, other).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  component
+     *         The {@link MessageTopLevelComponent} to send
+     * @param  other
+     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to send
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageComponents(MessageTopLevelComponent, MessageTopLevelComponent...)} throws
+     *
+     * @return {@link MessageCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
+    {
+        Checks.notNull(component, "MessageTopLevelComponents");
+        Checks.noneNull(other, "MessageTopLevelComponents");
+        List<MessageTopLevelComponent> components = new ArrayList<>(1 + other.length);
+        components.add(component);
+        Collections.addAll(components, other);
+        return replyComponents(components);
+    }
+
+    /**
+     * Shortcut for {@code getChannel().sendMessageComponents(tree).setMessageReference(this)}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If this message no longer exists</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  tree
+     *         The {@link ComponentTree} to send,
+     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     *
+     * @throws InsufficientPermissionException
+     *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws
+     * @throws IllegalArgumentException
+     *         If {@link MessageChannel#sendMessageComponents(ComponentTree)} throws
+     *
+     * @return {@link MessageCreateAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction replyComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
+    {
+        Checks.notNull(tree, "ComponentTree");
+        return replyComponents(tree.getComponents());
     }
 
     /**
@@ -1747,7 +1955,7 @@ public interface Message extends ISnowflake, Formattable
      *         or lost {@link Permission#MESSAGE_MANAGE}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages, if the interaction expired.</li>
      * </ul>
      *
      * @throws MissingAccessException
@@ -1761,8 +1969,8 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *              <li>If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
      *              {@link GuildChannel GuildChannel}.</li>
-     *              <li>If this Message is ephemeral</li>
      *              <li>If this message type cannot be deleted. (See {@link MessageType#canDelete()})</li>
+     *              <li>If this Message is ephemeral and the interaction expired.</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -1804,7 +2012,7 @@ public interface Message extends ISnowflake, Formattable
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The pin request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
+     *     <br>The pin request was attempted after the account lost {@link Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in
      *         the {@link GuildChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -1816,17 +2024,17 @@ public interface Message extends ISnowflake, Formattable
      *         <br><ul>
      *             <li>Missing {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
      *             <br>The account needs access the the channel to pin a message in it.</li>
-     *             <li>Missing {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
+     *             <li>Missing {@link Permission#PIN_MESSAGES Permission.PIN_MESSAGES}.
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
      * @throws IllegalStateException
      *         If this Message is ephemeral
      *
-     * @return {@link RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> pin();
+    AuditableRestAction<Void> pin();
 
     /**
      * Used to remove the Message from the {@link #getChannel() MessageChannel's} pinned message list.
@@ -1843,7 +2051,7 @@ public interface Message extends ISnowflake, Formattable
      *         typically due to being kicked or removed.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The unpin request was attempted after the account lost {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
+     *     <br>The unpin request was attempted after the account lost {@link Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in
      *         the {@link GuildChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -1855,17 +2063,17 @@ public interface Message extends ISnowflake, Formattable
      *         <br><ul>
      *             <li>Missing {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
      *             <br>The account needs access the the channel to pin a message in it.</li>
-     *             <li>Missing {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
+     *             <li>Missing {@link Permission#PIN_MESSAGES Permission.PIN_MESSAGES}.
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
      * @throws IllegalStateException
      *         If this Message is ephemeral
      *
-     * @return {@link RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> unpin();
+    AuditableRestAction<Void> unpin();
 
     /**
      * Adds a reaction to this Message using an {@link Emoji}.
@@ -2115,6 +2323,10 @@ public interface Message extends ISnowflake, Formattable
     /**
      * This obtains the {@link User users} who reacted using the given {@link Emoji}.
      *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsers(Emoji, MessageReaction.ReactionType) retrieveReactionUsers(emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
+     *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
      * <p>Using this data, we can obtain a {@link ReactionPaginationAction}
@@ -2149,7 +2361,51 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji);
+    default ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji)
+    {
+        return retrieveReactionUsers(emoji, MessageReaction.ReactionType.NORMAL);
+    }
+
+    /**
+     * This obtains the {@link User users} who reacted using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction}
+     * of the users who've reacted to this message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildChannel}
+     *         due to {@link Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message has already been deleted. This might also be triggered for ephemeral messages.</li>
+     * </ul>
+     *
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link GuildChannel} and the
+     *         logged in account does not have {@link Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided null is provided.
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
+     *
+     * @return The {@link ReactionPaginationAction} of the users who reacted with the provided emoji
+     */
+    @Nonnull
+    @CheckReturnValue
+    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type);
 
     /**
      * This obtains the {@link MessageReaction} for the given {@link Emoji} on this message.
@@ -2337,9 +2593,22 @@ public interface Message extends ISnowflake, Formattable
      * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
      *
      * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
+     *
+     * @deprecated
+     *         Replaced with {@link #getInteractionMetadata()}
      */
     @Nullable
+    @Deprecated
     Interaction getInteraction();
+
+    /**
+     * Returns the interaction metadata,
+     * available when the message is a response or a followup to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
+     *
+     * @return The {@link InteractionMetadata} of this message, or {@code null}
+     */
+    @Nullable
+    InteractionMetadata getInteractionMetadata();
 
     /**
      * Creates a new, public {@link ThreadChannel} spawning/starting at this {@link Message} inside the {@link IThreadContainer} this message was sent in.
@@ -2502,7 +2771,31 @@ public interface Message extends ISnowflake, Formattable
         /**
          * The Message is a voice message, containing an audio attachment
          */
-        IS_VOICE_MESSAGE(13);
+        IS_VOICE_MESSAGE(13),
+        /**
+         * Indicates this message is using V2 components.
+         *
+         * <p>Using V2 components has no top-level component limit,
+         * and allows more components in total ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+         * <br>They also allow you to use a larger choice of components,
+         * such as any component extending {@link MessageTopLevelComponent},
+         * as long as they are {@linkplain Component.Type#isMessageCompatible() compatible}.
+         * <br>The character limit for the messages also gets changed to {@value Message#MAX_CONTENT_LENGTH_COMPONENT_V2}.
+         *
+         * <p>This, however, comes with a few drawbacks:
+         * <ul>
+         *     <li>You cannot send content, embeds, polls or stickers</li>
+         *     <li>It does not support voice messages</li>
+         *     <li>It does not support previewing files</li>
+         *     <li>URLs don't create embeds</li>
+         *     <li>You cannot switch this message back to not using Components V2 (you can however upgrade a message to V2)</li>
+         * </ul>
+         *
+         * @see MessageRequest#useComponentsV2()
+         * @see MessageRequest#useComponentsV2(boolean)
+         * @see MessageRequest#setDefaultUseComponentsV2(boolean)
+         */
+        IS_COMPONENTS_V2(15);
 
         private final int value;
 
@@ -2639,16 +2932,16 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Returns an {@link AttachmentProxy} for this attachment.
+         * Returns an {@link NamedAttachmentProxy} for this attachment.
          *
-         * @return Non-null {@link AttachmentProxy} of this attachment
+         * @return Non-null {@link NamedAttachmentProxy} of this attachment
          *
          * @see    #getProxyUrl()
          */
         @Nonnull
-        public AttachmentProxy getProxy()
+        public NamedAttachmentProxy getProxy()
         {
-            return new AttachmentProxy(width > 0 && height > 0 ? proxyUrl : url);
+            return new NamedAttachmentProxy(width > 0 && height > 0 ? proxyUrl : url, fileName);
         }
 
         /**
@@ -2831,7 +3124,10 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     *
+     * @deprecated Replaced with {@link InteractionMetadata}
      */
+    @Deprecated
     class Interaction implements ISnowflake
     {
         private final long id;
@@ -2909,6 +3205,180 @@ public interface Message extends ISnowflake, Formattable
         public Member getMember()
         {
             return member;
+        }
+    }
+
+    /**
+     * Metadata about the interaction, including the source of the interaction and relevant server and user IDs.
+     *
+     * @see Message#getInteractionMetadata()
+     */
+    class InteractionMetadata implements ISnowflake
+    {
+        private final long id;
+        private final int type;
+        private final User user;
+        private final IntegrationOwners integrationOwners;
+        private final long originalResponseMessageId;
+        private final long interactedMessageId;
+        private final InteractionMetadata triggeringInteraction;
+        private final User targetUser;
+        private final long targetMessageId;
+
+        public InteractionMetadata(long id, int type, User user, IntegrationOwners integrationOwners, long originalResponseMessageId, long interactedMessageId, InteractionMetadata triggeringInteraction, User targetUser, long targetMessageId)
+        {
+            this.id = id;
+            this.type = type;
+            this.user = user;
+            this.integrationOwners = integrationOwners;
+            this.originalResponseMessageId = originalResponseMessageId;
+            this.interactedMessageId = interactedMessageId;
+            this.triggeringInteraction = triggeringInteraction;
+            this.targetUser = targetUser;
+            this.targetMessageId = targetMessageId;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        /**
+         * The raw interaction type.
+         * <br>It is recommended to use {@link #getType()} instead.
+         *
+         * @return The raw interaction type
+         */
+        public int getTypeRaw()
+        {
+            return type;
+        }
+
+        /**
+         * The {@link net.dv8tion.jda.api.interactions.InteractionType} for this interaction.
+         *
+         * @return The {@link net.dv8tion.jda.api.interactions.InteractionType} or {@link net.dv8tion.jda.api.interactions.InteractionType#UNKNOWN}
+         */
+        @Nonnull
+        public InteractionType getType()
+        {
+            return InteractionType.fromKey(type);
+        }
+
+        /**
+         * The {@link User} who caused this interaction.
+         *
+         * @return The {@link User}
+         */
+        @Nonnull
+        public User getUser()
+        {
+            return user;
+        }
+
+        /**
+         * Returns the integration owners of this interaction, which depends on how the app was installed.
+         *
+         * @return The integration owners of this interaction
+         */
+        @Nonnull
+        public IntegrationOwners getIntegrationOwners()
+        {
+            return integrationOwners;
+        }
+
+        /**
+         * The ID of the original response message, present only on followup messages.
+         *
+         * @return The ID of the original response message, or {@code 0}
+         */
+        public long getOriginalResponseMessageIdLong()
+        {
+            return originalResponseMessageId;
+        }
+
+        /**
+         * The ID of the original response message, present only on followup messages.
+         *
+         * @return The ID of the original response message, or {@code null}
+         */
+        @Nullable
+        public String getOriginalResponseMessageId()
+        {
+            if (originalResponseMessageId == 0) return null;
+            return Long.toUnsignedString(originalResponseMessageId);
+        }
+
+        /**
+         * The ID of the message containing the component which created this message.
+         *
+         * @return the ID of the message containing the component which created this message, or {@code 0}
+         */
+        public long getInteractedMessageIdLong()
+        {
+            return interactedMessageId;
+        }
+
+        /**
+         * The ID of the message containing the component which created this message.
+         *
+         * @return the ID of the message containing the component which created this message, or {@code null}
+         */
+        @Nullable
+        public String getInteractedMessageId()
+        {
+            if (interactedMessageId == 0) return null;
+            return Long.toUnsignedString(interactedMessageId);
+        }
+
+        /**
+         * Metadata for the interaction that was used to open the modal,
+         * present only on modal submit interactions.
+         *
+         * @return Metadata for the interaction that was used to open the modal, or {@code null}
+         */
+        @Nullable
+        public InteractionMetadata getTriggeringInteraction()
+        {
+            return triggeringInteraction;
+        }
+
+        /**
+         * The user the command was run on, present only on user interaction commands.
+         *
+         * @return The user the command was run on, or {@code null}
+         */
+        @Nullable
+        public User getTargetUser()
+        {
+            return targetUser;
+        }
+
+        /**
+         * The ID of the message the command was run on, present only on message interaction commands.
+         *
+         * <p>If this is present, {@link Message#getMessageReference()} will also be present.
+         *
+         * @return The ID of the message the command was run on, or {@code 0}
+         */
+        public long getTargetMessageIdLong()
+        {
+            return targetMessageId;
+        }
+
+        /**
+         * The ID of the message the command was run on, present only on message interaction commands.
+         *
+         * <p>If this is present, {@link Message#getMessageReference()} will also be present.
+         *
+         * @return The ID of the message the command was run on, or {@code null}
+         */
+        @Nullable
+        public String getTargetMessageId()
+        {
+            if (targetMessageId == 0) return null;
+            return Long.toUnsignedString(targetMessageId);
         }
     }
 }

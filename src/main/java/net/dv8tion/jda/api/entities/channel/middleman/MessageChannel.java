@@ -15,48 +15,43 @@
  */
 package net.dv8tion.jda.api.entities.channel.middleman;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.selections.SelectMenu;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.GroupChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.exceptions.ParsingException;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.MessageEditAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.PollVotersPaginationAction;
-import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.*;
 import net.dv8tion.jda.api.utils.AttachedFile;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.api.utils.messages.MessagePollData;
+import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.PinnedMessagePaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.PollVotersPaginationActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import org.jetbrains.annotations.Unmodifiable;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -65,7 +60,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.api.entities.Message Messages} and files sent to it.
@@ -137,6 +131,10 @@ public interface MessageChannel extends Channel, Formattable
      * <br>For {@link ThreadChannel} this method checks for {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND_IN_THREADS} instead of {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND}.
      * <br>For {@link PrivateChannel} this method checks if the user that this PrivateChannel communicates with is not a bot,
      * but it does <b>not</b> check if the said user blocked the currently logged in user or have their DMs disabled.
+     * <br>For {@link GroupChannel} this method returns false.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return True, if we are able to read and send messages in this channel
      */
@@ -152,6 +150,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageIds
      *         The message ids to delete
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -178,6 +179,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageIds
      *         The message ids to delete
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -206,6 +210,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If one of the provided messages is from another user and cannot be deleted due to permissions
      * @throws IllegalArgumentException
      *         If one of the provided messages is from another user and cannot be deleted because this is not in a guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -236,6 +242,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If one of the provided messages is from another user and cannot be deleted due to permissions
      * @throws IllegalArgumentException
      *         If one of the provided messages is from another user and cannot be deleted because this is not in a guild
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -276,6 +284,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @param  messageIds
      *         The message ids to delete
+     *
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return List of futures representing all deletion tasks
      *
@@ -324,6 +335,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -364,6 +377,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      *
@@ -415,6 +430,8 @@ public interface MessageChannel extends Channel, Formattable
      *         illegal conditions.  For specification of all possible
      *         formatting errors, see the <a href="../util/Formatter.html#detail">Details</a> section of the
      *         formatter class specification.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -475,6 +492,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -537,6 +556,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
@@ -566,30 +587,32 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>If this message was blocked by the harmful link filter</li>
      * </ul>
      *
-     * @param  component
-     *         {@link LayoutComponent} to send
-     * @param  other
-     *         Additional {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     * @param  components
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
-     *         If any of the components is null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull LayoutComponent component, @Nonnull LayoutComponent... other)
+    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
-        Checks.notNull(component, "LayoutComponents");
-        Checks.noneNull(other, "LayoutComponents");
-        List<LayoutComponent> components = new ArrayList<>(1 + other.length);
-        components.add(component);
-        Collections.addAll(components, other);
+        Checks.noneNull(components, "MessageTopLevelComponents");
         return new MessageCreateActionImpl(this).setComponents(components);
     }
 
@@ -612,42 +635,86 @@ public interface MessageChannel extends Channel, Formattable
      *     <br>If this message was blocked by the harmful link filter</li>
      * </ul>
      *
-     * <p><b>Example: Attachment Images</b>
-     * <pre>{@code
-     * // Make a file upload instance which refers to a local file called "myFile.png"
-     * // The second parameter "image.png" is the filename we tell discord to use for the attachment
-     * FileUpload file = FileUpload.fromData(new File("myFile.png"), "image.png");
-     *
-     * // Build a message embed which refers to this attachment by the given name.
-     * // Note that this must be the same name as configured for the attachment, not your local filename.
-     * MessageEmbed embed = new EmbedBuilder()
-     *   .setDescription("This is my cute cat :)")
-     *   .setImage("attachment://image.png") // refer to the file by using the "attachment://" schema with the filename we gave it above
-     *   .build();
-     *
-     * channel.sendMessageEmbeds(Collections.singleton(embed)) // send the embeds
-     *        .addFiles(file) // add the file as attachment
-     *        .queue();
-     * }</pre>
-     *
-     * @param  components
-     *         {@link LayoutComponent LayoutComponents} to use (up to {@value Message#MAX_COMPONENT_COUNT})
+     * @param  component
+     *         The {@link MessageTopLevelComponent} to send
+     * @param  other
+     *         Additional {@link MessageTopLevelComponent MessageTopLevelComponents} to send,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If this is a {@link PrivateChannel} and the recipient is a bot
      * @throws IllegalArgumentException
-     *         If any of the components is null or more than {@value Message#MAX_COMPONENT_COUNT} component layouts are provided
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageCreateAction sendMessageComponents(@Nonnull Collection<? extends LayoutComponent> components)
+    default MessageCreateAction sendMessageComponents(@Nonnull MessageTopLevelComponent component, @Nonnull MessageTopLevelComponent... other)
     {
-        return new MessageCreateActionImpl(this).setComponents(components);
+        Checks.notNull(component, "MessageTopLevelComponent");
+        Checks.noneNull(other, "MessageTopLevelComponents");
+        return sendMessageComponents(Helpers.mergeVararg(component, other));
+    }
+
+    /**
+     * Send a message to this channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>if this channel was deleted</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
+     *     <br>If this is a {@link PrivateChannel} and the currently logged in account
+     *         does not share any Guilds with the recipient User</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_AUTOMOD MESSAGE_BLOCKED_BY_AUTOMOD}
+     *     <br>If this message was blocked by an {@link net.dv8tion.jda.api.entities.automod.AutoModRule AutoModRule}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER MESSAGE_BLOCKED_BY_HARMFUL_LINK_FILTER}
+     *     <br>If this message was blocked by the harmful link filter</li>
+     * </ul>
+     *
+     * @param  tree
+     *         The {@link ComponentTree} to send,
+     *         containing up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     *
+     * @throws UnsupportedOperationException
+     *         If this is a {@link PrivateChannel} and the recipient is a bot
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link MessageCreateAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageCreateAction sendMessageComponents(@Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
+    {
+        Checks.notNull(tree, "ComponentTree");
+        return sendMessageComponents(tree.getComponents());
     }
 
     /**
@@ -751,6 +818,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      *
@@ -820,6 +889,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageCreateAction}
      *
@@ -871,6 +942,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
@@ -922,6 +995,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Message
      *         <br>The Message defined by the provided id.
@@ -967,6 +1042,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
@@ -1014,6 +1091,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
@@ -1133,6 +1212,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return A {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} related to this channel.
      */
@@ -1168,6 +1249,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel}
      *         and the currently logged in account does not have the permission {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY MESSAGE_HISTORY}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessagePaginationAction MessagePaginationAction}
      */
@@ -1231,6 +1314,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
@@ -1297,6 +1382,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
@@ -1363,6 +1450,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages around the provided message loaded into it.
@@ -1422,6 +1511,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
@@ -1477,6 +1568,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
@@ -1535,6 +1628,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages after the provided message loaded into it.
@@ -1594,6 +1689,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
@@ -1652,6 +1749,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
@@ -1710,6 +1809,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
      *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with messages before the provided message loaded into it.
@@ -1772,9 +1873,11 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with with the first messages of this channel loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with the first messages of this channel loaded into it.
      *         <br><b>Note: The messages are ordered from the most recent to oldest!</b>
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#retrieveFuture(int)                     MessageHistory.retrieveFuture(int)
@@ -1812,6 +1915,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
      */
@@ -1869,6 +1974,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -1929,6 +2036,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -1978,6 +2087,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -2031,6 +2142,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code messageId} is not a valid snowflake.</li>
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
@@ -2043,6 +2156,10 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsersById(String, Emoji, MessageReaction.ReactionType) retrieveReactionUsersById(messageId, emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
@@ -2077,6 +2194,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The {@link ReactionPaginationAction} of the emoji's users.
      */
@@ -2084,14 +2203,15 @@ public interface MessageChannel extends Channel, Formattable
     @CheckReturnValue
     default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji)
     {
-        Checks.isSnowflake(messageId, "Message ID");
-        Checks.notNull(emoji, "Emoji");
-
-        return new ReactionPaginationActionImpl(this, messageId, emoji.getAsReactionCode());
+        return retrieveReactionUsersById(messageId, emoji, MessageReaction.ReactionType.NORMAL);
     }
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <br>By default, this only includes users that reacted with {@link MessageReaction.ReactionType#NORMAL}.
+     * Use {@link #retrieveReactionUsersById(long, Emoji, MessageReaction.ReactionType) retrieveReactionUsersById(messageId, emoji, ReactionType.SUPER)}
+     * to retrieve the users that used a super reaction instead.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
@@ -2128,6 +2248,8 @@ public interface MessageChannel extends Channel, Formattable
      *             <li>If provided {@code messageId} is not a valid snowflake.</li>
      *             <li>If provided {@code emoji} is {@code null}.</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return The {@link ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
@@ -2138,6 +2260,110 @@ public interface MessageChannel extends Channel, Formattable
     default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji)
     {
         return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji);
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to the given message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildMessageChannel GuildMessageChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
+     *             <li>If provided {@code type} is {@code null}.</li>
+     *         </ul>
+     *
+     * @return The {@link ReactionPaginationAction} of the emoji's users.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(emoji, "Emoji");
+        Checks.notNull(type, "ReactionType");
+
+        return new ReactionPaginationActionImpl(this, messageId, emoji.getAsReactionCode(), type);
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link Emoji}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to the given message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link GuildMessageChannel GuildMessageChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emoji was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  emoji
+     *         The {@link Emoji} to retrieve users for.
+     * @param  type
+     *         The specific type of reaction
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
+     *             <li>If provided {@code emoji} is {@code null}.</li>
+     *             <li>If provided {@code type} is {@code null}.</li>
+     *         </ul>
+     *
+     * @return The {@link ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emoji emoji, @Nonnull MessageReaction.ReactionType type)
+    {
+        return retrieveReactionUsersById(Long.toUnsignedString(messageId), emoji, type);
     }
 
     /**
@@ -2152,7 +2378,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the
+     *         {@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in the
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2172,19 +2398,21 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> pinMessageById(@Nonnull String messageId)
+    default AuditableRestAction<Void> pinMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.PIN_MESSAGE.compile(getId(), messageId);
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -2199,7 +2427,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the
+     *         {@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in the
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2219,14 +2447,16 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> pinMessageById(long messageId)
+    default AuditableRestAction<Void> pinMessageById(long messageId)
     {
         return pinMessageById(Long.toUnsignedString(messageId));
     }
@@ -2243,7 +2473,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the
+     *         {@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in the
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2263,19 +2493,21 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> unpinMessageById(@Nonnull String messageId)
+    default AuditableRestAction<Void> unpinMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<Void>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.UNPIN_MESSAGE.compile(getId(), messageId);
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -2290,7 +2522,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the
+     *         {@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in the
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2310,14 +2542,16 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES}</li>
      *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> unpinMessageById(long messageId)
+    default AuditableRestAction<Void> unpinMessageById(long messageId)
     {
         return unpinMessageById(Long.toUnsignedString(messageId));
     }
@@ -2340,36 +2574,16 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Message}{@literal >}
-     *         <br>Retrieves an immutable list of pinned messages
+     * @return {@link PinnedMessagePaginationAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<@Unmodifiable List<Message>> retrievePinnedMessages()
+    default PinnedMessagePaginationAction retrievePinnedMessages()
     {
-        JDAImpl jda = (JDAImpl) getJDA();
-        Route.CompiledRoute route = Route.Messages.GET_PINNED_MESSAGES.compile(getId());
-        return new RestActionImpl<>(jda, route, (response, request) ->
-        {
-            EntityBuilder builder = jda.getEntityBuilder();
-            DataArray pins = response.getArray();
-            List<Message> pinnedMessages = new ArrayList<>(pins.length());
-
-            for (int i = 0; i < pins.length(); i++)
-            {
-                try
-                {
-                    pinnedMessages.add(builder.createMessageWithChannel(pins.getObject(i), MessageChannel.this, false));
-                }
-                catch (ParsingException | NullPointerException e)
-                {
-                    JDALogger.getLog(getClass()).error("Failed to parse pinned message", e);
-                }
-            }
-
-            return Collections.unmodifiableList(pinnedMessages);
-        });
+        return new PinnedMessagePaginationActionImpl(this);
     }
 
     /**
@@ -2392,6 +2606,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2408,6 +2625,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2441,6 +2660,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2456,6 +2678,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2486,6 +2710,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2504,6 +2731,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2536,6 +2765,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2553,6 +2785,8 @@ public interface MessageChannel extends Channel, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2583,6 +2817,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2609,6 +2846,8 @@ public interface MessageChannel extends Channel, Formattable
      *         For specification of all possible formatting errors,
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2640,6 +2879,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2663,6 +2905,8 @@ public interface MessageChannel extends Channel, Formattable
      *         For specification of all possible formatting errors,
      *         see the <a href="../util/Formatter.html#detail">Details</a>
      *         section of the formatter class specification.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2694,6 +2938,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2711,6 +2958,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2742,6 +2991,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2759,6 +3011,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2789,6 +3043,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2806,6 +3063,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2837,6 +3096,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * @param  messageId
@@ -2854,6 +3116,8 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
@@ -2866,9 +3130,18 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * List<ActionRow> rows = Arrays.asList(
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * );
+     * channel.editMessageComponentsById(messageId, rows).queue();
+     * }</pre>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2887,53 +3160,58 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
      *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * List<ActionRow> rows = Arrays.asList(
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * );
-     * channel.editMessageComponentsById(messageId, rows).queue();
-     * }</pre>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
+     * </ul>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noneNull(components, "Components");
-        if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
-            throw new UnsupportedOperationException("The provided component layout is not supported");
-        List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
-        return new MessageEditActionImpl(this, messageId).setComponents(actionRows);
+        return new MessageEditActionImpl(this, messageId).setComponents(components);
     }
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * List<ActionRow> rows = Arrays.asList(
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * );
+     * channel.editMessageComponentsById(messageId, rows).queue();
+     * }</pre>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -2952,45 +3230,55 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
      *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * List<ActionRow> rows = Arrays.asList(
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * );
-     * channel.editMessageComponentsById(messageId, rows).queue();
-     * }</pre>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
+     * </ul>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends LayoutComponent> components)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends MessageTopLevelComponent> components)
     {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.editMessageComponentsById(messageId,
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * ).queue();
+     * }</pre>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3009,38 +3297,38 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
      *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
+     * </ul>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
-     *             <li>If any of the provided {@link LayoutComponent LayoutComponents} is null</li>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
@@ -3048,9 +3336,17 @@ public interface MessageChannel extends Channel, Formattable
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
-     * <br>This will replace all the current {@link net.dv8tion.jda.api.interactions.components.Component Components},
+     * <br>This will replace all the current {@link Component Components},
      * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
-     * The provided parameters are {@link LayoutComponent LayoutComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.editMessageComponentsById(messageId,
+     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     * ).queue();
+     * }</pre>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -3069,40 +3365,186 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
-     * </ul>
      *
-     * <p><b>Example</b><br>
-     * <pre>{@code
-     * channel.editMessageComponentsById(messageId,
-     *   ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
-     *   ActionRow.of(Button.link(url, "Help")) // 2nd row below message
-     * ).queue();
-     * }</pre>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
+     * </ul>
      *
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  components
-     *         Up to 5 new {@link LayoutComponent LayoutComponents} for the edited message, such as {@link ActionRow}
+     *         The {@link MessageTopLevelComponent MessageTopLevelComponents} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
      *
      * @throws UnsupportedOperationException
      *         If the component layout is a custom implementation that is not supported by this interface
      * @throws IllegalArgumentException
-     *         If any of the provided {@link LayoutComponent LayoutComponents} is null
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction}
      */
     @Nonnull
     @CheckReturnValue
-    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull LayoutComponent... components)
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull MessageTopLevelComponent... components)
     {
         Checks.noneNull(components, "Components");
         return editMessageComponentsById(messageId, Arrays.asList(components));
     }
 
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     * <br>This will replace all the current {@link Component Components},
+     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.editMessageComponentsById(messageId,
+     *   MessageComponentTree.of(
+     *     ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *     ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     *   )
+     * ).queue();
+     * }</pre>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
+     * @param  tree
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     *
+     * @throws UnsupportedOperationException
+     *         If the component layout is a custom implementation that is not supported by this interface
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditAction editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
+    {
+        Checks.notNull(tree, "ComponentTree");
+        return editMessageComponentsById(messageId, tree.getComponents());
+    }
+
+    /**
+     * Attempts to edit a message by its id in this MessageChannel.
+     * <br>This will replace all the current {@link Component Components},
+     * such as {@link Button Buttons} or {@link SelectMenu SelectMenus} on this message.
+     * The provided parameters are {@link MessageTopLevelComponent MessageTopLevelComponents} such as {@link ActionRow} which contain a list of components to arrange in the respective layout.
+     *
+     * <p><b>Example</b><br>
+     * <pre>{@code
+     * channel.editMessageComponentsById(messageId,
+     *   MessageComponentTree.of(
+     *     ActionRow.of(Button.success("prompt:accept", "Accept"), Button.danger("prompt:reject", "Reject")), // 1st row below message
+     *     ActionRow.of(Button.link(url, "Help")) // 2nd row below message
+     *   )
+     * ).queue();
+     * }</pre>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_AUTHOR_EDIT INVALID_AUTHOR_EDIT}
+     *     <br>Attempted to edit a message that was not sent by the currently logged in account.
+     *         Discord does not allow editing of other users' Messages!</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         was revoked in the {@link GuildMessageChannel GuildMessageChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted. This might also be triggered for ephemeral messages.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id referencing the Message that should be edited
+     * @param  tree
+     *         The {@link ComponentTree} to set, can be empty to remove components,
+     *         can contain up to {@value Message#MAX_COMPONENT_COUNT} V1 components.
+     *         There are no limits for {@linkplain MessageRequest#isUsingComponentsV2() V2 components}
+     *         outside the {@linkplain Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE total tree size} ({@value Message#MAX_COMPONENT_COUNT_IN_COMPONENT_TREE}).
+     *
+     * @throws UnsupportedOperationException
+     *         If the component layout is a custom implementation that is not supported by this interface
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If {@code null} is provided</li>
+     *             <li>If any of the provided components are not {@linkplain Component.Type#isMessageCompatible() compatible with messages}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link GuildMessageChannel GuildMessageChannel} and this account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}
+     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_SEND Permission.MESSAGE_SEND}
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
+     *
+     * @return {@link MessageEditAction}
+     *
+     * @see    net.dv8tion.jda.api.components.tree.MessageComponentTree MessageComponentTree
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageEditAction editMessageComponentsById(long messageId, @Nonnull ComponentTree<? extends MessageTopLevelComponent> tree)
+    {
+        Checks.notNull(tree, "ComponentTree");
+        return editMessageComponentsById(messageId, tree.getComponents());
+    }
 
     /**
      * Attempts to edit a message by its id in this MessageChannel.
@@ -3127,6 +3569,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
@@ -3141,6 +3586,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction} that can be used to further update the message
      *
@@ -3178,6 +3625,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
@@ -3192,6 +3642,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction} that can be used to further update the message
      *
@@ -3229,6 +3681,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
@@ -3243,6 +3698,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction} that can be used to further update the message
      *
@@ -3279,6 +3736,9 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
      *     <br>The request was attempted after the channel was deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_FORM_BODY INVALID_FORM_BODY}
+     *     <br>{@linkplain MessageRequest#useComponentsV2(boolean) Components V2} is used by the to-be-edited message, and this request has non-empty content or embeds.</li>
      * </ul>
      *
      * <p><b>Resource Handling Note:</b> Once the request is handed off to the requester, for example when you call {@link RestAction#queue()},
@@ -3293,6 +3753,8 @@ public interface MessageChannel extends Channel, Formattable
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link MessageEditAction} that can be used to further update the message
      *

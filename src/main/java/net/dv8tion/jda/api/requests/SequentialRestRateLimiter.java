@@ -381,7 +381,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
         protected long reset = 0;
         protected int remaining = 1;
 
-        public Bucket(String bucketId)
+        public Bucket(@Nonnull String bucketId)
         {
             this.bucketId = bucketId;
         }
@@ -391,12 +391,12 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return bucketId.startsWith(UNINIT_BUCKET);
         }
 
-        public void enqueue(Work request)
+        public void enqueue(@Nonnull Work request)
         {
             requests.addLast(request);
         }
 
-        public void retry(Work request)
+        public void retry(@Nonnull Work request)
         {
             if (!moveRequest(request))
                 requests.addFirst(request);
@@ -456,7 +456,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             return requests;
         }
 
-        protected boolean moveRequest(Work request)
+        protected boolean moveRequest(@Nonnull Work request)
         {
             return MiscUtil.locked(lock, () ->
             {
@@ -471,7 +471,7 @@ public final class SequentialRestRateLimiter implements RestRateLimiter
             });
         }
 
-        protected boolean execute(Work request)
+        protected boolean execute(@Nonnull Work request)
         {
             try
             {

@@ -62,7 +62,7 @@ public class ExTermDecoder
      * @return The java object
      */
     @Nonnull
-    public static Object unpack(ByteBuffer buffer)
+    public static Object unpack(@Nonnull ByteBuffer buffer)
     {
         if (buffer.get() != -125)
             throw new IllegalArgumentException("Failed header check");
@@ -94,7 +94,7 @@ public class ExTermDecoder
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public static Map<String, Object> unpackMap(ByteBuffer buffer)
+    public static Map<String, Object> unpackMap(@Nonnull ByteBuffer buffer)
     {
         byte tag = buffer.get(1);
         if (tag != MAP)
@@ -126,7 +126,7 @@ public class ExTermDecoder
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public static List<Object> unpackList(ByteBuffer buffer)
+    public static List<Object> unpackList(@Nonnull ByteBuffer buffer)
     {
         byte tag = buffer.get(1);
         if (tag != LIST)
@@ -135,7 +135,7 @@ public class ExTermDecoder
         return (List<Object>) unpack(buffer);
     }
 
-    private static Object unpack0(ByteBuffer buffer)
+    private static Object unpack0(@Nonnull ByteBuffer buffer)
     {
         int tag = buffer.get();
         switch (tag) {
@@ -163,7 +163,7 @@ public class ExTermDecoder
         }
     }
 
-    private static Object unpackCompressed(ByteBuffer buffer)
+    private static Object unpackCompressed(@Nonnull ByteBuffer buffer)
     {
         int size = buffer.getInt();
         ByteArrayOutputStream decompressed = new ByteArrayOutputStream(size);
@@ -180,18 +180,18 @@ public class ExTermDecoder
         return unpack0(buffer);
     }
 
-    private static double unpackOldFloat(ByteBuffer buffer)
+    private static double unpackOldFloat(@Nonnull ByteBuffer buffer)
     {
         String bytes = getString(buffer, StandardCharsets.ISO_8859_1, 31);
         return Double.parseDouble(bytes);
     }
 
-    private static double unpackFloat(ByteBuffer buffer)
+    private static double unpackFloat(@Nonnull ByteBuffer buffer)
     {
         return buffer.getDouble();
     }
 
-    private static long unpackSmallBigint(ByteBuffer buffer)
+    private static long unpackSmallBigint(@Nonnull ByteBuffer buffer)
     {
         int arity = Byte.toUnsignedInt(buffer.get());
         int sign = Byte.toUnsignedInt(buffer.get());
@@ -206,17 +206,17 @@ public class ExTermDecoder
         return sign == 0 ? sum : -sum;
     }
 
-    private static int unpackSmallInt(ByteBuffer buffer)
+    private static int unpackSmallInt(@Nonnull ByteBuffer buffer)
     {
         return Byte.toUnsignedInt(buffer.get());
     }
 
-    private static int unpackInt(ByteBuffer buffer)
+    private static int unpackInt(@Nonnull ByteBuffer buffer)
     {
         return buffer.getInt();
     }
 
-    private static List<Object> unpackString(ByteBuffer buffer)
+    private static List<Object> unpackString(@Nonnull ByteBuffer buffer)
     {
         int length = Short.toUnsignedInt(buffer.getShort());
         List<Object> bytes = new ArrayList<>(length);
@@ -225,25 +225,25 @@ public class ExTermDecoder
         return bytes;
     }
 
-    private static String unpackBinary(ByteBuffer buffer)
+    private static String unpackBinary(@Nonnull ByteBuffer buffer)
     {
         int length = buffer.getInt();
         return getString(buffer, StandardCharsets.UTF_8, length);
     }
 
-    private static Object unpackSmallAtom(ByteBuffer buffer, Charset charset)
+    private static Object unpackSmallAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset)
     {
         int length = Byte.toUnsignedInt(buffer.get());
         return unpackAtom(buffer, charset, length);
     }
 
-    private static Object unpackAtom(ByteBuffer buffer, Charset charset)
+    private static Object unpackAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset)
     {
         int length = Short.toUnsignedInt(buffer.getShort());
         return unpackAtom(buffer, charset, length);
     }
 
-    private static Object unpackAtom(ByteBuffer buffer, Charset charset, int length)
+    private static Object unpackAtom(@Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length)
     {
         String value = getString(buffer, charset, length);
         switch (value)
@@ -255,14 +255,14 @@ public class ExTermDecoder
         }
     }
 
-    private static String getString(ByteBuffer buffer, Charset charset, int length)
+    private static String getString(@Nonnull ByteBuffer buffer, @Nonnull Charset charset, int length)
     {
         byte[] array = new byte[length];
         buffer.get(array);
         return new String(array, charset);
     }
 
-    private static List<Object> unpackList0(ByteBuffer buffer)
+    private static List<Object> unpackList0(@Nonnull ByteBuffer buffer)
     {
         int length = buffer.getInt();
         List<Object> list = new ArrayList<>(length);
@@ -276,7 +276,7 @@ public class ExTermDecoder
         return list;
     }
 
-    private static Map<String, Object> unpackMap0(ByteBuffer buffer)
+    private static Map<String, Object> unpackMap0(@Nonnull ByteBuffer buffer)
     {
         Map<String, Object> map = new HashMap<>();
         int arity = buffer.getInt();
