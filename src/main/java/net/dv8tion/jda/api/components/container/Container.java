@@ -175,8 +175,10 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
     /**
      * Creates a new {@link Container} with the specified components.
      *
+     * @param  component
+     *         The first new component
      * @param  components
-     *         The new components
+     *         Additional new components
      *
      * @throws IllegalArgumentException
      *         If the provided components are {@code null} or contains {@code null}

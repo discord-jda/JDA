@@ -175,8 +175,10 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
     /**
      * Creates a new {@link Section} with the specified content components.
      *
+     * @param  component
+     *         The first new content component
      * @param  components
-     *         The new content components
+     *         Additional new content components
      *
      * @throws IllegalArgumentException
      *         If the provided components are {@code null} or contains {@code null}

@@ -64,8 +64,10 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      * Create one row of {@link ActionRowChildComponent components}.
      * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link #getMaxAllowed(Type)}.
      *
+     * @param  component
+     *         The first component for this action row
      * @param  components
-     *         The components for this action row
+     *         Additional components for this action row
      *
      * @throws IllegalArgumentException
      *         If anything is null, empty, or an invalid number of components are provided
@@ -130,8 +132,10 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      * // partitioned[1] = ActionRow(selectMenu)
      * }</pre>
      *
+     * @param  component
+     *         The first component to partition
      * @param  components
-     *         The components to partition
+     *         Additional components to partition
      *
      * @throws IllegalArgumentException
      *         If null is provided or there is no components
@@ -288,8 +292,10 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
     /**
      * Creates a new {@link ActionRow} with the specified components.
      *
+     * @param  component
+     *         The first new component
      * @param  components
-     *         The new components
+     *         Additional new components
      *
      * @throws IllegalArgumentException
      *         If the provided components are {@code null} or contains {@code null}
@@ -298,7 +304,7 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      */
     @Nonnull
     @CheckReturnValue
-    default ActionRow withComponents(@Nonnull ActionRowChildComponent component, ActionRowChildComponent... components)
+    default ActionRow withComponents(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
     {
         Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");

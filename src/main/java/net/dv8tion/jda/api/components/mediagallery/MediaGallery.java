@@ -111,8 +111,10 @@ public interface MediaGallery extends Component, MessageTopLevelComponent, Conta
     /**
      * Creates a new {@link MediaGallery} with the specified items.
      *
+     * @param  item
+     *         The first new items
      * @param  items
-     *         The new items
+     *         Additional new items
      *
      * @throws IllegalArgumentException
      *         If the provided items are {@code null} or contains {@code null}
