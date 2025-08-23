@@ -30,9 +30,11 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ClockProvider;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.time.Instant;
 import java.util.Collection;
 
 public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>> extends
@@ -41,6 +43,8 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
         GuildChannelMixin<T>,
         MessageChannelMixin<T>
 {
+    Instant PIN_PERMISSION_DEADLINE = Instant.parse("2026-01-12T00:00:00Z");
+
     // ---- Default implementations of interface ----
     @Nonnull
     @CheckReturnValue
@@ -163,7 +167,10 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     default void checkCanControlMessagePins()
     {
         checkCanAccess();
-        checkPermission(Permission.MESSAGE_MANAGE, "You need MESSAGE_MANAGE to pin or unpin messages.");
+        if (ClockProvider.getClock().instant().isBefore(PIN_PERMISSION_DEADLINE) && hasPermission(Permission.MESSAGE_MANAGE))
+            return;
+
+        checkPermission(Permission.PIN_MESSAGES, "You need PIN_MESSAGES to pin or unpin messages.");
     }
 
     default boolean canDeleteOtherUsersMessages()
