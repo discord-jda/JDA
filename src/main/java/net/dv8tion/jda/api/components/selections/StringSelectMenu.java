@@ -101,6 +101,13 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
     List<SelectOption> getOptions();
 
     /**
+     * Whether the user must populate this select menu in Modals.
+     *
+     * @return Whether this menu must be populated
+     */
+    boolean isRequired();
+
+    /**
      * Creates a new preconfigured {@link Builder} with the same settings used for this select menu.
      * <br>This can be useful to create an updated version of this menu without needing to rebuild it from scratch.
      *
@@ -117,6 +124,7 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
         builder.setPlaceholder(getPlaceholder());
         builder.addOptions(getOptions());
         builder.setDisabled(isDisabled());
+        builder.setRequired(isRequired());
         return builder;
     }
 
@@ -144,6 +152,7 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
     class Builder extends SelectMenu.Builder<StringSelectMenu, StringSelectMenu.Builder>
     {
         private final List<SelectOption> options = new ArrayList<>();
+        private boolean required = true;
 
         protected Builder(@Nonnull String customId)
         {
@@ -375,6 +384,24 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
         }
 
         /**
+         * Configure whether the user must populate this select menu.
+         * <br>Default: {@code true}
+         *
+         * <p>This only has an effect in Modals!
+         *
+         * @param required
+         *        Whether this menu is required
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder setRequired(boolean required)
+        {
+            this.required = required;
+            return this;
+        }
+
+        /**
          * Creates a new {@link StringSelectMenu} instance if all requirements are satisfied.
          * <br>A select menu may not have more than {@value #OPTIONS_MAX_AMOUNT} options at once.
          *
@@ -399,7 +426,7 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
             Checks.check(options.size() <= OPTIONS_MAX_AMOUNT, "Cannot build a select menu with more than %d options.", OPTIONS_MAX_AMOUNT);
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
-            return new StringSelectMenuImpl(customId, uniqueId, placeholder, min, max, disabled, options);
+            return new StringSelectMenuImpl(customId, uniqueId, placeholder, min, max, disabled, options, required);
         }
     }
 }

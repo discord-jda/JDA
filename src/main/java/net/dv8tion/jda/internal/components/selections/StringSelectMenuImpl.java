@@ -31,17 +31,20 @@ import java.util.Objects;
 public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelectMenu, LabelChildComponentUnion
 {
     private final List<SelectOption> options;
+    private final boolean required;
 
     public StringSelectMenuImpl(DataObject data)
     {
         super(data);
         this.options = parseOptions(data.getArray("options"));
+        this.required = data.getBoolean("required", true);
     }
 
-    public StringSelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
+    public StringSelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options, boolean required)
     {
         super(id, uniqueId, placeholder, minValues, maxValues, disabled);
         this.options = options;
+        this.required = required;
     }
 
     private static List<SelectOption> parseOptions(DataArray array)
@@ -74,13 +77,20 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
         return Collections.unmodifiableList(options);
     }
 
+    @Override
+    public boolean isRequired()
+    {
+        return required;
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
     {
         return super.toData()
                 .put("type", Type.STRING_SELECT.getKey())
-                .put("options", DataArray.fromCollection(options));
+                .put("options", DataArray.fromCollection(options))
+                .put("required", required);
     }
 
     @Override

@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.components.label;
 
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
+import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.internal.components.label.LabelImpl;
 
 import javax.annotation.CheckReturnValue;
@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 /**
  * Component that contains a label, an optional description, and a {@linkplain LabelChildComponent child component}.
  *
- * <p>Labels are used as top-level components inside {@link net.dv8tion.jda.api.interactions.modals.Modal Modals},
+ * <p>Labels are used as top-level components inside {@link net.dv8tion.jda.api.modals.Modal Modals},
  * and cannot be used in Messages.
  *
  * @see LabelChildComponent
