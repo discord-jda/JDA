@@ -153,9 +153,6 @@ public class Route
         public static final Route GET_WELCOME_SCREEN    =  new Route(GET,   "guilds/{guild_id}/welcome-screen");
         public static final Route MODIFY_WELCOME_SCREEN =  new Route(PATCH, "guilds/{guild_id}/welcome-screen");
         public static final Route MODIFY_GUILD_INCIDENTS = new Route(PUT,   "guilds/{guild_id}/incident-actions");
-
-        public static final Route CREATE_GUILD = new Route(POST,   "guilds");
-        public static final Route DELETE_GUILD = new Route(DELETE, "guilds/{guild_id}");
     }
 
     public static class Emojis
@@ -306,7 +303,6 @@ public class Route
         public static final Route MODIFY_TEMPLATE =            new Route(PATCH,  "guilds/{guild_id}/templates/{code}");
         public static final Route DELETE_TEMPLATE =            new Route(DELETE, "guilds/{guild_id}/templates/{code}");
         public static final Route GET_GUILD_TEMPLATES =        new Route(GET,    "guilds/{guild_id}/templates");
-        public static final Route CREATE_GUILD_FROM_TEMPLATE = new Route(POST,   "guilds/templates/{code}");
     }
 
     /**
