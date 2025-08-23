@@ -108,6 +108,14 @@ public class ContainerImpl
         return new ContainerImpl(uniqueId, components, spoiler, accentColor);
     }
 
+    @Nonnull
+    @Override
+    public Container withComponents(@Nonnull Collection<? extends ContainerChildComponent> components)
+    {
+        Checks.noneNull(components, "Components");
+        return new ContainerImpl(uniqueId, ComponentsUtil.membersToUnion(components, ContainerChildComponentUnion.class), spoiler, accentColor);
+    }
+
     @Override
     public int getUniqueId()
     {
