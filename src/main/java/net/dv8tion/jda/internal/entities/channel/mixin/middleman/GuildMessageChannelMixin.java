@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.ClockProvider;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -166,7 +167,7 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     default void checkCanControlMessagePins()
     {
         checkCanAccess();
-        if (currentInstant().isBefore(PIN_PERMISSION_DEADLINE) && hasPermission(Permission.MESSAGE_MANAGE))
+        if (ClockProvider.getClock().instant().isBefore(PIN_PERMISSION_DEADLINE) && hasPermission(Permission.MESSAGE_MANAGE))
             return;
 
         checkPermission(Permission.PIN_MESSAGES, "You need PIN_MESSAGES to pin or unpin messages.");
@@ -175,11 +176,5 @@ public interface GuildMessageChannelMixin<T extends GuildMessageChannelMixin<T>>
     default boolean canDeleteOtherUsersMessages()
     {
         return hasPermission(Permission.MESSAGE_MANAGE);
-    }
-
-    // So we can mock it instead of JDK classes
-    default Instant currentInstant()
-    {
-        return Instant.now();
     }
 }

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.internal.entities.channel.mixin.middleman.GuildMessageChannelMixin;
+import net.dv8tion.jda.internal.utils.ClockProvider;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,14 +29,13 @@ public class MessagePinDeadlineTest
     {
         final GuildMessageChannelMixin<?> channel = mock(GuildMessageChannelMixin.class);
         doCallRealMethod().when(channel).checkCanControlMessagePins();
-        doReturn(timeOfCheck).when(channel).currentInstant();
         doAnswer(invocation -> {
             final Permission permission = invocation.getArgument(0);
             return grantedPermissions.contains(permission);
         }).when(channel).hasPermission(any());
         doCallRealMethod().when(channel).checkPermission(any(), any());
 
-        channel.checkCanControlMessagePins();
+        ClockProvider.withFixedTime(timeOfCheck, channel::checkCanControlMessagePins);
 
         // Make sure the permissions are checked in the given order (to check short-circuiting)
         final InOrder channelInOrder = inOrder(channel);
@@ -69,13 +69,12 @@ public class MessagePinDeadlineTest
     {
         final GuildMessageChannelMixin<?> channel = mock(GuildMessageChannelMixin.class);
         doCallRealMethod().when(channel).checkCanControlMessagePins();
-        doReturn(timeOfCheck).when(channel).currentInstant();
         doReturn(false).when(channel).hasPermission(any());
         doReturn(mock(Guild.class)).when(channel).getGuild();
         doCallRealMethod().when(channel).checkPermission(any(), any());
 
         assertThatException()
-                .isThrownBy(channel::checkCanControlMessagePins)
+                .isThrownBy(() -> ClockProvider.withFixedTime(timeOfCheck, channel::checkCanControlMessagePins))
                 .isInstanceOf(InsufficientPermissionException.class);
 
         // Make sure the permissions are checked in the given order
