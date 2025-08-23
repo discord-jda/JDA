@@ -158,6 +158,58 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
     }
 
     /**
+     * Creates a new {@link Section} with the specified content components.
+     *
+     * @param  components
+     *         The new content components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link Section}
+     */
+    @Nonnull
+    @CheckReturnValue
+    Section withContentComponents(@Nonnull Collection<? extends SectionContentComponent> components);
+
+    /**
+     * Creates a new {@link Section} with the specified content components.
+     *
+     * @param  component
+     *         The first new content component
+     * @param  components
+     *         Additional new content components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link Section}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Section withContentComponents(@Nonnull SectionContentComponent component, @Nonnull SectionContentComponent... components)
+    {
+        Checks.notNull(component, "Component");
+        Checks.notNull(components, "Components");
+        return withContentComponents(Helpers.mergeVararg(component, components));
+    }
+
+    /**
+     * Creates a new {@link Section} with the specified accessory.
+     *
+     * @param  accessory
+     *         The new accessory
+     *
+     * @throws IllegalArgumentException
+     *         If the provided accessory is {@code null}
+     *
+     * @return The new {@link Section}
+     */
+    @Nonnull
+    @CheckReturnValue
+    Section withAccessory(@Nonnull SectionAccessoryComponent accessory);
+
+    /**
      * Returns an immutable list with the components contained by this section.
      *
      * @return {@link List} of {@link SectionContentComponentUnion} in this section

@@ -152,7 +152,7 @@ public class Route
 
         public static final Route GET_WELCOME_SCREEN    =  new Route(GET,   "guilds/{guild_id}/welcome-screen");
         public static final Route MODIFY_WELCOME_SCREEN =  new Route(PATCH, "guilds/{guild_id}/welcome-screen");
-        public static final Route MODIFY_GUILD_INCIDENTS = new Route(PUT,  "guilds/{guild_id}/incident-actions");
+        public static final Route MODIFY_GUILD_INCIDENTS = new Route(PUT,   "guilds/{guild_id}/incident-actions");
     }
 
     public static class Emojis
@@ -260,8 +260,14 @@ public class Route
         @ReplaceWith("GET_MESSAGE_PINS")
         public static final Route GET_PINNED_MESSAGES =   new Route(GET,    "channels/{channel_id}/pins");
         public static final Route GET_MESSAGE_PINS =      new Route(GET,    "channels/{channel_id}/messages/pins");
+        @Deprecated
+        @ReplaceWith("PIN_MESSAGE")
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}");
+        public static final Route PIN_MESSAGE =           new Route(PUT,    "channels/{channel_id}/messages/pins/{message_id}");
+        @Deprecated
+        @ReplaceWith("UNPIN_MESSAGE")
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}");
+        public static final Route UNPIN_MESSAGE =         new Route(DELETE, "channels/{channel_id}/messages/pins/{message_id}");
 
         public static final Route ADD_REACTION =          new Route(PUT,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
         public static final Route REMOVE_REACTION =       new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");

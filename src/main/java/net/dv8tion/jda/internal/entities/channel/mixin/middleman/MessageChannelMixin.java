@@ -290,7 +290,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> pinMessageById(@Nonnull String messageId)
+    default AuditableRestAction<Void> pinMessageById(@Nonnull String messageId)
     {
         checkCanControlMessagePins();
         return MessageChannelUnion.super.pinMessageById(messageId);
@@ -298,7 +298,7 @@ public interface MessageChannelMixin<T extends MessageChannelMixin<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> unpinMessageById(@Nonnull String messageId)
+    default AuditableRestAction<Void> unpinMessageById(@Nonnull String messageId)
     {
         checkCanControlMessagePins();
         return MessageChannelUnion.super.unpinMessageById(messageId);

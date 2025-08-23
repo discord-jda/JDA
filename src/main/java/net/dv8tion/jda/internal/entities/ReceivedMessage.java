@@ -228,7 +228,7 @@ public class ReceivedMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> pin()
+    public AuditableRestAction<Void> pin()
     {
         checkSystem("pin");
         if (isEphemeral())
@@ -237,13 +237,13 @@ public class ReceivedMessage implements Message
         if (hasChannel())
             return getChannel().pinMessageById(getIdLong());
 
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getChannelId(), getId());
-        return new RestActionImpl<>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.PIN_MESSAGE.compile(getChannelId(), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> unpin()
+    public AuditableRestAction<Void> unpin()
     {
         checkSystem("unpin");
         if (isEphemeral())
@@ -252,8 +252,8 @@ public class ReceivedMessage implements Message
         if (hasChannel())
             return getChannel().unpinMessageById(getIdLong());
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getChannelId(), getId());
-        return new RestActionImpl<>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.UNPIN_MESSAGE.compile(getChannelId(), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull

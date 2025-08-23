@@ -94,6 +94,43 @@ public interface MediaGallery extends Component, MessageTopLevelComponent, Conta
     MediaGallery withUniqueId(int uniqueId);
 
     /**
+     * Creates a new {@link MediaGallery} with the specified items.
+     *
+     * @param  items
+     *         The new items
+     *
+     * @throws IllegalArgumentException
+     *         If the provided items are {@code null} or contains {@code null}
+     *
+     * @return The new {@link MediaGallery}
+     */
+    @Nonnull
+    @CheckReturnValue
+    MediaGallery withItems(@Nonnull Collection<? extends MediaGalleryItem> items);
+
+    /**
+     * Creates a new {@link MediaGallery} with the specified items.
+     *
+     * @param  item
+     *         The first new items
+     * @param  items
+     *         Additional new items
+     *
+     * @throws IllegalArgumentException
+     *         If the provided items are {@code null} or contains {@code null}
+     *
+     * @return The new {@link MediaGallery}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MediaGallery withItems(@Nonnull MediaGalleryItem item, @Nonnull MediaGalleryItem... items)
+    {
+        Checks.notNull(item, "Item");
+        Checks.notNull(items, "Items");
+        return withItems(Helpers.mergeVararg(item, items));
+    }
+
+    /**
      * Returns an immutable list with the items contained by this media gallery.
      *
      * @return {@link List} of {@link MediaGalleryItem} in this media gallery

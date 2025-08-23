@@ -19,12 +19,12 @@ package net.dv8tion.jda.api.components.actionrow;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.attribute.IDisableable;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponent;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -32,7 +32,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
 {
     /**
      * Create one row of {@link ActionRowChildComponent components}.
-     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
+     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link #getMaxAllowed(Type)}.
      *
      * @param  components
      *         The components for this action row
@@ -63,10 +62,12 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
 
     /**
      * Create one row of {@link ActionRowChildComponent components}.
-     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
+     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link #getMaxAllowed(Type)}.
      *
+     * @param  component
+     *         The first component for this action row
      * @param  components
-     *         The components for this action row
+     *         Additional components for this action row
      *
      * @throws IllegalArgumentException
      *         If anything is null, empty, or an invalid number of components are provided
@@ -74,15 +75,16 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      * @return The action row
      */
     @Nonnull
-    static ActionRow of(@Nonnull ActionRowChildComponent... components)
+    static ActionRow of(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
     {
+        Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
-        return of(Arrays.asList(components));
+        return of(Helpers.mergeVararg(component, components));
     }
 
     /**
      * Partitions the provided {@link ActionRowChildComponent components} into a list of ActionRow instances.
-     * <br>This will split the provided components by {@link #getMaxAllowed(Type)} ()} and create homogeneously typed rows,
+     * <br>This will split the provided components by {@link #getMaxAllowed(Type)} and create homogeneously typed rows,
      * meaning they will not have mixed component types.
      *
      * <p><b>Example</b>
@@ -130,8 +132,10 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      * // partitioned[1] = ActionRow(selectMenu)
      * }</pre>
      *
+     * @param  component
+     *         The first component to partition
      * @param  components
-     *         The components to partition
+     *         Additional components to partition
      *
      * @throws IllegalArgumentException
      *         If null is provided or there is no components
@@ -139,10 +143,11 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
      * @return {@link List} of {@link ActionRow}
      */
     @Nonnull
-    static List<ActionRow> partitionOf(@Nonnull ActionRowChildComponent... components)
+    static List<ActionRow> partitionOf(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
     {
+        Checks.notNull(component, "Component");
         Checks.notNull(components, "Components");
-        return partitionOf(Arrays.asList(components));
+        return partitionOf(Helpers.mergeVararg(component, components));
     }
 
     /**
@@ -267,5 +272,42 @@ public interface ActionRow extends MessageTopLevelComponent, ModalTopLevelCompon
     default ActionRow asEnabled()
     {
         return (ActionRow) IDisableable.super.asEnabled();
+    }
+
+    /**
+     * Creates a new {@link ActionRow} with the specified components.
+     *
+     * @param  components
+     *         The new components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link ActionRow}
+     */
+    @Nonnull
+    @CheckReturnValue
+    ActionRow withComponents(@Nonnull Collection<? extends ActionRowChildComponent> components);
+
+    /**
+     * Creates a new {@link ActionRow} with the specified components.
+     *
+     * @param  component
+     *         The first new component
+     * @param  components
+     *         Additional new components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link ActionRow}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ActionRow withComponents(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
+    {
+        Checks.notNull(component, "Component");
+        Checks.notNull(components, "Components");
+        return withComponents(Helpers.mergeVararg(component, components));
     }
 }

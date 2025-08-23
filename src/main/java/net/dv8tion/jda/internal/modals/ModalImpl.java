@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions.modal;
+package net.dv8tion.jda.internal.modals;
 
 import net.dv8tion.jda.api.components.Components;
-import net.dv8tion.jda.api.interactions.modals.Modal;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
+import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;

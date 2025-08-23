@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.components.replacer.IReplaceable;
 import net.dv8tion.jda.api.components.utils.ComponentIterator;
 import net.dv8tion.jda.api.utils.messages.MessageRequest;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -155,6 +156,43 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
     @Nonnull
     @CheckReturnValue
     Container withSpoiler(boolean spoiler);
+
+    /**
+     * Creates a new {@link Container} with the specified components.
+     *
+     * @param  components
+     *         The new components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link Container}
+     */
+    @Nonnull
+    @CheckReturnValue
+    Container withComponents(@Nonnull Collection<? extends ContainerChildComponent> components);
+
+    /**
+     * Creates a new {@link Container} with the specified components.
+     *
+     * @param  component
+     *         The first new component
+     * @param  components
+     *         Additional new components
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are {@code null} or contains {@code null}
+     *
+     * @return The new {@link Container}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Container withComponents(@Nonnull ContainerChildComponent component, @Nonnull ContainerChildComponent... components)
+    {
+        Checks.notNull(component, "Component");
+        Checks.notNull(components, "Components");
+        return withComponents(Helpers.mergeVararg(component, components));
+    }
 
     @Nonnull
     @Override

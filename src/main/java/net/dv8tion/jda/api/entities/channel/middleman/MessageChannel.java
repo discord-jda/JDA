@@ -1877,7 +1877,7 @@ public interface MessageChannel extends Channel, Formattable
      *         If this entity is {@link #isDetached() detached}
      *
      * @return {@link net.dv8tion.jda.api.entities.MessageHistory.MessageRetrieveAction MessageHistory.MessageRetrieveAction}
-     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with with the first messages of this channel loaded into it.
+     *         <br>Provides a {@link net.dv8tion.jda.api.entities.MessageHistory MessageHistory} object with the first messages of this channel loaded into it.
      *         <br><b>Note: The messages are ordered from the most recent to oldest!</b>
      *
      * @see    net.dv8tion.jda.api.entities.MessageHistory#retrieveFuture(int)                     MessageHistory.retrieveFuture(int)
@@ -2378,7 +2378,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the
+     *         {@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in the
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2398,21 +2398,21 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> pinMessageById(@Nonnull String messageId)
+    default AuditableRestAction<Void> pinMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
-        Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.PIN_MESSAGE.compile(getId(), messageId);
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -2427,7 +2427,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the
+     *         {@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in the
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2447,16 +2447,16 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> pinMessageById(long messageId)
+    default AuditableRestAction<Void> pinMessageById(long messageId)
     {
         return pinMessageById(Long.toUnsignedString(messageId));
     }
@@ -2473,7 +2473,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the
+     *         {@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in the
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2493,21 +2493,21 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> unpinMessageById(@Nonnull String messageId)
+    default AuditableRestAction<Void> unpinMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
-        Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<Void>(getJDA(), route);
+        Route.CompiledRoute route = Route.Messages.UNPIN_MESSAGE.compile(getId(), messageId);
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -2522,7 +2522,7 @@ public interface MessageChannel extends Channel, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The request was attempted after the account lost
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the
+     *         {@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES} in the
      *         {@link GuildMessageChannel GuildMessageChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -2542,16 +2542,16 @@ public interface MessageChannel extends Channel, Formattable
      *         If this is a {@link GuildMessageChannel GuildMessageChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#PIN_MESSAGES Permission.PIN_MESSAGES}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
      *         If this entity is {@link #isDetached() detached}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> unpinMessageById(long messageId)
+    default AuditableRestAction<Void> unpinMessageById(long messageId)
     {
         return unpinMessageById(Long.toUnsignedString(messageId));
     }

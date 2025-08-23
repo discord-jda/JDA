@@ -19,12 +19,12 @@ package net.dv8tion.jda.internal.components.actionrow;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
+import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
-import net.dv8tion.jda.api.interactions.modals.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -144,6 +144,14 @@ public class ActionRowImpl
     {
         Checks.positive(uniqueId, "Unique ID");
         return new ActionRowImpl(components, uniqueId);
+    }
+
+    @Nonnull
+    @Override
+    public ActionRow withComponents(@Nonnull Collection<? extends ActionRowChildComponent> components)
+    {
+        Checks.noneNull(components, "Components");
+        return new ActionRowImpl(ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class), uniqueId);
     }
 
     @Nonnull
