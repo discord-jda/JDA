@@ -107,9 +107,6 @@ public class MessagePinDeadlineTest
                 Arguments.argumentSet("Before deadline, fail if no MESSAGE_MANAGE or PIN_MESSAGES",
                         /* timeOfCheck */ BEFORE_DEADLINE,
                         /* expectedCheckedPermissions */ EnumSet.of(Permission.MESSAGE_MANAGE, Permission.PIN_MESSAGES)),
-                Arguments.argumentSet("Before deadline, fail if no MESSAGE_MANAGE",
-                        /* timeOfCheck */ BEFORE_DEADLINE,
-                        /* expectedCheckedPermissions */ EnumSet.of(Permission.MESSAGE_MANAGE, Permission.PIN_MESSAGES)),
                 Arguments.argumentSet("After deadline, fail if no PIN_MESSAGES",
                         /* timeOfCheck */ AFTER_DEADLINE,
                         /* expectedCheckedPermissions */ EnumSet.of(Permission.PIN_MESSAGES))
