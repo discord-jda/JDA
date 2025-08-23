@@ -2030,11 +2030,11 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalStateException
      *         If this Message is ephemeral
      *
-     * @return {@link RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> pin();
+    AuditableRestAction<Void> pin();
 
     /**
      * Used to remove the Message from the {@link #getChannel() MessageChannel's} pinned message list.
@@ -2069,11 +2069,11 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalStateException
      *         If this Message is ephemeral
      *
-     * @return {@link RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> unpin();
+    AuditableRestAction<Void> unpin();
 
     /**
      * Adds a reaction to this Message using an {@link Emoji}.
