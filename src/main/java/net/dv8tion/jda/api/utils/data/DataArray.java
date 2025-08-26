@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import net.dv8tion.jda.api.exceptions.DataArrayParsingException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
@@ -808,7 +809,7 @@ public class DataArray implements Iterable<Object>, SerializableArray
 
     private ParsingException valueError(int index, String expectedType)
     {
-        return new ParsingException("Unable to resolve value at " + index + " to type " + expectedType + ": " + data.get(index));
+        return new DataArrayParsingException(this, "Unable to resolve value at " + index + " to type " + expectedType + ": " + data.get(index));
     }
 
     @Nullable

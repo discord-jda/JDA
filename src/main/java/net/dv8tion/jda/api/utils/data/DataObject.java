@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.MapType;
+import net.dv8tion.jda.api.exceptions.DataObjectParsingException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
@@ -884,8 +885,8 @@ public class DataObject implements SerializableData
     private ParsingException valueError(String key, String expectedType)
     {
         if (!hasKey(key))
-            return new ParsingException("Missing value for key '" + key + "' with expected type " + expectedType);
-        return new ParsingException("Unable to resolve value with key '" + key + "' to type " + expectedType + ": " + data.get(key));
+            return new DataObjectParsingException(this, "Missing value for key '" + key + "' with expected type " + expectedType);
+        return new DataObjectParsingException(this, "Unable to resolve value with key '" + key + "' to type " + expectedType + ": " + data.get(key));
     }
 
     @Nullable

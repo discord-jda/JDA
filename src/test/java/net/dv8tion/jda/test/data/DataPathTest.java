@@ -45,7 +45,7 @@ public class DataPathTest
 
         assertThat(DataPath.getLong(object, "foo?", 0)).isEqualTo(0L);
         assertThatThrownBy(() -> DataPath.getLong(object, "foo"))
-            .hasMessage("Missing value for key 'foo' with expected type long")
+            .hasMessage("Missing value for key 'foo' with expected type long\n{}")
             .isInstanceOf(ParsingException.class);
 
         DataArray array = DataArray.empty();

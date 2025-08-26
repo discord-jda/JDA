@@ -1,0 +1,2 @@
+net.dv8tion.jda.api.exceptions.DataObjectParsingException: Missing value for key 'bar' with expected type any
+{"foo":1}
