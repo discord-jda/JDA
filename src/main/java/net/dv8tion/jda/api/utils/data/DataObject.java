@@ -22,12 +22,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.MapType;
+import net.dv8tion.jda.api.exceptions.DataObjectParsingException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.SerializationUtil;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -612,13 +614,13 @@ public class DataObject implements SerializableData
 
     /**
      * Resolves a double to a key.
-     * 
+     *
      * @param  key
      *         The key to check for a value
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the value is missing, null, or of the wrong type
-     * 
+     *
      * @return The double value for the key
      */
     public double getDouble(@Nonnull String key)
@@ -636,10 +638,10 @@ public class DataObject implements SerializableData
      *         The key to check for a value
      * @param  defaultValue
      *         Alternative value to use when no value or null value is associated with the key
-     * 
+     *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the value is of the wrong type
-     * 
+     *
      * @return The double value for the key
      */
     public double getDouble(@Nonnull String key, double defaultValue)
@@ -863,6 +865,19 @@ public class DataObject implements SerializableData
         }
     }
 
+    @Nonnull
+    public String toShallowString()
+    {
+        try
+        {
+            return SerializationUtil.toShallowJsonString(this.data);
+        }
+        catch (JsonProcessingException e)
+        {
+            throw new ParsingException(e);
+        }
+    }
+
     /**
      * Converts this DataObject to a {@link java.util.Map}
      *
@@ -883,7 +898,9 @@ public class DataObject implements SerializableData
 
     private ParsingException valueError(String key, String expectedType)
     {
-        return new ParsingException("Unable to resolve value with key " + key + " to type " + expectedType + ": " + data.get(key));
+        if (!hasKey(key))
+            return new DataObjectParsingException(this, "Missing value for key '" + key + "' with expected type " + expectedType);
+        return new DataObjectParsingException(this, "Unable to resolve value with key '" + key + "' to type " + expectedType + ": " + data.get(key));
     }
 
     @Nullable
