@@ -129,10 +129,14 @@ public class LabelImpl
     @Override
     public DataObject toData()
     {
-        return DataObject.empty()
+        DataObject obj = DataObject.empty()
                 .put("type", getType().getKey())
                 .put("label", label)
                 .put("description", description)
                 .put("component", child);
+        if (uniqueId >= 0)
+            obj.put("id", uniqueId);
+
+        return obj;
     }
 }
