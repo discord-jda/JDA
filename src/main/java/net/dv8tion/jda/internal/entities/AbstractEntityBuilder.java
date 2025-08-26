@@ -133,9 +133,11 @@ public abstract class AbstractEntityBuilder
     {
         if (api.isCacheFlagSet(CacheFlag.FORUM_TAGS))
         {
-            DataArray tags = json.getArray("available_tags");
-            for (int i = 0; i < tags.length(); i++)
-                createForumTag(channel, tags.getObject(i), i);
+            json.optArray("available_tags").ifPresent(tags ->
+            {
+                for (int i = 0; i < tags.length(); i++)
+                    createForumTag(channel, tags.getObject(i), i);
+            });
         }
 
         channel
@@ -190,9 +192,9 @@ public abstract class AbstractEntityBuilder
         }
 
         tag.setName(json.getString("name"))
-           .setModerated(json.getBoolean("moderated"))
-           .setEmoji(json)
-           .setPosition(index);
+                .setModerated(json.getBoolean("moderated"))
+                .setEmoji(json)
+                .setPosition(index);
         return tag;
     }
 
