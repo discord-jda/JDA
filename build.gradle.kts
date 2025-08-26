@@ -365,6 +365,12 @@ tasks.named("processTestResources").configure {
 
 
 tasks.register<Test>("updateTestSnapshots") {
+    group = "verification"
+    useJUnitPlatform()
+
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+
     systemProperty("updateSnapshots", "true")
 }
 
