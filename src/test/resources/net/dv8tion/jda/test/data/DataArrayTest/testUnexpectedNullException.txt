@@ -1,0 +1,2 @@
+net.dv8tion.jda.api.exceptions.DataArrayParsingException: Unable to resolve value at 3 to type int: null
+[1,"{…truncated object…}","[…truncated array…]",null]

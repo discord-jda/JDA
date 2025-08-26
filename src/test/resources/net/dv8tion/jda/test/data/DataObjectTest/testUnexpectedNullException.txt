@@ -1,2 +1,2 @@
 net.dv8tion.jda.api.exceptions.DataObjectParsingException: Unable to resolve value with key 'foo' to type int: null
-{"foo":null}
+{"foo":null,"nested_object":"{…truncated object…}","nested_array":"[…truncated array…]"}

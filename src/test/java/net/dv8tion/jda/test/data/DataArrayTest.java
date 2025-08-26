@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.test.data;
 
-import net.dv8tion.jda.api.exceptions.DataObjectParsingException;
+import net.dv8tion.jda.api.exceptions.DataArrayParsingException;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
@@ -24,31 +24,19 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class DataObjectTest extends AbstractSnapshotTest
+public class DataArrayTest extends AbstractSnapshotTest
 {
-    @Test
-    void testMissingKeyException()
-    {
-        DataObject data = DataObject.empty()
-                .put("foo", 1)
-                .put("nested_object", DataObject.empty().put("test", "test value"))
-                .put("nested_array", DataArray.empty().add("test value"));
-
-        assertThatExceptionOfType(DataObjectParsingException.class)
-            .isThrownBy(() -> data.get("bar"))
-            .satisfies(exception -> snapshotHandler.compareWithSnapshot(exception.toString(), null));
-    }
-
     @Test
     void testUnexpectedNullException()
     {
-        DataObject data = DataObject.empty()
-                .put("foo", null)
-                .put("nested_object", DataObject.empty().put("test", "test value"))
-                .put("nested_array", DataArray.empty().add("test value"));
+        DataArray data = DataArray.empty()
+                .add(1)
+                .add(DataObject.empty().put("test", "test value"))
+                .add(DataArray.empty().add("test value"))
+                .add(null);
 
-        assertThatExceptionOfType(DataObjectParsingException.class)
-            .isThrownBy(() -> data.getInt("foo"))
+        assertThatExceptionOfType(DataArrayParsingException.class)
+            .isThrownBy(() -> data.getInt(3))
             .satisfies(exception -> snapshotHandler.compareWithSnapshot(exception.toString(), null));
     }
 }

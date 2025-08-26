@@ -26,7 +26,7 @@ public class DataObjectParsingException extends ParsingException
 
     public DataObjectParsingException(@Nonnull DataObject data, @Nonnull String message)
     {
-        super(message + "\n" + data);
+        super(message + "\n" + data.toShallowString());
         this.data = data;
     }
 

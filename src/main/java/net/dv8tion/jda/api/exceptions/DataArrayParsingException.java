@@ -26,7 +26,7 @@ public class DataArrayParsingException extends ParsingException
 
     public DataArrayParsingException(@Nonnull DataArray data, @Nonnull String message)
     {
-        super(message + "\n" + data);
+        super(message + "\n" + data.toShallowString());
         this.data = data;
     }
 

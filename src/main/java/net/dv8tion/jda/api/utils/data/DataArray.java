@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.SerializationUtil;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -789,6 +790,19 @@ public class DataArray implements Iterable<Object>, SerializableArray
                     .with(SerializationFeature.INDENT_OUTPUT)
                     .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
                     .writeValueAsString(data);
+        }
+        catch (JsonProcessingException e)
+        {
+            throw new ParsingException(e);
+        }
+    }
+
+    @Nonnull
+    public String toShallowString()
+    {
+        try
+        {
+            return SerializationUtil.toShallowJsonString(this.data);
         }
         catch (JsonProcessingException e)
         {

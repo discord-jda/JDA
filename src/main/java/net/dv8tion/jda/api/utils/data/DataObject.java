@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.SerializationUtil;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -613,13 +614,13 @@ public class DataObject implements SerializableData
 
     /**
      * Resolves a double to a key.
-     * 
+     *
      * @param  key
      *         The key to check for a value
      *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the value is missing, null, or of the wrong type
-     * 
+     *
      * @return The double value for the key
      */
     public double getDouble(@Nonnull String key)
@@ -637,10 +638,10 @@ public class DataObject implements SerializableData
      *         The key to check for a value
      * @param  defaultValue
      *         Alternative value to use when no value or null value is associated with the key
-     * 
+     *
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the value is of the wrong type
-     * 
+     *
      * @return The double value for the key
      */
     public double getDouble(@Nonnull String key, double defaultValue)
@@ -857,6 +858,19 @@ public class DataObject implements SerializableData
                     .with(SerializationFeature.INDENT_OUTPUT)
                     .with(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
                     .writeValueAsString(data);
+        }
+        catch (JsonProcessingException e)
+        {
+            throw new ParsingException(e);
+        }
+    }
+
+    @Nonnull
+    public String toShallowString()
+    {
+        try
+        {
+            return SerializationUtil.toShallowJsonString(this.data);
         }
         catch (JsonProcessingException e)
         {
