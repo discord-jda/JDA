@@ -1143,7 +1143,9 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
 
         configureCategory(json, channel);
-        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        Optional<DataArray> permissionOverwrites = json.optArray("permission_overwrites");
+        if (permissionOverwrites.isPresent())
+            createOverridesPass(channel, permissionOverwrites.get());
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -1181,7 +1183,9 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
 
         configureTextChannel(json, channel);
-        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        Optional<DataArray> permissionOverwrites = json.optArray("permission_overwrites");
+        if (permissionOverwrites.isPresent())
+            createOverridesPass(channel, permissionOverwrites.get());
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -1219,7 +1223,9 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
 
         configureNewsChannel(json, channel);
-        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        Optional<DataArray> permissionOverwrites = json.optArray("permission_overwrites");
+        if (permissionOverwrites.isPresent())
+            createOverridesPass(channel, permissionOverwrites.get());
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -1256,7 +1262,9 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
 
         configureVoiceChannel(json, channel);
-        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        Optional<DataArray> permissionOverwrites = json.optArray("permission_overwrites");
+        if (permissionOverwrites.isPresent())
+            createOverridesPass(channel, permissionOverwrites.get());
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -1293,7 +1301,9 @@ public class EntityBuilder extends AbstractEntityBuilder
         }
 
         configureStageChannel(json, channel);
-        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        Optional<DataArray> permissionOverwrites = json.optArray("permission_overwrites");
+        if (permissionOverwrites.isPresent())
+            createOverridesPass(channel, permissionOverwrites.get());
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -1417,7 +1427,9 @@ public class EntityBuilder extends AbstractEntityBuilder
             }
         }
         configureForumChannel(json, channel);
-        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        Optional<DataArray> permissionOverwrites = json.optArray("permission_overwrites");
+        if (permissionOverwrites.isPresent())
+            createOverridesPass(channel, permissionOverwrites.get());
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -1453,7 +1465,9 @@ public class EntityBuilder extends AbstractEntityBuilder
             }
         }
         configureMediaChannel(json, channel);
-        createOverridesPass(channel, json.getArray("permission_overwrites"));
+        Optional<DataArray> permissionOverwrites = json.optArray("permission_overwrites");
+        if (permissionOverwrites.isPresent())
+            createOverridesPass(channel, permissionOverwrites.get());
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
