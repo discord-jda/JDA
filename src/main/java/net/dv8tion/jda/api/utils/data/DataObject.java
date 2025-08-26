@@ -883,7 +883,9 @@ public class DataObject implements SerializableData
 
     private ParsingException valueError(String key, String expectedType)
     {
-        return new ParsingException("Unable to resolve value with key " + key + " to type " + expectedType + ": " + data.get(key));
+        if (!hasKey(key))
+            return new ParsingException("Missing value for key '" + key + "' with expected type " + expectedType);
+        return new ParsingException("Unable to resolve value with key '" + key + "' to type " + expectedType + ": " + data.get(key));
     }
 
     @Nullable
