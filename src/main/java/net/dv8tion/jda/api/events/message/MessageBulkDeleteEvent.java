@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import java.util.List;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
+@RequiredIntents(sometimes = {GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES})
 public class MessageBulkDeleteEvent extends Event
 {
     protected final GuildMessageChannel channel;
