@@ -16,14 +16,9 @@
 
 package net.dv8tion.jda.api.modals;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
-import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.components.tree.ModalComponentTree;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -53,28 +48,25 @@ import java.util.stream.Collectors;
  * {
  *     if (event.getName().equals("modmail"))
  *     {
- *         TextInput subject = TextInput.create("subject", "Subject", TextInputStyle.SHORT)
+ *         TextInput subject = TextInput.create("subject", TextInputStyle.SHORT)
  *                 .setPlaceholder("Subject of this ticket")
  *                 .setMinLength(10)
  *                 .setMaxLength(100) // or setRequiredRange(10, 100)
  *                 .build();
  *
- *         TextInput body = TextInput.create("body", "Body", TextInputStyle.PARAGRAPH)
+ *         TextInput body = TextInput.create("body", TextInputStyle.PARAGRAPH)
  *                 .setPlaceholder("Your concerns go here")
  *                 .setMinLength(30)
  *                 .setMaxLength(1000)
  *                 .build();
  *
  *         Modal modal = Modal.create("modmail", "Modmail")
- *                 .addComponents(ActionRow.of(subject), ActionRow.of(body))
+ *                 .addComponents(Label.of("Subject", subject), Label.of("Body", body))
  *                 .build();
  *
  *         event.replyModal(modal).queue();
  *     }
  * }}</pre>
- *
- * <p><b>Only a maximum of 5 component layouts can be included in a Modal, and only {@link TextInput TextInputs} are allowed at this time.</b>
- * You can check whether a component is supported via {@link Component.Type#isModalCompatible}.
  *
  * @see    ModalInteractionEvent
  */
@@ -301,62 +293,6 @@ public interface Modal extends SerializableData
         {
             Checks.notNull(tree, "ModalComponentTree");
             return addComponents(tree.getComponents());
-        }
-
-        /**
-         * Adds an ActionRow to this modal
-         *
-         * @param  components
-         *         The components to add
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If any of the provided components are null, or an invalid number of components are provided</li>
-         *             <li>If any of the provided components are not compatible with Modals</li>
-         *         </ul>
-         *
-         * @return Same builder for chaining convenience
-         *
-         * @see    Component#isModalCompatible()
-         *
-         * @deprecated
-         *         Use {@link #addComponents(ModalTopLevelComponent...)} instead
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("addComponents(ActionRow.of(components))")
-        public Builder addActionRow(@Nonnull Collection<? extends ActionRowChildComponent> components)
-        {
-            return addComponents(ActionRow.of(components));
-        }
-
-        /**
-         * Adds an ActionRow to this modal
-         *
-         * @param  components
-         *         The components to add
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If any of the provided components are null, or an invalid number of components are provided</li>
-         *             <li>If any of the provided components are not compatible with Modals</li>
-         *         </ul>
-         *
-         * @return Same builder for chaining convenience
-         *
-         * @see    Component#isModalCompatible()
-         *
-         * @deprecated
-         *         Use {@link #addComponents(ModalTopLevelComponent...)} instead
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("addComponents(ActionRow.of(component, components))")
-        public Builder addActionRow(@Nonnull ActionRowChildComponent component, @Nonnull ActionRowChildComponent... components)
-        {
-            return addComponents(ActionRow.of(component, components));
         }
 
         /**
