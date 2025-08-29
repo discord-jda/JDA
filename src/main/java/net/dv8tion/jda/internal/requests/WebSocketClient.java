@@ -1374,6 +1374,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("CHANNEL_CREATE",                         new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                         new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                         new ChannelUpdateHandler(api));
+        handlers.put("SUBSCRIPTION_CREATE",                    new SubscriptionCreateHandler(api));
+        handlers.put("SUBSCRIPTION_UPDATE",                    new SubscriptionUpdateHandler(api));
+        handlers.put("SUBSCRIPTION_DELETE",                    new SubscriptionDeleteHandler(api));
         handlers.put("ENTITLEMENT_CREATE",                     new EntitlementCreateHandler(api));
         handlers.put("ENTITLEMENT_UPDATE",                     new EntitlementUpdateHandler(api));
         handlers.put("ENTITLEMENT_DELETE",                     new EntitlementDeleteHandler(api));
