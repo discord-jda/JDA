@@ -31,16 +31,16 @@ import java.util.Objects;
 public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelectMenu, LabelChildComponentUnion
 {
     private final List<SelectOption> options;
-    private final boolean required;
+    private final Boolean required;
 
     public StringSelectMenuImpl(DataObject data)
     {
         super(data);
         this.options = parseOptions(data.getArray("options"));
-        this.required = data.getBoolean("required", true);
+        this.required = (Boolean) data.opt("required").orElse(null);
     }
 
-    public StringSelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options, boolean required)
+    public StringSelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options, Boolean required)
     {
         super(id, uniqueId, placeholder, minValues, maxValues, disabled);
         this.options = options;
@@ -78,7 +78,7 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
     }
 
     @Override
-    public boolean isRequired()
+    public Boolean isRequired()
     {
         return required;
     }
@@ -87,10 +87,14 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
     @Override
     public DataObject toData()
     {
-        return super.toData()
+        DataObject obj = super.toData()
                 .put("type", Type.STRING_SELECT.getKey())
-                .put("options", DataArray.fromCollection(options))
-                .put("required", required);
+                .put("options", DataArray.fromCollection(options));
+
+        if (required != null)
+            obj.put("required", required);
+
+        return obj;
     }
 
     @Override
@@ -112,6 +116,7 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
                 && minValues == other.getMinValues()
                 && maxValues == other.getMaxValues()
                 && disabled == other.isDisabled()
-                && Objects.equals(options, other.getOptions());
+                && Objects.equals(options, other.getOptions())
+                && Objects.equals(required, other.isRequired());
     }
 }

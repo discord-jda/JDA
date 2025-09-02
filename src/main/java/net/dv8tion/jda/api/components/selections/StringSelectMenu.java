@@ -101,11 +101,12 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
     List<SelectOption> getOptions();
 
     /**
-     * Whether the user must populate this select menu in Modals.
+     * Whether the user must populate this select menu in Modals, or {@code null} if not set.
      *
-     * @return Whether this menu must be populated
+     * @return Whether this menu must be populated, or null
      */
-    boolean isRequired();
+    @Nullable
+    Boolean isRequired();
 
     /**
      * Creates a new preconfigured {@link Builder} with the same settings used for this select menu.
@@ -152,7 +153,7 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
     class Builder extends SelectMenu.Builder<StringSelectMenu, StringSelectMenu.Builder>
     {
         private final List<SelectOption> options = new ArrayList<>();
-        private boolean required = true;
+        private Boolean required = null;
 
         protected Builder(@Nonnull String customId)
         {
@@ -384,8 +385,7 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
         }
 
         /**
-         * Configure whether the user must populate this select menu.
-         * <br>Default: {@code true}
+         * Configure whether the user must populate this select menu if inside a Modal.
          *
          * <p>This only has an effect in Modals!
          *
@@ -395,7 +395,7 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
          * @return The same builder instance for chaining
          */
         @Nonnull
-        public Builder setRequired(boolean required)
+        public Builder setRequired(@Nullable Boolean required)
         {
             this.required = required;
             return this;
