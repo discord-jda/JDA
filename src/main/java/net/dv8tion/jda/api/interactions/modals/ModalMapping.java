@@ -44,8 +44,7 @@ public class ModalMapping
 
     public ModalMapping(DataObject object)
     {
-        // TODO: selects don't have an id for now, should be fixed soon:tm:
-        this.uniqueId = object.getInt("id", -1);
+        this.uniqueId = object.getInt("id");
         this.customId = object.getString("custom_id");
         this.type = Component.Type.fromKey(object.getInt("type"));
         this.value = object;
