@@ -1,0 +1,15 @@
+{
+  "component" : {
+    "custom_id" : "custom-id",
+    "id" : 10,
+    "max_length" : 4000,
+    "min_length" : 1,
+    "placeholder" : "Custom placeholder",
+    "required" : false,
+    "style" : 2,
+    "type" : 4
+  },
+  "description" : null,
+  "label" : "test-label",
+  "type" : 18
+}

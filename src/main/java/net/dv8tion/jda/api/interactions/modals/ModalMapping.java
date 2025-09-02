@@ -20,10 +20,13 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -34,17 +37,17 @@ import java.util.Objects;
  */
 public class ModalMapping
 {
-    private final String id;
+    private final String customId;
     private final int uniqueId;
-    private final String value;
+    private final DataObject value;
     private final Component.Type type;
 
     public ModalMapping(DataObject object)
     {
         this.uniqueId = object.getInt("id");
-        this.id = object.getString("custom_id");
-        this.value = object.getString("value");
+        this.customId = object.getString("custom_id");
         this.type = Component.Type.fromKey(object.getInt("type"));
+        this.value = object;
     }
 
     /**
@@ -61,7 +64,7 @@ public class ModalMapping
     @ReplaceWith("getCustomId()")
     public String getId()
     {
-        return id;
+        return customId;
     }
 
     /**
@@ -72,7 +75,7 @@ public class ModalMapping
     @Nonnull
     public String getCustomId()
     {
-        return id;
+        return customId;
     }
 
     /**
@@ -99,14 +102,46 @@ public class ModalMapping
     /**
      * The String representation of this component.
      *
-     * <p>For TextInputs, this returns what the User typed in it.
+     * <p>For {@link net.dv8tion.jda.api.components.textinput.TextInput TextInputs}, this returns what the User typed in it.
+     *
+     * <p>Use {@link #getType()} to check if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as a String.
      *
      * @return The String representation of this component.
      */
     @Nonnull
     public String getAsString()
     {
-        return value;
+        if (type != Component.Type.TEXT_INPUT)
+            typeError("String");
+
+        return value.getString("value");
+    }
+
+    /**
+     * The String list representation of this component.
+     *
+     * <p>For {@link net.dv8tion.jda.api.components.selections.StringSelectMenu StringSelectMenus}, this returns
+     * the values chosen by the User.
+     *
+     * <p>Use {@link #getType()} to check if this method can be used safely!
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as a List of Strings.
+     *
+     * @return The string list representation of this component.
+     */
+    @Nonnull
+    public List<String> getAsStringList()
+    {
+        if (type != Component.Type.STRING_SELECT)
+            typeError("List<String>");
+
+        return value.getArray("values")
+                .stream(DataArray::getString)
+                .collect(Helpers.toUnmodifiableList());
     }
 
     @Override
@@ -114,7 +149,7 @@ public class ModalMapping
     {
         return new EntityString(this)
                 .setType(getType())
-                .addMetadata("value", getAsString())
+                .addMetadata("customId", customId)
                 .toString();
     }
 
@@ -124,12 +159,17 @@ public class ModalMapping
         if (this == o) return true;
         if (!(o instanceof ModalMapping)) return false;
         ModalMapping that = (ModalMapping) o;
-        return type == that.type && Objects.equals(id, that.id) && Objects.equals(uniqueId, that.uniqueId) && Objects.equals(value, that.value);
+        return type == that.type && Objects.equals(customId, that.customId) && Objects.equals(uniqueId, that.uniqueId) && Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, uniqueId, value, type);
+        return Objects.hash(customId, uniqueId, value, type);
+    }
+
+    private void typeError(String targetType)
+    {
+        throw new IllegalStateException("ModalMapping of type " + getType() + " can not be represented as " + targetType + "!");
     }
 }

@@ -1,0 +1,11 @@
+{
+  "component" : {
+    "custom_id" : "custom-id",
+    "required" : true,
+    "style" : 1,
+    "type" : 4
+  },
+  "description" : null,
+  "label" : "test-label",
+  "type" : 18
+}

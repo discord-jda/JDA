@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.components.utils;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.container.Container;
+import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.section.Section;
 
 import javax.annotation.Nonnull;
@@ -118,6 +119,11 @@ public class ComponentIterator implements Iterator<Component>
             sectionComponents.add(section.getAccessory());
 
             return sectionComponents.iterator();
+        }
+        else if (component instanceof Label)
+        {
+            Label label = (Label) component;
+            return Collections.singleton(label.getChild()).iterator();
         }
 
         return null;

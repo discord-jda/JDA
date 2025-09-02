@@ -55,6 +55,7 @@ public class ComponentPathIteratorTests {
             case MEDIA_GALLERY:
             case FILE_DISPLAY:
             case SEPARATOR:
+            case LABEL:
                 break;
             case ACTION_ROW:
                 final ActionRow row = mock(ActionRow.class);

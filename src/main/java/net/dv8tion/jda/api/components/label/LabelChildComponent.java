@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.components;
+package net.dv8tion.jda.api.components.label;
+
+import net.dv8tion.jda.api.components.Component;
 
 import javax.annotation.Nonnull;
 
 /**
- * Represents a component that can be added directly to a modal, this includes:
+ * Represents a component that can be used inside {@link Label Labels}. This includes:
  * <ul>
- *     <li>{@link net.dv8tion.jda.api.components.label.Label Label}</li>
+ *     <li>{@link net.dv8tion.jda.api.components.textinput.TextInput TextInput}</li>
+ *     <li>{@link net.dv8tion.jda.api.components.selections.StringSelectMenu StringSelectMenu}</li>
  * </ul>
  */
-public interface ModalTopLevelComponent extends Component
+public interface LabelChildComponent extends Component
 {
     @Nonnull
     @Override
-    ModalTopLevelComponent withUniqueId(int uniqueId);
+    LabelChildComponent withUniqueId(int uniqueId);
 }

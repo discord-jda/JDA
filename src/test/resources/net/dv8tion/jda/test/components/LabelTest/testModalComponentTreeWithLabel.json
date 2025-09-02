@@ -1,0 +1,29 @@
+{
+  "components" : [ {
+    "component" : {
+      "custom_id" : "menu",
+      "disabled" : false,
+      "max_values" : 1,
+      "min_values" : 1,
+      "options" : [ {
+        "default" : false,
+        "label" : "This is an option",
+        "value" : "option-1"
+      } ],
+      "type" : 3
+    },
+    "description" : null,
+    "label" : "Custom label 1",
+    "type" : 18
+  }, {
+    "component" : {
+      "custom_id" : "input",
+      "required" : true,
+      "style" : 1,
+      "type" : 4
+    },
+    "description" : null,
+    "label" : "Custom label 2",
+    "type" : 18
+  } ]
+}

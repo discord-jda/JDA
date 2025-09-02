@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.components.selections;
 
+import net.dv8tion.jda.api.components.label.LabelChildComponentUnion;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -27,20 +28,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelectMenu
+public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelectMenu, LabelChildComponentUnion
 {
     private final List<SelectOption> options;
+    private final Boolean required;
 
     public StringSelectMenuImpl(DataObject data)
     {
         super(data);
         this.options = parseOptions(data.getArray("options"));
+        this.required = (Boolean) data.opt("required").orElse(null);
     }
 
-    public StringSelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
+    public StringSelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options, Boolean required)
     {
         super(id, uniqueId, placeholder, minValues, maxValues, disabled);
         this.options = options;
+        this.required = required;
     }
 
     private static List<SelectOption> parseOptions(DataArray array)
@@ -73,13 +77,24 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
         return Collections.unmodifiableList(options);
     }
 
+    @Override
+    public Boolean isRequired()
+    {
+        return required;
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
     {
-        return super.toData()
+        DataObject obj = super.toData()
                 .put("type", Type.STRING_SELECT.getKey())
                 .put("options", DataArray.fromCollection(options));
+
+        if (required != null)
+            obj.put("required", required);
+
+        return obj;
     }
 
     @Override
@@ -101,6 +116,7 @@ public class StringSelectMenuImpl extends SelectMenuImpl implements StringSelect
                 && minValues == other.getMinValues()
                 && maxValues == other.getMaxValues()
                 && disabled == other.isDisabled()
-                && Objects.equals(options, other.getOptions());
+                && Objects.equals(options, other.getOptions())
+                && Objects.equals(required, other.isRequired());
     }
 }
