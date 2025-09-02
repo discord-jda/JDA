@@ -1,9 +1,9 @@
 [versions]
-jackson = "2.19.1"
+jackson = "2.20.0"
 
 [libraries]
 archunit = "com.tngtech.archunit:archunit:1.4.1"
-assertj = "org.assertj:assertj-core:3.27.3"
+assertj = "org.assertj:assertj-core:3.27.4"
 commons-collections = "org.apache.commons:commons-collections4:4.5.0"
 commons-lang3 = "org.apache.commons:commons-lang3:3.18.0"
 findbugs = "com.google.code.findbugs:jsr305:3.0.2"
@@ -11,10 +11,10 @@ jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jetbrains-annotations = "org.jetbrains:annotations:26.0.2"
 jna = "net.java.dev.jna:jna:5.17.0"
-junit = "org.junit.jupiter:junit-jupiter:5.13.3"
-junit-launcher = "org.junit.platform:junit-platform-launcher:1.13.3"
+junit = "org.junit.jupiter:junit-jupiter:5.13.4"
+junit-launcher = "org.junit.platform:junit-platform-launcher:1.13.4"
 logback-classic = "ch.qos.logback:logback-classic:1.5.18"
-mockito = "org.mockito:mockito-core:5.18.0"
+mockito = "org.mockito:mockito-core:5.19.0"
 okhttp = "com.squareup.okhttp3:okhttp-jvm:5.1.0"
 opus = "club.minnced:opus-java:1.1.1"
 reflections = "org.reflections:reflections:0.10.2"
@@ -34,8 +34,8 @@ junit = [
 ]
 
 [plugins]
-shadow = "com.gradleup.shadow:8.3.8"
+download = "de.undercouch.download:5.6.0"
+jreleaser = "org.jreleaser:1.20.0"
+shadow = "com.gradleup.shadow:9.1.0"
 version-catalog-update = "nl.littlerobots.version-catalog-update:1.0.0"
 versions = "com.github.ben-manes.versions:0.52.0"
-jreleaser = "org.jreleaser:1.19.0"
-download = "de.undercouch.download:5.6.0"
