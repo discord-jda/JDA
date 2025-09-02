@@ -386,6 +386,7 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
 
         /**
          * Configure whether the user must populate this select menu if inside a Modal.
+         * <br>This defaults to {@code true} in Modals when unset.
          *
          * <p>This only has an effect in Modals!
          *
