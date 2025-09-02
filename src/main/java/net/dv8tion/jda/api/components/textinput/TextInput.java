@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.components.textinput;
 
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.api.components.ActionComponent;
+import net.dv8tion.jda.api.components.attribute.ICustomId;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.internal.components.textinput.TextInputImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  *
  * <p>Must be used inside {@link net.dv8tion.jda.api.components.label.Label Labels} only!
  */
-public interface TextInput extends ActionComponent, LabelChildComponent
+public interface TextInput extends ICustomId, LabelChildComponent
 {
     /**
      * The maximum length a TextInput value can have. ({@value})
@@ -113,33 +113,6 @@ public interface TextInput extends ActionComponent, LabelChildComponent
      */
     @Nullable
     String getPlaceHolder();
-
-    @Override
-    default boolean isDisabled()
-    {
-        return false;
-    }
-
-    @Nonnull
-    @Override
-    default TextInput asDisabled()
-    {
-        return (TextInput) ActionComponent.super.asDisabled();
-    }
-
-    @Nonnull
-    @Override
-    default TextInput asEnabled()
-    {
-        return (TextInput) ActionComponent.super.asEnabled();
-    }
-
-    @Nonnull
-    @Override
-    default TextInput withDisabled(boolean disabled)
-    {
-        throw new UnsupportedOperationException("TextInputs cannot be disabled!");
-    }
 
     @Nonnull
     @Override
