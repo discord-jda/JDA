@@ -142,8 +142,11 @@ public class SnapshotHandler
     private String getFilePath(String suffix, String extension)
     {
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);
+        Class<?> enclosingClass = currentClass.getEnclosingClass();
         Method testMethod = testInfo.getTestMethod().orElseThrow(AssertionError::new);
         String fileName = currentClass.getSimpleName() + "/" + testMethod.getName();
+        if (enclosingClass != null)
+            fileName = enclosingClass.getSimpleName() + "/" + fileName;
         if (suffix != null && !suffix.isEmpty())
             fileName += "_" + suffix;
         fileName += "." + extension;

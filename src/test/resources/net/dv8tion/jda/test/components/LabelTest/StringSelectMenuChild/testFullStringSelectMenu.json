@@ -1,0 +1,34 @@
+{
+  "component" : {
+    "custom_id" : "custom-id",
+    "disabled" : false,
+    "id" : 10,
+    "max_values" : 3,
+    "min_values" : 1,
+    "options" : [ {
+      "default" : false,
+      "label" : "Option 1",
+      "value" : "option-1"
+    }, {
+      "default" : false,
+      "emoji" : {
+        "animated" : true,
+        "id" : 821355005788684298,
+        "name" : "minn"
+      },
+      "label" : "Option 2",
+      "value" : "option-2"
+    }, {
+      "default" : false,
+      "description" : "Custom description",
+      "label" : "Option 3",
+      "value" : "option-3"
+    } ],
+    "placeholder" : "Custom placeholder",
+    "required" : false,
+    "type" : 3
+  },
+  "description" : null,
+  "label" : "test-label",
+  "type" : 18
+}
