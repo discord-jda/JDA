@@ -82,7 +82,7 @@ public class ComponentDeserializer
      * Deserializes all the provided components.
      *
      * @param  components
-     *         The list of components to deserialized
+     *         The list of components to deserialize
      *
      * @throws ParsingException
      *         If any of the components have an invalid format
@@ -108,7 +108,7 @@ public class ComponentDeserializer
      * @param  type
      *         The target component type
      * @param  components
-     *         The list of components to deserialized
+     *         The list of components to deserialize
      *
      * @throws ParsingException
      *         If any of the components have an invalid format
@@ -135,7 +135,7 @@ public class ComponentDeserializer
      * @param  type
      *         The target component type
      * @param  components
-     *         The array of components to deserialized
+     *         The array of components to deserialize
      *
      * @throws ParsingException
      *         If any of the components have an invalid format
@@ -162,7 +162,7 @@ public class ComponentDeserializer
      * @param  type
      *         The target component type
      * @param  component
-     *         The component to deserialized
+     *         The component to deserialize
      *
      * @throws ParsingException
      *         If the component has an invalid format
