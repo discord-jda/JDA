@@ -39,6 +39,14 @@ public class LabelImpl
 
     private LabelImpl(int uniqueId, @Nonnull String label, @Nullable String description, @Nonnull LabelChildComponentUnion child)
     {
+        this.uniqueId = uniqueId;
+        this.label = label;
+        this.description = description;
+        this.child = child;
+    }
+
+    public static Label of(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
+    {
         Checks.notBlank(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
         Checks.notNull(child, "Child");
@@ -48,14 +56,6 @@ public class LabelImpl
             Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
         }
 
-        this.uniqueId = uniqueId;
-        this.label = label;
-        this.description = description;
-        this.child = child;
-    }
-
-    public static Label of(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
-    {
         LabelChildComponentUnion childUnion = ComponentsUtil.safeUnionCast("child", child, LabelChildComponentUnion.class);
         return new LabelImpl(label, description, childUnion);
     }
@@ -64,24 +64,21 @@ public class LabelImpl
     @Override
     public Label withLabel(@Nonnull String label)
     {
-        return new LabelImpl(label, this.description, this.child);
+        return of(label, this.description, this.child);
     }
 
     @Nonnull
     @Override
     public Label withDescription(@Nullable String description)
     {
-        return new LabelImpl(this.label, description, this.child);
+        return of(this.label, description, this.child);
     }
 
     @Nonnull
     @Override
     public Label withChild(@Nonnull LabelChildComponent child)
     {
-        Checks.notNull(child, "Child");
-
-        LabelChildComponentUnion childUnion = ComponentsUtil.safeUnionCast("child", child, LabelChildComponentUnion.class);
-        return new LabelImpl(this.label, this.description, childUnion);
+        return of(this.label, this.description, child);
     }
 
     @Nonnull
