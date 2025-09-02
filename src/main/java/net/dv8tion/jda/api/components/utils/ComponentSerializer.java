@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.components.utils;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
-import net.dv8tion.jda.api.components.tree.ComponentTree;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -27,6 +26,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Utility class to serialize a list of {@link Component Components} into {@link DataObject}.
  *
  * <p>Since some components include implicit file uploads, such as {@link FileDisplay} and {@link Thumbnail},
- * the included {@link FileUpload} instances can be accessed using {@link #getFileUploads()}.
+ * the included {@link FileUpload} instances can be accessed using {@link #getFileUploads(Collection)}.
  * <br>Each uploaded file is referenced in the respective components using {@code attachment://filename}.
  *
  * <p>This separation is done to simplify persistence of these components in preferred formats.
@@ -47,58 +47,26 @@ import java.util.stream.Collectors;
  */
 public class ComponentSerializer
 {
-    private final List<? extends Component> components;
-
-    /**
-     * Create a new ComponentSerializer for the provided list of components.
-     *
-     * @param  components
-     *         The components to serialize
-     *
-     * @throws IllegalArgumentException
-     *         If {@code null} is provided or any of the components are not serializable
-     */
-    public ComponentSerializer(@Nonnull List<? extends Component> components)
-    {
-        Checks.noneNull(components, "Components");
-        for (int i = 0; i < components.size(); i++)
-        {
-            Component component = components.get(i);
-            Checks.check(component instanceof SerializableData, "Component at index %s is not serializable.", i);
-        }
-
-        this.components = components;
-    }
-
-    /**
-     * Create a new ComponentSerializer for the provided tree of components.
-     *
-     * @param  componentTree
-     *         The {@link ComponentTree} to serialize
-     *
-     * @throws NullPointerException
-     *         If {@code null} is provided
-     * @throws IllegalArgumentException
-     *         If any of the components are not serializable
-     */
-    public ComponentSerializer(@Nonnull ComponentTree<?> componentTree)
-    {
-        this(componentTree.getComponents());
-    }
-
     /**
      * Serializes the provided components into {@link DataObject} instances.
      *
      * <p>Some components that would implicitly upload a file, for instance {@link Thumbnail},
      * will reference the file using a URI with this format {@code attachment://filename}.
-     * The {@code filename} refers to a {@link FileUpload} provided by {@link #getFileUploads()},
+     * The {@code filename} refers to a {@link FileUpload} provided by {@link #getFileUploads(Collection)},
      * with a corresponding {@link FileUpload#getName() name}.
+     *
+     * @param  components
+     *         The components to serialized into {@link DataObject DataObjects}
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
      *
      * @return {@link List} of {@link DataObject}
      */
     @Nonnull
-    public List<DataObject> getDataObjects()
+    public List<DataObject> serializeAll(@Nonnull Collection<? extends Component> components)
     {
+        Checks.noneNull(components, "Components");
         return components.stream()
             .map(SerializableData.class::cast)
             .map(SerializableData::toData)
@@ -106,13 +74,20 @@ public class ComponentSerializer
     }
 
     /**
-     * Returns the implicit {@link FileUpload} instances used by {@link #getDataObjects()}.
+     * Returns the implicit {@link FileUpload} instances used by {@link #serializeAll(Collection)}.
+     *
+     * @param  components
+     *         The components to take the {@link FileUpload FileUploads} from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
      *
      * @return The implicit {@link FileUpload} instances for the provided components
      */
     @Nonnull
-    public List<FileUpload> getFileUploads()
+    public List<FileUpload> getFileUploads(@Nonnull Collection<? extends Component> components)
     {
+        Checks.noneNull(components, "Components");
         return MessageUtil.getIndirectFiles(components);
     }
 }

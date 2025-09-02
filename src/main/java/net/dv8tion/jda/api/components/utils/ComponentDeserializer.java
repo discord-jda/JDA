@@ -69,7 +69,7 @@ public class ComponentDeserializer
      * Create a new deserializer instance with the provided files.
      *
      * @param files
-     *        The implicit file uploads used by the components (see {@link ComponentSerializer#getFileUploads()})
+     *        The implicit file uploads used by the components (see {@link ComponentSerializer#getFileUploads(Collection)})
      */
     public ComponentDeserializer(@Nonnull Collection<? extends FileUpload> files)
     {

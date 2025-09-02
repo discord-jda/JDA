@@ -43,10 +43,12 @@ public class ComponentSerializerTest extends AbstractSnapshotTest
     {
         List<Component> components = Arrays.asList(component);
 
-        ComponentSerializer serializer = new ComponentSerializer(components);
+        ComponentSerializer serializer = new ComponentSerializer();
 
-        List<DataObject> dataObjects = serializer.getDataObjects();
-        List<String> fileNames = serializer.getFileUploads()
+        List<DataObject> dataObjects = serializer.serializeAll(components);
+        List<FileUpload> fileUploads = serializer.getFileUploads(components);
+
+        List<String> fileNames = fileUploads
                 .stream()
                 .map(FileUpload::getName)
                 .collect(Collectors.toList());
@@ -54,7 +56,7 @@ public class ComponentSerializerTest extends AbstractSnapshotTest
         assertWithSnapshot(DataArray.fromCollection(dataObjects), component.getType() + "-data");
         assertWithSnapshot(DataArray.fromCollection(fileNames), component.getType() + "-files");
 
-        ComponentDeserializer deserializer = new ComponentDeserializer(serializer.getFileUploads());
+        ComponentDeserializer deserializer = new ComponentDeserializer(fileUploads);
         List<IComponentUnion> deserialized = deserializer.deserializeAll(dataObjects);
 
         assertThat(deserialized).isEqualTo(components);
