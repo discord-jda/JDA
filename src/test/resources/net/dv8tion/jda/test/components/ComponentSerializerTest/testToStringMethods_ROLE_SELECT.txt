@@ -1,0 +1,1 @@
+SelectMenu[ROLE_SELECT](id=-1, custom id=role-menu, placeholder=null)

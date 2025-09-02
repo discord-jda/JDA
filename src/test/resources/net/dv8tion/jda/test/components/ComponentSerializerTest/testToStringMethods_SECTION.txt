@@ -1,0 +1,1 @@
+Section(id=-1, components=[TextDisplay(id=-1, content=Section with thumbnail)])

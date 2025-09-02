@@ -60,6 +60,13 @@ public class ComponentSerializerTest extends AbstractSnapshotTest
         assertThat(deserialized).isEqualTo(components);
     }
 
+    @MethodSource("getSerializerTestCases")
+    @ParameterizedTest
+    void testToStringMethods(Component component)
+    {
+        assertWithSnapshot(component.toString(), component.getType().toString());
+    }
+
     static Stream<Arguments> getSerializerTestCases()
     {
         return Arrays.stream(Component.Type.values())

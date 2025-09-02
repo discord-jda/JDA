@@ -1,0 +1,1 @@
+FileDisplayFileUpload(id=-1, file=AttachedFile[Data]:logo.png, spoiler=false)

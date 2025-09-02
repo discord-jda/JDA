@@ -47,6 +47,11 @@ public class AbstractSnapshotTest
         return new LoggingAssertions(snapshotHandler, logs);
     }
 
+    protected void assertWithSnapshot(String actual, String suffix)
+    {
+        snapshotHandler.compareWithSnapshot(actual, suffix);
+    }
+
     protected void assertWithSnapshot(SerializableData data)
     {
         snapshotHandler.compareWithSnapshot(data.toData(), null);

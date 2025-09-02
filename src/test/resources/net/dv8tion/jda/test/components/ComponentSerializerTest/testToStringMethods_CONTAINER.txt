@@ -1,0 +1,1 @@
+Container(id=-1, accentColor=null, spoiler=false, components=[TextDisplay(id=-1, content=First text), Separator(id=-1, divider=true, spacing=SMALL), FileDisplayFileUpload(id=-1, file=AttachedFile[Data]:logo.png, spoiler=false)])
