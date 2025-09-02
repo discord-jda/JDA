@@ -227,7 +227,14 @@ public class ComponentDeserializer
     {
         String url = data.getObject("media").getString("url");
         if (url.startsWith(ATTACHMENT_SCHEMA))
-            return new ThumbnailFileUpload(getFileByUri(url));
+        {
+            return new ThumbnailFileUpload(
+                data.getInt("id", -1),
+                getFileByUri(url),
+                data.getString("description", null),
+                data.getBoolean("spoiler"));
+        }
+
         return new ThumbnailImpl(data);
     }
 
@@ -236,7 +243,13 @@ public class ComponentDeserializer
     {
         String url = data.getObject("file").getString("url");
         if (url.startsWith(ATTACHMENT_SCHEMA))
-            return new FileDisplayFileUpload(getFileByUri(url));
+        {
+            return new FileDisplayFileUpload(
+                data.getInt("id", -1),
+                getFileByUri(url),
+                data.getBoolean("spoiler"));
+        }
+
         return new FileDisplayImpl(url);
     }
 
@@ -257,7 +270,13 @@ public class ComponentDeserializer
     {
         String url = data.getObject("media").getString("url");
         if (url.startsWith(ATTACHMENT_SCHEMA))
-            return new MediaGalleryItemFileUpload(getFileByUri(url));
+        {
+            return new MediaGalleryItemFileUpload(
+                getFileByUri(url),
+                data.getString("description", null),
+                data.getBoolean("spoiler"));
+        }
+
         return new MediaGalleryItemImpl(data);
     }
 

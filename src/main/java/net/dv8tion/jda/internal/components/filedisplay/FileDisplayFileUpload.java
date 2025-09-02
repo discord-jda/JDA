@@ -45,7 +45,7 @@ public class FileDisplayFileUpload
         this(-1, file, false);
     }
 
-    private FileDisplayFileUpload(int uniqueId, FileUpload file, boolean spoiler)
+    public FileDisplayFileUpload(int uniqueId, FileUpload file, boolean spoiler)
     {
         this.uniqueId = uniqueId;
         this.file = file;

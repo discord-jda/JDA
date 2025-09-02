@@ -45,7 +45,7 @@ public class ThumbnailFileUpload
         this(-1, file, null, false);
     }
 
-    private ThumbnailFileUpload(int uniqueId, FileUpload file, String description, boolean spoiler)
+    public ThumbnailFileUpload(int uniqueId, FileUpload file, String description, boolean spoiler)
     {
         this.uniqueId = uniqueId;
         this.file = file;
