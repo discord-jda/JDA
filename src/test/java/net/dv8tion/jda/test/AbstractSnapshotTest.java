@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.test;
 
+import net.dv8tion.jda.api.utils.data.SerializableArray;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.test.assertions.logging.LoggingAssertions;
 import net.dv8tion.jda.test.util.SnapshotHandler;
@@ -49,5 +50,15 @@ public class AbstractSnapshotTest
     protected void assertWithSnapshot(SerializableData data)
     {
         snapshotHandler.compareWithSnapshot(data.toData(), null);
+    }
+
+    protected void assertWithSnapshot(SerializableArray data)
+    {
+        assertWithSnapshot(data, null);
+    }
+
+    protected void assertWithSnapshot(SerializableArray data, String suffix)
+    {
+        snapshotHandler.compareWithSnapshot(data.toDataArray(), suffix);
     }
 }

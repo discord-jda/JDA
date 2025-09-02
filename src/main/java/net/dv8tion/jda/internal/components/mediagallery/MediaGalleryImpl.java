@@ -46,7 +46,7 @@ public class MediaGalleryImpl
     public MediaGalleryImpl(DataObject data)
     {
         this(
-                data.getInt("id"),
+                data.getInt("id", -1),
                 data.getArray("items")
                         .stream(DataArray::getObject)
                         .map(MediaGalleryItemImpl::new)
@@ -59,7 +59,7 @@ public class MediaGalleryImpl
         this(-1, items);
     }
 
-    private MediaGalleryImpl(int uniqueId, Collection<? extends MediaGalleryItem> items)
+    public MediaGalleryImpl(int uniqueId, Collection<? extends MediaGalleryItem> items)
     {
         Checks.notEmpty(items, "Items");
         this.uniqueId = uniqueId;

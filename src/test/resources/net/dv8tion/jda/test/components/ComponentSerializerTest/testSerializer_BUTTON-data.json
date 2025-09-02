@@ -1,0 +1,7 @@
+[ {
+  "custom_id" : "button",
+  "disabled" : false,
+  "label" : "Click me!",
+  "style" : 1,
+  "type" : 2
+} ]

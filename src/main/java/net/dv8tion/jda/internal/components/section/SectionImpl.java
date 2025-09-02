@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.section.*;
+import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -36,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class SectionImpl
         extends AbstractComponentImpl
@@ -45,10 +47,19 @@ public class SectionImpl
     private final List<SectionContentComponentUnion> components;
     private final SectionAccessoryComponentUnion accessory;
 
+    public SectionImpl(ComponentDeserializer deserializer, DataObject data)
+    {
+        this(
+            data.getInt("id", -1),
+            deserializer.deserializeAs(SectionContentComponentUnion.class, data.getArray("components")).collect(Collectors.toList()),
+            deserializer.deserializeAs(SectionAccessoryComponentUnion.class, data.getObject("accessory"))
+        );
+    }
+
     public SectionImpl(DataObject data)
     {
         this(
-                data.getInt("id"),
+                data.getInt("id", -1),
                 // Allow unknown components in deserialization methods
                 Components.parseComponents(SectionContentComponentUnion.class, data.getArray("components")),
                 Components.parseComponent(SectionAccessoryComponentUnion.class, data.getObject("accessory"))

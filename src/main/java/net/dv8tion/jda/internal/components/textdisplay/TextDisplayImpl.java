@@ -38,7 +38,7 @@ public class TextDisplayImpl
     public TextDisplayImpl(DataObject data)
     {
         this(
-                data.getInt("id"),
+                data.getInt("id", -1),
                 data.getString("content")
         );
     }

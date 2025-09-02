@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -46,13 +47,23 @@ public class ActionRowImpl
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
 
+    public ActionRowImpl(ComponentDeserializer deserializer, DataObject data)
+    {
+        this(
+            // Allow unknown components in deserialization methods
+            deserializer.deserializeAs(ActionRowChildComponentUnion.class, data.getArray("components")).collect(Collectors.toList()),
+            // Absent in modals
+            data.getInt("id", -1)
+        );
+    }
+
     public ActionRowImpl(DataObject data)
     {
         this(
-                // Allow unknown components in deserialization methods
-                Components.parseComponents(ActionRowChildComponentUnion.class, data.getArray("components")),
-                // Absent in modals
-                data.getInt("id", -1)
+            // Allow unknown components in deserialization methods
+            Components.parseComponents(ActionRowChildComponentUnion.class, data.getArray("components")),
+            // Absent in modals
+            data.getInt("id", -1)
         );
     }
 

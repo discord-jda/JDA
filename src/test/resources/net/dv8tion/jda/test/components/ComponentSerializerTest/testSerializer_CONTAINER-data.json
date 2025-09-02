@@ -1,0 +1,18 @@
+[ {
+  "components" : [ {
+    "content" : "First text",
+    "type" : 10
+  }, {
+    "divider" : true,
+    "spacing" : 1,
+    "type" : 14
+  }, {
+    "file" : {
+      "url" : "attachment://logo.png"
+    },
+    "spoiler" : false,
+    "type" : 13
+  } ],
+  "spoiler" : false,
+  "type" : 17
+} ]

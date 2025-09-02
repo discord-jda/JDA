@@ -21,13 +21,16 @@ import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.components.label.LabelChildComponentUnion;
+import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EntityString;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class LabelImpl
         extends AbstractComponentImpl
@@ -38,13 +41,23 @@ public class LabelImpl
     private final String description;
     private final LabelChildComponentUnion child;
 
+    public LabelImpl(@Nonnull ComponentDeserializer deserializer, @Nonnull DataObject object)
+    {
+        this(
+            object.getInt("id", -1),
+            object.getString("label"),
+            object.getString("description", null),
+            deserializer.deserializeAs(LabelChildComponentUnion.class, object.getObject("component"))
+        );
+    }
+
     public LabelImpl(@Nonnull DataObject object)
     {
         this(
-                object.getInt("id"),
+                object.getInt("id", -1),
                 object.getString("label"),
                 object.getString("description", null),
-                Components.parseComponent(LabelChildComponentUnion.class, object.getObject("child"))
+                Components.parseComponent(LabelChildComponentUnion.class, object.getObject("component"))
         );
     }
 
@@ -151,5 +164,32 @@ public class LabelImpl
             obj.put("id", uniqueId);
 
         return obj;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new EntityString(this)
+            .addMetadata("id", uniqueId)
+            .addMetadata("label", label)
+            .toString();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (!(o instanceof LabelImpl)) return false;
+        LabelImpl that = (LabelImpl) o;
+        return uniqueId == that.uniqueId
+            && Objects.equals(label, that.label)
+            && Objects.equals(description, that.description)
+            && Objects.equals(child, that.child);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(uniqueId, label, description, child);
     }
 }

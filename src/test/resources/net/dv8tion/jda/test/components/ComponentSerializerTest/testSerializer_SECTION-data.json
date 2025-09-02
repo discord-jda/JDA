@@ -1,0 +1,14 @@
+[ {
+  "accessory" : {
+    "media" : {
+      "url" : "attachment://logo.png"
+    },
+    "spoiler" : false,
+    "type" : 11
+  },
+  "components" : [ {
+    "content" : "Section with thumbnail",
+    "type" : 10
+  } ],
+  "type" : 9
+} ]
