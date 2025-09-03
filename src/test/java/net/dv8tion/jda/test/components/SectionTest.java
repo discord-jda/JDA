@@ -38,7 +38,7 @@ public class SectionTest
     {
         ChecksHelper.<SectionContentComponentUnion>assertCollectionChecks(
                         "Components",
-                        coll -> new SectionImpl(-1, coll, EXAMPLE_BUTTON)
+                        coll -> SectionImpl.of(EXAMPLE_BUTTON, coll)
                 )
                 .checksNotNull()
                 .checksNotEmpty();
@@ -49,7 +49,7 @@ public class SectionTest
     {
         ChecksHelper.<SectionAccessoryComponentUnion>assertChecks(
                         "Accessory",
-                        accessory -> new SectionImpl(-1, Collections.singletonList(EXAMPLE_TEXT_DISPLAY), accessory)
+                        accessory -> SectionImpl.of(accessory, Collections.singletonList(EXAMPLE_TEXT_DISPLAY))
                 )
                 .checksNotNull();
     }

@@ -1,0 +1,115 @@
+[
+    {
+        "type": 1,
+        "id": 1,
+        "components": [
+            {
+                "type": 2,
+                "id": 2,
+                "custom_id": "button",
+                "style": 1,
+                "label": "Click me!"
+            }
+        ]
+    },
+    {
+        "type": 9,
+        "id": 3,
+        "components": [
+            {
+                "type": 10,
+                "id": 4,
+                "content": "Section with thumbnail"
+            }
+        ],
+        "accessory": {
+            "type": 11,
+            "id": 5,
+            "media": {
+                "id": "1412730259241046099",
+                "url": "https://cdn.discordapp.com/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&",
+                "proxy_url": "https://media.discordapp.net/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&",
+                "width": 256,
+                "height": 256,
+                "content_type": "image/png",
+                "flags": 0,
+                "attachment_id": "1412730258838523964"
+            },
+            "description": null,
+            "spoiler": false
+        }
+    },
+    {
+        "type": 12,
+        "id": 6,
+        "items": [
+            {
+                "media": {
+                    "id": "1412730259241046100",
+                    "url": "https://cdn.discordapp.com/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&",
+                    "proxy_url": "https://media.discordapp.net/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&",
+                    "width": 256,
+                    "height": 256,
+                    "content_type": "image/png",
+                    "flags": 0,
+                    "attachment_id": "1412730258838523964"
+                },
+                "description": null,
+                "spoiler": false
+            }
+        ]
+    },
+    {
+        "type": 13,
+        "id": 7,
+        "file": {
+            "id": "1412730259241046101",
+            "url": "https://cdn.discordapp.com/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&",
+            "proxy_url": "https://media.discordapp.net/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&",
+            "width": 256,
+            "height": 256,
+            "content_type": "image/png",
+            "flags": 0,
+            "attachment_id": "1412730258838523964"
+        },
+        "name": "logo.png",
+        "size": 58726,
+        "spoiler": false
+    },
+    {
+        "type": 17,
+        "id": 8,
+        "accent_color": null,
+        "components": [
+            {
+                "type": 10,
+                "id": 9,
+                "content": "First text"
+            },
+            {
+                "type": 14,
+                "id": 10,
+                "spacing": 1,
+                "divider": true
+            },
+            {
+                "type": 13,
+                "id": 11,
+                "file": {
+                    "id": "1412730259241046102",
+                    "url": "https://cdn.discordapp.com/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&",
+                    "proxy_url": "https://media.discordapp.net/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&",
+                    "width": 256,
+                    "height": 256,
+                    "content_type": "image/png",
+                    "flags": 0,
+                    "attachment_id": "1412730258838523964"
+                },
+                "name": "logo.png",
+                "size": 58726,
+                "spoiler": false
+            }
+        ],
+        "spoiler": false
+    }
+]

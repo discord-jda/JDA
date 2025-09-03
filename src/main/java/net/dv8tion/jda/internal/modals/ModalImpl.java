@@ -16,18 +16,20 @@
 
 package net.dv8tion.jda.internal.modals;
 
-import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.modals.Modal;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static net.dv8tion.jda.internal.entities.EntityBuilder.DEFAULT_COMPONENT_DESERIALIZER;
 
 public class ModalImpl implements Modal
 {
@@ -40,7 +42,10 @@ public class ModalImpl implements Modal
         this.id = object.getString("custom_id");
         this.title = object.getString("title");
         this.components = object.optArray("components")
-                .map(arr -> Components.parseComponents(ModalTopLevelComponentUnion.class, arr))
+                .map(arr ->
+                        DEFAULT_COMPONENT_DESERIALIZER
+                            .deserializeAs(ModalTopLevelComponentUnion.class, arr)
+                            .collect(Helpers.toUnmodifiableList()))
                 .orElseGet(Collections::emptyList);
     }
 

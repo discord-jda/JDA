@@ -1,0 +1,11 @@
+[ {
+  "component" : {
+    "custom_id" : "input",
+    "required" : true,
+    "style" : 1,
+    "type" : 4
+  },
+  "description" : null,
+  "label" : "Custom label",
+  "type" : 18
+} ]

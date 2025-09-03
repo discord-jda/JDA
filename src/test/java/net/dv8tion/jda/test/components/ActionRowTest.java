@@ -56,10 +56,7 @@ public class ActionRowTest extends AbstractSnapshotTest
     @Test
     void testEmptyRowThrows()
     {
-        ChecksHelper.<ActionRowChildComponentUnion>assertCollectionChecks(
-                        "Row",
-                        coll -> new ActionRowImpl(coll, -1)
-                )
+        ChecksHelper.<ActionRowChildComponentUnion>assertCollectionChecks("Row", ActionRowImpl::of)
                 .checksNotNull()
                 .checksNotEmpty();
     }
@@ -70,7 +67,7 @@ public class ActionRowTest extends AbstractSnapshotTest
         final List<ActionRowChildComponentUnion> list = Arrays.asList(EXAMPLE_BUTTON, EXAMPLE_MENU);
 
         Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> new ActionRowImpl(list, -1));
+                .isThrownBy(() -> ActionRowImpl.of(list));
     }
 
     @Test

@@ -1,0 +1,1 @@
+MediaGallery(id=-1, items=[MediaGalleryItemFileUpload(file=AttachedFile[Data]:logo.png, spoiler=false, description=null)])

@@ -17,13 +17,13 @@
 package net.dv8tion.jda.internal.components.actionrow;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -46,13 +46,11 @@ public class ActionRowImpl
     private final int uniqueId;
     private final List<ActionRowChildComponentUnion> components;
 
-    public ActionRowImpl(DataObject data)
+    public ActionRowImpl(ComponentDeserializer deserializer, DataObject data)
     {
         this(
-                // Allow unknown components in deserialization methods
-                Components.parseComponents(ActionRowChildComponentUnion.class, data.getArray("components")),
-                // Absent in modals
-                data.getInt("id", -1)
+            deserializer.deserializeAs(ActionRowChildComponentUnion.class, data.getArray("components")).collect(Collectors.toList()),
+            data.getInt("id", -1)
         );
     }
 
@@ -63,8 +61,6 @@ public class ActionRowImpl
 
     public ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
     {
-        Checks.notEmpty(components, "Row");
-        checkIsValid(components);
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
     }
@@ -72,7 +68,9 @@ public class ActionRowImpl
     @Nonnull
     public static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> components)
     {
+        Checks.notEmpty(components, "Row");
         Checks.noneNull(components, "Components");
+        checkIsValid(components);
 
         // Don't allow unknown components in user-called methods
         Collection<ActionRowChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
@@ -172,17 +170,17 @@ public class ActionRowImpl
         return json;
     }
 
-    private static void checkIsValid(Collection<ActionRowChildComponentUnion> components)
+    private static void checkIsValid(Collection<? extends ActionRowChildComponent> components)
     {
-        Map<Component.Type, List<ActionRowChildComponentUnion>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
+        Map<Component.Type, List<ActionRowChildComponent>> groups = components.stream().collect(Collectors.groupingBy(Component::getType));
         // TODO: You can't mix components right now but maybe in the future, we need to check back on this when that happens
         if (groups.size() > 1)
             throw new IllegalArgumentException("Cannot create action row containing different component types! Provided: " + groups.keySet());
 
-        for (Map.Entry<Component.Type, List<ActionRowChildComponentUnion>> entry : groups.entrySet())
+        for (Map.Entry<Component.Type, List<ActionRowChildComponent>> entry : groups.entrySet())
         {
             Component.Type type = entry.getKey();
-            List<ActionRowChildComponentUnion> list = entry.getValue();
+            List<ActionRowChildComponent> list = entry.getValue();
             final int maxAllowed = ActionRow.getMaxAllowed(type);
             Checks.check(list.size() <= maxAllowed, "Cannot create an action row with more than %d %s! Provided: %d", maxAllowed, type.name(), list.size());
         }

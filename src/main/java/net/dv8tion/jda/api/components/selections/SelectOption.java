@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * One of the possible options provided in a {@link SelectMenu}.
@@ -308,5 +309,24 @@ public class SelectOption implements SerializableData
             data.getBoolean("default", false),
             data.optObject("emoji").map(EntityBuilder::createEmoji).orElse(null)
         );
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this) return true;
+        if (!(o instanceof SelectOption)) return false;
+        SelectOption that = (SelectOption) o;
+        return isDefault == that.isDefault
+            && Objects.equals(label, that.label)
+            && Objects.equals(value, that.value)
+            && Objects.equals(description, that.description)
+            && Objects.equals(emoji, that.emoji);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(label, value, description, isDefault, emoji);
     }
 }

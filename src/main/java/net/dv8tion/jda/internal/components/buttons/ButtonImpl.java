@@ -50,7 +50,7 @@ public class ButtonImpl
     {
         this(
             data.getString("custom_id", null),
-            data.getInt("id"),
+            data.getInt("id", -1),
             data.getString("label", ""),
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),

@@ -1,0 +1,66 @@
+[ {
+  "components" : [ {
+    "custom_id" : "button",
+    "disabled" : false,
+    "id" : 2,
+    "label" : "Click me!",
+    "style" : 1,
+    "type" : 2
+  } ],
+  "id" : 1,
+  "type" : 1
+}, {
+  "accessory" : {
+    "id" : 5,
+    "media" : {
+      "url" : "attachment://logo.png"
+    },
+    "spoiler" : false,
+    "type" : 11
+  },
+  "components" : [ {
+    "content" : "Section with thumbnail",
+    "id" : 4,
+    "type" : 10
+  } ],
+  "id" : 3,
+  "type" : 9
+}, {
+  "id" : 6,
+  "items" : [ {
+    "description" : null,
+    "media" : {
+      "url" : "attachment://logo.png"
+    },
+    "spoiler" : false
+  } ],
+  "type" : 12
+}, {
+  "file" : {
+    "url" : "attachment://logo.png"
+  },
+  "id" : 7,
+  "spoiler" : false,
+  "type" : 13
+}, {
+  "components" : [ {
+    "content" : "First text",
+    "id" : 9,
+    "type" : 10
+  }, {
+    "divider" : true,
+    "id" : 10,
+    "spacing" : 1,
+    "type" : 14
+  }, {
+    "file" : {
+      "url" : "attachment://logo.png"
+    },
+    "id" : 11,
+    "spoiler" : false,
+    "type" : 13
+  } ],
+  "id" : 8,
+  "spoiler" : false,
+  "type" : 17
+} ]

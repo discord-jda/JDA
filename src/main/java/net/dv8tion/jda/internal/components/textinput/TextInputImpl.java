@@ -45,7 +45,7 @@ public class TextInputImpl
     {
         this(
                 object.getString("custom_id"),
-                object.getInt("id"),
+                object.getInt("id", -1),
                 TextInputStyle.fromKey(object.getInt("style", -1)),
                 object.getInt("min_length", -1),
                 object.getInt("max_length", -1),

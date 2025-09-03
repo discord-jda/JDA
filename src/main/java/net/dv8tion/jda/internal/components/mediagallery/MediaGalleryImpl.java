@@ -33,7 +33,6 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MediaGalleryImpl
@@ -43,25 +42,13 @@ public class MediaGalleryImpl
     private final int uniqueId;
     private final List<MediaGalleryItem> items;
 
-    public MediaGalleryImpl(DataObject data)
-    {
-        this(
-                data.getInt("id"),
-                data.getArray("items")
-                        .stream(DataArray::getObject)
-                        .map(MediaGalleryItemImpl::new)
-                        .collect(Collectors.toList())
-        );
-    }
-
     private MediaGalleryImpl(Collection<? extends MediaGalleryItem> items)
     {
         this(-1, items);
     }
 
-    private MediaGalleryImpl(int uniqueId, Collection<? extends MediaGalleryItem> items)
+    public MediaGalleryImpl(int uniqueId, Collection<? extends MediaGalleryItem> items)
     {
-        Checks.notEmpty(items, "Items");
         this.uniqueId = uniqueId;
         this.items = Helpers.copyAsUnmodifiableList(items);
     }

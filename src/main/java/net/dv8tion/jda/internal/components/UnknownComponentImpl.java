@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.components.section.SectionContentComponentUnion;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class UnknownComponentImpl extends AbstractComponentImpl implements
         UnknownComponent,
@@ -61,5 +62,26 @@ public class UnknownComponentImpl extends AbstractComponentImpl implements
     public DataObject toData()
     {
         return data;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (!(o instanceof UnknownComponentImpl)) return false;
+        UnknownComponentImpl that = (UnknownComponentImpl) o;
+        return Objects.equals(data, that.data);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hashCode(data);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "UnknownComponent(data=" + data + ")";
     }
 }

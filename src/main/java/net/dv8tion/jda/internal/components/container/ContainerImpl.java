@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.internal.components.container;
 
-import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
+import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.AbstractComponentImpl;
@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ContainerImpl
         extends AbstractComponentImpl
@@ -45,14 +46,13 @@ public class ContainerImpl
     private final boolean spoiler;
     private final Integer accentColor;
 
-    public ContainerImpl(DataObject data)
+    public ContainerImpl(ComponentDeserializer deserializer, DataObject data)
     {
         this(
-                data.getInt("id"),
-                // Allow unknown components in deserialization methods
-                Components.parseComponents(ContainerChildComponentUnion.class, data.getArray("components")),
-                data.getBoolean("spoiler", false),
-                (Integer) data.opt("accent_color").orElse(null)
+            data.getInt("id", -1),
+            deserializer.deserializeAs(ContainerChildComponentUnion.class, data.getArray("components")).collect(Collectors.toList()),
+            data.getBoolean("spoiler", false),
+            data.isNull("accent_color") ? null : data.getInt("accent_color")
         );
     }
 
@@ -63,7 +63,6 @@ public class ContainerImpl
 
     public ContainerImpl(int uniqueId, Collection<ContainerChildComponentUnion> components, boolean spoiler, Integer accentColor)
     {
-        Checks.notEmpty(components, "Components");
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
         this.spoiler = spoiler;
@@ -73,6 +72,7 @@ public class ContainerImpl
     public static Container of(Collection<? extends ContainerChildComponent> components)
     {
         Checks.noneNull(components, "Components");
+        Checks.notEmpty(components, "Components");
 
         // Don't allow unknown components in user-called methods
         final Collection<ContainerChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ContainerChildComponentUnion.class);

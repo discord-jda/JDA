@@ -50,7 +50,7 @@ public class ThumbnailImpl
     public ThumbnailImpl(DataObject data)
     {
         this(
-                data.getInt("id"),
+                data.getInt("id", -1),
                 data.getObject("media").getString("url"),
                 new ResolvedMediaImpl(data.getObject("media")),
                 data.getString("description", null),

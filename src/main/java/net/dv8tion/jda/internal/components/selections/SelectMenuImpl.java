@@ -38,7 +38,7 @@ public abstract class SelectMenuImpl
     {
         this(
             data.getString("custom_id"),
-            data.getInt("id"),
+            data.getInt("id", -1),
             data.getString("placeholder", null),
             data.getInt("min_values", 1),
             data.getInt("max_values", 1),

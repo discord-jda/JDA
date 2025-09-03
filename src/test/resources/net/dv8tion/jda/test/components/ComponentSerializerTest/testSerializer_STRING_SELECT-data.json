@@ -1,0 +1,12 @@
+[ {
+  "custom_id" : "select-menu",
+  "disabled" : false,
+  "max_values" : 1,
+  "min_values" : 1,
+  "options" : [ {
+    "default" : false,
+    "label" : "Option 1",
+    "value" : "option-1"
+  } ],
+  "type" : 3
+} ]

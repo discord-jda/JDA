@@ -50,7 +50,7 @@ public class FileDisplayImpl
     public FileDisplayImpl(DataObject data)
     {
         this(
-                data.getInt("id"),
+                data.getInt("id", -1),
                 data.getObject("file").getString("url"),
                 new ResolvedMediaImpl(data.getObject("file")),
                 data.getBoolean("spoiler", false)

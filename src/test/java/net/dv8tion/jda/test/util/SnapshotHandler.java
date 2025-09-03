@@ -79,6 +79,16 @@ public class SnapshotHandler
         );
     }
 
+    public void compareWithSnapshot(DataArray actual, String suffix)
+    {
+        compareWithSnapshot(
+            stream -> DataArray.fromJson(stream).toPrettyString(),
+            actual.toPrettyString(),
+            suffix,
+            "json"
+        );
+    }
+
     private void compareWithSnapshot(ThrowingExtractor<InputStream, String, Exception> reader, String actual, String suffix, String extension)
     {
         Class<?> currentClass = testInfo.getTestClass().orElseThrow(AssertionError::new);

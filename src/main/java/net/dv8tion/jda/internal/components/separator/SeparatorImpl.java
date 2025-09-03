@@ -38,7 +38,7 @@ public class SeparatorImpl
     public SeparatorImpl(DataObject obj)
     {
         this(
-                obj.getInt("id"),
+                obj.getInt("id", -1),
                 Spacing.fromKey(obj.getInt("spacing", 1)),
                 obj.getBoolean("divider", true)
         );
