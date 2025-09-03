@@ -140,12 +140,36 @@ public interface TextInput extends ICustomId, LabelChildComponent
      *             <li>If id is longer than {@value #MAX_ID_LENGTH} characters</li>
      *         </ul>
      *
-     * @return a new TextInput Builder.
+     * @return The new TextInput Builder.
      */
     @Nonnull
     static TextInput.Builder create(@Nonnull String id, @Nonnull TextInputStyle style)
     {
         return new Builder(id, style);
+    }
+
+    /**
+     * Creates a new TextInput.
+     * <br>This is a shortcut for {@code TextInput.create(id, style).build()}.
+     *
+     * @param  id
+     *         The custom id
+     * @param  style
+     *         The {@link TextInputStyle TextInputStyle}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If id is null or blank</li>
+     *             <li>If style is null or {@link TextInputStyle#UNKNOWN UNKNOWN}</li>
+     *             <li>If id is longer than {@value #MAX_ID_LENGTH} characters</li>
+     *         </ul>
+     *
+     * @return The new TextInput instance.
+     */
+    @Nonnull
+    static TextInput of(@Nonnull String id, @Nonnull TextInputStyle style)
+    {
+        return TextInput.create(id, style).build();
     }
 
     /**

@@ -55,7 +55,7 @@ public class ComponentTestData
         case STRING_SELECT:
             return componentType.cast(StringSelectMenu.create("select-menu").addOption("Option 1", "option-1").build());
         case TEXT_INPUT:
-            return componentType.cast(TextInput.create("text-input", TextInputStyle.SHORT).build());
+            return componentType.cast(TextInput.of("text-input", TextInputStyle.SHORT));
         case USER_SELECT:
             return componentType.cast(EntitySelectMenu.create("user-menu", SelectTarget.USER).build());
         case ROLE_SELECT:
@@ -86,7 +86,7 @@ public class ComponentTestData
                 FileDisplay.fromFile(getImageFileUpload())
             ));
         case LABEL:
-            return componentType.cast(Label.of("Custom label", TextInput.create("input", TextInputStyle.SHORT).build()));
+            return componentType.cast(Label.of("Custom label", TextInput.of("input", TextInputStyle.SHORT)));
         default:
             return fail("Unhandled component type: " + type);
         }
