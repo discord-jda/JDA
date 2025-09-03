@@ -49,7 +49,6 @@ public class MediaGalleryImpl
 
     public MediaGalleryImpl(int uniqueId, Collection<? extends MediaGalleryItem> items)
     {
-        Checks.notEmpty(items, "Items");
         this.uniqueId = uniqueId;
         this.items = Helpers.copyAsUnmodifiableList(items);
     }

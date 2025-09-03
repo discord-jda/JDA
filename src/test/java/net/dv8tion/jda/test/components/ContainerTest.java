@@ -27,10 +27,7 @@ public class ContainerTest
     @Test
     void testEmptyContainerThrows()
     {
-        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks(
-                        "Components",
-                        coll -> new ContainerImpl(-1, coll, false, null)
-                )
+        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks("Components", ContainerImpl::of)
                 .checksNotNull()
                 .checksNotEmpty();
     }

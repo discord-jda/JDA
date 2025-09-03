@@ -62,7 +62,6 @@ public class SectionImpl
 
     public SectionImpl(int uniqueId, Collection<SectionContentComponentUnion> components, SectionAccessoryComponentUnion accessory)
     {
-        Checks.notEmpty(components, "Components");
         Checks.notNull(accessory, "Accessory");
         this.uniqueId = uniqueId;
         this.components = Helpers.copyAsUnmodifiableList(components);
@@ -73,6 +72,7 @@ public class SectionImpl
     {
         Checks.notNull(accessory, "Accessory");
         Checks.noneNull(components, "Components");
+        Checks.notEmpty(components, "Components");
         Checks.check(components.size() <= MAX_COMPONENTS, "A section can only contain %d components, provided: %d", MAX_COMPONENTS, components.size());
 
         // Don't allow unknown components in user-called methods

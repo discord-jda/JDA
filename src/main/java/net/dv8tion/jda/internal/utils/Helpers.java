@@ -350,9 +350,9 @@ public final class Helpers
 
     @Nonnull
     @Unmodifiable
-    public static <E> List<E> copyAsUnmodifiableList(@Nonnull Collection<? extends E> items)
+    public static <E> List<E> copyAsUnmodifiableList(Collection<? extends E> items)
     {
-        return Collections.unmodifiableList(new ArrayList<>(items));
+        return items == null || items.isEmpty() ? Collections.emptyList() : Collections.unmodifiableList(new ArrayList<>(items));
     }
 
     @Nonnull
