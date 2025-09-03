@@ -16,35 +16,28 @@
 
 package net.dv8tion.jda.api.components;
 
+import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.components.tree.ComponentTree;
-import net.dv8tion.jda.api.components.tree.MessageComponentTree;
-import net.dv8tion.jda.api.components.tree.ModalComponentTree;
+import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
+import net.dv8tion.jda.api.components.utils.ComponentSerializer;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.components.UnknownComponentImpl;
-import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
-import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
-import net.dv8tion.jda.internal.components.container.ContainerImpl;
-import net.dv8tion.jda.internal.components.filedisplay.FileDisplayImpl;
-import net.dv8tion.jda.internal.components.label.LabelImpl;
-import net.dv8tion.jda.internal.components.mediagallery.MediaGalleryImpl;
-import net.dv8tion.jda.internal.components.section.SectionImpl;
-import net.dv8tion.jda.internal.components.selections.EntitySelectMenuImpl;
-import net.dv8tion.jda.internal.components.selections.StringSelectMenuImpl;
-import net.dv8tion.jda.internal.components.separator.SeparatorImpl;
-import net.dv8tion.jda.internal.components.textdisplay.TextDisplayImpl;
-import net.dv8tion.jda.internal.components.textinput.TextInputImpl;
-import net.dv8tion.jda.internal.components.thumbnail.ThumbnailImpl;
-import net.dv8tion.jda.internal.components.utils.ComponentsUtil;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static net.dv8tion.jda.internal.entities.EntityBuilder.DEFAULT_COMPONENT_DESERIALIZER;
 
 /**
  * Utility class for components.
+ *
+ * <p>This utility builds on {@link ComponentDeserializer} to deserialize components.
+ * The implementation provided by {@link ComponentDeserializer} allows to deserialize components with implicit {@link FileUpload FileUploads} like {@link Thumbnail}.
+ *
+ * @see ComponentDeserializer
+ * @see ComponentSerializer
  */
 public class Components
 {
@@ -55,58 +48,17 @@ public class Components
      * @param  data
      *         The {@link DataArray} to create the component tree from
      *
-     * @return A {@link ComponentTree} representing the provided data
-     *
      * @throws IllegalArgumentException
      *         If the provided data is {@code null}, or the component is not of type {@link T}
+     *
+     * @return A {@link ComponentTree} representing the provided data
+     *
+     * @see ComponentDeserializer#deserializeAs(Class, DataObject)
      */
     @Nonnull
     public static <T extends Component> T parseComponent(@Nonnull Class<T> componentType, @Nonnull DataObject data)
     {
-        Checks.notNull(componentType, "Component type");
-        Checks.notNull(data, "Data");
-
-        final IComponentUnion component = parseComponent(data);
-        return ComponentsUtil.safeUnionCastWithUnknownType("component", component, componentType);
-    }
-
-    @Nonnull
-    private static IComponentUnion parseComponent(@Nonnull DataObject data)
-    {
-        switch (Component.Type.fromKey(data.getInt("type")))
-        {
-        case ACTION_ROW:
-            return new ActionRowImpl(data);
-        case BUTTON:
-            return new ButtonImpl(data);
-        case STRING_SELECT:
-            return new StringSelectMenuImpl(data);
-        case TEXT_INPUT:
-            return new TextInputImpl(data);
-        case USER_SELECT:
-        case ROLE_SELECT:
-        case MENTIONABLE_SELECT:
-        case CHANNEL_SELECT:
-            return new EntitySelectMenuImpl(data);
-        case SECTION:
-            return new SectionImpl(data);
-        case TEXT_DISPLAY:
-            return new TextDisplayImpl(data);
-        case THUMBNAIL:
-            return new ThumbnailImpl(data);
-        case MEDIA_GALLERY:
-            return new MediaGalleryImpl(data);
-        case FILE_DISPLAY:
-            return new FileDisplayImpl(data);
-        case SEPARATOR:
-            return new SeparatorImpl(data);
-        case CONTAINER:
-            return new ContainerImpl(data);
-        case LABEL:
-            return new LabelImpl(data);
-        default:
-            return new UnknownComponentImpl(data);
-        }
+        return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data);
     }
 
     /**
@@ -116,18 +68,17 @@ public class Components
      * @param  data
      *         The {@link DataArray} to create the components from
      *
-     * @return A {@link List} of {@link T} representing the provided data
-     *
      * @throws IllegalArgumentException
      *         If the provided data is {@code null}, or one of the components is not of type {@link T}
+     *
+     * @return A {@link List} of {@link T} representing the provided data
+     *
+     * @see ComponentDeserializer#deserializeAs(Class, DataArray)
      */
     @Nonnull
     public static <T extends Component> List<T> parseComponents(@Nonnull Class<T> componentType, @Nonnull DataArray data)
     {
-        Checks.notNull(componentType, "Component type");
-        Checks.notNull(data, "Data");
-
-        return parseTo(componentType, data, Function.identity());
+        return DEFAULT_COMPONENT_DESERIALIZER.deserializeAs(componentType, data).collect(Collectors.toList());
     }
 
     /**
@@ -137,41 +88,18 @@ public class Components
      * @param  data
      *         The {@link DataArray} to create the component tree from
      *
-     * @return A {@link ComponentTree} representing the provided data
-     *
      * @throws IllegalArgumentException
      *         If the provided data is {@code null}, or one of the components is not compatible.
      * @throws UnsupportedOperationException
      *         If the provided tree type is not supported
      *
+     * @return A {@link ComponentTree} representing the provided data
+     *
+     * @see ComponentDeserializer#deserializeAsTree(Class, DataArray)
      */
     @Nonnull
-    @SuppressWarnings("unchecked")
     public static <T extends ComponentTree<?>> T parseTree(@Nonnull Class<T> treeType, @Nonnull DataArray data)
     {
-        Checks.notNull(treeType, "Tree type");
-        Checks.notNull(data, "Data");
-
-        if (MessageComponentTree.class.isAssignableFrom(treeType))
-            return (T) parseTo(MessageTopLevelComponentUnion.class, data, MessageComponentTree::of);
-        else if (ModalComponentTree.class.isAssignableFrom(treeType))
-            return (T) parseTo(ModalTopLevelComponentUnion.class, data, ModalComponentTree::of);
-        else if (ComponentTree.class.isAssignableFrom(treeType))
-            return (T) parseTo(IComponentUnion.class, data, ComponentTree::of);
-        else
-            throw new UnsupportedOperationException("Cannot deserialize to tree of type " + treeType.getName());
-    }
-
-    @Nonnull
-    private static <R, U extends Component> R parseTo(
-            @Nonnull Class<U> topLevelComponentType,
-            @Nonnull DataArray data,
-            @Nonnull Function<List<U>, R> treeFactory
-    )
-    {
-        final List<U> components = data.stream(DataArray::getObject)
-                .map(obj -> parseComponent(topLevelComponentType, obj))
-                .collect(Collectors.toList());
-        return treeFactory.apply(components);
+        return DEFAULT_COMPONENT_DESERIALIZER.deserializeAsTree(treeType, data);
     }
 }

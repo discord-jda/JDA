@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.components.label;
 
-import net.dv8tion.jda.api.components.Components;
 import net.dv8tion.jda.api.components.ModalTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.label.Label;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
@@ -48,16 +47,6 @@ public class LabelImpl
             object.getString("label"),
             object.getString("description", null),
             deserializer.deserializeAs(LabelChildComponentUnion.class, object.getObject("component"))
-        );
-    }
-
-    public LabelImpl(@Nonnull DataObject object)
-    {
-        this(
-                object.getInt("id", -1),
-                object.getString("label"),
-                object.getString("description", null),
-                Components.parseComponent(LabelChildComponentUnion.class, object.getObject("component"))
         );
     }
 

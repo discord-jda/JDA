@@ -18,10 +18,15 @@ package net.dv8tion.jda.api.components.utils;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.filedisplay.FileDisplay;
 import net.dv8tion.jda.api.components.mediagallery.MediaGallery;
 import net.dv8tion.jda.api.components.mediagallery.MediaGalleryItem;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
+import net.dv8tion.jda.api.components.tree.ComponentTree;
+import net.dv8tion.jda.api.components.tree.MessageComponentTree;
+import net.dv8tion.jda.api.components.tree.ModalComponentTree;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -180,6 +185,64 @@ public class ComponentDeserializer
         Checks.notNull(component, "Component");
         IComponentUnion componentUnion = parseComponent(component);
         return ComponentsUtil.safeUnionCastWithUnknownType("component", componentUnion, type);
+    }
+
+    /**
+     * Deserializes the provided components to the provided component type.
+     *
+     * @param  treeType
+     *         The target component tree type (for instance {@link MessageComponentTree})
+     * @param  components
+     *         The list of components to deserialize
+     *
+     * @throws ParsingException
+     *         If any of the components has an invalid format
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided or the resulting component cannot be cast to the target type
+     *
+     * @return The deserialized components as a component tree
+     *
+     * @see    #deserializeAs(Class, List)
+     */
+    @Nonnull
+    public <T extends ComponentTree<?>> T deserializeAsTree(@Nonnull Class<T> treeType, @Nonnull List<DataObject> components)
+    {
+        Checks.notNull(components, "Components");
+        return deserializeAsTree(treeType, DataArray.fromCollection(components));
+    }
+
+    /**
+     * Deserializes the provided components to the provided component type.
+     *
+     * @param  treeType
+     *         The target component tree type (for instance {@link MessageComponentTree})
+     * @param  components
+     *         The list of components to deserialize
+     *
+     * @throws ParsingException
+     *         If any of the components has an invalid format
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided or the resulting component cannot be cast to the target type
+     *
+     * @return The deserialized components as a component tree
+     *
+     * @see    #deserializeAs(Class, List)
+     */
+    @Nonnull
+    @SuppressWarnings("unchecked")
+    public <T extends ComponentTree<?>> T deserializeAsTree(@Nonnull Class<T> treeType, @Nonnull DataArray components)
+    {
+        Checks.notNull(treeType, "Tree type");
+        Checks.notNull(components, "Components");
+
+        if (MessageComponentTree.class.isAssignableFrom(treeType))
+            return (T) MessageComponentTree.of(deserializeAs(MessageTopLevelComponent.class, components).collect(Collectors.toList()));
+        else if (ModalComponentTree.class.isAssignableFrom(treeType))
+            return (T) ModalComponentTree.of(deserializeAs(ModalTopLevelComponent.class, components).collect(Collectors.toList()));
+        else if (ComponentTree.class.isAssignableFrom(treeType))
+            return (T) ComponentTree.of(deserializeAs(Component.class, components).collect(Collectors.toList()));
+        else
+            throw new UnsupportedOperationException("Cannot deserialize to tree of type " + treeType.getName());
     }
 
 
