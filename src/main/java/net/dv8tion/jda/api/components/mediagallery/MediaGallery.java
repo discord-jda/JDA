@@ -61,7 +61,7 @@ public interface MediaGallery extends Component, MessageTopLevelComponent, Conta
     @Nonnull
     static MediaGallery of(@Nonnull Collection<? extends MediaGalleryItem> items)
     {
-        return MediaGalleryImpl.of(items);
+        return MediaGalleryImpl.validated(items);
     }
 
     /**

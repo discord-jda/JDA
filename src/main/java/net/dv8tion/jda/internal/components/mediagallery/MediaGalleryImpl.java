@@ -54,7 +54,7 @@ public class MediaGalleryImpl
     }
 
     @Nonnull
-    public static MediaGallery of(@Nonnull Collection<? extends MediaGalleryItem> items)
+    public static MediaGallery validated(@Nonnull Collection<? extends MediaGalleryItem> items)
     {
         Checks.noneNull(items, "Items");
         Checks.notEmpty(items, "Items");

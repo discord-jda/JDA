@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.test.components;
 
+import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.container.ContainerChildComponentUnion;
-import net.dv8tion.jda.internal.components.container.ContainerImpl;
 import net.dv8tion.jda.test.ChecksHelper;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +27,7 @@ public class ContainerTest
     @Test
     void testEmptyContainerThrows()
     {
-        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks("Components", ContainerImpl::of)
+        ChecksHelper.<ContainerChildComponentUnion>assertCollectionChecks("Components", Container::of)
                 .checksNotNull()
                 .checksNotEmpty();
     }

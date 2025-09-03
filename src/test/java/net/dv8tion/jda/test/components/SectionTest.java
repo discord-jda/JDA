@@ -17,10 +17,10 @@
 package net.dv8tion.jda.test.components;
 
 import net.dv8tion.jda.api.components.buttons.Button;
+import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponentUnion;
 import net.dv8tion.jda.api.components.section.SectionContentComponentUnion;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.internal.components.section.SectionImpl;
 import net.dv8tion.jda.test.ChecksHelper;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ public class SectionTest
     {
         ChecksHelper.<SectionContentComponentUnion>assertCollectionChecks(
                         "Components",
-                        coll -> SectionImpl.of(EXAMPLE_BUTTON, coll)
+                        coll -> Section.of(EXAMPLE_BUTTON, coll)
                 )
                 .checksNotNull()
                 .checksNotEmpty();
@@ -49,7 +49,7 @@ public class SectionTest
     {
         ChecksHelper.<SectionAccessoryComponentUnion>assertChecks(
                         "Accessory",
-                        accessory -> SectionImpl.of(accessory, Collections.singletonList(EXAMPLE_TEXT_DISPLAY))
+                        accessory -> Section.of(accessory, Collections.singletonList(EXAMPLE_TEXT_DISPLAY))
                 )
                 .checksNotNull();
     }

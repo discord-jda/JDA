@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponentUnion;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
 import net.dv8tion.jda.test.ChecksHelper;
 import org.assertj.core.api.Assertions;
@@ -56,7 +55,7 @@ public class ActionRowTest extends AbstractSnapshotTest
     @Test
     void testEmptyRowThrows()
     {
-        ChecksHelper.<ActionRowChildComponentUnion>assertCollectionChecks("Row", ActionRowImpl::of)
+        ChecksHelper.<ActionRowChildComponentUnion>assertCollectionChecks("Row", ActionRow::of)
                 .checksNotNull()
                 .checksNotEmpty();
     }
@@ -67,7 +66,7 @@ public class ActionRowTest extends AbstractSnapshotTest
         final List<ActionRowChildComponentUnion> list = Arrays.asList(EXAMPLE_BUTTON, EXAMPLE_MENU);
 
         Assertions.assertThatIllegalArgumentException()
-                .isThrownBy(() -> ActionRowImpl.of(list));
+                .isThrownBy(() -> ActionRow.of(list));
     }
 
     @Test
