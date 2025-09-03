@@ -37,8 +37,9 @@
   "type" : 12
 }, {
   "file" : {
-    "url" : "https://cdn.discordapp.com/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&"
+    "url" : "attachment://logo.png"
   },
+  "id" : 7,
   "spoiler" : false,
   "type" : 13
 }, {
@@ -53,8 +54,9 @@
     "type" : 14
   }, {
     "file" : {
-      "url" : "https://cdn.discordapp.com/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&"
+      "url" : "attachment://logo.png"
     },
+    "id" : 11,
     "spoiler" : false,
     "type" : 13
   } ],

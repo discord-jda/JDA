@@ -313,7 +313,7 @@ public class ComponentDeserializer
                 data.getBoolean("spoiler"));
         }
 
-        return new FileDisplayImpl(url);
+        return new FileDisplayImpl(data);
     }
 
     @Nonnull
