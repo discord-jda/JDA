@@ -1,0 +1,64 @@
+[ {
+  "components" : [ {
+    "custom_id" : "button",
+    "disabled" : false,
+    "id" : 2,
+    "label" : "Click me!",
+    "style" : 1,
+    "type" : 2
+  } ],
+  "id" : 1,
+  "type" : 1
+}, {
+  "accessory" : {
+    "id" : 5,
+    "media" : {
+      "url" : "attachment://logo.png"
+    },
+    "spoiler" : false,
+    "type" : 11
+  },
+  "components" : [ {
+    "content" : "Section with thumbnail",
+    "id" : 4,
+    "type" : 10
+  } ],
+  "id" : 3,
+  "type" : 9
+}, {
+  "id" : 6,
+  "items" : [ {
+    "description" : null,
+    "media" : {
+      "url" : "attachment://logo.png"
+    },
+    "spoiler" : false
+  } ],
+  "type" : 12
+}, {
+  "file" : {
+    "url" : "https://cdn.discordapp.com/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&"
+  },
+  "spoiler" : false,
+  "type" : 13
+}, {
+  "components" : [ {
+    "content" : "First text",
+    "id" : 9,
+    "type" : 10
+  }, {
+    "divider" : true,
+    "id" : 10,
+    "spacing" : 1,
+    "type" : 14
+  }, {
+    "file" : {
+      "url" : "https://cdn.discordapp.com/attachments/279710874984382464/1412730258838523964/logo.png?ex=68b95b14&is=68b80994&hm=557ee2aad12db0835c807448a362f43448c9dcb99b0d8d5082379a365661a027&"
+    },
+    "spoiler" : false,
+    "type" : 13
+  } ],
+  "id" : 8,
+  "spoiler" : false,
+  "type" : 17
+} ]
