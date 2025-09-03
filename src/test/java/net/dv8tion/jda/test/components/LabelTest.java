@@ -17,6 +17,7 @@
 package net.dv8tion.jda.test.components;
 
 import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
 import net.dv8tion.jda.api.components.textinput.TextInputStyle;
@@ -26,11 +27,16 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.test.AbstractSnapshotTest;
+import net.dv8tion.jda.test.ChecksHelper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static net.dv8tion.jda.test.ChecksHelper.assertStringChecks;
+
 class LabelTest extends AbstractSnapshotTest
 {
+    private static final TextInput EXAMPLE_TEXT_INPUT = TextInput.create("input", TextInputStyle.SHORT).build();
+
     @Test
     void testModalComponentTreeWithLabel()
     {
@@ -40,13 +46,41 @@ class LabelTest extends AbstractSnapshotTest
                     .addOption("This is an option", "option-1")
                     .build()),
             Label.of("Custom label 2",
-                TextInput.create("input", TextInputStyle.SHORT).build())
+                EXAMPLE_TEXT_INPUT)
         );
 
         assertWithSnapshot(
             DataObject.empty()
                 .put("components", DataArray.fromCollection(components.getComponents()))
         );
+    }
+
+    @Nested
+    class ArgumentChecks
+    {
+        @Test
+        void testLabelChecks()
+        {
+            assertStringChecks("Label", string -> Label.of(string, EXAMPLE_TEXT_INPUT))
+                .checksNotBlank()
+                .checksNotLonger(Label.LABEL_MAX_LENGTH);
+        }
+
+        @Test
+        void testDescriptionChecks()
+        {
+            assertStringChecks("Description", string -> Label.of("Label", string, EXAMPLE_TEXT_INPUT))
+                .checksNotBlank(false)
+                .checksNotLonger(Label.DESCRIPTION_MAX_LENGTH);
+        }
+
+        @Test
+        void testChildChecks()
+        {
+            ChecksHelper.<LabelChildComponent>assertChecks("Child", child -> Label.of("Label", child))
+                .checksNotNull();
+        }
+
     }
 
     @Nested
