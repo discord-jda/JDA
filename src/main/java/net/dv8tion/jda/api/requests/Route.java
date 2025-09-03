@@ -47,6 +47,7 @@ public class Route
         public static final Route EDIT_BOT_APPLICATION =            new Route(PATCH, "applications/@me");
         public static final Route GET_ROLE_CONNECTION_METADATA =    new Route(GET, "applications/{application_id}/role-connections/metadata");
         public static final Route UPDATE_ROLE_CONNECTION_METADATA = new Route(PUT, "applications/{application_id}/role-connections/metadata");
+        public static final Route GET_SKUS =                        new Route(GET, "applications/{application_id}/skus");
         public static final Route GET_ENTITLEMENTS =                new Route(GET, "applications/{application_id}/entitlements");
         public static final Route GET_ENTITLEMENT =                 new Route(GET, "applications/{application_id}/entitlements/{entitlement_id}");
         public static final Route CONSUME_ENTITLEMENT =             new Route(POST, "applications/{application_id}/entitlements/{entitlement_id}/consume");
