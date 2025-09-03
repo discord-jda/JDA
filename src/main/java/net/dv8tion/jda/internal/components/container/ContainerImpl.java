@@ -52,7 +52,7 @@ public class ContainerImpl
             data.getInt("id", -1),
             deserializer.deserializeAs(ContainerChildComponentUnion.class, data.getArray("components")).collect(Collectors.toList()),
             data.getBoolean("spoiler", false),
-            (Integer) data.opt("accent_color").orElse(null)
+            data.isNull("accent_color") ? null : data.getInt("accent_color")
         );
     }
 
