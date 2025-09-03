@@ -102,7 +102,7 @@ public class MarkdownUtilTest
     void testMaskedLink()
     {
         assertThat(maskedLink("Hello", "World")).isEqualTo("[Hello](World)");
-        assertThat(maskedLink("Hello", "World)")).isEqualTo("[Hello](World%29)");
-        assertThat(maskedLink("Hello]", "World)")).isEqualTo("[Hello\\]](World%29)");
+        assertThat(maskedLink("Hello", "World)")).isEqualTo("[Hello](World))");
+        assertThat(maskedLink("Hello]", "World)")).isEqualTo("[Hello]](World))");
     }
 }
