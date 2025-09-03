@@ -35,7 +35,7 @@ import static net.dv8tion.jda.test.ChecksHelper.assertStringChecks;
 
 class LabelTest extends AbstractSnapshotTest
 {
-    private static final TextInput EXAMPLE_TEXT_INPUT = TextInput.create("input", TextInputStyle.SHORT).build();
+    private static final TextInput EXAMPLE_TEXT_INPUT = TextInput.of("input", TextInputStyle.SHORT);
 
     @Test
     void testModalComponentTreeWithLabel()
@@ -90,7 +90,7 @@ class LabelTest extends AbstractSnapshotTest
         void testMinimalTextInput()
         {
             Label label = Label.of("test-label",
-                TextInput.create("custom-id", TextInputStyle.SHORT).build()
+                TextInput.of("custom-id", TextInputStyle.SHORT)
             );
             assertWithSnapshot(label);
         }
