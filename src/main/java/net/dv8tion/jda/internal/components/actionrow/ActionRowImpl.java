@@ -54,11 +54,6 @@ public class ActionRowImpl
         );
     }
 
-    private ActionRowImpl(Collection<ActionRowChildComponentUnion> components)
-    {
-        this(components, -1);
-    }
-
     public ActionRowImpl(Collection<ActionRowChildComponentUnion> components, int uniqueId)
     {
         this.uniqueId = uniqueId;
@@ -66,7 +61,13 @@ public class ActionRowImpl
     }
 
     @Nonnull
-    public static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> components)
+    public static ActionRow validated(@Nonnull Collection<? extends ActionRowChildComponent> components)
+    {
+        return validated(components, -1);
+    }
+
+    @Nonnull
+    public static ActionRow validated(@Nonnull Collection<? extends ActionRowChildComponent> components, int uniqueId)
     {
         Checks.notEmpty(components, "Row");
         Checks.noneNull(components, "Components");
@@ -74,7 +75,7 @@ public class ActionRowImpl
 
         // Don't allow unknown components in user-called methods
         Collection<ActionRowChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ActionRowChildComponentUnion.class);
-        return new ActionRowImpl(componentUnions);
+        return new ActionRowImpl(componentUnions, uniqueId);
     }
 
     @Nonnull
@@ -131,7 +132,7 @@ public class ActionRowImpl
                 ActionRowChildComponent.class,
                 components,
                 replacer,
-                newComponents -> new ActionRowImpl(newComponents, uniqueId)
+                newComponents -> validated(newComponents, uniqueId)
         );
     }
 

@@ -64,7 +64,7 @@ public interface Container extends MessageTopLevelComponent, IReplaceable, IDisa
     @Nonnull
     static Container of(@Nonnull Collection<? extends ContainerChildComponent> components)
     {
-        return ContainerImpl.of(components);
+        return ContainerImpl.validated(components);
     }
 
     /**

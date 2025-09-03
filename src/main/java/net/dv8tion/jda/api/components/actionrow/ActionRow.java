@@ -56,7 +56,7 @@ public interface ActionRow extends MessageTopLevelComponent, ContainerChildCompo
     @Nonnull
     static ActionRow of(@Nonnull Collection<? extends ActionRowChildComponent> components)
     {
-        return ActionRowImpl.of(components);
+        return ActionRowImpl.validated(components);
     }
 
     /**

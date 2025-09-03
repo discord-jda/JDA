@@ -69,14 +69,19 @@ public class ContainerImpl
         this.accentColor = accentColor;
     }
 
-    public static Container of(Collection<? extends ContainerChildComponent> components)
+    public static Container validated(Collection<? extends ContainerChildComponent> components)
+    {
+        return validated(-1, components, false, null);
+    }
+
+    public static Container validated(int uniqueId, Collection<? extends ContainerChildComponent> components, boolean spoiler, Integer accentColor)
     {
         Checks.noneNull(components, "Components");
         Checks.notEmpty(components, "Components");
 
         // Don't allow unknown components in user-called methods
-        final Collection<ContainerChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ContainerChildComponentUnion.class);
-        return new ContainerImpl(componentUnions);
+        Collection<ContainerChildComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, ContainerChildComponentUnion.class);
+        return new ContainerImpl(uniqueId, componentUnions, spoiler, accentColor);
     }
 
     @Nonnull
@@ -132,7 +137,7 @@ public class ContainerImpl
                 ContainerChildComponent.class,
                 getComponents(),
                 replacer,
-                components -> new ContainerImpl(uniqueId, components, spoiler, accentColor)
+                components -> validated(uniqueId, components, spoiler, accentColor)
         );
     }
 

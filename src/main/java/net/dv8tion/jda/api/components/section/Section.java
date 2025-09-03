@@ -74,7 +74,7 @@ public interface Section extends MessageTopLevelComponent, ContainerChildCompone
     @Nonnull
     static Section of(@Nonnull SectionAccessoryComponent accessory, @Nonnull Collection<? extends SectionContentComponent> components)
     {
-        return SectionImpl.of(accessory, components);
+        return SectionImpl.validated(accessory, components);
     }
 
     /**

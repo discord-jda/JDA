@@ -63,7 +63,7 @@ public class LabelImpl
         this.child = child;
     }
 
-    public static Label of(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
+    public static Label validated(@Nonnull String label, @Nullable String description, @Nonnull LabelChildComponent child)
     {
         Checks.notBlank(label, "Label");
         Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
@@ -82,21 +82,21 @@ public class LabelImpl
     @Override
     public Label withLabel(@Nonnull String label)
     {
-        return of(label, this.description, this.child);
+        return validated(label, this.description, this.child);
     }
 
     @Nonnull
     @Override
     public Label withDescription(@Nullable String description)
     {
-        return of(this.label, description, this.child);
+        return validated(this.label, description, this.child);
     }
 
     @Nonnull
     @Override
     public Label withChild(@Nonnull LabelChildComponent child)
     {
-        return of(this.label, this.description, child);
+        return validated(this.label, this.description, child);
     }
 
     @Nonnull

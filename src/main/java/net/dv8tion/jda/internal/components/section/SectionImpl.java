@@ -68,7 +68,12 @@ public class SectionImpl
         this.accessory = accessory;
     }
 
-    public static Section of(SectionAccessoryComponent accessory, Collection<? extends SectionContentComponent> components)
+    public static Section validated(SectionAccessoryComponent accessory, Collection<? extends SectionContentComponent> components)
+    {
+        return validated(accessory, components, -1);
+    }
+
+    public static Section validated(SectionAccessoryComponent accessory, Collection<? extends SectionContentComponent> components, int uniqueId)
     {
         Checks.notNull(accessory, "Accessory");
         Checks.noneNull(components, "Components");
@@ -76,10 +81,10 @@ public class SectionImpl
         Checks.check(components.size() <= MAX_COMPONENTS, "A section can only contain %d components, provided: %d", MAX_COMPONENTS, components.size());
 
         // Don't allow unknown components in user-called methods
-        final Collection<SectionContentComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, SectionContentComponentUnion.class);
-        final SectionAccessoryComponentUnion accessoryUnion = ComponentsUtil.safeUnionCast("accessory", accessory, SectionAccessoryComponentUnion.class);
+        Collection<SectionContentComponentUnion> componentUnions = ComponentsUtil.membersToUnion(components, SectionContentComponentUnion.class);
+        SectionAccessoryComponentUnion accessoryUnion = ComponentsUtil.safeUnionCast("accessory", accessory, SectionAccessoryComponentUnion.class);
 
-        return new SectionImpl(componentUnions, accessoryUnion);
+        return new SectionImpl(uniqueId, componentUnions, accessoryUnion);
     }
 
     @Nonnull
@@ -133,7 +138,7 @@ public class SectionImpl
                 newAccessories -> newAccessories.isEmpty() ? null : newAccessories.get(0)
         );
 
-        return new SectionImpl(uniqueId, newContent, newAccessory);
+        return validated(newAccessory, newContent, uniqueId);
     }
 
     @Override
