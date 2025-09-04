@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.components.selections;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
@@ -72,7 +73,7 @@ import java.util.*;
  * @see EntitySelectInteraction
  * @see StringSelectMenu
  */
-public interface EntitySelectMenu extends SelectMenu
+public interface EntitySelectMenu extends SelectMenu, LabelChildComponent
 {
     @Nonnull
     @Override

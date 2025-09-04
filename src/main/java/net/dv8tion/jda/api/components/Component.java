@@ -122,13 +122,13 @@ public interface Component
         /** A text input field */
         TEXT_INPUT(4, false, true),
         /** A select menu of users */
-        USER_SELECT(5, true, false),
+        USER_SELECT(5, true, true),
         /** A select menu of roles */
-        ROLE_SELECT(6, true, false),
+        ROLE_SELECT(6, true, true),
         /** A select menu of users and roles */
-        MENTIONABLE_SELECT(7, true, false),
+        MENTIONABLE_SELECT(7, true, true),
         /** A select menu of channels */
-        CHANNEL_SELECT(8, true, false),
+        CHANNEL_SELECT(8, true, true),
         SECTION(9, true, false),
         TEXT_DISPLAY(10, true, false),
         THUMBNAIL(11, true, false),
