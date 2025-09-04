@@ -237,7 +237,7 @@ public interface TextInput extends ICustomId, LabelChildComponent
         public Builder setCustomId(@Nonnull String customId)
         {
             Checks.notBlank(customId, "Custom ID");
-            Checks.notLonger(this.customId, MAX_ID_LENGTH, "Custom ID");
+            Checks.notLonger(customId, MAX_ID_LENGTH, "Custom ID");
             this.customId = customId;
             return this;
         }
