@@ -36,7 +36,6 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
     protected final Component.Type type;
     protected final EnumSet<ChannelType> channelTypes;
     protected final List<DefaultValue> defaultValues;
-    protected final Boolean required;
 
     public EntitySelectMenuImpl(DataObject data)
     {
@@ -50,16 +49,14 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
                 .map(DefaultValue::fromData)
                 .collect(Helpers.toUnmodifiableList())
         ).orElse(Collections.emptyList());
-        this.required = data.isNull("required") ? null : data.getBoolean("required");
     }
 
     public EntitySelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, Type type, EnumSet<ChannelType> channelTypes, List<DefaultValue> defaultValues, Boolean required)
     {
-        super(id, uniqueId, placeholder, minValues, maxValues, disabled);
+        super(id, uniqueId, placeholder, minValues, maxValues, disabled, required);
         this.type = type;
         this.channelTypes = channelTypes;
         this.defaultValues = defaultValues;
-        this.required = required;
     }
 
     @Nonnull
@@ -109,12 +106,6 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         return defaultValues;
     }
 
-    @Override
-    public Boolean isRequired()
-    {
-        return required;
-    }
-
     @Nonnull
     @Override
     public DataObject toData()
@@ -124,8 +115,6 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
             json.put("channel_types", DataArray.fromCollection(channelTypes.stream().map(ChannelType::getId).collect(Collectors.toList())));
         if (!defaultValues.isEmpty())
             json.put("default_values", DataArray.fromCollection(defaultValues));
-        if (required != null)
-            json.put("required", required);
         return json;
     }
 
