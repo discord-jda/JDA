@@ -359,6 +359,16 @@ public interface Invite
     interface Guild extends ISnowflake
     {
         /**
+         * The description for this guild.
+         * <br>This is displayed in the server browser below the guild name for verified guilds,
+         * and in embedded invite links.
+         *
+         * @return The guild's description
+         */
+        @Nullable
+        String getDescription();
+
+        /**
          * The icon id of this guild.
          *
          * @return The guild's icon id
