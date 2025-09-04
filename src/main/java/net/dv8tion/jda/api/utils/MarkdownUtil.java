@@ -199,8 +199,6 @@ public final class MarkdownUtil
 
     /**
      * Creates a masked link with the provided url as target.
-     * <br>This will replace any closing parentheses (in the url) with the url encoded equivalent
-     * and replace closing square brackets with their escaped equivalent.
      *
      * @param  text
      *         The text to display
@@ -212,6 +210,6 @@ public final class MarkdownUtil
     @Nonnull
     public static String maskedLink(@Nonnull String text, @Nonnull String url)
     {
-        return "[" + text.replace("]", "\\]") + "](" + url.replace(")", "%29") + ")";
+        return "[" + text + "](" + url + ")";
     }
 }
