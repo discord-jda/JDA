@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.components.selections;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
@@ -72,7 +73,7 @@ import java.util.*;
  * @see EntitySelectInteraction
  * @see StringSelectMenu
  */
-public interface EntitySelectMenu extends SelectMenu
+public interface EntitySelectMenu extends SelectMenu, LabelChildComponent
 {
     @Nonnull
     @Override
@@ -655,7 +656,7 @@ public interface EntitySelectMenu extends SelectMenu
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
             EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
             List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);
-            return new EntitySelectMenuImpl(customId, uniqueId, placeholder, minValues, maxValues, disabled, componentType, channelTypes, defaultValues);
+            return new EntitySelectMenuImpl(customId, uniqueId, placeholder, minValues, maxValues, disabled, componentType, channelTypes, defaultValues, required);
         }
     }
 }

@@ -47,9 +47,10 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
 
         DataObject data = object.getObject("data");
         this.modalId = data.getString("custom_id");
+        DataObject resolved = data.optObject("resolved").orElseGet(DataObject::empty);
         this.mappings = data.optArray("components").orElseGet(DataArray::empty)
                 .stream(DataArray::getObject)
-                .map(ModalInteractionImpl::getMapping)
+                .map(component -> getMapping(component, resolved))
                 .filter(Objects::nonNull)
                 .collect(Helpers.toUnmodifiableList());
 
@@ -58,12 +59,12 @@ public class ModalInteractionImpl extends DeferrableInteractionImpl implements M
                 .orElse(null);
     }
 
-    private static ModalMapping getMapping(DataObject component)
+    private ModalMapping getMapping(DataObject component, DataObject resolved)
     {
         Component.Type type = Component.Type.fromKey(component.getInt("type"));
 
         if (type == Component.Type.LABEL)
-            return new ModalMapping(component.getObject("component"));
+            return new ModalMapping(this, resolved, component.getObject("component"));
 
         return null;
     }

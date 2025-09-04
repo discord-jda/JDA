@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.components.textdisplay;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import net.dv8tion.jda.api.components.ModalTopLevelComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.section.SectionContentComponent;
 import net.dv8tion.jda.api.entities.Message;
@@ -37,7 +38,9 @@ import javax.annotation.Nonnull;
  *
  * <p><b>Requirements:</b> {@linkplain MessageRequest#useComponentsV2() Components V2} needs to be enabled!
  */
-public interface TextDisplay extends Component, MessageTopLevelComponent, ContainerChildComponent, SectionContentComponent
+public interface TextDisplay
+        extends Component, MessageTopLevelComponent, ModalTopLevelComponent,
+        ContainerChildComponent, SectionContentComponent
 {
     /**
      * Constructs a new {@link TextDisplay} from the given content.

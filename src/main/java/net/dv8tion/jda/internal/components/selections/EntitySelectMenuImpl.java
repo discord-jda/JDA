@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.components.selections;
 
 import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.components.label.LabelChildComponentUnion;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelectMenu
+public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelectMenu, LabelChildComponentUnion
 {
     protected final Component.Type type;
     protected final EnumSet<ChannelType> channelTypes;
@@ -50,9 +51,9 @@ public class EntitySelectMenuImpl extends SelectMenuImpl implements EntitySelect
         ).orElse(Collections.emptyList());
     }
 
-    public EntitySelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, Type type, EnumSet<ChannelType> channelTypes, List<DefaultValue> defaultValues)
+    public EntitySelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, Type type, EnumSet<ChannelType> channelTypes, List<DefaultValue> defaultValues, Boolean required)
     {
-        super(id, uniqueId, placeholder, minValues, maxValues, disabled);
+        super(id, uniqueId, placeholder, minValues, maxValues, disabled, required);
         this.type = type;
         this.channelTypes = channelTypes;
         this.defaultValues = defaultValues;
