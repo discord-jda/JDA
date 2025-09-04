@@ -2320,6 +2320,7 @@ public class EntityBuilder extends AbstractEntityBuilder
 
             final DataObject guildObject = object.getObject("guild");
 
+            final String guildBannerId = guildObject.getString("banner", null);
             final String guildIconId = guildObject.getString("icon", null);
             final long guildId = guildObject.getLong("id");
             final String guildName = guildObject.getString("name");
@@ -2339,7 +2340,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                     ? null
                     : createWelcomeScreen(null, guildObject.getObject("welcome_screen"));
 
-            guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, description, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
+            guild = new InviteImpl.GuildImpl(guildId, guildBannerId, guildIconId, guildName, guildSplashId, description, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
             final String channelName = channelObject.getString("name");
             final long channelId = channelObject.getLong("id");

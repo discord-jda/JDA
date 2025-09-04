@@ -31,6 +31,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static net.dv8tion.jda.api.entities.Guild.BANNER_URL;
+
 /**
  * Representation of a Discord Invite.
  * This class is immutable.
@@ -358,6 +360,44 @@ public interface Invite
      */
     interface Guild extends ISnowflake
     {
+        /**
+         * The guild banner id.
+         * <br>This is shown in guilds below the guild name.
+         *
+         * @return The guild banner id or null
+         *
+         * @see    #getBannerUrl()
+         */
+        @Nullable
+        String getBannerId();
+
+        /**
+         * The guild banner url.
+         * <br>This is shown in guilds below the guild name.
+         *
+         * @return The guild banner url or null
+         */
+        @Nullable
+        default String getBannerUrl()
+        {
+            String bannerId = getBannerId();
+            return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+        }
+
+        /**
+         * Returns an {@link ImageProxy} for this guild's banner image.
+         *
+         * @return Possibly-null {@link ImageProxy} of this guild's banner image
+         *
+         * @see    #getBannerUrl()
+         */
+        @Nullable
+        default ImageProxy getBanner()
+        {
+            final String bannerUrl = getBannerUrl();
+            return bannerUrl == null ? null : new ImageProxy(bannerUrl);
+        }
+
         /**
          * The description for this guild.
          * <br>This is displayed in the server browser below the guild name for verified guilds,

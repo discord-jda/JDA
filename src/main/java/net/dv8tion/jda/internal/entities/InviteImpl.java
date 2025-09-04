@@ -335,18 +335,19 @@ public class InviteImpl implements Invite
 
     public static class GuildImpl implements Guild
     {
-        private final String iconId, name, splashId, description;
+        private final String bannerId, iconId, name, splashId, description;
         private final int presenceCount, memberCount;
         private final long id;
         private final VerificationLevel verificationLevel;
         private final Set<String> features;
         private final GuildWelcomeScreen welcomeScreen;
 
-        public GuildImpl(final long id, final String iconId, final String name, final String splashId, final String description,
+        public GuildImpl(final long id, final String bannerId, final String iconId, final String name, final String splashId, final String description,
                          final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features,
                          final GuildWelcomeScreen welcomeScreen)
         {
             this.id = id;
+            this.bannerId = bannerId;
             this.iconId = iconId;
             this.name = name;
             this.splashId = splashId;
@@ -360,8 +361,15 @@ public class InviteImpl implements Invite
 
         public GuildImpl(final net.dv8tion.jda.api.entities.Guild guild)
         {
-            this(guild.getIdLong(), guild.getIconId(), guild.getName(), guild.getSplashId(), guild.getDescription(),
+            this(guild.getIdLong(), guild.getBannerId(), guild.getIconId(), guild.getName(), guild.getSplashId(), guild.getDescription(),
                  guild.getVerificationLevel(), -1, -1, guild.getFeatures(), null);
+        }
+
+        @Nullable
+        @Override
+        public String getBannerId()
+        {
+            return bannerId;
         }
 
         @Nullable
