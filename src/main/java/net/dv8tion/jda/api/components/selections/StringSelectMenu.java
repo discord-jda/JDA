@@ -307,6 +307,17 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
         }
 
         /**
+         * Whether the user must populate this select menu in Modals, or {@code null} if not set.
+         *
+         * @return Whether this menu must be populated, or null
+         */
+        @Nullable
+        public Boolean isRequired()
+        {
+            return required;
+        }
+
+        /**
          * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
          *
          * @param  values
