@@ -361,6 +361,29 @@ public interface Invite
     interface Guild extends ISnowflake
     {
         /**
+         * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
+         * <br>The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
+         *
+         * @return The vanity code or null
+         *
+         * @see    #getVanityUrl()
+         */
+        @Nullable
+        String getVanityCode();
+
+        /**
+         * The vanity url for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
+         * <br>The returned String will be the vanity invite link to this guild.
+         *
+         * @return The vanity url or null
+         */
+        @Nullable
+        default String getVanityUrl()
+        {
+            return getVanityCode() == null ? null : "https://discord.gg/" + getVanityCode();
+        }
+
+        /**
          * The guild banner id.
          * <br>This is shown in guilds below the guild name.
          *
