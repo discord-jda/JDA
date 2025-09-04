@@ -32,9 +32,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
 
-import static net.dv8tion.jda.api.components.Component.Type.STRING_SELECT;
-import static net.dv8tion.jda.api.components.Component.Type.TEXT_INPUT;
-
 /**
  * ID/Value pair for a {@link net.dv8tion.jda.api.events.interaction.ModalInteractionEvent ModalInteractionEvent}.
  *
@@ -124,7 +121,7 @@ public class ModalMapping
     @Nonnull
     public String getAsString()
     {
-        if (type != TEXT_INPUT)
+        if (type != Component.Type.TEXT_INPUT)
             typeError("String");
 
         return value.getString("value");
@@ -156,7 +153,7 @@ public class ModalMapping
     @Nonnull
     public List<String> getAsStringList()
     {
-        if (type != STRING_SELECT)
+        if (type != Component.Type.STRING_SELECT)
             typeError("List<String>");
 
         return value.getArray("values")
