@@ -130,7 +130,7 @@ public interface Component
         /** A select menu of channels */
         CHANNEL_SELECT(8, true, true),
         SECTION(9, true, false),
-        TEXT_DISPLAY(10, true, false),
+        TEXT_DISPLAY(10, true, true),
         THUMBNAIL(11, true, false),
         MEDIA_GALLERY(12, true, false),
         FILE_DISPLAY(13, true, false),
