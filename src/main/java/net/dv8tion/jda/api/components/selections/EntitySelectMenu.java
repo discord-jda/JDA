@@ -38,6 +38,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -133,6 +134,14 @@ public interface EntitySelectMenu extends SelectMenu, LabelChildComponent
     @Nonnull
     @Unmodifiable
     List<DefaultValue> getDefaultValues();
+
+    /**
+     * Whether the user must populate this select menu in Modals, or {@code null} if not set.
+     *
+     * @return Whether this menu must be populated, or null
+     */
+    @Nullable
+    Boolean isRequired();
 
     /**
      * Creates a new preconfigured {@link Builder} with the same settings used for this select menu.
@@ -468,10 +477,22 @@ public interface EntitySelectMenu extends SelectMenu, LabelChildComponent
         protected Component.Type componentType;
         protected EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
         protected List<DefaultValue> defaultValues = new ArrayList<>();
+        protected Boolean required;
 
         protected Builder(@Nonnull String customId)
         {
             super(customId);
+        }
+
+        /**
+         * Whether the user must populate this select menu in Modals, or {@code null} if not set.
+         *
+         * @return Whether this menu must be populated, or null
+         */
+        @Nullable
+        public Boolean isRequired()
+        {
+            return required;
         }
 
         /**
@@ -642,6 +663,24 @@ public interface EntitySelectMenu extends SelectMenu, LabelChildComponent
         }
 
         /**
+         * Configure whether the user must populate this select menu if inside a Modal.
+         * <br>This defaults to {@code true} in Modals when unset.
+         *
+         * <p>This only has an effect in Modals!
+         *
+         * @param required
+         *        Whether this menu is required
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder setRequired(@Nullable Boolean required)
+        {
+            this.required = required;
+            return this;
+        }
+
+        /**
          * Creates a new {@link EntitySelectMenu} instance if all requirements are satisfied.
          *
          * @throws IllegalArgumentException
@@ -656,7 +695,7 @@ public interface EntitySelectMenu extends SelectMenu, LabelChildComponent
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
             EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
             List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);
-            return new EntitySelectMenuImpl(customId, uniqueId, placeholder, minValues, maxValues, disabled, componentType, channelTypes, defaultValues);
+            return new EntitySelectMenuImpl(customId, uniqueId, placeholder, minValues, maxValues, disabled, componentType, channelTypes, defaultValues, required);
         }
     }
 }
