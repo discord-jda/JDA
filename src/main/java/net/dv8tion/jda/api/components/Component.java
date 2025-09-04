@@ -198,6 +198,16 @@ public interface Component
         }
 
         /**
+         * Whether this component is an {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}
+         *
+         * @return {@code true} is this is a type of {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}
+         */
+        public boolean isEntitySelectMenu()
+        {
+            return this == MENTIONABLE_SELECT || this == CHANNEL_SELECT || this == USER_SELECT || this == ROLE_SELECT;
+        }
+
+        /**
          * Maps the provided type id to the respective enum instance.
          *
          * @param  type

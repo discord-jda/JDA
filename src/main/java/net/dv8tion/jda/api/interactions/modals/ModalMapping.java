@@ -19,15 +19,21 @@ package net.dv8tion.jda.api.interactions.modals;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
+import net.dv8tion.jda.api.entities.Mentions;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.SelectMenuMentions;
+import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
+
+import static net.dv8tion.jda.api.components.Component.Type.STRING_SELECT;
+import static net.dv8tion.jda.api.components.Component.Type.TEXT_INPUT;
 
 /**
  * ID/Value pair for a {@link net.dv8tion.jda.api.events.interaction.ModalInteractionEvent ModalInteractionEvent}.
@@ -37,16 +43,20 @@ import java.util.Objects;
  */
 public class ModalMapping
 {
+    private final InteractionImpl interaction;
     private final String customId;
     private final int uniqueId;
+    private final DataObject resolved;
     private final DataObject value;
     private final Component.Type type;
 
-    public ModalMapping(DataObject object)
+    public ModalMapping(InteractionImpl interaction, DataObject resolved, DataObject object)
     {
+        this.interaction = interaction;
         this.uniqueId = object.getInt("id");
         this.customId = object.getString("custom_id");
         this.type = Component.Type.fromKey(object.getInt("type"));
+        this.resolved = resolved;
         this.value = object;
     }
 
@@ -114,7 +124,7 @@ public class ModalMapping
     @Nonnull
     public String getAsString()
     {
-        if (type != Component.Type.TEXT_INPUT)
+        if (type != TEXT_INPUT)
             typeError("String");
 
         return value.getString("value");
@@ -123,8 +133,18 @@ public class ModalMapping
     /**
      * The String list representation of this component.
      *
-     * <p>For {@link net.dv8tion.jda.api.components.selections.StringSelectMenu StringSelectMenus}, this returns
-     * the values chosen by the User.
+     * <p>Return values include:
+     * <ul>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.selections.StringSelectMenu StringSelectMenus},
+     *         this returns the values chosen by the User.
+     *     </li>
+     *     <li>
+     *         For {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenus},
+     *         this returns the entity IDs chosen by the User.
+     *     </li>
+     * </ul>
+     * <p>
      *
      * <p>Use {@link #getType()} to check if this method can be used safely!
      *
@@ -136,12 +156,56 @@ public class ModalMapping
     @Nonnull
     public List<String> getAsStringList()
     {
-        if (type != Component.Type.STRING_SELECT)
+        if (type != STRING_SELECT)
             typeError("List<String>");
 
         return value.getArray("values")
                 .stream(DataArray::getString)
                 .collect(Helpers.toUnmodifiableList());
+    }
+
+    /**
+     * Returns this component's value as a list of entity IDs.
+     *
+     * <p>This is available if the component was an {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}.
+     *
+     * <p>You can use {@link #getType()} and {@link Component.Type#isEntitySelectMenu()} to check if this method can be used safely.
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as such
+     *
+     * @return This component's value as a list of entity IDs.
+     */
+    @Nonnull
+    public List<Long> getAsLongList()
+    {
+        if (!type.isEntitySelectMenu())
+            typeError("List<Long>");
+
+        return value.getArray("values")
+                .stream(DataArray::getLong)
+                .collect(Helpers.toUnmodifiableList());
+    }
+
+    /**
+     * Returns this component's value as a {@link Mentions} object.
+     *
+     * <p>This is available if the component was an {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}.
+     *
+     * <p>You can use {@link #getType()} and {@link Component.Type#isEntitySelectMenu()} to check if this method can be used safely.
+     *
+     * @throws IllegalStateException
+     *         If this ModalMapping cannot be represented as such
+     *
+     * @return This component's value as a {@link Mentions} object.
+     */
+    @Nonnull
+    public Mentions getAsMentions()
+    {
+        if (!type.isEntitySelectMenu())
+            typeError("Mentions");
+
+        return new SelectMenuMentions(interaction.getJDA(), interaction.getInteractionEntityBuilder(), interaction.getGuild(), resolved, value.getArray("values"));
     }
 
     @Override
