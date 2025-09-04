@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 
 import static net.dv8tion.jda.api.entities.Guild.BANNER_URL;
+import static net.dv8tion.jda.api.entities.Guild.NSFWLevel;
 
 /**
  * Representation of a Discord Invite.
@@ -514,6 +515,9 @@ public interface Invite
          */
         @Nonnull
         VerificationLevel getVerificationLevel();
+
+        @Nonnull
+        NSFWLevel getNSFWLevel();
         
         /**
          * Returns the approximate count of online members in the guild. If the online member count was not included in the

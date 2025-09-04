@@ -41,6 +41,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static net.dv8tion.jda.api.entities.Guild.NSFWLevel;
+
 public class InviteImpl implements Invite
 {
     private final JDAImpl api;
@@ -339,11 +341,12 @@ public class InviteImpl implements Invite
         private final int presenceCount, memberCount;
         private final long id;
         private final VerificationLevel verificationLevel;
+        private final NSFWLevel nsfwLevel;
         private final Set<String> features;
         private final GuildWelcomeScreen welcomeScreen;
 
         public GuildImpl(final long id, final String vanityCode, final String bannerId, final String iconId, final String name, final String splashId, final String description,
-                         final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features,
+                         final VerificationLevel verificationLevel, final NSFWLevel nsfwLevel, final int presenceCount, final int memberCount, final Set<String> features,
                          final GuildWelcomeScreen welcomeScreen)
         {
             this.id = id;
@@ -354,6 +357,7 @@ public class InviteImpl implements Invite
             this.splashId = splashId;
             this.description = description;
             this.verificationLevel = verificationLevel;
+            this.nsfwLevel = nsfwLevel;
             this.presenceCount = presenceCount;
             this.memberCount = memberCount;
             this.features = features;
@@ -363,7 +367,7 @@ public class InviteImpl implements Invite
         public GuildImpl(final net.dv8tion.jda.api.entities.Guild guild)
         {
             this(guild.getIdLong(), guild.getVanityCode(), guild.getBannerId(), guild.getIconId(), guild.getName(), guild.getSplashId(), guild.getDescription(),
-                 guild.getVerificationLevel(), -1, -1, guild.getFeatures(), null);
+                 guild.getVerificationLevel(), guild.getNSFWLevel(), -1, -1, guild.getFeatures(), null);
         }
 
         @Nullable
@@ -432,7 +436,14 @@ public class InviteImpl implements Invite
         {
             return verificationLevel;
         }
-        
+
+        @Nonnull
+        @Override
+        public NSFWLevel getNSFWLevel()
+        {
+            return nsfwLevel;
+        }
+
         @Override
         public int getOnlineCount()
         {

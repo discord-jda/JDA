@@ -2328,6 +2328,7 @@ public class EntityBuilder extends AbstractEntityBuilder
             final String guildSplashId = guildObject.getString("splash", null);
             final String description = guildObject.getString("description", null);
             final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
+            final Guild.NSFWLevel guildNsfwLevel = Guild.NSFWLevel.fromKey(guildObject.getInt("nsfw_level", -1));
             final int presenceCount = object.getInt("approximate_presence_count", -1);
             final int memberCount = object.getInt("approximate_member_count", -1);
 
@@ -2341,7 +2342,7 @@ public class EntityBuilder extends AbstractEntityBuilder
                     ? null
                     : createWelcomeScreen(null, guildObject.getObject("welcome_screen"));
 
-            guild = new InviteImpl.GuildImpl(guildId, guildVanityCode, guildBannerId, guildIconId, guildName, guildSplashId, description, guildVerificationLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
+            guild = new InviteImpl.GuildImpl(guildId, guildVanityCode, guildBannerId, guildIconId, guildName, guildSplashId, description, guildVerificationLevel, guildNsfwLevel, presenceCount, memberCount, guildFeatures, welcomeScreen);
 
             final String channelName = channelObject.getString("name");
             final long channelId = channelObject.getLong("id");
