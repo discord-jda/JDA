@@ -36,10 +36,9 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.List;
 
 public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImpl>
 {
@@ -194,6 +193,12 @@ public class DetachedMemberImpl implements Member, MemberMixin<DetachedMemberImp
     @Nonnull
     @Override
     public Set<Role> getUnsortedRoles()
+    {
+        throw detachedException();
+    }
+
+    @Override
+    public boolean hasRole(@Nonnull Role role)
     {
         throw detachedException();
     }
