@@ -4,6 +4,7 @@ on:
   push:
     branches: [ master ]
   pull_request:
+  merge_group:
 
 jobs:
   build:
