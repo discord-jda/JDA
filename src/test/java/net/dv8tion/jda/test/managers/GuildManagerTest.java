@@ -18,7 +18,7 @@ package net.dv8tion.jda.test.managers;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.SelfMember;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.GuildManager;
@@ -48,7 +48,7 @@ public class GuildManagerTest extends IntegrationTest
     @Mock
     private Guild guild;
     @Mock
-    private Member selfMember;
+    private SelfMember selfMember;
     @Mock
     private TextChannel textChannel;
     @Mock

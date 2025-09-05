@@ -653,7 +653,10 @@ public class EntityBuilder extends AbstractEntityBuilder
         if (member == null)
         {
             // Create a brand new member
-            member = new MemberImpl(guild, user);
+            if (user.getIdLong() == getJDA().getSelfUser().getIdLong())
+                member = new SelfMemberImpl(guild, ((SelfUser) user));
+            else
+                member = new MemberImpl(guild, user);
             configureMember(memberJson, member);
             Set<Role> roles = member.getRoleSet();
             for (int i = 0; i < roleArray.length(); i++)
