@@ -1319,7 +1319,7 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      * @return The Member object of the currently logged in account.
      */
     @Nonnull
-    Member getSelfMember();
+    SelfMember getSelfMember();
 
     /**
      * Returns the NSFW Level that this guild is classified with.
