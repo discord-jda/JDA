@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.managers.SelfMemberManager;
+import net.dv8tion.jda.api.requests.RestAction;
+
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 /**
@@ -31,4 +35,17 @@ public interface SelfMember extends Member
     @Nonnull
     @Override
     SelfUser getUser();
+
+    /**
+     * Returns the {@link SelfMemberManager} for this SelfMember,
+     * used to modify some properties of the currently logged in guild member.
+     *
+     * <p>If you wish to modify multiple fields,
+     * do it in one request by chaining setters before calling {@link RestAction#queue()}.
+     *
+     * @return The manager of this SelfMember
+     */
+    @Nonnull
+    @CheckReturnValue
+    SelfMemberManager getManager();
 }

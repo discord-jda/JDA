@@ -70,6 +70,8 @@ public interface Member extends IMentionable, IPermissionHolder, IDetachableEnti
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
     /** Maximum number of days a Member can be timed out for */
     int MAX_TIME_OUT_LENGTH = 28;
+    /** Max length of a member nickname */
+    int MAX_NICKNAME_LENGTH = 32;
 
     /**
      * The user wrapped by this Entity.
