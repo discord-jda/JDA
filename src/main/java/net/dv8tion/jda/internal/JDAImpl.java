@@ -106,12 +106,12 @@ public class JDAImpl implements JDA
 {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
-    protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
-    protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
+    protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, new User[0], User::getName);
+    protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, new Guild[0], Guild::getName);
     protected final ChannelCacheViewImpl<Channel> channelCache = new ChannelCacheViewImpl<>(Channel.class);
     protected final ArrayDeque<Long> privateChannelLRU = new ArrayDeque<>();
 
-    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
+    protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, new AudioManager[0], m -> m.getGuild().getName());
 
     protected final PresenceImpl presence;
     protected final Thread shutdownHook;
@@ -139,7 +139,7 @@ public class JDAImpl implements JDA
     protected String gatewayUrl;
     protected ChunkingFilter chunkingFilter;
 
-    protected String clientId = null,  requiredScopes = "bot";
+    protected String clientId = null, requiredScopes = "bot";
     protected ShardManager shardManager = null;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
@@ -230,7 +230,7 @@ public class JDAImpl implements JDA
         try
         {
             return member.getUser().equals(getSelfUser()) // always cache self
-                || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
+                    || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
         }
         catch (Exception e)
         {
@@ -374,7 +374,8 @@ public class JDAImpl implements JDA
 
     public void setStatus(Status status)
     {
-        StatusChangeEvent event = MiscUtil.locked(statusLock, () -> {
+        StatusChangeEvent event = MiscUtil.locked(statusLock, () ->
+        {
             Status oldStatus = this.status.getAndSet(status);
             this.statusCondition.signalAll();
 
@@ -517,7 +518,7 @@ public class JDAImpl implements JDA
             EnumSet<Status> endCondition = EnumSet.of(status, failOn);
             Status current = getStatus();
             while (!current.isInit()                      // In case of disconnects during startup
-                 || current.ordinal() < status.ordinal()) // If we missed the status (e.g. LOGGING_IN -> CONNECTED happened while waiting for lock)
+                    || current.ordinal() < status.ordinal()) // If we missed the status (e.g. LOGGING_IN -> CONNECTED happened while waiting for lock)
             {
                 if (current == Status.SHUTDOWN)
                     throw new IllegalStateException("Was shutdown trying to await status.\nReason: " + shutdownReason);
@@ -616,7 +617,7 @@ public class JDAImpl implements JDA
     public List<Guild> getMutualGuilds(@Nonnull Collection<? extends UserSnowflake> users)
     {
         Checks.notNull(users, "users");
-        for(UserSnowflake u : users)
+        for (UserSnowflake u : users)
             Checks.notNull(u, "All users");
         return getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
@@ -629,7 +630,8 @@ public class JDAImpl implements JDA
     {
         return new DeferredRestAction<>(this, User.class,
                 () -> isIntent(GatewayIntent.GUILD_MEMBERS) || isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null,
-                () -> {
+                () ->
+                {
                     if (id == getSelfUser().getIdLong())
                         return new CompletedRestAction<>(this, getSelfUser());
                     Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
@@ -757,7 +759,7 @@ public class JDAImpl implements JDA
         Checks.notNull(sticker, "Sticker");
         Route.CompiledRoute route = Route.Stickers.GET_STICKER.compile(sticker.getId());
         return new RestActionImpl<>(this, route,
-            (response, request) -> entityBuilder.createRichSticker(response.getObject())
+                (response, request) -> entityBuilder.createRichSticker(response.getObject())
         );
     }
 
@@ -905,16 +907,18 @@ public class JDAImpl implements JDA
     {
         if (selfUser != null && userId == selfUser.getIdLong())
             throw new UnsupportedOperationException("Cannot open private channel with yourself!");
-        return new DeferredRestAction<>(this, PrivateChannel.class, () -> {
+        return new DeferredRestAction<>(this, PrivateChannel.class, () ->
+        {
             User user = getUserById(userId);
             if (user instanceof UserImpl)
                 return ((UserImpl) user).getPrivateChannel();
             return null;
-        }, () -> {
+        }, () ->
+        {
             Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
             DataObject body = DataObject.empty().put("recipient_id", userId);
             return new RestActionImpl<>(this, route, body,
-                (response, request) -> getEntityBuilder().createPrivateChannel(response.getObject()));
+                    (response, request) -> getEntityBuilder().createPrivateChannel(response.getObject()));
         });
     }
 
@@ -986,7 +990,9 @@ public class JDAImpl implements JDA
             {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
             }
-            catch (Exception ignored) {}
+            catch (Exception ignored)
+            {
+            }
         }
 
         // If the requester has been shutdown too, we can fire the shutdown event
@@ -1015,9 +1021,9 @@ public class JDAImpl implements JDA
     private void closeAudioConnections()
     {
         getAudioManagerCache()
-            .stream()
-            .map(AudioManagerImpl.class::cast)
-            .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
+                .stream()
+                .map(AudioManagerImpl.class::cast)
+                .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
     }
 
     @Override
@@ -1064,7 +1070,7 @@ public class JDAImpl implements JDA
     {
         Checks.noneNull(listeners, "listeners");
 
-        for (Object listener: listeners)
+        for (Object listener : listeners)
             eventManager.register(listener);
     }
 
@@ -1073,7 +1079,7 @@ public class JDAImpl implements JDA
     {
         Checks.noneNull(listeners, "listeners");
 
-        for (Object listener: listeners)
+        for (Object listener : listeners)
             eventManager.unregister(listener);
     }
 
@@ -1100,11 +1106,11 @@ public class JDAImpl implements JDA
                 .withQueryParams("with_localizations", String.valueOf(withLocalizations));
 
         return new RestActionImpl<>(this, route,
-            (response, request) ->
-                response.getArray()
-                        .stream(DataArray::getObject)
-                        .map(json -> new CommandImpl(this, null, json))
-                        .collect(Collectors.toList()));
+                (response, request) ->
+                        response.getArray()
+                                .stream(DataArray::getObject)
+                                .map(json -> new CommandImpl(this, null, json))
+                                .collect(Collectors.toList()));
     }
 
     @Nonnull
@@ -1157,11 +1163,11 @@ public class JDAImpl implements JDA
     {
         Route.CompiledRoute route = Route.Applications.GET_ROLE_CONNECTION_METADATA.compile(getSelfUser().getApplicationId());
         return new RestActionImpl<>(this, route,
-            (response, request) ->
-                response.getArray()
-                    .stream(DataArray::getObject)
-                    .map(RoleConnectionMetadata::fromData)
-                    .collect(Helpers.toUnmodifiableList()));
+                (response, request) ->
+                        response.getArray()
+                                .stream(DataArray::getObject)
+                                .map(RoleConnectionMetadata::fromData)
+                                .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull
@@ -1177,11 +1183,11 @@ public class JDAImpl implements JDA
         RequestBody body = RequestBody.create(array.toJson(), Requester.MEDIA_TYPE_JSON);
 
         return new RestActionImpl<>(this, route, body,
-            (response, request) ->
-                response.getArray()
-                    .stream(DataArray::getObject)
-                    .map(RoleConnectionMetadata::fromData)
-                    .collect(Helpers.toUnmodifiableList()));
+                (response, request) ->
+                        response.getArray()
+                                .stream(DataArray::getObject)
+                                .map(RoleConnectionMetadata::fromData)
+                                .collect(Helpers.toUnmodifiableList()));
     }
 
     @Nonnull

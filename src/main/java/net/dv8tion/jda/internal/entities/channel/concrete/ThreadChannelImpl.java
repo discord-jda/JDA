@@ -61,7 +61,7 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         ThreadChannelMixin<ThreadChannelImpl>
 {
     private final ChannelType type;
-    private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, null);
+    private final CacheView.SimpleCacheView<ThreadMember> threadMembers = new CacheView.SimpleCacheView<>(ThreadMember.class, new ThreadMember[0], null);
 
     private TLongSet appliedTags = new TLongHashSet(ForumChannel.MAX_POST_TAGS);
     private AutoArchiveDuration autoArchiveDuration;
@@ -224,10 +224,11 @@ public class ThreadChannelImpl extends AbstractGuildChannelImpl<ThreadChannelImp
         JDAImpl jda = (JDAImpl) getJDA();
         return new DeferredRestAction<>(jda, ThreadMember.class,
                 () -> getThreadMemberById(id),
-                () -> {
+                () ->
+                {
                     Route.CompiledRoute route = Route.Channels.GET_THREAD_MEMBER.compile(getId(), Long.toUnsignedString(id)).withQueryParams("with_member", "true");
                     return new RestActionImpl<>(jda, route, (resp, req) ->
-                        jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject()));
+                            jda.getEntityBuilder().createThreadMember(getGuild(), this, resp.getObject()));
                 });
     }
 

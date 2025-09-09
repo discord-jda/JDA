@@ -48,7 +48,7 @@ public class DetachedMediaChannelImpl extends AbstractGuildChannelImpl<DetachedM
         IInteractionPermissionMixin<DetachedMediaChannelImpl>
 {
     private ChannelInteractionPermissions interactionPermissions;
-    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, new ForumTag[0], ForumTag::getName, Comparator.naturalOrder());
 
     private Emoji defaultReaction;
     private String topic;

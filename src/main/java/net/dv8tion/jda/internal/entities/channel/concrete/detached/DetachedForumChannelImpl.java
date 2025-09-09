@@ -41,14 +41,14 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class DetachedForumChannelImpl extends AbstractGuildChannelImpl<DetachedForumChannelImpl>
-    implements
+        implements
         ForumChannel,
         GuildChannelUnion,
         ForumChannelMixin<DetachedForumChannelImpl>,
         IInteractionPermissionMixin<DetachedForumChannelImpl>
 {
     private ChannelInteractionPermissions interactionPermissions;
-    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, new ForumTag[0], ForumTag::getName, Comparator.naturalOrder());
 
     private Emoji defaultReaction;
     private String topic;

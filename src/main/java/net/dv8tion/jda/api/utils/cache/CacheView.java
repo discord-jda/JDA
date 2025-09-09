@@ -95,7 +95,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return {@link ClosableIterator} holding a read-lock on the data structure.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     ClosableIterator<T> lockedIterator();
@@ -110,7 +110,7 @@ public interface CacheView<T> extends Iterable<T>
      * @throws NullPointerException
      *         If provided with null
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     default void forEachUnordered(@Nonnull final Consumer<? super T> action)
     {
@@ -140,7 +140,7 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @return The resulting value after the action was performed
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    #acceptStream(Consumer)
      */
@@ -174,7 +174,7 @@ public interface CacheView<T> extends Iterable<T>
      * @throws IllegalArgumentException
      *         If the action is null
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    #applyStream(Function)
      */
@@ -449,9 +449,9 @@ public interface CacheView<T> extends Iterable<T>
      */
     class SimpleCacheView<T> extends AbstractCacheView<T>
     {
-        public SimpleCacheView(@Nonnull Class<T> type, @Nullable Function<T, String> nameMapper)
+        public SimpleCacheView(@Nonnull Class<T> type, @Nonnull T[] emptyArray, @Nullable Function<T, String> nameMapper)
         {
-            super(type, nameMapper);
+            super(type, emptyArray, nameMapper);
         }
     }
 }

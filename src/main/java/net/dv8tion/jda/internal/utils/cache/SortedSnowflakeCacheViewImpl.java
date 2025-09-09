@@ -34,14 +34,14 @@ public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? su
 
     protected final Comparator<T> comparator;
 
-    public SortedSnowflakeCacheViewImpl(Class<T> type, Comparator<T> comparator)
+    public SortedSnowflakeCacheViewImpl(Class<T> type, T[] emptyArray, Comparator<T> comparator)
     {
-        this(type, null, comparator);
+        this(type, emptyArray, null, comparator);
     }
 
-    public SortedSnowflakeCacheViewImpl(Class<T> type, Function<T, String> nameMapper, Comparator<T> comparator)
+    public SortedSnowflakeCacheViewImpl(Class<T> type, T[] emptyArray, Function<T, String> nameMapper, Comparator<T> comparator)
     {
-        super(type, nameMapper);
+        super(type, emptyArray, nameMapper);
         this.comparator = comparator;
     }
 

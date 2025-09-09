@@ -43,12 +43,12 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class MediaChannelImpl extends AbstractGuildChannelImpl<MediaChannelImpl>
-    implements MediaChannel,
+        implements MediaChannel,
         GuildChannelUnion,
         MediaChannelMixin<MediaChannelImpl>
 {
     private final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
-    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, ForumTag::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<ForumTag> tagCache = new SortedSnowflakeCacheViewImpl<>(ForumTag.class, new ForumTag[0], ForumTag::getName, Comparator.naturalOrder());
 
     private Emoji defaultReaction;
     private String topic;
