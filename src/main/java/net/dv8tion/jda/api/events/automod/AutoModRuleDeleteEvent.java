@@ -17,7 +17,11 @@
 package net.dv8tion.jda.api.events.automod;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.automod.AutoModRule;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiredPermissions;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 
@@ -29,6 +33,8 @@ import javax.annotation.Nonnull;
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#AUTO_MODERATION_CONFIGURATION AUTO_MODERATION_CONFIGURATION} intent to be enabled.
  * <br>This event will only fire for guilds where the bot has the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
  */
+@RequiredIntents(always = GatewayIntent.AUTO_MODERATION_CONFIGURATION)
+@RequiredPermissions(always = Permission.MANAGE_SERVER)
 public class AutoModRuleDeleteEvent extends GenericAutoModRuleEvent
 {
     public AutoModRuleDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull AutoModRule rule)
