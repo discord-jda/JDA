@@ -30,7 +30,7 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
 {
     public MemberCacheViewImpl()
     {
-        super(Member.class, Member::getEffectiveName);
+        super(Member.class, new Member[0], Member::getEffectiveName);
     }
 
     @Override
