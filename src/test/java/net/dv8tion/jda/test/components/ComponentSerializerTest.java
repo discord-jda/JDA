@@ -17,7 +17,6 @@
 package net.dv8tion.jda.test.components;
 
 import net.dv8tion.jda.api.components.Component;
-import net.dv8tion.jda.api.components.IComponentUnion;
 import net.dv8tion.jda.api.components.utils.ComponentDeserializer;
 import net.dv8tion.jda.api.components.utils.ComponentSerializer;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -39,19 +38,21 @@ public class ComponentSerializerTest extends AbstractComponentTest
     @ParameterizedTest
     void testSerializer(Component component)
     {
-        List<Component> components = Collections.singletonList(component);
-
         ComponentSerializer serializer = new ComponentSerializer();
 
-        List<DataObject> dataObjects = serializer.serializeAll(components);
-        List<FileUpload> fileUploads = serializer.getFileUploads(components);
+        DataObject dataObject = serializer.serialize(component);
+        List<FileUpload> fileUploads = serializer.getFileUploads(component);
 
-        assertSerialization(serializer, components, component.getType().name());
+        assertSerialization(
+            serializer,
+            Collections.singletonList(component),
+            component.getType().name()
+        );
 
         ComponentDeserializer deserializer = new ComponentDeserializer(fileUploads);
-        List<IComponentUnion> deserialized = deserializer.deserializeAll(dataObjects);
+        Component deserialized = deserializer.deserializeAs(Component.class, dataObject);
 
-        assertThat(deserialized).isEqualTo(components);
+        assertThat(deserialized).isEqualTo(component);
     }
 
     @MethodSource("getSerializerTestCases")

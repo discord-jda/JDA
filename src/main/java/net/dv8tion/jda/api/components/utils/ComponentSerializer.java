@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.utils.message.MessageUtil;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,30 @@ import java.util.stream.Collectors;
  */
 public class ComponentSerializer
 {
+    /**
+     * Serializes the provided component into a {@link DataObject} instance.
+     *
+     * <p>Some components that would implicitly upload a file, for instance {@link Thumbnail},
+     * will reference the file using a URI with this format {@code attachment://filename}.
+     * The {@code filename} refers to a {@link FileUpload} provided by {@link #getFileUploads(Component)},
+     * with a corresponding {@link FileUpload#getName() name}.
+     *
+     * @param  component
+     *         The component to serialized into {@link DataObject}
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return Serialized {@link DataObject} for the provided component
+     */
+    @Nonnull
+    public DataObject serialize(@Nonnull Component component)
+    {
+        Checks.notNull(component, "Component");
+        Checks.check(component instanceof SerializableData, "Component is not serializable");
+        return ((SerializableData) component).toData();
+    }
+
     /**
      * Serializes the provided components into {@link DataObject} instances.
      *
@@ -71,6 +96,24 @@ public class ComponentSerializer
             .map(SerializableData.class::cast)
             .map(SerializableData::toData)
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the implicit {@link FileUpload} instances used by {@link #serialize(Component)}.
+     *
+     * @param  component
+     *         The component to take the {@link FileUpload FileUploads} from
+     *
+     * @throws IllegalArgumentException
+     *         If {@code null} is provided
+     *
+     * @return The implicit {@link FileUpload} instances for the provided component
+     */
+    @Nonnull
+    public List<FileUpload> getFileUploads(@Nonnull Component component)
+    {
+        Checks.notNull(component, "Component");
+        return MessageUtil.getIndirectFiles(Collections.singletonList(component));
     }
 
     /**
