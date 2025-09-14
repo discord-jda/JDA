@@ -153,7 +153,7 @@ public class ModalMapping
     @Nonnull
     public List<String> getAsStringList()
     {
-        if (type != Component.Type.STRING_SELECT)
+        if (type != Component.Type.STRING_SELECT && !type.isEntitySelectMenu())
             typeError("List<String>");
 
         return value.getArray("values")
