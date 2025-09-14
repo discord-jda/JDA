@@ -21,6 +21,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
+import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -45,7 +46,7 @@ import java.util.Collection;
  * @see EntitySelectMenu
  * @see SelectMenuInteraction
  */
-public interface SelectMenu extends ActionComponent, ActionRowChildComponent
+public interface SelectMenu extends ActionComponent, ActionRowChildComponent, LabelChildComponent
 {
     /**
      * The maximum length a select menu id can have
@@ -111,6 +112,14 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
     int getMaxValues();
 
     /**
+     * Whether the user must populate this select menu in Modals, or {@code null} if not set.
+     *
+     * @return Whether this menu must be populated, or null
+     */
+    @Nullable
+    Boolean isRequired();
+
+    /**
      * Creates a new preconfigured {@link SelectMenu.Builder} with the same settings used for this select menu.
      * <br>This can be useful to create an updated version of this menu without needing to rebuild it from scratch.
      *
@@ -136,6 +145,7 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
         protected String placeholder;
         protected int minValues = 1, maxValues = 1;
         protected boolean disabled = false;
+        protected Boolean required = null;
 
         protected Builder(@Nonnull String customId)
         {
@@ -312,6 +322,24 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
         }
 
         /**
+         * Configure whether the user must populate this select menu if inside a Modal.
+         * <br>This defaults to {@code true} in Modals when unset.
+         *
+         * <p>This only has an effect in Modals!
+         *
+         * @param required
+         *        Whether this menu is required
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public B setRequired(@Nullable Boolean required)
+        {
+            this.required = required;
+            return (B) this;
+        }
+
+        /**
          * The custom id used to identify the select menu.
          *
          * @return The custom id
@@ -388,6 +416,17 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent
         public boolean isDisabled()
         {
             return disabled;
+        }
+
+        /**
+         * Whether the user must populate this select menu in Modals, or {@code null} if not set.
+         *
+         * @return Whether this menu must be populated, or null
+         */
+        @Nullable
+        public Boolean isRequired()
+        {
+            return required;
         }
 
         /**

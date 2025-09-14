@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.components.selections;
 
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenuInteraction;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction;
@@ -63,7 +62,7 @@ import java.util.stream.Collectors;
  * @see StringSelectInteraction
  * @see EntitySelectMenu
  */
-public interface StringSelectMenu extends SelectMenu, LabelChildComponent
+public interface StringSelectMenu extends SelectMenu
 {
     @Nonnull
     @Override
@@ -99,14 +98,6 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
      */
     @Nonnull
     List<SelectOption> getOptions();
-
-    /**
-     * Whether the user must populate this select menu in Modals, or {@code null} if not set.
-     *
-     * @return Whether this menu must be populated, or null
-     */
-    @Nullable
-    Boolean isRequired();
 
     /**
      * Creates a new preconfigured {@link Builder} with the same settings used for this select menu.
@@ -153,7 +144,6 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
     class Builder extends SelectMenu.Builder<StringSelectMenu, StringSelectMenu.Builder>
     {
         private final List<SelectOption> options = new ArrayList<>();
-        private Boolean required = null;
 
         protected Builder(@Nonnull String customId)
         {
@@ -307,17 +297,6 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
         }
 
         /**
-         * Whether the user must populate this select menu in Modals, or {@code null} if not set.
-         *
-         * @return Whether this menu must be populated, or null
-         */
-        @Nullable
-        public Boolean isRequired()
-        {
-            return required;
-        }
-
-        /**
          * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
          *
          * @param  values
@@ -393,24 +372,6 @@ public interface StringSelectMenu extends SelectMenu, LabelChildComponent
         {
             Checks.noneNull(values, "Values");
             return setDefaultOptions(Arrays.asList(values));
-        }
-
-        /**
-         * Configure whether the user must populate this select menu if inside a Modal.
-         * <br>This defaults to {@code true} in Modals when unset.
-         *
-         * <p>This only has an effect in Modals!
-         *
-         * @param required
-         *        Whether this menu is required
-         *
-         * @return The same builder instance for chaining
-         */
-        @Nonnull
-        public Builder setRequired(@Nullable Boolean required)
-        {
-            this.required = required;
-            return this;
         }
 
         /**

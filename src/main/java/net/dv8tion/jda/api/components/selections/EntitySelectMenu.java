@@ -655,7 +655,7 @@ public interface EntitySelectMenu extends SelectMenu
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
             EnumSet<ChannelType> channelTypes = componentType == Type.CHANNEL_SELECT ? this.channelTypes : EnumSet.noneOf(ChannelType.class);
             List<DefaultValue> defaultValues = new ArrayList<>(this.defaultValues);
-            return new EntitySelectMenuImpl(customId, uniqueId, placeholder, minValues, maxValues, disabled, componentType, channelTypes, defaultValues);
+            return new EntitySelectMenuImpl(customId, uniqueId, placeholder, minValues, maxValues, disabled, componentType, channelTypes, defaultValues, required);
         }
     }
 }

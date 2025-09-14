@@ -122,15 +122,15 @@ public interface Component
         /** A text input field */
         TEXT_INPUT(4, false, true),
         /** A select menu of users */
-        USER_SELECT(5, true, false),
+        USER_SELECT(5, true, true),
         /** A select menu of roles */
-        ROLE_SELECT(6, true, false),
+        ROLE_SELECT(6, true, true),
         /** A select menu of users and roles */
-        MENTIONABLE_SELECT(7, true, false),
+        MENTIONABLE_SELECT(7, true, true),
         /** A select menu of channels */
-        CHANNEL_SELECT(8, true, false),
+        CHANNEL_SELECT(8, true, true),
         SECTION(9, true, false),
-        TEXT_DISPLAY(10, true, false),
+        TEXT_DISPLAY(10, true, true),
         THUMBNAIL(11, true, false),
         MEDIA_GALLERY(12, true, false),
         FILE_DISPLAY(13, true, false),
@@ -195,6 +195,16 @@ public interface Component
         public boolean isModalCompatible()
         {
             return modalCompatible;
+        }
+
+        /**
+         * Whether this component is an {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}
+         *
+         * @return {@code true} is this is a type of {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}
+         */
+        public boolean isEntitySelectMenu()
+        {
+            return this == MENTIONABLE_SELECT || this == CHANNEL_SELECT || this == USER_SELECT || this == ROLE_SELECT;
         }
 
         /**

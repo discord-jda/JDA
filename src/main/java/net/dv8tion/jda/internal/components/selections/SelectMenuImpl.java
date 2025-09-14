@@ -33,6 +33,7 @@ public abstract class SelectMenuImpl
     protected final int uniqueId;
     protected final int minValues, maxValues;
     protected final boolean disabled;
+    protected final Boolean required;
 
     public SelectMenuImpl(DataObject data)
     {
@@ -42,11 +43,12 @@ public abstract class SelectMenuImpl
             data.getString("placeholder", null),
             data.getInt("min_values", 1),
             data.getInt("max_values", 1),
-            data.getBoolean("disabled")
+            data.getBoolean("disabled"),
+            data.isNull("required") ? null : data.getBoolean("required")
         );
     }
 
-    public SelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled)
+    public SelectMenuImpl(String id, int uniqueId, String placeholder, int minValues, int maxValues, boolean disabled, Boolean required)
     {
         this.id = id;
         this.uniqueId = uniqueId;
@@ -54,6 +56,7 @@ public abstract class SelectMenuImpl
         this.minValues = minValues;
         this.maxValues = maxValues;
         this.disabled = disabled;
+        this.required = required;
     }
 
     @Nonnull
@@ -98,6 +101,12 @@ public abstract class SelectMenuImpl
         return disabled;
     }
 
+    @Override
+    public Boolean isRequired()
+    {
+        return required;
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
@@ -111,6 +120,8 @@ public abstract class SelectMenuImpl
         data.put("disabled", disabled);
         if (placeholder != null)
             data.put("placeholder", placeholder);
+        if (required != null)
+            data.put("required", required);
         return data;
     }
 
