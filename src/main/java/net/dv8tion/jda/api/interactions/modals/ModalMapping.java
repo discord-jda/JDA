@@ -162,7 +162,7 @@ public class ModalMapping
     }
 
     /**
-     * Returns this component's value as a list of entity IDs.
+     * Returns this component's value as a list of Longs.
      *
      * <p>This is available if the component was an {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}.
      *
@@ -171,7 +171,7 @@ public class ModalMapping
      * @throws IllegalStateException
      *         If this ModalMapping cannot be represented as such
      *
-     * @return This component's value as a list of entity IDs.
+     * @return This component's value as a list of Longs.
      */
     @Nonnull
     public List<Long> getAsLongList()
