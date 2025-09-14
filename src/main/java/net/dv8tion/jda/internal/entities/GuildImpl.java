@@ -743,12 +743,12 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public Member getSelfMember()
+    public SelfMember getSelfMember()
     {
         Member member = getMember(getJDA().getSelfUser());
         if (member == null)
             throw new IllegalStateException("Guild does not have a self member");
-        return member;
+        return (SelfMember) member;
     }
 
     @Override

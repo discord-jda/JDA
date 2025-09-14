@@ -19,7 +19,7 @@ package net.dv8tion.jda.test.entities.guild;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.SelfMemberImpl;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
@@ -38,7 +38,7 @@ public abstract class AbstractGuildTest extends IntegrationTest
     @Mock
     protected SelfUserImpl selfUser;
     @Mock
-    protected MemberImpl selfMember;
+    protected SelfMemberImpl selfMember;
 
     protected GuildImpl guild;
 
