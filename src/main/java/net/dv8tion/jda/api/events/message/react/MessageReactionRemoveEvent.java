@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +39,7 @@ import javax.annotation.Nullable;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels</li>
  * </ul>
  */
+@RequiredIntents(sometimes = {GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGE_REACTIONS})
 public class MessageReactionRemoveEvent extends GenericMessageReactionEvent
 {
     public MessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nullable User user,

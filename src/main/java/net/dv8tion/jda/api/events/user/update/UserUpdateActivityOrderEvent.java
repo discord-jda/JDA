@@ -20,6 +20,11 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.annotations.RequiredCacheFlags;
+import net.dv8tion.jda.api.events.annotations.RequiredIntents;
+import net.dv8tion.jda.api.events.annotations.RequiresCachedMember;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -41,7 +46,13 @@ import java.util.List;
  * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
+ *
+ * <p>This also requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled.
+ * You can enable the cache flag with {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) enableCache(CacheFlag.ACTIVITY)}.
  */
+@RequiredIntents(always = GatewayIntent.GUILD_PRESENCES)
+@RequiredCacheFlags(always = CacheFlag.ACTIVITY)
+@RequiresCachedMember
 public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent
 {
     public static final String IDENTIFIER = "activity_order";
