@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.components.textinput.TextInput TextInput}</li>
  *     <li>{@link net.dv8tion.jda.api.components.selections.StringSelectMenu StringSelectMenu}</li>
  *     <li>{@link net.dv8tion.jda.api.components.selections.EntitySelectMenu EntitySelectMenu}</li>
+ *     <li>{@link net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload AttachmentUpload}</li>
  * </ul>
  */
 public interface LabelChildComponent extends Component

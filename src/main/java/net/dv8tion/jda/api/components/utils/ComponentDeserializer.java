@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.components.UnknownComponentImpl;
 import net.dv8tion.jda.internal.components.actionrow.ActionRowImpl;
+import net.dv8tion.jda.internal.components.attachmentupload.AttachmentUploadImpl;
 import net.dv8tion.jda.internal.components.buttons.ButtonImpl;
 import net.dv8tion.jda.internal.components.container.ContainerImpl;
 import net.dv8tion.jda.internal.components.filedisplay.FileDisplayFileUpload;
@@ -280,6 +281,8 @@ public class ComponentDeserializer
             return new ContainerImpl(this, data);
         case LABEL:
             return new LabelImpl(this, data);
+        case FILE_UPLOAD:
+            return new AttachmentUploadImpl(data);
         default:
             return new UnknownComponentImpl(data);
         }
