@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.components.label;
 
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.IComponentUnion;
+import net.dv8tion.jda.api.components.attachmentupload.AttachmentUpload;
 import net.dv8tion.jda.api.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.components.textinput.TextInput;
@@ -30,6 +31,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link TextInput}</li>
  *     <li>{@link StringSelectMenu}</li>
  *     <li>{@link EntitySelectMenu}</li>
+ *     <li>{@link AttachmentUpload}</li>
  * </ul>
  */
 public interface LabelChildComponentUnion extends LabelChildComponent, IComponentUnion
@@ -105,6 +107,28 @@ public interface LabelChildComponentUnion extends LabelChildComponent, IComponen
      */
     @Nonnull
     EntitySelectMenu asEntitySelectMenu();
+
+    /**
+     * Casts this union to a {@link AttachmentUpload}.
+     * This method exists for developer discoverability.
+     *
+     * <p>Note: This is effectively equivalent to using the cast operator:
+     * <pre><code>
+     * //These are the same!
+     * AttachmentUpload menu = union.asAttachmentUpload();
+     * AttachmentUpload menu2 = (AttachmentUpload) union;
+     * </code></pre>
+     *
+     * You can use {@link #getType()} to see if the component is of type {@link Component.Type#FILE_UPLOAD} to validate
+     * whether you can call this method in addition to normal instanceof checks: <code>component instanceof AttachmentUpload</code>
+     *
+     * @throws IllegalStateException
+     *         If the component represented by this union is not actually a {@link AttachmentUpload}.
+     *
+     * @return The component as a {@link AttachmentUpload}
+     */
+    @Nonnull
+    AttachmentUpload asAttachmentUpload();
 
     @Nonnull
     @Override
