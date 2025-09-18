@@ -1,0 +1,1 @@
+AttachmentUpload(custom_id=file-upload, required=true)
