@@ -106,9 +106,11 @@ public interface AttachmentUpload extends Component, ICustomId, LabelChildCompon
      */
     boolean isRequired();
 
+    /**
+     * Builder for {@link AttachmentUpload AttachmentUploads}.
+     */
     class Builder
     {
-
         protected int uniqueId = -1;
         protected String customId;
         protected int minValues = 1;
