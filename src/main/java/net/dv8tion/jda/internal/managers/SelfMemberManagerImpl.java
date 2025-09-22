@@ -60,13 +60,13 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     {
         super.reset(fields);
         if ((fields & NICKNAME) == NICKNAME)
-            avatar = null;
+            nickname = null;
         if ((fields & AVATAR) == AVATAR)
             avatar = null;
         if ((fields & BANNER) == BANNER)
             banner = null;
         if ((fields & BIO) == BIO)
-            banner = null;
+            bio = null;
         return this;
     }
 
