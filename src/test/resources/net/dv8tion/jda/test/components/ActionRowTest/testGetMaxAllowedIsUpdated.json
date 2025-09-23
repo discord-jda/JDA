@@ -12,7 +12,7 @@
     "SEPARATOR" : 0,
     "STRING_SELECT" : 1,
     "TEXT_DISPLAY" : 0,
-    "TEXT_INPUT" : 1,
+    "TEXT_INPUT" : 0,
     "THUMBNAIL" : 0,
     "UNKNOWN" : 0,
     "USER_SELECT" : 1
