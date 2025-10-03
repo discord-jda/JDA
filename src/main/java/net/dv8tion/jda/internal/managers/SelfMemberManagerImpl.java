@@ -97,8 +97,8 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     @CheckReturnValue
     public SelfMemberManagerImpl setNickname(@Nullable String nickname)
     {
-        Checks.notBlank(nickname, "Nickname");
-        Checks.notLonger(nickname, Member.MAX_NICKNAME_LENGTH, "Nickname");
+        if (nickname != null)
+            Checks.notLonger(nickname, Member.MAX_NICKNAME_LENGTH, "Nickname");
         this.nickname = nickname;
         set |= NICKNAME;
         return this;
@@ -129,8 +129,8 @@ public class SelfMemberManagerImpl extends ManagerBase<SelfMemberManager> implem
     @CheckReturnValue
     public SelfMemberManagerImpl setBio(@Nullable String bio)
     {
-        Checks.notBlank(bio, "Bio");
-        Checks.notLonger(bio, SelfMember.MAX_BIO_LENGTH, "Bio");
+        if (bio != null)
+            Checks.notLonger(bio, SelfMember.MAX_BIO_LENGTH, "Bio");
         this.bio = bio;
         set |= BIO;
         return this;
