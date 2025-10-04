@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.components.attribute;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.Component;
 import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.replacer.IReplaceable;
@@ -32,34 +30,6 @@ import javax.annotation.Nullable;
  */
 public interface ICustomId extends Component
 {
-    /**
-     * An unique component ID or {@code null}.
-     * <br>Some components such as link buttons don't have this.
-     *
-     * <p>Custom IDs can contain custom data,
-     * this is typically used to pass data between a slash command and your button listener.
-     *
-     * <p>While this ID is unique and can be retrieved with {@link ComponentInteraction#getComponentId()},
-     * you should use {@link #getUniqueId()} to identify a component in a single message,
-     * such as when replacing components using {@link ComponentTree} or {@link IReplaceable#replace(ComponentReplacer)}.
-     *
-     * @return The component ID or null if not present
-     *
-     * @see    ComponentInteraction#getComponentId()
-     * @see    Component#getUniqueId()
-     *
-     * @deprecated
-     *         Replaced with {@link #getCustomId()}
-     */
-    @Nullable
-    @Deprecated
-    @ForRemoval
-    @ReplaceWith("getCustomId()")
-    default String getId()
-    {
-        return getCustomId();
-    }
-
     /**
      * An unique component ID or {@code null}.
      * <br>Some components such as link buttons don't have this.
