@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api.components;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
-import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.section.SectionAccessoryComponent;
@@ -148,21 +145,6 @@ public interface Component
             this.key = key;
             this.messageCompatible = messageCompatible;
             this.modalCompatible = modalCompatible;
-        }
-
-        /**
-         * How many components of this type can be added to one {@link ActionRow}.
-         *
-         * @return The maximum amount an action row can contain
-         *
-         * @deprecated Replaced with {@link ActionRow#getMaxAllowed(Component.Type)}
-         */
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("ActionRow.getMaxAllowed(Component.Type)")
-        public int getMaxPerRow()
-        {
-            return ActionRow.getMaxAllowed(this);
         }
 
         /**

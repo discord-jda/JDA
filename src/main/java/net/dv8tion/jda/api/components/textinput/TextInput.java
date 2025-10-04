@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.components.textinput;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.attribute.ICustomId;
 import net.dv8tion.jda.api.components.label.LabelChildComponent;
 import net.dv8tion.jda.internal.components.textinput.TextInputImpl;
@@ -194,32 +192,6 @@ public interface TextInput extends ICustomId, LabelChildComponent
         {
             setCustomId(customId);
             setStyle(style);
-        }
-
-        /**
-         * Sets the id for this TextInput
-         * <br>This can be used to uniquely identify it, or pass data to other handlers.
-         *
-         * @param  id
-         *         The id to set
-         *
-         * @throws IllegalArgumentException
-         *         <ul>
-         *             <li>If id is null or blank</li>
-         *             <li>If id is longer than {@value #MAX_ID_LENGTH} characters</li>
-         *         </ul>
-         *
-         * @return The same Builder for chaining convenience.
-         *
-         * @deprecated
-         *         Replaced by {@link #setCustomId(String)}
-         */
-        @Nonnull
-        @Deprecated
-        @ReplaceWith("setCustomId(id)")
-        public Builder setId(@Nonnull String id)
-        {
-            return setCustomId(id);
         }
 
         /**
@@ -453,23 +425,6 @@ public interface TextInput extends ICustomId, LabelChildComponent
         public int getMaxLength()
         {
             return maxLength;
-        }
-
-        /**
-         * The custom id
-         *
-         * @return Custom id
-         *
-         * @deprecated
-         *         Replaced with {@link #getCustomId()}
-         */
-        @Nonnull
-        @Deprecated
-        @ForRemoval
-        @ReplaceWith("getCustomId()")
-        public String getId()
-        {
-            return customId;
         }
 
         /**

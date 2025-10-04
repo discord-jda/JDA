@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.api.components.buttons;
 
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.components.ActionComponent;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.actionrow.ActionRowChildComponent;
@@ -197,34 +196,6 @@ public interface Button extends ActionComponent, ActionRowChildComponent, Sectio
     default Button withLabel(@Nonnull String label)
     {
         return new ButtonImpl(getCustomId(), getUniqueId(), label, getStyle(), getUrl(), getSku(), isDisabled(), getEmoji()).checkValid();
-    }
-
-    /**
-     * Returns a copy of this button with the provided id.
-     *
-     * @param  id
-     *         The id to use
-     *
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If this is a {@link ButtonStyle#LINK LINK}-styled or {@link ButtonStyle#PREMIUM PREMIUM}-styled button</li>
-     *             <li>If the provided {@code id} is null or empty.</li>
-     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
-     *             is exceeded.</li>
-     *         </ul>
-     *
-     * @return New button with the changed id
-     *
-     * @deprecated
-     *         Replaced with {@link #withCustomId(String)}
-     */
-    @Nonnull
-    @Deprecated
-    @ReplaceWith("withCustomId(id)")
-    @CheckReturnValue
-    default Button withId(@Nonnull String id)
-    {
-        return withCustomId(id);
     }
 
     /**
