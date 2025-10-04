@@ -38,6 +38,8 @@ public class GuildMembersChunkHandler extends SocketHandler
     protected Long handleInternally(DataObject content)
     {
         final long guildId = content.getLong("guild_id");
+        api.getClient().getChunkingRateLimiter().onChunkReceived(guildId);
+
         DataArray members = content.getArray("members");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild != null)

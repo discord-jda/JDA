@@ -114,6 +114,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected long identifyTime = 0;
 
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
+    protected final WebSocketChunkingRateLimiter chunkingRateLimiter = new WebSocketChunkingRateLimiter(queueLock);
     protected final Queue<DataObject> chunkSyncQueue = new ConcurrentLinkedQueue<>();
     protected final Queue<DataObject> ratelimitQueue = new ConcurrentLinkedQueue<>();
 
@@ -184,6 +185,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public MemberChunkManager getChunkManager()
     {
         return chunkManager;
+    }
+
+    public WebSocketChunkingRateLimiter getChunkingRateLimiter()
+    {
+        return chunkingRateLimiter;
     }
 
     public void ready()
@@ -1366,6 +1372,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void setupHandlers()
     {
         final SocketHandler.NOPHandler nopHandler =            new SocketHandler.NOPHandler(api);
+        handlers.put("RATE_LIMITED",                           new RateLimitedHandler(api));
         handlers.put("APPLICATION_COMMAND_PERMISSIONS_UPDATE", new ApplicationCommandPermissionsUpdateHandler(api));
         handlers.put("AUTO_MODERATION_RULE_CREATE",            new AutoModRuleHandler(api, "CREATE"));
         handlers.put("AUTO_MODERATION_RULE_UPDATE",            new AutoModRuleHandler(api, "UPDATE"));

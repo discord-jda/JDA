@@ -42,6 +42,7 @@ class WebSocketSendingThread implements Runnable
     private final WebSocketClient client;
     private final JDAImpl api;
     private final ReentrantLock queueLock;
+    private final WebSocketChunkingRateLimiter chunkingRateLimiter;
     private final Queue<DataObject> chunkQueue;
     private final Queue<DataObject> ratelimitQueue;
     private final TLongObjectMap<ConnectionRequest> queuedAudioConnections;
@@ -57,6 +58,7 @@ class WebSocketSendingThread implements Runnable
         this.client = client;
         this.api = client.api;
         this.queueLock = client.queueLock;
+        this.chunkingRateLimiter = client.chunkingRateLimiter;
         this.chunkQueue = client.chunkSyncQueue;
         this.ratelimitQueue = client.ratelimitQueue;
         this.queuedAudioConnections = client.queuedAudioConnections;
@@ -129,7 +131,13 @@ class WebSocketSendingThread implements Runnable
 
             chunkRequest = chunkQueue.peek();
             if (chunkRequest != null)
-                handleChunkSync(chunkRequest);
+            {
+                final long guildId = chunkRequest.getLong("guild_id");
+                // Send a request only if there is no in-flight request for the same guild, and if no rate limit was imposed
+                if (!chunkingRateLimiter.isAwaitingResponse(guildId) && !chunkingRateLimiter.isRateLimited(guildId))
+                    handleChunkSync(guildId, chunkRequest);
+                // Try again on next scheduled task
+            }
             else if (audioRequest != null)
                 handleAudioRequest(audioRequest);
             else
@@ -187,7 +195,7 @@ class WebSocketSendingThread implements Runnable
         }
     }
 
-    private void handleChunkSync(DataObject chunkOrSyncRequest)
+    private void handleChunkSync(long guildId, DataObject chunkOrSyncRequest)
     {
         LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
         boolean success = send(
@@ -197,7 +205,12 @@ class WebSocketSendingThread implements Runnable
         );
 
         if (success)
+        {
+            // Signal we have successfully sent the WS message,
+            // and we are now waiting for Discord to either rate limit us or send chunks
+            chunkingRateLimiter.setAwaitingResponse(guildId);
             chunkQueue.remove();
+        }
     }
 
     private void handleAudioRequest(ConnectionRequest audioRequest)
