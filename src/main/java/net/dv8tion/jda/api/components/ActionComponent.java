@@ -44,6 +44,8 @@ public interface ActionComponent extends IDisableable, ICustomId
     /**
      * Returns a copy of this component with {@link #isDisabled()} set to true.
      *
+     * <p><b>Note:</b> Components in modals cannot be disabled.
+     *
      * @return New disabled component instance
      */
     @Nonnull
@@ -67,6 +69,8 @@ public interface ActionComponent extends IDisableable, ICustomId
 
     /**
      * Returns a copy of this component with {@link #isDisabled()} set to the provided value.
+     *
+     * <p><b>Note:</b> Components in modals cannot be disabled.
      *
      * @param  disabled
      *         True, if this component should be disabled
