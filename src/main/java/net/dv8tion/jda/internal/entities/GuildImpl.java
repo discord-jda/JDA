@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StandardSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
@@ -86,6 +87,7 @@ import net.dv8tion.jda.internal.utils.cache.*;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -2368,6 +2370,12 @@ public class GuildImpl implements Guild
     public NSFWLevel getNSFWLevel()
     {
         return nsfwLevel;
+    }
+
+    @Override
+    public @NotNull EnumSet<SystemChannelFlag> getSystemChannelFlags()
+    {
+        return SystemChannelFlag.fromBitmask(systemChannelFlags);
     }
 
     @Nullable

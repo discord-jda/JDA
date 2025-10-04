@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.api.entities.sticker.*;
 import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -1334,6 +1335,22 @@ public interface Guild extends IGuildChannelContainer<GuildChannel>, ISnowflake,
      */
     @Nonnull
     NSFWLevel getNSFWLevel();
+
+    /**
+     * Returns the system channel flags associated to the guild. A system channel is a unique
+     * channel in a guild where messages like new members joining are received.
+     * System channel flags are flags associated with configuring these broadcasts. For
+     * example, {@link SystemChannelFlag#SUPPRESS_JOIN_NOTIFICATIONS} is a flag designated
+     * to suppress notifications upon new member join.
+     * @throws net.dv8tion.jda.api.exceptions.DetachedEntityException
+     *         If this entity is {@link #isDetached() detached}.
+     * @see <a href="https://discord.com/developers/docs/resources/guild#guild-object-system-channel-flags">
+     *     System Channel Flags API documentation
+     *     <a/>
+     * @return the system channel flags of this guild.
+     * */
+    @Nonnull
+    EnumSet<SystemChannelFlag> getSystemChannelFlags();
 
     /**
      * Gets the Guild specific {@link Member Member} object for the provided

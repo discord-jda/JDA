@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentActions;
 import net.dv8tion.jda.api.entities.guild.SecurityIncidentDetections;
+import net.dv8tion.jda.api.entities.guild.SystemChannelFlag;
 import net.dv8tion.jda.api.entities.sticker.GuildSticker;
 import net.dv8tion.jda.api.entities.sticker.StickerSnowflake;
 import net.dv8tion.jda.api.entities.templates.Template;
@@ -54,6 +55,7 @@ import net.dv8tion.jda.internal.entities.detached.mixin.IDetachableEntityMixin;
 import net.dv8tion.jda.internal.requests.restaction.pagination.BanPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.EntityString;
 import net.dv8tion.jda.internal.utils.cache.SortedChannelCacheViewImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -722,6 +724,12 @@ public class DetachedGuildImpl implements Guild, IDetachableEntityMixin
     @Nonnull
     @Override
     public NSFWLevel getNSFWLevel()
+    {
+        throw detachedException();
+    }
+
+    @Override
+    public @NotNull EnumSet<SystemChannelFlag> getSystemChannelFlags()
     {
         throw detachedException();
     }

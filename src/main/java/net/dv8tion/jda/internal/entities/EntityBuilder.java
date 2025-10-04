@@ -337,7 +337,8 @@ public class EntityBuilder extends AbstractEntityBuilder
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount)
                 .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel))
-                .setBoostProgressBarEnabled(boostProgressBarEnabled);
+                .setBoostProgressBarEnabled(boostProgressBarEnabled)
+                .setSystemChannelFlags(systemChannelFlags);
 
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())
