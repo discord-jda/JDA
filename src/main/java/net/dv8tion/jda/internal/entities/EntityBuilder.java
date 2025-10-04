@@ -314,6 +314,7 @@ public class EntityBuilder extends AbstractEntityBuilder
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
         final int nsfwLevel = guildJson.getInt("nsfw_level", -1);
         final boolean boostProgressBarEnabled = guildJson.getBoolean("premium_progress_bar_enabled");
+        final int systemChannelFlags = guildJson.getInt("system_channel_flags", -1);
 
         guildObj.setName(name)
                 .setIconId(iconId)

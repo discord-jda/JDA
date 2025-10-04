@@ -143,6 +143,7 @@ public class GuildImpl implements Guild
     private BoostTier boostTier = BoostTier.NONE;
     private DiscordLocale preferredLocale = DiscordLocale.ENGLISH_US;
     private int memberCount;
+    private int systemChannelFlags;
     private boolean boostProgressBarEnabled;
 
     public GuildImpl(JDAImpl api, long id)
@@ -2321,6 +2322,12 @@ public class GuildImpl implements Guild
     public GuildImpl setBoostProgressBarEnabled(boolean enabled)
     {
         this.boostProgressBarEnabled = enabled;
+        return this;
+    }
+
+    public GuildImpl setSystemChannelFlags(int systemChannelFlags)
+    {
+        this.systemChannelFlags = systemChannelFlags;
         return this;
     }
 
