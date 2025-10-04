@@ -86,7 +86,11 @@ public interface TextInput extends ICustomId, LabelChildComponent
     int getMaxLength();
 
     /**
-     * Whether this TextInput is required to be non-empty
+     * Whether this TextInput is required to be non-empty.
+     *
+     * <p>This attribute is completely separate from the length range,
+     * for example, you can have an optional text input with the range set to {@code [2 ; 5]},
+     * meaning you accept either no input, or, at least 2 characters but at most 5.
      *
      * @return True if this TextInput is required to be used.
      */
@@ -289,6 +293,10 @@ public interface TextInput extends ICustomId, LabelChildComponent
 
         /**
          * Sets whether the user is required to write in this TextInput. Default is true.
+         *
+         * <p>This attribute is completely separate from the length range,
+         * for example, you can have an optional text input with the range set to {@code [2 ; 5]},
+         * meaning you accept either no input, or, at least 2 characters but at most 5.
          *
          * @param  required 
          *         If this TextInput should be required
@@ -522,6 +530,10 @@ public interface TextInput extends ICustomId, LabelChildComponent
         /**
          * Whether this TextInput is required.
          * <br>If this is True, the user must populate this TextInput field before they can submit the Modal.
+         *
+         * <p>This attribute is completely separate from the length range,
+         * for example, you can have an optional text input with the range set to {@code [2 ; 5]},
+         * meaning you accept either no input, or, at least 2 characters but at most 5.
          *
          * @return True if this TextInput is required
          * 

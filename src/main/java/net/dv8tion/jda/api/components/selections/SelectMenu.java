@@ -114,6 +114,10 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
     /**
      * Whether the user must populate this select menu in Modals, or {@code null} if not set.
      *
+     * <p>This attribute is completely separate from the value range,
+     * for example, you can have an optional select menu with the range set to {@code [2 ; 5]},
+     * meaning you accept either 0 options, or, at least 2 but at most 5.
+     *
      * @return Whether this menu must be populated, or null
      */
     @Nullable
@@ -325,6 +329,10 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
          * Configure whether the user must populate this select menu if inside a Modal.
          * <br>This defaults to {@code true} in Modals when unset.
          *
+         * <p>This attribute is completely separate from the value range,
+         * for example, you can have an optional select menu with the range set to {@code [2 ; 5]},
+         * meaning you accept either 0 options, or, at least 2 but at most 5.
+         *
          * <p>This only has an effect in Modals!
          *
          * @param required
@@ -420,6 +428,10 @@ public interface SelectMenu extends ActionComponent, ActionRowChildComponent, La
 
         /**
          * Whether the user must populate this select menu in Modals, or {@code null} if not set.
+         *
+         * <p>This attribute is completely separate from the value range,
+         * for example, you can have an optional select menu with the range set to {@code [2 ; 5]},
+         * meaning you accept either 0 options, or, at least 2 but at most 5.
          *
          * @return Whether this menu must be populated, or null
          */
