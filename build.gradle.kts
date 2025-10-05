@@ -211,7 +211,7 @@ spotless {
             .style("AOSP")
             .formatJavadoc(false)
 
-        licenseHeaderFile("spotless/licence.txt")
+        licenseHeaderFile("spotless/licence-header.txt")
 
         target("src/main/**/*.java", "src/test/**/*.java")
 
