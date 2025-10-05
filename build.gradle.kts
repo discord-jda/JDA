@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import com.diffplug.spotless.LineEnding
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import de.undercouch.gradle.tasks.download.Download
@@ -37,6 +38,7 @@ plugins {
     alias(libs.plugins.version.catalog.update)
     alias(libs.plugins.jreleaser)
     alias(libs.plugins.download)
+    alias(libs.plugins.spotless)
 }
 
 
@@ -189,6 +191,41 @@ versionCatalogUpdate {
 
 ////////////////////////////////////
 //                                //
+//    Formatting and Linting      //
+//                                //
+////////////////////////////////////
+
+spotless {
+    encoding("UTF-8")
+    lineEndings = LineEnding.GIT_ATTRIBUTES_FAST_ALLSAME
+
+    kotlinGradle {
+        target("*.gradle.kts", "buildSrc/*.gradle.kts", "buildSrc/src/**/*.kt*")
+
+        trimTrailingWhitespace()
+        leadingTabsToSpaces()
+    }
+
+    java {
+        ratchetFrom("origin/master")
+
+        googleJavaFormat("1.29.0")
+            .aosp()
+            .reorderImports(true)
+            .reflowLongStrings()
+            .skipJavadocFormatting()
+
+        target("src/main/**/*.java", "src/test/**/*.java")
+
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        leadingTabsToSpaces()
+    }
+}
+
+
+////////////////////////////////////
+//                                //
 //    Build Task Configuration    //
 //                                //
 ////////////////////////////////////
@@ -209,11 +246,11 @@ val sourcesForRelease by tasks.registering(Copy::class) {
         val version = projectEnvironment.version.get()
 
         val tokens = mapOf(
-            "versionMajor" to version.major,
-            "versionMinor" to version.minor,
-            "versionRevision" to version.revision,
-            "versionClassifier" to nullableReplacement(version.classifier),
-            "commitHash" to projectEnvironment.commitHash
+                "versionMajor" to version.major,
+                "versionMinor" to version.minor,
+                "versionRevision" to version.revision,
+                "versionClassifier" to nullableReplacement(version.classifier),
+                "commitHash" to projectEnvironment.commitHash
         )
         // Allow for setting null on some strings without breaking the source
         // for this, we have special tokens marked with "!@...@!" which are replaced to @...@
@@ -303,7 +340,7 @@ val javadoc by tasks.getting(Javadoc::class) {
     source = generateJavaSources.get().source
 
     exclude {
-        it.file.absolutePath.contains("internal", ignoreCase=false)
+        it.file.absolutePath.contains("internal", ignoreCase = false)
     }
 }
 
